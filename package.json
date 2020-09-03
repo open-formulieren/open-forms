@@ -1,0 +1,64 @@
+{
+  "name": "openforms",
+  "version": "1.0.0-alpha.0",
+  "description": "openforms project",
+  "main": "src/static/openforms/js/openforms.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "build": "gulp build",
+    "watch": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/maykinmedia/openforms.git"
+  },
+  "author": "Maykin Media",
+  "license": "UNLICENSED",
+  "homepage": "https://maykinmedia.nl",
+  "dependencies": {
+    "microscope-sass": "latest"
+  },
+  "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/polyfill": "latest",
+    "@babel/preset-env": "latest",
+    "autoprefixer": "latest",
+    "babel-loader": "latest",
+    "chai": "latest",
+    "css-loader": "latest",
+    "cssnano": "latest",
+    "gulp": "latest",
+    "gulp-file": "latest",
+    "gulp-hub": "latest",
+    "gulp-if": "latest",
+    "gulp-jshint": "latest",
+    "gulp-jshint-jslint-file-reporter": "latest",
+    "istanbul-instrumenter-loader": "latest",
+    "jshint": "latest",
+    "jshint-stylish": "latest",
+    "karma": "latest",
+    "karma-chrome-launcher": "latest",
+    "karma-coverage": "latest",
+    "karma-junit-reporter": "latest",
+    "karma-mocha": "latest",
+    "karma-spec-reporter": "latest",
+    "karma-webpack": "latest",
+    "mini-css-extract-plugin": "latest",
+    "mocha": "latest",
+    "node-sass": "latest",
+    "postcss-loader": "latest",
+    "postcss-selector-lint": "latest",
+    "sass-loader": "latest",
+    "simulant": "latest",
+    "sinon": "latest",
+    "url-loader": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest",
+    "webpack-dev-server": "latest",
+    "webpack-stream": "latest",
+    "yargs": "latest"
+  }
+}

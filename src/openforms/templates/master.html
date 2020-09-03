@@ -1,0 +1,24 @@
+{% load staticfiles hijack_tags %}<!DOCTYPE html>
+<html lang="en" class="view {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Openforms{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
+        <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet" />
+        <link href="{% static 'hijack/hijack-styles.css' %}" rel="stylesheet" type="text/css" />
+        {% block extra_css %}{% endblock %}
+    </head>
+
+    <body class="view__body">
+        {% hijack_notification %}
+        <main>
+            {% block content %}
+                Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
+                to get some actual content.
+            {% endblock %}
+        </main>
+        
+        <script src="{% static 'bundles/openforms-js.js' %}"></script>
+    </body>
+</html>

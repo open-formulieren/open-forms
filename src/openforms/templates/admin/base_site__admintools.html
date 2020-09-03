@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load i18n admin_tools_menu_tags staticfiles %}
+
+{% block title %}{{ title }} | {{ settings.PROJECT_NAME|capfirst }} {% trans 'admin' %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu_css %}
+{% endif %}
+{% endif %}
+<link href="{% static 'bundles/admin_overrides.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{{ settings.PROJECT_NAME|capfirst }} {% trans 'administration' %}</h1>
+{% endblock %}
+
+{% block nav-global %}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu %}
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+{% endblock %}

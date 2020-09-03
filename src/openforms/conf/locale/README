@@ -1,0 +1,9 @@
+In this directory, language directories can be created ('nl', 'en', etc.) for 
+every locale in the Django settings. We use centralized translations for easy
+management, merging and translating.
+
+Usage::
+
+    cd src/project_name
+    python ../manage.py makemessages --all
+    python ../manage.py compilemessages

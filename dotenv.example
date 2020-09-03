@@ -1,0 +1,10 @@
+SECRET_KEY="{{ secret_key }}"
+DB_NAME="{{ project_name|lower }}"
+DB_USER="{{ project_name|lower }}"
+#
+# For peer authentication via unix domain socket
+# these should be kept empty.
+#
+DB_PASSWORD=""
+DB_HOST=""
+DB_PORT=""

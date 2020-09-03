@@ -1,0 +1,70 @@
+dist: xenial
+
+language: python
+
+cache: pip
+
+python: 3.8
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "10"
+
+env:
+  global:
+  - DJANGO_SETTINGS_MODULE={{ project_name|lower }}.conf.ci
+  - SECRET_KEY=dummy
+  - DB_PASSWORD=
+  - DB_USER=postgres
+
+install:
+  - pip install -r requirements/ci.txt
+  - pip install codecov
+  - npm ci
+  - npm run build
+
+jobs:
+  include:
+    # Run jobs in parallel in stage Tests
+    - stage: "Tests"
+      name: "Unit tests"
+      script:
+        - python src/manage.py collectstatic --noinput --link
+        - coverage run src/manage.py test src
+
+    - name: "Code imports"
+      before_install: skip
+      install:
+        - pip install isort
+      before_script: skip
+      script: isort . --check-only --diff
+
+    - name: "Code format"
+      before_install: skip
+      install:
+        - pip install black
+      before_script: skip
+      script: black --check src --diff
+
+    - stage: "Docker image"
+      name: Docker image build
+      services:
+        - docker
+      install: skip
+      script: docker build .
+      deploy:
+        - provider: script
+          script: bin/docker_push.sh latest
+          on:
+            branch: master
+
+        - provider: script
+          script: bin/docker_push.sh $TRAVIS_TAG
+          on:
+            tags: true
+
+
+after_success:
+  - codecov

@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load i18n static hijack_tags %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Administration') }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block messages %}
+    {% hijack_notification %}
+    {{ block.super }}
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+{% endblock %}
