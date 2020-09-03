@@ -19,8 +19,6 @@ module.exports = {
     entry: {
         [`${paths.package.name}-css`]: `${__dirname}/${paths.scssEntry}`,
         [`${paths.package.name}-js`]: `${__dirname}/${paths.jsEntry}`,
-
-        'admin_overrides': `${__dirname}/${paths.scssSrcDir}/admin/admin_overrides.scss`,
     },
 
     // (Output) bundle locations.

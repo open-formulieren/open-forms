@@ -1,0 +1,2 @@
+REST_FRAMEWORK = {
+}

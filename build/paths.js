@@ -25,13 +25,13 @@ module.exports = {
     staticRoot: staticRoot,
 
     // Path to the scss entry point
-    scssEntry: sourcesRoot + 'scss/screen.scss',
+    scssEntry: sourcesRoot + 'ui/static/ui/scss/screen.scss',
 
     // Path to the scss (sources) directory
-    scssSrcDir: sourcesRoot + 'scss/',
+    scssSrcDir: sourcesRoot + 'ui/static/ui/scss/',
 
     // Path to the scss (sources) entry point
-    scssSrc: sourcesRoot + 'scss/**/*.scss',
+    scssSrc: sourcesRoot + 'ui/static/ui/scss/**/*.scss',
 
     // Path to the (transpiled) css directory
     cssDir: staticRoot + 'bundles/',
@@ -40,32 +40,32 @@ module.exports = {
     fontsDir: staticRoot + 'fonts/',
 
     // Path to the js entry point (source)
-    jsEntry: sourcesRoot + 'js/index.js',
+    jsEntry: sourcesRoot + 'ui/static/ui/js/index.js',
 
     // Path to the compatibility js entry point (source)
-    swEntry: sourcesRoot + 'js/sw.js',
+    swEntry: sourcesRoot + 'ui/static/ui/js/sw.js',
 
     // Path to js (sources)
-    jsSrc: sourcesRoot + 'js/**/*.js',
+    jsSrc: sourcesRoot + 'ui/static/ui/js/**/*.js',
 
     // Path to the js (sources) directory
-    jsSrcDir: sourcesRoot + 'js/',
+    jsSrcDir: sourcesRoot + 'ui/static/ui/js/',
 
     // Path to the (transpiled) js directory
     jsDir: staticRoot + 'bundles/',
 
     // Path to js spec (test) files
-    jsSpec: sourcesRoot + 'jstests/**/*.spec.js',
+    jsSpec: sourcesRoot + 'ui/static/ui/jstests/**/*.spec.js',
 
     // Path to js spec (test) entry file
-    jsSpecEntry: sourcesRoot + 'jstests/index.js',
+    jsSpecEntry: sourcesRoot + 'ui/static/ui/jstests/index.js',
 
     // Path to js code coverage directory
     coverageDir: 'reports/jstests/',
 
     // Path to HTML templates directory
-    htmlTemplatesDir: sourcesRoot + 'templates/views',
+    htmlTemplatesDir: sourcesRoot + 'ui/templates/ui/views/',
 
     // Path to HTML includes directory
-    htmlIncludesDir: sourcesRoot + 'templates/components/'
+    htmlIncludesDir: sourcesRoot + 'ui/templates/ui/components/'
 };
