@@ -1,0 +1,47 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+@import '../nav/constants';
+@import '../footer/constants';
+
+.layout {
+  background-color: $color-gray;
+  min-height: calc(100vh - #{$nav-min-height + $footer-min-height});
+
+  &__row {
+    @include container(flex);
+    @include responsive(flex-direction, column, row);
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__column:first-child:last-child {
+    @include columns-responsive(4, 9, 12, 12);
+  }
+
+  &__column:first-child:not(last-child) {
+    @include columns-responsive(4, 9, 8, 8);
+  }
+
+  &__column:not(:first-child):last-child {
+    @include columns-responsive(4, 9, 4, 4);
+  }
+
+  &__column {
+    .title,
+    .subtitle,
+    .caption,
+    .body {
+      @include margin;
+    }
+
+    .button {
+      @include margin(true, margin-top);
+      @include margin(auto, $value-mobile: $typography-margin-text * 2);
+    }
+  }
+
+}

@@ -37,7 +37,7 @@ module.exports = {
     cssDir: staticRoot + 'bundles/',
 
     // Path to the fonts directory
-    fontsDir: staticRoot + 'fonts/',
+    fontsDir: sourcesRoot + 'ui/static/ui/fonts/',
 
     // Path to the js entry point (source)
     jsEntry: sourcesRoot + 'ui/static/ui/js/index.js',

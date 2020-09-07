@@ -1,0 +1,10 @@
+.view {
+  position: relative;
+
+  &__body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    margin: 0;
+  }
+}
