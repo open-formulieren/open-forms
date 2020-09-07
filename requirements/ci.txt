@@ -30,6 +30,7 @@ faker==4.1.2              # via factory-boy
 freezegun==0.3.15         # via -r requirements/test-tools.in
 idna==2.10                # via -r requirements/base.txt, requests
 lxml==4.5.2               # via pyquery
+pep8==1.7.1
 pillow==7.2.0             # via -r requirements/base.txt
 polib==1.1.0              # via -r requirements/base.txt, django-rosetta
 psycopg2==2.8.5           # via -r requirements/base.txt

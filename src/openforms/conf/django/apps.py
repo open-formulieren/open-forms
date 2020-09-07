@@ -25,6 +25,7 @@ INSTALLED_APPS = [
 
     # Project applications.
     "openforms.accounts",
+    "openforms.core",
     "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",
