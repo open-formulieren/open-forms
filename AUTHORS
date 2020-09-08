@@ -1,0 +1,20 @@
+The Open Forms project was initiated by Maykin Media to create a generic user
+facing application to start a "Zaak" in Open Zaak. Using Common Ground 
+principles and making this product specifically for municipalities, we hope 
+Open Forms will be a powerful addition to the Common Ground product family.
+
+Here is an inevitably incomplete list of MUCH-APPRECIATED CONTRIBUTORS --
+people who laid the groundwork, have submitted patches, reported bugs, added
+translations, helped answer questions, and generally made Open Forms that much 
+better:
+
+    Joeri Bekker <joeri@maykinmedia.nl>
+    David Oberholzer <david@maykinmedia.nl>
+    Sven van de Scheur <sven@maykinmedia.nl>
+
+A big THANK YOU goes to:
+
+    The Form.io team for making such a great open source library that speed up
+    the development of Open Forms.
+
+    All people behind Common Ground for their enthusiasm and vision.
