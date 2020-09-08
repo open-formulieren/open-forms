@@ -44,13 +44,10 @@ development machine.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/openforms.git
-       $ cd openforms
+       $ git clone git@bitbucket.org:maykinmedia/open-forms.git
+       $ cd open-forms
 
 3. Install all required libraries.
-   **Tip:** You can use the ``bootstrap.py`` script to install the requiments
-   and set the proper settings in ``manage.py``. Or, perform the steps
-   manually:
 
    .. code-block:: bash
 
@@ -114,7 +111,7 @@ When updating an existing installation:
 
    .. code-block:: bash
 
-       $ cd openforms
+       $ cd open-forms
        $ source env/bin/activate
 
 2. Update the code and libraries:
@@ -168,15 +165,15 @@ Docker
 The easiest way to get the project started is by using `Docker Compose`_.
 
 1. Clone or download the code from `Github`_ in a folder like
-   ``openforms``:
+   ``open-forms``:
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/openforms.git
-       Cloning into 'openforms'...
+       $ git clone git@bitbucket.org:maykinmedia/open-forms.git
+       Cloning into 'open-forms'...
        ...
 
-       $ cd openforms
+       $ cd open-forms
 
 2. Start the database and web services:
 
@@ -226,7 +223,7 @@ The easiest way to get the project started is by using `Docker Compose`_.
    system you can run ``docker system prune``.
 
 .. _Docker Compose: https://docs.docker.com/compose/install/
-.. _Github: https://github.com/maykinmedia/openforms/
+.. _Github: https://github.com/maykinmedia/open-forms/
 
 
 More Docker

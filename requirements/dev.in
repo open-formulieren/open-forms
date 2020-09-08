@@ -1,5 +1,6 @@
 # Helpers
 pip-tools
+bump2version
 
 # Code formatting
 black

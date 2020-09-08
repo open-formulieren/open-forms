@@ -3,6 +3,7 @@
 .git
 .svn
 .idea/
+.vscode/
 .sass-cache/
 *.db
 *.pyc

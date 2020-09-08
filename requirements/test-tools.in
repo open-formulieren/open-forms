@@ -7,3 +7,4 @@ freezegun
 pyquery  # integrates with webtest
 requests-mock
 tblib
+pep8
