@@ -14,7 +14,7 @@ addons:
 
 env:
   global:
-  - DJANGO_SETTINGS_MODULE={{ project_name|lower }}.conf.ci
+  - DJANGO_SETTINGS_MODULE=openforms.conf.ci
   - SECRET_KEY=dummy
   - DB_PASSWORD=
   - DB_USER=postgres
