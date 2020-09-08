@@ -1,0 +1,23 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.a11y-toolbar {
+  @media print {
+    display: none;
+  }
+
+  &__list {
+    display: flex;
+    justify-content: flex-end;
+    list-style: none;
+    margin: 0;
+  }
+
+  .anchor {
+    @include body--small;
+    @include margin(true, padding-top);
+    @include margin(true, padding-bottom);
+    display: inline-block;
+    margin-left: $grid-margin-3;
+  }
+}

@@ -1,0 +1,20 @@
+@import '~microscope-sass/lib/typography';
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    @include body;
+    @include body--big;
+  }
+
+  &:not(#{&}--compact) &__item {
+    @include margin;
+  }
+
+  &--compact &__item {
+    @include margin($value-mobile: $grid-margin-1);
+  }
+}

@@ -1,0 +1,30 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/typography';
+
+.anchor {
+  @include text;
+
+  &:not(#{&}--hover) {
+    @include anchor;
+  }
+  &--hover {
+    @include anchor(true);
+  }
+
+  &--active {
+    @include color-primary;
+  }
+
+  &--inherit {
+    color: inherit!important;
+  }
+
+  &--muted {
+    color: $color-gray-darker!important;
+  }
+
+  &--active#{&}--muted,
+  &--muted:hover {
+    color: $typography-color-text!important;
+  }
+}

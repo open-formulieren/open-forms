@@ -1,0 +1,26 @@
+{% extends 'master.html' %}
+{% load ui %}
+
+{% block content %}
+    {% block nav %}
+        {% skiplink %}
+        {% nav %}
+    {% endblock %}
+
+    {% block layout %}
+        <main class="layout">
+            {% block layout_inner %}
+                <section class="layout__row">
+                    <div class="layout__column">
+                        {% breadcrumbs %}
+                        {% skiplink_target %}
+                    </div>
+                </section>
+            {% endblock %}
+        </main>
+    {% endblock %}
+
+    {% block footer %}
+        {% footer %}
+    {% endblock %}
+{% endblock %}

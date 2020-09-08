@@ -1,0 +1,9 @@
+<figure class="image">
+    {% if href %}<a class="image__anchor">{% endif %}
+
+    <picture class="image__picture">
+        <img class="image__image" alt="{{ alt }}" src="{{ src }}">
+    </picture>
+
+    {% if href %}</a>{% endif %}
+</figure>

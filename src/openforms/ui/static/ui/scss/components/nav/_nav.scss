@@ -1,0 +1,76 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/transform';
+@import '~microscope-sass/lib/typography';
+@import 'constants';
+.nav {
+  @include container;
+  @include container-margin(normal, (padding-left, padding-right));
+  box-sizing: content-box;
+  padding-bottom: $nav-height-secondary;
+
+  @media print {
+    display: none;
+  }
+
+  &__list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    &:before {
+      @include center-hv;
+      @include color-primary(background-color);
+      content: "";
+      z-index: -1;
+      width: 100vw;
+      height: 100%;
+    }
+  }
+
+  &__list-item {
+    z-index: 1;
+  }
+
+  &__list-item:hover &__anchor,
+  &__list-item--active &__anchor {
+    @include color-secondary(background-color);
+    @include color-primary(color);
+  }
+
+  &__list-item--active > &__anchor {
+    font-weight: bold;
+  }
+
+  &__anchor {
+    @include anchor(true);
+    @include body;
+    @include color-background(color);
+    @include ellipsis;
+    display: flex;
+    align-items: center;
+    height: $nav-height-secondary;
+    padding: 0 $grid-margin-3;
+  }
+
+  & > &__list > &__list-item > &__anchor {
+    @include body--big;
+    height: $nav-height-primary;
+  }
+
+  &__list-item &__list {
+    @include absolute(100%, 0);
+    display: none;
+    width: 100%;
+
+    &:before {
+      @include color-secondary(background-color);
+    }
+  }
+
+  &__list-item:hover &__list,
+  &__list-item--active &__list {
+    display: flex;
+  }
+}

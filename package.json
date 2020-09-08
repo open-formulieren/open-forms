@@ -19,6 +19,7 @@
   "license": "UNLICENSED",
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
     "microscope-sass": "latest"
   },
   "devDependencies": {

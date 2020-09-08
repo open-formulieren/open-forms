@@ -1,0 +1,8 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/typography';
+
+.card {
+  @include color-background;
+  padding: $grid-margin-8;
+  box-sizing: border-box;
+}

@@ -1,0 +1,34 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.title {
+  @include h1;
+}
+
+.subtitle {
+  @include h2;
+}
+
+.caption {
+  @include h3;
+}
+
+.body {
+  @include body;
+  clear: both;
+}
+
+.title,
+.subtitle,
+.caption,
+.body {
+  @include margin;
+
+  &--compact {
+    @include margin($value-mobile: $grid-margin-1);
+  }
+
+  &--emphasized {
+    font-style: italic;
+  }
+}
