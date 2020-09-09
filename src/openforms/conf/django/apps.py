@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     "hijack",
     "compat",  # Part of hijack
     "hijack_admin",
-    # "rest_framework",
+    "rest_framework",
 
     # Project applications.
     "openforms.accounts",

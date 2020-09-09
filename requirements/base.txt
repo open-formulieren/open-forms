@@ -18,7 +18,8 @@ django-ordered-model==3.4.1  # via django-admin-index
 django-redis==4.12.1      # via -r requirements/base.in
 django-rosetta==0.9.4     # via -r requirements/base.in
 django-sniplates==0.7.0   # via -r requirements/base.in
-django==2.2.16            # via -r requirements/base.in, django-appconf, django-axes, django-choices, django-redis, django-rosetta, django-sniplates
+django==2.2.16            # via -r requirements/base.in, django-appconf, django-axes, django-choices, django-redis, django-rosetta, django-sniplates, djangorestframework
+djangorestframework==3.11.1  # via -r requirements/base.in
 elastic-apm==5.8.1        # via -r requirements/base.in
 idna==2.10                # via requests
 pillow==7.2.0             # via -r requirements/base.in
