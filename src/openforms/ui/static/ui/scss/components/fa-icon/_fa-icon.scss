@@ -1,4 +1,10 @@
-@import "~@fortawesome/fontawesome-free/scss/fontawesome";
-@import "~@fortawesome/fontawesome-free/scss/brands";
-@import "~@fortawesome/fontawesome-free/scss/regular";
-@import "~@fortawesome/fontawesome-free/scss/solid";
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~microscope-sass/lib/transform';
+
+.fa-icon {
+  font-size: 0.5em;
+  vertical-align: middle;
+}

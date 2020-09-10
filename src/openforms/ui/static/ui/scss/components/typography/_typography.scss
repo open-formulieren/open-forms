@@ -16,6 +16,14 @@
 .body {
   @include body;
   clear: both;
+
+  &--small {
+    @include body--small
+  }
+
+  &--big {
+    @include body--big
+  }
 }
 
 .title,
@@ -30,5 +38,9 @@
 
   &--emphasized {
     font-style: italic;
+  }
+
+  &--muted {
+    color: $color-gray-darker;
   }
 }

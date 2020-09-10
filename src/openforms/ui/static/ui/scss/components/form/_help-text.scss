@@ -1,0 +1,12 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/typography';
+
+.help-text {
+  @include body;
+  @include border(left, $color-info, 4px);
+  @include margin(true, margin-top, $value-mobile: $typography-margin-list);
+  background-color: $color-blue-lighter;
+  $help-text-line-height: $typography-line-height-text * $typography-font-size-text;
+  padding: calc((#{$grid-row-height} - #{$help-text-line-height}) / 2)  $grid-margin-3;
+  padding-left: $grid-margin-3 - 4px;
+}

@@ -1,0 +1,11 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.form {
+  @include margin(true, padding-top);
+  @include margin(true, padding-bottom);
+
+  .form-control {
+    @include margin($value-mobile: $grid-row-height)
+  }
+}

@@ -1,0 +1,9 @@
+@import '~microscope-sass/lib/grid';
+
+.table {
+  &__head,
+  &__cell {
+    padding: 0;
+    @include margin($property: padding-right);
+  }
+}

@@ -2,6 +2,7 @@
 @import '~microscope-sass/lib/transform';
 @import '~microscope-sass/lib/typography';
 @import 'constants';
+
 .nav {
   @include container;
   @include container-margin(normal, (padding-left, padding-right));
@@ -33,17 +34,7 @@
     z-index: 1;
   }
 
-  &__list-item:hover &__anchor,
-  &__list-item--active &__anchor {
-    @include color-secondary(background-color);
-    @include color-primary(color);
-  }
-
-  &__list-item--active > &__anchor {
-    font-weight: bold;
-  }
-
-  &__anchor {
+  .anchor {
     @include anchor(true);
     @include body;
     @include color-background(color);
@@ -54,9 +45,19 @@
     padding: 0 $grid-margin-3;
   }
 
-  & > &__list > &__list-item > &__anchor {
+  & > &__list > &__list-item > .anchor {
     @include body--big;
     height: $nav-height-primary;
+  }
+
+  &__list-item:hover .anchor,
+  &__list-item--active .anchor {
+    @include color-secondary(background-color);
+    @include color-primary(color);
+  }
+
+  &__list-item--active > .anchor {
+    font-weight: bold;
   }
 
   &__list-item &__list {

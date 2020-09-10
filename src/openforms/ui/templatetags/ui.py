@@ -1,10 +1,12 @@
 from django import template
 from django.utils.translation import gettext as _
 
-from .abstract import get_config, get_href, get_required_config_value
+from .abstract import get_config, get_href, get_required_config_value, get_is_active, get_config_from_prefix
 
 register = template.Library()
 
+
+# Large components
 
 @register.inclusion_tag("ui/components/skiplink/skiplink.html")
 def skiplink(**kwargs):
@@ -64,6 +66,11 @@ def breadcrumbs(**kwargs):
     return config
 
 
+@register.inclusion_tag("ui/components/costs_indicator/costs_indicator.html")
+def costs_indicator(**kwargs):
+    config = get_config(kwargs)
+
+
 @register.inclusion_tag("ui/components/a11y_toolbar/a11y_toolbar.html")
 def a11y_toolbar(**kwargs):
     config = get_config(kwargs)
@@ -74,6 +81,65 @@ def a11y_toolbar(**kwargs):
 def footer(**kwargs):
     config = get_config(kwargs)
     return config
+
+
+# Small components
+
+@register.inclusion_tag("ui/components/anchor/anchor.html", takes_context=True)
+def anchor(context, **kwargs):
+    """
+    Renders an anchor (link).
+    :param kwargs:
+
+    Example:
+
+        {% anchor config=config %}
+        {% anchor option1='foo' option2='bar' %}
+
+    Available options:
+
+        - href (str): Creates an anchor to href, can be a url or a url name.
+        - label (str): The anchor label.
+
+        - active (bool) (optional): Whether the anchor should be marked as active, defaults to automatic behaviour.
+        - hover (bool) (optional): Whether the text-decoration (underline) should NOT be present until hovered.
+        - indent (bool or str) (optional): Whether whitespace should be reserved for an icon. If "auto" indent is only
+          applied when no icon configuration is passed.
+        - style (str) (optional): The anchor style, either "normal", "inherit" or "muted". Defaults to "normal".
+        - target (str) (optional): The anchor target. Defaults to "_self".
+
+        - icon_*: Prefixed configuration. See fa_icon.
+        - icon_position (str) (optional): The icon position (if set), either "left" or "right". Defaults to "left".
+
+    :return: dict
+    """
+    config = get_config(kwargs)
+    request = context.request
+
+    def get_icon_config():
+        return get_config_from_prefix(config, "icon")
+
+    def get_indent():
+        indent = config.get("indent", False)
+
+        if str(indent).lower() == "auto":
+            indent = not bool(get_icon_config())
+
+        return indent
+
+    return {
+        "href": get_href(config, "href", "anchor"),
+        "label": get_required_config_value(config, "label", "anchor"),
+
+        "active": get_is_active(request, config),
+        "hover": config.get("hover", False),
+        "indent": get_indent(),
+        "style": config.get("style", "normal"),
+        "target": config.get("target", "_self"),
+
+        "icon_config": get_icon_config(),
+        "icon_position": kwargs.get("icon_position", "left"),
+    }
 
 
 @register.inclusion_tag("ui/components/button/button.html")
@@ -89,10 +155,11 @@ def button(**kwargs):
 
     Available options:
 
-        - label (str) (optional): The button label.
+        - disabled (bool) (optional): Makes this button non-intractable.
         - href (str) (optional): Creates an anchor to href, can be a url or a url name.
+        - label (str) (optional): The button label.
         - name (str) (optional): Name attribute, should only be used when "href" is not set.
-        - src (str): Path to the image file (sets type to "button").
+        - src (str) (optional): Path to the image file (sets type to "button").
         - style (str) (optional): The button style, either "primary", "secondary" or "image". Defaults to "primary".
         - type (str) (optional): The button type. Defaults to "button".
 
@@ -123,8 +190,8 @@ def button(**kwargs):
 
     return {
         "disabled": config.get("disabled", False),
-        "label": config.get("label", ""),
         "href": get_href(config),
+        "label": config.get("label", ""),
         "name": kwargs.get("name", ""),
         "src": get_src(),
         "style": get_style(),
@@ -185,6 +252,6 @@ def fa_icon(**kwargs):
     config = get_config(kwargs)
 
     return {
+        "icon": get_required_config_value(config, "icon", "fa_icon"),
         "style": config.get("style", "solid")[0],
-        "icon": config.get("icon", ""),
     }

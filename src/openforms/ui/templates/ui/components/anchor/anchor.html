@@ -1,0 +1,9 @@
+{% load ui %}{% spaceless %}
+    <a class="anchor anchor--{{ style }}{% if active %} anchor--active{% endif %}{% if hover %} anchor--hover{% endif %}{% if indent %} anchor--indent{% endif %}" href="{{ href }}" target="{{ target }}">{% spaceless %}
+        {% if icon_config and icon_position == 'left' %}{% fa_icon config=icon_config %}{% endif %}
+
+        {{ label }}
+
+        {% if icon_config and icon_position == 'right' %}{% fa_icon config=icon_config %}{% endif %}
+    {% endspaceless %}</a>
+{% endspaceless %}

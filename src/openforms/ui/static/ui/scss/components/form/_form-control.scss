@@ -1,0 +1,11 @@
+@import '~microscope-sass/lib/color';
+
+
+.form-control {
+  position: relative;
+
+  &--error {
+    @include border(left, $color-danger, 4px);
+    padding-left: $grid-margin-3;
+  }
+}

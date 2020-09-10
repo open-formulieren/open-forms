@@ -12,6 +12,9 @@
 
   &:not(#{&}--compact) &__item {
     @include margin;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   &--compact &__item {

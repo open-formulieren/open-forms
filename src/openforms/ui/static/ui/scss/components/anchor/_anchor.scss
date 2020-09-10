@@ -12,7 +12,7 @@
   }
 
   &--active {
-    @include color-primary;
+    font-weight: bold;
   }
 
   &--inherit {
@@ -26,5 +26,9 @@
   &--active#{&}--muted,
   &--muted:hover {
     color: $typography-color-text!important;
+  }
+
+  &--indent {
+    padding-left: 0.6em;
   }
 }

@@ -1,23 +1,25 @@
+{% load ui %}
+
 <nav class="nav">
     <ul class="nav__list nav__list">
         <li class="nav__list-item nav__list-item--active">
-            <a class="nav__anchor" href="#">Inwoners en ondernemers</a><ul class="nav__list">
-                <li class="nav__list-item nav__list-item--active"><a class="nav__anchor" href="#">Paspoort, rijbewijs en uittreksel</a></li>
-                <li class="nav__list-item"><a class="nav__anchor" href="#">Parkeren, verkeer en vervoer</a></li>
-                <li class="nav__list-item"><a class="nav__anchor" href="#">Afval en duurzaamheid</a></li>
-                <li class="nav__list-item"><a class="nav__anchor" href="#">Wmo, zorg en welzijn</a></li>
-                <li class="nav__list-item"><a class="nav__anchor" href="#">Meer inderwerpen</a></li>
+            {% anchor href='#' label='Inwoners en ondernemers' %}<ul class="nav__list">
+                <li class="nav__list-item nav__list-item--active">{% anchor href='#' label='Paspoort, rijbewijs en uittreksel' %}</li>
+                <li class="nav__list-item">{% anchor href='#' label='Parkeren, verkeer en vervoer' %}</li>
+                <li class="nav__list-item">{% anchor href='#' label='Afval en duurzaamheid' %}</li>
+                <li class="nav__list-item">{% anchor href='#' label='Wmo, zorg en welzijn' %}</li>
+                <li class="nav__list-item">{% anchor href='#' label='Meer inderwerpen' %}</li>
             </ul>
         </li>
 
 
-        <li class="nav__list-item"><a class="nav__anchor" href="#">Stadsdelen</a><ul class="nav__list">
-                <li class="nav__list-item"><a class="nav__anchor">Foo</a></li>
-                <li class="nav__list-item"><a class="nav__anchor">Bar</a></li>
+        <li class="nav__list-item">{% anchor href='#' label='Stadsdelen' %}<ul class="nav__list">
+                <li class="nav__list-item">{% anchor href='#' label='Foo' %}</li>
+                <li class="nav__list-item">{% anchor href='#' label='Bar' %}</li>
             </ul>
         </li>
 
 
-        <li class="nav__list-item"><a class="nav__anchor" href="#">Bestuur</a></li>
+        <li class="nav__list-item">{% anchor href='#' label='Bestuur' %}</li>
     </ul>
 </nav>

@@ -44,4 +44,9 @@
     }
   }
 
+  &__column--no-print {
+    @media print {
+      display: none;
+    }
+  }
 }

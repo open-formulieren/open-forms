@@ -1,0 +1,9 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/responsive';
+
+.sticky {
+  @include tablet {
+    @include margin(true, top);
+    position: sticky;
+  }
+}
