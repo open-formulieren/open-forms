@@ -24,6 +24,7 @@ django-rosetta==0.9.4     # via -r requirements/base.txt
 django-sniplates==0.7.0   # via -r requirements/base.txt
 django-webtest==1.9.7     # via -r requirements/test-tools.in
 django==2.2.16            # via -r requirements/base.txt, django-appconf, django-axes, django-choices, django-jenkins, django-redis, django-rosetta, django-sniplates
+djangorestframework==3.11.1  # via -r requirements/base.txt
 elastic-apm==5.8.1        # via -r requirements/base.txt
 factory-boy==3.0.1        # via -r requirements/test-tools.in
 faker==4.1.2              # via factory-boy
