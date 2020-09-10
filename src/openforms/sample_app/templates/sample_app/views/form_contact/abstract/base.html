@@ -8,12 +8,13 @@
         <div class="layout__column">
             <div class="card">
                 <header class="card__header">
-                    <h1 class="title">Details aanvraag uitreksel</h1>
+                    <h1 class="title">Uw gegevens</h1>
                     <p class="body body--compact body--emphasized body--small">Alle vragen met een * zijn verplicht</p>
+                    <p class="body body--compact body--small">Wij zullen uw gegevens nooit doorgeven aan derden.</p>
                 </header>
 
                 <div class="card__body">
-                    {% block form %}{% include 'sample_app/views/form_details/abstract/form.html' only %}{% endblock %}
+                    {% block form %}{% include 'sample_app/views/form_contact/abstract/form.html' only %}{% endblock %}
                 </div>
             </div>
 

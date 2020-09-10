@@ -2,10 +2,11 @@
 @import '~microscope-sass/lib/typography';
 
 .form {
-  @include margin(true, padding-top);
-  @include margin(true, padding-bottom);
-
   .form-control {
     @include margin($value-mobile: $grid-row-height)
+  }
+
+  .toolbar {
+    @include rows(1, margin-top);
   }
 }

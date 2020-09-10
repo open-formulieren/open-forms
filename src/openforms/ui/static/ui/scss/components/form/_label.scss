@@ -3,6 +3,5 @@
 .label {
   @include body;
   @include body--big;
-  @include margin($value-mobile: $typography-margin-list);
   display: block;
 }

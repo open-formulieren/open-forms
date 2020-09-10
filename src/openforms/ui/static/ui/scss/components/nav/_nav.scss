@@ -4,9 +4,7 @@
 @import 'constants';
 
 .nav {
-  @include container;
-  @include container-margin(normal, (padding-left, padding-right));
-  box-sizing: content-box;
+  @include container($padding: false);
   padding-bottom: $nav-height-secondary;
 
   @media print {

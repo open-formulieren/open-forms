@@ -1,1 +1,4 @@
 {% extends 'sample_app/views/form_details/abstract/base.html' %}
+{% block form %}
+    {% include 'sample_app/views/form_details/abstract/form.html' with errors=False next='sample_app:form_details_errors' next_label='Volgende: Afspraak gegegvens' only %}
+{% endblock %}

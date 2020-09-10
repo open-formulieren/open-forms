@@ -30,20 +30,6 @@
     @include columns-responsive(4, 9, 4, 4);
   }
 
-  &__column {
-    .title,
-    .subtitle,
-    .caption,
-    .body {
-      @include margin;
-    }
-
-    .button {
-      @include margin(true, margin-top);
-      @include margin(auto, $value-mobile: $typography-margin-text * 2);
-    }
-  }
-
   &__column--no-print {
     @media print {
       display: none;

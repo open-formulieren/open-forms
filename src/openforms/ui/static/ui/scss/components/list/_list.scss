@@ -1,6 +1,10 @@
 @import '~microscope-sass/lib/typography';
 
 .list {
+  .caption + & {
+    @include margin(true, $property: margin-top);
+  }
+
   list-style: none;
   margin: 0;
   padding: 0;

@@ -1,0 +1,31 @@
+{% load ui %}
+
+<form class="form">
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">E-mailadres</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <input class="input" id="input-1" type="email" />
+        <label class="body body--muted" for="input-1">Op uw e-mailadres ontvangt u een bevestiging van uw aanvraag voor het uitreksel.</label>
+    </div>
+
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">Telefoonnummer</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <input class="input" id="input-1" type="tel" />
+        <label class="body body--muted" for="input-1">Mocht er iets niet duidelijk zijn dan proberen wij u op dit nummer te bereiken.</label>
+    </div>
+
+    {% include 'sample_app/views/abstract/toolbar.html' with previous=previous next=next next_label=next_label only %}
+</form>

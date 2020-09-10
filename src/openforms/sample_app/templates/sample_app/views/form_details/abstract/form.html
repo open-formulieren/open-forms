@@ -134,14 +134,5 @@
     </div>
 
     {% costs_indicator %}
-
-    <div class="toolbar">
-        <ul class="toolbar__list">
-            <li class="toolbar__list-item">{% button href='sample_app:digid_login' label='Vorige pagina' style='anchor' %}</li>
-        </ul>
-        <ul class="toolbar__list">
-            <li class="toolbar__list-item">{% button label='Tussentijds opslaan' style='secondary' %}</li>
-            <li class="toolbar__list-item">{% button href=next|default:'sample_app:form_errors' label='Volgende: Contactgegevens' style='primary' %}</li>
-        </ul>
-    </div>
+    {% include 'sample_app/views/abstract/toolbar.html' with previous=previous next=next next_label=next_label only %}
 </form>

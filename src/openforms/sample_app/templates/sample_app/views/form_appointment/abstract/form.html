@@ -1,0 +1,79 @@
+{% load ui %}
+
+<form class="form">
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">Hoeveel paspoorten of identiteitskaarten wilt u aanvragen?*</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <select class="select">
+            <option>1 paspoort of identiteitskaart</option>
+        </select>
+    </div>
+
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">Bent u uw paspoort of identiteitskaart kwijt?</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <div class="checkbox">
+            <input class="checkbox__checkbox" type="checkbox" name="subject" id="checkbox-1">
+            <span class="checkbox__checkmark"></span>
+            <label class="checkbox__label" for="checkbox-1">Ja, mijn passpoort of identiteitskaart is gestolen of ben ik verloren</label>
+        </div>
+    </div>
+
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">Wilt u een vreemdelingen- of vluchtelingenpaspoort?</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <div class="checkbox">
+            <input class="checkbox__checkbox" type="checkbox" name="subject" id="checkbox-2">
+            <span class="checkbox__checkmark"></span>
+            <label class="checkbox__label" for="checkbox-2">Ja, ik wil een vreemdelingen- of vluchtelingenpaspoort</label>
+        </div>
+    </div>
+
+    <div class="form-control{% if errors %} form-control--error{% endif %}">
+        <label class="label">Wilt u in deze afspraak ook een rijbewijs aanvragen?*</label>
+
+        {% if errors %}
+            <div class="errors">
+                <span class="message message--error">U heeft dit veld nog niet ingevuld</span>
+            </div>
+        {% endif %}
+
+        <ul class="form-choices">
+            <li class="form-choices__choice">
+                <div class="checkbox">
+                    <input class="checkbox__checkbox" type="radio" name="subject" id="checkbox-3">
+                    <span class="checkbox__checkmark"></span>
+                    <label class="checkbox__label" for="checkbox-3">Ja</label>
+                </div>
+            </li>
+
+            <li class="form-choices__choice">
+                <div class="checkbox">
+                    <input class="checkbox__checkbox" type="radio" name="subject" id="checkbox-4">
+                    <span class="checkbox__checkmark"></span>
+                    <label class="checkbox__label" for="checkbox-4">Nee</label>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    {% include 'sample_app/views/abstract/toolbar.html' with previous=previous next=next next_label=next_label only %}
+</form>
