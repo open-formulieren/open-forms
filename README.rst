@@ -19,7 +19,7 @@ Introduction
 
 Using Open Forms, administrators can quickly create powerful and smart forms 
 that are exposed via an API. With the included webcomponent, personalized forms 
-can be shown retrieved and shown to the user. The form blends in with an 
+can be retrieved and shown to the user. The form blends in with an 
 existing website using various styling options. Form fields are prefilled 
 whenever possible and personalized choices are shown depending on the user if 
 logged in using DigiD.
