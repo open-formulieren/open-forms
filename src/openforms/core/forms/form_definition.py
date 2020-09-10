@@ -9,4 +9,4 @@ class FormDefinitionForm(forms.ModelForm):
 
     class Meta:
         model = FormDefinition
-        fields = ('name', 'slug', 'configuration',)
+        fields = ('name', 'slug', 'active', 'product', 'configuration',)

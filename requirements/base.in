@@ -17,7 +17,7 @@ django-rosetta
 django-sniplates
 
 # API libraries
-# djangorestframework
+djangorestframework
 # django-extra-fields
 # django-filter
 # drf-yasg  # api documentation
