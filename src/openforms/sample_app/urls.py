@@ -6,6 +6,7 @@ app_name = 'sample_app'
 urlpatterns = [
     path('digid-login', TemplateView.as_view(template_name='sample_app/views/digid_login/digid_login.html'), name='digid_login'),
     path('form-details', TemplateView.as_view(template_name='sample_app/views/form_details/form_details.html'), name='form_details'),
+    path('form-errors', TemplateView.as_view(template_name='sample_app/views/form_details/form_errors.html'), name='form_errors'),
     path('', RedirectView.as_view(url="form-details")),
 
 ]

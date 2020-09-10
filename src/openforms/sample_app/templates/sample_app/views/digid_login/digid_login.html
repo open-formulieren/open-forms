@@ -11,7 +11,7 @@
 
                 <p class="body">Om digitaal een uittreksel aan te vragen moet u inloggen met DigiD.</p>
 
-                {% button href="#" label="Inloggen met DigiD" %}
+                {% button href="sample_app:form_details" label="Inloggen met DigiD" %}
                 {% static 'img/digid.png' as digid_image_src %}
                 {% button src=digid_image_src disabled=True %}
 
@@ -23,7 +23,7 @@
 
 
         <div class="layout__column layout__column--no-print">
-            {% include 'sample_app/views/abstract/wizzard_progress.html' %}
+            {% include 'sample_app/views/abstract/wizzard_progress.html' only %}
         </div>
     </section>
 {% endblock %}
