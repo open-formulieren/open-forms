@@ -20,6 +20,8 @@
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
+    "bem.js": "^1.0.10",
+    "formiojs": "^4.11.3",
     "microscope-sass": "latest"
   },
   "devDependencies": {
@@ -31,9 +33,9 @@
     "chai": "latest",
     "css-loader": "latest",
     "cssnano": "latest",
-    "gulp": "latest",
-    "gulp-file": "latest",
-    "gulp-hub": "latest",
+    "gulp": "^4.0.2",
+    "gulp-file": "^0.4.0",
+    "gulp-hub": "^4.2.0",
     "gulp-if": "latest",
     "gulp-jshint": "latest",
     "gulp-jshint-jslint-file-reporter": "latest",
@@ -47,7 +49,7 @@
     "karma-mocha": "latest",
     "karma-spec-reporter": "latest",
     "karma-webpack": "latest",
-    "mini-css-extract-plugin": "latest",
+    "mini-css-extract-plugin": "^0.11.1",
     "mocha": "latest",
     "node-sass": "latest",
     "postcss-loader": "latest",
@@ -56,10 +58,10 @@
     "simulant": "latest",
     "sinon": "latest",
     "url-loader": "latest",
-    "webpack": "latest",
+    "webpack": "^4.44.1",
     "webpack-cli": "latest",
     "webpack-dev-server": "latest",
-    "webpack-stream": "latest",
-    "yargs": "latest"
+    "webpack-stream": "^6.1.0",
+    "yargs": "^15.4.1"
   }
 }
