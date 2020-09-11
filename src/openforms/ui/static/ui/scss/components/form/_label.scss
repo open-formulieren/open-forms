@@ -1,0 +1,7 @@
+@import '~microscope-sass/lib/typography';
+
+.label {
+  @include body;
+  @include body--big;
+  display: block;
+}

@@ -1,0 +1,13 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.input {
+  @include body;
+  @include border(all, $size: 1px);
+  @include rows(1);
+  appearance: none;
+  border-radius: 0;
+  font-weight: bold;
+  padding: $grid-margin-2;
+  width: 100%;
+}

@@ -1,0 +1,29 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+
+  @media print {
+    display: none;
+  }
+
+  &__list {
+    display: flex;
+    justify-content: flex-end;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__list-item {
+    @include margin($property: margin-right);
+    display: flex;
+    align-items: center;
+  }
+
+
+  .image {
+    @include margin($property: margin-right);
+    float: left;
+    height: 34px;
+  }
+}

@@ -7,32 +7,27 @@
     <section class="layout__row">
         <div class="layout__column">
             <div class="card">
-                <h1 class="title">Uitreksel aanvragen</h1>
+                <header class="card__header">
+                    <h1 class="title">Uitreksel aanvragen</h1>
+                    <p class="body body--compact">Om digitaal een uittreksel aan te vragen moet u inloggen met DigiD.</p>
+                </header>
 
-                <p class="body">Om digitaal een uittreksel aan te vragen moet u inloggen met DigiD.</p>
+                <div class="card__body">
 
-                {% button href="#" label="Inloggen met Digid" %}
-                {% static 'img/digid.png' as digid_image_src %}
-                {% button src=digid_image_src disabled=True %}
+                    {% button href="sample_app:form_details" label="Inloggen met DigiD" %}
+                    {% static 'img/digid.png' as digid_image_src %}
+                    {% button src=digid_image_src disabled=True %}
 
-                <p class="body">DigiD vraag u aan op <a class="anchor" href="https://digid.nl" target="_blank">de website DigiD.nl</a></p>
+                    <p class="body"><br>DigiD vraag u aan op {% anchor href='https://digid.nl' target='_blank' label='de website DigiD.nl' %}</p>
+                </div>
             </div>
 
             {% a11y_toolbar %}
         </div>
 
 
-        <div class="layout__column">
-            <div class="card">
-                <h3 class="caption">Uitreksel aanvragen</h3>
-                <ol class="list">
-                    <li class="list__item"><a class="anchor anchor--active anchor--hover anchor--muted" href="#">Inloggen</a></li>
-                    <li class="list__item"><a class="anchor anchor--hover anchor--muted" href="#">Details aanvraag uitreksel</a></li>
-                    <li class="list__item"><a class="anchor anchor--hover anchor--muted" href="#">Afspraak gegevens</a></li>
-                    <li class="list__item"><a class="anchor anchor--hover anchor--muted" href="#">Uw gegevens</a></li>
-                    <li class="list__item"><a class="anchor anchor--hover anchor--muted" href="#">Controleer en bevestig</a></li>
-                </ol>
-            </div>
+        <div class="layout__column layout__column--no-print">
+            {% include 'sample_app/views/abstract/wizzard_progress.html' only %}
         </div>
     </section>
 {% endblock %}

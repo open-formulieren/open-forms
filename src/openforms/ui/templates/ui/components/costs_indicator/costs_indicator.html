@@ -1,0 +1,31 @@
+{% load static ui %}
+
+<aside class="costs-indicator">
+    <header class="costs-indicator__header">
+        <p class="body body--big">Totale kosten</p>
+    </header>
+
+    <div class="costs-indicator__body">
+        <table class="table table--compact">
+            <tbody class="table__body">
+            <tr class="table__row">
+                <th class="table__head"><p class="body">1 uittreksel</p></th>
+                <td class="table__cell"><p class="body">€ 21,90</p></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="costs-indicator__footer">
+        <p class="body body--emphasized body--muted">U kunt later in het proces betalen met iDeal of creditcard</p>
+        {% static 'img/ideal.gif' as ideal_src %}
+        {% image alt='iDeal' src=ideal_src %}
+
+        {% static 'img/visa.png' as visa_src %}
+        {% image alt='VISA' src=visa_src %}
+
+        {% static 'img/mastercard.svg' as mastercard_src %}
+        {% image alt='VISA' src=mastercard_src %}
+    </footer>
+
+</aside>

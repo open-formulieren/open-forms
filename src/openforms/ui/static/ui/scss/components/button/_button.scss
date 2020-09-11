@@ -6,7 +6,7 @@ $button-line-height-px: $button-line-height / ($button-line-height * 0 + 1) * 16
 $button-padding-v: ($grid-row-height - $button-line-height-px) / 2 - $typography-size-border;
 $button-padding-h: $grid-margin-2;
 
-@mixin button-style($name, $color, $color-background, $color-border: $color-background) {
+@mixin button-style($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
   &--#{$name} {
     color: $color;
     background-color: $color-background;
@@ -17,6 +17,10 @@ $button-padding-h: $grid-margin-2;
       background-color: scale_color($color-background, $lightness: -20%);
       border-right-color: scale_color($color-border, $lightness: -20%);
       border-bottom-color: scale_color($color-border, $lightness: -20%);
+
+      @if $decorate-on-hover {
+        @include anchor(true);
+      }
     }
 
     &:active {
@@ -33,9 +37,10 @@ $button-padding-h: $grid-margin-2;
 .button {
   @include body;
   @include body--big;
-  @include border(all, $color: transparent);
+  @include border(all, $color: transparent, $size: 2px);
   @include button-style(primary, $color-background, #007BC7, $color-primary);
   @include button-style(secondary, $typography-color-text, $color-background, $color-border);
+  @include button-style(anchor, $typography-color-link, transparent, transparent, true);
   appearance: none;
   border-radius: 0;
   display: flex;
@@ -46,6 +51,10 @@ $button-padding-h: $grid-margin-2;
 
   @media print {
     display: none;
+  }
+
+  &:not([disabled]) {
+    cursor: pointer;
   }
 
   &--image {

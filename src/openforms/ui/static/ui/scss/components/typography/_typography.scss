@@ -2,33 +2,39 @@
 @import '~microscope-sass/lib/typography';
 
 .title {
-  @include h1;
+  @include h1(auto);
 }
 
 .subtitle {
-  @include h2;
+  @include h2(auto);
 }
 
 .caption {
-  @include h3;
+  @include h3(auto);
 }
 
 .body {
-  @include body;
+  @include body(auto);
   clear: both;
+
+  &--small {
+    @include body--small
+  }
+
+  &--big {
+    @include body--big
+  }
 }
 
 .title,
 .subtitle,
 .caption,
 .body {
-  @include margin;
-
-  &--compact {
-    @include margin($value-mobile: $grid-margin-1);
-  }
-
   &--emphasized {
     font-style: italic;
+  }
+
+  &--muted {
+    color: $color-gray-darker;
   }
 }

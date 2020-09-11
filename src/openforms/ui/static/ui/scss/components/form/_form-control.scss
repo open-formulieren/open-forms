@@ -1,0 +1,26 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/typography';
+
+
+.form-control {
+  position: relative;
+
+  &--error {
+    @include border(left, $color-danger, 4px);
+    padding-left: $grid-margin-3;
+  }
+
+  .errors,
+  .label {
+    @include margin($value-mobile: $typography-margin-list);
+  }
+
+  .body,
+  .help-text {
+    @include margin(true, margin-top, $value-mobile: $typography-margin-list);
+  }
+
+  .body {
+    display: block;
+  }
+}

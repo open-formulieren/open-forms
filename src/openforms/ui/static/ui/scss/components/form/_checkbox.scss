@@ -1,0 +1,37 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/transform';
+@import '~microscope-sass/lib/typography';
+
+.checkbox {
+  @include rows(1);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: $grid-margin-2;
+
+  [type=checkbox],
+  [type=radio] {
+    position: relative;
+    z-index: 10;
+  }
+
+  &__label {
+    @include body;
+    @include body--big;
+    @include border(all, transparent, 1px);
+    @include ellipsis;
+    @include overlay;
+    display: flex;
+    align-items: center;
+    background-color: $color-gray-lighter;
+    cursor: pointer;
+    padding: $grid-margin-2  $grid-margin-2  $grid-margin-2  $grid-margin-2 * 4;
+  }
+
+  :checked ~ &__label {
+    @include border(all, $color-primary, 1px);
+    @include color-background;
+  }
+}

@@ -5,4 +5,8 @@
   @include color-background;
   padding: $grid-margin-8;
   box-sizing: border-box;
+
+  &__body {
+    @include rows(1, margin-top);
+  }
 }
