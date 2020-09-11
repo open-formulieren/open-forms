@@ -2,11 +2,9 @@
 @import '~microscope-sass/lib/typography';
 
 .form {
-  .form-control {
+  .form-control,
+  .help-text,
+  .costs-indicator {
     @include margin($value-mobile: $grid-row-height)
-  }
-
-  .toolbar {
-    @include rows(1, margin-top);
   }
 }
