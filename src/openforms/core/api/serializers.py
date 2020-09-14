@@ -1,16 +1,52 @@
+import json
+
 from rest_framework import serializers
 
-from openforms.core.models import FormDefinition
+from openforms.core.models import Form, FormDefinition
 
 
 class FormSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
+        request = self.context['request']
+        if not request.session.get(instance.slug):
+            request.session[instance.slug] = {
+                'current_step': instance.first_step
+            }
+
+        steps = instance.get_api_form_steps(self.context['request'])
+
         return {
             'name': instance.name,
-            'url': instance.get_config_api_url(self.context['request'])
+            'login_required': instance.login_required,
+            'product': str(instance.product),
+            'user_current_step': steps[request.session[instance.slug]['current_step']],
+            'steps': steps
+        }
+
+    class Meta:
+        model = Form
+        fields = ('name', 'login_required', 'product', 'steps', )
+
+
+class FormStepSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        return {
+            'name': instance.name,
+            'configuration': json.loads(instance.configuration)
         }
 
     class Meta:
         model = FormDefinition
-        fields = ('name', 'url',)
+        fields = ()
+
+
+class FormDefinitionSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        return json.loads(instance.configuration)
+
+    class Meta:
+        model = FormDefinition
+        fields = ()

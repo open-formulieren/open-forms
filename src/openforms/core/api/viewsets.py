@@ -1,27 +1,30 @@
-import json
+from rest_framework import permissions, viewsets
 
-from django.http import JsonResponse, Http404
-from rest_framework import permissions, views, viewsets
-from rest_framework.generics import get_object_or_404
-
-from openforms.core.api.serializers import FormSerializer
-from openforms.core.models import FormDefinition
+from openforms.core.api.serializers import (
+    FormSerializer, FormDefinitionSerializer, FormStepSerializer
+)
+from openforms.core.models import Form, FormDefinition
 
 
-class ConfigurationView(views.APIView):
+class FormStepViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+    serializer_class = FormStepSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        form = get_object_or_404(FormDefinition, slug=kwargs['slug'])
-        if form.active:
-            return JsonResponse(json.loads(form.configuration))
-        else:
-            raise Http404
+    def get_queryset(self):
+        return FormDefinition.objects.filter(slug=self.kwargs['slug'])
+
+
+class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+    queryset = FormDefinition.objects.filter()
+    serializer_class = FormDefinitionSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class FormViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'slug'
-    queryset = FormDefinition.objects.filter(active=True)
+    queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
     permission_classes = [permissions.IsAuthenticated]
 

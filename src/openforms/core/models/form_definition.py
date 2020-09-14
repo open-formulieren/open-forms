@@ -1,7 +1,6 @@
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from rest_framework.reverse import reverse
 
 
 class FormDefinition(models.Model):
@@ -12,16 +11,10 @@ class FormDefinition(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=100, unique=True)
     configuration = JSONField()
-    active = models.BooleanField(default=False)
-    product = models.ForeignKey(
-        'core.Product',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
+    login_required = models.BooleanField(
+        default=False,
+        help_text='DigID Login required for form step'
     )
-
-    def get_config_api_url(self, request):
-        return reverse('api:configurations', args=(self.slug,), request=request)
 
     def __str__(self):
         return self.name
