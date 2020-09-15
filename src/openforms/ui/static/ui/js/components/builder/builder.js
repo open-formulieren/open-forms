@@ -2,6 +2,7 @@
 import BEM from 'bem.js';
 import {Formio, Components} from 'formiojs';
 
+import './components';
 import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from '../constants';
 
 
@@ -49,6 +50,8 @@ class FormIOBuilder {
                     default: true,
                     components: {
                         textfield: true,
+                        select: true,
+                        radio: true,
                     }
                 }
             },
