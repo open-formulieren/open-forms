@@ -1,12 +1,18 @@
+from django.urls import path
+
 from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
-from openforms.core.api.viewsets import FormViewSet, FormDefinitionViewSet, FormStepViewSet
+from openforms.core.api.viewsets import (
+    FormViewSet, FormDefinitionViewSet, FormStepViewSet, FormSubmissionViewSet
+)
 
 
 core_router = routers.DefaultRouter()
 
 core_router.register(r'form-definitions', FormDefinitionViewSet)
+
+core_router.register(r'form-submissions', FormSubmissionViewSet)
 
 core_router.register(r'forms', FormViewSet)
 
