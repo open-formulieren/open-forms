@@ -18,6 +18,7 @@ django-sniplates
 
 # API libraries
 djangorestframework
+drf-nested-routers
 # django-extra-fields
 # django-filter
 # drf-yasg  # api documentation
