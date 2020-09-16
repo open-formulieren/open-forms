@@ -1,0 +1,15 @@
+@import '~microscope-sass/lib/typography';
+
+.label {
+  @include body;
+  @include body--big;
+  display: block;
+}
+
+.char-count,
+.word-count,
+.prefix,
+.suffix {
+  @include body;
+  color: $color-gray-darker;
+}

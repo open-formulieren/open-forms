@@ -7,8 +7,8 @@ class FormBuilderWidget(Widget):
     class Media:
         css = {
             'all': (
-                'bundles/openforms-css.css',
-                'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'
+                # 'bundles/openforms-css.css',
+                'bundles/core-css.css',
             ),
         }
-        js = ('bundles/openforms-js.js',)
+        js = ('bundles/core-js.js',)

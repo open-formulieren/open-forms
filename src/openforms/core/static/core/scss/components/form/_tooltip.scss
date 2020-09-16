@@ -1,0 +1,20 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/transform';
+@import '~microscope-sass/lib/typography';
+@import '~microscope-sass/lib/util';
+
+.tooltip {
+  &-inner {
+    @include border(all);
+    @include body;
+    @include body--small;
+    @include color-background;
+    @include shadow;
+    bottom: 100%;
+    padding: $grid-margin-0;
+    box-sizing: border-box;
+    display: flex;
+  }
+
+}

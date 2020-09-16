@@ -1,0 +1,28 @@
+{% extends 'ui/views/abstract/base.html' %}
+{% load static ui %}
+
+{% block layout_inner %}
+    {{ block.super }}
+
+    <section class="layout__row">
+        <div class="layout__column">
+            <div class="card">
+                <header class="card__header">
+                    <h1 class="title">Afspraak gegevens</h1>
+                    <p class="body body--compact body--emphasized body--small">Alle vragen met een * zijn verplicht</p>
+                </header>
+
+                <div class="card__body">
+                    {% block form %}{% include './form.html' only %}{% endblock %}
+                </div>
+            </div>
+
+            {% a11y_toolbar %}
+        </div>
+
+
+        <div class="layout__column layout__column--no-print">
+            {% include 'sample_app/views/abstract/wizzard_progress.html' only %}
+        </div>
+    </section>
+{% endblock %}

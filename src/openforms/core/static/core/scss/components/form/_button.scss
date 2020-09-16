@@ -1,0 +1,78 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+$button-line-height: $typography-line-height-text-big * $typography-font-size-text-big;
+$button-line-height-px: $button-line-height / ($button-line-height * 0 + 1) * 16px;
+$button-padding-v: ($grid-row-height - $button-line-height-px) / 2 - $typography-size-border;
+$button-padding-h: $grid-margin-2;
+
+@mixin button-theme($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
+  @if $name == '' {
+    @include button-style($color, $color-background, $color-border, $decorate-on-hover);
+  } @else {
+    &--#{$name} {
+      @include button-style($color, $color-background, $color-border, $decorate-on-hover);
+    }
+  }
+}
+
+@mixin button-style($color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
+  color: $color;
+  background-color: $color-background;
+  border-right-color: $color-border;
+  border-bottom-color: $color-border;
+
+  &:hover {
+    background-color: scale_color($color-background, $lightness: -20%);
+    border-right-color: scale_color($color-border, $lightness: -20%);
+    border-bottom-color: scale_color($color-border, $lightness: -20%);
+
+    @if $decorate-on-hover {
+      @include anchor(true);
+    }
+  }
+
+  &:active {
+    color: scale_color($color, $lightness: -25%);
+    background-color: scale_color($color-background, $lightness: -25%);
+    border-top-color: scale_color($color-border, $lightness: -20%);
+    border-right-color: transparent;
+    border-left-color: scale_color($color-border, $lightness: -20%);
+    border-bottom-color: transparent;
+  }
+}
+
+.button {
+  @include body;
+  @include body--big;
+  @include border(all, $color: transparent, $size: 2px);
+  @include button-theme('primary', $color-background, #007BC7, $color-primary);
+  @include button-theme('', $typography-color-text, $color-background, $color-border);
+  @include button-theme('anchor', $typography-color-link, transparent, transparent, true);
+  appearance: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  padding: $button-padding-v $button-padding-h;
+  text-decoration: none;
+  float: left;
+
+  @media print {
+    display: none;
+  }
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
+
+  &--image {
+    @include rows(1);
+    border: none;
+    padding: 0;
+  }
+
+  + #{&} {
+    margin-left: $grid-margin-2;
+  }
+
+}
