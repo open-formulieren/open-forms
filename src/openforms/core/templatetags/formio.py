@@ -25,11 +25,6 @@ def formio_form(context, **kwargs):
     def get_object():
         return get_required_config_value(config, "form_definition", "formio_form")
 
-    def get_config_api_url():
-        request = context.get("request")
-        return get_object().get_config_api_url(request)
-
     return {
         "object": get_object(),
-        "config_api_url": get_config_api_url()
     }
