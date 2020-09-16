@@ -1,6 +1,7 @@
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.urls import reverse
 
 
 class FormDefinition(models.Model):
@@ -15,6 +16,9 @@ class FormDefinition(models.Model):
         default=False,
         help_text='DigID Login required for form step'
     )
+
+    def get_absolute_url(self):
+        return reverse("core:form_definition_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.name
