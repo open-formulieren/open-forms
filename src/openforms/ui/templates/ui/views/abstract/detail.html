@@ -1,0 +1,28 @@
+{% extends './base.html' %}
+{% load ui %}
+
+{% block layout_inner %}
+    {{ block.super }}
+
+    <section class="layout__row">
+        <div class="layout__column">
+            {% block card %}
+                <div class="card">
+                    <header class="card__header">
+                        <h1 class="title">{{ object }}</h1>
+                    </header>
+
+                    <div class="card__body">
+                        {% block card_body %}
+                            <p class="body">
+                                {{ object }}
+                            </p>
+                        {% endblock %}
+                    </div>
+                </div>
+            {% endblock %}
+
+            {% a11y_toolbar %}
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,6 @@
+@import '~microscope-sass/lib/grid';
+
+.textarea {
+  @extend .input;
+  @include rows(3, min-height);
+}

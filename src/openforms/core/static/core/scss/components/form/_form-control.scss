@@ -1,0 +1,45 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/typography';
+
+
+.form-control {
+  position: relative;
+
+  &--hidden {
+    display: none;
+  }
+
+  &[class*="error"] {
+    @include border(left, $color-danger, 4px);
+    padding-left: $grid-margin-3;
+  }
+
+  .errors,
+  .label {
+    @include margin($value-mobile: $typography-margin-list);
+    @include ellipsis;
+  }
+
+  // Reverse errors and label
+  .errors:not(:empty) {
+    transform: translateY(31px);
+  }
+
+  .errors:not(:empty) + .label {
+    transform: translateY(-31px);
+  }
+
+  .prefix {
+    @include margin($value-mobile: $typography-margin-list);
+  }
+
+  .body,
+  .help-text,
+  .suffix {
+    @include margin(true, margin-top, $value-mobile: $typography-margin-list);
+  }
+
+  .body {
+    display: block;
+  }
+}

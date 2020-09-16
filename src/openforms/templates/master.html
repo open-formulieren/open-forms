@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
     <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
+    <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'hijack/hijack-styles.css' %}" rel="stylesheet" type="text/css"/>
     {% block extra_css %}{% endblock %}
 </head>
@@ -17,8 +18,8 @@
     Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
     to get some actual content.
 {% endblock %}
-        
 
 <script src="{% static 'bundles/openforms-js.js' %}"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

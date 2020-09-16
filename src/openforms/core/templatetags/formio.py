@@ -1,0 +1,35 @@
+from django import template
+
+from openforms.ui.templatetags.abstract import get_config, get_required_config_value
+
+register = template.Library()
+
+
+@register.inclusion_tag("ui/components/formio_form/formio_form.html", takes_context=True)
+def formio_form(context, **kwargs):
+    """
+    Renders a Form.io form.
+    :param kwargs:
+
+    Example:
+
+        {% formio_form config=config %}
+        {% formio_form option1='foo' option2='bar' %}
+
+    Available options:
+
+        - form_definition (FormDefinition): The FormDefinition object to render.
+    """
+    config = get_config(kwargs)
+
+    def get_object():
+        return get_required_config_value(config, "form_definition", "formio_form")
+
+    def get_config_api_url():
+        request = context.get("request")
+        return get_object().get_config_api_url(request)
+
+    return {
+        "object": get_object(),
+        "config_api_url": get_config_api_url()
+    }
