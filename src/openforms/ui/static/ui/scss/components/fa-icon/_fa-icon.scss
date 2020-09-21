@@ -5,6 +5,13 @@
 @import '~microscope-sass/lib/transform';
 
 .fa-icon {
-  font-size: 0.5em;
   vertical-align: middle;
+
+  &--small {
+    font-size: 0.5em;
+  }
+
+  &--normal {
+    font-size: 1em;
+  }
 }

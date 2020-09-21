@@ -1,7 +1,10 @@
 @import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/typography';
 
 .a11y-toolbar {
+  @include hide-on-mobile;
+
   @media print {
     display: none;
   }

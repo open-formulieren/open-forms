@@ -20,10 +20,10 @@
     @include margin(true, margin-top);
     @include margin(true, margin-bottom);
     @include container(flex);
-  }
 
-  .footer__body {
-    //@include margin(true, margin-bottom);
+    @include mobile-only {
+      padding: 0;
+    }
   }
 
   .footer__nav {

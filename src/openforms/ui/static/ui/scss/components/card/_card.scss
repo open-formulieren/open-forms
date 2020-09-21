@@ -1,10 +1,15 @@
 @import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/typography';
 
 .card {
   @include color-background;
   padding: $grid-margin-8;
   box-sizing: border-box;
+
+  @include mobile-only {
+    @include container-margin($properties: (padding-left, padding-right));
+  }
 
   &__body {
     @include rows(1, margin-top);
