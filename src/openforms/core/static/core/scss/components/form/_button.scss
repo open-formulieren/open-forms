@@ -6,39 +6,36 @@ $button-line-height-px: $button-line-height / ($button-line-height * 0 + 1) * 16
 $button-padding-v: ($grid-row-height - $button-line-height-px) / 2 - $typography-size-border;
 $button-padding-h: $grid-margin-2;
 
-@mixin button-theme($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
-  @if $name == '' {
-    @include button-style($color, $color-background, $color-border, $decorate-on-hover);
-  } @else {
-    &--#{$name} {
-      @include button-style($color, $color-background, $color-border, $decorate-on-hover);
+@mixin button-style($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
+  &--#{$name} {
+    color: $color;
+    background-color: $color-background;
+    border-right-color: $color-border;
+    border-bottom-color: $color-border;
+
+    &:hover {
+      background-color: scale_color($color-background, $lightness: -20%);
+      border-right-color: scale_color($color-border, $lightness: -20%);
+      border-bottom-color: scale_color($color-border, $lightness: -20%);
+
+      @if $decorate-on-hover {
+        @include anchor(true);
+      }
     }
-  }
-}
 
-@mixin button-style($color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
-  color: $color;
-  background-color: $color-background;
-  border-right-color: $color-border;
-  border-bottom-color: $color-border;
+    &:active {
+      @if $color != inherit {
+        color: scale_color($color, $lightness: -25%);
+      } @else {
+        color: $color;
+      }
 
-  &:hover {
-    background-color: scale_color($color-background, $lightness: -20%);
-    border-right-color: scale_color($color-border, $lightness: -20%);
-    border-bottom-color: scale_color($color-border, $lightness: -20%);
-
-    @if $decorate-on-hover {
-      @include anchor(true);
+      background-color: scale_color($color-background, $lightness: -25%);
+      border-top-color: scale_color($color-border, $lightness: -20%);
+      border-right-color: transparent;
+      border-left-color: scale_color($color-border, $lightness: -20%);
+      border-bottom-color: transparent;
     }
-  }
-
-  &:active {
-    color: scale_color($color, $lightness: -25%);
-    background-color: scale_color($color-background, $lightness: -25%);
-    border-top-color: scale_color($color-border, $lightness: -20%);
-    border-right-color: transparent;
-    border-left-color: scale_color($color-border, $lightness: -20%);
-    border-bottom-color: transparent;
   }
 }
 
@@ -46,9 +43,11 @@ $button-padding-h: $grid-margin-2;
   @include body;
   @include body--big;
   @include border(all, $color: transparent, $size: 2px);
-  @include button-theme('primary', $color-background, #007BC7, $color-primary);
-  @include button-theme('', $typography-color-text, $color-background, $color-border);
-  @include button-theme('anchor', $typography-color-link, transparent, transparent, true);
+  @include button-style(primary, $color-background, #007BC7, $color-primary);
+  @include button-style(secondary, $color-primary, $color-secondary, $color-border);
+  @include button-style(anchor, $typography-color-link, transparent, transparent, true);
+  @include button-style(transparent, $typography-color-text, transparent, transparent);
+  @include button-style(transparent-contrast, $color-background, transparent, transparent);
   appearance: none;
   border-radius: 0;
   display: flex;
