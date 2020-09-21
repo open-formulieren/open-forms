@@ -155,7 +155,7 @@
                             bevestiging e-mail? Neem dan contact met ons op.</span>
                         </div>
 
-                        <div class="toolbar">
+                        <div class="toolbar toolbar--stacked">
                             <ul class="toolbar__list">
                                 <li class="toolbar__list-item">
                                     {% button href='sample_app:digid_login' label='Vorige pagina' style='anchor' %}
@@ -166,16 +166,19 @@
                                 <li class="toolbar__list-item">
                                     {% static 'img/ideal.gif' as ideal_src %}
                                     {% image alt='iDeal' src=ideal_src %}
-                                </li>
+{#                                </li>#}
 
-                                <li class="toolbar__list-item">
+{#                                <li class="toolbar__list-item">#}
                                     {% static 'img/visa.png' as visa_src %}
                                     {% image alt='VISA' src=visa_src %}
-                                </li>
+{#                                </li>#}
 
-                                <li class="toolbar__list-item">
+{#                                <li class="toolbar__list-item">#}
                                     {% static 'img/mastercard.svg' as mastercard_src %}
                                     {% image alt='VISA' src=mastercard_src %}
+                                </li>
+                                <li class="toolbar__list-item">
+
                                     {% button href='#' label='Bevestigen en naar betalen' style='primary' %}
                                 </li>
                             </ul>
@@ -188,7 +191,7 @@
         </div>
 
 
-        <div class="layout__column layout__column--no-print">
+        <div class="layout__column layout__column--secondary">
             {% include 'sample_app/views/abstract/wizzard_progress.html' only %}
         </div>
     </section>
