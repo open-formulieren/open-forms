@@ -1,6 +1,7 @@
 import BEM from 'bem.js';
 import {Formio} from 'formiojs';
 import {BLOCK_FORMIO_FORM, ELEMENT_BODY, FORMIO_FORMS} from './constants';
+import {FormDefinitionConsumer} from '../../data/form_definition';
 
 /**
  * Renders a form.
@@ -17,16 +18,40 @@ class FormIOForm {
         /** @type {HTMLElement} */
         this.container = BEM.getChildBEMNode(this.node, BLOCK_FORMIO_FORM, ELEMENT_BODY);
 
-        this.render();
+        /** @type {FormDefinitionConsumer} */
+        this.consumer = new FormDefinitionConsumer();
+
+        this.getData();
+    }
+
+    /**
+     * Fetches API data.
+     * Calls render() on success.
+     * Calls onError() on failure.
+     */
+    getData() {
+        const url = this.node.dataset.schemeUrl;
+        this.consumer.read(url)
+            .then(this.render.bind(this))
+            .catch(this.onError.bind(this))
+        ;
+    }
+
+    /**
+     * Updates this.container with error message.
+     * Logs error to console.
+     * @param error
+     */
+    onError(error) {
+        this.container.innerText = error.statusText || error.message || 'Error';
+        console.error(error);
     }
 
     /**
      * Renders the form.
      */
-    render() {
-        const json = this.node.dataset.configuration;
-        this.node.dataset.configuration = '';
-        Formio.createForm(this.container, JSON.parse(json));
+    render(formDefinition) {
+        Formio.createForm(this.container, formDefinition);
     }
 }
 

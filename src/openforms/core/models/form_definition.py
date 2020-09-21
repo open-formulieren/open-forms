@@ -20,6 +20,12 @@ class FormDefinition(models.Model):
     def get_absolute_url(self):
         return reverse("core:form_definition_detail", kwargs={"slug": self.slug})
 
+    def get_scheme_url(self):
+        """
+        TODO: Can this be reversed/made not hardcoded?
+        """
+        return f"/api/v1/form-definitions/{self.slug}"
+
     def __str__(self):
         return self.name
 
