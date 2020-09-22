@@ -2,8 +2,22 @@
 @import '~microscope-sass/lib/typography';
 
 .form {
+  &__row {
+    @include responsive(flex-direction, column, row);
+    display: flex;
+  }
+
+  &__column {
+    @include columns-responsive(4, 4.5, 6, 6);
+  }
+
+  & &__row &__column .form-control {
+    @include margin(true, $value-mobile: $typography-margin-list);
+  }
+
   &__footer {
     @include rows(1, margin-top);
+    clear: both;
   }
 
   .form-control,

@@ -1,0 +1,17 @@
+.signature {
+  position: relative;
+
+  .fa-icon {
+    @include absolute($grid-margin-1, $grid-margin-1);
+    cursor: pointer;
+    opacity: 0.5;
+  }
+
+  .fa-icon:hover {
+    opacity: 1;
+  }
+
+  .footer {
+    text-align: center;
+  }
+}
