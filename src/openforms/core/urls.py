@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.FormDefinition import FormDefinitionListView, FormDefinitionDetailView
+from .views.form_definition import FormDefinitionListView, FormDefinitionDetailView
 
 
 app_name = 'core'
