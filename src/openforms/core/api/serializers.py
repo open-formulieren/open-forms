@@ -2,7 +2,7 @@ import json
 
 from rest_framework import serializers
 
-from openforms.core.models import Form, FormDefinition, FormSubmission
+from openforms.core.models import Form, FormDefinition
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -39,20 +39,6 @@ class FormStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormDefinition
-        fields = ()
-
-
-class FormSubmissionSerializer(serializers.ModelSerializer):
-
-    def to_representation(self, instance):
-        return {
-            'form': str(instance.form),
-            'submitted_on': instance.submitted_on,
-            'data': json.loads(instance.data)
-        }
-
-    class Meta:
-        model = FormSubmission
         fields = ()
 
 
