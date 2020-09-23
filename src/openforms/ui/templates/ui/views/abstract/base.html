@@ -5,15 +5,15 @@
     {% block nav %}
         {% skiplink %}
         {% nav %}
+        {% skiplink_target %}
     {% endblock %}
 
     {% block layout %}
         <main class="layout">
             {% block layout_inner %}
-                <section class="layout__row">
+                <section class="layout__row layout__column--secondary">
                     <div class="layout__column">
                         {% breadcrumbs %}
-                        {% skiplink_target %}
                     </div>
                 </section>
             {% endblock %}

@@ -24,7 +24,12 @@ $button-padding-h: $grid-margin-2;
     }
 
     &:active {
-      color: scale_color($color, $lightness: -25%);
+      @if $color != inherit {
+        color: scale_color($color, $lightness: -25%);
+      } @else {
+        color: $color;
+      }
+
       background-color: scale_color($color-background, $lightness: -25%);
       border-top-color: scale_color($color-border, $lightness: -20%);
       border-right-color: transparent;
@@ -39,8 +44,10 @@ $button-padding-h: $grid-margin-2;
   @include body--big;
   @include border(all, $color: transparent, $size: 2px);
   @include button-style(primary, $color-background, #007BC7, $color-primary);
-  @include button-style(secondary, $typography-color-text, $color-background, $color-border);
+  @include button-style(secondary, $color-primary, $color-secondary, $color-border);
   @include button-style(anchor, $typography-color-link, transparent, transparent, true);
+  @include button-style(transparent, $typography-color-text, transparent, transparent);
+  @include button-style(transparent-contrast, $color-background, transparent, transparent);
   appearance: none;
   border-radius: 0;
   display: flex;

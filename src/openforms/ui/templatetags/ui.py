@@ -163,6 +163,16 @@ def button(**kwargs):
         - style (str) (optional): The button style, either "primary", "secondary" or "image". Defaults to "primary".
         - type (str) (optional): The button type. Defaults to "button".
 
+        - toggle_target (str) (optional): A query selector matching an element to toggle "toggle_modifier" on when
+          clicked.
+        - toggle_modifier (str) (optional): A BEM modifier to toggle on element selected by "toggle_target" when
+          clicked.
+        - toggle_clear_target (str) (optional): A query selector matching an element to remove "toggle_modifier" from
+          "toggle_target" when clicked.
+          clicked.
+
+        - icon_*: Prefixed configuration. See fa_icon.
+
     :return: dict
     """
     config = get_config(kwargs)
@@ -196,8 +206,13 @@ def button(**kwargs):
         "src": get_src(),
         "style": get_style(),
         "type": get_type(),
+        "tag": get_tag(),
 
-        "tag": get_tag()
+        "toggle_target": config.get("toggle_target"),
+        "toggle_modifier": config.get("toggle_modifier"),
+        "toggle_clear_target": config.get("toggle_clear_target"),
+
+        "icon_config": get_config_from_prefix(config, "icon"),
     }
 
 
@@ -245,6 +260,7 @@ def fa_icon(**kwargs):
 
         - icon (str): The name of the icon.
 
+        - size (str) (optional): Either "small" or "normal". Defaults to "small".
         - style (str) (optional): Either "solid", "regular" or "brands". Defaults to "solid".
 
     :return: dict
@@ -253,5 +269,7 @@ def fa_icon(**kwargs):
 
     return {
         "icon": get_required_config_value(config, "icon", "fa_icon"),
+
+        "size": config.get("size", "small"),
         "style": config.get("style", "solid")[0],
     }

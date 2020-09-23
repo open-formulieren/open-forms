@@ -1,26 +1,65 @@
 {% load ui %}
 
-<nav class="nav">
-    <ul class="nav__list nav__list">
-        <li class="nav__list-item nav__list-item--active">
-            {% anchor href='#' label='Inwoners en ondernemers' %}
-            <ul class="nav__list">
-                <li class="nav__list-item nav__list-item--active">{% anchor href='#' hover=True label='Paspoort, rijbewijs en uittreksel' %}</li>
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Parkeren, verkeer en vervoer' %}</li>
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Afval en duurzaamheid' %}</li>
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Wmo, zorg en welzijn' %}</li>
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Meer inderwerpen' %}</li>
-            </ul>
-        </li>
+<nav class="nav" id="nav">
+    <div class="nav__body">
+        {% button style='primary' icon_icon='bars' icon_size='normal' toggle_target='#nav, #nav-1' toggle_modifier='open' toggle_clear_target='.view' %}
+
+        <ul class="nav__list" id="nav-1">
+            <li class="nav__list-item nav__list-item--active">
+                {% button style='transparent-contrast' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                {% anchor href='#' hover=True label='Inwoners en ondernemers' %}
+
+                <ul class="nav__list" id="nav-1-1">
+                    <li class="nav__list-item nav__list-item--active">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Paspoort, rijbewijs en uittreksel' %}
+                    </li>
+
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Parkeren, verkeer en vervoer' %}
+                    </li>
+
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Afval en duurzaamheid' %}
+                    </li>
+
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Wmo, zorg en welzijn' %}
+                    </li>
+
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-1' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Meer inderwerpen' %}
+                    </li>
+                </ul>
+            </li>
 
 
-        <li class="nav__list-item">{% anchor href='#' label='Stadsdelen' %}<ul class="nav__list">
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Foo' %}</li>
-                <li class="nav__list-item">{% anchor href='#' hover=True label='Bar' %}</li>
-            </ul>
-        </li>
+            <li class="nav__list-item">
+                {% button style='transparent-contrast' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-2' toggle_modifier='open' toggle_clear_target='.view' %}
+                {% anchor href='#' hover=True label='Stadsdelen' %}
+
+                <ul class="nav__list" id="nav-1-2">
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-2' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Foo' %}
+                    </li>
+
+                    <li class="nav__list-item">
+                        {% button style='secondary' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-2' toggle_modifier='open' toggle_clear_target='.view' %}
+                        {% anchor href='#' hover=True label='Bar' %}
+                    </li>
+                </ul>
+            </li>
 
 
-        <li class="nav__list-item">{% anchor href='#' label='Bestuur' %}</li>
-    </ul>
+            <li class="nav__list-item">
+                {% button disabled=True style='transparent-contrast' icon_icon='chevron-down' icon_size='normal' toggle_target='&, #nav-1-3' toggle_modifier='open' toggle_clear_target='.view' %}
+                {% anchor href='#' hover=True label='Bestuur' %}
+            </li>
+        </ul>
+    </div>
 </nav>
