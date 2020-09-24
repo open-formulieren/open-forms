@@ -23,7 +23,7 @@ def formio_form(context, **kwargs):
     config = get_config(kwargs)
 
     def get_object():
-        return get_required_config_value(config, "form_definition", "formio_form")
+        return get_required_config_value(config, "object", "formio_form")
 
     return {
         "object": get_object(),

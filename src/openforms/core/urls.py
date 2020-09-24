@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .views.form_definition import FormDefinitionListView, FormDefinitionDetailView
+from .views.form import FormListView, FormDetailView
 
 app_name = 'core'
 
 urlpatterns = [
-    path("", FormDefinitionListView.as_view(), name="form_definition_list"),
-    path("<slug:slug>", FormDefinitionDetailView.as_view(), name="form_definition_detail")
+    path("", FormListView.as_view(), name="form-list"),
+    path("<slug:slug>", FormDetailView.as_view(), name="form-detail")
 ]

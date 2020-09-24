@@ -2,7 +2,7 @@
 {% load static formio %}
 
 {% block card_body %}
-    {% formio_form form_definition=object%}
+    {% formio_form object=form.formstep_set.first    %}
 {% endblock %}
 
 {% block extra_js %}

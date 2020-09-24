@@ -11,6 +11,7 @@ import {getTemplate as getMultipleMasksInput} from '../form/multiple-masks-input
 import {getTemplate as getCheckbox} from '../form/checkbox';
 import {getTemplate as getRadio} from '../form/radio';
 import {getTemplate as getSelect} from '../form/select';
+import {SubmissionConsumer} from '../../data/submission';
 
 /**
  * Renders a form.
@@ -27,8 +28,50 @@ class FormIOForm {
         /** @type {HTMLElement} */
         this.container = BEM.getChildBEMNode(this.node, BLOCK_FORMIO_FORM, ELEMENT_BODY);
 
+        /** @type {SubmissionConsumer} */
+        this.submissionConsumer = new SubmissionConsumer();
+
         this.render();
     }
+
+    /**
+     * Gets called when Form.io form is ready.
+     * @param {WebForm} webform
+     */
+    onFormReady(webform) {
+        [...this.node.querySelectorAll('[type=submit]')]
+            .forEach(this.bindButton.bind(this, webform));
+
+        webform.on('submit', this.submitForm.bind(this));
+    }
+
+    /**
+     * Binds "button" click to "webform" (Form.io instance)
+     * @param webform
+     * @param button
+     */
+    bindButton(webform, button) {
+        button.addEventListener('click', this.onButtonClick.bind(this, webform));
+    }
+
+    /**
+     * Gets called when any [type=submit] child of the of the form is pressed.
+     * @param webform
+     * @param event
+     */
+    onButtonClick(webform, event) {
+        event.preventDefault();
+        webform.submit();
+    }
+
+    submitForm(form) {
+        const data = form.data;
+        this.submissionConsumer.create({
+            form: this.node.dataset.form,
+            data
+        }).then(s => console.info(s));
+    }
+
 
     /**
      * Renders the form.
@@ -58,7 +101,8 @@ class FormIOForm {
         this.node.dataset.configuration = '';
 
         console.log("render");
-        Formio.createForm(this.container, JSON.parse(json));
+        Formio.createForm(this.container, JSON.parse(json))
+            .then(this.onFormReady.bind(this));
     }
 }
 
