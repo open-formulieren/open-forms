@@ -37,9 +37,10 @@ class Form(models.Model):
         steps = [
             {
                 'name': form_step.form_definition.name,
+                'index': form_step.order,
                 'url': reverse(
                     'api:form-steps-detail',
-                    kwargs={'form_slug': self.slug, 'slug': form_step.form_definition.slug},
+                    kwargs={'form_slug': self.slug, 'order': form_step.order},
                     request=request
                 )
             } for form_step in self.formstep_set.all()

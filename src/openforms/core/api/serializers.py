@@ -2,7 +2,7 @@ import json
 
 from rest_framework import serializers
 
-from openforms.core.models import Form, FormDefinition
+from openforms.core.models import Form, FormDefinition, FormStep
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -30,16 +30,15 @@ class FormSerializer(serializers.ModelSerializer):
 
 
 class FormStepSerializer(serializers.ModelSerializer):
-
-    def to_representation(self, instance):
-        return {
-            'name': instance.name,
-            'configuration': json.loads(instance.configuration)
-        }
+    index = serializers.IntegerField(source="order")
+    configuration = serializers.SerializerMethodField()
 
     class Meta:
-        model = FormDefinition
-        fields = ()
+        model = FormStep
+        fields = ("index", "configuration",)
+
+    def get_configuration(self, obj):
+        return json.loads(obj.form_definition.configuration)
 
 
 class FormDefinitionSerializer(serializers.ModelSerializer):
