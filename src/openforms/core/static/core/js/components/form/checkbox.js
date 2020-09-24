@@ -1,8 +1,7 @@
-import {BuilderUtils, Formio, Utils} from 'formiojs';
+import {Formio} from 'formiojs';
 import {defineEditFormTabs, defineInputInfo} from './abstract';
 
 
-defineInputInfo(Formio.Components.components.checkbox, 'checkbox__input');
 defineEditFormTabs(Formio.Components.components.checkbox, [
     {
         type: 'tabs', key: 'tabs', components: [
@@ -35,27 +34,31 @@ defineEditFormTabs(Formio.Components.components.checkbox, [
 ]);
 
 
-export const checkbox = `
-<div class="checkbox">
-    <{{ctx.input.type}}
-      ref="input"
-      {% for (var attr in ctx.input.attr) { %}
-      {{attr}}="{{ctx.input.attr[attr]}}"
-      {% } %}
-      id="{{ctx.instance.id}}-{{ctx.component.key}}"
-      {% if (ctx.checked) { %}checked=true{% } %}
-    >
+export const getTemplate = () => {
+    defineInputInfo(Formio.Components.components.checkbox, 'checkbox__input');
 
-        {{ctx.input.content}}
-    </{{ctx.input.type}}>
-    
-    <div class="checkbox__checkmark"></div>
-    <label class="checkbox__label {{ctx.input.labelClass}}" for="{{ctx.instance.id}}-{{ctx.component.key}}">
-        {{ctx.input.label}}&nbsp;
-        {% if (ctx.component.tooltip) { %}
-            <i ref="tooltip" class="{{ctx.iconClass('question-sign')}}"></i>
-        {% } %}
+    return `
+        <div class="checkbox">
+            <{{ctx.input.type}}
+              ref="input"
+              {% for (var attr in ctx.input.attr) { %}
+              {{attr}}="{{ctx.input.attr[attr]}}"
+              {% } %}
+              id="{{ctx.instance.id}}-{{ctx.component.key}}"
+              {% if (ctx.checked) { %}checked=true{% } %}
+            >
         
-  </label>
-</div>
-`;
+                {{ctx.input.content}}
+            </{{ctx.input.type}}>
+            
+            <div class="checkbox__checkmark"></div>
+            <label class="checkbox__label {{ctx.input.labelClass}}" for="{{ctx.instance.id}}-{{ctx.component.key}}">
+                {{ctx.input.label}}&nbsp;
+                {% if (ctx.component.tooltip) { %}
+                    <i ref="tooltip" class="{{ctx.iconClass('question-sign')}}"></i>
+                {% } %}
+                
+          </label>
+        </div>
+    `;
+};
