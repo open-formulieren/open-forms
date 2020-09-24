@@ -38,7 +38,6 @@ class SubmissionAPITests(APITestCase):
         # TODO: Replace with factory
         submission = Submission.objects.create(
             form=form,
-            data="{}",
         )
 
         url = reverse('api:submission-list')
@@ -57,7 +56,6 @@ class SubmissionAPITests(APITestCase):
         url = reverse('api:submission-list')
         data = {
             "form": reverse('api:form-detail', kwargs={'slug': form.slug}),
-            "data": {"foo": "bar"}
         }
 
         response = self.client.post(url, data, format='json')
@@ -67,7 +65,6 @@ class SubmissionAPITests(APITestCase):
         url = reverse('api:submission-list')
         data = {
             "form": None,
-            "data": {"foo": "bar"}
         }
 
         response = self.client.post(url, data, format='json')

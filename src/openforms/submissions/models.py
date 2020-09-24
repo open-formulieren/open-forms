@@ -1,25 +1,42 @@
+import uuid
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
 class Submission(models.Model):
     """
-    Submission data model to hold form submission JSON data.
+    Container for submission steps that hold the actual submitted data.
     """
-    form = models.ForeignKey('core.Form', blank=True, null=True, on_delete=models.SET_NULL)
-    form_name = models.CharField(max_length=50)
-    submitted_on = models.DateTimeField(auto_now_add=True)
-    data = JSONField(blank=True, null=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    form = models.ForeignKey('core.Form', on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Submission'
         verbose_name_plural = 'Submissions'
 
     def __str__(self):
-        return f'Submission {self.pk}: Form {self.form_name} ({self.form_pk}) submitted on {self.submitted_on}'
+        return f'Submission {self.pk}: Form {self.form_id} submitted on {self.created_on}'
 
-    def save(self, *args, **kwargs):
-        if self.form:
-            self.form_name = self.form.name
 
-        super().save(*args, **kwargs)
+class SubmissionStep(models.Model):
+    """
+    Submission data.
+
+    TODO: This model (and therefore API) allows for the same form step to be
+    submitted multiple times. Can be useful for retrieving historical data or
+    changes made during filling out the form... but...
+    """
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    submission = models.ForeignKey('submissions.Submission', on_delete=models.CASCADE)
+    form_step = models.ForeignKey('core.FormStep', on_delete=models.CASCADE)
+    data = JSONField(blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'SubmissionStep'
+        verbose_name_plural = 'SubmissionSteps'
+
+    def __str__(self):
+        return f'SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}'
