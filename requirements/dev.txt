@@ -32,8 +32,10 @@ django-redis==4.12.1      # via -r requirements/ci.txt
 django-rosetta==0.9.4     # via -r requirements/ci.txt
 django-sniplates==0.7.0   # via -r requirements/ci.txt
 django-webtest==1.9.7     # via -r requirements/ci.txt
-django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, django-appconf, django-axes, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-rosetta, django-sniplates
+django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, django-appconf, django-axes, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers
+djangorestframework==3.11.1  # via -r requirements/ci.txt, drf-nested-routers
 docutils==0.16            # via sphinx
+drf-nested-routers==0.91  # via -r requirements/ci.txt
 elastic-apm==5.8.1        # via -r requirements/ci.txt
 factory-boy==3.0.1        # via -r requirements/ci.txt
 faker==4.1.2              # via -r requirements/ci.txt, factory-boy

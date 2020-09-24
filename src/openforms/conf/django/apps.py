@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",
+    "openforms.submissions",
 ]
 
 MIDDLEWARE = [

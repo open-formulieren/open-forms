@@ -52,6 +52,7 @@
     "mini-css-extract-plugin": "^0.11.1",
     "mocha": "latest",
     "node-sass": "latest",
+    "postcss": "^8.0.8",
     "postcss-loader": "latest",
     "postcss-selector-lint": "latest",
     "sass-loader": "latest",
