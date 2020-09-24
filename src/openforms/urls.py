@@ -19,7 +19,8 @@ urlpatterns = [
     path("reset/done/", auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete", ),
 
     path("api/v1/", include('openforms.api.urls', namespace='api')),
-    path("", include('openforms.sample_app.urls', namespace='sample_app')),
+    path("prototype/", include('openforms.sample_app.urls', namespace='sample_app')),
+    path("", include('openforms.core.urls', namespace='core')),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

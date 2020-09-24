@@ -1,0 +1,14 @@
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.form {
+  &__footer {
+    @include rows(1, margin-top);
+  }
+
+  .form-control,
+  .help-text,
+  .costs-indicator {
+    @include margin($value-mobile: $grid-row-height)
+  }
+}

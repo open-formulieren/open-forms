@@ -1,0 +1,4 @@
+{% extends './abstract/base.html' %}
+{% block form %}
+    {% include './abstract/form.html' with errors=True next='sample_app:overview' next_label='Volgende: Controleer en bevestig' only %}
+{% endblock %}

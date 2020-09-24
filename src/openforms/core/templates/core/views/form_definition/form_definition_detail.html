@@ -1,0 +1,11 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load static formio %}
+
+{% block card_body %}
+    {% formio_form form_definition=object%}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static 'bundles/core-js.js' %}"></script>
+{% endblock %}

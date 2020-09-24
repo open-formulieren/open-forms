@@ -1,0 +1,62 @@
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~formiojs/dist/formio.full.css';
+
+.field-configuration {
+
+  div:first-of-type {
+    width: 100%;
+  }
+
+}
+
+li.nav-item {
+  list-style-type: none;
+}
+
+.card {
+  &.form-builder-panel {
+    padding: 0;
+  }
+}
+
+// Django admin styling fixes!!
+
+.submit-row .deletelink-box .deletelink {
+  height: auto;
+}
+
+.formio-dialog-content {
+  margin: 50px auto !important;
+}
+
+body {
+  font-size: 14px !important;
+  font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif !important;
+}
+
+div#header {
+  height: auto;
+}
+
+div#container {
+  .dropdown-menu {
+    position: sticky;
+    top: 0;
+    display: block;
+    float: initial;
+    background-color: #417690;
+    border: none;
+    border-radius: 0;
+    padding: 0 40px;
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+div#content h1 {
+  font-weight: 300;
+  font-size: 20px;
+}

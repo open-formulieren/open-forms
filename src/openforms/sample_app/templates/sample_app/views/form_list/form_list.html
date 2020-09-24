@@ -1,0 +1,28 @@
+{% extends 'ui/views/abstract/base.html' %}
+{% load ui %}
+
+{% block layout_inner %}
+    {{ block.super }}
+
+    <section class="layout__row">
+        <div class="layout__column">
+            <div class="card">
+                <header class="card__header">
+                    <h1 class="title">Formulieren</h1>
+                </header>
+
+                <div class="card__body">
+                    <ul class="list">
+                        {% for object in object_list %}
+                            <li class="list__item">
+                                {% anchor href=object.get_absolute_url label=object %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% a11y_toolbar %}
+        </div>
+    </section>
+{% endblock %}

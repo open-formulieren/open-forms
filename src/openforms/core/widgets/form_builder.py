@@ -2,13 +2,13 @@ from django.forms import Widget
 
 
 class FormBuilderWidget(Widget):
-    template_name = 'core/widgets/form_builder.html'
+    template_name = "core/widgets/form_builder.html"
 
     class Media:
         css = {
-            'all': (
-                'bundles/openforms-css.css',
-                'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'
+            "all": (
+                "bundles/core-css.css",
+                "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
             ),
         }
-        js = ('bundles/openforms-js.js',)
+        js = ("bundles/core-js.js",)

@@ -19,6 +19,8 @@ module.exports = {
     entry: {
         [`${paths.package.name}-css`]: `${__dirname}/${paths.scssEntry}`,
         [`${paths.package.name}-js`]: `${__dirname}/${paths.jsEntry}`,
+        [`core-css`]:  `${__dirname}/${paths.sourcesRoot}core/static/core/scss/screen.scss`,
+        [`core-js`]:  `${__dirname}/${paths.sourcesRoot}core/static/core/js/index.js`,
     },
 
     // (Output) bundle locations.
