@@ -8,10 +8,5 @@ def register(func):
 
 
 @register
-def console_backend(submission):
-    print(submission.data)
-
-
-@register
-def create_zaak_backend(submission):
+def console_backend(submission) -> None:
     print(submission.data)
