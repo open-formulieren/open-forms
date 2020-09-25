@@ -6,8 +6,6 @@ from openforms.core.custom_field_types import register
 
 from .models import BRPConfig
 
-BSN = "108915864"
-
 
 @register("npFamilyMembers")
 def fill_out_family_members(
@@ -41,7 +39,9 @@ def get_np_children(request: Request) -> List[Tuple[str, str]]:
     config = BRPConfig.get_solo()
     client = config.get_client()
 
-    bsn = request.session.get("bsn", BSN)
+    bsn = request.session.get("bsn")
+    if not bsn:
+        raise RuntimeError("No authenticated person!")
 
     # actual operation ID from standard! but Open Personen has the wrong one
     # operation_id = "ingeschrevenpersonenBurgerservicenummerkinderen"
