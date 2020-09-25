@@ -18,6 +18,22 @@ def fill_out_family_members(
     component: Dict[str, Any], request: Request
 ) -> Dict[str, Any]:
 
-    print("saw custom component")
+    # change the type to a primitive
+    component["type"] = "selectboxes"
+    component["fieldSet"] = False
+    component["inline"] = False
+    component["inputType"] = "checkbox"
+
+    # set the available choices
+    component["values"] = [
+        {
+            "label": label,
+            "value": value,
+        }
+        for value, label in BSN_CHOICES
+    ]
+
+    if "mask" in component:
+        del component["mask"]
 
     return component

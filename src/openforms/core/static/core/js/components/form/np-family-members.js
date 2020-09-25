@@ -4,16 +4,14 @@
 import {Formio} from 'formiojs';
 import {defineEditFormTabs, defineInputInfo} from './abstract';
 
-const FieldComponent = Formio.Components.components.field;
-// const FieldComponent = Formio.Components.components.textfield;
+const SelectBoxes = Formio.Components.components.selectboxes;
 
-class NpFamilyMembers extends FieldComponent {
+class NpFamilyMembers extends SelectBoxes {
     static schema(...extend) {
-        return FieldComponent.schema({
+        return SelectBoxes.schema({
             label: 'Selecteer gezinsleden',
             key: 'npFamilyMembers',
             type: 'npFamilyMembers',
-            mask: false,
         }, ...extend);
     }
 
@@ -30,16 +28,6 @@ class NpFamilyMembers extends FieldComponent {
     get defaultSchema() {
         return NpFamilyMembers.schema();
     }
-
-    render() {
-        return super.render(`
-            <div ref="element">${getTemplate()}</div>
-        `);
-    }
-
-    // get emptyValue() {
-    //     return [];
-    // }
 }
 
 
@@ -60,7 +48,3 @@ defineEditFormTabs(NpFamilyMembers, [
 ]);
 
 Formio.registerComponent('npFamilyMembers', NpFamilyMembers);
-
-export const getTemplate = () => {
-    return "(Familieleden)";
-};
