@@ -6,15 +6,6 @@ from openforms.core.custom_field_types import register
 
 from .models import BRPConfig
 
-BSN_CHOICES = (
-    ("534135286", "shea"),
-    ("462447546", "bart"),
-    ("407174205", "anna"),
-    ("462677448", "sven"),
-    ("005255545", "sergei"),
-)
-
-
 BSN = "108915864"
 
 
