@@ -79,5 +79,10 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         })
         submission_step = super().save(*args, **kwargs)
 
-        backend_func = registry[submission_step.form.backend]
-        backend_func(submission_step)
+        # run form backend
+        backend_func = registry.get(submission_step.submission.form.backend)
+        if backend_func:
+            result = backend_func(submission_step)
+            submission = submission_step.submission
+            submission.backend_result = result
+            submission.save()

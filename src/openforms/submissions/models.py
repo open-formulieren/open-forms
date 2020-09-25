@@ -11,6 +11,7 @@ class Submission(models.Model):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4)
     form = models.ForeignKey('core.Form', on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
+    backend_result = JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Submission'
