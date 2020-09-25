@@ -9,30 +9,37 @@ chardet==3.0.4            # via requests
 django-admin-index==1.4.0  # via -r requirements/base.in
 django-appconf==1.0.4     # via django-axes
 django-axes==5.5.0        # via -r requirements/base.in
-django-choices==1.7.1     # via -r requirements/base.in
+django-choices==1.7.1     # via -r requirements/base.in, zgw-consumers
 django-compat==1.0.15     # via django-hijack, django-hijack-admin
 django-hijack-admin==2.1.10  # via -r requirements/base.in
 django-hijack==2.1.10     # via -r requirements/base.in, django-hijack-admin
 django-ipware==3.0.1      # via django-axes
 django-ordered-model==3.4.1  # via django-admin-index
 django-redis==4.12.1      # via -r requirements/base.in
+django-relativedelta==1.1.1  # via zgw-consumers
 django-rosetta==0.9.4     # via -r requirements/base.in
 django-sniplates==0.7.0   # via -r requirements/base.in
-django==2.2.16            # via -r requirements/base.in, django-appconf, django-axes, django-choices, django-redis, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers
+django-solo==1.1.3        # via -r requirements/base.in, zgw-consumers
+django==2.2.16            # via -r requirements/base.in, django-appconf, django-axes, django-choices, django-redis, django-relativedelta, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers, zgw-consumers
 djangorestframework==3.11.1  # via -r requirements/base.in, drf-nested-routers
 drf-nested-routers==0.91  # via -r requirements/base.in
 elastic-apm==5.8.1        # via -r requirements/base.in
+gemma-zds-client==0.13.3  # via zgw-consumers
 idna==2.10                # via requests
 pillow==7.2.0             # via -r requirements/base.in
 polib==1.1.0              # via django-rosetta
 psycopg2==2.8.5           # via -r requirements/base.in
+pyjwt==1.7.1              # via gemma-zds-client
+python-dateutil==2.8.1    # via django-relativedelta
 python-decouple==3.3      # via -r requirements/base.in
 python-dotenv==0.14.0     # via -r requirements/base.in
 pytz==2020.1              # via -r requirements/base.in, django
+pyyaml==5.3.1             # via gemma-zds-client
 redis==3.5.3              # via django-redis
-requests==2.24.0          # via django-rosetta
+requests==2.24.0          # via django-rosetta, gemma-zds-client, zgw-consumers
 sentry-sdk==0.17.3        # via -r requirements/base.in
-six==1.15.0               # via django-choices, django-compat, django-rosetta
+six==1.15.0               # via django-choices, django-compat, django-rosetta, python-dateutil
 sqlparse==0.3.1           # via django
 urllib3==1.25.10          # via elastic-apm, requests, sentry-sdk
 uwsgi==2.0.19.1           # via -r requirements/base.in
+zgw-consumers==0.12.1     # via -r requirements/base.in

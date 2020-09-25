@@ -15,6 +15,7 @@ django-hijack-admin
 django-redis
 django-rosetta
 django-sniplates
+django-solo
 
 # API libraries
 djangorestframework
@@ -27,3 +28,6 @@ drf-nested-routers
 uwsgi
 sentry-sdk  # error monitoring
 elastic-apm  # Elastic APM integration
+
+# Common Ground integration
+zgw-consumers

@@ -22,9 +22,12 @@ INSTALLED_APPS = [
     "compat",  # Part of hijack
     "hijack_admin",
     "rest_framework",
+    "solo",
+    "zgw_consumers",
 
     # Project applications.
     "openforms.accounts",
+    "openforms.contrib.zgw",
     "openforms.core",
     "openforms.sample_app",
     "openforms.ui",

@@ -1,5 +1,8 @@
 from django.db import models
+
 from rest_framework.reverse import reverse
+
+from ..backends import registry
 
 
 class Form(models.Model):
@@ -15,6 +18,7 @@ class Form(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
+    backend = models.CharField(max_length=100, blank=True)
 
     @property
     def login_required(self):

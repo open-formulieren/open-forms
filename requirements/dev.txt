@@ -19,7 +19,7 @@ ddt-api-calls==0.2.0      # via -r requirements/dev.in
 django-admin-index==1.4.0  # via -r requirements/ci.txt
 django-appconf==1.0.4     # via -r requirements/ci.txt, django-axes
 django-axes==5.5.0        # via -r requirements/ci.txt
-django-choices==1.7.1     # via -r requirements/ci.txt
+django-choices==1.7.1     # via -r requirements/ci.txt, zgw-consumers
 django-compat==1.0.15     # via -r requirements/ci.txt, django-hijack, django-hijack-admin
 django-debug-toolbar==2.2  # via -r requirements/dev.in
 django-extensions==3.0.7  # via -r requirements/dev.in
@@ -29,10 +29,12 @@ django-ipware==3.0.1      # via -r requirements/ci.txt, django-axes
 django-jenkins==0.110.0   # via -r requirements/ci.txt
 django-ordered-model==3.4.1  # via -r requirements/ci.txt, django-admin-index
 django-redis==4.12.1      # via -r requirements/ci.txt
+django-relativedelta==1.1.1  # via -r requirements/ci.txt, zgw-consumers
 django-rosetta==0.9.4     # via -r requirements/ci.txt
 django-sniplates==0.7.0   # via -r requirements/ci.txt
+django-solo==1.1.3        # via -r requirements/ci.txt, zgw-consumers
 django-webtest==1.9.7     # via -r requirements/ci.txt
-django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, django-appconf, django-axes, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers
+django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, django-appconf, django-axes, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-relativedelta, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers, zgw-consumers
 djangorestframework==3.11.1  # via -r requirements/ci.txt, drf-nested-routers
 docutils==0.16            # via sphinx
 drf-nested-routers==0.91  # via -r requirements/ci.txt
@@ -41,6 +43,7 @@ factory-boy==3.0.1        # via -r requirements/ci.txt
 faker==4.1.2              # via -r requirements/ci.txt, factory-boy
 flake8==3.8.3             # via -r requirements/dev.in
 freezegun==0.3.15         # via -r requirements/ci.txt
+gemma-zds-client==0.13.3  # via -r requirements/ci.txt, zgw-consumers
 idna==2.10                # via -r requirements/ci.txt, requests
 imagesize==1.2.0          # via sphinx
 importlib-metadata==1.7.0  # via flake8
@@ -60,16 +63,18 @@ psycopg2==2.8.5           # via -r requirements/ci.txt
 pycodestyle==2.6.0        # via flake8
 pyflakes==2.2.0           # via flake8
 pygments==2.6.1           # via sphinx
+pyjwt==1.7.1              # via -r requirements/ci.txt, gemma-zds-client
 pyparsing==2.4.7          # via packaging
 pyquery==1.4.1            # via -r requirements/ci.txt
-python-dateutil==2.8.1    # via -r requirements/ci.txt, faker, freezegun
+python-dateutil==2.8.1    # via -r requirements/ci.txt, django-relativedelta, faker, freezegun
 python-decouple==3.3      # via -r requirements/ci.txt
 python-dotenv==0.14.0     # via -r requirements/ci.txt
 pytz==2020.1              # via -r requirements/ci.txt, babel, django
+pyyaml==5.3.1             # via -r requirements/ci.txt, gemma-zds-client
 redis==3.5.3              # via -r requirements/ci.txt, django-redis
 regex==2020.7.14          # via black
 requests-mock==1.8.0      # via -r requirements/ci.txt, ddt-api-calls
-requests==2.24.0          # via -r requirements/ci.txt, ddt-api-calls, django-rosetta, requests-mock, sphinx
+requests==2.24.0          # via -r requirements/ci.txt, ddt-api-calls, django-rosetta, gemma-zds-client, requests-mock, sphinx, zgw-consumers
 sentry-sdk==0.17.3        # via -r requirements/ci.txt
 six==1.15.0               # via -r requirements/ci.txt, django-choices, django-compat, django-rosetta, freezegun, packaging, pip-tools, python-dateutil, requests-mock, webtest
 snowballstemmer==2.0.0    # via sphinx
@@ -93,6 +98,7 @@ uwsgi==2.0.19.1           # via -r requirements/ci.txt
 waitress==1.4.4           # via -r requirements/ci.txt, webtest
 webob==1.8.6              # via -r requirements/ci.txt, webtest
 webtest==2.0.35           # via -r requirements/ci.txt, django-webtest
+zgw-consumers==0.12.1     # via -r requirements/ci.txt
 zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
