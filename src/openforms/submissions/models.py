@@ -14,6 +14,9 @@ class Submission(models.Model):
     backend_result = JSONField(blank=True, null=True)
     completed_on = models.DateTimeField(blank=True, null=True)
 
+    # TODO add BSN format validation
+    bsn = models.CharField(max_length=9, default='', blank=True)
+
     class Meta:
         verbose_name = 'Submission'
         verbose_name_plural = 'Submissions'

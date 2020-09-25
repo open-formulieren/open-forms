@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "hijack_admin",
     "rest_framework",
     "rest_framework.authtoken",
+    'digid_eherkenning',
     "solo",
     "zgw_consumers",
     # Project applications.
