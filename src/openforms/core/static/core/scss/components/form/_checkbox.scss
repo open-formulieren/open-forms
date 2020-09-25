@@ -11,10 +11,19 @@
   position: relative;
 
   [type=checkbox],
+  [type=radio],
+  &__checkmark:before,
+  [type=radio] ~ &__checkmark:after {
+    cursor: pointer;
+    width: $typography-line-height-text-big * $typography-font-size-text-big;
+    height: $typography-line-height-text-big * $typography-font-size-text-big;
+  }
+
+  [type=checkbox],
   [type=radio] {
-    position: absolute;
+    @include absolute($grid-margin-2 - 4px, $grid-margin-2 - 4px);
     opacity: 0;
-    z-index: -1;
+    z-index: 100;
   }
 
   &__checkmark:before,
@@ -23,8 +32,6 @@
     @include color-background;
     content: '';
     display: block;
-    width: $typography-line-height-text-big * $typography-font-size-text-big;
-    height: $typography-line-height-text-big * $typography-font-size-text-big;
     z-index: 20;
   }
 
