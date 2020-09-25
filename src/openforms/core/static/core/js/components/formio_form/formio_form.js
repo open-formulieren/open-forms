@@ -12,6 +12,7 @@ import {getTemplate as getCheckbox} from '../form/checkbox';
 import {getTemplate as getRadio} from '../form/radio';
 import {getTemplate as getSelect} from '../form/select';
 import {SubmissionConsumer} from '../../data/submission';
+import {FormConsumer} from '../../data/form';
 
 /**
  * Renders a form.
@@ -28,21 +29,41 @@ class FormIOForm {
         /** @type {HTMLElement} */
         this.container = BEM.getChildBEMNode(this.node, BLOCK_FORMIO_FORM, ELEMENT_BODY);
 
+        /** @type {FormConsumer} */
+        this.formConsumer = new FormConsumer();
+
         /** @type {SubmissionConsumer} */
         this.submissionConsumer = new SubmissionConsumer();
 
-        this.render();
+        this.getContextData()
+            .then(this.render.bind(this));
+    }
+
+    /**
+     * Fetches requires data.
+     * @return {Promise}
+     */
+    async getContextData() {
+        const form = await this.formConsumer.read(this.node.dataset.formSlug)
+            .catch(this.error.bind(this));
+
+        const formStep = await form.readCurrentStep()
+            .catch(this.error.bind(this));
+
+        return {form, formStep};
     }
 
     /**
      * Gets called when Form.io form is ready.
+     * @param {Form} form
+     * @param {FormStep} formStep
      * @param {WebForm} webform
      */
-    onFormReady(webform) {
+    onFormReady(form, formStep, webform) {
         [...this.node.querySelectorAll('[type=submit]')]
             .forEach(this.bindButton.bind(this, webform));
 
-        webform.on('submit', this.submitForm.bind(this));
+        webform.on('submit', this.submitForm.bind(this, form, formStep));
     }
 
     /**
@@ -64,19 +85,39 @@ class FormIOForm {
         webform.submit();
     }
 
-    submitForm(form) {
-        const data = form.data;
-        this.submissionConsumer.create({
-            form: this.node.dataset.form,
-            data
-        }).then(s => console.info(s));
+    /**
+     * Creates Submission and SubmissionStep for "form" "formStep".
+     * @param {Form} form
+     * @param {FormStep} formStep
+     * @param {Object} formResult
+     */
+    submitForm(form, formStep, formResult) {
+        const formData = formResult.data;
+
+        this.submissionConsumer.create(form)
+            .then(submission => submission.createSubmissionStep(formStep, formData))
+            .then(this.submitFormSuccess.bind(this))
+            .catch(this.error.bind(this));
     }
 
+    submitFormSuccess(result) {
+        console.info('Result', result);
+    }
+
+    /**
+     * Generic error handler.
+     * @param {*} error
+     */
+    error(error) {
+        console.error(error);
+        alert(error);
+    }
 
     /**
      * Renders the form.
+     * @param {Object} context
      */
-    render() {
+    render(context) {
         const OFLibrary = {
             component: {form: getComponent()},
             field: {form: getField()},
@@ -96,13 +137,8 @@ class FormIOForm {
 
         Templates.OFLibrary = OFLibrary;
         Templates.current = Templates.OFLibrary;
-
-        const json = this.node.dataset.configuration;
-        this.node.dataset.configuration = '';
-
-        console.log("render");
-        Formio.createForm(this.container, JSON.parse(json))
-            .then(this.onFormReady.bind(this));
+        Formio.createForm(this.container, context.formStep.configuration)
+            .then(this.onFormReady.bind(this, context.form, context.formStep));
     }
 }
 

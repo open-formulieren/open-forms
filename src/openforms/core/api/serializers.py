@@ -21,7 +21,9 @@ class FormSerializer(serializers.ModelSerializer):
             'login_required': instance.login_required,
             'product': str(instance.product),
             'user_current_step': steps[request.session[instance.slug]['current_step']],
-            'steps': steps
+            'steps': steps,
+            'slug': instance.slug,
+            'url': instance.get_api_url(),
         }
 
     class Meta:

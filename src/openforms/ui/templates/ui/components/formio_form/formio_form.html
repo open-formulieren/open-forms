@@ -1,5 +1,5 @@
 {% load i18n ui %}
-<form class="formio-form form" data-form="{{ object.form.get_api_url }}" data-configuration="{{ object.form_definition.configuration }}">
+<form class="formio-form form" data-form-slug="{{ object.form.slug }}">
     <div class="formio-form__body">
         <p class="body">{% trans 'Bezig met laden...' %}</p>
     </div>
