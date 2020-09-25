@@ -3,7 +3,7 @@ import json
 from rest_framework import serializers
 
 from openforms.core.models import Form, FormDefinition, FormStep
-from openforms.contrib.handlers import handle_custom_types
+from ..custom_field_types import handle_custom_types
 
 
 class FormSerializer(serializers.ModelSerializer):

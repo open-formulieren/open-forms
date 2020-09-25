@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from rest_framework.request import Request
 
-from .handlers import register
+from openforms.core.custom_field_types import register
 
 BSN_CHOICES = (
     ("534135286", "shea"),

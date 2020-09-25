@@ -2,6 +2,8 @@ from typing import Any, Dict
 
 from rest_framework.request import Request
 
+__all__ = ["register", "handle_custom_types"]
+
 REGISTRY = {}
 
 

@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",
-    "openforms.contrib",
+    "openforms.contrib.brp.apps.BRPConfig",
 ]
 
 MIDDLEWARE = [
