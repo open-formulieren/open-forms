@@ -80,6 +80,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         submission_step = super().save(*args, **kwargs)
 
         # run form backend
+        # TODO should run only on the final submit of the form
+        # TODO should be done after merging all data in submission model and marking final submission steps
         backend_func = registry.get(submission_step.submission.form.backend)
         if backend_func:
             result = backend_func(submission_step)
