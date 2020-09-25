@@ -1,0 +1,82 @@
+[
+{
+    "model": "admin_index.appgroup",
+    "pk": 1,
+    "fields": {
+        "order": 0,
+        "name": "Accounts",
+        "slug": "accounts",
+        "models": [
+            11,
+            4
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "pk": 4,
+    "fields": {
+        "order": 8,
+        "name": "Logging",
+        "slug": "logging",
+        "models": [
+            9,
+            10
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "pk": 5,
+    "fields": {
+        "order": 3,
+        "name": "Core",
+        "slug": "core",
+        "models": [
+            12,
+            13,
+            15,
+            14
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "pk": 6,
+    "fields": {
+        "order": 4,
+        "name": "Submissions",
+        "slug": "submissions",
+        "models": [
+            16
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "pk": 8,
+    "fields": {
+        "order": 6,
+        "name": "Configuratie",
+        "slug": "configuratie",
+        "models": [
+            6,
+            20,
+            18,
+            17
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "pk": 10,
+    "fields": {
+        "order": 9,
+        "name": "Zgw",
+        "slug": "zgw",
+        "models": [
+            21
+        ]
+    }
+}
+]
