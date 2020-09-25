@@ -34,6 +34,12 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             },
         }
 
+    def save(self, *args, **kwargs):
+        bsn = self.context['request'].session.get('bsn')
+        if bsn:
+            kwargs["bsn"] = bsn
+        return super().save(*args, **kwargs)
+
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     parent_lookup_kwargs = {
@@ -88,3 +94,5 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             submission = submission_step.submission
             submission.backend_result = result
             submission.save()
+
+        return submission_step
