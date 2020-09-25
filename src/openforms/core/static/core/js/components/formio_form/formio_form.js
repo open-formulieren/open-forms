@@ -11,6 +11,7 @@ import {getTemplate as getMultipleMasksInput} from '../form/multiple-masks-input
 import {getTemplate as getCheckbox} from '../form/checkbox';
 import {getTemplate as getRadio} from '../form/radio';
 import {getTemplate as getSelect} from '../form/select';
+import {getTemplate as getNpFamilyMembers} from '../form/np-family-members';
 import {SubmissionConsumer} from '../../data/submission';
 import {FormConsumer} from '../../data/form';
 
@@ -133,6 +134,8 @@ class FormIOForm {
             radio: {form: getRadio()},
 
             select: {form: getSelect()},
+
+            npFamilyMembers: {form: getNpFamilyMembers()},
         };
 
         Templates.OFLibrary = OFLibrary;
