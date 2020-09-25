@@ -47,3 +47,5 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
 ]
+
+ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
