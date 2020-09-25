@@ -34,18 +34,6 @@ class FormSerializer(serializers.ModelSerializer):
         )
 
 
-class FormStepSerializer(serializers.ModelSerializer):
-    index = serializers.IntegerField(source="order")
-    configuration = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FormStep
-        fields = ("index", "configuration",)
-
-    def get_configuration(self, obj):
-        return json.loads(obj.form_definition.configuration)
-
-
 class FormDefinitionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # TODO: json.loads on something that is a JSONField makes no sense,
@@ -59,3 +47,21 @@ class FormDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormDefinition
         fields = ()
+
+
+class FormStepSerializer(serializers.ModelSerializer):
+    index = serializers.IntegerField(source="order")
+    configuration = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FormStep
+        fields = ("index", "configuration")
+
+    def get_configuration(self, instance):
+        # can't simply declare this because the JSON is stored as string in
+        # the DB instead of actual JSON
+        serializer = FormDefinitionSerializer(
+            instance=instance.form_definition,
+            context=self.context,
+        )
+        return serializer.data
