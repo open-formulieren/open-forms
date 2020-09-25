@@ -24,9 +24,9 @@ class SubmissionAPITests(APITestCase):
         self.client.logout()
         
         url = reverse('api:submission-list')
-        response = self.client.get(url, format='json')
+        response = self.client.get(url, format='json', secure=True)
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
         # TODO: Replace with factory

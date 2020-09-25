@@ -19,7 +19,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Submission
-        fields = ('uuid', 'url', 'form', 'steps', 'created_on')
+        fields = ('uuid', 'url', 'form', 'steps', 'created_on', 'completed_on')
         extra_kwargs = {
             "uuid": {
                 "read_only": True,

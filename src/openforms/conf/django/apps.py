@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "solo",
     "zgw_consumers",
+    "rest_framework.authtoken",
 
     # Project applications.
     "openforms.accounts",
