@@ -8,5 +8,5 @@ def register(func):
 
 
 @register
-def console_backend(submission) -> None:
-    print(submission.data)
+def console_backend(submission_step) -> None:
+    print(submission_step.data)

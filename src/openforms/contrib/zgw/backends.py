@@ -3,9 +3,9 @@ from openforms.core.backends import register
 
 
 @register
-def create_zaak_backend(submission) -> dict:
+def create_zaak_backend(submission_step) -> dict:
     zaak = create_zaak()
-    document = create_document(name=submission.form_name, body=submission.data)
+    document = create_document(name=submission_step.submission.form.name, body=submission_step.data)
     relate_document(zaak['url'], document['url'])
 
     result = {
