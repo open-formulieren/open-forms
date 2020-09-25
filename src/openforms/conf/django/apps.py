@@ -15,17 +15,15 @@ INSTALLED_APPS = [
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
-
     # External applications.
     "axes",
     "hijack",
     "compat",  # Part of hijack
     "hijack_admin",
     "rest_framework",
+    "rest_framework.authtoken",
     "solo",
     "zgw_consumers",
-    "rest_framework.authtoken",
-
     # Project applications.
     "openforms.accounts",
     "openforms.contrib.zgw",
@@ -34,6 +32,7 @@ INSTALLED_APPS = [
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",
+    "openforms.contrib",
 ]
 
 MIDDLEWARE = [
