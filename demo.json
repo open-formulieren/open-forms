@@ -42,6 +42,60 @@
     "model": "zgw_consumers.service",
     "pk": 1,
     "fields": {
+        "label": "ZRC Test",
+        "api_type": "zrc",
+        "api_root": "https://test.openzaak.nl/zaken/api/v1/",
+        "client_id": "anna",
+        "secret": "zVHTg5fh3VCKsBse",
+        "auth_type": "zgw",
+        "header_key": "",
+        "header_value": "",
+        "oas": "https://test.openzaak.nl/zaken/api/v1/schema/openapi.yaml",
+        "nlx": "",
+        "user_id": "openforms",
+        "user_representation": "openforms"
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 2,
+    "fields": {
+        "label": "ZTC test",
+        "api_type": "ztc",
+        "api_root": "https://test.openzaak.nl/catalogi/api/v1/",
+        "client_id": "anna",
+        "secret": "zVHTg5fh3VCKsBse",
+        "auth_type": "zgw",
+        "header_key": "",
+        "header_value": "",
+        "oas": "https://test.openzaak.nl/catalogi/api/v1/schema/openapi.yaml",
+        "nlx": "",
+        "user_id": "openforms",
+        "user_representation": "openforms"
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 3,
+    "fields": {
+        "label": "DRC test",
+        "api_type": "drc",
+        "api_root": "https://test.openzaak.nl/documenten/api/v1/",
+        "client_id": "anna",
+        "secret": "zVHTg5fh3VCKsBse",
+        "auth_type": "zgw",
+        "header_key": "",
+        "header_value": "",
+        "oas": "https://test.openzaak.nl/documenten/api/v1/schema/openapi.yaml",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": ""
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 4,
+    "fields": {
         "label": "BRP",
         "api_type": "orc",
         "api_root": "http://192.168.129.232:8000/openpersonen/api/",
@@ -68,7 +122,18 @@
     "model": "brp.brpconfig",
     "pk": 1,
     "fields": {
-        "brp_service": 1
+        "brp_service": 4
+    }
+},
+{
+    "model": "zgw.zgwconfig",
+    "pk": 1,
+    "fields": {
+        "zrc_service": 1,
+        "drc_service": 3,
+        "zaaktype": "https://test.openzaak.nl/catalogi/api/v1/zaaktypen/53340e34-7581-4b04-884f-8ff7e6a73c2c",
+        "informatieobjecttype": "https://test.openzaak.nl/catalogi/api/v1/informatieobjecttypen/1db73aba-cef4-42ec-bdf0-cd4c7c4f2514",
+        "organisatie_rsin": "100000009"
     }
 }
 ]
