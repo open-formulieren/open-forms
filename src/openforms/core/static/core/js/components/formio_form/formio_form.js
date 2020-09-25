@@ -135,7 +135,7 @@ class FormIOForm {
 
             select: {form: getSelect()},
 
-            npFamilyMembers: {form: getNpFamilyMembers()},
+            // npFamilyMembers: {form: getNpFamilyMembers()},
         };
 
         Templates.OFLibrary = OFLibrary;

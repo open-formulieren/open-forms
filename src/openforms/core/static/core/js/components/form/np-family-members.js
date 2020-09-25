@@ -5,6 +5,7 @@ import {Formio} from 'formiojs';
 import {defineEditFormTabs, defineInputInfo} from './abstract';
 
 const FieldComponent = Formio.Components.components.field;
+// const FieldComponent = Formio.Components.components.textfield;
 
 class NpFamilyMembers extends FieldComponent {
     static schema(...extend) {
@@ -28,6 +29,12 @@ class NpFamilyMembers extends FieldComponent {
 
     get defaultSchema() {
         return NpFamilyMembers.schema();
+    }
+
+    render() {
+        return super.render(`
+            <div ref="element">${getTemplate()}</div>
+        `);
     }
 
     // get emptyValue() {
@@ -55,5 +62,5 @@ defineEditFormTabs(NpFamilyMembers, [
 Formio.registerComponent('npFamilyMembers', NpFamilyMembers);
 
 export const getTemplate = () => {
-    return "Familieleden";
+    return "(Familieleden)";
 };
