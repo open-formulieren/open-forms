@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
 from openforms.core.models import Form, FormStep
@@ -14,6 +15,7 @@ class FormStepInline(OrderedTabularInline):
 
 
 class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'backend')
     inlines = (FormStepInline,)
     prepopulated_fields = {'slug': ('name',)}
 

@@ -4,6 +4,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from ..models import Submission, SubmissionStep
 from openforms.core.models import FormStep
+from openforms.core.backends import registry
 
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
@@ -38,7 +39,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
     }
-    
+
     form_step = NestedHyperlinkedRelatedField(
         # many=True,
         # read_only=True,   # Or add a queryset
@@ -76,4 +77,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 uuid=self.context['request'].parser_context['view'].kwargs['submission_uuid']
             )
         })
-        return super().save(*args, **kwargs)
+        submission_step = super().save(*args, **kwargs)
+
+        backend_func = registry[submission_step.form.backend]
+        backend_func(submission_step)
