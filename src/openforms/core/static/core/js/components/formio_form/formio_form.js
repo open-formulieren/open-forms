@@ -35,73 +35,95 @@ class FormIOForm {
         /** @type {SubmissionConsumer} */
         this.submissionConsumer = new SubmissionConsumer();
 
+        /** @type {Object} */
+        this.webForm = {};
+
+        this.configureTemplates();
+        this.bindEvents();
+
         this.getContextData()
-            .then(this.render.bind(this));
+            .then(this.mount.bind(this))
+            .then(this.render.bind(this))
+            .catch(this.error.bind(this))
+        ;
     }
 
     /**
-     * Fetches requires data.
-     * @return {Promise}
+     * Binds events to callbacks.
      */
-    async getContextData() {
-        const form = await this.formConsumer.read(this.node.dataset.formSlug)
-            .catch(this.error.bind(this));
-
-        const formStep = await form.readCurrentStep()
-            .catch(this.error.bind(this));
-
-        return {form, formStep};
-    }
-
-    /**
-     * Gets called when Form.io form is ready.
-     * @param {Form} form
-     * @param {FormStep} formStep
-     * @param {WebForm} webform
-     */
-    onFormReady(form, formStep, webform) {
-        [...this.node.querySelectorAll('[type=submit]')]
-            .forEach(this.bindButton.bind(this, webform));
-
-        webform.on('submit', this.submitForm.bind(this, form, formStep));
+    bindEvents() {
+        window.addEventListener('popstate', (event) => this.render(event.state));
     }
 
     /**
      * Binds "button" click to "webform" (Form.io instance)
-     * @param webform
      * @param button
      */
-    bindButton(webform, button) {
-        button.addEventListener('click', this.onButtonClick.bind(this, webform));
+    bindButton(button) {
+        button.addEventListener('click', this.onButtonClick.bind(this));
+    }
+
+    /**
+     * Returns the step index for "form" based on URL or null if not found.
+     * @param {Form} form
+     * @return {(number|null)}
+     */
+    getStepIndex(form) {
+        try {
+            return parseInt(
+                String(window.location)
+                    .replace(form.get_absolute_url, '')
+                    .match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
+            );
+        } catch (e) {
+
+        }
+        return null;
     }
 
     /**
      * Gets called when any [type=submit] child of the of the form is pressed.
-     * @param webform
      * @param event
      */
-    onButtonClick(webform, event) {
+    onButtonClick(event) {
         event.preventDefault();
-        webform.submit();
+        this.webForm.submit();
+    }
+
+    /**
+     * Gets called when Form.io form is ready.
+     * @param {Object} context
+     */
+    onFormReady(context) {
+        [...this.node.querySelectorAll('[type=submit]')]
+            .forEach(this.bindButton.bind(this));
+
+        this.webForm.on('submit', this.submitForm.bind(this, context));
     }
 
     /**
      * Creates Submission and SubmissionStep for "form" "formStep".
-     * @param {Form} form
-     * @param {FormStep} formStep
+     * @param {Object} context
      * @param {Object} formResult
      */
-    submitForm(form, formStep, formResult) {
+    submitForm(context, formResult) {
+        const {form, formStep} = context;
         const formData = formResult.data;
 
         this.submissionConsumer.create(form)
             .then(submission => submission.createSubmissionStep(formStep, formData))
-            .then(this.submitFormSuccess.bind(this))
+            .then(this.submitFormSuccess.bind(this, form))
             .catch(this.error.bind(this));
     }
 
-    submitFormSuccess(result) {
-        console.info('Result', result);
+    /**
+     * Gets called when Submission and SubmissionStep have been sucessfully created.
+     */
+    submitFormSuccess() {
+        this.getContextData(true)
+            .then(this.render.bind(this))
+            .catch(this.error.bind(this))
+        ;
     }
 
     /**
@@ -114,10 +136,9 @@ class FormIOForm {
     }
 
     /**
-     * Renders the form.
-     * @param {Object} context
+     * Configures the (custom) Form.io templates.
      */
-    render(context) {
+    configureTemplates() {
         const OFLibrary = {
             component: {form: getComponent()},
             field: {form: getField()},
@@ -137,8 +158,55 @@ class FormIOForm {
 
         Templates.OFLibrary = OFLibrary;
         Templates.current = Templates.OFLibrary;
-        Formio.createForm(this.container, context.formStep.configuration)
-            .then(this.onFormReady.bind(this, context.form, context.formStep));
+    }
+
+    /**
+     * Loads context data.
+     * @param {boolean} [next=false] Whether to load the next step.
+     * @return {Promise}
+     */
+    async getContextData(next=false) {
+        // Fetch data.
+        const form = await this.formConsumer.read(this.node.dataset.formSlug);
+        const stepIndex = next === false ? this.getStepIndex(form) : null;  // Null value causes FormConsumer to read user_current_step.
+        const formStep = await form.readCurrentStep(stepIndex);
+
+        // Update history with received context..
+        const formState = JSON.parse(form.asJSON());
+        const formStepState = JSON.parse(formStep.asJSON());
+        const formStepUrl = formStep.getAbsoluteUrl(form);
+        history.pushState({form: formState, formStep: formStepState}, document.title, formStepUrl);
+
+        // Return context.
+        return {form, formStep};
+    }
+
+    /**
+     * Creates an empty Form.io form, sets this.webForm and calls onFormReady() and render() when done.
+     * @param context
+     * @return {Promise}
+     */
+    mount(context) {
+        return Formio.createForm(this.container, {})
+            .then(webForm => {
+                this.webForm = webForm;
+                this.onFormReady(context);
+                return context;
+            });
+    }
+
+    /**
+     * Renders the form configuration on this.webForm.
+     * @param {Object} context
+     */
+    render(context) {
+        // Renders is called as side effect of "popstate" event, hence context may be empty.
+        if (!context) {
+            return;
+        }
+
+        const {formStep} = context;
+        this.webForm.setForm(formStep.configuration);
     }
 }
 

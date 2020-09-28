@@ -16,11 +16,23 @@ class Form extends CrudConsumerObject {
     }
 
     /**
+     * Returns the URL for this Form.
+     * @return {string}
+     */
+    getAbsoluteUrl() {
+        return `/${this.slug}`;
+    }
+
+    /**
      * Reads the current FormStep for this Form.
+     * @param {(number|null)} [stepIndex=null] The index of the step to load, loads current step if ommited.
      * @return {Promise}
      */
-    readCurrentStep() {
-        const stepIndex =  this.user_current_step.index;
+    readCurrentStep(stepIndex=null) {
+        console.log("readCurrentStep", stepIndex);
+        if (stepIndex === null) {
+            return this.formStepConsumer.read(this, this.user_current_step.index);
+        }
         return this.formStepConsumer.read(this, stepIndex);
     }
 }
@@ -36,5 +48,7 @@ export class FormConsumer extends CrudConsumer {
      */
     constructor() {
         super('/api/v1/forms/', Form);
+
+        this.unserializableFields = [...this.unserializableFields, 'formStepConsumer'];
     }
 }

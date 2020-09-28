@@ -37,6 +37,8 @@ export class SubmissionConsumer extends CrudConsumer {
      */
     constructor() {
         super('/api/v1/submissions/', Submission);
+
+        this.unserializableFields = [...this.unserializableFields, 'submissionStepConsumer'];
     }
 
     /**
