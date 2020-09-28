@@ -25,11 +25,10 @@ class Form extends CrudConsumerObject {
 
     /**
      * Reads the current FormStep for this Form.
-     * @param {(number|null)} [stepIndex=null] The index of the step to load, loads current step if ommited.
+     * @param {(number|null)} [stepIndex=null] The index of the step to load, loads current step if omitted.
      * @return {Promise}
      */
     readCurrentStep(stepIndex=null) {
-        console.log("readCurrentStep", stepIndex);
         if (stepIndex === null) {
             return this.formStepConsumer.read(this, this.user_current_step.index);
         }

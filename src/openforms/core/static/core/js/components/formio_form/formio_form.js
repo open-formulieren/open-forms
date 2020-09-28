@@ -65,15 +65,12 @@ class FormIOForm {
 
     /**
      * Returns the step index for "form" based on URL or null if not found.
-     * @param {Form} form
      * @return {(number|null)}
      */
-    getStepIndex(form) {
+    getStepIndex() {
         try {
             return parseInt(
-                String(window.location)
-                    .replace(form.get_absolute_url, '')
-                    .match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
+                String(window.location).match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
             );
         } catch (e) {
 
@@ -107,11 +104,10 @@ class FormIOForm {
      * @param {Object} formResult
      */
     submitForm(context, formResult) {
-        const {form, formStep} = context;
+        const {form, formStep, submission} = context;
         const formData = formResult.data;
 
-        this.submissionConsumer.create(form)
-            .then(submission => submission.createSubmissionStep(formStep, formData))
+        submission.createSubmissionStep(formStep, formData)
             .then(this.submitFormSuccess.bind(this, form))
             .catch(this.error.bind(this));
     }
@@ -165,20 +161,28 @@ class FormIOForm {
      * @param {boolean} [next=false] Whether to load the next step.
      * @return {Promise}
      */
-    async getContextData(next=false) {
+    async getContextData(next = false) {
         // Fetch data.
         const form = await this.formConsumer.read(this.node.dataset.formSlug);
-        const stepIndex = next === false ? this.getStepIndex(form) : null;  // Null value causes FormConsumer to read user_current_step.
+        const submission = await this.submissionConsumer.create(form);
+        const stepIndex = next === false ? this.getStepIndex() : null;  // Null value causes FormConsumer to read user_current_step.
         const formStep = await form.readCurrentStep(stepIndex);
 
-        // Update history with received context..
+        // Update history with received context.
         const formState = JSON.parse(form.asJSON());
         const formStepState = JSON.parse(formStep.asJSON());
+        const submissionState = JSON.parse(submission.asJSON());
+
         const formStepUrl = formStep.getAbsoluteUrl(form);
-        history.pushState({form: formState, formStep: formStepState}, document.title, formStepUrl);
+
+        history.pushState({
+            form: formState,
+            formStep: formStepState,
+            submission: submissionState
+        }, document.title, formStepUrl);
 
         // Return context.
-        return {form, formStep};
+        return {form, formStep, submission};
     }
 
     /**
