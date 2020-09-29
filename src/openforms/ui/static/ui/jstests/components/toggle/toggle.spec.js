@@ -3,7 +3,7 @@ import {BLOCK_TOGGLE} from '../../../js/components/toggle/constants';
 import {Toggle} from '../../../js/components/toggle/toggle';
 import simulant from 'simulant';
 import {delay} from '../../utils';
-import sinon from 'sinon';
+
 
 describe('Toggle', function () {
     beforeEach(() => {
@@ -264,7 +264,7 @@ describe('Toggle', function () {
         new Toggle(this.button);
 
         delay()
-            // Remove.
+        // Remove.
             .then(() => this.target.classList.add('target--on'))
             .then(() => this.button.dataset.toggleOperation = 'remove')
             .then(() => simulant.fire(this.button, 'click'))
