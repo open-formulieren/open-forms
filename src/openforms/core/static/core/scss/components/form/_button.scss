@@ -71,8 +71,7 @@ $button-padding-h: $grid-margin-2;
     padding: 0;
   }
 
-  + #{&} {
-    margin-left: $grid-margin-2;
+  .fa-icon:not(:last-child) {
+    margin-right: $button-padding-h;
   }
-
 }

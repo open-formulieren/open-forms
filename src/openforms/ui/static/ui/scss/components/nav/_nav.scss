@@ -7,20 +7,21 @@
 @import 'constants';
 
 .nav {
-
   @media print {
     display: none;
   }
 
   @include mobile-only {
+    @include color-secondary(background-color);
     height: $nav-height-primary-mobile + $nav-height-secondary-mobile;
+    position: relative;
+    z-index: 1000;
 
     &__body {
       display: flex;
       align-items: flex-start;
       position: absolute;
       width: 100%;
-      z-index: 1000;
     }
 
     //
@@ -41,21 +42,45 @@
       display: block;
     }
 
+    // Fix color.
     .button--primary {
-      @include absolute;
       @include color-primary(background-color);
+    }
+
+    // Open.
+    &__body > .button--primary {
+      @include absolute;
       z-index: 10;
     }
 
-    &--open .button--primary {
+    &__body > .button--primary:first-child .button__label {
+      font-size: 0;
+    }
+
+    &__body > .button--primary:first-child .fa-icon {
+      margin-right: 0;
+    }
+
+    &--open &__body > .button--primary:first-child {
       display: none;
     }
 
-    .button--secondary {
+    // Close
+    &__body > .button--primary + .button {
+      @include absolute;
+      display: none;
+    }
+
+    &--open &__body > .button--primary + .button {
+      display: flex;
+    }
+
+    // Sub.
+    &__list-item .button--anchor {
       visibility: hidden;
     }
 
-    &:not(#{&}--open) &__list-item &__list-item--active .button--secondary {
+    &:not(#{&}--open) &__list-item &__list-item--active .button--anchor {
       visibility: visible;
     }
 
@@ -70,6 +95,10 @@
       padding: 0;
       box-sizing: border-box;
       width: 100%;
+    }
+
+    &--open &__body > &__list {
+      margin-top: $nav-height-primary-mobile;
     }
 
     &__list-item &__list {

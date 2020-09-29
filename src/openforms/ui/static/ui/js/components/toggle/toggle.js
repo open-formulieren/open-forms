@@ -100,12 +100,13 @@ export class Toggle {
         let clearTarget = e.target;
         const toggleTargets = this.getTargets();
 
-        // Don't clear if clicked node is (child of) a target.
+        // Don't clear if clicked node is child of a target.
         while(clearTarget.parentNode) {
+            clearTarget = clearTarget.parentNode;
+
             if (toggleTargets.indexOf(clearTarget) > -1) {
                 return;
             }
-            clearTarget = clearTarget.parentNode;
         }
 
         this.toggle(false);
