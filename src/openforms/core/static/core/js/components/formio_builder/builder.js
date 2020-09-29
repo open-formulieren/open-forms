@@ -46,16 +46,24 @@ class FormIOBuilder {
 
                 custom: {
                     default: true,
-                    label: 'Formuliervelden',
+                    title: 'Formuliervelden',
+                    weight: 0,
                     components: {
                         textfield: true,
                         textarea: true,
                         checkbox: true,
                         selectboxes: true,
                         select: true,
-                        radio: true
+                        radio: true,
                     }
                 },
+                brp: {
+                    title: 'Basisregistratie Personen',
+                    weight: 10,
+                    components: {
+                        npFamilyMembers: true,
+                    },
+                }
 
             },
 

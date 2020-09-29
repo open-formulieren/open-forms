@@ -2,33 +2,67 @@ import json
 
 from rest_framework import serializers
 
-from openforms.core.models import Form, FormDefinition, FormStep
+from openforms.products.api.serializers import ProductSerializer
+
+from ..custom_field_types import handle_custom_types
+from ..models import Form, FormDefinition, FormStep
+
+
+class MinimalFormStepSerializer(serializers.ModelSerializer):
+    form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    index = serializers.IntegerField(source="order")
+
+    class Meta:
+        model = FormStep
+        fields = ("uuid", "form_definition", "index", "url",)
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "url": {
+                "source": "get_api_url"
+            }
+        }
 
 
 class FormSerializer(serializers.ModelSerializer):
-
-    def to_representation(self, instance):
-        request = self.context['request']
-        if not request.session.get(instance.slug):
-            request.session[instance.slug] = {
-                'current_step': instance.first_step
-            }
-
-        steps = instance.get_api_form_steps(self.context['request'])
-
-        return {
-            'name': instance.name,
-            'login_required': instance.login_required,
-            'product': str(instance.product),
-            'user_current_step': steps[request.session[instance.slug]['current_step']],
-            'steps': steps,
-            'slug': instance.slug,
-            'url': instance.get_api_url(),
-        }
+    product = ProductSerializer(read_only=True)
+    steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
     class Meta:
         model = Form
-        fields = ('name', 'login_required', 'product', 'steps', )
+        fields = (
+            "uuid",
+            "name",
+            "login_required",
+            "product",
+            "slug",
+            "url",
+            "steps"
+        )
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "url": {
+                "source": "get_api_url"
+            }
+        }
+
+
+class FormDefinitionSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        # TODO: json.loads on something that is a JSONField makes no sense,
+        # track down the cause of this being a string instead of actual JSON
+        parsed_config = json.loads(instance.configuration)
+        parsed_config = handle_custom_types(
+            parsed_config, request=self.context["request"]
+        )
+        return parsed_config
+
+    class Meta:
+        model = FormDefinition
+        fields = ()
 
 
 class FormStepSerializer(serializers.ModelSerializer):
@@ -37,17 +71,13 @@ class FormStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration",)
+        fields = ("index", "configuration")
 
-    def get_configuration(self, obj):
-        return json.loads(obj.form_definition.configuration)
-
-
-class FormDefinitionSerializer(serializers.ModelSerializer):
-
-    def to_representation(self, instance):
-        return json.loads(instance.configuration)
-
-    class Meta:
-        model = FormDefinition
-        fields = ()
+    def get_configuration(self, instance):
+        # can't simply declare this because the JSON is stored as string in
+        # the DB instead of actual JSON
+        serializer = FormDefinitionSerializer(
+            instance=instance.form_definition,
+            context=self.context,
+        )
+        return serializer.data

@@ -24,10 +24,10 @@ export class FormStepConsumer extends CrudConsumer {
     /**
      * Reads all FormSteps from the backend for "form".
      * @param {Form} form The Form instance to create FormStep for.
-     * @param {number} stepIndex The step index.
+     * @param {number} step The FormStep instance.
      * @return {Promise}
      */
-    read(form, stepIndex) {
-        return this.get(`${form.slug}/steps/${stepIndex}`);
+    read(form, step) {
+        return this.get(`${form.uuid}/steps/${step.uuid}`);
     }
 }

@@ -15,21 +15,26 @@ INSTALLED_APPS = [
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
-
     # External applications.
     "axes",
     "hijack",
     "compat",  # Part of hijack
     "hijack_admin",
     "rest_framework",
-
+    "rest_framework.authtoken",
+    'digid_eherkenning',
+    "solo",
+    "zgw_consumers",
     # Project applications.
     "openforms.accounts",
+    "openforms.contrib.zgw",
     "openforms.core",
+    "openforms.products",
     "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",
+    "openforms.contrib.brp",
 ]
 
 MIDDLEWARE = [
@@ -43,3 +48,5 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
 ]
+
+ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"

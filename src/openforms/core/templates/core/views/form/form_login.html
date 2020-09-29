@@ -1,0 +1,28 @@
+{% extends 'ui/views/abstract/base.html' %}
+{% load static ui %}
+
+{% block layout_inner %}
+    {{ block.super }}
+
+    <section class="layout__row">
+        <div class="layout__column">
+            <div class="card">
+                <header class="card__header">
+                    <h1 class="title">Inloggen met DigiD</h1>
+                    <p class="body body--compact">Om digitaal een formulier in te vullen en te verzenden moet u inloggen met DigiD.</p>
+                </header>
+
+                <div class="card__body">
+
+                    {% button href=digid_button_url label="Inloggen met DigiD" %}
+                    {% static 'img/digid.png' as digid_image_src %}
+                    <a href="{{ digid_button_url }}" style="display: inline-block; margin-left:3px;" title="Inloggen met DigiD"><img src="{{ digid_image_src }}" ></a>
+
+                    <p class="body"><br>DigiD vraag u aan op {% anchor href='https://digid.nl' target='_blank' label='de website DigiD.nl' %}</p>
+                </div>
+            </div>
+
+            {% a11y_toolbar %}
+        </div>
+    </section>
+{% endblock %}

@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
-from django.urls import reverse
 from django.http import HttpRequest
+from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.core.models import Form
-from .models import Submission
+from openforms.core.tests.factories import FormFactory
+
+from .factories import SubmissionFactory
 
 
 class SubmissionAPITests(APITestCase):
@@ -22,23 +22,15 @@ class SubmissionAPITests(APITestCase):
     def test_auth_required(self):
         # TODO: Replace with not using an API-token
         self.client.logout()
-        
-        url = reverse('api:submission-list')
-        response = self.client.get(url, format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        url = reverse('api:submission-list')
+        response = self.client.get(url, format='json', secure=True)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
-        # TODO: Replace with factory
-        form = Form.objects.create(
-            name="test",
-            slug="test",
-        )
-
-        # TODO: Replace with factory
-        submission = Submission.objects.create(
-            form=form,
-        )
+        form = FormFactory.create()
+        SubmissionFactory.create(form=form)
 
         url = reverse('api:submission-list')
         response = self.client.get(url, format='json')
@@ -47,20 +39,16 @@ class SubmissionAPITests(APITestCase):
         self.assertEqual(len(response.json()), 1)
 
     def test_create(self):
-        # TODO: Replace with factory
-        form = Form.objects.create(
-            name="test",
-            slug="test",
-        )
-       
+        form = FormFactory.create()
+
         url = reverse('api:submission-list')
         data = {
-            "form": reverse('api:form-detail', kwargs={'slug': form.slug}),
+            "form": reverse('api:form-detail', kwargs={'uuid': form.uuid}),
         }
 
         response = self.client.post(url, data, format='json')
         self.assertEquals(response.status_code, status.HTTP_201_CREATED, response.content)
-    
+
     def test_create_without_form(self):
         url = reverse('api:submission-list')
         data = {

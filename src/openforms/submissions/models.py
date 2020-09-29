@@ -11,6 +11,11 @@ class Submission(models.Model):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4)
     form = models.ForeignKey('core.Form', on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
+    backend_result = JSONField(blank=True, null=True)
+    completed_on = models.DateTimeField(blank=True, null=True)
+
+    # TODO add BSN format validation
+    bsn = models.CharField(max_length=9, default='', blank=True)
 
     class Meta:
         verbose_name = 'Submission'
@@ -18,6 +23,10 @@ class Submission(models.Model):
 
     def __str__(self):
         return f'Submission {self.pk}: Form {self.form_id} submitted on {self.created_on}'
+
+    @property
+    def is_completed(self):
+        return bool(self.completed_on)
 
 
 class SubmissionStep(models.Model):

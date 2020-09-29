@@ -21,6 +21,10 @@ urlpatterns = [
     path("api/v1/", include('openforms.api.urls', namespace='api')),
     path("prototype/", include('openforms.sample_app.urls', namespace='sample_app')),
     path("", include('openforms.core.urls', namespace='core')),
+
+    # NOTE: we dont use the User creation feature so don't enable all the mock views
+    # path("digid/", include("digid_eherkenning.mock.digid_urls")),
+    path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

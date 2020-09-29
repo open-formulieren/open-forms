@@ -1,7 +1,7 @@
 from django import forms
 
-from openforms.core.widgets import FormBuilderWidget
-from openforms.core.models import FormDefinition
+from ..models import FormDefinition
+from ..widgets import FormBuilderWidget
 
 
 class FormDefinitionForm(forms.ModelForm):

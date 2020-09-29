@@ -1,0 +1,112 @@
+[
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 0,
+        "name": "Accounts",
+        "slug": "accounts",
+        "models": [
+            [
+                "accounts",
+                "user"
+            ],
+            [
+                "auth",
+                "group"
+            ],
+            [
+                "authtoken",
+                "token"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 8,
+        "name": "Logging",
+        "slug": "logging",
+        "models": [
+            [
+                "axes",
+                "accessattempt"
+            ],
+            [
+                "axes",
+                "accesslog"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 3,
+        "name": "Core",
+        "slug": "core",
+        "models": [
+            [
+                "core",
+                "form"
+            ],
+            [
+                "core",
+                "formdefinition"
+            ],
+            [
+                "core",
+                "formstep"
+            ],
+            [
+                "core",
+                "product"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 4,
+        "name": "Submissions",
+        "slug": "submissions",
+        "models": [
+            [
+                "submissions",
+                "submission"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 6,
+        "name": "Configuratie",
+        "slug": "configuratie",
+        "models": [
+            [
+                "admin_index",
+                "appgroup"
+            ],
+            [
+                "brp",
+                "brpconfig"
+            ],
+            [
+                "zgw",
+                "zgwconfig"
+            ],
+            [
+                "zgw_consumers",
+                "nlxconfig"
+            ],
+            [
+                "zgw_consumers",
+                "service"
+            ]
+        ]
+    }
+}
+]
