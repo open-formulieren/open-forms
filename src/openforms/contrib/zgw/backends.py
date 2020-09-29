@@ -1,5 +1,6 @@
-from openforms.contrib.zgw.service import create_document, create_zaak, relate_document
 from openforms.core.backends import register
+
+from .service import create_document, create_zaak, relate_document
 
 
 @register

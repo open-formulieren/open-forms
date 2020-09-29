@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
-from django.urls import reverse
 from django.http import HttpRequest
+from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.core.models import Form
+
 from .models import Submission
 
 
@@ -22,7 +22,7 @@ class SubmissionAPITests(APITestCase):
     def test_auth_required(self):
         # TODO: Replace with not using an API-token
         self.client.logout()
-        
+
         url = reverse('api:submission-list')
         response = self.client.get(url, format='json', secure=True)
 
@@ -52,7 +52,7 @@ class SubmissionAPITests(APITestCase):
             name="test",
             slug="test",
         )
-       
+
         url = reverse('api:submission-list')
         data = {
             "form": reverse('api:form-detail', kwargs={'slug': form.slug}),
@@ -60,7 +60,7 @@ class SubmissionAPITests(APITestCase):
 
         response = self.client.post(url, data, format='json')
         self.assertEquals(response.status_code, status.HTTP_201_CREATED, response.content)
-    
+
     def test_create_without_form(self):
         url = reverse('api:submission-list')
         data = {

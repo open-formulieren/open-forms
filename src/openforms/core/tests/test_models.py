@@ -1,4 +1,4 @@
-from openforms.core.tests.base import BaseFormTestCase
+from .base import BaseFormTestCase
 
 
 class FormTestCase(BaseFormTestCase):

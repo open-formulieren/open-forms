@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views.form import FormListView, FormDetailView, FormLoginButtonView
+from .views.form import FormDetailView, FormListView, FormLoginButtonView
 
 app_name = 'core'
 

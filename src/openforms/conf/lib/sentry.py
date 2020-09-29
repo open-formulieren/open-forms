@@ -1,4 +1,5 @@
 import os
+
 from sentry_sdk.integrations import DidNotEnable, django, redis
 
 try:

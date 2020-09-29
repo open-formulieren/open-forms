@@ -2,8 +2,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
 
-from openforms.core.models import Form
 from openforms.ui.views.generic import UIDetailView, UIListView
+
+from ..models import Form
 
 
 class FormListView(UIListView):
@@ -43,7 +44,8 @@ class FormLoginButtonView(UIDetailView):
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data(*args, **kwargs)
 
-        # NOTE: we dont use the User creation feature so we bypass the regular ACS and use this view instead
+        # NOTE: we dont use the User creation feature so we bypass
+        # the regular ACS and use this view instead
         url = reverse('digid-mock:login')
         params = {
             "acs": self.request.path,
