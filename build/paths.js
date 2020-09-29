@@ -58,7 +58,7 @@ module.exports = {
     jsSpec: sourcesRoot + 'ui/static/ui/jstests/**/*.spec.js',
 
     // Path to js spec (test) entry file
-    jsSpecEntry: sourcesRoot + 'ui/static/ui/jstests/index.js',
+    jsSpecEntry: sourcesRoot + 'ui/static/*/jstests/index.js',
 
     // Path to js code coverage directory
     coverageDir: 'reports/jstests/',

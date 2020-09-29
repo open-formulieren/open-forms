@@ -185,7 +185,7 @@ export class Toggle {
     }
 
     /**
-     * Retursn all the clear targets for this.node.
+     * Returns all the clear targets for this.node.
      * @return {HTMLElement[]}
      */
     getClearTargets() {
