@@ -5,9 +5,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.core.models import Form
+from openforms.core.tests.factories import FormFactory
 
-from .models import Submission
+from .factories import SubmissionFactory
 
 
 class SubmissionAPITests(APITestCase):
@@ -29,16 +29,8 @@ class SubmissionAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
-        # TODO: Replace with factory
-        form = Form.objects.create(
-            name="test",
-            slug="test",
-        )
-
-        # TODO: Replace with factory
-        submission = Submission.objects.create(
-            form=form,
-        )
+        form = FormFactory.create()
+        SubmissionFactory.create(form=form)
 
         url = reverse('api:submission-list')
         response = self.client.get(url, format='json')
@@ -47,15 +39,11 @@ class SubmissionAPITests(APITestCase):
         self.assertEqual(len(response.json()), 1)
 
     def test_create(self):
-        # TODO: Replace with factory
-        form = Form.objects.create(
-            name="test",
-            slug="test",
-        )
+        form = FormFactory.create()
 
         url = reverse('api:submission-list')
         data = {
-            "form": reverse('api:form-detail', kwargs={'slug': form.slug}),
+            "form": reverse('api:form-detail', kwargs={'uuid': form.uuid}),
         }
 
         response = self.client.post(url, data, format='json')
