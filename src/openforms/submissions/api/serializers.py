@@ -20,7 +20,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Submission
-        fields = ('uuid', 'url', 'form', 'steps', 'created_on', 'completed_on')
+        fields = ('uuid', 'url', 'form', 'current_step', 'steps', 'created_on', 'completed_on')
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -52,7 +52,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # read_only=True,   # Or add a queryset
         queryset=FormStep.objects,
         view_name='api:form-steps-detail',
-        lookup_field="order",
+        lookup_field='uuid',
         parent_lookup_kwargs={'form_uuid': 'form__uuid'}
     )
 

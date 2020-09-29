@@ -3,26 +3,28 @@ import uuid
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+from openforms.utils.fields import StringUUIDField
+from openforms.utils.validators import validate_bsn
+
 
 class Submission(models.Model):
     """
     Container for submission steps that hold the actual submitted data.
     """
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    uuid = StringUUIDField(unique=True, default=uuid.uuid4)
     form = models.ForeignKey('core.Form', on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     backend_result = JSONField(blank=True, null=True)
     completed_on = models.DateTimeField(blank=True, null=True)
-
-    # TODO add BSN format validation
-    bsn = models.CharField(max_length=9, default='', blank=True)
+    bsn = models.CharField(max_length=9, default='', blank=True, validators=(validate_bsn,))
+    current_step = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = 'Submission'
         verbose_name_plural = 'Submissions'
 
     def __str__(self):
-        return f'Submission {self.pk}: Form {self.form_id} submitted on {self.created_on}'
+        return f'Submission {self.pk}: Form {self.form_id} started on {self.created_on}'
 
     @property
     def is_completed(self):

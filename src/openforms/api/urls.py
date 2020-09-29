@@ -8,6 +8,7 @@ from openforms.core.api.viewsets import (
     FormStepViewSet,
     FormViewSet,
 )
+from openforms.submissions.api.views import SubmissionView
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
 app_name = "api"
@@ -29,4 +30,5 @@ urlpatterns = [
     path("", include(router.urls)),
     path("", include(forms_router.urls)),
     path("", include(submissions_router.urls)),
+    path("form-submission/<str:form_uuid>/", SubmissionView.as_view(), name="form-submission")
 ]

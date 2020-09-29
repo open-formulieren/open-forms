@@ -14,7 +14,7 @@ class FormStepViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return FormStep.objects.filter(form__slug=self.kwargs['form_slug'])
+        return FormStep.objects.filter(form__uuid=self.kwargs['form_uuid'])
 
 
 class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
