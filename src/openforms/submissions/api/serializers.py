@@ -2,9 +2,10 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
-from ..models import Submission, SubmissionStep
-from openforms.core.models import FormStep
 from openforms.core.backends import registry
+from openforms.core.models import FormStep
+
+from ..models import Submission, SubmissionStep
 
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
@@ -30,7 +31,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             },
             "form": {
                 "view_name": "api:form-detail",
-                "lookup_field": "slug",
+                "lookup_field": "uuid",
             },
         }
 
@@ -52,7 +53,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         queryset=FormStep.objects,
         view_name='api:form-steps-detail',
         lookup_field="order",
-        parent_lookup_kwargs={'form_slug': 'form__slug'}
+        parent_lookup_kwargs={'form_uuid': 'form__uuid'}
     )
 
     class Meta:

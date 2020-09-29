@@ -1,7 +1,6 @@
 from django.urls import path
-from django.views.generic import TemplateView, RedirectView, ListView
+from django.views.generic import RedirectView, TemplateView
 
-from openforms.core.models import FormDefinition
 
 app_name = 'sample_app'
 

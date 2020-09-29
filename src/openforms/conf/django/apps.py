@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "openforms.accounts",
     "openforms.contrib.zgw",
     "openforms.core",
+    "openforms.products",
     "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",

@@ -1,4 +1,5 @@
 import os
+
 from openforms.conf.django.dirs import BASE_DIR, DJANGO_PROJECT_DIR
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")

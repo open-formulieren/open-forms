@@ -1,4 +1,5 @@
 import os
+
 from .dirs import BASE_DIR
 
 LOGGING_DIR = os.path.join(BASE_DIR, "log")

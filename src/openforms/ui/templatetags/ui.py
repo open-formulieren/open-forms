@@ -1,7 +1,13 @@
 from django import template
 from django.utils.translation import gettext as _
 
-from .abstract import get_config, get_href, get_required_config_value, get_is_active, get_config_from_prefix
+from .abstract import (
+    get_config,
+    get_config_from_prefix,
+    get_href,
+    get_is_active,
+    get_required_config_value,
+)
 
 register = template.Library()
 

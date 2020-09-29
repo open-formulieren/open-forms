@@ -1,7 +1,9 @@
 from django.test import TestCase
 
 from openforms.accounts.models import User
-from openforms.core.models import Form, FormDefinition, FormStep, Product
+from openforms.products.models import Product
+
+from ..models import Form, FormDefinition, FormStep
 
 
 class BaseFormTestCase(TestCase):

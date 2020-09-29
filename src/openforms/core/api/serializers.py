@@ -2,36 +2,52 @@ import json
 
 from rest_framework import serializers
 
-from openforms.core.models import Form, FormDefinition, FormStep
+from openforms.products.api.serializers import ProductSerializer
+
 from ..custom_field_types import handle_custom_types
+from ..models import Form, FormDefinition, FormStep
+
+
+class MinimalFormStepSerializer(serializers.ModelSerializer):
+    form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    index = serializers.IntegerField(source="order")
+
+    class Meta:
+        model = FormStep
+        fields = ("uuid", "form_definition", "index", "url",)
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "url": {
+                "source": "get_api_url"
+            }
+        }
 
 
 class FormSerializer(serializers.ModelSerializer):
-    def to_representation(self, instance):
-        request = self.context["request"]
-        if not request.session.get(instance.slug):
-            request.session[instance.slug] = {"current_step": instance.first_step}
-
-        steps = instance.get_api_form_steps(self.context["request"])
-
-        return {
-            'name': instance.name,
-            'login_required': instance.login_required,
-            'product': str(instance.product),
-            'user_current_step': steps[request.session[instance.slug]['current_step']],
-            'steps': steps,
-            'slug': instance.slug,
-            'url': instance.get_api_url(),
-        }
+    product = ProductSerializer(read_only=True)
+    steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
     class Meta:
         model = Form
         fields = (
+            "uuid",
             "name",
             "login_required",
             "product",
-            "steps",
+            "slug",
+            "url",
+            "steps"
         )
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "url": {
+                "source": "get_api_url"
+            }
+        }
 
 
 class FormDefinitionSerializer(serializers.ModelSerializer):

@@ -1,4 +1,5 @@
 import os
+
 from openforms.conf.django.dirs import DJANGO_PROJECT_DIR
 
 LANGUAGE_CODE = "nl-nl"

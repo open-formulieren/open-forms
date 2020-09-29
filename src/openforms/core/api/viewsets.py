@@ -1,13 +1,15 @@
 from rest_framework import permissions, viewsets
 
-from openforms.core.api.serializers import (
-    FormSerializer, FormDefinitionSerializer, FormStepSerializer
+from ..api.serializers import (
+    FormDefinitionSerializer,
+    FormSerializer,
+    FormStepSerializer,
 )
-from openforms.core.models import Form, FormDefinition, FormStep
+from ..models import Form, FormDefinition, FormStep
 
 
 class FormStepViewSet(viewsets.ReadOnlyModelViewSet):
-    lookup_field = 'order'
+    lookup_field = 'uuid'
     serializer_class = FormStepSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -16,14 +18,14 @@ class FormStepViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
     queryset = FormDefinition.objects.filter()
     serializer_class = FormDefinitionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class FormViewSet(viewsets.ReadOnlyModelViewSet):
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
     permission_classes = [permissions.IsAuthenticated]

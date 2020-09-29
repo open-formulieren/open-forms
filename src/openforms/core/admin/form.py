@@ -3,9 +3,8 @@ from django.contrib import admin
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
-from openforms.core.models import Form, FormStep
-
 from ..backends import registry
+from ..models import Form, FormStep
 
 
 class FormStepInline(OrderedTabularInline):
@@ -17,6 +16,7 @@ class FormStepInline(OrderedTabularInline):
     extra = 1
 
 
+@admin.register(Form)
 class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'backend')
     inlines = (FormStepInline,)
@@ -35,6 +35,3 @@ class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
             )
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
-
-
-admin.site.register(Form, FormAdmin)
