@@ -1,3 +1,5 @@
+@import '~microscope-sass/lib/transform';
+
 .view {
   position: relative;
 
@@ -6,5 +8,13 @@
     -moz-osx-font-smoothing: grayscale;
     position: relative;
     margin: 0;
+  }
+
+  &--open:before {
+    @include overlay;
+    content: '';
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+
   }
 }

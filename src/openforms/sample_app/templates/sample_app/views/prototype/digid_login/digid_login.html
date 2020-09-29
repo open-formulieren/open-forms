@@ -13,10 +13,19 @@
                 </header>
 
                 <div class="card__body">
-
-                    {% button href="sample_app:form_details" label="Inloggen met DigiD" %}
-                    {% static 'img/digid.png' as digid_image_src %}
-                    {% button src=digid_image_src disabled=True %}
+                    <div class="toolbar toolbar--start">
+                        <ul class="toolbar__list">
+                            <li class="toolbar__list-item">
+                                {% button href="sample_app:form_details" label="Inloggen met DigiD" %}
+                            </li>
+                        </ul>
+                        <ul class="toolbar__list">
+                            <li class="toolbar__list-item">
+                                {% static 'img/digid.png' as digid_image_src %}
+                                {% button src=digid_image_src disabled=True %}
+                            </li>
+                        </ul>
+                    </div>
 
                     <p class="body"><br>DigiD vraag u aan op {% anchor href='https://digid.nl' target='_blank' label='de website DigiD.nl' %}</p>
                 </div>

@@ -2,5 +2,5 @@
 
 <{{ tag }} class="button button--{{ style }}{% if toggle_target %} toggle{% endif %}"{% if disabled %} disabled{% endif %}{% if href %} href="{{ href }}"{% endif %}{% if type %} type="{{ type }}"{% endif %}{% if name %} name="{{ name }}"{% endif %}{% if src %} src="{{ src }}"{% endif %}{% if toggle_target %} data-toggle-target="{{ toggle_target }}"{% endif %}{% if toggle_modifier %} data-toggle-modifier="{{ toggle_modifier }}"{% endif %}{% if toggle_clear_target %} data-toggle-clear-target="{{ toggle_clear_target }}"{% endif %}>
     {% if icon_config %}{% fa_icon config=icon_config %}{% endif %}
-    {{ label }}
+    {% if label %}<span class="button__label">{{ label }}</span>{% endif %}
 </{{ tag }}>
