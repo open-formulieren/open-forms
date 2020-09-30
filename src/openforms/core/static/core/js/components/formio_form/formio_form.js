@@ -52,7 +52,9 @@ export class FormIOForm {
      * Binds events to callbacks.
      */
     bindEvents() {
-        window.addEventListener('popstate', (event) => this.render(event.state));
+        window.addEventListener('popstate', (event) => {
+            this.render(event.state);
+        });
     }
 
     /**
@@ -70,7 +72,7 @@ export class FormIOForm {
     getStepIndex() {
         try {
             return parseInt(
-                String(window.location).match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
+                String(window.location.pathname).match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
             );
         } catch (e) {
 
@@ -206,6 +208,11 @@ export class FormIOForm {
     render(context) {
         // Renders is called as side effect of "popstate" event, hence context may be empty.
         if (!context) {
+            return;
+        }
+
+        // Fixme: this seems to happen in tests, unclear why.
+        if (!this.webForm.setForm) {
             return;
         }
 

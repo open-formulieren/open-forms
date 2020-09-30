@@ -13,9 +13,28 @@ const FIXTURES = {
             }
         }`,
     },
-    FORM_STEP: {
+    FORM_STEP_1: {
         URL: '/api/v1/forms/foo/steps/1',
-        GET: `{}`,
+        GET: `{
+            "index": 1,
+            "configuration": {
+                "components": [
+                    {
+                        "label": "Voornaam",
+                        "key": "first-name",
+                        "type": "textfield",
+                        "id": "first-name"
+                    }
+                ]
+            }
+        }`,
+    },
+    FORM_STEP_2: {
+        URL: '/api/v1/forms/foo/steps/2',
+        GET: `{
+            "index": 2,
+            "configuration": {}
+        }`,
     },
     SUBMISSIONS: {
         URL: '/api/v1/submissions/',
@@ -54,9 +73,12 @@ describe('FormIOForm', function () {
 
         // XHR.
         this.server = sinon.createFakeServer();
-        this.server.respondWith('GET', FIXTURES.FORM.URL, FIXTURES.FORM.GET);
-        this.server.respondWith('POST', FIXTURES.SUBMISSIONS.URL, FIXTURES.SUBMISSIONS.POST);
-
+        Object.values(FIXTURES).forEach(fixture => {
+            Object.keys(fixture)
+                .filter(key => ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT'].indexOf(key) > -1)
+                .forEach(method => this.server.respondWith(method, fixture.URL, fixture[method]))
+            ;
+        });
     });
 
     afterEach(() => {
@@ -93,7 +115,7 @@ describe('FormIOForm', function () {
             .then(done, done);
     });
 
-    it('should get the FormStep instance.', (done) => {
+    it('should get the FormStep instance based on current step.', (done) => {
         new FormIOForm(this.form);
         delay()
             .then(() => this.server.respond())
@@ -101,7 +123,90 @@ describe('FormIOForm', function () {
             .then(() => this.server.respond())
             .then(delay)
             .then(() => assert.equal(this.server.requests[2].method, 'GET'))
-            .then(() => assert.equal(this.server.requests[2].url, FIXTURES.FORM_STEP.URL))
+            .then(() => assert.equal(this.server.requests[2].url, FIXTURES.FORM_STEP_1.URL))
+            .then(done, done);
+    });
+
+    it('should get the FormStep instance based on step URL.', (done) => {
+        history.pushState({}, '', '/foo/2');
+        const form = new FormIOForm(this.form);
+
+        delay()
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => assert.equal(this.server.requests[2].method, 'GET'))
+            .then(() => assert.equal(this.server.requests[2].url, FIXTURES.FORM_STEP_2.URL))
+            .then(done, done);
+    });
+
+    it('should update the history url based on received step.', (done) => {
+        history.pushState({}, '', '/foo/2');
+        const form = new FormIOForm(this.form);
+        const spy = sinon.spy(history, 'pushState');
+
+        delay()
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => assert.ok(spy.calledOnce))
+            .then(() => assert.equal(spy.firstCall.args[2], '/foo/2'))
+            .then(() => spy.restore())
+            .then(done, done);
+    });
+
+    it('should mount an empty form.', (done) => {
+        history.pushState({}, '', '/foo/1');
+        new FormIOForm(this.form);
+
+        delay()
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => assert.ok(this.form.querySelector('.formio-form')))
+            .then(done, done);
+    });
+
+    it('should render the component(s) returned by the API.', (done) => {
+        history.pushState({}, '', '/foo/1');
+        const form = new FormIOForm(this.form);
+
+        delay()
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(() => this.server.respond())
+            .then(delay)
+            .then(delay)
+            .then(() => assert.equal(this.form.querySelector('.label').textContent.trim(), 'Voornaam'))
+            .then(() => assert.ok(this.form.querySelector('.input')))
+            .then(done, done);
+    });
+
+    it('should render the component(s) returned by the window.popstate event.', (done) => {
+        history.pushState({}, '', '/foo/1');
+        const form = new FormIOForm(this.form);
+        const spy = sinon.stub(form, 'render');
+        const event = document.createEvent('CustomEvent');
+        event.initEvent('popstate');
+        event.state = {
+            formStep: JSON.parse(FIXTURES.FORM_STEP_1.GET)
+        };
+
+        delay()
+            .then(() => form.mount(event.state))
+            .then(delay)
+            .then(() => window.dispatchEvent(event))
+            .then(() => assert.equal(spy.firstCall.args[0], event.state))
+            .then(() => spy.restore())
             .then(done, done);
     });
 });
