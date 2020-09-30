@@ -17,7 +17,7 @@ import {FormConsumer} from '../../data/form';
 /**
  * Renders a form.
  */
-class FormIOForm {
+export class FormIOForm {
     /**
      * Constructor method.
      * @param {HTMLElement} node
