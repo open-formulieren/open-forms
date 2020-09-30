@@ -69,15 +69,15 @@ export class FormIOForm {
      * Returns the step index for "form" based on URL or null if not found.
      * @return {(number|null)}
      */
-    getStepIndex() {
+    getStep(form, submission) {
         try {
-            return parseInt(
+            const index = parseInt(
                 String(window.location.pathname).match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
             );
+            return form.steps[index - 1];
         } catch (e) {
-
+            return null;
         }
-        return null;
     }
 
     /**
@@ -165,9 +165,9 @@ export class FormIOForm {
      */
     async getContextData(next = false) {
         // Fetch data.
-        const form = await this.formConsumer.read(this.node.dataset.formSlug);
+        const form = await this.formConsumer.read(this.node.dataset.formId);
         const submission = await this.submissionConsumer.create(form);
-        const stepIndex = next === false ? this.getStepIndex() : null;  // Null value causes FormConsumer to read user_current_step.
+        const stepIndex = next === false ? this.getStep(form, submission) : null;  // Null value causes FormConsumer to read user_current_step.
         const formStep = await form.readCurrentStep(stepIndex);
 
         // Update history with received context.
@@ -176,6 +176,7 @@ export class FormIOForm {
         const submissionState = JSON.parse(submission.asJSON());
 
         const formStepUrl = formStep.getAbsoluteUrl(form);
+        console.log(formStepUrl);
 
         history.pushState({
             form: formState,

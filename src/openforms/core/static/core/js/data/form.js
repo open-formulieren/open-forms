@@ -20,19 +20,20 @@ class Form extends CrudConsumerObject {
      * @return {string}
      */
     getAbsoluteUrl() {
-        return `/${this.slug}`;
+        return `/${this.uuid}`;
     }
 
     /**
      * Reads the current FormStep for this Form.
-     * @param {(number|null)} [stepIndex=null] The index of the step to load, loads current step if omitted.
+     * @param {(number|null)} [stepUUID=null] The uuid of the step to load, loads current step if omitted.
      * @return {Promise}
      */
-    readCurrentStep(stepIndex=null) {
-        if (stepIndex === null) {
-            return this.formStepConsumer.read(this, this.user_current_step.index);
+    readCurrentStep(stepUUID=null) {
+        if (stepUUID === null) {
+            return this.formStepConsumer.read(this, this.user_current_step);
         }
-        return this.formStepConsumer.read(this, stepIndex);
+
+        return this.formStepConsumer.read(this, stepUUID);
     }
 }
 

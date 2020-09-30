@@ -4,19 +4,32 @@ import sinon from 'sinon';
 
 const FIXTURES = {
     FORM: {
-        URL: '/api/v1/forms/foo',
+        URL: '/api/v1/forms/1111111-2222-3333-4444-555555555555',
         GET: `{ 
-            "url": "/api/v1/forms/foo",
-            "slug": "foo",
+            "url": "/api/v1/forms/1111111-2222-3333-4444-555555555555",
+            "uuid": "1111111-2222-3333-4444-555555555555",
+            "steps": [
+                {
+                    "index": 1,
+                    "uuid": "2222222-3333-4444-5555-666666666666",
+                    "configuration": {}
+                },
+                {
+                    "index": 2,
+                    "uuid": "3333333-4444-5555-6666-777777777777",
+                    "configuration": {}
+                }
+            ],
             "user_current_step": {
-                "index": 1
+                "uuid": "2222222-3333-4444-5555-666666666666"
             }
         }`,
     },
     FORM_STEP_1: {
-        URL: '/api/v1/forms/foo/steps/1',
+        URL: '/api/v1/forms/1111111-2222-3333-4444-555555555555/steps/2222222-3333-4444-5555-666666666666',
         GET: `{
             "index": 1,
+            "uuid": "2222222-3333-4444-5555-666666666666",
             "configuration": {
                 "components": [
                     {
@@ -30,9 +43,10 @@ const FIXTURES = {
         }`,
     },
     FORM_STEP_2: {
-        URL: '/api/v1/forms/foo/steps/2',
+        URL: '/api/v1/forms/1111111-2222-3333-4444-555555555555/steps/3333333-4444-5555-6666-777777777777',
         GET: `{
             "index": 2,
+            "uuid": "3333333-4444-5555-6666-777777777777",
             "configuration": {}
         }`,
     },
@@ -60,7 +74,7 @@ describe('FormIOForm', function () {
         this.form = document.createElement('form');
         this.form.classList.add('formio-form');
         this.form.classList.add('form');
-        this.form.dataset.formSlug = 'foo';
+        this.form.dataset.formId = '1111111-2222-3333-4444-555555555555';
         document.body.appendChild(this.form);
 
         this.formBody = document.createElement('div');
@@ -128,7 +142,7 @@ describe('FormIOForm', function () {
     });
 
     it('should get the FormStep instance based on step URL.', (done) => {
-        history.pushState({}, '', '/foo/2');
+        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/2');
         const form = new FormIOForm(this.form);
 
         delay()
@@ -142,7 +156,7 @@ describe('FormIOForm', function () {
     });
 
     it('should update the history url based on received step.', (done) => {
-        history.pushState({}, '', '/foo/2');
+        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/2');
         const form = new FormIOForm(this.form);
         const spy = sinon.spy(history, 'pushState');
 
@@ -154,13 +168,13 @@ describe('FormIOForm', function () {
             .then(() => this.server.respond())
             .then(delay)
             .then(() => assert.ok(spy.calledOnce))
-            .then(() => assert.equal(spy.firstCall.args[2], '/foo/2'))
+            .then(() => assert.equal(spy.firstCall.args[2], '/1111111-2222-3333-4444-555555555555/2'))
             .then(() => spy.restore())
             .then(done, done);
     });
 
     it('should mount an empty form.', (done) => {
-        history.pushState({}, '', '/foo/1');
+        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/1');
         new FormIOForm(this.form);
 
         delay()
@@ -175,7 +189,7 @@ describe('FormIOForm', function () {
     });
 
     it('should render the component(s) returned by the API.', (done) => {
-        history.pushState({}, '', '/foo/1');
+        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/1');
         const form = new FormIOForm(this.form);
 
         delay()
@@ -192,7 +206,7 @@ describe('FormIOForm', function () {
     });
 
     it('should render the component(s) returned by the window.popstate event.', (done) => {
-        history.pushState({}, '', '/foo/1');
+        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/1');
         const form = new FormIOForm(this.form);
         const spy = sinon.stub(form, 'render');
         const event = document.createEvent('CustomEvent');
