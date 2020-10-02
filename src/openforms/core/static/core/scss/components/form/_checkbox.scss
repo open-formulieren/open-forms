@@ -3,8 +3,18 @@
 @import '~microscope-sass/lib/transform';
 @import '~microscope-sass/lib/typography';
 @import '~microscope-sass/lib/util';
+@import '../../../../../../ui/static/ui/scss/lib/numbers';
+
+
+$checkbox-checkmark-size: 1em * strip_unit($typography-line-height-text-big) !default;
+$checkbox-label-padding-v: calc((#{$grid-row-height} - #{1em * strip_unit($typography-line-height-text-big)}) / 2)!default;
+$checkbox-label-padding-h: $grid-margin-2!default;
+$checkbox-label-padding-left: calc(#{1em * strip_unit($typography-line-height-text-big)} + #{$grid-margin-2 * 2})!default;
+
 
 .checkbox {
+  @include body;
+  @include body--big;
   @include rows(1, min-height);
   display: flex;
   align-items: center;
@@ -15,22 +25,24 @@
   &__checkmark:before,
   [type=radio] ~ &__checkmark:after {
     cursor: pointer;
-    width: $typography-line-height-text-big * $typography-font-size-text-big;
-    height: $typography-line-height-text-big * $typography-font-size-text-big;
+    width: $checkbox-checkmark-size;
+    height: $checkbox-checkmark-size;
   }
 
   [type=checkbox],
   [type=radio] {
-    @include absolute($grid-margin-2 - 4px, $grid-margin-2 - 4px);
+    @include absolute($checkbox-label-padding-v, $checkbox-label-padding-h);
+    margin-top: calc((#{1em * strip_unit($typography-line-height-text-big)} - #{$checkbox-checkmark-size}) / 2);
     opacity: 0;
     z-index: 100;
   }
 
   &__checkmark:before,
   [type=radio] ~ &__checkmark:after {
-    @include absolute($grid-margin-2, $grid-margin-2);
+    @include absolute($checkbox-label-padding-v, $checkbox-label-padding-h);
     @include color-background;
     content: '';
+    margin-top: calc((#{1em * strip_unit($typography-line-height-text-big)} - #{$checkbox-checkmark-size}) / 2);
     display: block;
     z-index: 20;
   }
@@ -66,10 +78,9 @@
 
 
   &__label {
-    @include body;
-    @include body--big;
     @include border(all, transparent, 1px);
-    padding: $grid-margin-2 $grid-margin-2 $grid-margin-2 calc(#{$typography-line-height-text-big * $typography-font-size-text-big} + #{$grid-margin-2 * 2});
+    padding: $checkbox-label-padding-v $checkbox-label-padding-h;
+    padding-left: $checkbox-label-padding-left;
     display: flex;
     align-items: center;
     cursor: pointer;
