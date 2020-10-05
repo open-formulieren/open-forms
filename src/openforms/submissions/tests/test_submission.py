@@ -24,7 +24,7 @@ class FormSubmissionAPITests(APITestCase):
         self.client.logout()
         form = FormFactory.create()
 
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         response = self.client.post(url, format='json', secure=True, data={'data': {'data'}})
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -32,7 +32,7 @@ class FormSubmissionAPITests(APITestCase):
     def test_post_no_data(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         response = self.client.post(url, format='json', secure=True, data={'step_index': 0})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -43,7 +43,7 @@ class FormSubmissionAPITests(APITestCase):
     def test_post_invalid_step_index(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         response = self.client.post(
             url,
             format='json',
@@ -62,7 +62,7 @@ class FormSubmissionAPITests(APITestCase):
     def test_post_invalid_next_step_index(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         response = self.client.post(
             url,
             format='json',
@@ -83,7 +83,7 @@ class FormSubmissionAPITests(APITestCase):
         step_1 = FormStepFactory.create(form=form)
         step_2 = FormStepFactory.create(form=form)
 
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         self.client.post(
             url,
             format='json',
@@ -142,7 +142,7 @@ class FormSubmissionAPITests(APITestCase):
         step_2 = FormStepFactory.create(form=form)
         step_3 = FormStepFactory.create(form=form)
 
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         self.client.post(
             url,
             format='json',
@@ -175,7 +175,7 @@ class FormSubmissionAPITests(APITestCase):
         step_2 = FormStepFactory.create(form=form)
         step_3 = FormStepFactory.create(form=form)
 
-        url = reverse('api:form-submission', args=(form.uuid,))
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
         self.client.post(
             url,
             format='json',

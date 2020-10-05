@@ -14,7 +14,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     index = serializers.IntegerField(source="order")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
-        source="instance",
+        source="*",
         view_name="api:form-steps-detail",
         lookup_field="uuid",
         parent_lookup_kwargs={"form_uuid": "form__uuid"}

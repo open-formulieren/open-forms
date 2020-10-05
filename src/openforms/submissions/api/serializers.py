@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
-from openforms.core.backends import registry
 from openforms.core.models import FormStep
 
 from ..models import Submission, SubmissionStep
@@ -34,12 +33,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_field": "uuid",
             },
         }
-
-    def save(self, *args, **kwargs):
-        bsn = self.context['request'].session.get('bsn')
-        if bsn:
-            kwargs["bsn"] = bsn
-        return super().save(*args, **kwargs)
 
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
@@ -76,24 +69,3 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 "read_only": True,
             },
         }
-
-    def save(self, *args, **kwargs):
-        # TODO: I forgot how to nicely do this.
-        kwargs.update({
-            "submission": Submission.objects.get(
-                uuid=self.context['request'].parser_context['view'].kwargs['submission_uuid']
-            )
-        })
-        submission_step = super().save(*args, **kwargs)
-
-        # run form backend
-        # TODO should run only on the final submit of the form
-        # TODO should be done after merging all data in submission model and marking final submission steps
-        backend_func = registry.get(submission_step.submission.form.backend)
-        if backend_func:
-            result = backend_func(submission_step)
-            submission = submission_step.submission
-            submission.backend_result = result
-            submission.save()
-
-        return submission_step

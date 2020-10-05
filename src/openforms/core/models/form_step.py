@@ -18,10 +18,6 @@ class FormStep(OrderedModel):
     form_definition = models.ForeignKey('core.FormDefinition', on_delete=models.CASCADE)
     order_with_respect_to = 'form'
 
-    @property
-    def instance(self):
-        return self
-
     def get_api_url(self):
         return reverse(
             'api:form-steps-detail',
