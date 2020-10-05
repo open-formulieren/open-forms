@@ -1,6 +1,7 @@
 import json
 
 from rest_framework import serializers
+from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.products.api.serializers import ProductSerializer
 
@@ -11,6 +12,13 @@ from ..models import Form, FormDefinition, FormStep
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
+    url = NestedHyperlinkedRelatedField(
+        queryset=FormStep.objects,
+        source="*",
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid": "form__uuid"}
+    )
 
     class Meta:
         model = FormStep
@@ -18,9 +26,6 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
-            },
-            "url": {
-                "source": "get_api_url"
             }
         }
 
@@ -45,7 +50,8 @@ class FormSerializer(serializers.ModelSerializer):
                 "read_only": True,
             },
             "url": {
-                "source": "get_api_url"
+                "view_name": "api:form-detail",
+                "lookup_field": "uuid",
             }
         }
 

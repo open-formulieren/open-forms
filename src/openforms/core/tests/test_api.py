@@ -43,8 +43,14 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
 
-    def test_get_steps(self):
-        FormStepFactory.create()
+    def test_steps_list(self):
+        step = FormStepFactory.create()
+
+        url = reverse('api:form-steps-list', args=(step.form.uuid,))
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 1)
 
 
 class FormDefinitionsAPITests(APITestCase):

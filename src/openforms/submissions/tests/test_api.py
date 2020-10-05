@@ -37,23 +37,3 @@ class SubmissionAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
-
-    def test_create(self):
-        form = FormFactory.create()
-
-        url = reverse('api:submission-list')
-        data = {
-            "form": reverse('api:form-detail', kwargs={'uuid': form.uuid}),
-        }
-
-        response = self.client.post(url, data, format='json')
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED, response.content)
-
-    def test_create_without_form(self):
-        url = reverse('api:submission-list')
-        data = {
-            "form": None,
-        }
-
-        response = self.client.post(url, data, format='json')
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
