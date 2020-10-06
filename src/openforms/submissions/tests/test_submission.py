@@ -70,6 +70,28 @@ class FormSubmissionAPITests(APITestCase):
 
         self.assertEqual(submission.submissionstep_set.count(), 0)
 
+    def test_start_existing_session(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(form=form)
+        FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        session = self.client.session
+        session[str(form.uuid)] = str(submission.uuid)
+        session.save()
+        url = reverse('api:form-submissions-start', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Submission created on first post.
+        submission = Submission.objects.get()
+        # First step has been submitted so it should be at the second.
+        self.assertEqual(submission.current_step, step_1.order)
+        self.assertEqual(submission.form, form)
+        self.assertFalse(submission.completed_on)
+        self.assertFalse(submission.bsn)
+
+        self.assertEqual(submission.submissionstep_set.count(), 0)
+
     def test_start_with_bsn(self):
         form = FormFactory.create()
         step_1 = FormStepFactory.create(form=form)
