@@ -191,7 +191,12 @@ class FormSubmissionViewSet(viewsets.ViewSet):
                     order__in=submitted_steps
                 ).values_list('order', flat=True)
                 if form_steps:
-                    submission.current_step = form_steps.last()
+                    next_step = data['form_step'].order + 1
+                    while next_step not in form_steps:
+                        next_step += 1
+                        if next_step > last_step:
+                            next_step = first_step
+                    submission.current_step = next_step
                 else:
                     submission.current_step = first_step
             submission.save()
