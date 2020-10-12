@@ -6,6 +6,15 @@ import {CrudConsumer, CrudConsumerObject} from 'consumerjs';
  * @class
  */
 class FormStep extends CrudConsumerObject {
+    /**
+     * Returns the URL for this Form.
+     * @param {Form} form
+     * @return {string}
+     */
+    getAbsoluteUrl(form) {
+        const formUrl = form.getAbsoluteUrl();
+        return `${formUrl}/${this.index}`;
+    }
 }
 
 

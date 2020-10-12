@@ -16,12 +16,24 @@ class Form extends CrudConsumerObject {
     }
 
     /**
+     * Returns the URL for this Form.
+     * @return {string}
+     */
+    getAbsoluteUrl() {
+        return `/${this.uuid}`;
+    }
+
+    /**
      * Reads the current FormStep for this Form.
+     * @param {(number|null)} [stepUUID=null] The uuid of the step to load, loads current step if omitted.
      * @return {Promise}
      */
-    readCurrentStep() {
-        const stepIndex =  this.user_current_step.index;
-        return this.formStepConsumer.read(this, stepIndex);
+    readCurrentStep(stepUUID=null) {
+        if (stepUUID === null) {
+            return this.formStepConsumer.read(this, this.user_current_step);
+        }
+
+        return this.formStepConsumer.read(this, stepUUID);
     }
 }
 
@@ -36,5 +48,7 @@ export class FormConsumer extends CrudConsumer {
      */
     constructor() {
         super('/api/v1/forms/', Form);
+
+        this.unserializableFields = [...this.unserializableFields, 'formStepConsumer'];
     }
 }
