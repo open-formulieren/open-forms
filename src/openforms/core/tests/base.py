@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
@@ -169,6 +170,12 @@ class SeleniumStepTestBase(StaticLiveServerTestCase):
 
     def setUp(self) -> None:
         super().setUp()
+        User = get_user_model()
+        self.user = User.objects.create_superuser(
+            username="john",
+            password="secret",
+            email="john@example.com"
+        )
         self.selenium.get('{}/admin/'.format(self.live_server_url))
         username = self.selenium.find_element_by_id('id_username')
         password = self.selenium.find_element_by_id('id_password')
@@ -176,7 +183,7 @@ class SeleniumStepTestBase(StaticLiveServerTestCase):
         username.send_keys(self.user.username)
         password.send_keys('secret')
 
-        submit = self.selenium.find_element_by_name('submit')
+        submit = self.selenium.find_element_by_xpath('//input[@type="submit"]')
         submit.click()
 
     def tearDown(self) -> None:

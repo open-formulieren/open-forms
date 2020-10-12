@@ -1,3 +1,5 @@
+import json
+
 from openforms.submissions.models import Submission
 
 from .base import SeleniumStepTestBase, TEST_FORM_DEFINITION_CONFIG
@@ -7,17 +9,18 @@ from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 class FormFlowTests(SeleniumStepTestBase):
 
     def setUp(self) -> None:
+        super().setUp()
         self.form = FormFactory(name='TestForm1')
         self.definition_1 = FormDefinitionFactory(
-            configuration=TEST_FORM_DEFINITION_CONFIG,
+            configuration=json.dumps(TEST_FORM_DEFINITION_CONFIG),
             login_required=False
         )
         self.definition_2 = FormDefinitionFactory(
-            configuration=TEST_FORM_DEFINITION_CONFIG,
+            configuration=json.dumps(TEST_FORM_DEFINITION_CONFIG),
             login_required=False
         )
         self.definition_3 = FormDefinitionFactory(
-            configuration=TEST_FORM_DEFINITION_CONFIG,
+            configuration=json.dumps(TEST_FORM_DEFINITION_CONFIG),
             login_required=False
         )
         self.step_1 = FormStepFactory(form=self.form, form_definition=self.definition_1)
@@ -30,16 +33,12 @@ class FormFlowTests(SeleniumStepTestBase):
             '//a[text()="TestForm1"]'
         ).click()
 
-        text = self.selenium.find_element_by_xpath(
-            '//input[@name="fieldyField"]'
-        )
+        text = self.selenium.find_element_by_id('e0evwd-fieldyField')
         text.send_keys('some input')
-        checkbox = self.selenium.find_element_by_xpath(
-            '//input[@name="checky"]'
-        )
+        checkbox = self.selenium.find_element_by_id('ekyj0j-checky')
         checkbox.click()
 
-        submit = self.selenium.find_element_by_name('submit')
+        submit = self.selenium.find_element_by_name('next')
         submit.click()
 
         submission = Submission.objects.get()
@@ -52,16 +51,12 @@ class FormFlowTests(SeleniumStepTestBase):
             'checky': True
         })
 
-        text = self.selenium.find_element_by_xpath(
-            '//input[@name="fieldyField"]'
-        )
+        text = self.selenium.find_element_by_id('e0evwd-fieldyField')
         text.send_keys('some other input')
-        checkbox = self.selenium.find_element_by_xpath(
-            '//input[@name="checky"]'
-        )
+        checkbox = self.selenium.find_element_by_id('ekyj0j-checky')
         checkbox.click()
 
-        submit = self.selenium.find_element_by_name('submit')
+        submit = self.selenium.find_element_by_name('next')
         submit.click()
 
         submission = Submission.objects.get()
