@@ -157,7 +157,8 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={
             'data': {
                 'more': 'something'
-            }
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_1.uuid,))
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -244,7 +245,7 @@ class FormSubmissionAPITests(APITestCase):
 
     def test_submit_already_completed(self):
         form = FormFactory.create()
-        FormStepFactory.create(form=form)
+        step_1 = FormStepFactory.create(form=form)
         FormStepFactory.create(form=form)
 
         # Start submission.
@@ -261,7 +262,8 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={
             'data': {
                 'more': 'something'
-            }
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_1.uuid,))
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {'reason': 'Submission completed.'})
@@ -281,7 +283,47 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {
-            'reason': ['Either `data` or `next_step_index` must be supplied.']
+            'reason': ['Either `data` and `form_step` or `next_step_index` must be supplied.']
+        })
+
+    def test_submit_only_data(self):
+        form = FormFactory.create()
+        FormStepFactory.create(form=form)
+        FormStepFactory.create(form=form)
+
+        # Start submission.
+        url = reverse('api:form-submissions-start', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Try submit.
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={
+            'data': {
+                'more': 'something'
+            }
+        })
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {
+            'reason': ['`form_step` not supplied.']
+        })
+
+    def test_submit_only_form_step(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(form=form)
+        FormStepFactory.create(form=form)
+
+        # Start submission.
+        url = reverse('api:form-submissions-start', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Try submit.
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_1.uuid,))
+        })
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {
+            'reason': ['`data` not supplied.']
         })
 
     @freeze_time("2020-01-14")
@@ -299,7 +341,8 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={
             'data': {
                 'some': 'data'
-            }
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_1.uuid,))
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Submit 2nd form.
@@ -307,7 +350,8 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={
             'data': {
                 'some': 'thing'
-            }
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_2.uuid,))
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Complete submission
@@ -351,7 +395,8 @@ class FormSubmissionAPITests(APITestCase):
         response = self.client.post(url, format='json', secure=True, data={
             'data': {
                 'some': 'data'
-            }
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_1.uuid,))
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Try Complete submission

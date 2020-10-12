@@ -41,6 +41,7 @@ gemma-zds-client==0.13.3  # via -r requirements/base.txt, zgw-consumers
 idna==2.10                # via -r requirements/base.txt, requests
 isodate==0.6.0            # via -r requirements/base.txt, python3-saml
 lxml==4.5.2               # via -r requirements/base.txt, pyquery, xmlsec
+mock==4.0.2               # via -r requirements/test-tools.in
 pep8==1.7.1               # via -r requirements/test-tools.in
 pillow==7.2.0             # via -r requirements/base.txt
 polib==1.1.0              # via -r requirements/base.txt, django-rosetta
@@ -57,6 +58,7 @@ pyyaml==5.3.1             # via -r requirements/base.txt, gemma-zds-client
 redis==3.5.3              # via -r requirements/base.txt, django-redis
 requests-mock==1.8.0      # via -r requirements/test-tools.in
 requests==2.24.0          # via -r requirements/base.txt, django-rosetta, gemma-zds-client, requests-mock, zgw-consumers
+selenium==3.14.1          # via -r requirements/test-tools.in
 sentry-sdk==0.17.3        # via -r requirements/base.txt
 six==1.15.0               # via -r requirements/base.txt, cryptography, django-choices, django-compat, django-rosetta, freezegun, isodate, pyopenssl, python-dateutil, requests-mock, webtest
 soupsieve==2.0.1          # via beautifulsoup4

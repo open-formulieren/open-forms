@@ -22,8 +22,16 @@ class FormSubmissionViewSet(viewsets.ViewSet):
     # TODO: Handle auth correctly / remove this Auth
     permission_classes = [permissions.IsAuthenticated]
 
-    @staticmethod
-    def get_submission(request, form_uuid, create=True):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form = None
+
+    def get_form(self, form_uuid):
+        if not self.form:
+            self.form = get_object_or_404(Form, uuid=form_uuid)
+        return self.form
+
+    def get_submission(self, request, form_uuid, create=True):
         """
         Looks for the submission in the session.
         If not found and create is set to True, then create a new one and add to the session.
@@ -33,7 +41,7 @@ class FormSubmissionViewSet(viewsets.ViewSet):
         :return: A tuple of the Submission object found/created and a boolean indicating
         if a new Submission was created.
         """
-        form = get_object_or_404(Form, uuid=form_uuid)
+        form = self.get_form(form_uuid)
         submission_uuid = request.session.get(form.uuid, None)
         submission = None
         created = False
@@ -59,20 +67,35 @@ class FormSubmissionViewSet(viewsets.ViewSet):
                 request.session[form.uuid] = str(submission.uuid)
         return submission, created
 
-    @staticmethod
-    def validate_data(request, last_step):
+    def validate_data(self, request, last_step, form_uuid):
         """
         Validate request data for the 'submit' implementation.
         :param request: The current request object.
         :param last_step: The last step order value.
+        :param form_uuid: The uuid of the form.
         :return: A tuple of the cleaned data (dict), and errors found (list).
         """
         errors = []
 
         data = request.data.get('data')
+        form_step = request.data.get('form_step')
         next_step_index = request.data.get('next_step_index')
-        if not data and not next_step_index:
-            errors.append('Either `data` or `next_step_index` must be supplied.')
+
+        if not data and not form_step and not next_step_index:
+            errors.append('Either `data` and `form_step` or `next_step_index` must be supplied.')
+
+        if data and not form_step:
+            errors.append('`form_step` not supplied.')
+
+        if not data and form_step:
+            errors.append('`data` not supplied.')
+
+        if form_step:
+            form = self.get_form(form_uuid)
+            form_step = form.formstep_set.filter(uuid=form_step.split('/')[-2]).first()
+
+            if not form_step:
+                errors.append('Form step not found.')
 
         if next_step_index:
             if next_step_index > last_step:
@@ -80,6 +103,7 @@ class FormSubmissionViewSet(viewsets.ViewSet):
 
         return {
             'data': data,
+            'form_step': form_step,
             'next_step_index': next_step_index
         }, errors
 
@@ -142,13 +166,12 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             )
 
         # TODO: Validate data that is posted and saved at the current step.
-        data, errors = self.validate_data(request, last_step)
+        data, errors = self.validate_data(request, last_step, uuid)
         if not errors:
-            current_step = submission.current_step
             if data['data']:
                 submission_step = SubmissionStep.objects.create(
                     submission=submission,
-                    form_step=submission.form.formstep_set.get(order=current_step),
+                    form_step=data['form_step'],
                     data=data['data']
                 )
                 # Save step to registered backend.
@@ -160,9 +183,17 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             if data["next_step_index"]:
                 submission.current_step = data["next_step_index"]
             else:
-                submission.current_step = current_step + 1
-            if submission.current_step > last_step:
-                submission.current_step = first_step
+                submitted_steps = submission.submissionstep_set.values_list(
+                    'form_step__order',
+                    flat=True
+                )
+                form_steps = submission.form.formstep_set.exclude(
+                    order__in=submitted_steps
+                ).values_list('order', flat=True)
+                if form_steps:
+                    submission.current_step = form_steps.last()
+                else:
+                    submission.current_step = first_step
             submission.save()
 
             return self.serialized_response(request, submission, status.HTTP_201_CREATED)

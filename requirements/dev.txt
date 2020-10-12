@@ -58,6 +58,7 @@ jinja2==2.11.2            # via sphinx
 lxml==4.5.2               # via -r requirements/ci.txt, pyquery, xmlsec
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8
+mock==4.0.2               # via -r requirements/ci.txt
 mypy-extensions==0.4.3    # via black
 packaging==20.4           # via sphinx
 pathspec==0.8.0           # via black
@@ -83,6 +84,7 @@ redis==3.5.3              # via -r requirements/ci.txt, django-redis
 regex==2020.7.14          # via black
 requests-mock==1.8.0      # via -r requirements/ci.txt, ddt-api-calls
 requests==2.24.0          # via -r requirements/ci.txt, ddt-api-calls, django-rosetta, gemma-zds-client, requests-mock, sphinx, zgw-consumers
+selenium==3.14.1          # via -r requirements/ci.txt
 sentry-sdk==0.17.3        # via -r requirements/ci.txt
 six==1.15.0               # via -r requirements/ci.txt, cryptography, django-choices, django-compat, django-rosetta, freezegun, isodate, packaging, pip-tools, pyopenssl, python-dateutil, requests-mock, webtest
 snowballstemmer==2.0.0    # via sphinx
