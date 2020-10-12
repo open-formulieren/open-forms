@@ -4,7 +4,7 @@
 .help-text {
   @include body;
   @include border(left, $color-info, 4px);
-  background-color: $color-blue-lighter;
+  background-color: scale_color($color-info, $lightness: 80%, $saturation: -60%);
   $help-text-line-height: $typography-line-height-text * $typography-font-size-text;
   padding: calc((#{$grid-row-height} - #{$help-text-line-height}) / 2)  $grid-margin-3;
   padding-left: $grid-margin-3 - 4px;

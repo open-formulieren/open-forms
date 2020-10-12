@@ -24,14 +24,14 @@ $color-blue-lighter: #E5F0F9;
 $color-blue: #01689B;
 $color-green: green !default;
 $color-red: #D52B1E;
-$color-orange: orange !default;
-$color-yellow: yellow !default;
-$color-primary: $color-blue !default;
-$color-secondary: #CCE0F1;
+$color-orange: #E17000;
+$color-yellow: #FFB612;
+$color-primary: $color-orange;
+$color-secondary: scale_color($color-primary, $lightness: 80%, $saturation: -60%);
 $color-background: $color-white !default;
 $color-border: $color-gray;
 $color-danger: $color-red !default;
-$color-info: $color-blue !default;
+$color-info: #007bc7;
 $color-success: $color-green !default;
 $color-warning: $color-orange !default;
 
@@ -70,7 +70,7 @@ $grid-margin-10: 50px; // Yes.
 
 $typography-color-base: $color-black !default;
 $typography-color-text: $typography-color-base !default;
-$typography-color-link: $color-blue !default;
+$typography-color-link: $color-primary;
 $typography-color-link-hover: $typography-color-link !default;
 $typography-color-h: $typography-color-base !default;
 $typography-default-hover-link: false !default;
@@ -78,7 +78,7 @@ $typography-decoration-link: underline !default;
 $typography-font-family-base: 'RO Sans', Calibri, sans-serif;
 $typography-font-family-text: $typography-font-family-base !default;
 $typography-font-family-h: $typography-font-family-base !default;
-$typography-font-size-text: 1rem !default;
+$typography-font-size-text: 16/16*1rem;
 $typography-font-size-text-mobile: $typography-font-size-text !default;
 $typography-font-size-text-tablet: $typography-font-size-text !default;
 $typography-font-size-text-laptop: $typography-font-size-text !default;
