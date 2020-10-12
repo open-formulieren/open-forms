@@ -146,6 +146,7 @@ class FormSubmissionAPITests(APITestCase):
         form = FormFactory.create()
         step_1 = FormStepFactory.create(form=form)
         step_2 = FormStepFactory.create(form=form)
+        step_3 = FormStepFactory.create(form=form)
 
         # Start submission.
         url = reverse('api:form-submissions-start', args=(form.uuid,))
@@ -174,6 +175,64 @@ class FormSubmissionAPITests(APITestCase):
         self.assertEqual(len(submission_steps), 1)
         self.assertEqual(submission_steps[0].form_step, step_1)
         self.assertEqual(submission_steps[0].data, {'more': 'something'})
+
+    def test_submit_in_the_middle(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(form=form)
+        step_2 = FormStepFactory.create(form=form)
+        step_3 = FormStepFactory.create(form=form)
+        step_4 = FormStepFactory.create(form=form)
+
+        # Start submission.
+        url = reverse('api:form-submissions-start', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Submit first form data.
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={
+            'data': {
+                'more': 'something'
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_2.uuid,))
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Submission created on first post.
+        submission = Submission.objects.get()
+        # First step has been submitted so it should be at the second.
+        self.assertEqual(submission.current_step, step_3.order)
+        self.assertEqual(submission.form, form)
+        self.assertFalse(submission.completed_on)
+        self.assertFalse(submission.bsn)
+
+        submission_steps = submission.submissionstep_set.all()
+        self.assertEqual(len(submission_steps), 1)
+        self.assertEqual(submission_steps[0].form_step, step_2)
+        self.assertEqual(submission_steps[0].data, {'more': 'something'})
+
+        # Submit some data.
+        url = reverse('api:form-submissions-submit', args=(form.uuid,))
+        response = self.client.post(url, format='json', secure=True, data={
+            'data': {
+                'never': 'more'
+            },
+            'form_step': reverse('api:form-steps-detail', args=(form.uuid, step_4.uuid,))
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission = Submission.objects.get()
+        self.assertEqual(submission.current_step, step_1.order)
+        self.assertEqual(submission.form, form)
+        self.assertFalse(submission.completed_on)
+        self.assertFalse(submission.bsn)
+
+        submission_steps = submission.submissionstep_set.all()
+        self.assertEqual(len(submission_steps), 2)
+        self.assertEqual(submission_steps[0].form_step, step_2)
+        self.assertEqual(submission_steps[0].data, {'more': 'something'})
+        self.assertEqual(submission_steps[1].form_step, step_4)
+        self.assertEqual(submission_steps[1].data, {'never': 'more'})
 
     def test_submit_no_submission(self):
         form = FormFactory.create()
