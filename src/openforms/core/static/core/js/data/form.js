@@ -16,23 +16,19 @@ class Form extends CrudConsumerObject {
     }
 
     /**
-     * Returns the URL for this Form.
+     * Returns the (frontend) URL for this Form.
      * @return {string}
      */
     getAbsoluteUrl() {
-        return `/${this.uuid}`;
+        return `/${this.slug}`;
     }
 
     /**
-     * Reads the current FormStep for this Form.
-     * @param {(number|null)} [stepUUID=null] The uuid of the step to load, loads current step if omitted.
+     * Reads a FormStep for this Form.
+     * @param {number} stepUUID The uuid of the step to load.
      * @return {Promise}
      */
-    readCurrentStep(stepUUID=null) {
-        if (stepUUID === null) {
-            return this.formStepConsumer.read(this, this.user_current_step);
-        }
-
+    readStep(stepUUID) {
         return this.formStepConsumer.read(this, stepUUID);
     }
 }

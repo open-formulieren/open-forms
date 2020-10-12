@@ -66,23 +66,31 @@ export class FormIOForm {
     }
 
     /**
-     * Returns the step index for "form" based on URL or null if not found.
-     * @return {(number|null)}
+     * Returns the step uuid for "form" based on URL or submission.
+     * @param {Form} form The Form instance.
+     * @param {Submission} submission The Submission instance.
+     * @param {number} [stepIndex]
+     * @return {string}
      */
-    getStep(form, submission) {
-        try {
-            const index = parseInt(
-                String(window.location.pathname).match(/(\d+)\/?$/)[1]  // Number(s) at end of the url.
-            );
-            return form.steps[index - 1];
-        } catch (e) {
-            return null;
+    getStepUUID(form, submission, stepIndex = null) {
+        let index = submission.current_step;
+
+        if (stepIndex !== null) {
+            index = stepIndex;
+        } else {
+            try {
+                const path = window.location.pathname;
+                const match = String(path).match(/(\d+)\/?$/)[1];  // Number(s) at end of the url.
+                index = parseInt(match) - 1;
+            } catch (e) {
+            }
         }
+        return form.steps[index].uuid;
     }
 
     /**
      * Gets called when any [type=submit] child of the of the form is pressed.
-     * @param event
+     * @param {MouseEvent} event
      */
     onButtonClick(event) {
         event.preventDefault();
@@ -101,7 +109,7 @@ export class FormIOForm {
     }
 
     /**
-     * Creates Submission and SubmissionStep for "form" "formStep".
+     * Submits the form.
      * @param {Object} context
      * @param {Object} formResult
      */
@@ -109,16 +117,17 @@ export class FormIOForm {
         const {form, formStep, submission} = context;
         const formData = formResult.data;
 
-        submission.createSubmissionStep(formStep, formData)
-            .then(this.submitFormSuccess.bind(this, form))
+        submission.submit(form, formStep, formData)
+            .then(this.submitFormSuccess.bind(this))
             .catch(this.error.bind(this));
     }
 
     /**
-     * Gets called when Submission and SubmissionStep have been sucessfully created.
+     * Gets called when the form is successfully submitted.
+     * @param {Submission} submission The Submission instance.
      */
-    submitFormSuccess() {
-        this.getContextData(true)
+    submitFormSuccess(submission) {
+        this.getContextData(submission.current_step)
             .then(this.render.bind(this))
             .catch(this.error.bind(this))
         ;
@@ -159,16 +168,16 @@ export class FormIOForm {
     }
 
     /**
-     * Loads context data.
-     * @param {boolean} [next=false] Whether to load the next step.
+     * Gets context data.
+     * @param {number} [stepIndex] The index of the step to load.
      * @return {Promise}
      */
-    async getContextData(next = false) {
+    async getContextData(stepIndex = null) {
         // Fetch data.
         const form = await this.formConsumer.read(this.node.dataset.formId);
-        const submission = await this.submissionConsumer.create(form);
-        const stepIndex = next === false ? this.getStep(form, submission) : null;  // Null value causes FormConsumer to read user_current_step.
-        const formStep = await form.readCurrentStep(stepIndex);
+        const submission = await this.submissionConsumer.start(form);
+        const stepUUID = this.getStepUUID(form, submission, stepIndex);
+        const formStep = await form.readStep(stepUUID);
 
         // Update history with received context.
         const formState = JSON.parse(form.asJSON());
@@ -176,7 +185,6 @@ export class FormIOForm {
         const submissionState = JSON.parse(submission.asJSON());
 
         const formStepUrl = formStep.getAbsoluteUrl(form);
-        console.log(formStepUrl);
 
         history.pushState({
             form: formState,

@@ -8,6 +8,7 @@ const FIXTURES = {
         GET: `{ 
             "url": "/api/v1/forms/1111111-2222-3333-4444-555555555555",
             "uuid": "1111111-2222-3333-4444-555555555555",
+            "slug": "foo",
             "steps": [
                 {
                     "index": 1,
@@ -19,10 +20,7 @@ const FIXTURES = {
                     "uuid": "3333333-4444-5555-6666-777777777777",
                     "configuration": {}
                 }
-            ],
-            "user_current_step": {
-                "uuid": "2222222-3333-4444-5555-666666666666"
-            }
+            ]
         }`,
     },
     FORM_STEP_1: {
@@ -51,8 +49,10 @@ const FIXTURES = {
         }`,
     },
     SUBMISSIONS: {
-        URL: '/api/v1/submissions/',
-        POST: `{}`,
+        URL: '/api/v1/form-submissions/1111111-2222-3333-4444-555555555555/start/',
+        POST: `{
+            "current_step": 0
+        }`,
     }
 };
 
@@ -125,7 +125,7 @@ describe('FormIOForm', function () {
             .then(() => this.server.respond())
             .then(delay)
             .then(() => assert.equal(this.server.requests[1].method, 'POST'))
-            .then(() => assert.equal(this.server.requests[1].url, '/api/v1/submissions/'))
+            .then(() => assert.equal(this.server.requests[1].url, FIXTURES.SUBMISSIONS.URL))
             .then(done, done);
     });
 
@@ -156,7 +156,7 @@ describe('FormIOForm', function () {
     });
 
     it('should update the history url based on received step.', (done) => {
-        history.pushState({}, '', '/1111111-2222-3333-4444-555555555555/2');
+        history.pushState({}, '', '/foo');
         const form = new FormIOForm(this.form);
         const spy = sinon.spy(history, 'pushState');
 
@@ -168,7 +168,7 @@ describe('FormIOForm', function () {
             .then(() => this.server.respond())
             .then(delay)
             .then(() => assert.ok(spy.calledOnce))
-            .then(() => assert.equal(spy.firstCall.args[2], '/1111111-2222-3333-4444-555555555555/2'))
+            .then(() => assert.equal(spy.firstCall.args[2], '/foo/2'))
             .then(() => spy.restore())
             .then(done, done);
     });

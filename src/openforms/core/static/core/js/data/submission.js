@@ -1,5 +1,4 @@
 import {CrudConsumer, CrudConsumerObject} from 'consumerjs';
-import {SubmissionStepConsumer} from './submissionstep';
 
 
 /**
@@ -8,21 +7,14 @@ import {SubmissionStepConsumer} from './submissionstep';
  */
 class Submission extends CrudConsumerObject {
     /**
-     * Constructor method.
-     */
-    constructor(...args) {
-        super(...args);
-        this.submissionStepConsumer = new SubmissionStepConsumer();
-    }
-
-    /**
      * Creates a SubmissionStep for this Submission.
-     * @param {FormStep} formStep
+     * @param {Form} form The Form instance.
+     * @param {FormStep} formStep the FormStep instance.
      * @param {Object} formData
      * @return {Promise}
      */
-    createSubmissionStep(formStep, formData) {
-        return this.submissionStepConsumer.create(this, formStep, formData);
+    submit(form, formStep, formData) {
+        return this.__consumer__.submit(form, formStep, formData);
     }
 }
 
@@ -36,17 +28,30 @@ export class SubmissionConsumer extends CrudConsumer {
      * Constructor method.
      */
     constructor() {
-        super('/api/v1/submissions/', Submission);
-
-        this.unserializableFields = [...this.unserializableFields, 'submissionStepConsumer'];
+        super('/api/v1/form-submissions/', Submission);
     }
 
     /**
-     * Creates a SubmissionStep on the backend for "submission".
-     * @param {Form} form The Form instance to create Submission for.
+     * Will either create a new submission and save to the session, or retrieve an existing submission on the session,
+     * or an existing submission for the form IF there is a BSN.
+     * @param {Form} form The Form instance.
      * @return {Promise}
      */
-    create(form) {
-        return this.post('', {form: form.url});
+    start(form) {
+        return this.post(`${form.uuid}/start/`);
+    }
+
+    /**
+     * Creates a SubmissionStep for this Submission.
+     * @param {Form} form The Form instance.
+     * @param {FormStep} formStep the FormStep instance.
+     * @param {Object} formData
+     * @return {Promise}
+     */
+    submit(form, formStep, formData) {
+        return this.post(`${form.uuid}/submit/`, {
+            form_step: formStep.url,
+            data: formData,
+        });
     }
 }
