@@ -7,7 +7,7 @@ webpackConfig.output.library = undefined;
 // Add istanbul-instrumenter to webpack configuration
 webpackConfig.module.rules.push({
     test: /\.js$/,
-    include: __dirname + '/' + paths.jsSrcDir,
+    include: [`${__dirname}/src/openforms/ui/static/ui/js/`, `${__dirname}/src/openforms/core/static/core/js/`],
     loader: 'istanbul-instrumenter-loader',
     enforce: 'post',
 

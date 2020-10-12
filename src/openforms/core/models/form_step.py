@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from rest_framework.reverse import reverse
 
 from ordered_model.models import OrderedModel
 from rest_framework.reverse import reverse
@@ -26,6 +27,12 @@ class FormStep(OrderedModel):
 
     def __str__(self):
         return f'Form Step {str(self.order)}'
+
+    def get_absolute_url(self):
+        return reverse('core:form-steps-detail', kwargs={'slug': self.form.slug, 'order': self.order})
+
+    def get_api_url(self, request):
+        return reverse('api:form-steps-detail', kwargs={'form_slug': self.form.slug, 'order': self.order}, request=request)
 
     class Meta:
         verbose_name = 'Form Step'
