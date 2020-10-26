@@ -159,7 +159,7 @@ class SeleniumStepTestBase(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
         cls.selenium = webdriver.Chrome(chrome_options=chrome_options)
         cls.selenium.implicitly_wait(20)
 

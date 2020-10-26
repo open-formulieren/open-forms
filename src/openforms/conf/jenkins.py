@@ -38,6 +38,7 @@ DATABASES = {
         #
         # PostgreSQL 9.6: 5432 (default for Jenkins)
         "PORT": "",
+        'ATOMIC_REQUESTS': True,
         "TEST": {"NAME": get_db_name("test_openforms")},
     }
 }

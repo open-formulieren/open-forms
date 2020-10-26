@@ -21,6 +21,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD", "openforms"),
         "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": os.getenv("DB_PORT", 5432),
+        'ATOMIC_REQUESTS': True,
     }
 }
 
