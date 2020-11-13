@@ -3,7 +3,7 @@ import logging
 from django.db.models import Max
 from django.utils import timezone
 
-from rest_framework import permissions, status, viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from openforms.core.backends import registry
 from openforms.core.models import Form
 
-from .serializers import SubmissionSerializer, SubmissionStepSerializer
 from ..models import Submission, SubmissionStep
+from .serializers import SubmissionSerializer, SubmissionStepSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +27,9 @@ class FormSubmissionViewSet(viewsets.ViewSet):
         self.form = None
 
     def create_new_submission(self, request):
-        data = {
-            "form": self.form
-        }
+        data = {"form": self.form}
         # TODO: Check if the user has existing incomplete submission under their BSN.
-        bsn = request.session.get('bsn')
+        bsn = request.session.get("bsn")
         if bsn:
             data["bsn"] = bsn
         submission = Submission.objects.create(**data)
@@ -42,26 +40,26 @@ class FormSubmissionViewSet(viewsets.ViewSet):
     def validate_data(request, last_step):
         errors = []
 
-        data = request.data.get('data')
-        step_index = request.data.get('step_index')
-        next_step_index = request.data.get('next_step_index')
+        data = request.data.get("data")
+        step_index = request.data.get("step_index")
+        next_step_index = request.data.get("next_step_index")
         if not data:
-            errors.append('No data supplied')
+            errors.append("No data supplied")
 
         if step_index:
             if step_index > last_step:
-                errors.append('`step_index` not an existing form step.')
+                errors.append("`step_index` not an existing form step.")
         if next_step_index:
             if next_step_index > last_step:
-                errors.append('`next_step_index` not an existing form step.')
+                errors.append("`next_step_index` not an existing form step.")
 
         return {
-            'data': data,
-            'step_index': step_index,
-            'next_step_index': next_step_index
+            "data": data,
+            "step_index": step_index,
+            "next_step_index": next_step_index,
         }, errors
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def submit(self, request, uuid=None):
         self.form = get_object_or_404(Form, uuid=uuid)
         # TODO: Rate limit/throttle this, since someone can just keep hitting this
@@ -73,7 +71,7 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             try:
                 submission = Submission.objects.get(uuid=submission_uuid)
             except Submission.DoesNotExist:
-                logger.info('Session Submission does not exist. Recreating...')
+                logger.info("Session Submission does not exist. Recreating...")
                 submission = self.create_new_submission(request)
 
         last_step = submission.form.formstep_set.aggregate(Max("order"))["order__max"]
@@ -81,7 +79,7 @@ class FormSubmissionViewSet(viewsets.ViewSet):
         if submission.completed_on:
             return Response(
                 data={"reason": "Submission completed."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # TODO: Validate data that is posted and saved at the current step.
@@ -91,7 +89,7 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             submission_step = SubmissionStep.objects.create(
                 submission=submission,
                 form_step=submission.form.formstep_set.get(order=current_step),
-                data=data['data']
+                data=data["data"],
             )
             if data["next_step_index"]:
                 submission.current_step = data["next_step_index"]
@@ -105,18 +103,19 @@ class FormSubmissionViewSet(viewsets.ViewSet):
                     submission.backend_result = result
             submission.save()
 
-            serializer = SubmissionSerializer(instance=submission, context={"request": request})
+            serializer = SubmissionSerializer(
+                instance=submission, context={"request": request}
+            )
 
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(data={"reason": errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubmissionViewSet(viewsets.ReadOnlyModelViewSet):
+class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     lookup_field = "uuid"
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class SubmissionStepViewSet(viewsets.ReadOnlyModelViewSet):
@@ -126,4 +125,4 @@ class SubmissionStepViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(submission__uuid=self.kwargs['submission_uuid'])
+        return self.queryset.filter(submission__uuid=self.kwargs["submission_uuid"])
