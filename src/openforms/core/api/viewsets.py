@@ -28,7 +28,8 @@ class FormViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'uuid'
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # anonymous clients must be able to get the form definitions in the browser
+    permission_classes = [permissions.AllowAny]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
