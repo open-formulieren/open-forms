@@ -14,22 +14,26 @@ Easily create and publish smart forms (`Nederlandse versie`_)
 Developed by `Maykin Media B.V.`_.
 
 
+.. warning:: The master branch is currently very unstable. Use the git tag
+   ``still-functional`` if you need a working backend + frontend.
+
+
 Introduction
 ============
 
-Using Open Forms, administrators can quickly create powerful and smart forms 
-that are exposed via an API. With the included webcomponent, personalized forms 
-can be retrieved and shown to the user. The form blends in with an 
-existing website using various styling options. Form fields are prefilled 
-whenever possible and personalized choices are shown depending on the user if 
+Using Open Forms, administrators can quickly create powerful and smart forms
+that are exposed via an API. With the included webcomponent, personalized forms
+can be retrieved and shown to the user. The form blends in with an
+existing website using various styling options. Form fields are prefilled
+whenever possible and personalized choices are shown depending on the user if
 logged in using DigiD.
 
-Open Forms is developed in line with the `Common Ground`_ principles, 
+Open Forms is developed in line with the `Common Ground`_ principles,
 specificly for municipalities and with a strong focus on usability for both
 the civilian users and the administrator.
 
 Form submissions can be added as document to a "Zaak" in, for example,
-`Open Zaak`_, or used as input for a BPMN process in `Camunda`_ or 
+`Open Zaak`_, or used as input for a BPMN process in `Camunda`_ or
 `Alfresco Process Services`_.
 
 Open Forms supports among others:
@@ -39,8 +43,8 @@ Open Forms supports among others:
 * Login using DigiD
 * Smart components show family members retrieved from the BRP `BRP`_ or owned
   properties from the BAG
-* Prefilled form fields if the information is already known 
-* Store answers in a database, send them to a process in `Camunda`_ or attach 
+* Prefilled form fields if the information is already known
+* Store answers in a database, send them to a process in `Camunda`_ or attach
   as a document with a "`Zaak`_"
 * Link forms to products
 * Calculate costs and payment options
