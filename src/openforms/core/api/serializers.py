@@ -59,7 +59,9 @@ class FormDefinitionSerializer(serializers.ModelSerializer):
         # track down the cause of this being a string instead of actual JSON
         parsed_config = json.loads(instance.configuration)
         parsed_config = handle_custom_types(
-            parsed_config, request=self.context["request"]
+            parsed_config,
+            request=self.context["request"],
+            submission=self.context["submission"],
         )
         return parsed_config
 

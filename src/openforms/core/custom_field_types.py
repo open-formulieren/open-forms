@@ -2,7 +2,9 @@ from typing import Any, Dict
 
 from rest_framework.request import Request
 
-__all__ = ["register", "handle_custom_types"]
+from openforms.submissions.models import Submission
+
+__all__ = ["register", "unregister", "handle_custom_types"]
 
 REGISTRY = {}
 
@@ -17,9 +19,15 @@ def register(custom_type: str):
     return decorator
 
 
+def unregister(custom_type: str):
+    if custom_type in REGISTRY:
+        del REGISTRY[custom_type]
+
+
 def handle_custom_types(
     configuration: Dict[str, Any],
     request: Request,
+    submission: Submission,
 ) -> Dict[str, Any]:
 
     rewritten_components = []
@@ -34,7 +42,7 @@ def handle_custom_types(
 
         # if there is a handler, invoke it
         handler = REGISTRY[type_key]
-        rewritten_components.append(handler(component, request))
+        rewritten_components.append(handler(component, request, submission))
 
     return {
         "components": rewritten_components,

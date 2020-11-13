@@ -3,13 +3,14 @@ from typing import Any, Dict, List, Tuple
 from rest_framework.request import Request
 
 from openforms.core.custom_field_types import register
+from openforms.submissions.models import Submission
 
 from .models import BRPConfig
 
 
 @register("npFamilyMembers")
 def fill_out_family_members(
-    component: Dict[str, Any], request: Request
+    component: Dict[str, Any], request: Request, submission: Submission
 ) -> Dict[str, Any]:
 
     # change the type to a primitive

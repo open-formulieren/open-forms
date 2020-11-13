@@ -11,11 +11,11 @@ aware step definition.
 import json
 
 from rest_framework import status
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.core.custom_field_types import register, unregister
-from openforms.core.tests.factories import FormFactory, FormStepFactory
+from openforms.core.tests.factories import FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission
@@ -48,7 +48,7 @@ class ReadSubmissionStepTests(APITestCase):
         cls.submission = SubmissionFactory.create(form=cls.step.form)
         cls.step_url = reverse(
             "api:submission-steps-detail",
-            kwargs={"submission_uuid": cls.submission.uuid, "uuid": cls.step.uuid},
+            kwargs={"submission_uuid": cls.submission.uuid, "step_uuid": cls.step.uuid},
         )
 
     def _add_submission_to_session(self, submission: Submission):
