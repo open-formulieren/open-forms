@@ -1,5 +1,6 @@
 import logging
 
+from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from openforms.core.backends import registry
 from openforms.core.models import Form
 
+from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission, SubmissionStep
 from .serializers import SubmissionSerializer, SubmissionStepSerializer
 
@@ -116,6 +118,17 @@ class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     lookup_field = "uuid"
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+
+        # store the submission ID in the session, so that only the session owner can
+        # mutate/view the submission
+        # note: possible race condition with concurrent requests
+        submissions = self.request.session.get(SUBMISSIONS_SESSION_KEY, [])
+        submissions.append(str(serializer.instance.uuid))
+        self.request.session[SUBMISSIONS_SESSION_KEY] = submissions
 
 
 class SubmissionStepViewSet(viewsets.ReadOnlyModelViewSet):
