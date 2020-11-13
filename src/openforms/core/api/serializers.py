@@ -17,12 +17,17 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         source="*",
         view_name="api:form-steps-detail",
         lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid": "form__uuid"}
+        parent_lookup_kwargs={"form_uuid": "form__uuid"},
     )
 
     class Meta:
         model = FormStep
-        fields = ("uuid", "form_definition", "index", "url",)
+        fields = (
+            "uuid",
+            "form_definition",
+            "index",
+            "url",
+        )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -36,15 +41,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Form
-        fields = (
-            "uuid",
-            "name",
-            "login_required",
-            "product",
-            "slug",
-            "url",
-            "steps"
-        )
+        fields = ("uuid", "name", "login_required", "product", "slug", "url", "steps")
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -52,7 +49,7 @@ class FormSerializer(serializers.ModelSerializer):
             "url": {
                 "view_name": "api:form-detail",
                 "lookup_field": "uuid",
-            }
+            },
         }
 
 
@@ -74,6 +71,10 @@ class FormDefinitionSerializer(serializers.ModelSerializer):
 class FormStepSerializer(serializers.ModelSerializer):
     index = serializers.IntegerField(source="order")
     configuration = serializers.SerializerMethodField()
+
+    parent_lookup_kwargs = {
+        "form_uuid": "form__uuid",
+    }
 
     class Meta:
         model = FormStep
