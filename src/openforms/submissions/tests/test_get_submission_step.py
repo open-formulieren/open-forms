@@ -9,6 +9,7 @@ The tests in this module validate that we can retrieve the submission-context
 aware step definition.
 """
 import json
+import uuid
 
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -132,3 +133,22 @@ class ReadSubmissionStepTests(APITestCase):
             "data": None,
         }
         self.assertEqual(response.json(), expected)
+
+    def test_invalid_submission_id(self):
+        self._add_submission_to_session(self.submission)
+        self.submission.delete()
+
+        response = self.client.get(self.step_url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_invalid_step_id(self):
+        self._add_submission_to_session(self.submission)
+        step_url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": self.submission.uuid, "step_uuid": uuid.uuid4()},
+        )
+
+        response = self.client.get(step_url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
