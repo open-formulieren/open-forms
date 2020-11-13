@@ -25,6 +25,10 @@ class FormDefinitionViewSet(BaseFormsViewSet):
     queryset = FormDefinition.objects.filter()
     serializer_class = FormDefinitionSerializer
 
+    def get_serializer_context(self) -> dict:
+        context = super().get_serializer_context()
+        return {**context, "handle_custom_types": False}
+
 
 class FormViewSet(BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
