@@ -8,21 +8,28 @@ from ..models import Submission, SubmissionStep
 
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
-    steps = NestedHyperlinkedRelatedField(
-        source="submissionstep_set",
-        many=True,
-        read_only=True,
-        view_name='api:submission-steps-detail',
+    next_step = NestedHyperlinkedRelatedField(
+        view_name="api:form-steps-detail",
         lookup_field="uuid",
-        parent_lookup_kwargs={'submission_uuid': 'submission__uuid'}
+        source="get_next_step",
+        read_only=True,
+        allow_null=True,
+        parent_lookup_kwargs={
+            "form_uuid": "form__uuid",
+        },
     )
 
     class Meta:
         model = Submission
-        fields = ('uuid', 'url', 'form', 'current_step', 'steps', 'created_on', 'completed_on')
+        fields = (
+            "id",
+            "form",
+            "next_step",
+        )
         extra_kwargs = {
-            "uuid": {
+            "id": {
                 "read_only": True,
+                "source": "uuid",
             },
             "url": {
                 "view_name": "api:submission-detail",
@@ -44,14 +51,14 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # many=True,
         # read_only=True,   # Or add a queryset
         queryset=FormStep.objects,
-        view_name='api:form-steps-detail',
-        lookup_field='uuid',
-        parent_lookup_kwargs={'form_uuid': 'form__uuid'}
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid": "form__uuid"},
     )
 
     class Meta:
         model = SubmissionStep
-        fields = ('uuid', 'url', 'submission', 'form_step', 'data', 'created_on')
+        fields = ("uuid", "url", "submission", "form_step", "data", "created_on")
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -59,9 +66,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "url": {
                 "view_name": "api:submission-steps-detail",
                 "lookup_field": "uuid",
-                "parent_lookup_kwargs": {
-                    'submission_uuid': 'submission__uuid'
-                }
+                "parent_lookup_kwargs": {"submission_uuid": "submission__uuid"},
             },
             "submission": {
                 "view_name": "api:submission-detail",

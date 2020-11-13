@@ -1,7 +1,9 @@
 import os
 import warnings
 
-os.environ.setdefault("SECRET_KEY", "@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a")
+os.environ.setdefault(
+    "SECRET_KEY", "@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a"
+)
 
 # uses postgresql by default, see base.py
 os.environ.setdefault("DB_NAME", "openforms"),
@@ -35,13 +37,21 @@ LOGGING["loggers"].update(
             "level": "DEBUG",
             "propagate": True,
         },
-        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True,},
+        "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "django.db.backends": {
             "handlers": ["django"],
             "level": "DEBUG",
             "propagate": False,
         },
-        "performance": {"handlers": ["console"], "level": "INFO", "propagate": True,},
+        "performance": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
         #
         # See: https://code.djangoproject.com/ticket/30554
         # Autoreload logs excessively, turn it down a bit.
@@ -105,12 +115,21 @@ AXES_BEHIND_REVERSE_PROXY = (
 # in memory cache and django-axes don't get along.
 # https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
 CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
-    "axes_cache": {"BACKEND": "django.core.cache.backends.dummy.DummyCache",},
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+    "axes_cache": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
 }
 
 AXES_CACHE = "axes_cache"
 
+INSTALLED_APPS += ["django_extensions"]
+
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
+    "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"
+]
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
