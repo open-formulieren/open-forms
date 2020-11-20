@@ -31,10 +31,6 @@ class SubmissionStartTests(APITestCase):
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(form=cls.form)
         cls.form_url = reverse("api:form-detail", kwargs={"uuid": cls.form.uuid})
-        cls.formstep_url = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid": cls.form.uuid, "uuid": cls.step.uuid},
-        )
 
     def test_start_submission(self):
         body = {
@@ -45,12 +41,16 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
+        submission_step_url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": self.step.uuid},
+        )
         self.assertEqual(
             response.json(),
             {
                 "id": submission.uuid,
                 "form": f"http://testserver{self.form_url}",
-                "nextStep": f"http://testserver{self.formstep_url}",
+                "nextStep": f"http://testserver{submission_step_url}",
             },
         )
 

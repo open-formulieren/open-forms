@@ -1,22 +1,23 @@
 from rest_framework import serializers
-from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from openforms.core.api.serializers import FormDefinitionSerializer
 from openforms.core.models import FormStep
 
 from ..models import Submission, SubmissionStep
+from .fields import NestedSubmissionRelatedField
 
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
-    next_step = NestedHyperlinkedRelatedField(
-        view_name="api:form-steps-detail",
+    next_step = NestedSubmissionRelatedField(
+        view_name="api:submission-steps-detail",
         lookup_field="uuid",
+        lookup_url_kwarg="step_uuid",
         source="get_next_step",
         read_only=True,
         allow_null=True,
-        parent_lookup_kwargs={
-            "form_uuid": "form__uuid",
+        instance_lookup_kwargs={
+            "submission_uuid": "uuid",
         },
     )
 
