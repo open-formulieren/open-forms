@@ -8,12 +8,14 @@ from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.core.backends import registry
 from openforms.core.models import Form
 
-from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission, SubmissionStep
+from ..utils import add_submmission_to_session
+from .permissions import ActiveSubmissionPermission
 from .serializers import SubmissionSerializer, SubmissionStepSerializer
 
 logger = logging.getLogger(__name__)
@@ -126,16 +128,47 @@ class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
         # note: possible race condition with concurrent requests
-        submissions = self.request.session.get(SUBMISSIONS_SESSION_KEY, [])
-        submissions.append(str(serializer.instance.uuid))
-        self.request.session[SUBMISSIONS_SESSION_KEY] = submissions
+        add_submmission_to_session(serializer.instance, self.request)
 
 
-class SubmissionStepViewSet(viewsets.ReadOnlyModelViewSet):
-    lookup_field = "uuid"
+class SubmissionStepViewSet(
+    NestedViewSetMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = ()
+    permission_classes = [ActiveSubmissionPermission]
+    lookup_url_kwarg = "step_uuid"
 
-    def get_queryset(self):
-        return self.queryset.filter(submission__uuid=self.kwargs["submission_uuid"])
+    def get_object(self):
+        """
+        Retrieve a SubmissionStep instance in the context of the current submission.
+
+        This is a custom implementation, because the :class:`SubmissionStep` record may
+        not exist yet for GET calls because no data has been submitted yet. In that case,
+        a new, unsaved instance is used for the serializer.
+
+        The URL path kwargs resolve the static form step definition, apply the
+        submission context and possibly transform the form definition.
+        """
+        submission_uuid = self.kwargs["submission_uuid"]
+        qs = SubmissionStep.objects.filter(
+            submission__uuid=submission_uuid,
+            form_step__uuid=self.kwargs["step_uuid"],
+        )
+        try:
+            submission_step = qs.get()
+        except SubmissionStep.DoesNotExist:
+            submission = get_object_or_404(
+                Submission.objects.select_related("form"), uuid=submission_uuid
+            )
+            form_step = get_object_or_404(
+                submission.form.formstep_set, uuid=self.kwargs["step_uuid"]
+            )
+            submission_step = SubmissionStep(
+                uuid=None,
+                submission=submission,
+                form_step=form_step,
+            )
+
+        return submission_step

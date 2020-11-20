@@ -58,8 +58,14 @@ class FormDefinitionSerializer(serializers.ModelSerializer):
         # TODO: json.loads on something that is a JSONField makes no sense,
         # track down the cause of this being a string instead of actual JSON
         parsed_config = json.loads(instance.configuration)
+        _handle_custom_types = self.context.get("handle_custom_types", True)
+        if not _handle_custom_types:
+            return parsed_config
+
         parsed_config = handle_custom_types(
-            parsed_config, request=self.context["request"]
+            parsed_config,
+            request=self.context["request"],
+            submission=self.context["submission"],
         )
         return parsed_config
 
@@ -83,8 +89,4 @@ class FormStepSerializer(serializers.ModelSerializer):
     def get_configuration(self, instance):
         # can't simply declare this because the JSON is stored as string in
         # the DB instead of actual JSON
-        serializer = FormDefinitionSerializer(
-            instance=instance.form_definition,
-            context=self.context,
-        )
-        return serializer.data
+        return json.loads(instance.form_definition.configuration)

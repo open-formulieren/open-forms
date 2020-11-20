@@ -1,21 +1,23 @@
 from rest_framework import serializers
-from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
+from openforms.core.api.serializers import FormDefinitionSerializer
 from openforms.core.models import FormStep
 
 from ..models import Submission, SubmissionStep
+from .fields import NestedSubmissionRelatedField
 
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
-    next_step = NestedHyperlinkedRelatedField(
-        view_name="api:form-steps-detail",
+    next_step = NestedSubmissionRelatedField(
+        view_name="api:submission-steps-detail",
         lookup_field="uuid",
+        lookup_url_kwarg="step_uuid",
         source="get_next_step",
         read_only=True,
         allow_null=True,
-        parent_lookup_kwargs={
-            "form_uuid": "form__uuid",
+        instance_lookup_kwargs={
+            "submission_uuid": "uuid",
         },
     )
 
@@ -42,35 +44,51 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class ContextAwareFormStepSerializer(serializers.ModelSerializer):
+    configuration = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FormStep
+        fields = ("index", "configuration")
+        extra_kwargs = {
+            "index": {"source": "order"},
+        }
+
+    def get_configuration(self, instance):
+        # can't simply declare this because the JSON is stored as string in
+        # the DB instead of actual JSON
+        # FIXME: sort out the storing of configuration
+        submission = self.root.instance.submission
+        serializer = FormDefinitionSerializer(
+            instance=instance.form_definition,
+            context={**self.context, "submission": submission},
+        )
+        return serializer.data
+
+
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
+    form_step = ContextAwareFormStepSerializer(read_only=True)
+
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
     }
 
-    form_step = NestedHyperlinkedRelatedField(
-        # many=True,
-        # read_only=True,   # Or add a queryset
-        queryset=FormStep.objects,
-        view_name="api:form-steps-detail",
-        lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid": "form__uuid"},
-    )
-
     class Meta:
         model = SubmissionStep
-        fields = ("uuid", "url", "submission", "form_step", "data", "created_on")
+        fields = (
+            "id",
+            "form_step",
+            "data",
+        )
+
         extra_kwargs = {
-            "uuid": {
-                "read_only": True,
-            },
             "url": {
                 "view_name": "api:submission-steps-detail",
-                "lookup_field": "uuid",
+                "lookup_field": "form_step__uuid",
                 "parent_lookup_kwargs": {"submission_uuid": "submission__uuid"},
             },
-            "submission": {
-                "view_name": "api:submission-detail",
-                "lookup_field": "uuid",
+            "id": {
                 "read_only": True,
+                "source": "uuid",
             },
         }

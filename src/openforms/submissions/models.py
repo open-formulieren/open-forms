@@ -63,6 +63,7 @@ class SubmissionStep(models.Model):
     class Meta:
         verbose_name = "SubmissionStep"
         verbose_name_plural = "SubmissionSteps"
+        unique_together = (("submission", "form_step"),)
 
     def __str__(self):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
