@@ -172,3 +172,26 @@ class SubmissionStepViewSet(
             )
 
         return submission_step
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update or create a form submission step.
+
+        Partial updates are not allowed - PUT is used for both creating or updating
+        the submission step data.
+        """
+        instance = self.get_object()
+        create = instance.pk is None
+        if create:
+            instance.uuid = SubmissionStep._meta.get_field("uuid").default()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
+        return Response(serializer.data, status=status_code)

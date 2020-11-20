@@ -18,12 +18,11 @@ from rest_framework.test import APITestCase
 from openforms.core.custom_field_types import register, unregister
 from openforms.core.tests.factories import FormStepFactory
 
-from ..constants import SUBMISSIONS_SESSION_KEY
-from ..models import Submission
 from .factories import SubmissionFactory
+from .mixins import SubmissionsMixin
 
 
-class ReadSubmissionStepTests(APITestCase):
+class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -51,11 +50,6 @@ class ReadSubmissionStepTests(APITestCase):
             "api:submission-steps-detail",
             kwargs={"submission_uuid": cls.submission.uuid, "step_uuid": cls.step.uuid},
         )
-
-    def _add_submission_to_session(self, submission: Submission):
-        session = self.client.session
-        session[SUBMISSIONS_SESSION_KEY] = [str(submission.uuid)]
-        session.save()
 
     def test_submission_not_in_session(self):
         with self.subTest(case="no submissions in session"):

@@ -82,11 +82,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
 
         extra_kwargs = {
-            "url": {
-                "view_name": "api:submission-steps-detail",
-                "lookup_field": "form_step__uuid",
-                "parent_lookup_kwargs": {"submission_uuid": "submission__uuid"},
-            },
             "id": {
                 "read_only": True,
                 "source": "uuid",
