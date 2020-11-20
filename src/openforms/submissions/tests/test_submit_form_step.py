@@ -12,7 +12,7 @@ from rest_framework.test import APITestCase
 from openforms.core.tests.factories import FormFactory, FormStepFactory
 
 from ..models import Submission, SubmissionStep
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
@@ -57,6 +57,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 },
             },
         )
+        self.assertEqual(submission_step.data, {"some": "example data"})
 
     def test_create_step_wrong_step_id(self):
         """
@@ -92,3 +93,42 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         response = self.client.put(endpoint, {})
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_step_data(self):
+        self._add_submission_to_session(self.submission)
+        SubmissionStepFactory.create(
+            submission=self.submission,
+            form_step=self.step1,
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=self.submission,
+            data={"foo": "bar"},
+            form_step=self.step2,
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.step2.uuid,
+            },
+        )
+        body = {"data": {"modified": "data"}}
+
+        response = self.client.put(endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            {
+                "id": str(submission_step.uuid),
+                "formStep": {
+                    "index": 1,
+                    "configuration": {"components": [{"type": "test-component"}]},
+                },
+                "data": {
+                    "modified": "data",
+                },
+            },
+        )
+        submission_step.refresh_from_db()
+        self.assertEqual(submission_step.data, {"modified": "data"})
