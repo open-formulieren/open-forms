@@ -57,3 +57,38 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 },
             },
         )
+
+    def test_create_step_wrong_step_id(self):
+        """
+        Validate that the step UUID belongs to the submission form.
+        """
+        other_form_step = FormStepFactory.create()
+        assert other_form_step.form != self.form
+        self._add_submission_to_session(self.submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": other_form_step.uuid,
+            },
+        )
+
+        response = self.client.put(endpoint, {})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_step_invalid_submission_id(self):
+        """
+        Validate that the user must "own" the submission.
+        """
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.step1.uuid,
+            },
+        )
+
+        response = self.client.put(endpoint, {})
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
