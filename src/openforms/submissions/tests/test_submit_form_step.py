@@ -6,12 +6,11 @@ submitted to a submission step. Existing data can be overwritten and new data is
 by using HTTP PUT.
 """
 from rest_framework import status
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.core.tests.factories import FormFactory, FormStepFactory
 
-from ..models import Submission, SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
