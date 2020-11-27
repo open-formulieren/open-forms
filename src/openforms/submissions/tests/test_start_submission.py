@@ -45,14 +45,17 @@ class SubmissionStartTests(APITestCase):
             "api:submission-steps-detail",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": self.step.uuid},
         )
-        self.assertEqual(
-            response.json(),
-            {
-                "id": submission.uuid,
-                "form": f"http://testserver{self.form_url}",
-                "nextStep": f"http://testserver{submission_step_url}",
-            },
-        )
+
+        response_json = response.json()
+        expected = {
+            "id": submission.uuid,
+            "form": f"http://testserver{self.form_url}",
+            "nextStep": f"http://testserver{submission_step_url}",
+        }
+        for key, value in expected.items():
+            with self.subTest(key=key, value=value):
+                self.assertIn(key, response_json)
+                self.assertEqual(response_json[key], value)
 
         # check that the submission ID is in the session
         self.assertEqual(
