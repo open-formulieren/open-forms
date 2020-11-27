@@ -116,10 +116,14 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             return Response(data={"reason": errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    lookup_field = "uuid"
+class SubmissionViewSet(
+    mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
+    authentication_classes = ()
+    permission_classes = [ActiveSubmissionPermission]
+    lookup_field = "uuid"
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -139,6 +143,7 @@ class SubmissionStepViewSet(
     authentication_classes = ()
     permission_classes = [ActiveSubmissionPermission]
     lookup_url_kwarg = "step_uuid"
+    submission_url_kwarg = "submission_uuid"
 
     def get_object(self):
         """
