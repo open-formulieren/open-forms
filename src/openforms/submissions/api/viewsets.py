@@ -175,7 +175,7 @@ class SubmissionStepViewSet(
                 submission=submission,
                 form_step=form_step,
             )
-
+        self.check_object_permissions(self.request, submission_step)
         return submission_step
 
     def update(self, request, *args, **kwargs):
