@@ -17,7 +17,6 @@ class NestedSubmissionRelatedField(NestedHyperlinkedRelatedField):
             "instance_lookup_kwargs", self.instance_lookup_kwargs
         )
         kwargs["read_only"] = True
-        # kwargs["source"] = "*"
         super().__init__(*args, **kwargs)
 
     def get_url(self, obj, view_name, request, format):
