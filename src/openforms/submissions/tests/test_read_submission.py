@@ -15,6 +15,8 @@ from .mixins import SubmissionsMixin
 
 
 class SubmissionReadTests(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -40,7 +42,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         form_step_path = reverse(
             "api:form-steps-detail",
             kwargs={
-                "form_uuid": self.submission.uuid,
+                "form_uuid": self.form.uuid,
                 "uuid": self.step.uuid,
             },
         )
@@ -55,17 +57,18 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         self.assertEqual(
             response.json(),
             {
                 "id": str(self.submission.uuid),
-                "url": self.endpoint,
+                "url": f"http://testserver{self.endpoint}",
                 "form": f"http://testserver{form_path}",
                 "steps": [
                     {
                         "id": str(self.step.uuid),
-                        "url": f"http://testserver{form_step_path}",
-                        "submissionStep": f"http://testserver{submission_step_path}",
+                        "url": f"http://testserver{submission_step_path}",
+                        "formStep": f"http://testserver{form_step_path}",
                         "available": True,
                         "completed": False,
                         "current": True,
