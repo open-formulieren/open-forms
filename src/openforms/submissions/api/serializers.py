@@ -33,6 +33,11 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         },
     )
 
+    optional = serializers.BooleanField(
+        source="form_step.optional",
+        read_only=True,
+    )
+
     class Meta:
         model = SubmissionStep
         fields = (

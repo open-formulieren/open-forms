@@ -79,3 +79,14 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "nextStep": f"http://testserver{submission_step_path}",
             },
         )
+
+    def test_retrieve_submission_optional_steps(self):
+        self._add_submission_to_session(self.submission)
+        self.step.optional = True
+        self.step.save()
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        step = response.json()["steps"][0]
+        self.assertTrue(step["optional"])

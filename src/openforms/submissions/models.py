@@ -157,8 +157,3 @@ class SubmissionStep(models.Model):
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
         return bool(self.pk and self.data is not None)
-
-    @property
-    def optional(self) -> bool:
-        # TODO: implement logic
-        return False
