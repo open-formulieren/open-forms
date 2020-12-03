@@ -116,10 +116,14 @@ class FormSubmissionViewSet(viewsets.ViewSet):
             return Response(data={"reason": errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    lookup_field = "uuid"
+class SubmissionViewSet(
+    mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
+    authentication_classes = ()
+    permission_classes = [ActiveSubmissionPermission]
+    lookup_field = "uuid"
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -134,11 +138,30 @@ class SubmissionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 class SubmissionStepViewSet(
     NestedViewSetMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
+    """
+    Handle form step submission data.
+
+    retrieve:
+    Retrieve the form step submission details.
+
+    update:
+    Submit the form step submission data.
+
+    The submission data is either created or updated, depending on whether there was
+    submission data present before or not. Make sure to retrieve the step data to
+    display already filled out fields.
+
+    Note that the form step configuration is currently not validated - this may change
+    in the future. I.e. - a step that is marked as not available will still be submitted
+    at the time being.
+    """
+
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
     authentication_classes = ()
     permission_classes = [ActiveSubmissionPermission]
     lookup_url_kwarg = "step_uuid"
+    submission_url_kwarg = "submission_uuid"
 
     def get_object(self):
         """
@@ -170,7 +193,7 @@ class SubmissionStepViewSet(
                 submission=submission,
                 form_step=form_step,
             )
-
+        self.check_object_permissions(self.request, submission_step)
         return submission_step
 
     def update(self, request, *args, **kwargs):

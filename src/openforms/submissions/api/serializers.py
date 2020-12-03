@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
@@ -8,7 +10,57 @@ from ..models import Submission, SubmissionStep
 from .fields import NestedSubmissionRelatedField
 
 
+class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
+    id = serializers.UUIDField(source="form_step.uuid")
+    name = serializers.CharField(source="form_step.form_definition.name")
+
+    url = NestedSubmissionRelatedField(
+        view_name="api:submission-steps-detail",
+        source="*",
+        lookup_field="form_step__uuid",
+        lookup_url_kwarg="step_uuid",
+        instance_lookup_kwargs={
+            "submission_uuid": "submission__uuid",
+        },
+    )
+
+    form_step = NestedSubmissionRelatedField(
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        lookup_url_kwarg="uuid",
+        instance_lookup_kwargs={
+            "form_uuid": "form__uuid",
+        },
+    )
+
+    optional = serializers.BooleanField(
+        source="form_step.optional",
+        read_only=True,
+    )
+
+    class Meta:
+        model = SubmissionStep
+        fields = (
+            "id",
+            "name",
+            "url",
+            "form_step",
+            "available",
+            "completed",
+            "optional",
+        )
+
+
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
+    steps = NestedSubmissionStepSerializer(
+        label=_("Submission steps"),
+        read_only=True,
+        many=True,
+        help_text=_(
+            "Details of every form step of this submission's form, tracking the "
+            "progress and other meta-data of each particular step."
+        ),
+    )
     next_step = NestedSubmissionRelatedField(
         view_name="api:submission-steps-detail",
         lookup_field="uuid",
@@ -25,7 +77,9 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         model = Submission
         fields = (
             "id",
+            "url",
             "form",
+            "steps",
             "next_step",
         )
         extra_kwargs = {

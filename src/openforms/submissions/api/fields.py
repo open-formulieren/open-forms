@@ -16,6 +16,7 @@ class NestedSubmissionRelatedField(NestedHyperlinkedRelatedField):
         self.instance_lookup_kwargs = kwargs.pop(
             "instance_lookup_kwargs", self.instance_lookup_kwargs
         )
+        kwargs["read_only"] = True
         super().__init__(*args, **kwargs)
 
     def get_url(self, obj, view_name, request, format):
@@ -25,15 +26,19 @@ class NestedSubmissionRelatedField(NestedHyperlinkedRelatedField):
         May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
         attributes are not configured to correctly match the URL conf.
         """
+        underscored_obj_lookups = self.lookup_field.split("__")
+        obj_for_lookup = reduce(getattr, [obj] + underscored_obj_lookups[:-1])
+
         # Unsaved objects will not yet have a valid URL.
-        if hasattr(obj, "pk") and obj.pk in (None, ""):
+        if hasattr(obj_for_lookup, "pk") and obj_for_lookup.pk in (None, ""):
             return None
 
         # default lookup from rest_framework.relations.HyperlinkedRelatedField
-        lookup_value = getattr(obj, self.lookup_field)
+        lookup_value = getattr(obj_for_lookup, underscored_obj_lookups[-1])
         kwargs = {self.lookup_url_kwarg: lookup_value}
 
-        instance = self.parent.instance
+        # FIXME: this can probably be done in a cleaner way
+        instance = self.parent.instance or obj
 
         # multi-level lookup
         for instance_lookup_kwarg in list(self.instance_lookup_kwargs.keys()):

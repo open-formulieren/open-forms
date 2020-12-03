@@ -1,12 +1,51 @@
+import logging
 import uuid
-from typing import Optional
+from dataclasses import dataclass
+from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+from openforms.core.constants import AvailabilityOptions
 from openforms.core.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class SubmissionState:
+    form_steps: List[FormStep]
+    submission_steps: List["SubmissionStep"]
+
+    def get_next_step(self) -> Optional["SubmissionStep"]:
+        """
+        Determine the next logical step to fill out.
+
+        The next step is the step:
+        - after the last submitted step
+        - that is available
+
+        It does not consider "skipped" steps.
+
+        If there are no more steps, the result is None.
+        """
+        completed_steps = sorted(
+            [step for step in self.submission_steps if step.completed],
+            key=lambda step: step.modified,
+        )
+        offset = (
+            0
+            if not completed_steps
+            else self.submission_steps.index(completed_steps[-1])
+        )
+        candidates = (
+            step
+            for step in self.submission_steps[offset:]
+            if not step.completed and step.available
+        )
+        return next(candidates, None)
 
 
 class Submission(models.Model):
@@ -31,18 +70,68 @@ class Submission(models.Model):
     def __str__(self):
         return f"Submission {self.pk}: Form {self.form_id} started on {self.created_on}"
 
+    def refresh_from_db(self, *args, **kwargs):
+        super().refresh_from_db(*args, **kwargs)
+        if hasattr(self, "_execution_state"):
+            del self._execution_state
+
     @property
     def is_completed(self):
         return bool(self.completed_on)
 
+    def load_execution_state(self) -> SubmissionState:
+        """
+        Retrieve the current execution state of steps from the database.
+        """
+        if hasattr(self, "_execution_state"):
+            return self._execution_state
+
+        form_steps = self.form.formstep_set.select_related("form_definition").order_by(
+            "order"
+        )
+        _submission_steps = self.submissionstep_set.select_related(
+            "form_step", "form_step__form_definition"
+        )
+        submission_steps = {step.form_step: step for step in _submission_steps}
+
+        # build the resulting list - some SubmissionStep instances will probably not exist
+        # in the database yet - this is on purpose!
+        steps: List[SubmissionStep] = []
+        for form_step in form_steps:
+            if form_step in submission_steps:
+                step = submission_steps[form_step]
+            else:
+                # there's no known DB record for this, so we create a fresh, unsaved
+                # instance and return this
+                step = SubmissionStep(
+                    # nothing assigned yet, and on next call it'll be a different value
+                    # if we rely on the default
+                    uuid=None,
+                    submission=self,
+                    form_step=form_step,
+                )
+            steps.append(step)
+
+        state = SubmissionState(
+            form_steps=list(form_steps),
+            submission_steps=steps,
+        )
+        self._execution_state = state
+        return state
+
+    @property
+    def steps(self) -> List["SubmissionStep"]:
+        # fetch the existing DB records for submitted form steps
+        submission_state = self.load_execution_state()
+        return submission_state.submission_steps
+
     def get_next_step(self) -> Optional[FormStep]:
         """
         Determine which is the next step for the current submission.
-
-        TODO: look at the state of completed steps and figure it out from there.
         """
-        form_steps = self.form.formstep_set.all()
-        return form_steps.first()
+        submission_state = self.load_execution_state()
+        next_submission_step = submission_state.get_next_step()
+        return next_submission_step.form_step if next_submission_step else None
 
 
 class SubmissionStep(models.Model):
@@ -59,6 +148,7 @@ class SubmissionStep(models.Model):
     form_step = models.ForeignKey("core.FormStep", on_delete=models.CASCADE)
     data = JSONField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "SubmissionStep"
@@ -67,3 +157,38 @@ class SubmissionStep(models.Model):
 
     def __str__(self):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
+
+    @property
+    def available(self) -> bool:
+        strat = self.form_step.availability_strategy
+        if strat == AvailabilityOptions.always:
+            return True
+
+        elif strat == AvailabilityOptions.after_previous_step:
+            submission_state = self.submission.load_execution_state()
+            index = submission_state.form_steps.index(self.form_step)
+            if index == 0:  # there is no previous step...
+                logger.warning(
+                    "First step is misconfigured, should always be available. Form step: %d",
+                    self.form_step_id,
+                )
+                return False
+
+            # check if the previous available step was completed
+            candidates = [
+                step
+                for step in submission_state.submission_steps[:index]
+                if step.available
+            ]
+            if candidates and candidates[-1].completed:
+                return True
+            return False
+        else:
+            raise NotImplementedError(f"Unknown strategy: {strat}")
+
+    @property
+    def completed(self) -> bool:
+        # TODO: should check that all the data for the form definition is present?
+        # and validates?
+        # For now - if it's been saved, we assume that was because it was completed
+        return bool(self.pk and self.data is not None)
