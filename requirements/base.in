@@ -21,7 +21,7 @@ django-solo
 pyopenssl
 
 # API libraries
-djangorestframework
+djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
 # django-extra-fields
