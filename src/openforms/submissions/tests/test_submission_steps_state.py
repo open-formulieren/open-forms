@@ -57,6 +57,7 @@ class SubmissionStepsStateTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step1, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             steps = submission.steps
 
@@ -67,6 +68,7 @@ class SubmissionStepsStateTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step2, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             steps = submission.steps
 
@@ -89,6 +91,7 @@ class SubmissionNextStepTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step1, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             next_step = submission.get_next_step()
 
@@ -98,6 +101,7 @@ class SubmissionNextStepTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step2, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             next_step = submission.get_next_step()
 
@@ -107,6 +111,7 @@ class SubmissionNextStepTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step3, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             next_step = submission.get_next_step()
 
@@ -126,6 +131,7 @@ class SubmissionNextStepTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step2, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             next_step = submission.get_next_step()
 
@@ -178,6 +184,7 @@ class SubmissionStepAvailabilityTests(TestCase):
             SubmissionStepFactory.create(
                 form_step=step1, submission=submission, data={}
             )
+            submission.refresh_from_db()
 
             steps = submission.steps
 

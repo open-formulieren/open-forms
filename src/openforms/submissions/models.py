@@ -70,6 +70,11 @@ class Submission(models.Model):
     def __str__(self):
         return f"Submission {self.pk}: Form {self.form_id} started on {self.created_on}"
 
+    def refresh_from_db(self, *args, **kwargs):
+        super().refresh_from_db(*args, **kwargs)
+        if hasattr(self, "_execution_state"):
+            del self._execution_state
+
     @property
     def is_completed(self):
         return bool(self.completed_on)
@@ -78,6 +83,9 @@ class Submission(models.Model):
         """
         Retrieve the current execution state of steps from the database.
         """
+        if hasattr(self, "_execution_state"):
+            return self._execution_state
+
         form_steps = self.form.formstep_set.select_related("form_definition").order_by(
             "order"
         )
@@ -108,7 +116,7 @@ class Submission(models.Model):
             form_steps=list(form_steps),
             submission_steps=steps,
         )
-
+        self._execution_state = state
         return state
 
     @property
