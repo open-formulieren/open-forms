@@ -24,6 +24,8 @@ pyopenssl
 djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
+pyyaml
+uritemplate
 # django-extra-fields
 # django-filter
 # drf-yasg  # api documentation
