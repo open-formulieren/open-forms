@@ -8,6 +8,7 @@ API responses.
 
 from django.test import TestCase
 
+from openforms.core.constants import AvailabilityOptions
 from openforms.core.tests.factories import FormFactory, FormStepFactory
 
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -144,3 +145,42 @@ class SubmissionNextStepTests(TestCase):
         next_step = submission.get_next_step()
 
         self.assertEqual(next_step, step2)
+
+
+class SubmissionStepAvailabilityTests(TestCase):
+    def test_always_available(self):
+        form = FormFactory.create()
+        step1, step2, step3 = FormStepFactory.create_batch(
+            3, form=form, availability_strategy=AvailabilityOptions.always
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        for step in submission.steps:
+            with self.subTest(step=step):
+                self.assertTrue(step.available)
+
+    def test_conditional_availability(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(form=form)
+        step2, step3 = FormStepFactory.create_batch(
+            2, form=form, availability_strategy=AvailabilityOptions.after_previous_step
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        with self.subTest(submissions="none"):
+            steps = submission.steps
+
+            self.assertTrue(steps[0].available)
+            self.assertFalse(steps[1].available)
+            self.assertFalse(steps[2].available)
+
+        with self.subTest(submissions="step1"):
+            SubmissionStepFactory.create(
+                form_step=step1, submission=submission, data={}
+            )
+
+            steps = submission.steps
+
+            self.assertTrue(steps[0].available)
+            self.assertTrue(steps[1].available)
+            self.assertFalse(steps[2].available)
