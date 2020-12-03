@@ -10,7 +10,7 @@ from django.test import TestCase
 
 from openforms.core.tests.factories import FormFactory, FormStepFactory
 
-from .factories import Submission, SubmissionFactory, SubmissionStepFactory
+from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 class SubmissionStepsStateTests(TestCase):
@@ -40,51 +40,6 @@ class SubmissionStepsStateTests(TestCase):
 
         self.assertEqual(steps[0].form_step, step1)
         self.assertEqual(steps[1].form_step, step2)
-
-    def test_current_step_moving(self):
-        form = FormFactory.create()
-        step1, step2, step3 = FormStepFactory.create_batch(3, form=form)
-        submission = SubmissionFactory.create(form=form)
-
-        with self.subTest(submissions="none"):
-            steps = submission.steps
-
-            self.assertTrue(steps[0].current)
-            self.assertFalse(steps[1].current)
-            self.assertFalse(steps[2].current)
-
-        with self.subTest(submissions="first step"):
-            SubmissionStepFactory.create(
-                form_step=step1, submission=submission, data={}
-            )
-
-            steps = submission.steps
-
-            self.assertFalse(steps[0].current)
-            self.assertTrue(steps[1].current)
-            self.assertFalse(steps[2].current)
-
-        with self.subTest(submissions="second step"):
-            SubmissionStepFactory.create(
-                form_step=step2, submission=submission, data={}
-            )
-
-            steps = submission.steps
-
-            self.assertFalse(steps[0].current)
-            self.assertFalse(steps[1].current)
-            self.assertTrue(steps[2].current)
-
-        with self.subTest(submissions="third and last step"):
-            SubmissionStepFactory.create(
-                form_step=step3, submission=submission, data={}
-            )
-
-            steps = submission.steps
-
-            self.assertFalse(steps[0].current)
-            self.assertFalse(steps[1].current)
-            self.assertFalse(steps[2].current)
 
     def test_step_completed(self):
         form = FormFactory.create()
@@ -116,3 +71,76 @@ class SubmissionStepsStateTests(TestCase):
 
             self.assertTrue(steps[0].completed)
             self.assertTrue(steps[1].completed)
+
+
+class SubmissionNextStepTests(TestCase):
+    def test_next_step_all_required_sequential_submission(self):
+        form = FormFactory.create()
+        step1, step2, step3 = FormStepFactory.create_batch(3, form=form)
+        submission = SubmissionFactory.create(form=form)
+
+        with self.subTest(submissions="none"):
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, step1)
+
+        with self.subTest(submissions="first step"):
+            SubmissionStepFactory.create(
+                form_step=step1, submission=submission, data={}
+            )
+
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, step2)
+
+        with self.subTest(submissions="second step"):
+            SubmissionStepFactory.create(
+                form_step=step2, submission=submission, data={}
+            )
+
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, step3)
+
+        with self.subTest(submissions="third and last step"):
+            SubmissionStepFactory.create(
+                form_step=step3, submission=submission, data={}
+            )
+
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, None)
+
+    def test_next_step_non_sequential_submission(self):
+        form = FormFactory.create()
+        step1, step2, step3 = FormStepFactory.create_batch(3, form=form)
+        submission = SubmissionFactory.create(form=form)
+
+        with self.subTest(submissions="none"):
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, step1)
+
+        with self.subTest(submissions="second step"):
+            SubmissionStepFactory.create(
+                form_step=step2, submission=submission, data={}
+            )
+
+            next_step = submission.get_next_step()
+
+            self.assertEqual(next_step, step3)
+
+    def test_next_step_based_on_last_modification(self):
+        """
+        Test that step 2 is the next step if step 1 is the last touched step.
+        """
+        form = FormFactory.create()
+        step1, step2, step3 = FormStepFactory.create_batch(3, form=form)
+        submission = SubmissionFactory.create(form=form)
+        # first submit step 3, then 1 -> the next step is 2 and not None
+        SubmissionStepFactory.create(form_step=step3, submission=submission, data={})
+        SubmissionStepFactory.create(form_step=step1, submission=submission, data={})
+
+        next_step = submission.get_next_step()
+
+        self.assertEqual(next_step, step2)

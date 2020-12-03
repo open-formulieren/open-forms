@@ -20,7 +20,7 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
         model = FormDefinition
 
     name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
-    slug = factory.Faker("word")
+    slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
     configuration = '{"components": [{"type": "test-component"}]}'
 

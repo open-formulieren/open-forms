@@ -42,7 +42,6 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_step",
             "available",
             "completed",
-            "current",
             "optional",
         )
 

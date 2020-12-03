@@ -1,16 +1,17 @@
 """
-All state is managed on the backend - it's the definitive source of truth which also makes resuming possible across devices (if you have a "magic link").
+All state is managed on the backend - it's the definitive source of truth which also
+makes resuming possible across devices (if you have a "magic link").
 
 This information drives the frontend/navigation.
 """
 
 from rest_framework import status
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.core.tests.factories import FormFactory, FormStepFactory
 
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import SubmissionFactory
 from .mixins import SubmissionsMixin
 
 
@@ -71,7 +72,6 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                         "formStep": f"http://testserver{form_step_path}",
                         "available": True,
                         "completed": False,
-                        "current": True,
                         "optional": False,
                         "name": "Select product",
                     }
