@@ -7,15 +7,15 @@
 -e git+ssh://git@bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning  # via -r requirements/ci.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml  # via -r requirements/ci.txt
 alabaster==0.7.12         # via sphinx
-appdirs==1.4.4            # via black
+appdirs==1.4.4            # via -r requirements/ci.txt, black
 babel==2.8.0              # via sphinx
 beautifulsoup4==4.9.1     # via -r requirements/ci.txt, webtest
-black==20.8b1             # via -r requirements/dev.in
+black==20.8b1             # via -r requirements/ci.txt
 bump2version==1.0.0       # via -r requirements/dev.in
 certifi==2020.6.20        # via -r requirements/ci.txt, elastic-apm, requests, sentry-sdk
 cffi==1.14.3              # via -r requirements/ci.txt, cryptography
 chardet==3.0.4            # via -r requirements/ci.txt, requests
-click==7.1.2              # via black, pip-tools
+click==7.1.2              # via -r requirements/ci.txt, black, pip-tools
 coverage==4.5.4           # via -r requirements/ci.txt
 cryptography==3.1.1       # via -r requirements/ci.txt, pyopenssl
 cssselect==1.1.0          # via -r requirements/ci.txt, pyquery
@@ -47,29 +47,29 @@ drf-nested-routers==0.91  # via -r requirements/ci.txt
 elastic-apm==5.8.1        # via -r requirements/ci.txt
 factory-boy==3.0.1        # via -r requirements/ci.txt
 faker==4.1.2              # via -r requirements/ci.txt, factory-boy
-flake8==3.8.3             # via -r requirements/dev.in
+flake8==3.8.4             # via -r requirements/ci.txt
 freezegun==0.3.15         # via -r requirements/ci.txt
 gemma-zds-client==0.13.3  # via -r requirements/ci.txt, zgw-consumers
 idna==2.10                # via -r requirements/ci.txt, requests
 imagesize==1.2.0          # via sphinx
-importlib-metadata==1.7.0  # via flake8
+importlib-metadata==3.1.1  # via -r requirements/ci.txt, flake8
 isodate==0.6.0            # via -r requirements/ci.txt, python3-saml
-isort==5.5.0              # via -r requirements/dev.in
+isort==5.6.4              # via -r requirements/ci.txt
 jinja2==2.11.2            # via sphinx
 lxml==4.5.2               # via -r requirements/ci.txt, pyquery, xmlsec
 markupsafe==1.1.1         # via jinja2
-mccabe==0.6.1             # via flake8
-mypy-extensions==0.4.3    # via black
+mccabe==0.6.1             # via -r requirements/ci.txt, flake8
+mypy-extensions==0.4.3    # via -r requirements/ci.txt, black
 packaging==20.4           # via sphinx
-pathspec==0.8.0           # via black
+pathspec==0.8.1           # via -r requirements/ci.txt, black
 pep8==1.7.1               # via -r requirements/ci.txt
 pillow==7.2.0             # via -r requirements/ci.txt
 pip-tools==5.3.1          # via -r requirements/dev.in
 polib==1.1.0              # via -r requirements/ci.txt, django-rosetta
 psycopg2==2.8.5           # via -r requirements/ci.txt
-pycodestyle==2.6.0        # via flake8
+pycodestyle==2.6.0        # via -r requirements/ci.txt, flake8
 pycparser==2.20           # via -r requirements/ci.txt, cffi
-pyflakes==2.2.0           # via flake8
+pyflakes==2.2.0           # via -r requirements/ci.txt, flake8
 pygments==2.6.1           # via sphinx
 pyjwt==1.7.1              # via -r requirements/ci.txt, gemma-zds-client
 pyopenssl==19.1.0         # via -r requirements/ci.txt
@@ -81,7 +81,7 @@ python-dotenv==0.14.0     # via -r requirements/ci.txt
 pytz==2020.1              # via -r requirements/ci.txt, babel, django
 pyyaml==5.3.1             # via -r requirements/ci.txt, gemma-zds-client
 redis==3.5.3              # via -r requirements/ci.txt, django-redis
-regex==2020.7.14          # via black
+regex==2020.11.13         # via -r requirements/ci.txt, black
 requests-mock==1.8.0      # via -r requirements/ci.txt, ddt-api-calls
 requests==2.24.0          # via -r requirements/ci.txt, ddt-api-calls, django-rosetta, gemma-zds-client, requests-mock, sphinx, zgw-consumers
 sentry-sdk==0.17.3        # via -r requirements/ci.txt
@@ -99,9 +99,9 @@ sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 sqlparse==0.3.1           # via -r requirements/ci.txt, django, django-debug-toolbar
 tblib==1.7.0              # via -r requirements/ci.txt
 text-unidecode==1.3       # via -r requirements/ci.txt, faker
-toml==0.10.1              # via black
-typed-ast==1.4.1          # via black
-typing-extensions==3.7.4.3  # via black
+toml==0.10.2              # via -r requirements/ci.txt, black
+typed-ast==1.4.1          # via -r requirements/ci.txt, black
+typing-extensions==3.7.4.3  # via -r requirements/ci.txt, black
 urllib3==1.25.10          # via -r requirements/ci.txt, elastic-apm, requests, sentry-sdk
 uwsgi==2.0.19.1           # via -r requirements/ci.txt
 waitress==1.4.4           # via -r requirements/ci.txt, webtest
@@ -109,7 +109,7 @@ webob==1.8.6              # via -r requirements/ci.txt, webtest
 webtest==2.0.35           # via -r requirements/ci.txt, django-webtest
 xmlsec==1.3.8             # via -r requirements/ci.txt, python3-saml
 zgw-consumers==0.12.1     # via -r requirements/ci.txt
-zipp==3.1.0               # via importlib-metadata
+zipp==3.4.0               # via -r requirements/ci.txt, importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

@@ -2,11 +2,6 @@
 pip-tools
 bump2version
 
-# Code formatting
-black
-isort
-flake8
-
 # Debug tooling
 django-debug-toolbar
 ddt-api-calls
