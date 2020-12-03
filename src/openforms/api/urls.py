@@ -1,8 +1,7 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 
 from rest_framework import routers
-from rest_framework.schemas import get_schema_view
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.core.api.viewsets import (
@@ -15,6 +14,8 @@ from openforms.submissions.api.viewsets import (
     SubmissionStepViewSet,
     SubmissionViewSet,
 )
+
+from .schema import schema_view
 
 app_name = "api"
 
@@ -38,15 +39,10 @@ router.register(r"form-submissions", FormSubmissionViewSet, basename="form-submi
 
 
 urlpatterns = [
-    path(
-        "v1",
-        get_schema_view(
-            title="Open Forms",
-            description="Open Forms API to manage forms, form steps and submissions",
-            version="1.0.0",
-            public=True,
-        ),
-        name="openapi-schema",
+    re_path(
+        r"v1(?P<format>\.json|\.yaml)",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
     ),
     path(
         "v1/docs/",
