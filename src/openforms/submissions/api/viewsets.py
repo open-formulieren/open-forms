@@ -138,6 +138,24 @@ class SubmissionViewSet(
 class SubmissionStepViewSet(
     NestedViewSetMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
+    """
+    Handle form step submission data.
+
+    retrieve:
+    Retrieve the form step submission details.
+
+    update:
+    Submit the form step submission data.
+
+    The submission data is either created or updated, depending on whether there was
+    submission data present before or not. Make sure to retrieve the step data to
+    display already filled out fields.
+
+    Note that the form step configuration is currently not validated - this may change
+    in the future. I.e. - a step that is marked as not available will still be submitted
+    at the time being.
+    """
+
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
     authentication_classes = ()
