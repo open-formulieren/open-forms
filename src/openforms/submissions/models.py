@@ -1,3 +1,4 @@
+import logging
 import uuid
 from dataclasses import dataclass
 from typing import List, Optional
@@ -5,9 +6,12 @@ from typing import List, Optional
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+from openforms.core.constants import AvailabilityOptions
 from openforms.core.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -101,7 +105,7 @@ class Submission(models.Model):
             steps.append(step)
 
         state = SubmissionState(
-            form_steps=form_steps,
+            form_steps=list(form_steps),
             submission_steps=steps,
         )
 
@@ -148,8 +152,31 @@ class SubmissionStep(models.Model):
 
     @property
     def available(self) -> bool:
-        # TODO: future implementations might be dynamic, might be DMN driven...
-        return True
+        strat = self.form_step.availability_strategy
+        if strat == AvailabilityOptions.always:
+            return True
+
+        elif strat == AvailabilityOptions.after_previous_step:
+            submission_state = self.submission.load_execution_state()
+            index = submission_state.form_steps.index(self.form_step)
+            if index == 0:  # there is no previous step...
+                logger.warning(
+                    "First step is misconfigured, should always be available. Form step: %d",
+                    self.form_step_id,
+                )
+                return False
+
+            # check if the previous available step was completed
+            candidates = [
+                step
+                for step in submission_state.submission_steps[:index]
+                if step.available
+            ]
+            if candidates and candidates[-1].completed:
+                return True
+            return False
+        else:
+            raise NotImplementedError(f"Unknown strategy: {strat}")
 
     @property
     def completed(self) -> bool:
