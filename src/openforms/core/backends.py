@@ -8,5 +8,6 @@ def register(func):
 
 
 @register
-def console_backend(submission_step) -> None:
-    print(submission_step.data)
+def console_backend(submission) -> None:
+    for step in submission.submissionstep_set.all():
+        print(step.data)

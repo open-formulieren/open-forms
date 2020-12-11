@@ -18,3 +18,16 @@ def add_submmission_to_session(
     submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
     submissions.append(str(submission.uuid))
     request.session[SUBMISSIONS_SESSION_KEY] = submissions
+
+
+def remove_submission_from_session(
+    submission: Submission, request: Union[Request, HttpRequest]
+) -> None:
+    """
+    Remove the submission UUID from the session if it's present.
+    """
+    id_to_check = str(submission.uuid)
+    submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
+    if id_to_check in submissions:
+        submissions.remove(id_to_check)
+        request.session[SUBMISSIONS_SESSION_KEY] = submissions

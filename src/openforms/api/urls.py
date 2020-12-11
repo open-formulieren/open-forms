@@ -9,11 +9,7 @@ from openforms.core.api.viewsets import (
     FormStepViewSet,
     FormViewSet,
 )
-from openforms.submissions.api.viewsets import (
-    FormSubmissionViewSet,
-    SubmissionStepViewSet,
-    SubmissionViewSet,
-)
+from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
 from .schema import schema_view
 
@@ -34,8 +30,6 @@ submissions_router = NestedSimpleRouter(router, r"submissions", lookup="submissi
 submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
 )
-
-router.register(r"form-submissions", FormSubmissionViewSet, basename="form-submissions")
 
 
 urlpatterns = [
