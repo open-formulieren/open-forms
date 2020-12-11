@@ -165,6 +165,10 @@ class SubmissionViewSet(
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
+        backend_func = registry.get(submission.form.backend)
+        if backend_func:
+            result = backend_func(submission)
+            submission.backend_result = result
         submission.save()
         remove_submission_from_session(submission, self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
