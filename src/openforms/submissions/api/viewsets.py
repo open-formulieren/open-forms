@@ -14,9 +14,10 @@ from openforms.core.backends import registry
 from openforms.core.models import Form
 
 from ..models import Submission, SubmissionStep
-from ..utils import add_submmission_to_session
+from ..utils import add_submmission_to_session, remove_submission_from_session
 from .permissions import ActiveSubmissionPermission
 from .serializers import SubmissionSerializer, SubmissionStepSerializer
+from .validation import validate_submission_completion
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +139,16 @@ class SubmissionViewSet(
         # mutate/view the submission
         # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request)
+
+    @transaction.atomic()
+    @action(detail=True, methods=["post"], url_name="complete")
+    def _complete(self, request, *args, **kwargs):
+        submission = self.get_object()
+        validate_submission_completion(submission, request=request)
+        submission.completed_on = timezone.now()
+        submission.save()
+        remove_submission_from_session(submission, self.request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SubmissionStepViewSet(
