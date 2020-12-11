@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 
+from drf_yasg.utils import no_body, swagger_auto_schema
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -17,7 +18,7 @@ from ..models import Submission, SubmissionStep
 from ..utils import add_submmission_to_session, remove_submission_from_session
 from .permissions import ActiveSubmissionPermission
 from .serializers import SubmissionSerializer, SubmissionStepSerializer
-from .validation import validate_submission_completion
+from .validation import CompletionValidationSerializer, validate_submission_completion
 
 logger = logging.getLogger(__name__)
 
@@ -140,9 +141,27 @@ class SubmissionViewSet(
         # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request)
 
+    @swagger_auto_schema(
+        request_body=no_body,
+        responses={
+            204: "",
+            400: CompletionValidationSerializer,
+        },
+    )
     @transaction.atomic()
     @action(detail=True, methods=["post"], url_name="complete")
     def _complete(self, request, *args, **kwargs):
+        """
+        Mark the submission as completed.
+
+        Submission completion requires that all required steps are completed.
+
+        Once a submission is completed, it's removed from the session. This means it's
+        no longer possible to change or read the submission data (including individual
+        steps).
+
+        The submissions is persisted to the configured backend.
+        """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
