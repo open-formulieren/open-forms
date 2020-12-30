@@ -8,6 +8,7 @@ pyquery  # integrates with webtest
 requests-mock
 tblib
 pep8
+django-capture-on-commit-callbacks
 
 # Code formatting
 black

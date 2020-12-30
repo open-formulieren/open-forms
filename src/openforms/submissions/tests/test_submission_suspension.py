@@ -51,3 +51,21 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         # test that submission ID is not removed from session
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
         self.assertIn(str(submission.uuid), submissions_in_session)
+
+    def test_missing_email(self):
+        form = FormFactory.create()
+        FormStepFactory.create(form=form, optional=False)
+        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.json())
+        submission.refresh_from_db()
+        self.assertIsNone(submission.suspended_on)

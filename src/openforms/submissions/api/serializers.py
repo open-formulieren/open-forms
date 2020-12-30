@@ -1,3 +1,7 @@
+import logging
+
+from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -8,6 +12,8 @@ from openforms.core.models import FormStep
 
 from ..models import Submission, SubmissionStep
 from .fields import NestedSubmissionRelatedField
+
+logger = logging.getLogger(__name__)
 
 
 class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
@@ -141,3 +147,36 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 "source": "uuid",
             },
         }
+
+
+class SubmissionSuspensionSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        write_only=True,
+        label=_("Contact e-mail address"),
+        help_text=_(
+            "The e-mail address where the 'magic' resume link should be sent to"
+        ),
+    )
+
+    class Meta:
+        model = Submission
+        fields = (
+            "email",
+            "suspended_on",
+        )
+        extra_kwargs = {
+            "suspended_on": {
+                "read_only": True,
+            }
+        }
+
+    def update(self, instance, validated_data):
+        email = validated_data.pop("email")
+        instance.suspended_on = timezone.now()
+        instance = super().update(instance, validated_data)
+        transaction.on_commit(lambda: self.notify_suspension(instance, email))
+        return instance
+
+    def notify_suspension(self, instance: Submission, email: str):
+        logger.info("TODO: implement sending e-mail with magic link")
