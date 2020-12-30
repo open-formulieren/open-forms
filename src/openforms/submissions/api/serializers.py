@@ -1,5 +1,7 @@
 import logging
 
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -179,4 +181,10 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         return instance
 
     def notify_suspension(self, instance: Submission, email: str):
-        logger.info("TODO: implement sending e-mail with magic link")
+        logger.info("TODO: properly implement sending e-mail with magic link")
+        send_mail(
+            _("Your form submission"),
+            "Submission is suspended. Resume here: <link>",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+        )

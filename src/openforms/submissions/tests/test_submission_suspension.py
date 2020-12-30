@@ -7,8 +7,11 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+from django.core import mail
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -69,3 +72,19 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertIn("email", response.json())
         submission.refresh_from_db()
         self.assertIsNone(submission.suspended_on)
+
+    def test_email_sent(self):
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True) as callbacks:
+            response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(callbacks), 1)
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ["hello@open-forms.nl"])
+        self.assertEqual(email.subject, _("Your form submission"))
