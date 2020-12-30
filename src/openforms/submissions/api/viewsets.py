@@ -15,7 +15,11 @@ from openforms.core.backends import registry
 from ..models import Submission, SubmissionStep
 from ..utils import add_submmission_to_session, remove_submission_from_session
 from .permissions import ActiveSubmissionPermission
-from .serializers import SubmissionSerializer, SubmissionStepSerializer
+from .serializers import (
+    SubmissionSerializer,
+    SubmissionStepSerializer,
+    SubmissionSuspensionSerializer,
+)
 from .validation import CompletionValidationSerializer, validate_submission_completion
 
 logger = logging.getLogger(__name__)
@@ -75,6 +79,30 @@ class SubmissionViewSet(
         submission.save()
         remove_submission_from_session(submission, self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @swagger_auto_schema(
+        request_body=SubmissionSuspensionSerializer,
+        responses={
+            201: SubmissionSuspensionSerializer,
+            # 400: TODO - schema for errors!
+        },
+    )
+    @transaction.atomic()
+    @action(detail=True, methods=["post"], url_name="suspend")
+    def _suspend(self, request, *args, **kwargs):
+        """
+        Suspend the submission.
+
+        Submission suspension requires contact details to send the end-user the resume
+        URL so that they can resume the submission (possible from another device).
+        """
+        submission = self.get_object()
+        serializer = SubmissionSuspensionSerializer(
+            instance=submission, data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SubmissionStepViewSet(

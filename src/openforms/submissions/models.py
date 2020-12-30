@@ -58,6 +58,7 @@ class Submission(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     backend_result = JSONField(blank=True, null=True)
     completed_on = models.DateTimeField(blank=True, null=True)
+    suspended_on = models.DateTimeField(blank=True, null=True)
     bsn = models.CharField(
         max_length=9, default="", blank=True, validators=(validate_bsn,)
     )
