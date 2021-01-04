@@ -15,7 +15,7 @@ import {
   Switch,
   Route,
   Link as RouterLink
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import FormList from './FormList';
 import FormDetail from './FormDetail';
