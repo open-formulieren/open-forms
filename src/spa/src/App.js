@@ -65,7 +65,7 @@ const App = () => {
 
         <Switch>
           <Route exact path="/"> <FormList /> </Route>
-          <Route path="/forms/:id"> <FormDetail /> </Route>
+          <Route path="/forms/:id/start"> <FormDetail /> </Route>
         </Switch>
 
       </Container>

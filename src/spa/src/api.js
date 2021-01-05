@@ -1,10 +1,18 @@
+import { parse, serialize } from "uri-js";
+
 const fetchDefaults = {
     credentials: 'same-origin', // required for Firefox 60, which is used in werkplekken
 };
 
 const apiCall = (url, opts) => {
     const options = { ...fetchDefaults, ...opts };
-    return window.fetch(url, options);
+    const targetUrl = serialize({
+      ...parse(url),
+      scheme: undefined,
+      host: undefined,
+      port: undefined,
+    });
+    return window.fetch(targetUrl, options);
 };
 
 const get = async (url, params = {}, multiParams = []) => {
@@ -19,7 +27,7 @@ const get = async (url, params = {}, multiParams = []) => {
         });
     }
     url += `?${searchParams}`;
-    const response = await fetch(url);
+    const response = await apiCall(url);
     const data = await response.json();
     return data;
 };
@@ -33,7 +41,7 @@ const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
         },
         body: JSON.stringify(data),
     };
-    const response = await fetch(url, opts);
+    const response = await apiCall(url, opts);
     const responseData = await response.json();
     return {
         ok: response.ok,
@@ -64,7 +72,7 @@ const destroy = async (url, csrftoken) => {
             'X-CSRFToken': csrftoken,
         },
     };
-    const response = await fetch(url, opts);
+    const response = await apiCall(url, opts);
     if (!response.ok) {
         const responseData = await response.json();
         console.error('Delete failed', responseData);
