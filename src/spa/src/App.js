@@ -19,6 +19,7 @@ import {
 
 import FormList from './FormList';
 import FormDetail from './FormDetail';
+import FormStep from './FormStep';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,14 +46,14 @@ const App = () => {
               color="inherit"
               variant="h5"
               className={classes.navLink}
-              component={RouterLink} >Forms</Link>
+              component={RouterLink}>Forms</Link>
 
             <Link
-              to="/dummy"
+              to="/submissions"
               color="inherit"
               variant="h5"
               className={classes.navLink}
-              component={RouterLink} >Dummy</Link>
+              component={RouterLink}>My submissions</Link>
 
           </Toolbar>
         </AppBar>
@@ -64,8 +65,9 @@ const App = () => {
         </Box>
 
         <Switch>
-          <Route exact path="/"> <FormList /> </Route>
-          <Route path="/forms/:id/start"> <FormDetail /> </Route>
+          <Route exact path="/" component={FormList} />
+          <Route path="/forms/:id/start" component={FormDetail} />
+          <Route path="/submissions/:submissionId/steps/:stepId" component={FormStep} />
         </Switch>
 
       </Container>
