@@ -32,7 +32,9 @@ const get = async (url, params = {}, multiParams = []) => {
     return data;
 };
 
-const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
+const _unsafe = async (method = 'POST', url, data = {}) => {
+    const csrfTokenCookie = await window.cookieStore.get('csrftoken');
+    const csrftoken = csrfTokenCookie.value;
     const opts = {
         method,
         headers: {
@@ -50,22 +52,24 @@ const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
     };
 };
 
-const post = async (url, csrftoken, data = {}) => {
-    const resp = await _unsafe('POST', url, csrftoken, data);
+const post = async (url, data = {}) => {
+    const resp = await _unsafe('POST', url, data);
     return resp;
 };
 
-const patch = async (url, csrftoken, data = {}) => {
-    const resp = await _unsafe('PATCH', url, csrftoken, data);
+const patch = async (url, data = {}) => {
+    const resp = await _unsafe('PATCH', url, data);
     return resp;
 };
 
-const put = async (url, csrftoken, data = {}) => {
-    const resp = await _unsafe('PUT', url, csrftoken, data);
+const put = async (url, data = {}) => {
+    const resp = await _unsafe('PUT', url, data);
     return resp;
 };
 
-const destroy = async (url, csrftoken) => {
+const destroy = async (url) => {
+    const csrfTokenCookie = await window.cookieStore.get('csrftoken');
+    const csrftoken = csrfTokenCookie.value;
     const opts = {
         method: 'DELETE',
         headers: {
