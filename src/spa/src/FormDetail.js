@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -29,6 +30,9 @@ const useStyles = makeStyles( (theme) => ({
     overflow: 'auto',
     background: '#eee',
     padding: theme.spacing(2),
+  },
+  submitRow: {
+    paddingTop: theme.spacing(2),
   }
 }));
 
@@ -41,35 +45,46 @@ const FormDetail = () => {
       fn={async () => await loadForm(id).catch(console.error)}
       args={[id]}
       render={ ({form, step}) => (
-        <Paper>
-          <Box p={2}>
-            <Typography variant="h2" gutterBottom> {form.name} </Typography>
-            <Typography>{form.steps.length} step(s).</Typography>
-            <Typography variant="h5" component="h3">Configuration</Typography>
-            <Typography component="pre" py={1} className={classes.code}>
-              <code>
-                {JSON.stringify(step.configuration, null, 4)}
-              </code>
-            </Typography>
+        <Box component="form" onSubmit={console.log} noValidate autoComplete="off">
+          <Typography variant="h2" gutterBottom> {form.name} </Typography>
+          <Typography gutterBottom>{form.steps.length} step(s) total.</Typography>
 
-            <form onSubmit={console.log} noValidate autoComplete="off">
-              <TextField
-                id={`form-step-data-${step.index}`}
-                label="Form step data"
-                multiline
-                rows={12}
-                value=""
-                onChange={console.log}
-                variant="outlined"
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-              >Submit</Button>
-            </form>
-          </Box>
-        </Paper>
+          <Paper>
+            <Box p={2}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    id={`form-step-data-${step.index}`}
+                    label="Form step data"
+                    multiline
+                    rows={12}
+                    value=""
+                    onChange={console.log}
+                    variant="outlined"
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h5" component="h3">Configuration</Typography>
+                  <Typography component="pre" py={1} className={classes.code}>
+                    <code>
+                      {JSON.stringify(step.configuration, null, 4)}
+                    </code>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
+
+          <Grid container justify="flex-end" className={classes.submitRow}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+            >Submit</Button>
+          </Grid>
+
+        </Box>
       )}
     />
   );
