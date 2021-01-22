@@ -1,6 +1,6 @@
 import os
 
-from openforms.conf.django.dirs import DJANGO_PROJECT_DIR
+from openforms.conf.django.dirs import BASE_DIR, DJANGO_PROJECT_DIR
 
 RAW_TEMPLATE_LOADERS = (
     "django.template.loaders.filesystem.Loader",
@@ -11,7 +11,10 @@ RAW_TEMPLATE_LOADERS = (
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(DJANGO_PROJECT_DIR, "templates"), ],
+        "DIRS": [
+            os.path.join(DJANGO_PROJECT_DIR, "templates"),
+            os.path.join(BASE_DIR, "src"),
+        ],
         "APP_DIRS": False,  # conflicts with explicity specifying the loaders
         "OPTIONS": {
             "context_processors": [
