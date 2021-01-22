@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 import zip from 'lodash/zip';
 
@@ -10,14 +10,12 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
-import CloseIcon from '@material-ui/icons/Close';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
 
 import AsyncLoad from './AsyncLoad';
 import FormattedJson from './FormattedJson';
 import SubmitRow from './SubmitRow';
 import { get, post } from './api';
+import { SnackbarContext } from './Context';
 
 const loadSubmissionOverview = async (submissionId) => {
   const submission = await get(`/api/v1/submissions/${submissionId}`);
@@ -62,47 +60,28 @@ StepSummary.propTypes = {
   data: PropTypes.object,
 };
 
-
-const SubmitConfirmation = ({open=false, onClose}) => {
-  return (
-    <Snackbar
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      open={open}
-      autoHideDuration={3000}
-      onClose={onClose}
-      message="Form submission completed"
-      action={
-        <React.Fragment>
-          <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </React.Fragment>
-      }
-    />
-  );
-};
-
-SubmitConfirmation.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func.isRequired,
-};
-
 const FormCompletion = ({submissionId, steps=[]}) => {
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const setSnackbarState = useContext(SnackbarContext)[1];
 
   const onSubmit = async (event) => {
     event.preventDefault();
 
     try {
       await completeSubmission(submissionId);
-      setConfirmationOpen(true);
+      setSnackbarState({
+        open: true,
+        onClose: () => setSnackbarState(null),
+      });
+      setCompleted(true);
     } catch (error) {
       console.error(error);
     }
   };
+
+  if (completed) {
+    return (<Redirect push to="/" />);
+  }
 
   return (
     <Box component="form" onSubmit={onSubmit} noValidate autoComplete="off">
@@ -113,10 +92,6 @@ const FormCompletion = ({submissionId, steps=[]}) => {
       <SubmitRow>
         <Button type="submit" variant="contained" color="primary">Confirm</Button>
       </SubmitRow>
-      <SubmitConfirmation
-        open={confirmationOpen}
-        onClose={() => setConfirmationOpen(false)}
-      />
     </Box>
   );
 };

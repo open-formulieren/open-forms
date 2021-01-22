@@ -83,7 +83,7 @@ const FormStep = ({ submissionId, step }) => {
 
         <SubmitRow>
           <Button type="submit" variant="contained" color="primary">Submit</Button>
-        </SubmitRow>>
+        </SubmitRow>
       </Box>
     </Paper>
   );
