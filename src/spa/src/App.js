@@ -17,12 +17,13 @@ import {
   Link as RouterLink
 } from 'react-router-dom';
 
+import { SnackbarContext } from './Context';
 import FormList from './FormList';
 import FormDetail from './FormDetail';
 import FormStep from './FormStep';
 import FormCompletion from './FormCompletion';
-import { SnackbarContext } from './Context';
 import Snackbar from './Snackbar';
+import SubmissionList from './SubmissionList';
 
 const basename = process.env.REACT_APP_BASENAME || '/';
 
@@ -76,6 +77,7 @@ const App = () => {
           <Switch>
             <Route exact path="/" component={FormList} />
             <Route path="/forms/:id/start" component={FormDetail} />
+            <Route exact path="/submissions" component={SubmissionList} />
             <Route path="/submissions/:submissionId/steps/:stepId" component={FormStep} />
             <Route path="/submissions/:submissionId/complete" component={FormCompletion} />
           </Switch>
