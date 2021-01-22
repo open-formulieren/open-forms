@@ -6,6 +6,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
+from .views import SPADemoView
+
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
@@ -37,6 +39,7 @@ urlpatterns = [
     path("api/", include("openforms.api.urls", namespace="api")),
     path("prototype/", include("openforms.sample_app.urls", namespace="sample_app")),
     path("", include("openforms.core.urls", namespace="core")),
+    path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),

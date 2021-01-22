@@ -21,6 +21,7 @@ import FormList from './FormList';
 import FormDetail from './FormDetail';
 import FormStep from './FormStep';
 
+const basename = process.env.REACT_APP_BASENAME || '/';
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const classes = useStyles();
   return (
-    <Router>
+    <Router basename={basename}>
       <Container maxWidth="xl">
 
         <AppBar position="static">
