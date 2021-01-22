@@ -28,7 +28,7 @@ const basename = process.env.REACT_APP_BASENAME || '/';
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
-    marginRight: theme.spacing(1),
+    marginRight: theme.spacing(2),
   }
 }));
 
