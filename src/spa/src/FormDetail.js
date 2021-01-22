@@ -56,7 +56,7 @@ const FormDetail = () => {
       render={ (form) => (
         <Paper>
           <Box p={2} component="form" onSubmit={onSubmit.bind(null, form)} noValidate autoComplete="off">
-            <Typography variant="h2" gutterBottom> {form.name} </Typography>
+            <Typography variant="h5" compnent="h2" gutterBottom> {form.name} </Typography>
             <Typography gutterBottom>{form.steps.length} step(s) total.</Typography>
 
             <div className={classes.submitRow}>
