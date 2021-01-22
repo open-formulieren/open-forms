@@ -20,6 +20,7 @@ import {
 import FormList from './FormList';
 import FormDetail from './FormDetail';
 import FormStep from './FormStep';
+import FormCompletion from './FormCompletion';
 
 const basename = process.env.REACT_APP_BASENAME || '/';
 
@@ -69,6 +70,7 @@ const App = () => {
           <Route exact path="/" component={FormList} />
           <Route path="/forms/:id/start" component={FormDetail} />
           <Route path="/submissions/:submissionId/steps/:stepId" component={FormStep} />
+          <Route path="/submissions/:submissionId/complete" component={FormCompletion} />
         </Switch>
 
       </Container>

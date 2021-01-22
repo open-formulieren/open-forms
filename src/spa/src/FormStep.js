@@ -7,11 +7,12 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 import AsyncLoad from './AsyncLoad';
+import FormattedJson from './FormattedJson';
+import SubmitRow from './SubmitRow';
 import { get, put } from './api';
 
 const loadSubmission = async (submissionId) => {
@@ -31,18 +32,6 @@ const submitStepData = async (stepUrl, data) => {
   return stepDataResponse.data;
 };
 
-const useStyles = makeStyles( (theme) => ({
-  code: {
-    maxHeight: 400,
-    overflow: 'auto',
-    background: '#eee',
-    padding: theme.spacing(2),
-  },
-  submitRow: {
-    paddingTop: theme.spacing(2),
-  }
-}));
-
 /**
  * Display the form step form definition and handle data submission.
  * @param  {UUID} options.submissionId The ID of the submission currently being processed.
@@ -52,7 +41,6 @@ const useStyles = makeStyles( (theme) => ({
 const FormStep = ({ submissionId, step }) => {
   const [stepData, setStepData] = useState(step.data ? JSON.stringify(step.data) : '');
   const [redirectTo, setRedirectTo] = useState('');
-  const classes = useStyles();
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -89,17 +77,13 @@ const FormStep = ({ submissionId, step }) => {
 
           <Grid item xs={12} md={6}>
             <Typography variant="h5" component="h3">Configuration</Typography>
-            <Typography component="pre" py={1} className={classes.code}>
-              <code>
-                {JSON.stringify(step.formStep.configuration, null, 4)}
-              </code>
-            </Typography>
+            <FormattedJson data={step.formStep.configuration} />
           </Grid>
         </Grid>
 
-        <Grid container space={2} justify="flex-end" className={classes.submitRow}>
+        <SubmitRow>
           <Button type="submit" variant="contained" color="primary">Submit</Button>
-        </Grid>
+        </SubmitRow>>
       </Box>
     </Paper>
   );
