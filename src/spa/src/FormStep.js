@@ -13,6 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import AsyncLoad from './AsyncLoad';
 import FormattedJson from './FormattedJson';
 import SubmitRow from './SubmitRow';
+import FormStepsSidebar from './FormStepsSidebar';
 import { get, put } from './api';
 
 const loadSubmission = async (submissionId) => {
@@ -22,9 +23,13 @@ const loadSubmission = async (submissionId) => {
 
 const loadSubmissionStep = async (submissionId, stepId) => {
   const url = `/api/v1/submissions/${submissionId}/steps/${stepId}`;
-  const submissionStep = await get(url);
+  const promises = [
+    get(url),
+    get(`/api/v1/submissions/${submissionId}`),
+  ];
+  const [submissionStep, submission] = await Promise.all(promises);
   submissionStep.url = url;  // FIXME: should be in API!
-  return submissionStep;
+  return [submissionStep, submission.steps];
 };
 
 const submitStepData = async (stepUrl, data) => {
@@ -38,7 +43,7 @@ const submitStepData = async (stepUrl, data) => {
  * @param  {Object} options.step       The SubmissionStep instance for the particular form step.
  * @return {JSX}                       Render the form and redirect after valid submission.
  */
-const FormStep = ({ submissionId, step }) => {
+const FormStep = ({ submissionId, step, formSteps=[] }) => {
   const [stepData, setStepData] = useState(step.data ? JSON.stringify(step.data) : '');
   const [redirectTo, setRedirectTo] = useState('');
 
@@ -60,38 +65,53 @@ const FormStep = ({ submissionId, step }) => {
   }
 
   return (
-    <Paper>
-      <Box p={2} component="form" onSubmit={onSubmit} noValidate autoComplete="off">
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              id={`form-step-data-${step.formStep.index}`}
-              label="Form step data"
-              multiline
-              rows={12}
-              value={stepData}
-              onChange={ event => setStepData(event.target.value) }
-              variant="outlined"
-            />
-          </Grid>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={9}>
 
-          <Grid item xs={12} md={6}>
-            <Typography variant="h5" component="h3">Configuration</Typography>
-            <FormattedJson data={step.formStep.configuration} />
-          </Grid>
-        </Grid>
+        <Paper>
+          <Box p={2} component="form" onSubmit={onSubmit} noValidate autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id={`form-step-data-${step.formStep.index}`}
+                  label="Form step data"
+                  multiline
+                  rows={12}
+                  value={stepData}
+                  onChange={ event => setStepData(event.target.value) }
+                  variant="outlined"
+                />
+              </Grid>
 
-        <SubmitRow>
-          <Button type="submit" variant="contained" color="primary">Submit</Button>
-        </SubmitRow>
-      </Box>
-    </Paper>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h5" component="h3">Configuration</Typography>
+                <FormattedJson data={step.formStep.configuration} />
+              </Grid>
+            </Grid>
+
+            <SubmitRow>
+              <Button type="submit" variant="contained" color="primary">Submit</Button>
+            </SubmitRow>
+          </Box>
+        </Paper>
+
+      </Grid>
+
+      <Grid item xs={12} md={3}>
+        <FormStepsSidebar
+          steps={formSteps}
+          activeStep={step.formStep.index}
+          submissionId={submissionId}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
 FormStep.propTypes = {
   submissionId: PropTypes.string.isRequired,
   step: PropTypes.object.isRequired,
+  formSteps: PropTypes.arrayOf(PropTypes.object),
 };
 
 
@@ -105,7 +125,9 @@ const FormStepContainer = () => {
       <AsyncLoad
         fn={async () => await loadSubmissionStep(submissionId, stepId).catch(console.error)}
         args={[submissionId, stepId]}
-        render={ (submissionStep) => (<FormStep step={submissionStep} submissionId={submissionId} />) }
+        render={ ([submissionStep, formSteps]) => (
+          <FormStep step={submissionStep} submissionId={submissionId} formSteps={formSteps} />
+        ) }
       />
     );
 };
