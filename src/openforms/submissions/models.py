@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from openforms.core.constants import AvailabilityOptions
 from openforms.core.models import FormStep
@@ -69,7 +70,10 @@ class Submission(models.Model):
         verbose_name_plural = "Submissions"
 
     def __str__(self):
-        return f"Submission {self.pk}: Form {self.form_id} started on {self.created_on}"
+        return _("{pk} - started on {started}").format(
+            pk=self.pk or _("(unsaved)"),
+            started=self.created_on or _("(no timestamp yet)"),
+        )
 
     def refresh_from_db(self, *args, **kwargs):
         super().refresh_from_db(*args, **kwargs)

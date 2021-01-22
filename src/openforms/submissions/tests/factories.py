@@ -6,16 +6,14 @@ from ..models import Submission, SubmissionStep
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
+    form = factory.SubFactory(FormFactory)
 
     class Meta:
         model = Submission
 
-    form = factory.SubFactory(FormFactory)
-
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
 
     class Meta:
         model = SubmissionStep
-
-    submission = factory.SubFactory(SubmissionFactory)

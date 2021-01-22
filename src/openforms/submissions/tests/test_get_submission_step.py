@@ -1,5 +1,5 @@
 """
-Relates to issue #110
+Relates to Github issues #110 and #114
 
 A form and its form step definitions are a static declaration, which can include
 custom field types. The custom field types only resolve within the context of a
@@ -18,7 +18,8 @@ from rest_framework.test import APITestCase
 from openforms.core.custom_field_types import register, unregister
 from openforms.core.tests.factories import FormStepFactory
 
-from .factories import SubmissionFactory
+from ..models import Submission
+from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
@@ -130,7 +131,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
 
     def test_invalid_submission_id(self):
         self._add_submission_to_session(self.submission)
-        self.submission.delete()
+        Submission.objects.filter(id=self.submission.id).delete()
 
         response = self.client.get(self.step_url)
 
@@ -146,3 +147,22 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         response = self.client.get(step_url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_step_data_returned(self):
+        self._add_submission_to_session(self.submission)
+        self.assertFalse(self.submission.submissionstep_set.exists())
+
+        # create submission step data
+        SubmissionStepFactory.create(
+            submission=self.submission,
+            form_step=self.step,
+            data={"dummy": "data"},
+        )
+
+        response = self.client.get(self.step_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["data"],
+            {"dummy": "data"},
+        )
