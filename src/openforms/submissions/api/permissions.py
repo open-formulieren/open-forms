@@ -28,3 +28,9 @@ class ActiveSubmissionPermission(permissions.BasePermission):
 
         submission_id = view.kwargs[submission_url_kwarg]
         return submission_id in active_submissions
+
+    def filter_queryset(self, request: Request, view: APIView, queryset):
+        active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)
+        if not active_submissions:
+            return queryset.none()
+        return queryset.filter(uuid__in=active_submissions)

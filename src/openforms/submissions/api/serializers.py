@@ -13,7 +13,7 @@ from openforms.core.api.serializers import FormDefinitionSerializer
 from openforms.core.models import FormStep
 
 from ..models import Submission, SubmissionStep
-from .fields import NestedSubmissionRelatedField
+from .fields import NestedRelatedField
 
 logger = logging.getLogger(__name__)
 
@@ -22,22 +22,25 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     id = serializers.UUIDField(source="form_step.uuid")
     name = serializers.CharField(source="form_step.form_definition.name")
 
-    url = NestedSubmissionRelatedField(
+    url = NestedRelatedField(
         view_name="api:submission-steps-detail",
         source="*",
+        read_only=True,
         lookup_field="form_step__uuid",
         lookup_url_kwarg="step_uuid",
-        instance_lookup_kwargs={
+        parent_lookup_kwargs={
             "submission_uuid": "submission__uuid",
         },
     )
 
-    form_step = NestedSubmissionRelatedField(
+    form_step = NestedRelatedField(
         view_name="api:form-steps-detail",
-        lookup_field="uuid",
+        source="*",
+        read_only=True,
+        lookup_field="form_step__uuid",
         lookup_url_kwarg="uuid",
-        instance_lookup_kwargs={
-            "form_uuid": "form__uuid",
+        parent_lookup_kwargs={
+            "form_uuid": "submission__form__uuid",
         },
     )
 
@@ -69,15 +72,15 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "progress and other meta-data of each particular step."
         ),
     )
-    next_step = NestedSubmissionRelatedField(
+    next_step = NestedRelatedField(
         view_name="api:submission-steps-detail",
-        lookup_field="uuid",
+        lookup_field="form_step__uuid",
         lookup_url_kwarg="step_uuid",
         source="get_next_step",
         read_only=True,
         allow_null=True,
-        instance_lookup_kwargs={
-            "submission_uuid": "uuid",
+        parent_lookup_kwargs={
+            "submission_uuid": "submission__uuid",
         },
     )
 

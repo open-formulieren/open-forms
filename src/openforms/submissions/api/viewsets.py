@@ -10,6 +10,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
+from openforms.api import pagination
+from openforms.api.filters import PermissionFilterMixin
 from openforms.core.backends import registry
 
 from ..models import Submission, SubmissionStep
@@ -26,13 +28,14 @@ logger = logging.getLogger(__name__)
 
 
 class SubmissionViewSet(
-    mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+    PermissionFilterMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
 ):
-    queryset = Submission.objects.all()
+    queryset = Submission.objects.order_by("created_on")
     serializer_class = SubmissionSerializer
     authentication_classes = ()
     permission_classes = [ActiveSubmissionPermission]
     lookup_field = "uuid"
+    pagination_class = pagination.PageNumberPagination
 
     @transaction.atomic
     def perform_create(self, serializer):

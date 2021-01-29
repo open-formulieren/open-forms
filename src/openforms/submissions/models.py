@@ -130,13 +130,12 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
 
-    def get_next_step(self) -> Optional[FormStep]:
+    def get_next_step(self) -> Optional["SubmissionStep"]:
         """
         Determine which is the next step for the current submission.
         """
         submission_state = self.load_execution_state()
-        next_submission_step = submission_state.get_next_step()
-        return next_submission_step.form_step if next_submission_step else None
+        return submission_state.get_next_step()
 
 
 class SubmissionStep(models.Model):
