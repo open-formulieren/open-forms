@@ -86,7 +86,7 @@ class FormStepSerializer(serializers.ModelSerializer):
         model = FormStep
         fields = ("index", "configuration")
 
-    def get_configuration(self, instance):
+    def get_configuration(self, instance) -> dict:
         # can't simply declare this because the JSON is stored as string in
         # the DB instead of actual JSON
         return json.loads(instance.form_definition.configuration)

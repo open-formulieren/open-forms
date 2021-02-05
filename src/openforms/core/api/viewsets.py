@@ -1,3 +1,7 @@
+from django.utils.translation import gettext_lazy as _
+
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import permissions, viewsets
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -16,13 +20,29 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 
+@extend_schema_view(
+    list=extend_schema(summary=_("List form steps")),
+    retrieve=extend_schema(summary=_("Retrieve form step details")),
+)
 class FormStepViewSet(NestedViewSetMixin, BaseFormsViewSet):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("List form step definitions"),
+        tags=["forms"],
+        # responses=OpenApiTypes.OBJECT, TODO: needs to be an array
+    ),
+    retrieve=extend_schema(
+        summary=_("Retrieve form step definition"),
+        tags=["forms"],
+        responses=OpenApiTypes.OBJECT,
+    ),
+)
 class FormDefinitionViewSet(BaseFormsViewSet):
-    queryset = FormDefinition.objects.filter()
+    queryset = FormDefinition.objects.all()
     serializer_class = FormDefinitionSerializer
 
     def get_serializer_context(self) -> dict:
@@ -30,6 +50,10 @@ class FormDefinitionViewSet(BaseFormsViewSet):
         return {**context, "handle_custom_types": False}
 
 
+@extend_schema_view(
+    list=extend_schema(summary=_("List forms")),
+    retrieve=extend_schema(summary=_("Retrieve form details")),
+)
 class FormViewSet(BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
