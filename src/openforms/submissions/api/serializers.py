@@ -150,6 +150,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "id": {
                 "read_only": True,
                 "source": "uuid",
+                "allow_null": True,
             },
         }
 

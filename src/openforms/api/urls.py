@@ -1,5 +1,4 @@
-from django.urls import include, path, re_path
-from django.views.generic import TemplateView
+from django.urls import include, path
 
 from drf_spectacular.views import (
     SpectacularAPIView,
