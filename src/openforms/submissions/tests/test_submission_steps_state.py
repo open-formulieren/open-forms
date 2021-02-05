@@ -83,7 +83,7 @@ class SubmissionNextStepTests(TestCase):
         submission = SubmissionFactory.create(form=form)
 
         with self.subTest(submissions="none"):
-            next_step = submission.get_next_step()
+            next_step = submission.get_next_step().form_step
 
             self.assertEqual(next_step, step1)
 
@@ -93,7 +93,7 @@ class SubmissionNextStepTests(TestCase):
             )
             submission.refresh_from_db()
 
-            next_step = submission.get_next_step()
+            next_step = submission.get_next_step().form_step
 
             self.assertEqual(next_step, step2)
 
@@ -103,7 +103,7 @@ class SubmissionNextStepTests(TestCase):
             )
             submission.refresh_from_db()
 
-            next_step = submission.get_next_step()
+            next_step = submission.get_next_step().form_step
 
             self.assertEqual(next_step, step3)
 
@@ -123,7 +123,7 @@ class SubmissionNextStepTests(TestCase):
         submission = SubmissionFactory.create(form=form)
 
         with self.subTest(submissions="none"):
-            next_step = submission.get_next_step()
+            next_step = submission.get_next_step().form_step
 
             self.assertEqual(next_step, step1)
 
@@ -133,7 +133,7 @@ class SubmissionNextStepTests(TestCase):
             )
             submission.refresh_from_db()
 
-            next_step = submission.get_next_step()
+            next_step = submission.get_next_step().form_step
 
             self.assertEqual(next_step, step3)
 
@@ -148,7 +148,7 @@ class SubmissionNextStepTests(TestCase):
         SubmissionStepFactory.create(form_step=step3, submission=submission, data={})
         SubmissionStepFactory.create(form_step=step1, submission=submission, data={})
 
-        next_step = submission.get_next_step()
+        next_step = submission.get_next_step().form_step
 
         self.assertEqual(next_step, step2)
 
