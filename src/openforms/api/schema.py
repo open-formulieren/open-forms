@@ -1,12 +1,7 @@
-from rest_framework import permissions
+from drf_spectacular.openapi import AutoSchema as _AutoSchema
 
-# schema_view = get_schema_view(
-#     openapi.Info(
-#         title="Open Forms",
-#         default_version="v1",
-#         description="Open Forms API to manage forms, form steps and submissions",
-#         contact=openapi.Contact(email="support@maykinmedia.nl"),
-#     ),
-#     public=True,
-#     permission_classes=(permissions.AllowAny,),
-# )
+
+class AutoSchema(_AutoSchema):
+    # Subclassed because we often end up hooking into the schema generator. This
+    # provides the plumbing.
+    pass
