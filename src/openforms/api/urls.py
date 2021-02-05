@@ -11,7 +11,7 @@ from openforms.core.api.viewsets import (
 )
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
-from .schema import schema_view
+# from .schema import schema_view
 
 app_name = "api"
 
@@ -33,11 +33,11 @@ submissions_router.register(
 
 
 urlpatterns = [
-    re_path(
-        r"v1(?P<format>\.json|\.yaml)",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
-    ),
+    # re_path(
+    #     r"v1(?P<format>\.json|\.yaml)",
+    #     schema_view.without_ui(cache_timeout=0),
+    #     name="schema-json",
+    # ),
     path(
         "v1/docs/",
         TemplateView.as_view(template_name="api_docs.html"),

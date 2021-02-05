@@ -3,7 +3,6 @@ import logging
 from django.db import transaction
 from django.utils import timezone
 
-from drf_yasg.utils import no_body, swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -51,13 +50,13 @@ class SubmissionViewSet(
         # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request)
 
-    @swagger_auto_schema(
-        request_body=no_body,
-        responses={
-            204: "",
-            400: CompletionValidationSerializer,
-        },
-    )
+    # @swagger_auto_schema(
+    #     request_body=no_body,
+    #     responses={
+    #         204: "",
+    #         400: CompletionValidationSerializer,
+    #     },
+    # )
     @transaction.atomic()
     @action(detail=True, methods=["post"], url_name="complete")
     def _complete(self, request, *args, **kwargs):
@@ -83,13 +82,13 @@ class SubmissionViewSet(
         remove_submission_from_session(submission, self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @swagger_auto_schema(
-        request_body=SubmissionSuspensionSerializer,
-        responses={
-            201: SubmissionSuspensionSerializer,
-            # 400: TODO - schema for errors!
-        },
-    )
+    # @swagger_auto_schema(
+    #     request_body=SubmissionSuspensionSerializer,
+    #     responses={
+    #         201: SubmissionSuspensionSerializer,
+    #         # 400: TODO - schema for errors!
+    #     },
+    # )
     @transaction.atomic()
     @action(detail=True, methods=["post"], url_name="suspend")
     def _suspend(self, request, *args, **kwargs):

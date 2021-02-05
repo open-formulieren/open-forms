@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     "digid_eherkenning",
     "solo",
     "zgw_consumers",
-    "drf_yasg",
     # Project applications.
     "openforms.accounts",
     "openforms.contrib.zgw",

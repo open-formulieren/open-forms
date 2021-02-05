@@ -16,8 +16,6 @@ certifi==2020.6.20        # via -r requirements/ci.txt, elastic-apm, requests, s
 cffi==1.14.3              # via -r requirements/ci.txt, cryptography
 chardet==3.0.4            # via -r requirements/ci.txt, requests
 click==7.1.2              # via -r requirements/ci.txt, black, pip-tools
-coreapi==2.3.3            # via -r requirements/ci.txt, drf-yasg
-coreschema==0.0.4         # via -r requirements/ci.txt, coreapi, drf-yasg
 coverage==4.5.4           # via -r requirements/ci.txt
 cryptography==3.1.1       # via -r requirements/ci.txt, pyopenssl
 cssselect==1.1.0          # via -r requirements/ci.txt, pyquery
@@ -42,12 +40,11 @@ django-rosetta==0.9.4     # via -r requirements/ci.txt
 django-sniplates==0.7.0   # via -r requirements/ci.txt
 django-solo==1.1.3        # via -r requirements/ci.txt, zgw-consumers
 django-webtest==1.9.7     # via -r requirements/ci.txt
-django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, digid-eherkenning, django-appconf, django-axes, django-capture-on-commit-callbacks, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-relativedelta, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers, drf-yasg, zgw-consumers
+django==2.2.16            # via -r requirements/ci.txt, ddt-api-calls, digid-eherkenning, django-appconf, django-axes, django-capture-on-commit-callbacks, django-choices, django-debug-toolbar, django-jenkins, django-redis, django-relativedelta, django-rosetta, django-sniplates, djangorestframework, drf-nested-routers, zgw-consumers
 djangorestframework-camel-case==1.2.0  # via -r requirements/ci.txt
-djangorestframework==3.12.2  # via -r requirements/ci.txt, drf-nested-routers, drf-yasg
+djangorestframework==3.12.2  # via -r requirements/ci.txt, drf-nested-routers
 docutils==0.16            # via sphinx
 drf-nested-routers==0.91  # via -r requirements/ci.txt
-drf-yasg==1.20.0          # via -r requirements/ci.txt
 elastic-apm==5.8.1        # via -r requirements/ci.txt
 factory-boy==3.0.1        # via -r requirements/ci.txt
 faker==4.1.2              # via -r requirements/ci.txt, factory-boy
@@ -57,16 +54,14 @@ gemma-zds-client==0.13.3  # via -r requirements/ci.txt, zgw-consumers
 idna==2.10                # via -r requirements/ci.txt, requests
 imagesize==1.2.0          # via sphinx
 importlib-metadata==3.1.1  # via -r requirements/ci.txt, flake8
-inflection==0.5.1         # via -r requirements/ci.txt, drf-yasg
 isodate==0.6.0            # via -r requirements/ci.txt, python3-saml
 isort==5.6.4              # via -r requirements/ci.txt
-itypes==1.2.0             # via -r requirements/ci.txt, coreapi
-jinja2==2.11.2            # via -r requirements/ci.txt, coreschema, sphinx
+jinja2==2.11.2            # via sphinx
 lxml==4.5.2               # via -r requirements/ci.txt, pyquery, xmlsec
-markupsafe==1.1.1         # via -r requirements/ci.txt, jinja2
+markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via -r requirements/ci.txt, flake8
 mypy-extensions==0.4.3    # via -r requirements/ci.txt, black
-packaging==20.7           # via -r requirements/ci.txt, drf-yasg, sphinx
+packaging==20.7           # via sphinx
 pathspec==0.8.1           # via -r requirements/ci.txt, black
 pep8==1.7.1               # via -r requirements/ci.txt
 pillow==7.2.0             # via -r requirements/ci.txt
@@ -79,7 +74,7 @@ pyflakes==2.2.0           # via -r requirements/ci.txt, flake8
 pygments==2.6.1           # via sphinx
 pyjwt==1.7.1              # via -r requirements/ci.txt, gemma-zds-client
 pyopenssl==19.1.0         # via -r requirements/ci.txt
-pyparsing==2.4.7          # via -r requirements/ci.txt, packaging
+pyparsing==2.4.7          # via packaging
 pyquery==1.4.1            # via -r requirements/ci.txt
 python-dateutil==2.8.1    # via -r requirements/ci.txt, django-relativedelta, faker, freezegun
 python-decouple==3.3      # via -r requirements/ci.txt
@@ -89,9 +84,7 @@ pyyaml==5.3.1             # via -r requirements/ci.txt, gemma-zds-client
 redis==3.5.3              # via -r requirements/ci.txt, django-redis
 regex==2020.11.13         # via -r requirements/ci.txt, black
 requests-mock==1.8.0      # via -r requirements/ci.txt, ddt-api-calls
-requests==2.24.0          # via -r requirements/ci.txt, coreapi, ddt-api-calls, django-rosetta, gemma-zds-client, requests-mock, sphinx, zgw-consumers
-ruamel.yaml.clib==0.2.2   # via -r requirements/ci.txt, ruamel.yaml
-ruamel.yaml==0.16.12      # via -r requirements/ci.txt, drf-yasg
+requests==2.24.0          # via -r requirements/ci.txt, ddt-api-calls, django-rosetta, gemma-zds-client, requests-mock, sphinx, zgw-consumers
 sentry-sdk==0.17.3        # via -r requirements/ci.txt
 six==1.15.0               # via -r requirements/ci.txt, cryptography, django-choices, django-compat, django-rosetta, freezegun, isodate, pip-tools, pyopenssl, python-dateutil, requests-mock, webtest
 snowballstemmer==2.0.0    # via sphinx
@@ -110,7 +103,6 @@ text-unidecode==1.3       # via -r requirements/ci.txt, faker
 toml==0.10.2              # via -r requirements/ci.txt, black
 typed-ast==1.4.1          # via -r requirements/ci.txt, black
 typing-extensions==3.7.4.3  # via -r requirements/ci.txt, black
-uritemplate==3.0.1        # via -r requirements/ci.txt, coreapi, drf-yasg
 urllib3==1.25.10          # via -r requirements/ci.txt, elastic-apm, requests, sentry-sdk
 uwsgi==2.0.19.1           # via -r requirements/ci.txt
 waitress==1.4.4           # via -r requirements/ci.txt, webtest

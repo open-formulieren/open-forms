@@ -26,7 +26,6 @@ drf-nested-routers
 djangorestframework-camel-case
 # django-extra-fields
 # django-filter
-drf-yasg  # api documentation
 
 # WSGI servers & monitoring - production oriented
 uwsgi
