@@ -5,10 +5,16 @@
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
-FROM python:3.8-buster AS backend-build
+FROM python:3.8-slim-buster AS backend-build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+        build-essential \
+        git \
         libpq-dev \
+        libxml2-dev \
+        libxmlsec1-dev \
+        libxmlsec1-openssl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -44,14 +50,16 @@ RUN npm run build
 
 
 # Stage 3 - Build docker image suitable for production
-FROM python:3.8-buster
+FROM python:3.8-slim-buster
 
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
 RUN apt-get update && apt-get install -y --no-install-recommends \
         procps \
         vim \
+        mime-support \
         postgresql-client \
+        libxmlsec1 \
         # lxml deps
         # libxslt \
     && rm -rf /var/lib/apt/lists/*
@@ -67,7 +75,7 @@ COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
 COPY --from=backend-build /app/src/ /app/src/
 
 # copy frontend build statics
-COPY --from=frontend-build /app/src/{{ project_name|lower }}/static /app/src/{{ project_name|lower }}/static
+COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 
 # copy source code
 COPY ./src /app/src
@@ -80,7 +88,7 @@ USER maykin
 
 ARG COMMIT_HASH
 ENV GIT_SHA=${COMMIT_HASH}
-ENV DJANGO_SETTINGS_MODULE={{ project_name|lower }}.conf.docker
+ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
 
 ARG SECRET_KEY=dummy
 

@@ -4,7 +4,7 @@
 #
 #    pip-compile --no-index --output-file=requirements/ci.txt requirements/base.txt requirements/test-tools.in
 #
--e git+ssh://git@bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning  # via -r requirements/base.txt
+-e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning  # via -r requirements/base.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml  # via -r requirements/base.txt
 appdirs==1.4.4            # via black
 attrs==20.3.0             # via -r requirements/base.txt, jsonschema
