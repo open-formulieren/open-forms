@@ -56,7 +56,7 @@
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "postcss-selector-lint": "latest",
-    "sass-loader": "latest",
+    "sass-loader": "^10.0.0",
     "simulant": "latest",
     "sinon": "latest",
     "url-loader": "latest",
