@@ -4,7 +4,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -132,6 +133,16 @@ class SubmissionViewSet(
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            "submission_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH
+        ),
+        OpenApiParameter(
+            "step_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH
+        ),
+    ]
+)
 @extend_schema_view(
     retrieve=extend_schema(
         summary=_("Retrieve step details"),

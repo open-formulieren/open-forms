@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import permissions, viewsets
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -20,6 +20,11 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("form_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH)
+    ]
+)
 @extend_schema_view(
     list=extend_schema(summary=_("List form steps")),
     retrieve=extend_schema(summary=_("Retrieve form step details")),
