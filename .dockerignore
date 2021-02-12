@@ -6,9 +6,15 @@ docker-compose*
 .vscode
 env/
 local.py
-media/
-private_media/
+/doc/_build/
+
+/htmlcov
+.coverage
+
+/static/
+/media/
+/private_media/
 
 # demo SPA
-src/spa/build
-src/spa/node_modules
+/src/spa/build
+/src/spa/node_modules
