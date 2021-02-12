@@ -11,9 +11,7 @@ def forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('submissions', '0002_auto_20200923_1038'),
+        ("submissions", "0002_auto_20200923_1038"),
     ]
 
-    operations = [
-        migrations.RunPython(forward, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(forward, migrations.RunPython.noop)]

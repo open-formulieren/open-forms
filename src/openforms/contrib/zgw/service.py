@@ -37,7 +37,7 @@ def create_document(name: str, body: dict) -> dict:
         "titel": name,
         "auteur": "openforms",
         "taal": "nld",
-        "inhoud": base64_body
+        "inhoud": base64_body,
     }
 
     informatieobject = client.create("enkelvoudiginformatieobject", data)

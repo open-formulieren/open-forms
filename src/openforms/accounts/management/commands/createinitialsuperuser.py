@@ -10,10 +10,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "username", help="Specifies the username for the superuser.",
+            "username",
+            help="Specifies the username for the superuser.",
         )
         parser.add_argument(
-            "email", help="Specifies the email for the superuser.",
+            "email",
+            help="Specifies the email for the superuser.",
         )
 
     def handle(self, *args, **options):

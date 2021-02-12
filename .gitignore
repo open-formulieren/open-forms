@@ -26,7 +26,7 @@ local.py
 /mail/
 /log/*.log*
 /log/nginx/*.log*
-.env
+/.env
 
 # Static files
 src/openforms/static/bundles/

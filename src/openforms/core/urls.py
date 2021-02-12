@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views.form import FormDetailView, FormListView, FormLoginButtonView
 
-app_name = 'core'
+app_name = "core"
 
 urlpatterns = [
     path("", FormListView.as_view(), name="form-list"),

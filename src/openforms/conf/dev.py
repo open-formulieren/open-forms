@@ -1,11 +1,14 @@
 import os
 import warnings
 
+os.environ.setdefault("DEBUG", "yes")
+os.environ.setdefault("ALLOWED_HOSTS", "*")
 os.environ.setdefault(
     "SECRET_KEY", "@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a"
 )
+os.environ.setdefault("IS_HTTPS", "no")
+os.environ.setdefault("VERSION_TAG", "dev")
 
-# uses postgresql by default, see base.py
 os.environ.setdefault("DB_NAME", "openforms"),
 os.environ.setdefault("DB_USER", "openforms"),
 os.environ.setdefault("DB_PASSWORD", "openforms"),
@@ -13,22 +16,13 @@ os.environ.setdefault("DB_PASSWORD", "openforms"),
 from .base import *  # noqa isort:skip
 
 # Feel free to switch dev to sqlite3 for simple projects,
-# or override DATABASES in your local.py
-# DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
+# os.environ.setdefault("DB_ENGINE", "django.db.backends.sqlite3")
 
 #
 # Standard Django settings.
 #
 
-DEBUG = True
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-ADMINS = ()
-MANAGERS = ADMINS
-
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
 
 LOGGING["loggers"].update(
     {
@@ -64,19 +58,12 @@ LOGGING["loggers"].update(
     }
 )
 
-#
-# Additional Django settings
-#
-
-# Disable security measures for development
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = False
-
-#
-# Custom settings
-#
-ENVIRONMENT = "development"
+# in memory cache and django-axes don't get along.
+# https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+}
 
 #
 # Library settings
@@ -108,24 +95,11 @@ DEBUG_TOOLBAR_PANELS = [
     "ddt_api_calls.panels.APICallsPanel",
 ]
 
-AXES_BEHIND_REVERSE_PROXY = (
-    False  # Default: False (we are typically using Nginx as reverse proxy)
-)
-
-# in memory cache and django-axes don't get along.
-# https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-    },
-    "axes_cache": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-    },
-}
-
-AXES_CACHE = "axes_cache"
+# Django extensions
 
 INSTALLED_APPS += ["django_extensions"]
+
+# DRF - browsable API
 
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
     "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"

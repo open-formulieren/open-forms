@@ -12,5 +12,5 @@ django-capture-on-commit-callbacks
 
 # Code formatting
 black
-isort
+isort~=5.7.0
 flake8

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_delete_formsubmission'),
+        ("core", "0002_delete_formsubmission"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='backend',
+            model_name="form",
+            name="backend",
             field=models.CharField(blank=True, max_length=100),
         ),
     ]
