@@ -184,6 +184,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(DJANGO_PROJECT_DIR, "static"),
     os.path.join(BASE_DIR, "src", "spa", "build", "static"),
+    # font-awesome fonts from formio
+    (
+        "bundles/fonts",
+        os.path.join(BASE_DIR, "node_modules", "formiojs", "dist", "fonts"),
+    ),
 ]
 
 # List of finder classes that know how to find static files in
