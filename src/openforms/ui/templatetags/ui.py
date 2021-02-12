@@ -14,6 +14,7 @@ register = template.Library()
 
 # Large components
 
+
 @register.inclusion_tag("ui/components/skiplink/skiplink.html")
 def skiplink(**kwargs):
     """
@@ -91,6 +92,7 @@ def footer(**kwargs):
 
 # Small components
 
+
 @register.inclusion_tag("ui/components/anchor/anchor.html", takes_context=True)
 def anchor(context, **kwargs):
     """
@@ -136,13 +138,11 @@ def anchor(context, **kwargs):
     return {
         "href": get_href(config, "href", "anchor"),
         "label": get_required_config_value(config, "label", "anchor"),
-
         "active": get_is_active(request, config),
         "hover": config.get("hover", False),
         "indent": get_indent(),
         "style": config.get("style", "normal"),
         "target": config.get("target", "_self"),
-
         "icon_config": get_icon_config(),
         "icon_position": kwargs.get("icon_position", "left"),
     }
@@ -213,11 +213,9 @@ def button(**kwargs):
         "style": get_style(),
         "type": get_type(),
         "tag": get_tag(),
-
         "toggle_target": config.get("toggle_target"),
         "toggle_modifier": config.get("toggle_modifier"),
         "toggle_clear_target": config.get("toggle_clear_target"),
-
         "icon_config": get_config_from_prefix(config, "icon"),
     }
 
@@ -247,12 +245,11 @@ def image(**kwargs):
     return {
         "alt": get_required_config_value(config, "alt", "image"),
         "src": get_required_config_value(config, "src", "image"),
-
         "href": get_href(config),
     }
 
 
-@register.inclusion_tag('ui/components/fa-icon/fa-icon.html')
+@register.inclusion_tag("ui/components/fa-icon/fa-icon.html")
 def fa_icon(**kwargs):
     """
     Renders a Font Awesome icon.
@@ -275,7 +272,6 @@ def fa_icon(**kwargs):
 
     return {
         "icon": get_required_config_value(config, "icon", "fa_icon"),
-
         "size": config.get("size", "small"),
         "style": config.get("style", "solid")[0],
     }

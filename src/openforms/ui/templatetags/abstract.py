@@ -24,7 +24,7 @@ def get_config_from_prefix(config, prefix):
     :return: dict
     """
     return {
-        key[len(prefix) + 1:]: value
+        key[len(prefix) + 1 :]: value
         for key, value in config.items()
         if key.startswith(prefix)
     }

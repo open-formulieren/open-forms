@@ -50,7 +50,7 @@ idna==2.10                # via -r requirements/base.txt, requests
 importlib-metadata==3.4.0  # via -r requirements/base.txt, flake8, jsonschema
 inflection==0.5.1         # via -r requirements/base.txt, drf-spectacular
 isodate==0.6.0            # via -r requirements/base.txt, python3-saml
-isort==5.6.4              # via -r requirements/test-tools.in
+isort==5.7.0              # via -r requirements/test-tools.in
 jsonschema==3.2.0         # via -r requirements/base.txt, drf-spectacular
 lxml==4.5.2               # via -r requirements/base.txt, pyquery, xmlsec
 mccabe==0.6.1             # via flake8

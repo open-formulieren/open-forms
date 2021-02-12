@@ -58,7 +58,7 @@ imagesize==1.2.0          # via sphinx
 importlib-metadata==3.4.0  # via -r requirements/ci.txt, flake8, jsonschema
 inflection==0.5.1         # via -r requirements/ci.txt, drf-spectacular
 isodate==0.6.0            # via -r requirements/ci.txt, python3-saml
-isort==5.6.4              # via -r requirements/ci.txt
+isort==5.7.0              # via -r requirements/ci.txt
 jinja2==2.11.2            # via sphinx
 jsonschema==3.2.0         # via -r requirements/ci.txt, drf-spectacular
 lxml==4.5.2               # via -r requirements/ci.txt, pyquery, xmlsec

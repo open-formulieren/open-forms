@@ -5,7 +5,9 @@ from openforms.ui.templatetags.abstract import get_config, get_required_config_v
 register = template.Library()
 
 
-@register.inclusion_tag("ui/components/formio_form/formio_form.html", takes_context=True)
+@register.inclusion_tag(
+    "ui/components/formio_form/formio_form.html", takes_context=True
+)
 def formio_form(context, **kwargs):
     """
     Renders a Form.io form.

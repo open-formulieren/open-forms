@@ -2,7 +2,6 @@ from django.db import models
 
 
 class StringUUIDField(models.UUIDField):
-
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value

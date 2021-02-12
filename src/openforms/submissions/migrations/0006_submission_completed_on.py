@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('submissions', '0005_submission_backend_result'),
+        ("submissions", "0005_submission_backend_result"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='submission',
-            name='completed_on',
+            model_name="submission",
+            name="completed_on",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

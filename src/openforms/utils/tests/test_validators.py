@@ -5,7 +5,6 @@ from ..validators import validate_bsn
 
 
 class BSNValidatorTestCase(TestCase):
-
     @staticmethod
     def test_valid_bsns():
         validate_bsn("063308836")
