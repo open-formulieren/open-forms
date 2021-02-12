@@ -47,4 +47,4 @@ jobs:
           pip install -r requirements/ci.txt
       - name: Run black
         run: |
-          black --check src doc
+          black --check src/openforms doc
