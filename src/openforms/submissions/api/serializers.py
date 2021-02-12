@@ -119,7 +119,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
             "index": {"source": "order"},
         }
 
-    def get_configuration(self, instance):
+    def get_configuration(self, instance) -> dict:
         # can't simply declare this because the JSON is stored as string in
         # the DB instead of actual JSON
         # FIXME: sort out the storing of configuration
@@ -150,6 +150,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "id": {
                 "read_only": True,
                 "source": "uuid",
+                "allow_null": True,
             },
         }
 

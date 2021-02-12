@@ -2,8 +2,10 @@ import logging
 
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
-from drf_yasg.utils import no_body, swagger_auto_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -27,6 +29,27 @@ from .validation import CompletionValidationSerializer, validate_submission_comp
 logger = logging.getLogger(__name__)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("List active submissions"),
+        description=_(
+            "Active submissions are submissions whose ID is in the user session. "
+            "This endpoint returns user-bound submissions. Note that you get different "
+            "results on different results because of the differing sessions."
+        ),
+    ),
+    retrieve=extend_schema(
+        summary=_("Retrieve submission details"),
+        description=_("Get the state of a single submission in the user session."),
+    ),
+    create=extend_schema(
+        summary=_("Start a submission"),
+        description=_(
+            "Start a submission for a particular form. The submission is added to the "
+            "user session."
+        ),
+    ),
+)
 class SubmissionViewSet(
     PermissionFilterMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
 ):
@@ -51,10 +74,11 @@ class SubmissionViewSet(
         # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request)
 
-    @swagger_auto_schema(
-        request_body=no_body,
+    @extend_schema(
+        summary=_("Complete a submission"),
+        request=None,
         responses={
-            204: "",
+            204: None,
             400: CompletionValidationSerializer,
         },
     )
@@ -70,7 +94,7 @@ class SubmissionViewSet(
         no longer possible to change or read the submission data (including individual
         steps).
 
-        The submissions is persisted to the configured backend.
+        The submission is persisted to the configured backend.
         """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
@@ -83,11 +107,12 @@ class SubmissionViewSet(
         remove_submission_from_session(submission, self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @swagger_auto_schema(
-        request_body=SubmissionSuspensionSerializer,
+    @extend_schema(
+        summary=_("Suspend a submission"),
+        request=SubmissionSuspensionSerializer,
         responses={
             201: SubmissionSuspensionSerializer,
-            # 400: TODO - schema for errors!
+            # 400: TODO - schema for errors
         },
     )
     @transaction.atomic()
@@ -96,8 +121,8 @@ class SubmissionViewSet(
         """
         Suspend the submission.
 
-        Submission suspension requires contact details to send the end-user the resume
-        URL so that they can resume the submission (possible from another device).
+        Submission suspension requires contact details to send the end-user a URL to
+        resume the submission (possibly from another device).
         """
         submission = self.get_object()
         serializer = SubmissionSuspensionSerializer(
@@ -108,25 +133,31 @@ class SubmissionViewSet(
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            "submission_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH
+        ),
+        OpenApiParameter(
+            "step_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH
+        ),
+    ]
+)
+@extend_schema_view(
+    retrieve=extend_schema(
+        summary=_("Retrieve step details"),
+        description=_(
+            "The details of a particular submission step always return the related "
+            "form step configuration. If there is no data yet for the step, the ID "
+            "will be `null`. Set the step data by making a `PUT` request."
+        ),
+    )
+)
 class SubmissionStepViewSet(
     NestedViewSetMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
     """
     Handle form step submission data.
-
-    retrieve:
-    Retrieve the form step submission details.
-
-    update:
-    Submit the form step submission data.
-
-    The submission data is either created or updated, depending on whether there was
-    submission data present before or not. Make sure to retrieve the step data to
-    display already filled out fields.
-
-    Note that the form step configuration is currently not validated - this may change
-    in the future. I.e. - a step that is marked as not available will still be submitted
-    at the time being.
     """
 
     queryset = SubmissionStep.objects.all()
@@ -169,12 +200,16 @@ class SubmissionStepViewSet(
         self.check_object_permissions(self.request, submission_step)
         return submission_step
 
+    @extend_schema(summary=_("Store submission step data"))
     def update(self, request, *args, **kwargs):
         """
-        Update or create a form submission step.
+        The submission data is either created or updated, depending on whether there was
+        submission data present before or not. Make sure to retrieve the step data to
+        display already filled out fields.
 
-        Partial updates are not allowed - PUT is used for both creating or updating
-        the submission step data.
+        Note that the form step configuration is currently not validated - this may change
+        in the future. I.e. - a step that is marked as not available will still be submitted
+        at the time being.
         """
         instance = self.get_object()
         create = instance.pk is None

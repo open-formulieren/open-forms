@@ -22,10 +22,10 @@ INSTALLED_APPS = [
     "hijack_admin",
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
     "digid_eherkenning",
     "solo",
     "zgw_consumers",
-    "drf_yasg",
     # Project applications.
     "openforms.accounts",
     "openforms.contrib.zgw",

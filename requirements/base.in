@@ -16,7 +16,7 @@ django-redis
 django-rosetta
 django-sniplates
 django-solo
--e git+ssh://git@bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning
+-e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning
 -e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml
 pyopenssl
 
@@ -24,9 +24,12 @@ pyopenssl
 djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
+
+# API schema generation (OpenAPI 3)
+drf-spectacular
+
 # django-extra-fields
 # django-filter
-drf-yasg  # api documentation
 
 # WSGI servers & monitoring - production oriented
 uwsgi

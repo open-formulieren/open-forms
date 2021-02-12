@@ -1,6 +1,10 @@
-from django.urls import include, path, re_path
-from django.views.generic import TemplateView
+from django.urls import include, path
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularJSONAPIView,
+    SpectacularRedocView,
+)
 from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
@@ -11,7 +15,7 @@ from openforms.core.api.viewsets import (
 )
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
-from .schema import schema_view
+# from .schema import schema_view
 
 app_name = "api"
 
@@ -33,18 +37,31 @@ submissions_router.register(
 
 
 urlpatterns = [
-    re_path(
-        r"v1(?P<format>\.json|\.yaml)",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
-    ),
     path(
-        "v1/docs/",
-        TemplateView.as_view(template_name="api_docs.html"),
-        name="api-docs",
+        "v1/",
+        include(
+            [
+                # API documentation
+                path(
+                    "",
+                    SpectacularJSONAPIView.as_view(schema=None),
+                    name="api-schema-json",
+                ),
+                path(
+                    "docs/",
+                    SpectacularRedocView.as_view(url_name="api:schema"),
+                    name="api-docs",
+                ),
+                path("schema", SpectacularAPIView.as_view(schema=None), name="schema"),
+                # actual API endpoints
+                path(
+                    "api-auth",
+                    include("rest_framework.urls", namespace="rest_framework"),
+                ),
+                path("", include(router.urls)),
+                path("", include(forms_router.urls)),
+                path("", include(submissions_router.urls)),
+            ]
+        ),
     ),
-    path("v1/api-auth", include("rest_framework.urls", namespace="rest_framework")),
-    path("v1/", include(router.urls)),
-    path("v1/", include(forms_router.urls)),
-    path("v1/", include(submissions_router.urls)),
 ]

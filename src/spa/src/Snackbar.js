@@ -1,5 +1,4 @@
 import React, {useContext} from 'react';
-import PropTypes from 'prop-types';
 
 import MuiSnackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,7 +8,7 @@ import { SnackbarContext } from './Context';
 
 
 const Snackbar = () => {
-  const [snackbarState, ...rest] = useContext(SnackbarContext);
+  const snackbarState = useContext(SnackbarContext)[0];
   if (snackbarState == null) {
     return null;
   }
