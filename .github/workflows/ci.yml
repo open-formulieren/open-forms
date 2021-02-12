@@ -49,8 +49,6 @@ jobs:
 
       - name: Build demo SPA
         run: |
-          pwd
-          rm -rf ../../node_modules ../../package.json ../../package-lock.json
           yarn install
           yarn build
         working-directory: ./src/spa
