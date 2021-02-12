@@ -60,7 +60,7 @@ jobs:
           python src/manage.py collectstatic --noinput --link
           coverage run src/manage.py test src
         env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.dev
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
