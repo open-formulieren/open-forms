@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sites',
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     # Optional applications.
     "ordered_model",
     "django_admin_index",
