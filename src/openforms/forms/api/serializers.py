@@ -53,25 +53,34 @@ class FormSerializer(serializers.ModelSerializer):
         }
 
 
-class FormDefinitionSerializer(serializers.ModelSerializer):
+class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
-        # TODO: json.loads on something that is a JSONField makes no sense,
-        # track down the cause of this being a string instead of actual JSON
-        parsed_config = json.loads(instance.configuration)
-        _handle_custom_types = self.context.get("handle_custom_types", True)
-        if not _handle_custom_types:
-            return parsed_config
+        representation = super().to_representation(instance=instance)
 
-        parsed_config = handle_custom_types(
-            parsed_config,
-            request=self.context["request"],
-            submission=self.context["submission"],
-        )
-        return parsed_config
+        _handle_custom_types = self.context.get("handle_custom_types", True)
+        if _handle_custom_types:
+            representation["configuration"] = handle_custom_types(
+                representation["configuration"],
+                request=self.context["request"],
+                submission=self.context["submission"],
+            )
+        return representation
 
     class Meta:
         model = FormDefinition
-        fields = ()
+        fields = (
+            "url",
+            "uuid",
+            "name",
+            "slug",
+            "configuration",
+        )
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:formdefinition-detail",
+                "lookup_field": "uuid",
+            }
+        }
 
 
 class FormStepSerializer(serializers.ModelSerializer):

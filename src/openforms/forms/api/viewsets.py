@@ -5,6 +5,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import permissions, viewsets
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
+from openforms.api.pagination import PageNumberPagination
+
 from ..api.serializers import (
     FormDefinitionSerializer,
     FormSerializer,
@@ -16,7 +18,7 @@ from ..models import Form, FormDefinition, FormStep
 class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
-    # The DRF settings apply some default throttling to prevent abuse
+    # The DRF settings apply some default throttling to mitigate abuse
     permission_classes = [permissions.AllowAny]
 
 
@@ -47,8 +49,9 @@ class FormStepViewSet(NestedViewSetMixin, BaseFormsViewSet):
     ),
 )
 class FormDefinitionViewSet(BaseFormsViewSet):
-    queryset = FormDefinition.objects.all()
+    queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
+    pagination_class = PageNumberPagination
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
