@@ -119,7 +119,6 @@ INSTALLED_APPS = [
     "openforms.contrib.zgw",
     "openforms.forms",
     "openforms.products",
-    "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",
