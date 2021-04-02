@@ -2,7 +2,10 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
@@ -40,12 +43,10 @@ class FormStepViewSet(NestedViewSetMixin, BaseFormsViewSet):
     list=extend_schema(
         summary=_("List form step definitions"),
         tags=["forms"],
-        # responses=OpenApiTypes.OBJECT, TODO: needs to be an array
     ),
     retrieve=extend_schema(
         summary=_("Retrieve form step definition"),
         tags=["forms"],
-        responses=OpenApiTypes.OBJECT,
     ),
 )
 class FormDefinitionViewSet(BaseFormsViewSet):
@@ -56,6 +57,23 @@ class FormDefinitionViewSet(BaseFormsViewSet):
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
         return {**context, "handle_custom_types": False}
+
+    @extend_schema(
+        summary=_("Retrieve form definition JSON schema"),
+        tags=["forms"],
+        responses=OpenApiTypes.OBJECT,
+    )
+    @action(methods=("GET",), detail=True)
+    def configuration(self, request: Request, *args, **kwargs):
+        """
+        Return the raw FormIO.js configuration definition.
+
+        This excludes all the meta-data and just returns the JSON schema blob. In
+        theory, this can be fed directly to a FormIO.js renderer, but note that there
+        may be custom field types in play.
+        """
+        definition = self.get_object()
+        return Response(data=definition.configuration, status=status.HTTP_200_OK)
 
 
 @extend_schema_view(
