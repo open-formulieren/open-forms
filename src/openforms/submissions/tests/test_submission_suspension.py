@@ -17,7 +17,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.core.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from .factories import SubmissionFactory, SubmissionStepFactory

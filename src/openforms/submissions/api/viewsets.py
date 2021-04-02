@@ -14,7 +14,7 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.core.backends import registry
+from openforms.forms.backends import registry
 
 from ..models import Submission, SubmissionStep
 from ..utils import add_submmission_to_session, remove_submission_from_session

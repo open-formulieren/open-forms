@@ -20,7 +20,7 @@ class FormDetailView(UIDetailView):
         self.object = self.get_object()
 
         if self.object.login_required and not self.request.session.get("bsn"):
-            return redirect("core:form-login", slug=self.kwargs["slug"])
+            return redirect("forms:form-login", slug=self.kwargs["slug"])
         else:
             return super().get(request, *args, **kwargs)
 

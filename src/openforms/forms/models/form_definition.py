@@ -22,7 +22,7 @@ class FormDefinition(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse("core:form_definition_detail", kwargs={"slug": self.slug})
+        return reverse("forms:form_definition_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.name

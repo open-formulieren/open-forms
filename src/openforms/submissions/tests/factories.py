@@ -1,6 +1,6 @@
 import factory
 
-from openforms.core.tests.factories import FormFactory
+from openforms.forms.tests.factories import FormFactory
 
 from ..models import Submission, SubmissionStep
 

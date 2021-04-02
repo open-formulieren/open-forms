@@ -15,8 +15,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.core.custom_field_types import register, unregister
-from openforms.core.tests.factories import FormStepFactory
+from openforms.forms.custom_field_types import register, unregister
+from openforms.forms.tests.factories import FormStepFactory
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory

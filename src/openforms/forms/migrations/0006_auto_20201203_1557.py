@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0005_form_product"),
+        ("forms", "0005_form_product"),
     ]
 
     operations = [

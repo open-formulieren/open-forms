@@ -7,8 +7,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.core.constants import AvailabilityOptions
-from openforms.core.models import FormStep
+from openforms.forms.constants import AvailabilityOptions
+from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
@@ -55,7 +55,7 @@ class Submission(models.Model):
     """
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
-    form = models.ForeignKey("core.Form", on_delete=models.CASCADE)
+    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     backend_result = JSONField(blank=True, null=True)
     completed_on = models.DateTimeField(blank=True, null=True)
@@ -149,7 +149,7 @@ class SubmissionStep(models.Model):
 
     uuid = models.UUIDField(unique=True, default=uuid.uuid4)
     submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
-    form_step = models.ForeignKey("core.FormStep", on_delete=models.CASCADE)
+    form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
     data = JSONField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

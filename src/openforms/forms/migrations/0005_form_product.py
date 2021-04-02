@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("products", "0001_initial"),
-        ("core", "0004_auto_20200928_1243"),
+        ("forms", "0004_auto_20200928_1243"),
     ]
 
     operations = [

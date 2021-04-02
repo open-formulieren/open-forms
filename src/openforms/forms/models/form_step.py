@@ -18,8 +18,8 @@ class FormStep(OrderedModel):
     """
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
-    form = models.ForeignKey("core.Form", on_delete=models.CASCADE)
-    form_definition = models.ForeignKey("core.FormDefinition", on_delete=models.CASCADE)
+    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
+    form_definition = models.ForeignKey("forms.FormDefinition", on_delete=models.CASCADE)
 
     # step properties/flow control
     optional = models.BooleanField(
@@ -53,6 +53,6 @@ class FormStep(OrderedModel):
 
     def get_absolute_url(self):
         return reverse(
-            "core:form-steps-detail",
+            "forms:form-steps-detail",
             kwargs={"slug": self.form.slug, "order": self.order},
         )

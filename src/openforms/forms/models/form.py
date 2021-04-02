@@ -35,7 +35,7 @@ class Form(models.Model):
         return self.formstep_set.first().order
 
     def get_absolute_url(self):
-        return reverse("core:form-detail", kwargs={"slug": self.slug})
+        return reverse("forms:form-detail", kwargs={"slug": self.slug})
 
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})

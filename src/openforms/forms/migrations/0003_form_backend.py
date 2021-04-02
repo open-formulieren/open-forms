@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0002_delete_formsubmission"),
+        ("forms", "0002_delete_formsubmission"),
     ]
 
     operations = [

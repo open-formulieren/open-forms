@@ -117,7 +117,7 @@ INSTALLED_APPS = [
     # Project applications.
     "openforms.accounts",
     "openforms.contrib.zgw",
-    "openforms.core",
+    "openforms.forms",
     "openforms.products",
     "openforms.sample_app",
     "openforms.ui",

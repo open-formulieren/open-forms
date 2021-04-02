@@ -10,7 +10,7 @@ import openforms.utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0003_form_backend"),
+        ("forms", "0003_form_backend"),
     ]
 
     operations = [

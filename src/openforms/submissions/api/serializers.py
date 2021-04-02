@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
-from openforms.core.api.serializers import FormDefinitionSerializer
-from openforms.core.models import FormStep
+from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.models import FormStep
 
 from ..models import Submission, SubmissionStep
 from .fields import NestedRelatedField

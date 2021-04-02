@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("core", "0002_delete_formsubmission"),
+        ("forms", "0002_delete_formsubmission"),
     ]
 
     operations = [
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        to="core.Form",
+                        to="forms.Form",
                     ),
                 ),
             ],

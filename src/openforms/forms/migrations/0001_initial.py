@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                 (
                     "form",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="core.Form"
+                        on_delete=django.db.models.deletion.CASCADE, to="forms.Form"
                     ),
                 ),
             ],
@@ -128,14 +128,14 @@ class Migration(migrations.Migration):
                 (
                     "form",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="core.Form"
+                        on_delete=django.db.models.deletion.CASCADE, to="forms.Form"
                     ),
                 ),
                 (
                     "form_definition",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="core.FormDefinition",
+                        to="forms.FormDefinition",
                     ),
                 ),
             ],
@@ -151,7 +151,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                to="core.Product",
+                to="forms.Product",
             ),
         ),
     ]
