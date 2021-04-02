@@ -85,7 +85,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
 class FormStepSerializer(serializers.ModelSerializer):
     index = serializers.IntegerField(source="order")
-    configuration = serializers.SerializerMethodField()
+    configuration = serializers.JSONField(source="form_definition.configuration")
 
     parent_lookup_kwargs = {
         "form_uuid": "form__uuid",
@@ -94,8 +94,3 @@ class FormStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormStep
         fields = ("index", "configuration")
-
-    def get_configuration(self, instance) -> dict:
-        # can't simply declare this because the JSON is stored as string in
-        # the DB instead of actual JSON
-        return json.loads(instance.form_definition.configuration)

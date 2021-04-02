@@ -8,7 +8,6 @@ submission to be able to be transformed into vanilla Formio definitions.
 The tests in this module validate that we can retrieve the submission-context
 aware step definition.
 """
-import json
 import uuid
 
 from rest_framework import status
@@ -42,10 +41,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 },
             ]
         }
-        # FIXME: the json.dumps should _not_ be needed with JSONField
-        cls.step = FormStepFactory.create(
-            form_definition__configuration=json.dumps(configuration)
-        )
+        cls.step = FormStepFactory.create(form_definition__configuration=configuration)
         cls.submission = SubmissionFactory.create(form=cls.step.form)
         cls.step_url = reverse(
             "api:submission-steps-detail",

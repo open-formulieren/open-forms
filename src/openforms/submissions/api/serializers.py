@@ -128,7 +128,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
             instance=instance.form_definition,
             context={**self.context, "submission": submission},
         )
-        return serializer.data
+        return serializer.data["configuration"]
 
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
