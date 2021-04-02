@@ -19,7 +19,9 @@ class FormStep(OrderedModel):
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
-    form_definition = models.ForeignKey("forms.FormDefinition", on_delete=models.CASCADE)
+    form_definition = models.ForeignKey(
+        "forms.FormDefinition", on_delete=models.CASCADE
+    )
 
     # step properties/flow control
     optional = models.BooleanField(
