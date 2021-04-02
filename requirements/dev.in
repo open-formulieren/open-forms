@@ -1,3 +1,5 @@
+-c ci.txt
+
 # Helpers
 pip-tools~=6.0
 bump2version
