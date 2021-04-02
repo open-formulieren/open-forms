@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.core.tests.factories import FormFactory
+from openforms.forms.tests.factories import FormFactory
 
 from .factories import SubmissionFactory
 

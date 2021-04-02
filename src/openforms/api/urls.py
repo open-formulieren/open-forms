@@ -8,7 +8,7 @@ from drf_spectacular.views import (
 from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
-from openforms.core.api.viewsets import (
+from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
     FormStepViewSet,
     FormViewSet,

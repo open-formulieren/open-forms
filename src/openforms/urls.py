@@ -37,8 +37,7 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("api/", include("openforms.api.urls", namespace="api")),
-    path("prototype/", include("openforms.sample_app.urls", namespace="sample_app")),
-    path("", include("openforms.core.urls", namespace="core")),
+    path("", include("openforms.forms.urls", namespace="core")),
     path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),

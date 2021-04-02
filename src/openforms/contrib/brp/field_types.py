@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Tuple
 
 from rest_framework.request import Request
 
-from openforms.core.custom_field_types import register
+from openforms.forms.custom_field_types import register
 from openforms.submissions.models import Submission
 
 from .models import BRPConfig

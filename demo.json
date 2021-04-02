@@ -1,139 +1,863 @@
 [
 {
-    "model": "core.form",
+    "model": "forms.form",
     "pk": 1,
     "fields": {
+        "uuid": "2df702f1-b3b4-48cd-a9f3-1135601cf790",
         "name": "\u2615\ufe0f",
         "slug": "koffie",
         "active": true,
-        "product": 1,
+        "product": null,
+        "backend": "openforms.core.backends.console_backend"
+    }
+},
+{
+    "model": "forms.form",
+    "pk": 2,
+    "fields": {
+        "uuid": "93c09209-5fb9-4105-b6bb-9d9f0aa6782c",
+        "name": "Demo multiple steps",
+        "slug": "demo-multiple-steps",
+        "active": true,
+        "product": null,
         "backend": ""
     }
 },
 {
-    "model": "core.formdefinition",
+    "model": "forms.formdefinition",
     "pk": 1,
     "fields": {
+        "uuid": "6188c18d-48cf-4a7e-806b-6b94cc217aac",
         "name": "\u2615\ufe0f",
         "slug": "koffie",
-        "configuration": "{\"components\":[{\"label\":\"Voornaam\",\"key\":\"voornaam\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"tableView\":true,\"type\":\"textfield\",\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"ef6fl8ca\"},{\"label\":\"Achternaam\",\"key\":\"achternaam\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"eo8f2p\"},{\"label\":\"Wie wil koffie?\",\"input\":true,\"key\":\"selecteerGezinsleden\",\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":false,\"modalEdit\":false,\"labelPosition\":\"top\",\"description\":\"\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":null,\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false},\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"npFamilyMembers\",\"inputType\":\"checkbox\",\"values\":[{\"label\":\"\",\"value\":\"\"}],\"fieldSet\":false,\"inline\":false,\"id\":\"eshira\"},{\"label\":\"Melk & Suiker\",\"key\":\"melkSuiker\",\"description\":\"Geef aan of u melk en/of suiker in uw koffie wilt.\",\"values\":[{\"label\":\"Melk\",\"value\":\"melk\"},{\"label\":\"Suiker\",\"value\":\"suiker\"}],\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"tableView\":false,\"type\":\"selectboxes\",\"inputType\":\"checkbox\",\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":null,\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"fieldSet\":false,\"inline\":false,\"id\":\"e52ejbb\"},{\"label\":\"Afleverpunt\",\"key\":\"afleverpunt\",\"description\":\"Geen aan waar de koffie bezorgt moet worden.\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"etb5lqy\"}]}",
-        "login_required": true
+        "configuration": "{\"components\":[{\"label\":\"Voornaam\",\"key\":\"voornaam\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"tableView\":true,\"type\":\"textfield\",\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"ef6fl8ca\"},{\"label\":\"Achternaam\",\"key\":\"achternaam\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"eo8f2p\"},{\"label\":\"Melk & Suiker\",\"key\":\"melkSuiker\",\"description\":\"Geef aan of u melk en/of suiker in uw koffie wilt.\",\"values\":[{\"label\":\"Melk\",\"value\":\"melk\"},{\"label\":\"Suiker\",\"value\":\"suiker\"}],\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"tableView\":false,\"type\":\"selectboxes\",\"inputType\":\"checkbox\",\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":null,\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"fieldSet\":false,\"inline\":false,\"id\":\"e52ejbb\"},{\"label\":\"Demo Dev meeting\",\"key\":\"demoDevMeeting\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"ermjya\"},{\"label\":\"Afleverpunt\",\"key\":\"afleverpunt\",\"description\":\"Geen aan waar de koffie bezorgt moet worden.\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"etb5lqy\"}]}",
+        "login_required": false
     }
 },
 {
-    "model": "core.formstep",
+    "model": "forms.formdefinition",
+    "pk": 2,
+    "fields": {
+        "uuid": "50bce72c-b408-4f0e-9645-250e290c1e2a",
+        "name": "Step 1",
+        "slug": "step-1",
+        "configuration": "{\"components\":[{\"label\":\"Stap 1\",\"key\":\"stap1\",\"description\":\"\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"e3mej\"}]}",
+        "login_required": false
+    }
+},
+{
+    "model": "forms.formdefinition",
+    "pk": 3,
+    "fields": {
+        "uuid": "f643f17e-342d-4a24-ac25-3c7f8fcf7978",
+        "name": "Step 2",
+        "slug": "step-2",
+        "configuration": "{\"components\":[{\"label\":\"Step 2 data\",\"key\":\"step2Data\",\"description\":\"Example form definition for step 2\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\",\"minWords\":\"\",\"maxWords\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textarea\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"html\",\"inputMask\":\"\",\"spellcheck\":true,\"rows\":3,\"wysiwyg\":false,\"editor\":\"\",\"fixedSize\":true,\"id\":\"ev6qtyw9\"}]}",
+        "login_required": false
+    }
+},
+{
+    "model": "forms.formdefinition",
+    "pk": 4,
+    "fields": {
+        "uuid": "2d21a49f-cb80-425d-8c8a-a3f71c5bbe36",
+        "name": "Step 3",
+        "slug": "step-3",
+        "configuration": "{\"components\":[{\"label\":\"First field\",\"key\":\"firstField\",\"description\":\"Field 1\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"eh6iybf\"},{\"label\":\"Second field\",\"key\":\"secondField\",\"description\":\"Field 2\",\"conditional\":{\"show\":null,\"when\":null,\"eq\":\"\"},\"input\":true,\"placeholder\":\"\",\"prefix\":\"\",\"customClass\":\"\",\"suffix\":\"\",\"multiple\":false,\"defaultValue\":null,\"protected\":false,\"unique\":false,\"persistent\":true,\"hidden\":false,\"clearOnHide\":true,\"refreshOn\":\"\",\"redrawOn\":\"\",\"tableView\":true,\"modalEdit\":false,\"labelPosition\":\"top\",\"errorLabel\":\"\",\"tooltip\":\"\",\"hideLabel\":false,\"tabindex\":\"\",\"disabled\":false,\"autofocus\":false,\"dbIndex\":false,\"customDefaultValue\":\"\",\"calculateValue\":\"\",\"calculateServer\":false,\"widget\":{\"type\":\"input\"},\"attributes\":{},\"validateOn\":\"change\",\"validate\":{\"required\":false,\"custom\":\"\",\"customPrivate\":false,\"strictDateValidation\":false,\"multiple\":false,\"unique\":false,\"minLength\":\"\",\"maxLength\":\"\",\"pattern\":\"\"},\"overlay\":{\"style\":\"\",\"left\":\"\",\"top\":\"\",\"width\":\"\",\"height\":\"\"},\"allowCalculateOverride\":false,\"encrypted\":false,\"showCharCount\":false,\"showWordCount\":false,\"properties\":{},\"allowMultipleMasks\":false,\"type\":\"textfield\",\"mask\":false,\"inputType\":\"text\",\"inputFormat\":\"plain\",\"inputMask\":\"\",\"spellcheck\":true,\"id\":\"elac31o\"}]}",
+        "login_required": false
+    }
+},
+{
+    "model": "forms.formstep",
     "pk": 1,
     "fields": {
         "order": 0,
+        "uuid": "58ad106f-fdd8-4517-b87a-55f9a3f433a1",
         "form": 1,
-        "form_definition": 1
+        "form_definition": 1,
+        "optional": false,
+        "availability_strategy": "always"
     }
 },
 {
-    "model": "core.product",
-    "pk": 1,
-    "fields": {
-        "name": "\u2615\ufe0f",
-        "url": "",
-        "price": "0.00"
-    }
-},
-{
-    "model": "zgw_consumers.service",
-    "pk": 1,
-    "fields": {
-        "label": "ZRC Test",
-        "api_type": "zrc",
-        "api_root": "https://test.openzaak.nl/zaken/api/v1/",
-        "client_id": "anna",
-        "secret": "zVHTg5fh3VCKsBse",
-        "auth_type": "zgw",
-        "header_key": "",
-        "header_value": "",
-        "oas": "https://test.openzaak.nl/zaken/api/v1/schema/openapi.yaml",
-        "nlx": "",
-        "user_id": "openforms",
-        "user_representation": "openforms"
-    }
-},
-{
-    "model": "zgw_consumers.service",
+    "model": "forms.formstep",
     "pk": 2,
     "fields": {
-        "label": "ZTC test",
-        "api_type": "ztc",
-        "api_root": "https://test.openzaak.nl/catalogi/api/v1/",
-        "client_id": "anna",
-        "secret": "zVHTg5fh3VCKsBse",
-        "auth_type": "zgw",
-        "header_key": "",
-        "header_value": "",
-        "oas": "https://test.openzaak.nl/catalogi/api/v1/schema/openapi.yaml",
-        "nlx": "",
-        "user_id": "openforms",
-        "user_representation": "openforms"
+        "order": 0,
+        "uuid": "1fb513e9-5c24-431a-8a9c-5f7cc4d00883",
+        "form": 2,
+        "form_definition": 2,
+        "optional": false,
+        "availability_strategy": "always"
     }
 },
 {
-    "model": "zgw_consumers.service",
+    "model": "forms.formstep",
     "pk": 3,
     "fields": {
-        "label": "DRC test",
-        "api_type": "drc",
-        "api_root": "https://test.openzaak.nl/documenten/api/v1/",
-        "client_id": "anna",
-        "secret": "zVHTg5fh3VCKsBse",
-        "auth_type": "zgw",
-        "header_key": "",
-        "header_value": "",
-        "oas": "https://test.openzaak.nl/documenten/api/v1/schema/openapi.yaml",
-        "nlx": "",
-        "user_id": "",
-        "user_representation": ""
+        "order": 1,
+        "uuid": "44eb883a-04fe-496f-b992-949059a9dda3",
+        "form": 2,
+        "form_definition": 3,
+        "optional": false,
+        "availability_strategy": "after_previous_step"
     }
 },
 {
-    "model": "zgw_consumers.service",
+    "model": "forms.formstep",
     "pk": 4,
     "fields": {
-        "label": "BRP",
-        "api_type": "orc",
-        "api_root": "http://192.168.129.232:8000/openpersonen/api/",
-        "client_id": "",
-        "secret": "",
-        "auth_type": "api_key",
-        "header_key": "Authorization",
-        "header_value": "Token 266546ecfee761cb9796f2bb228c1b70a7ac8dbb",
-        "oas": "http://192.168.129.232:8000/openpersonen/api/schema/openapi.yaml",
-        "nlx": "",
-        "user_id": "",
-        "user_representation": ""
+        "order": 2,
+        "uuid": "3d9c2de6-ebee-4b55-ba01-1996a8b2c9ce",
+        "form": 2,
+        "form_definition": 4,
+        "optional": true,
+        "availability_strategy": "always"
     }
 },
 {
-    "model": "zgw_consumers.nlxconfig",
-    "pk": 1,
+    "model": "submissions.submission",
+    "pk": 2,
     "fields": {
-        "directory": "",
-        "outway": "/"
+        "uuid": "ab6bcf35-6baf-4651-8401-02362c927e70",
+        "form": 1,
+        "created_on": "2020-09-25T15:28:15.860Z",
+        "backend_result": {
+            "zaak": {
+                "url": "https://test.openzaak.nl/zaken/api/v1/zaken/b850fbe6-6354-47f2-99c7-47293bc4a087",
+                "uuid": "b850fbe6-6354-47f2-99c7-47293bc4a087",
+                "status": null,
+                "zaaktype": "https://test.openzaak.nl/catalogi/api/v1/zaaktypen/53340e34-7581-4b04-884f-8ff7e6a73c2c",
+                "deelzaken": [],
+                "einddatum": null,
+                "hoofdzaak": null,
+                "kenmerken": [],
+                "resultaat": null,
+                "startdatum": "2020-09-25",
+                "verlenging": {
+                    "duur": null,
+                    "reden": ""
+                },
+                "opschorting": {
+                    "reden": "",
+                    "indicatie": false
+                },
+                "toelichting": "",
+                "omschrijving": "",
+                "archiefstatus": "nog_te_archiveren",
+                "eigenschappen": [],
+                "identificatie": "ZAAK-2020-0000000098",
+                "zaakgeometrie": null,
+                "bronorganisatie": "100000009",
+                "publicatiedatum": null,
+                "archiefnominatie": null,
+                "einddatumGepland": null,
+                "registratiedatum": "2020-09-25",
+                "archiefactiedatum": null,
+                "betalingsindicatie": "",
+                "communicatiekanaal": "",
+                "laatsteBetaaldatum": null,
+                "productenOfDiensten": [],
+                "selectielijstklasse": "",
+                "relevanteAndereZaken": [],
+                "betalingsindicatieWeergave": "",
+                "vertrouwelijkheidaanduiding": "openbaar",
+                "uiterlijkeEinddatumAfdoening": null,
+                "verantwoordelijkeOrganisatie": "100000009"
+            },
+            "document": {
+                "url": "https://test.openzaak.nl/documenten/api/v1/enkelvoudiginformatieobjecten/558ec14b-d3b1-4a93-a62d-046b7b392bf3",
+                "link": "",
+                "taal": "nld",
+                "titel": "\u2615\ufe0f",
+                "auteur": "openforms",
+                "inhoud": "https://test.openzaak.nl/documenten/api/v1/enkelvoudiginformatieobjecten/558ec14b-d3b1-4a93-a62d-046b7b392bf3/download?versie=1",
+                "locked": false,
+                "status": "",
+                "versie": 1,
+                "formaat": "",
+                "integriteit": {
+                    "datum": null,
+                    "waarde": "",
+                    "algoritme": ""
+                },
+                "beschrijving": "",
+                "bestandsnaam": "",
+                "creatiedatum": "2020-09-25",
+                "verzenddatum": null,
+                "identificatie": "DOCUMENT-2020-0000000076",
+                "ondertekening": {
+                    "datum": null,
+                    "soort": ""
+                },
+                "bestandsomvang": 244,
+                "ontvangstdatum": null,
+                "bronorganisatie": "100000009",
+                "beginRegistratie": "2020-09-25T15:28:31.258419Z",
+                "informatieobjecttype": "https://test.openzaak.nl/catalogi/api/v1/informatieobjecttypen/1db73aba-cef4-42ec-bdf0-cd4c7c4f2514",
+                "indicatieGebruiksrecht": null,
+                "vertrouwelijkheidaanduiding": "openbaar"
+            }
+        },
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "108915864",
+        "current_step": 0
     }
 },
 {
-    "model": "brp.brpconfig",
-    "pk": 1,
+    "model": "submissions.submission",
+    "pk": 3,
     "fields": {
-        "brp_service": 4
+        "uuid": "b8feda6c-a37a-490c-8a67-a6da31a5843c",
+        "form": 1,
+        "created_on": "2020-11-13T13:28:49.075Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
     }
 },
 {
-    "model": "zgw.zgwconfig",
+    "model": "submissions.submission",
+    "pk": 12,
+    "fields": {
+        "uuid": "e8e57472-0e93-4aeb-ae6d-c383953ada1b",
+        "form": 1,
+        "created_on": "2021-01-08T11:50:00.965Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 13,
+    "fields": {
+        "uuid": "491ccfad-c1a7-4824-909c-5e6771d89291",
+        "form": 1,
+        "created_on": "2021-01-08T13:48:59.012Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 14,
+    "fields": {
+        "uuid": "c974ce95-d9a0-4394-8ed3-61969a599376",
+        "form": 1,
+        "created_on": "2021-01-08T14:16:45.650Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 15,
+    "fields": {
+        "uuid": "a2f1c982-bbdb-49e1-a322-0988e59a685a",
+        "form": 1,
+        "created_on": "2021-01-22T10:07:35.213Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 16,
+    "fields": {
+        "uuid": "cd5c972b-2a82-4f94-b155-d83b0362ce68",
+        "form": 1,
+        "created_on": "2021-01-22T10:08:18.698Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 17,
+    "fields": {
+        "uuid": "95bb9d8d-03a0-4ec6-86ff-adb6afa98263",
+        "form": 1,
+        "created_on": "2021-01-22T11:03:56.005Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 18,
+    "fields": {
+        "uuid": "8540fa5b-a43d-4e08-98e5-68e515ee9484",
+        "form": 1,
+        "created_on": "2021-01-22T11:04:26.900Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 19,
+    "fields": {
+        "uuid": "c845e3d1-0e07-4a8d-bb37-62395780a0cb",
+        "form": 1,
+        "created_on": "2021-01-22T11:07:28.892Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:17:01.011Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 20,
+    "fields": {
+        "uuid": "4ccc8c97-32fa-450e-bcdf-7482516d3675",
+        "form": 1,
+        "created_on": "2021-01-22T13:19:17.349Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:19:50.806Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 21,
+    "fields": {
+        "uuid": "2e199026-c9c6-4a61-8cd9-ead59b859aac",
+        "form": 1,
+        "created_on": "2021-01-22T13:20:16.652Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:21:03.922Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 22,
+    "fields": {
+        "uuid": "8ee49051-b462-4361-9680-4b8e574a30ba",
+        "form": 1,
+        "created_on": "2021-01-22T13:25:14.596Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:25:26.032Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 23,
+    "fields": {
+        "uuid": "c66ce644-36bd-4ead-bd3f-8ae6648e0271",
+        "form": 1,
+        "created_on": "2021-01-22T13:27:49.473Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:28:14.770Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 24,
+    "fields": {
+        "uuid": "877fcc9f-39ce-4daa-963c-4dd8155f9260",
+        "form": 1,
+        "created_on": "2021-01-22T13:47:31.342Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T13:47:42.493Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 25,
+    "fields": {
+        "uuid": "340fa63e-d841-4671-bf60-d45b4ba86fcd",
+        "form": 1,
+        "created_on": "2021-01-22T13:52:13.975Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 26,
+    "fields": {
+        "uuid": "3fcbb5b7-0566-4e58-a55a-b1e212a7efa5",
+        "form": 2,
+        "created_on": "2021-01-22T14:04:57.624Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 27,
+    "fields": {
+        "uuid": "c3fd4621-70d1-40c1-9dd8-6e8ad27e2c0c",
+        "form": 2,
+        "created_on": "2021-01-22T14:37:06.314Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 28,
+    "fields": {
+        "uuid": "45e12452-caa2-4f06-83ff-ffee2701744f",
+        "form": 2,
+        "created_on": "2021-01-22T14:43:40.209Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 29,
+    "fields": {
+        "uuid": "a281c17c-dae0-4320-a63d-73130d29dd34",
+        "form": 2,
+        "created_on": "2021-01-22T14:45:05.952Z",
+        "backend_result": null,
+        "completed_on": "2021-01-22T14:46:00.157Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 30,
+    "fields": {
+        "uuid": "df7ccf71-91e0-410b-a463-ffd05d30fc57",
+        "form": 2,
+        "created_on": "2021-03-23T14:10:45.866Z",
+        "backend_result": null,
+        "completed_on": null,
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submission",
+    "pk": 31,
+    "fields": {
+        "uuid": "47f281a0-2c02-4dc1-94ea-9d0204b62174",
+        "form": 2,
+        "created_on": "2021-03-23T14:17:58.981Z",
+        "backend_result": null,
+        "completed_on": "2021-03-23T14:19:15.156Z",
+        "suspended_on": null,
+        "bsn": "",
+        "current_step": 0
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 2,
+    "fields": {
+        "uuid": "2d486685-0a26-46b6-99d0-8b5bb63305d1",
+        "submission": 2,
+        "form_step": 1,
+        "data": {
+            "voornaam": "Joeri",
+            "achternaam": "Bekker",
+            "melkSuiker": {
+                "melk": false,
+                "suiker": true
+            },
+            "afleverpunt": "Hier en nu",
+            "selecteerGezinsleden": {
+                "005255545": true,
+                "407174205": false,
+                "462447546": true,
+                "462677448": false,
+                "534135286": true
+            }
+        },
+        "created_on": "2020-09-25T15:28:15.959Z",
+        "modified": "2020-12-03T14:57:05.494Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 6,
+    "fields": {
+        "uuid": "c350b963-8553-4e96-8d45-5c414f3cac71",
+        "submission": 12,
+        "form_step": 1,
+        "data": {
+            "voornaam": "Sergei",
+            "achternaam": "Maertens"
+        },
+        "created_on": "2021-01-08T11:50:01.210Z",
+        "modified": "2021-01-08T11:50:01.210Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 7,
+    "fields": {
+        "uuid": "f2671029-f73f-4982-95c4-f1819a17263b",
+        "submission": 13,
+        "form_step": 1,
+        "data": {
+            "voornaam": "Sergei"
+        },
+        "created_on": "2021-01-08T13:48:59.230Z",
+        "modified": "2021-01-08T13:48:59.230Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 8,
+    "fields": {
+        "uuid": "f45ad3f4-0730-4cd3-8bf2-b4b86d7d3b6a",
+        "submission": 14,
+        "form_step": 1,
+        "data": {
+            "data": {
+                "voornaam": "Sergei",
+                "achternaam": "Maertens"
+            }
+        },
+        "created_on": "2021-01-08T14:35:11.597Z",
+        "modified": "2021-01-08T14:35:11.597Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 9,
+    "fields": {
+        "uuid": "0e9284eb-5223-4a08-b60b-d08bad27008e",
+        "submission": 15,
+        "form_step": 1,
+        "data": {
+            "demo_dev_meeting": "Hello world"
+        },
+        "created_on": "2021-01-22T10:07:57.705Z",
+        "modified": "2021-01-22T10:07:57.705Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 10,
+    "fields": {
+        "uuid": "eead85aa-d07e-49bb-8e66-4497197658fa",
+        "submission": 19,
+        "form_step": 1,
+        "data": {
+            "foo": "bar"
+        },
+        "created_on": "2021-01-22T11:11:48.818Z",
+        "modified": "2021-01-22T11:11:48.818Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 11,
+    "fields": {
+        "uuid": "6f26417e-83e0-4eb7-9a74-e5b3a3c1462a",
+        "submission": 20,
+        "form_step": 1,
+        "data": {
+            "dummy": "data"
+        },
+        "created_on": "2021-01-22T13:19:43.735Z",
+        "modified": "2021-01-22T13:19:43.736Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 12,
+    "fields": {
+        "uuid": "05d6d739-2203-4bf0-b918-aa1483238ef0",
+        "submission": 21,
+        "form_step": 1,
+        "data": {
+            "foo": "bar"
+        },
+        "created_on": "2021-01-22T13:20:59.619Z",
+        "modified": "2021-01-22T13:20:59.619Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 13,
+    "fields": {
+        "uuid": "66b9729e-72a4-4284-a098-91a54fac9ad4",
+        "submission": 22,
+        "form_step": 1,
+        "data": {
+            "foo": "bar"
+        },
+        "created_on": "2021-01-22T13:25:20.140Z",
+        "modified": "2021-01-22T13:25:20.140Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 14,
+    "fields": {
+        "uuid": "97d61c23-1e75-4168-966b-4eb78ac90817",
+        "submission": 23,
+        "form_step": 1,
+        "data": {
+            "completion": "test"
+        },
+        "created_on": "2021-01-22T13:28:10.730Z",
+        "modified": "2021-01-22T13:28:10.730Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 15,
+    "fields": {
+        "uuid": "93c00248-a825-43ec-85a1-b52cf4cc80c6",
+        "submission": 24,
+        "form_step": 1,
+        "data": {
+            "test": "snackbar"
+        },
+        "created_on": "2021-01-22T13:47:39.348Z",
+        "modified": "2021-01-22T13:47:39.348Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 16,
+    "fields": {
+        "uuid": "73debfb9-3b9c-4a07-9ad3-d9e02920c931",
+        "submission": 25,
+        "form_step": 1,
+        "data": {
+            "start": "new"
+        },
+        "created_on": "2021-01-22T13:52:20.181Z",
+        "modified": "2021-01-22T13:52:20.181Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 17,
+    "fields": {
+        "uuid": "78e36460-9408-4e58-8e2d-9fbea5da647b",
+        "submission": 26,
+        "form_step": 2,
+        "data": {
+            "stap_1": "Completed"
+        },
+        "created_on": "2021-01-22T14:36:36.116Z",
+        "modified": "2021-01-22T14:36:36.116Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 18,
+    "fields": {
+        "uuid": "cf287059-19a4-48bd-ba44-ba38c0763add",
+        "submission": 27,
+        "form_step": 2,
+        "data": {
+            "foo": "bar"
+        },
+        "created_on": "2021-01-22T14:37:33.729Z",
+        "modified": "2021-01-22T14:37:33.729Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 19,
+    "fields": {
+        "uuid": "c62809c0-0588-4cd7-ad82-4afa36153dde",
+        "submission": 28,
+        "form_step": 2,
+        "data": {
+            "stap_1": "Demo submission API"
+        },
+        "created_on": "2021-01-22T14:44:00.542Z",
+        "modified": "2021-01-22T14:44:00.542Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 20,
+    "fields": {
+        "uuid": "618a2e27-5bfc-4093-ae59-6b440f12a044",
+        "submission": 28,
+        "form_step": 3,
+        "data": {
+            "anything": "goes"
+        },
+        "created_on": "2021-01-22T14:44:13.738Z",
+        "modified": "2021-01-22T14:44:13.738Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 21,
+    "fields": {
+        "uuid": "309a0378-eee9-4e32-ac80-5d831416646f",
+        "submission": 29,
+        "form_step": 2,
+        "data": {
+            "stap_1": "Demo submission API"
+        },
+        "created_on": "2021-01-22T14:45:32.386Z",
+        "modified": "2021-01-22T14:45:32.386Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 22,
+    "fields": {
+        "uuid": "1b1c0dd6-0250-4d19-a628-eb4e7e8bbd01",
+        "submission": 29,
+        "form_step": 3,
+        "data": {
+            "anything": "goes"
+        },
+        "created_on": "2021-01-22T14:45:42.789Z",
+        "modified": "2021-01-22T14:45:42.789Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 23,
+    "fields": {
+        "uuid": "f0521481-63f8-4bf6-be87-d93ce2682946",
+        "submission": 29,
+        "form_step": 4,
+        "data": {
+            "skip option": "notImplementedYet"
+        },
+        "created_on": "2021-01-22T14:45:53.719Z",
+        "modified": "2021-01-22T14:45:53.719Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 24,
+    "fields": {
+        "uuid": "67c28a8b-aec3-43ab-aaef-0220011e3a78",
+        "submission": 31,
+        "form_step": 2,
+        "data": {
+            "foo": "bar"
+        },
+        "created_on": "2021-03-23T14:18:09.545Z",
+        "modified": "2021-03-23T14:18:09.545Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 25,
+    "fields": {
+        "uuid": "84aa1f14-dd01-4a8e-96f0-82306197e56c",
+        "submission": 31,
+        "form_step": 3,
+        "data": {
+            "andere": "key"
+        },
+        "created_on": "2021-03-23T14:18:53.740Z",
+        "modified": "2021-03-23T14:18:53.740Z"
+    }
+},
+{
+    "model": "submissions.submissionstep",
+    "pk": 26,
+    "fields": {
+        "uuid": "2b0ebb26-4732-410b-9b0b-5510d32302ce",
+        "submission": 31,
+        "form_step": 4,
+        "data": {
+            "blah": "blah"
+        },
+        "created_on": "2021-03-23T14:19:06.150Z",
+        "modified": "2021-03-23T14:19:06.150Z"
+    }
+},
+{
+    "model": "accounts.user",
     "pk": 1,
     "fields": {
-        "zrc_service": 1,
-        "drc_service": 3,
-        "zaaktype": "https://test.openzaak.nl/catalogi/api/v1/zaaktypen/53340e34-7581-4b04-884f-8ff7e6a73c2c",
-        "informatieobjecttype": "https://test.openzaak.nl/catalogi/api/v1/informatieobjecttypen/1db73aba-cef4-42ec-bdf0-cd4c7c4f2514",
-        "organisatie_rsin": "100000009"
+        "password": "pbkdf2_sha256$150000$vc0XKvjrtA3w$zeYKk56W9vgZrU2sY/C8rJpMxSbBNY/EQ2OZDeK0TUA=",
+        "last_login": "2021-03-23T14:21:51.244Z",
+        "is_superuser": true,
+        "username": "sergei",
+        "first_name": "",
+        "last_name": "",
+        "email": "sergei@maykinmedia.nl",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-09-25T08:56:21.860Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "accounts.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$Q5LZKERyob3p$em1igC73P6vt07sILdajGvKIPt9DEeZNxosZi4G7Ihs=",
+        "last_login": "2020-09-25T15:24:26.234Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "lol@maykinmedia.nl",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2020-09-25T13:01:53.829Z",
+        "groups": [],
+        "user_permissions": []
     }
 }
 ]

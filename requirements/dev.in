@@ -1,5 +1,7 @@
+-c ci.txt
+
 # Helpers
-pip-tools
+pip-tools~=6.0
 bump2version
 
 # Debug tooling

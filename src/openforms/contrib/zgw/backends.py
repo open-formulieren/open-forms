@@ -1,4 +1,4 @@
-from openforms.core.backends import register
+from openforms.forms.backends import register
 
 from .service import create_document, create_zaak, relate_document
 

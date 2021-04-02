@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sites',
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     # Optional applications.
     "ordered_model",
     "django_admin_index",
@@ -104,7 +105,6 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
-    "sniplates",
     "hijack",
     "hijack_admin",
     "compat",  # Part of hijack
@@ -117,9 +117,8 @@ INSTALLED_APPS = [
     # Project applications.
     "openforms.accounts",
     "openforms.contrib.zgw",
-    "openforms.core",
+    "openforms.forms",
     "openforms.products",
-    "openforms.sample_app",
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",

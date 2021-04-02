@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0002_delete_formsubmission"),
+        ("forms", "0002_delete_formsubmission"),
         ("submissions", "0003_auto_20200924_1710"),
     ]
 
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             model_name="submission",
             name="form",
             field=models.ForeignKey(
-                default=1, on_delete=django.db.models.deletion.CASCADE, to="core.Form"
+                default=1, on_delete=django.db.models.deletion.CASCADE, to="forms.Form"
             ),
             preserve_default=False,
         ),
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 (
                     "form_step",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="core.FormStep"
+                        on_delete=django.db.models.deletion.CASCADE, to="forms.FormStep"
                     ),
                 ),
                 (

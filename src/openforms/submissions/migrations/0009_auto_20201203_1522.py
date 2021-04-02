@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0005_form_product"),
+        ("forms", "0005_form_product"),
         ("submissions", "0008_auto_20200929_1643"),
     ]
 
