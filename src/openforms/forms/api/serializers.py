@@ -1,5 +1,3 @@
-import json
-
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
@@ -90,6 +88,18 @@ class FormStepSerializer(serializers.ModelSerializer):
     parent_lookup_kwargs = {
         "form_uuid": "form__uuid",
     }
+
+    def create(self, validated_data):
+        validated_data["form"] = self.context["form"]
+        config = validated_data["form_definition"]["configuration"]
+
+        # FIXME the identity of the related FormDefinition and Form can't
+        # be determined from the request body, so the FormStep shape in the API
+        # should probably change?
+        validated_data["form_definition"] = FormDefinition.objects.filter(
+            configuration=config
+        ).last()
+        return super().create(validated_data)
 
     class Meta:
         model = FormStep
