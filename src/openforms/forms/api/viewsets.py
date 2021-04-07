@@ -1,8 +1,19 @@
+from django.core.management import CommandError, call_command
+from django.http.response import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import permissions, status, viewsets
+from rest_framework import (
+    exceptions,
+    parsers,
+    permissions,
+    response,
+    status,
+    views,
+    viewsets,
+)
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -83,3 +94,46 @@ class FormDefinitionViewSet(BaseFormsViewSet):
 class FormViewSet(BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
+
+    def get_authenticators(self):
+        if self.name == "Export":
+            return [TokenAuthentication()]
+        return super().get_authenticators()
+
+    @action(detail=True, methods=["post"])
+    def export(self, request, *args, **kwargs):
+        """
+        Exports the Form and related FormDefinitions and FormSteps as a .zip
+        """
+        instance = self.get_object()
+
+        response = HttpResponse(content_type="application/zip")
+        filename = instance.slug
+        response["Content-Disposition"] = "attachment;filename={}".format(
+            f"{filename}.zip"
+        )
+
+        call_command("export", response=response, form_id=instance.id)
+
+        response["Content-Length"] = len(response.content)
+        return response
+
+
+class FormsImportAPIView(views.APIView):
+    parser_classes = (parsers.FileUploadParser,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        """
+        Import a form
+
+        Import forms by uploading a .zip file
+        """
+
+        try:
+            call_command("import", import_file_content=request.FILES["file"].read())
+        except CommandError as e:
+            raise exceptions.ValidationError({"error": e})
+
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
