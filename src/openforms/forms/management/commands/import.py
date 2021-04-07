@@ -80,7 +80,13 @@ class Command(BaseCommand):
 
                         old_uuid = entry.object.uuid
                         entry.object.uuid = str(uuid4())
-                        entry.save()
+
+                        try:
+                            entry.save()
+                        except Exception as e:
+                            raise CommandError(
+                                f"Something went wrong while importing: {e}"
+                            ) from e
 
                         uuid_mapping[old_uuid] = entry.object.uuid
 
