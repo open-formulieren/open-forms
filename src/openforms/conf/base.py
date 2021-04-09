@@ -4,6 +4,7 @@ import os
 from django.urls import reverse_lazy
 
 import sentry_sdk
+from corsheaders.defaults import default_headers as default_cors_headers
 
 from .utils import config, get_sentry_integrations
 
@@ -105,6 +106,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
+    "corsheaders",
     "hijack",
     "hijack_admin",
     "compat",  # Part of hijack
@@ -131,6 +133,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     # 'django.middleware.locale.LocaleMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -408,6 +411,23 @@ HIJACK_REGISTER_ADMIN = False
 # This is a CSRF-security risk.
 # See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
 HIJACK_ALLOW_GET_REQUESTS = True
+
+#
+# DJANGO-CORS-MIDDLEWARE
+#
+# CORS requests are required if the SDK is used in another domain. When developing
+# on the SDK for example, set `CORS_ALLOWED_ORIGINS=http://localhost:3000` in your
+# Open Forms .env
+CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=False)
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", split=True, default=[])
+CORS_ALLOWED_ORIGIN_REGEXES = config(
+    "CORS_ALLOWED_ORIGIN_REGEXES", split=True, default=[]
+)
+# Authorization is included in default_cors_headers
+CORS_ALLOW_HEADERS = list(default_cors_headers) + config(
+    "CORS_EXTRA_ALLOW_HEADERS", split=True, default=[]
+)
+CORS_EXPOSE_HEADERS = []
 
 #
 # SENTRY - error monitoring

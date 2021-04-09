@@ -84,6 +84,10 @@ django-compat==1.0.15
     #   -r requirements/base.txt
     #   django-hijack
     #   django-hijack-admin
+django-cors-headers==3.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-hijack-admin==2.1.10
     # via
     #   -c requirements/base.txt
@@ -138,6 +142,7 @@ django==2.2.20
     #   django-axes
     #   django-capture-on-commit-callbacks
     #   django-choices
+    #   django-cors-headers
     #   django-jenkins
     #   django-redis
     #   django-relativedelta
