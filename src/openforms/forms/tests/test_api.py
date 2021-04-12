@@ -1,7 +1,9 @@
+import uuid
 from unittest import expectedFailure
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
+from django.test.client import MULTIPART_CONTENT
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -52,7 +54,7 @@ class FormsAPITests(WebTest):
             "name": "Test Post Form",
             "slug": "test-post-form",
         }
-        response = self.client.post(url, data=data, format="json")
+        response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.filter(**data).count(), 1)
@@ -64,7 +66,7 @@ class FormsAPITests(WebTest):
         data = {
             "bad": "data",
         }
-        response = self.client.post(url, data=data, format="json")
+        response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Form.objects.count(), 0)
@@ -76,10 +78,133 @@ class FormsAPITests(WebTest):
             "name": "Test Post Form",
             "slug": "test-post-form",
         }
-        response = self.client.post(url, data=data, format="json")
+        response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Form.objects.count(), 0)
+
+    def test_patch_form(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "name": "Test Patch Form",
+        }
+        response = self.client.patch(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.name, "Test Patch Form")
+
+    def test_patch_form_without_authentication(self):
+        form = FormFactory.create()
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "name": "Test Patch Form",
+        }
+        response = self.client.patch(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Patch Form")
+
+    def test_patch_form_with_bad_data(self):
+        form = FormFactory.create()
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "bad": "data",
+        }
+        response = self.client.patch(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Patch Form")
+
+    def test_patch_form_404(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = f'{reverse("api:form-list")}/{uuid.uuid4()}'
+        data = {
+            "bad": "data",
+        }
+        response = self.client.patch(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Patch Form")
+
+    def test_put_form(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "name": "Test Put Form",
+            "slug": "test-put-form",
+        }
+        response = self.client.put(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.name, "Test Put Form")
+
+    def test_put_form_with_incomplete_data(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "name": "Test Put Form",
+        }
+        response = self.client.put(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), {'slug': ['Dit veld is vereist.']})
+
+    def test_put_form_without_authentication(self):
+        form = FormFactory.create()
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "name": "Test Put Form",
+        }
+        response = self.client.put(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Put Form")
+
+    def test_put_form_with_bad_data(self):
+        form = FormFactory.create()
+        url = f'{reverse("api:form-list")}/{form.uuid}'
+        data = {
+            "bad": "data",
+        }
+        response = self.client.put(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Put Form")
+
+    def test_put_form_404(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = f'{reverse("api:form-list")}/{uuid.uuid4()}'
+        data = {
+            "bad": "data",
+        }
+        response = self.client.put(url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        form.refresh_from_db()
+        self.assertNotEqual(form.name, "Test Put Form")
 
     def test_steps_list(self):
         step = FormStepFactory.create()
