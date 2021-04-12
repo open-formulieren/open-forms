@@ -37,14 +37,12 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
 )
 class FormStepViewSet(
     NestedViewSetMixin,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    BaseFormsViewSet,
+    viewsets.ModelViewSet,
 ):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
     permission_classes = [IsStaffOrReadOnly]
+    lookup_field = "uuid"
 
 
 @extend_schema_view(
