@@ -3,10 +3,8 @@ from unittest import expectedFailure
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
-from django.test.client import MULTIPART_CONTENT
 from django.urls import reverse
 
-from django_webtest import WebTest
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -14,7 +12,7 @@ from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
-class FormsAPITests(WebTest):
+class FormsAPITests(APITestCase):
     def setUp(self):
         # TODO: Replace with API-token
         User = get_user_model()
@@ -92,7 +90,7 @@ class FormsAPITests(WebTest):
         data = {
             "name": "Test Patch Form",
         }
-        response = self.client.patch(url, data=data, content_type='application/json')
+        response = self.client.patch(url, data=data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
@@ -104,7 +102,7 @@ class FormsAPITests(WebTest):
         data = {
             "name": "Test Patch Form",
         }
-        response = self.client.patch(url, data=data, content_type='application/json')
+        response = self.client.patch(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
@@ -116,7 +114,7 @@ class FormsAPITests(WebTest):
         data = {
             "bad": "data",
         }
-        response = self.client.patch(url, data=data, content_type='application/json')
+        response = self.client.patch(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
@@ -131,7 +129,7 @@ class FormsAPITests(WebTest):
         data = {
             "bad": "data",
         }
-        response = self.client.patch(url, data=data, content_type='application/json')
+        response = self.client.patch(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         form.refresh_from_db()
@@ -147,7 +145,7 @@ class FormsAPITests(WebTest):
             "name": "Test Put Form",
             "slug": "test-put-form",
         }
-        response = self.client.put(url, data=data, content_type='application/json')
+        response = self.client.put(url, data=data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
@@ -162,10 +160,10 @@ class FormsAPITests(WebTest):
         data = {
             "name": "Test Put Form",
         }
-        response = self.client.put(url, data=data, content_type='application/json')
+        response = self.client.put(url, data=data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'slug': ['Dit veld is vereist.']})
+        self.assertEqual(response.json(), {"slug": ["Dit veld is vereist."]})
 
     def test_put_form_without_authentication(self):
         form = FormFactory.create()
@@ -173,7 +171,7 @@ class FormsAPITests(WebTest):
         data = {
             "name": "Test Put Form",
         }
-        response = self.client.put(url, data=data, content_type='application/json')
+        response = self.client.put(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
@@ -185,7 +183,7 @@ class FormsAPITests(WebTest):
         data = {
             "bad": "data",
         }
-        response = self.client.put(url, data=data, content_type='application/json')
+        response = self.client.put(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
@@ -200,7 +198,7 @@ class FormsAPITests(WebTest):
         data = {
             "bad": "data",
         }
-        response = self.client.put(url, data=data, content_type='application/json')
+        response = self.client.put(url, data=data, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         form.refresh_from_db()
