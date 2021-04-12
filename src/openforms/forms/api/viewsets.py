@@ -22,13 +22,13 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
 
-from ..api.permissions import IsStaffOrReadOnly
-from ..api.serializers import (
+from ..models import Form, FormDefinition, FormStep
+from .permissions import IsStaffOrReadOnly
+from .serializers import (
     FormDefinitionSerializer,
     FormSerializer,
     FormStepSerializer,
 )
-from ..models import Form, FormDefinition, FormStep
 
 
 @extend_schema(
@@ -137,7 +137,6 @@ class FormViewSet(
 class FormsImportAPIView(views.APIView):
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         """
