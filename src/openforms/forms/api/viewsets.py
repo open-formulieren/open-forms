@@ -27,6 +27,7 @@ from ..api.serializers import (
     FormStepSerializer,
 )
 from ..models import Form, FormDefinition, FormStep
+from ..api.permissions import IsStaffOrReadOnly
 
 
 class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -48,6 +49,7 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
 class FormStepViewSet(NestedViewSetMixin, BaseFormsViewSet):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
+    permission_classes = [IsStaffOrReadOnly]
 
 
 @extend_schema_view(
@@ -94,6 +96,7 @@ class FormDefinitionViewSet(BaseFormsViewSet):
 class FormViewSet(BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
+    permission_classes = [IsStaffOrReadOnly]
 
     def get_authenticators(self):
         if self.name == "Export":
@@ -122,7 +125,6 @@ class FormViewSet(BaseFormsViewSet):
 class FormsImportAPIView(views.APIView):
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         """
