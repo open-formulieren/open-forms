@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import permissions, status, viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -34,9 +34,16 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
     list=extend_schema(summary=_("List form steps")),
     retrieve=extend_schema(summary=_("Retrieve form step details")),
 )
-class FormStepViewSet(NestedViewSetMixin, BaseFormsViewSet):
+class FormStepViewSet(
+    NestedViewSetMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    BaseFormsViewSet,
+):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 @extend_schema_view(
@@ -80,6 +87,7 @@ class FormDefinitionViewSet(BaseFormsViewSet):
     list=extend_schema(summary=_("List forms")),
     retrieve=extend_schema(summary=_("Retrieve form details")),
 )
-class FormViewSet(BaseFormsViewSet):
+class FormViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
