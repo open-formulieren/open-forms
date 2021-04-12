@@ -16,6 +16,7 @@ from ..api.serializers import (
     FormStepSerializer,
 )
 from ..models import Form, FormDefinition, FormStep
+from ..api.permissions import IsStaffOrReadOnly
 
 
 class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,7 +44,7 @@ class FormStepViewSet(
 ):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsStaffOrReadOnly]
 
 
 @extend_schema_view(
@@ -90,4 +91,4 @@ class FormDefinitionViewSet(BaseFormsViewSet):
 class FormViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
     serializer_class = FormSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsStaffOrReadOnly]
