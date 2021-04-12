@@ -10,13 +10,13 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
 
+from ..api.permissions import IsStaffOrReadOnly
 from ..api.serializers import (
     FormDefinitionSerializer,
     FormSerializer,
     FormStepSerializer,
 )
 from ..models import Form, FormDefinition, FormStep
-from ..api.permissions import IsStaffOrReadOnly
 
 
 class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
