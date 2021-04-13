@@ -6,7 +6,6 @@ from openforms.forms.models import Form, FormDefinition
 
 
 class FormValidator:
-    message = _("A form does not exist with this uuid")
 
     def set_context(self, serializer):
         """
@@ -17,7 +16,7 @@ class FormValidator:
 
     def __call__(self, attrs: dict):
         if not Form.objects.filter(uuid=self.form_uuid).exists():
-            raise Http404(self.message)
+            raise Http404()
 
 
 class FormDefinitionValidator:
