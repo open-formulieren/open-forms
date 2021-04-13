@@ -6,7 +6,6 @@ from openforms.forms.models import Form, FormDefinition
 
 
 class FormValidator:
-
     def set_context(self, serializer):
         """
         This hook is called by the serializer instance,
