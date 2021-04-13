@@ -1,6 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
-
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
@@ -8,7 +5,7 @@ from openforms.products.api.serializers import ProductSerializer
 
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
-from .validators import FormDefinitionValidator
+from .validators import FormDefinitionValidator, FormValidator
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
@@ -97,6 +94,7 @@ class FormStepSerializer(serializers.ModelSerializer):
     }
 
     validators = [
+        FormValidator(),
         FormDefinitionValidator(),
     ]
 
@@ -114,11 +112,7 @@ class FormStepSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        try:
-            form = Form.objects.get(uuid=self.context["view"].kwargs["form_uuid"])
-        except ObjectDoesNotExist:
-            raise Http404()
-
+        form = Form.objects.get(uuid=self.context["view"].kwargs["form_uuid"])
         form_definition = FormDefinition.objects.get(
             uuid=validated_data["form_definition"]
         )

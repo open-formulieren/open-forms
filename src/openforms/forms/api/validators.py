@@ -1,19 +1,28 @@
 from django.core.exceptions import ValidationError
+from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
-from openforms.forms.models import FormDefinition
+from openforms.forms.models import Form, FormDefinition
 
 
-class FormDefinitionValidator:
-    code = "non-existant-form-definition"
-    message = _("A form definition does not exist with this uuid")
+class FormValidator:
+    message = _("A form does not exist with this uuid")
 
     def set_context(self, serializer):
         """
         This hook is called by the serializer instance,
         prior to the validation call being made.
         """
-        self.instance = getattr(serializer, "instance", None)
+        self.form_uuid = serializer.context["view"].kwargs["form_uuid"]
+
+    def __call__(self, attrs: dict):
+        if not Form.objects.filter(uuid=self.form_uuid).exists():
+            raise Http404(self.message)
+
+
+class FormDefinitionValidator:
+    code = "non-existant-form-definition"
+    message = _("A form definition does not exist with this uuid")
 
     def __call__(self, attrs: dict):
         if (
