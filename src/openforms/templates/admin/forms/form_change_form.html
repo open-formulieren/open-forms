@@ -1,0 +1,18 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+
+    {% if has_change_permission %}
+    <div class="submit-row submit-row-extended">
+
+        {% block extra_submit_buttons %}
+            {{ block.super }}
+
+            {% if original %}<input type="submit" value="{% trans 'Export' %}" name="_export"/>{% endif %}
+        {% endblock %}
+
+    </div>
+    {% endif %}
+{% endblock %}
