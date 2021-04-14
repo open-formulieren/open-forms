@@ -34,6 +34,10 @@ class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
 @extend_schema_view(
     list=extend_schema(summary=_("List form steps")),
     retrieve=extend_schema(summary=_("Retrieve form step details")),
+    create=extend_schema(summary=_("Create a form step")),
+    update=extend_schema(summary=_("Update all details of a form step")),
+    partial_update=extend_schema(summary=_("Update some details of a form step")),
+    destroy=extend_schema(summary=_("Delete a form step")),
 )
 class FormStepViewSet(
     NestedViewSetMixin,
@@ -85,6 +89,9 @@ class FormDefinitionViewSet(BaseFormsViewSet):
 @extend_schema_view(
     list=extend_schema(summary=_("List forms")),
     retrieve=extend_schema(summary=_("Retrieve form details")),
+    create=extend_schema(summary=_("Create form")),
+    update=extend_schema(summary=_("Update all details of a form")),
+    partial_update=extend_schema(summary=_("Update given details of a form")),
 )
 class FormViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, BaseFormsViewSet):
     queryset = Form.objects.filter(active=True)
