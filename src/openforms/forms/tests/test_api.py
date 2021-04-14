@@ -356,3 +356,125 @@ class ImportExportAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class CopyFormAPITests(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="john", password="secret", email="john@example.com"
+        )
+        self.token = TokenFactory(user=self.user)
+
+    def test_form_copy(self):
+        self.user.is_staff = True
+        self.user.save()
+
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        url = reverse("api:form-copy", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.has_header("Location"))
+
+        self.assertEqual(Form.objects.count(), 2)
+        self.assertEqual(FormDefinition.objects.count(), 2)
+        self.assertEqual(FormStep.objects.count(), 2)
+
+        copied_form = Form.objects.last()
+        copied_form_step = copied_form.formstep_set.first()
+        copied_form_definition = copied_form_step.form_definition
+
+        self.assertIn(
+            reverse("api:form-detail", kwargs={"uuid": copied_form.uuid}),
+            response["Location"],
+        )
+
+        self.assertNotEqual(copied_form.pk, form.pk)
+        self.assertNotEqual(copied_form.uuid, str(form.uuid))
+        self.assertEqual(copied_form.active, form.active)
+        self.assertEqual(copied_form.backend, form.backend)
+        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
+        self.assertIsNone(copied_form.product)
+        self.assertEqual(copied_form.slug, f"{form.slug}-kopie")
+
+        self.assertNotEqual(copied_form_definition.pk, form_definition.pk)
+        self.assertNotEqual(copied_form_definition.uuid, str(form_definition.uuid))
+        self.assertEqual(
+            copied_form_definition.configuration, form_definition.configuration
+        )
+        self.assertEqual(
+            copied_form_definition.login_required, form_definition.login_required
+        )
+        self.assertEqual(copied_form_definition.name, f"{form_definition.name} (kopie)")
+        self.assertEqual(copied_form_definition.slug, f"{form_definition.slug}-kopie")
+
+        self.assertNotEqual(copied_form_step.pk, form_step.pk)
+        self.assertNotEqual(copied_form_step.uuid, str(form_step.uuid))
+        self.assertEqual(
+            copied_form_step.availability_strategy, form_step.availability_strategy
+        )
+        self.assertEqual(copied_form_step.form.pk, copied_form.pk)
+        self.assertEqual(copied_form_step.form_definition.pk, copied_form_definition.pk)
+        self.assertEqual(copied_form_step.optional, form_step.optional)
+        self.assertEqual(copied_form_step.order, form_step.order)
+
+    def test_form_copy_already_exists(self):
+        self.user.is_staff = True
+        self.user.save()
+
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        url = reverse("api:form-copy", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.has_header("Location"))
+
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_form_copy_token_auth_required(self):
+        form = FormFactory.create()
+        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_form_copy_session_auth_not_allowed(self):
+        self.user.is_staff = True
+        self.user.save()
+
+        self.client.login(
+            request=HttpRequest(), username=self.user.username, password="secret"
+        )
+
+        form = FormFactory.create()
+        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_form_copy_staff_required(self):
+        self.user.is_staff = False
+        self.user.save()
+
+        form = FormFactory.create()
+        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        response = self.client.post(
+            url,
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
