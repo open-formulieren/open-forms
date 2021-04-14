@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Import forms" %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:forms_form_changelist' %}">{% trans 'Forms' %}</a>
+&rsaquo; {% trans 'Import form' %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans 'Import form' %}</h1>
+    <div id="content-main">
+        <form action="" method="POST" enctype="multipart/form-data">
+            <div>
+                <fieldset class="module aligned ">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {{ field.label.capitalize }}: {{ field }}<br/>
+                        {{ field.help_text }}<br/><br/>
+                    {% endfor %}
+                </fieldset>
+
+                <div class="submit-row">
+                    <input type="submit" value="{% trans 'Import' %}" name="_import">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
