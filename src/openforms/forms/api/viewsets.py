@@ -1,6 +1,9 @@
 from django.core.management import CommandError, call_command
+from django.db import transaction
+from django.db.utils import DataError, IntegrityError
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -32,6 +35,8 @@ from .serializers import (
     FormSerializer,
     FormStepSerializer,
 )
+from ..models import Form, FormDefinition, FormStep
+from ..utils import copy_form
 
 
 @extend_schema(
@@ -117,6 +122,29 @@ class FormViewSet(
     lookup_field = "uuid"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    @extend_schema(
+        summary=_("Copy form"),
+        tags=["forms"],
+        responses=OpenApiTypes.OBJECT,
+    )
+    @transaction.atomic
+    @action(detail=True, methods=["post"], authentication_classes=(TokenAuthentication,))
+    def copy(self, request, *args, **kwargs):
+        """
+        Copies a Form and all related FormSteps/FormDefinitions
+        """
+        instance = self.get_object()
+
+        try:
+            copied_form = copy_form(instance)
+        except (DataError, IntegrityError) as e:
+            return Response({"error": f"Error occurred while copying: {e}"}, status=400)
+
+        path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
+        detail_url = request.build_absolute_uri(path)
+
+        return Response(status=201, headers={"Location": detail_url})
 
     @extend_schema(
         summary=_("Export form"),
