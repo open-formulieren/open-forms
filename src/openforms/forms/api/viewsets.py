@@ -1,5 +1,8 @@
 from django.core.management import CommandError, call_command
+from django.db import transaction
+from django.db.utils import DataError, IntegrityError
 from django.http.response import HttpResponse
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -28,6 +31,7 @@ from ..api.serializers import (
     FormStepSerializer,
 )
 from ..models import Form, FormDefinition, FormStep
+from ..utils import copy_form
 
 
 class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -99,9 +103,27 @@ class FormViewSet(BaseFormsViewSet):
     permission_classes = [IsStaffOrReadOnly]
 
     def get_authenticators(self):
-        if self.name == "Export":
+        if self.name in ["Export", "Copy"]:
             return [TokenAuthentication()]
         return super().get_authenticators()
+
+    @transaction.atomic
+    @action(detail=True, methods=["post"])
+    def copy(self, request, *args, **kwargs):
+        """
+        Copies a Form and all related FormSteps/FormDefinitions
+        """
+        instance = self.get_object()
+
+        try:
+            copied_form = copy_form(instance)
+        except (DataError, IntegrityError) as e:
+            return Response({"error": f"Error occurred while copying: {e}"}, status=400)
+
+        path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
+        detail_url = request.build_absolute_uri(path)
+
+        return Response(status=201, headers={"Location": detail_url})
 
     @action(detail=True, methods=["post"])
     def export(self, request, *args, **kwargs):
