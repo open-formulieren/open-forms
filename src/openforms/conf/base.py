@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "digid_eherkenning",
     "solo",
+    "reversion",
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
