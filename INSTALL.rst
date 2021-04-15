@@ -23,6 +23,7 @@ You need the following libraries and/or programs:
 * `PostgreSQL`_ 10 or above
 * `Node.js`_
 * `npm`_
+* `yarn`_
 
 .. _Python: https://www.python.org/
 .. _Virtualenv: https://virtualenv.pypa.io/en/stable/
@@ -30,6 +31,7 @@ You need the following libraries and/or programs:
 .. _PostgreSQL: https://www.postgresql.org
 .. _Node.js: http://nodejs.org/
 .. _npm: https://www.npmjs.com/
+.. _yarn: https://yarnpkg.com/
 
 
 Getting started
@@ -55,16 +57,25 @@ development machine.
        $ source env/bin/activate
        $ pip install -r requirements/dev.txt
 
-4. Install the front-end CLI tool `gulp`_ if you've never installed them
-   before and install the frontend libraries:
+4. Install and build the frontend libraries:
 
    .. code-block:: bash
 
-       $ npm install -g gulp
-       $ npm install
-       $ gulp sass
+       $ npm ci
+       $ npm run build
 
-5. Activate your virtual environment and create the statics and database:
+5. Install the front-end CLI tool `yarn`_ if you've never installed them
+   before and install and build the frontend libraries for the React SPA demo app in the `src/spa` subdirectory:
+
+   .. code-block:: bash
+
+       $ npm install -g yarn
+       $ cd src/spa
+       $ yarn install
+       $ yarn build
+       $ cd ../..
+
+6. Activate your virtual environment and create the statics and database:
 
    .. code-block:: bash
 
@@ -72,20 +83,20 @@ development machine.
        $ python src/manage.py collectstatic --link
        $ python src/manage.py migrate
 
-6. Create a superuser to access the management interface:
+7. Create a superuser to access the management interface:
 
    .. code-block:: bash
 
        $ python src/manage.py createsuperuser
 
-7. You can now run your installation and point your browser to the address
+8. You can now run your installation and point your browser to the address
    given by this command:
 
    .. code-block:: bash
 
        $ python src/manage.py runserver
 
-8. Create a .env file with database settings. See dotenv.example for an example.
+9. Create a .env file with database settings. See dotenv.example for an example.
 
         $ cp dotenv.example .env
 
@@ -121,7 +132,11 @@ When updating an existing installation:
        $ git pull
        $ pip install -r requirements/dev.txt
        $ npm install
-       $ gulp sass
+       $ npm run build
+       $ cd src/spa
+       $ yarn install
+       $ yarn build
+       $ cd ../..
 
 3. Update the statics and database:
 
