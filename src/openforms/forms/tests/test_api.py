@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory
+from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -488,6 +489,70 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(FormStep.objects.count(), 1)
+
+    def test_form_delete(self):
+        self.user.is_staff = True
+        self.user.save()
+        token = TokenFactory(user=self.user)
+
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(form=form)
+
+        response = self.client.delete(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            HTTP_AUTHORIZATION=f"Token {token.key}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
+
+        response = self.client.get(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Submission still exists
+        submission.refresh_from_db()
+        self.assertEqual(submission.form, form)
+
+    def test_form_delete_staff_required(self):
+        token = TokenFactory(user=self.user)
+
+        form = FormFactory.create()
+
+        response = self.client.delete(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            HTTP_AUTHORIZATION=f"Token {token.key}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        form.refresh_from_db()
+        self.assertFalse(form._is_deleted)
+
+        response = self.client.get(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_form_delete_token_required(self):
+        form = FormFactory.create()
+
+        response = self.client.delete(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        form.refresh_from_db()
+        self.assertFalse(form._is_deleted)
+
+        response = self.client.get(
+            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class FormDefinitionsAPITests(APITestCase):
