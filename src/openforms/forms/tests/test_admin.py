@@ -4,11 +4,12 @@ from zipfile import ZipFile
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
-from ..models import Form
-from .factories import FormFactory
+from ..models import Form, FormStep
+from .factories import FormFactory, FormStepFactory
 
 
 class FormAdminImportExportTests(WebTest):
@@ -164,3 +165,72 @@ class FormAdminImportExportTests(WebTest):
 
         error_message = response.html.find("li", {"class": "error"})
         self.assertIn("Something went wrong while importing", error_message.text)
+
+
+class FormAdminCopyTests(WebTest):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="john",
+            password="secret",
+            email="john@example.com",
+            is_superuser=True,
+            is_staff=True,
+        )
+
+    def test_form_admin_copy(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        response = self.app.get(
+            reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = response.form.submit("_copy")
+
+        copied_form = Form.objects.get(slug=f"{form.slug}-kopie")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.location,
+            reverse("admin:forms_form_change", args=(copied_form.pk,)),
+        )
+
+        self.assertNotEqual(copied_form.uuid, form.uuid)
+        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
+
+        copied_form_step = FormStep.objects.last()
+        self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
+        self.assertEqual(copied_form_step.form, copied_form)
+
+        copied_form_definition = copied_form_step.form_definition
+        self.assertNotEqual(copied_form_definition.uuid, form_step.form_definition.uuid)
+        self.assertEqual(
+            copied_form_definition.name, f"{form_step.form_definition.name} (kopie)"
+        )
+        self.assertEqual(
+            copied_form_definition.slug, f"{form_step.form_definition.slug}-kopie"
+        )
+
+    def test_form_admin_copy_error_duplicate(self):
+        form = FormFactory.create()
+        FormFactory.create(slug=f"{form.slug}-kopie")
+        form_step = FormStepFactory.create(form=form)
+        response = self.app.get(
+            reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = response.form.submit("_copy")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.location, reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        response = response.follow()
+
+        error = response.html.find("li", {"class": "error"})
+        self.assertIn(_("Error occurred while copying: duplicate key"), error.text)
