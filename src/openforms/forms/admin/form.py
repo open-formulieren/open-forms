@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
 from django.core.management import CommandError, call_command
+from django.db.utils import DataError, IntegrityError
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -12,6 +13,7 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
+from ..utils import copy_form
 
 
 class FormStepInline(OrderedTabularInline):
@@ -41,6 +43,27 @@ class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
     change_list_template = "admin/forms/form_change_list.html"
 
     def response_post_save_change(self, request, obj):
+        if "_copy" in request.POST:
+            # Clear messages
+            storage = messages.get_messages(request)
+            for i in storage:
+                pass
+
+            try:
+                copied_form = copy_form(obj)
+            except (DataError, IntegrityError) as e:
+                messages.error(request, _("Error occurred while copying: {}").format(e))
+                return HttpResponseRedirect(
+                    reverse("admin:forms_form_change", args=(obj.pk,))
+                )
+
+            messages.success(
+                request,
+                _("{} {} was successfully copied").format("Form", obj),
+            )
+            return HttpResponseRedirect(
+                reverse("admin:forms_form_change", args=(copied_form.pk,))
+            )
         if "_export" in request.POST:
             # Clear messages
             storage = messages.get_messages(request)

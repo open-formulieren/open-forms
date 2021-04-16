@@ -10,7 +10,10 @@
         {% block extra_submit_buttons %}
             {{ block.super }}
 
-            {% if original %}<input type="submit" value="{% trans 'Export' %}" name="_export"/>{% endif %}
+            {% if original %}
+                <input type="submit" value="{% trans 'Export' %}" name="_export"/>
+                <input type="submit" value="{% trans 'Copy' %}" name="_copy"/>
+            {% endif %}
         {% endblock %}
 
     </div>
