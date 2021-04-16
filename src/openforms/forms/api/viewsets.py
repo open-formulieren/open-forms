@@ -125,6 +125,7 @@ class FormViewSet(BaseFormsViewSet):
 class FormsImportAPIView(views.APIView):
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
+    permission_classes = [IsStaffOrReadOnly]
 
     def post(self, request, *args, **kwargs):
         """
