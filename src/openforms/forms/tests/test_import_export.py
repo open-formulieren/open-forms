@@ -43,15 +43,9 @@ class ImportExportTests(TestCase):
 
             form_definitions = json.loads(f.read("formDefinitions.json"))
             self.assertEqual(len(form_definitions), 1)
-            self.assertEqual(
-                form_definitions[0]["uuid"], str(form_definition.uuid)
-            )
-            self.assertEqual(
-                form_definitions[0]["name"], form_definition.name
-            )
-            self.assertEqual(
-                form_definitions[0]["slug"], form_definition.slug
-            )
+            self.assertEqual(form_definitions[0]["uuid"], str(form_definition.uuid))
+            self.assertEqual(form_definitions[0]["name"], form_definition.name)
+            self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
             self.assertEqual(
                 form_definitions[0]["configuration"],
                 form_definition.configuration,
@@ -59,7 +53,9 @@ class ImportExportTests(TestCase):
 
             form_steps = json.loads(f.read("formSteps.json"))
             self.assertEqual(len(form_steps), 1)
-            self.assertEqual(form_steps[0]["configuration"], form_definition.configuration)
+            self.assertEqual(
+                form_steps[0]["configuration"], form_definition.configuration
+            )
 
     def test_import(self):
         product = ProductFactory.create()
