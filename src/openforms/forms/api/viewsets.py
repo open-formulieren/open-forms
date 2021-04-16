@@ -9,7 +9,6 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
     exceptions,
-    mixins,
     parsers,
     permissions,
     response,
@@ -111,11 +110,10 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
     create=extend_schema(summary=_("Create form")),
     update=extend_schema(summary=_("Update all details of a form")),
     partial_update=extend_schema(summary=_("Update given details of a form")),
+    destroy=extend_schema(summary=_("(Soft) delete a form")),
 )
-class FormViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet
-):
-    queryset = Form.objects.filter(active=True)
+class FormViewSet(viewsets.ModelViewSet):
+    queryset = Form.objects.filter(active=True, _is_deleted=False)
     lookup_field = "uuid"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
@@ -182,6 +180,10 @@ class FormViewSet(
 
         response["Content-Length"] = len(response.content)
         return response
+
+    def perform_destroy(self, instance):
+        instance._is_deleted = True
+        instance.save()
 
 
 class FormsImportAPIView(views.APIView):
