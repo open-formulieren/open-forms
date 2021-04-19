@@ -8,8 +8,6 @@ from openforms.products.api.serializers import ProductSerializer
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
 
-# from .validators import FormDefinitionValidator, FormValidator
-
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
