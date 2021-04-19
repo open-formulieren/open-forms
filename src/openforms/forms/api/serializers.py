@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
@@ -5,7 +7,8 @@ from openforms.products.api.serializers import ProductSerializer
 
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
-from .validators import FormDefinitionValidator, FormValidator
+
+# from .validators import FormDefinitionValidator, FormValidator
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
@@ -82,39 +85,29 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class FormStepSerializer(serializers.ModelSerializer):
+class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     index = serializers.IntegerField(source="order", read_only=True)
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
     )
-    form_definition = serializers.UUIDField(write_only=True)
 
     parent_lookup_kwargs = {
         "form_uuid": "form__uuid",
     }
 
-    validators = [
-        FormValidator(),
-        FormDefinitionValidator(),
-    ]
-
     class Meta:
         model = FormStep
         fields = ("index", "configuration", "form_definition")
 
-    def update(self, instance, validated_data):
-        instance.form_definition = FormDefinition.objects.get(
-            uuid=validated_data["form_definition"]
-        )
-        instance.save()
-
-        return instance
+        extra_kwargs = {
+            "form_definition": {
+                "view_name": "api:formdefinition-detail",
+                "lookup_field": "uuid",
+            },
+        }
 
     def create(self, validated_data):
-
-        form = Form.objects.get(uuid=self.context["view"].kwargs["form_uuid"])
-        form_definition = FormDefinition.objects.get(
-            uuid=validated_data["form_definition"]
+        validated_data["form"] = get_object_or_404(
+            Form, uuid=self.context["view"].kwargs["form_uuid"]
         )
-
-        return FormStep.objects.create(form=form, form_definition=form_definition)
+        return super().create(validated_data)

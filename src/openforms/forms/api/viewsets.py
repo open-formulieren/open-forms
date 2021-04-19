@@ -19,13 +19,6 @@ from ..api.serializers import (
 from ..models import Form, FormDefinition, FormStep
 
 
-class BaseFormsViewSet(viewsets.ReadOnlyModelViewSet):
-    lookup_field = "uuid"
-    # anonymous clients must be able to get the form definitions in the browser
-    # The DRF settings apply some default throttling to mitigate abuse
-    permission_classes = [permissions.AllowAny]
-
-
 @extend_schema(
     parameters=[
         OpenApiParameter("form_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH)
@@ -59,10 +52,14 @@ class FormStepViewSet(
         tags=["forms"],
     ),
 )
-class FormDefinitionViewSet(BaseFormsViewSet):
+class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
     pagination_class = PageNumberPagination
+    lookup_field = "uuid"
+    # anonymous clients must be able to get the form definitions in the browser
+    # The DRF settings apply some default throttling to mitigate abuse
+    permission_classes = [permissions.AllowAny]
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
@@ -93,7 +90,10 @@ class FormDefinitionViewSet(BaseFormsViewSet):
     update=extend_schema(summary=_("Update all details of a form")),
     partial_update=extend_schema(summary=_("Update given details of a form")),
 )
-class FormViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, BaseFormsViewSet):
+class FormViewSet(
+    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet
+):
     queryset = Form.objects.filter(active=True)
+    lookup_field = "uuid"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]

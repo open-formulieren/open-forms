@@ -236,9 +236,10 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", args=(self.step.form.uuid,))
-        data = {
-            "formDefinition": self.step.form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -260,9 +261,10 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", args=(uuid.uuid4(),))
-        data = {
-            "formDefinition": self.step.form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -270,9 +272,10 @@ class FormsStepsAPITests(APITestCase):
 
     def test_post_without_authentication(self):
         url = reverse("api:form-steps-list", args=(self.step.form.uuid,))
-        data = {
-            "formDefinition": self.step.form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -282,9 +285,11 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -337,9 +342,10 @@ class FormsStepsAPITests(APITestCase):
 
     def test_put_without_authentication(self):
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -352,9 +358,11 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -367,9 +375,10 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{uuid.uuid4()}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -382,9 +391,10 @@ class FormsStepsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": uuid.uuid4(),
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -402,14 +412,15 @@ class FormsStepsAPITests(APITestCase):
         }
         response = self.client.patch(url, data=data)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FormStep.objects.count(), 1)
 
     def test_patch_without_authentication(self):
         url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        form_detail_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
