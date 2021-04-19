@@ -4,13 +4,19 @@ from .service import create_document, create_zaak, relate_document
 
 
 @register
-def create_zaak_backend(submission_step) -> dict:
-    raise NotImplementedError(
-        "Signature changed from step to full submission, this backend is now broken."
-    )
-    zaak = create_zaak()
+def create_zaak_backend(submission) -> dict:
+    form_config = None
+
+    assert hasattr(submission.form, "zgwformconfig"), "Form should have ZGW config"
+    form_config = submission.form.zgwformconfig
+
+    data = {}
+    for step in submission.steps:
+        data.update(step.data)
+
+    zaak = create_zaak(form_config)
     document = create_document(
-        name=submission_step.submission.form.name, body=submission_step.data
+        name=submission.form.name, body=data, form_config=form_config
     )
     relate_document(zaak["url"], document["url"])
 
