@@ -44,7 +44,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
 
-    def test_post_successful(self):
+    def test_create_form_successful(self):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -55,9 +55,12 @@ class FormsAPITests(APITestCase):
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Form.objects.filter(**data).count(), 1)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
 
-    def test_post_with_bad_data(self):
+    def test_create_form_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -67,9 +70,13 @@ class FormsAPITests(APITestCase):
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(Form.objects.count(), 0)
+        self.assertFalse(Form.objects.exists())
+        self.assertEqual(
+            response.json(),
+            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+        )
 
-    def test_post_without_authentication(self):
+    def test_create_form_unsuccessful_without_authorization(self):
 
         url = reverse("api:form-list")
         data = {
@@ -79,130 +86,131 @@ class FormsAPITests(APITestCase):
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Form.objects.count(), 0)
+        self.assertFalse(Form.objects.exists())
 
-    def test_patch_form(self):
+    def test_partial_update_of_form(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
 
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "name": "Test Patch Form",
         }
-        response = self.client.patch(url, data=data, format="json")
+        response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertEqual(form.name, "Test Patch Form")
 
-    def test_patch_form_without_authentication(self):
+    def test_partial_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "name": "Test Patch Form",
         }
-        response = self.client.patch(url, data=data, content_type="application/json")
+        response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
         self.assertNotEqual(form.name, "Test Patch Form")
 
-    def test_patch_form_with_bad_data(self):
+    def test_partial_update_of_form_with_bad_data_does_no_update(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "bad": "data",
         }
-        response = self.client.patch(url, data=data, content_type="application/json")
+        response = self.client.patch(url, data=data)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        form.refresh_from_db()
-        self.assertNotEqual(form.name, "Test Patch Form")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check form is unchanged
+        self.assertEqual(form, Form.objects.get(id=form.id))
 
-    def test_patch_form_404(self):
-        form = FormFactory.create()
+    def test_partial_update_of_form_unsuccessful_when_form_cannot_be_found(self):
         self.user.is_staff = True
         self.user.save()
 
-        url = f'{reverse("api:form-list")}/{uuid.uuid4()}'
+        url = reverse("api:form-detail", kwargs={"uuid": uuid.uuid4()})
         data = {
             "bad": "data",
         }
-        response = self.client.patch(url, data=data, content_type="application/json")
+        response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        form.refresh_from_db()
-        self.assertNotEqual(form.name, "Test Patch Form")
 
-    def test_put_form(self):
+    def test_complete_update_of_form_successful(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
 
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
         }
-        response = self.client.put(url, data=data, format="json")
+        response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertEqual(form.name, "Test Put Form")
 
-    def test_put_form_with_incomplete_data(self):
+    def test_complete_update_of_form_with_incomplete_data_unsuccessful(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
 
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "name": "Test Put Form",
         }
-        response = self.client.put(url, data=data, format="json")
+        response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {"slug": ["Dit veld is vereist."]})
 
-    def test_put_form_without_authentication(self):
+    def test_complete_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "name": "Test Put Form",
         }
-        response = self.client.put(url, data=data, content_type="application/json")
+        response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
         self.assertNotEqual(form.name, "Test Put Form")
 
-    def test_put_form_with_bad_data(self):
+    def test_complete_update_of_form_unsuccessful_with_bad_data(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-list")}/{form.uuid}'
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
         data = {
             "bad": "data",
         }
-        response = self.client.put(url, data=data, content_type="application/json")
+        response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         form.refresh_from_db()
         self.assertNotEqual(form.name, "Test Put Form")
+        self.assertEqual(
+            response.json(),
+            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+        )
 
-    def test_put_form_404(self):
+    def test_complete_update_of_form_when_form_cannot_be_found(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
 
-        url = f'{reverse("api:form-list")}/{uuid.uuid4()}'
+        url = reverse("api:form-detail", kwargs={"uuid": uuid.uuid4()})
         data = {
             "bad": "data",
         }
-        response = self.client.put(url, data=data, content_type="application/json")
+        response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         form.refresh_from_db()
@@ -232,7 +240,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
 
-    def test_post_successful(self):
+    def test_create_form_step_successful(self):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", args=(self.step.form.uuid,))
@@ -245,7 +253,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(FormStep.objects.count(), 2)
 
-    def test_post_with_bad_data(self):
+    def test_create_form_step_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", args=(self.step.form.uuid,))
@@ -256,8 +264,9 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
+        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
 
-    def test_post_404(self):
+    def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", args=(uuid.uuid4(),))
@@ -270,7 +279,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(FormStep.objects.count(), 1)
 
-    def test_post_without_authentication(self):
+    def test_create_form_step_unsuccessful_without_authorization(self):
         url = reverse("api:form-steps-list", args=(self.step.form.uuid,))
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
@@ -281,10 +290,12 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(FormStep.objects.count(), 1)
 
-    def test_put_successful(self):
+    def test_complete_form_step_update_successful(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
@@ -298,40 +309,52 @@ class FormsStepsAPITests(APITestCase):
             1,
         )
 
-    def test_put_404(self):
+    def test_complete_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{uuid.uuid4()}'
-        data = {
-            "formDefinition": self.other_form_definition.uuid,
-        }
+        url = reverse("api:form-steps-detail", args=(self.step.form.uuid, uuid.uuid4()))
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
 
-    def test_put_with_non_existant_form_definition(self):
+    def test_complete_form_step_update_unsuccessful_with_non_existant_form_definition(
+        self,
+    ):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
-        data = {
-            "formDefinition": uuid.uuid4(),
-        }
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": uuid.uuid4()},
+        )
+        data = {"formDefinition": f"http://testserver{form_detail_url}"}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
+        )
         self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+            response.json(),
+            {"formDefinition": ["Ongeldige hyperlink - Object bestaat niet."]},
         )
 
-    def test_put_with_bad_data(self):
+    def test_complete_form_step_update_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         data = {
             "bad": "data",
         }
@@ -339,9 +362,12 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
+        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
 
-    def test_put_without_authentication(self):
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+    def test_complete_form_step_update_unsuccessful_without_authorization(self):
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
         )
@@ -349,15 +375,16 @@ class FormsStepsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
 
-    def test_patch_successful(self):
+    def test_partial_form_step_update_successful(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
@@ -371,10 +398,10 @@ class FormsStepsAPITests(APITestCase):
             1,
         )
 
-    def test_patch_404(self):
+    def test_partial_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{uuid.uuid4()}'
+        url = reverse("api:form-steps-detail", args=(self.step.form.uuid, uuid.uuid4()))
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
         )
@@ -382,15 +409,16 @@ class FormsStepsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
 
-    def test_patch_with_bad_uuid(self):
+    def test_partial_form_step_update_unsuccessful_when_form_definition_not_found(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
         )
@@ -398,15 +426,20 @@ class FormsStepsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
+        )
         self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+            response.json(),
+            {"formDefinition": ["Ongeldige hyperlink - Object bestaat niet."]},
         )
 
-    def test_patch_with_bad_data(self):
+    def test_partial_form_step_update_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         data = {
             "bad": "data",
         }
@@ -415,8 +448,10 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FormStep.objects.count(), 1)
 
-    def test_patch_without_authentication(self):
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+    def test_partial_form_step_update_unsuccessful_without_authorization(self):
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
         )
@@ -424,31 +459,34 @@ class FormsStepsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
-            0,
+        self.assertFalse(
+            FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
 
-    def test_delete_successful(self):
+    def test_delete_form_step_successful(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(FormStep.objects.count(), 0)
+        self.assertFalse(FormStep.objects.exists())
 
-    def test_delete_404(self):
+    def test_delete_form_step_unsuccessful_when_form_not_found(self):
         self.user.is_staff = True
         self.user.save()
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{uuid.uuid4()}'
+        url = reverse("api:form-steps-detail", args=(self.step.form.uuid, uuid.uuid4()))
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(FormStep.objects.count(), 1)
 
-    def test_delete_not_authenticated(self):
-        url = f'{reverse("api:form-steps-list", args=(self.step.form.uuid,))}/{self.step.uuid}'
+    def test_delete_form_step_unsuccessful_when_not_authenticated(self):
+        url = reverse(
+            "api:form-steps-detail", args=(self.step.form.uuid, self.step.uuid)
+        )
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
