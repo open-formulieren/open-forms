@@ -473,7 +473,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(FormStep.objects.count(), 1)
 
-    def test_delete_form_step_unsuccessful_when_not_authenticated(self):
+    def test_delete_form_step_unsuccessful_when_not_authorized(self):
         url = reverse(
             "api:form-steps-detail",
             kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
