@@ -2,7 +2,14 @@ from django.contrib import admin
 
 from solo.admin import SingletonModelAdmin
 
-from .models import ZgwConfig
+from openforms.forms.admin.registry import register_inline
+
+from .models import ZgwConfig, ZGWFormConfig
+
+
+@register_inline(backend_name="create_zaak_backend")
+class ZGWFormConfigInline(admin.StackedInline):
+    model = ZGWFormConfig
 
 
 @admin.register(ZgwConfig)

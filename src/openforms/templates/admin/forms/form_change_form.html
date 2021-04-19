@@ -1,0 +1,44 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n %}
+
+{% block admin_change_form_document_ready %}
+    {{ block.super }}
+
+    {{inline_mapping|json_script:"inline_mapping"}}
+
+    <script>
+        let inlineMapping = JSON.parse(document.querySelector("#inline_mapping").textContent);
+
+        let backend = document.querySelector("#id_backend");
+        let initialValue = backend.value;
+
+        backend.addEventListener("change", (e) => {
+            hideFormSets(backend.value)
+        })
+
+        function hideFormSets(selectedValue) {
+            let visibleFormSetName;
+
+            if(selectedValue) {
+                visibleFormSetName = inlineMapping[selectedValue.split(".").slice(-1)[0]]
+            } else {
+                visibleFormSetName = ""
+            }
+
+
+            let inlines = document.querySelectorAll(".js-inline-admin-formset");
+
+            for(inline of inlines) {
+                let formsetName = inline.id.split("-")[0];
+                if(Object.values(inlineMapping).includes(formsetName) && formsetName != visibleFormSetName) {
+                    inline.style.display = "none";
+                } else {
+                    inline.style.display = "";
+                }
+            }
+        }
+
+        hideFormSets(initialValue);
+    </script>
+{% endblock %}
+

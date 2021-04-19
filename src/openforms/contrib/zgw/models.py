@@ -32,3 +32,24 @@ class ZgwConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("ZGW Configuration")
+
+
+class ZGWFormConfig(models.Model):
+    # TODO add more configurable fields
+    form = models.OneToOneField("forms.Form", on_delete=models.CASCADE)
+    zaaktype = models.URLField(
+        max_length=1000, help_text=_("URL of the ZAAKTYPE in Catalogi API")
+    )
+    informatieobjecttype = models.URLField(
+        max_length=1000, help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
+    )
+    organisatie_rsin = models.CharField(
+        max_length=9, help_text=_("RSIN of organization, which creates the ZAAK")
+    )
+    vertrouwelijkheidaanduiding = models.CharField(
+        max_length=100,
+        help_text=_("Confidentiality of the ZAAK and related INFORMATIEOBJECT"),
+    )
+
+    class Meta:
+        verbose_name = _("ZGW Form Configuration")
