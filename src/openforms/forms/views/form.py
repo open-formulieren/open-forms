@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
+from django.views.generic import DetailView
 
 from openforms.ui.views.generic import UIDetailView, UIListView
 
@@ -23,6 +24,16 @@ class FormDetailView(UIDetailView):
             return redirect("forms:form-login", slug=self.kwargs["slug"])
         else:
             return super().get(request, *args, **kwargs)
+
+
+class FormCreateView(DetailView):
+    model = Form
+    template_name = "core/views/form/form_create.html"
+    pk_url_kwarg = "object_id"
+    # set these on the .as_viev(...) call
+    admin_site = None
+    model_admin = None
+
 
 
 class FormLoginButtonView(UIDetailView):

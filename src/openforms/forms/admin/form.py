@@ -6,6 +6,8 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.translation import ugettext_lazy as _
+from django.contrib import admin
+from django.urls import path
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from reversion.admin import VersionAdmin
@@ -15,6 +17,7 @@ from openforms.registrations.admin import BackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
+from ..views.form import FormCreateView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -128,6 +131,21 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         context = dict(self.admin_site.each_context(request), form=form)
 
         return TemplateResponse(request, "admin/forms/form/import_form.html", context)
+
+    def get_urls(self) -> list:
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<path:object_id>/create/",
+                self.admin_site.admin_view(self.formcreate_view),
+                name="form_create",
+            ),
+        ]
+        return custom_urls + urls
+
+    @property
+    def formcreate_view(self):
+        return FormCreateView.as_view(admin_site=self.admin_site, model_admin=self, )
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == "backend":
