@@ -509,3 +509,4 @@ SPECTACULAR_SETTINGS = {
 # ZGW Consumers
 #
 ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
+ZGW_CONSUMERS_TEST_SCHEMA_DIRS = ["src/openforms/contrib/zgw/tests/files"]
