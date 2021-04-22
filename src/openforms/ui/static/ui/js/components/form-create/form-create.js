@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Form as FormioForm } from 'react-formio';
+import useAsync from 'react-use/esm/useAsync';
 import { post } from './api';
 
 // Need to send name and slug of form, just those two
@@ -41,8 +42,9 @@ const CreateForm = () => {
 
         <div style={{width: '75%'}}>
             <FormioForm form={configuration} onSubmit={e => {
-                const resp = post('/api/v1/forms' ,e.data);
-                console.log(resp);
+                post('/api/v1/forms', e.data).then(e => {
+                    console.log(e);
+                });
             }} />
         </div>
       </div>
