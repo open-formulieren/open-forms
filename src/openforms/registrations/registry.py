@@ -4,9 +4,7 @@ from typing import Dict, Optional, Type
 
 from rest_framework import serializers
 
-from openforms.submissions.models import Submission
-
-from .fields import UNIQUE_ID_MAX_LENGTH
+from .constants import UNIQUE_ID_MAX_LENGTH
 
 SerializerCls = Type[serializers.Serializer]
 
@@ -76,6 +74,7 @@ class Registry:
         Note that registration applies some validation to enforce correct public API
         usage, causing code to crash early if you make mistakes as a plugin developer.
         """
+        from openforms.submissions.models import Submission
 
         def decorator(callback: callable):
             sig = inspect.signature(callback)
@@ -116,6 +115,9 @@ class Registry:
             return callback
 
         return decorator
+
+    def __iter__(self):
+        return iter(self._registry.values())
 
     def __getitem__(self, key: str):
         return self._registry[key]

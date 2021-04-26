@@ -3,6 +3,8 @@ from django.contrib import admin
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
+from openforms.registrations.admin import BackendChoiceFieldMixin
+
 from ..backends import registry
 from ..models import Form, FormStep
 
@@ -26,7 +28,9 @@ class FormStepInline(OrderedTabularInline):
 
 
 @admin.register(Form)
-class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
+class FormAdmin(
+    BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, admin.ModelAdmin
+):
     list_display = ("name", "registration_backend", "registration_backend_options")
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
