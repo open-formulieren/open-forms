@@ -1,9 +1,12 @@
 import uuid
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.reverse import reverse
 
+from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
 
@@ -19,7 +22,10 @@ class Form(models.Model):
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
-    backend = models.CharField(max_length=100, blank=True)
+
+    # backend integration - which registration to use?
+    registration_backend = BackendChoiceField(_("registration backend"), blank=True)
+    registration_backend_options = JSONField(default=dict, blank=True, null=True)
 
     @property
     def login_required(self) -> bool:

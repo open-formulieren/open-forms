@@ -6,6 +6,8 @@ from rest_framework import serializers
 
 from openforms.submissions.models import Submission
 
+from .fields import UNIQUE_ID_MAX_LENGTH
+
 SerializerCls = Type[serializers.Serializer]
 
 
@@ -90,6 +92,11 @@ class Registry:
             ):
                 raise TypeError(
                     f"The '{param.name}' typehint does not appear to be a Submission."
+                )
+
+            if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
+                raise ValueError(
+                    f"'unique_identifier' must be {UNIQUE_ID_MAX_LENGTH} or less characters."
                 )
 
             if unique_identifier in self._registry:

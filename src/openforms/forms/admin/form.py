@@ -27,7 +27,7 @@ class FormStepInline(OrderedTabularInline):
 
 @admin.register(Form)
 class FormAdmin(OrderedInlineModelAdminMixin, admin.ModelAdmin):
-    list_display = ("name", "backend")
+    list_display = ("name", "registration_backend", "registration_backend_options")
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
 
