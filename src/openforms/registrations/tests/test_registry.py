@@ -11,7 +11,7 @@ class OptionsSerializer(serializers.Serializer):
     pass
 
 
-def dummy_callback(submission):
+def dummy_callback(submission, opts):
     pass
 
 
@@ -38,7 +38,7 @@ class RegistryTests(SimpleTestCase):
         )
         _register(unique_identifier="cb1")(dummy_callback)
 
-        def other_callback(submission):
+        def other_callback(submission, opts):
             pass
 
         with self.assertRaisesMessage(
@@ -49,7 +49,7 @@ class RegistryTests(SimpleTestCase):
     def test_bad_typehint(self):
         register = Registry()
 
-        def callback(sub: int):
+        def callback(sub: int, opts):
             pass
 
         with self.assertRaisesMessage(
@@ -68,14 +68,18 @@ class RegistryTests(SimpleTestCase):
         def bad_1():
             pass
 
-        def bad_2(arg1, arg2):
+        def bad_2(arg1):
+            pass
+
+        def bad_3(arg1, arg2, arg3):
             pass
 
         for cb in (bad_1, bad_2):
             with self.subTest(callback=cb):
                 with self.assertRaisesMessage(
                     TypeError,
-                    "A callback must take exactly one argument - an instance of 'submissions.Submission'.",
+                    "A callback must take exactly two arguments - an instance of 'submissions.Submission' and "
+                    "the options object.",
                 ):
                     register(
                         cb.__name__,

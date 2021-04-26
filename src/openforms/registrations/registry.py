@@ -77,10 +77,10 @@ class Registry:
 
         def decorator(callback: callable):
             sig = inspect.signature(callback)
-            if len(sig.parameters) != 1:
+            if len(sig.parameters) != 2:
                 raise TypeError(
-                    "A callback must take exactly one argument - an instance of "
-                    "'submissions.Submission'."
+                    "A callback must take exactly two arguments - an instance of "
+                    "'submissions.Submission' and the options object."
                 )
 
             # check the expected type hint
