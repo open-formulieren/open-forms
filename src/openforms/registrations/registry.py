@@ -99,13 +99,19 @@ class Registry:
                 )
 
             self._registry[unique_identifier] = RegisteredPlugin(
+                unique_identifier=unique_identifier,
                 callback=callback,
                 name=name,
                 configuration_options=configuration_options,
                 backend_feedback_serializer=backend_feedback_serializer,
             )
 
+            return callback
+
         return decorator
+
+    def __getitem__(self, key: str):
+        return self._registry[key]
 
 
 # Sentinel to provide the default registry. You an easily instantiate another
