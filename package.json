@@ -23,7 +23,9 @@
     "bem.js": "^1.0.10",
     "consumerjs": "^3.2.0",
     "formiojs": "^4.11.3",
-    "microscope-sass": "latest"
+    "leaflet": "^1.7.1",
+    "microscope-sass": "latest",
+    "proj4leaflet": "^1.0.2"
   },
   "devDependencies": {
     "@babel/core": "latest",
