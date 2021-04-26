@@ -63,6 +63,13 @@ class FormIOBuilder {
                     components: {
                         npFamilyMembers: true,
                     },
+                },
+                pdok: {
+                    title: 'PDOK kaart',
+                    weight: 10,
+                    components: {
+                        pdokMap: true,
+                    }
                 }
 
             },
