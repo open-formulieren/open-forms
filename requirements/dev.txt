@@ -64,7 +64,7 @@ coverage==4.5.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==3.1.1
+cryptography==3.4.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -111,7 +111,7 @@ django-compat==1.0.15
     #   -r requirements/ci.txt
     #   django-hijack
     #   django-hijack-admin
-django-debug-toolbar==2.2
+django-debug-toolbar==3.2.1
     # via -r requirements/dev.in
 django-extensions==3.0.7
     # via -r requirements/dev.in
@@ -160,7 +160,7 @@ django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==2.2.19
+django==2.2.20
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -254,14 +254,14 @@ isort==5.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-jinja2==2.11.2
+jinja2==2.11.3
     # via sphinx
 jsonschema==3.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-lxml==4.5.2
+lxml==4.6.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -322,7 +322,7 @@ pyflakes==2.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-pygments==2.6.1
+pygments==2.8.1
     # via sphinx
 pyjwt==1.7.1
     # via
@@ -365,7 +365,7 @@ pytz==2021.1
     #   -r requirements/ci.txt
     #   babel
     #   django
-pyyaml==5.3.1
+pyyaml==5.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -405,7 +405,6 @@ six==1.15.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   cryptography
     #   django-choices
     #   django-compat
     #   django-rosetta
