@@ -1,6 +1,7 @@
 """
 Test the registration hook on submissions.
 """
+import uuid
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -21,13 +22,14 @@ class OptionsSerializer(serializers.Serializer):
     service = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all())
 
 
+class ResultSerializer(serializers.Serializer):
+    external_id = serializers.UUIDField()
+
+
 class RegistrationHookTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
-        # use an isolated registry
-        cls.register = Registry()
 
         cls.service = Service.objects.create(
             label="Test",
@@ -44,9 +46,10 @@ class RegistrationHookTests(TestCase):
         )
 
     def test_assertion_callback_with_deserialized_options(self):
+        register = Registry()
 
         # register the callback, including the assertions
-        @self.register(
+        @register(
             "callback",
             "Assertion callback",
             configuration_options=OptionsSerializer,
@@ -61,11 +64,37 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
-        with patch.object(model_field, "registry", self.register):
+        with patch.object(model_field, "registry", register):
             register_submission(self.submission)
 
         self.submission.refresh_from_db()
         self.assertEqual(
             self.submission.backend_result,
             {"result": "ok"},
+        )
+
+    def test_callback_with_custom_result_serializer(self):
+        register = Registry()
+
+        result_uuid = uuid.uuid4()
+
+        # register the callback, including the assertions
+        @register(
+            "callback",
+            "Assertion callback",
+            configuration_options=OptionsSerializer,
+            backend_feedback_serializer=ResultSerializer,
+        )
+        def callback(submission, options):
+            return {"external_id": result_uuid}
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with patch.object(model_field, "registry", register):
+            register_submission(self.submission)
+
+        self.submission.refresh_from_db()
+        self.assertEqual(
+            self.submission.backend_result,
+            {"external_id": str(result_uuid)},
         )
