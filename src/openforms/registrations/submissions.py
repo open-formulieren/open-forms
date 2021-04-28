@@ -16,13 +16,30 @@ def register_submission(submission: Submission) -> Optional[dict]:
         logger.info("Form %s has no registration plugin configured, aborting")
         return
 
+    logger.debug("Looking up plugin with unique identifier '%s'", backend)
     plugin = registry[backend]
 
-    import bpdb
+    logger.debug("De-serializing the plugin configuration options")
+    options_serializer = plugin.configuration_options(
+        data=form.registration_backend_options
+    )
+    options_serializer.is_valid(raise_exception=True)
 
-    bpdb.set_trace()
+    logger.debug("Invoking the '%r' plugin callback", plugin.callback)
+    result = plugin.callback(submission, options_serializer.validated_data)
 
-    backend_func = registry.get(submission.form.backend)
-    if backend_func:
-        result = backend_func(submission)
-        submission.backend_result = result
+    if plugin.backend_feedback_serializer:
+        logger.debug(
+            "Serializing the callback result with '%r'",
+            plugin.backend_feedback_serializer,
+        )
+        result_serializer = plugin.backend_feedback_serializer(instance=result)
+        result_data = result_serializer.data
+    else:
+        logger.debug(
+            "No result serializer specified, assuming raw result can be serialized as JSON"
+        )
+        result_data = result
+
+    submission.backend_result = result_data
+    submission.save(update_fields=["backend_result"])
