@@ -17,13 +17,6 @@ const configuration = {
     },
     "components": [
         {
-            "label": "Name",
-            "tableView": true,
-            "key": "textField",
-            "type": "textfield",
-            "input": true
-        },
-        {
             "label": "Add Step",
             "action": "event",
             "showValidations": false,
@@ -67,12 +60,6 @@ const stepsConfiguration = {
             dataSrc: "values",
             template: "<span>{{ item.label }}</span>",
             input: true
-        },
-        {
-            type: 'button',
-            action: 'submit',
-            label: 'Submit',
-            theme: 'primary'
         }
     ]
 };
@@ -89,11 +76,18 @@ const CreateForm = () => {
     return (
         <div className="card">
             <header className="card__header">
-                <h2 className="title">Create Form with React and FormIO</h2>
+                <h2 className="title">Create Form</h2>
             </header>
             <div className="card__body" style={{display: 'flex'}}>
 
                 <div style={{width: '75%'}}>
+                    <div className="form-group">
+                        <label htmlFor="exampleInputEmail1">Name</label>
+                        <input type="text" className="form-control" id="inputFormName"/>
+                    </div>
+                    <div>
+                        {stepForms}
+                    </div>
                     <FormioForm
                         form={configuration}
                         onSubmit={e => {
@@ -108,13 +102,10 @@ const CreateForm = () => {
                           console.log(customEvent);
                           if (customEvent.type === 'addStep') {
                             console.log('Adding step');
-                            setStepForms(oldArray => [...oldArray, <CreateStepForm configuration={stepsConfiguration}/>])
+                            setStepForms(oldArray => [...oldArray, <CreateStepForm configuration={stepsConfiguration} key={oldArray.length}/>])
                           }
                         }}
                     />
-                    <div>
-                        {stepForms}
-                    </div>
                 </div>
             </div>
         </div>
