@@ -3,17 +3,15 @@ import {post} from "./api";
 import {Form as FormioForm} from "react-formio";
 
 // Just need form definition
+// or
+// TODO Create new Form definition
 
 
-const CreateStepForm = ({configuration, submit_url}) => {
+const CreateStepForm = ({configuration}) => {
     return (
         <div>
-            <h2>Form Step</h2>
-            <FormioForm form={configuration} onSubmit={e => {
-                post(submit_url, e.data).then(response => {
-                    console.log(response);
-                });
-            }}/>
+            <h2>Step</h2>
+            <FormioForm form={configuration}/>
         </div>
     );
 };
