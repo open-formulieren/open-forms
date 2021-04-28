@@ -65,7 +65,7 @@ class Registry:
         self,
         unique_identifier: str,
         name: str,
-        configuration_options: SerializerCls,
+        configuration_options: SerializerCls = serializers.Serializer,
         backend_feedback_serializer: Optional[SerializerCls] = None,
     ):
         """

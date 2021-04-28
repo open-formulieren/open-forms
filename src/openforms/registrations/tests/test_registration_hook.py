@@ -2,7 +2,6 @@
 Test the registration hook on submissions.
 """
 import uuid
-from unittest.mock import patch
 
 from django.test import TestCase
 
@@ -15,6 +14,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..registry import Registry
 from ..submissions import register_submission
+from .utils import patch_registry
 
 
 class OptionsSerializer(serializers.Serializer):
@@ -64,7 +64,7 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
-        with patch.object(model_field, "registry", register):
+        with patch_registry(model_field, register):
             register_submission(self.submission)
 
         self.submission.refresh_from_db()
@@ -90,7 +90,7 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
-        with patch.object(model_field, "registry", register):
+        with patch_registry(model_field, register):
             register_submission(self.submission)
 
         self.submission.refresh_from_db()
