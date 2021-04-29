@@ -2,13 +2,7 @@ import {FormBuilder} from 'react-formio';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const FormIOBuilder = ({ configurationInput }) => {
-
-    let configuration = {display: 'form'};
-    if (configurationInput.value) {
-        configuration = JSON.parse(configurationInput.value);
-    }
-
+const FormIOBuilder = ({ configuration, onChange }) => {
     return (
         <FormBuilder
             form={configuration}
@@ -46,13 +40,14 @@ const FormIOBuilder = ({ configurationInput }) => {
                     noDefaultSubmitButton: true,
                 }
             }
-            onChange={formSchema => configurationInput.setAttribute('value', JSON.stringify(formSchema))}
+            onChange={formSchema => onChange(formSchema)}
         />
     );
 };
 
 FormIOBuilder.propTypes = {
-    node: PropTypes.object,
+    configuration: PropTypes.object,
+    onChange: PropTypes.func,
 };
 
 export default FormIOBuilder;
