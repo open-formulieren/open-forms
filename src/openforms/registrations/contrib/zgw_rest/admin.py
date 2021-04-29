@@ -7,5 +7,5 @@ from .models import ZgwConfig
 
 @admin.register(ZgwConfig)
 class ZgwConfigAdmin(SingletonModelAdmin):
-    #  todo display zaaktype and informatieobjecttype fields as choice fields would be nice
+    # TODO display zaaktype and informatieobjecttype fields as choice fields would be nice
     pass

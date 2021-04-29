@@ -6,17 +6,21 @@ from zgw_consumers.constants import APITypes
 
 
 class ZgwConfig(SingletonModel):
+    """
+    global configuration and defaults
+    """
+
     zrc_service = models.ForeignKey(
         "zgw_consumers.Service",
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.zrc},
         related_name="zrc_config",
     )
     drc_service = models.ForeignKey(
         "zgw_consumers.Service",
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
         related_name="drc_config",
     )
@@ -32,3 +36,8 @@ class ZgwConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("ZGW Configuration")
+
+    def apply_defaults_to(self, options):
+        options.setdefault("zaaktype", self.zaaktype)
+        options.setdefault("informatieobjecttype", self.informatieobjecttype)
+        options.setdefault("organisatie_rsin", self.organisatie_rsin)

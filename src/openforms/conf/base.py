@@ -119,7 +119,6 @@ INSTALLED_APPS = [
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
-    "openforms.contrib.zgw",
     "openforms.forms",
     "openforms.products",
     "openforms.ui",
@@ -127,6 +126,7 @@ INSTALLED_APPS = [
     "openforms.submissions",
     "openforms.contrib.brp",
     "openforms.registrations.contrib.demo",
+    "openforms.registrations.contrib.zgw_rest",
 ]
 
 MIDDLEWARE = [
@@ -549,3 +549,6 @@ SPECTACULAR_SETTINGS = {
 # ZGW Consumers
 #
 ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
+ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
+    "openforms/registrations/contrib/zgw_rest/tests/files"
+]
