@@ -1,86 +1,66 @@
-// jshint ignore: start
-import BEM from 'bem.js';
-import {Formio} from 'formiojs';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {FormBuilder} from 'react-formio';
+import BEM from "bem.js";
+import {BLOCK_FORM_BUILDER, INPUT_ELEMENT} from "./constants";
 
-import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from './constants';
+const FormIOBuilder = ({ node }) => {
 
+    const configurationInput = document.getElementById('form-builder__configuration-input');
 
-/**
- * Installs Form.io on ELEMENT_CONTAINER.
- * @class
- */
-class FormIOBuilder {
-    /**
-     * Constructor method.
-     * @param {HTMLElement} node
-     */
-    constructor(node) {
-        /** @type {HTMLElement} */
-        this.node = node;
-
-        /** @type {HTMLElement} */
-        this.container = BEM.getChildBEMNode(this.node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER);
-
-        /** @type {string} */
-        this.configurationInput = BEM.getChildBEMNode(this.node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
-
-        this.configuration = {};
-        if (this.configurationInput.value) {
-            this.configuration = JSON.parse(this.configurationInput.value);
-        }
-
-        this.render();
+    let configuration = {display: 'form'};
+    if (configurationInput.value) {
+        configuration = JSON.parse(configurationInput.value);
     }
 
-    /**
-     * Mounts Form.io
-     */
-    render() {
-        Formio.builder(this.container, this.configuration, {
-            builder: {
-                basic: false,
-                advanced: false,
-                data: false,
-                layout: false,
-                premium: false,
+    return (
+        <FormBuilder
+            form={configuration}
+            options={
+                {
+                    builder: {
+                        basic: false,
+                        advanced: false,
+                        data: false,
+                        layout: false,
+                        premium: false,
 
-                custom: {
-                    default: true,
-                    title: 'Formuliervelden',
-                    weight: 0,
-                    components: {
-                        textfield: true,
-                        textarea: true,
-                        checkbox: true,
-                        selectboxes: true,
-                        select: true,
-                        radio: true,
-                    }
-                },
-                brp: {
-                    title: 'Basisregistratie Personen',
-                    weight: 10,
-                    components: {
-                        npFamilyMembers: true,
+                        custom: {
+                            default: true,
+                            title: 'Formuliervelden',
+                            weight: 0,
+                            components: {
+                                textfield: true,
+                                textarea: true,
+                                checkbox: true,
+                                selectboxes: true,
+                                select: true,
+                                radio: true,
+                            }
+                        },
+                        brp: {
+                            title: 'Basisregistratie Personen',
+                            weight: 10,
+                            components: {
+                                npFamilyMembers: true,
+                            },
+                        }
+
                     },
+                    noDefaultSubmitButton: true,
                 }
-
-            },
-
-            noDefaultSubmitButton: true,
-        })
-            .then(form => {
-                form.on('change', formObj => {
-                    this.configurationInput.setAttribute('value', JSON.stringify(formObj));
-                });
-            });
-    }
-}
+            }
+            onChange={formSchema => configurationInput.setAttribute('value', JSON.stringify(formSchema))}
+        />
+    );
+};
 
 document.addEventListener("DOMContentLoaded", event => {
     const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
     [...FORM_BUILDERS].forEach(node => {
-        new FormIOBuilder(node);
+        ReactDOM.render(
+            <FormIOBuilder node={node} />,
+            node
+        )
     });
 });
-
