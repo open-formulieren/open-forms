@@ -1,5 +1,5 @@
 import BEM from "bem.js";
-import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER} from "./constants";
+import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from "./constants";
 import FormIOBuilder from "./builder";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -7,8 +7,10 @@ import ReactDOM from "react-dom";
 document.addEventListener("DOMContentLoaded", event => {
     const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
     [...FORM_BUILDERS].forEach(node => {
+        const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
+
         ReactDOM.render(
-            <FormIOBuilder node={node} />,
+            <FormIOBuilder configurationInput={configurationInput} />,
             BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
         )
     });

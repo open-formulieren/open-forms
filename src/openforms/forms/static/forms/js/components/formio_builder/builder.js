@@ -1,12 +1,8 @@
-import React from 'react';
 import {FormBuilder} from 'react-formio';
-import BEM from "bem.js";
 import PropTypes from 'prop-types';
-import {BLOCK_FORM_BUILDER, INPUT_ELEMENT, ELEMENT_CONTAINER} from "./constants";
+import React from 'react';
 
-const FormIOBuilder = ({ node }) => {
-
-    const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
+const FormIOBuilder = ({ configurationInput }) => {
 
     let configuration = {display: 'form'};
     if (configurationInput.value) {
