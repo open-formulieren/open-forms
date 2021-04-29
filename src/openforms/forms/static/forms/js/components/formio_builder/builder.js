@@ -1,12 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {FormBuilder} from 'react-formio';
 import BEM from "bem.js";
-import {BLOCK_FORM_BUILDER, INPUT_ELEMENT} from "./constants";
+import PropTypes from 'prop-types';
+import {BLOCK_FORM_BUILDER, INPUT_ELEMENT, ELEMENT_CONTAINER} from "./constants";
 
 const FormIOBuilder = ({ node }) => {
 
-    const configurationInput = document.getElementById('form-builder__configuration-input');
+    const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
 
     let configuration = {display: 'form'};
     if (configurationInput.value) {
@@ -55,12 +55,8 @@ const FormIOBuilder = ({ node }) => {
     );
 };
 
-document.addEventListener("DOMContentLoaded", event => {
-    const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
-    [...FORM_BUILDERS].forEach(node => {
-        ReactDOM.render(
-            <FormIOBuilder node={node} />,
-            node
-        )
-    });
-});
+FormIOBuilder.propTypes = {
+    node: PropTypes.object,
+};
+
+export default FormIOBuilder;
