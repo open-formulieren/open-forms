@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     "digid_eherkenning",
     "solo",
     "reversion",
+    "tinymce",
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",

@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .forms import ConfirmationEmailTemplateForm
 from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
 
 
@@ -23,4 +24,4 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(ConfirmationEmailTemplate)
 class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
-    pass
+    form = ConfirmationEmailTemplateForm
