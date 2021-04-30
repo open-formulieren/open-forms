@@ -86,7 +86,7 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(forms.last().pk, form_pk)
         self.assertNotEqual(forms.last().uuid, str(form.uuid))
         self.assertEqual(forms.last().active, False)
-        self.assertEqual(forms.last().backend, form.backend)
+        self.assertEqual(forms.last().registration_backend, form.registration_backend)
         self.assertEqual(forms.last().name, form.name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)

@@ -665,7 +665,7 @@ class ImportExportAPITests(APITestCase):
         self.assertNotEqual(imported_form.pk, form1.pk)
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
-        self.assertEqual(imported_form.backend, form1.backend)
+        self.assertEqual(imported_form.registration_backend, form1.registration_backend)
         self.assertEqual(imported_form.name, form1.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, form1.slug)

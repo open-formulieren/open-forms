@@ -1,5 +1,6 @@
 from django.core.management import CommandError, call_command
 from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -48,6 +49,11 @@ class FormStepViewSet(
     queryset = FormStep.objects.all()
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = "uuid"
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid"])
+        return context
 
 
 @extend_schema_view(
