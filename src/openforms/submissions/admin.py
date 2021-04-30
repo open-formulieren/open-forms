@@ -13,6 +13,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
         "created_on",
         "form",
+        "registration_status",
     )
     list_filter = ("form",)
     inlines = [

@@ -12,6 +12,8 @@ from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
+from .constants import RegistrationStatuses
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,13 +59,29 @@ class Submission(models.Model):
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
-    backend_result = JSONField(blank=True, null=True)
     completed_on = models.DateTimeField(blank=True, null=True)
     suspended_on = models.DateTimeField(blank=True, null=True)
     bsn = models.CharField(
         max_length=9, default="", blank=True, validators=(validate_bsn,)
     )
     current_step = models.PositiveIntegerField(default=0)
+
+    # interaction with registration backend
+    registration_result = JSONField(
+        _("result of backend registration"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Contains data returned by the registration backend while registrating the submission data."
+        ),
+    )
+    registration_status = models.CharField(
+        _("Backend registration status"),
+        max_length=50,
+        choices=RegistrationStatuses,
+        default=RegistrationStatuses.pending,
+        help_text=("Whether registration in the configured backend was succesful."),
+    )
 
     class Meta:
         verbose_name = "Submission"
