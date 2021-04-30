@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from ..models import FormDefinition
@@ -38,21 +39,34 @@ class FormDefinitionTestCase(TestCase):
     def setUp(self) -> None:
         self.form_definition = FormDefinitionFactory.create()
 
+    def test_deleting_form_definition(self):
+        self.form_definition.delete()
+        self.assertFalse(
+            FormDefinition.objects.filter(pk=self.form_definition.pk).exists()
+        )
+
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition)
+        with self.assertRaises(ValidationError):
+            form_definition.delete()
+        self.assertTrue(FormDefinition.objects.filter(pk=form_definition.pk).exists())
+
     def test_creating_copy_of_form_definition(self):
+        pre_copy_name = self.form_definition.name
+        pre_copy_slug = self.form_definition.slug
+
         self.form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 2)
-        form_definition = FormDefinition.objects.order_by("name").last()
-        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie")
-        self.assertEqual(form_definition.slug, "fd-0-kopie")
+        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie")
+        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie")
 
-        form_definition.copy()
+        self.form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 3)
-        form_definition = FormDefinition.objects.order_by("name").last()
-        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie 1")
-        self.assertEqual(form_definition.slug, "fd-0-kopie1")
+        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie 1")
+        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie1")
 
-        form_definition.copy()
+        self.form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 4)
-        form_definition = FormDefinition.objects.order_by("name").last()
-        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie 2")
-        self.assertEqual(form_definition.slug, "fd-0-kopie2")
+        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie 2")
+        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie2")

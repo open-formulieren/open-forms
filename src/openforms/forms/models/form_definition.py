@@ -1,10 +1,12 @@
 import uuid
 
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from openforms.forms.models import Form
 from openforms.utils.fields import StringUUIDField
 
 
@@ -57,6 +59,16 @@ class FormDefinition(models.Model):
 
     def __str__(self):
         return self.name
+
+    def delete(self, using=None, keep_parents=False):
+        if Form.objects.filter(formstep__form_definition=self).exists():
+            raise ValidationError(
+                _(
+                    "Deze Form Definitie is bij een Form gebruikt en daarvoor mag niet wiegeren worden"
+                )
+            )
+
+        return super().delete(using=using, keep_parents=keep_parents)
 
     class Meta:
         verbose_name = "Form Definition"
