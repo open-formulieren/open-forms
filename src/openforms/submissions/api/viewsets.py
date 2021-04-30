@@ -14,7 +14,7 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.forms.backends import registry
+from openforms.registrations.submissions import register_submission
 
 from ..models import Submission, SubmissionStep
 from ..utils import add_submmission_to_session, remove_submission_from_session
@@ -99,10 +99,9 @@ class SubmissionViewSet(
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
-        backend_func = registry.get(submission.form.backend)
-        if backend_func:
-            result = backend_func(submission)
-            submission.backend_result = result
+
+        register_submission(submission)
+
         submission.save()
         remove_submission_from_session(submission, self.request)
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     "openforms.utils",
     "openforms.submissions",
     "openforms.contrib.brp",
+    "openforms.registrations.contrib.demo",
 ]
 
 MIDDLEWARE = [

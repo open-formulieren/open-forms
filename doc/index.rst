@@ -1,8 +1,8 @@
 .. _index:
 
-===================
-
-===================
+================
+Open Formulieren
+================
 
 Welcome to the documentation for the  project.
 
@@ -16,3 +16,4 @@ Documentation
     general/index
     coding_style/index
     testing
+    developers

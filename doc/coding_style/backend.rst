@@ -28,8 +28,6 @@ Example:
 
 .. code-block::
 
-    from __future__ import absolute_import, unicode_literals
-
     import datetime
     from datetime import timedelta
 
