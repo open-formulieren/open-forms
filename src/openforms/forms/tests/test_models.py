@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 from ..models import FormDefinition
+from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 class FormTestCase(TestCase):
@@ -41,18 +41,18 @@ class FormDefinitionTestCase(TestCase):
     def test_creating_copy_of_form_definition(self):
         self.form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 2)
-        form_definition = FormDefinition.objects.order_by('name').last()
-        self.assertEqual(form_definition.name, 'FormDefinition 000 Kopie')
-        self.assertEqual(form_definition.slug, 'fd-0-kopie')
+        form_definition = FormDefinition.objects.order_by("name").last()
+        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie")
+        self.assertEqual(form_definition.slug, "fd-0-kopie")
 
         form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 3)
-        form_definition = FormDefinition.objects.order_by('name').last()
-        self.assertEqual(form_definition.name, 'FormDefinition 000 Kopie 1')
-        self.assertEqual(form_definition.slug, 'fd-0-kopie1')
+        form_definition = FormDefinition.objects.order_by("name").last()
+        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie 1")
+        self.assertEqual(form_definition.slug, "fd-0-kopie1")
 
         form_definition.copy()
         self.assertEqual(FormDefinition.objects.count(), 4)
-        form_definition = FormDefinition.objects.order_by('name').last()
-        self.assertEqual(form_definition.name, 'FormDefinition 000 Kopie 2')
-        self.assertEqual(form_definition.slug, 'fd-0-kopie2')
+        form_definition = FormDefinition.objects.order_by("name").last()
+        self.assertEqual(form_definition.name, "FormDefinition 000 Kopie 2")
+        self.assertEqual(form_definition.slug, "fd-0-kopie2")

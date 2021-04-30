@@ -12,11 +12,12 @@ class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
     list_display = ("name", "used_in_forms")
-    actions = ['make_copies']
+    actions = ["make_copies"]
 
     def make_copies(self, request, queryset):
         for instance in queryset:
             instance.copy()
+
     make_copies.short_description = _("Kopie geselecteerde Form Definitions")
 
     def used_in_forms(self, obj) -> str:
