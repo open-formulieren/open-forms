@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Submission, SubmissionStep
+from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -19,3 +19,8 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
+
+
+@admin.register(ConfirmationEmailTemplate)
+class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
+    pass
