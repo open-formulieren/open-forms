@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('submissions', '0011_auto_20210430_1436'),
-        ('submissions', '0011_confirmationemailtemplate'),
+        ("submissions", "0011_auto_20210430_1436"),
+        ("submissions", "0011_confirmationemailtemplate"),
     ]
 
-    operations = [
-    ]
+    operations = []
