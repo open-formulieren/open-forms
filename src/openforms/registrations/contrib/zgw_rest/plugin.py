@@ -7,6 +7,8 @@ from rest_framework import serializers
 from openforms.registrations.contrib.zgw_rest.models import ZgwConfig
 from openforms.registrations.contrib.zgw_rest.service import (
     create_document,
+    create_rol,
+    create_status,
     create_zaak,
     relate_document,
 )
@@ -21,6 +23,11 @@ class ZaakOptionsSerializer(serializers.Serializer):
     )
     organisatie_rsin = serializers.CharField(
         help_text=_("RSIN of organization, which creates the ZAAK")
+    )
+    vertrouwelijkheidaanduiding = serializers.CharField(
+        help_text=_(
+            "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is."
+        )
     )
 
 
@@ -39,11 +46,25 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     zgw.apply_defaults_to(options)
 
     zaak = create_zaak(options)
-    document = create_document(name=submission.form.name, body=data, options=options)
+    document = create_document(submission.form.name, data, options)
     relate_document(zaak["url"], document["url"])
+
+    # for now grab fixed data value
+    initiator = {
+        "betrokkeneIdentificatie": {
+            "voornamen": data.get("voornaam", ""),
+        },
+        "roltoelichting": "inzender formulier",
+    }
+    rol = create_rol(zaak, initiator, options)
+
+    # for now create generic status
+    status = create_status(zaak)
 
     result = {
         "zaak": zaak,
         "document": document,
+        "status": status,
+        "rol": rol,
     }
     return result

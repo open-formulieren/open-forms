@@ -12,6 +12,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
 class ZgwConfigFactory(factory.django.DjangoModelFactory):
     zrc_service = factory.SubFactory(ServiceFactory)
     drc_service = factory.SubFactory(ServiceFactory)
+    ztc_service = factory.SubFactory(ServiceFactory)
 
     class Meta:
         model = ZgwConfig

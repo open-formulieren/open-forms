@@ -12,26 +12,41 @@ class ZgwConfig(SingletonModel):
 
     zrc_service = models.ForeignKey(
         "zgw_consumers.Service",
-        null=True,
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.zrc},
-        related_name="zrc_config",
+        related_name="zgw_zrc_config",
+        null=True,
     )
     drc_service = models.ForeignKey(
         "zgw_consumers.Service",
-        null=True,
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
-        related_name="drc_config",
+        related_name="zgw_drc_config",
+        null=True,
+    )
+    ztc_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.ztc},
+        related_name="zgw_ztc_config",
+        null=True,
     )
     zaaktype = models.URLField(
-        max_length=1000, help_text=_("URL of the ZAAKTYPE in Catalogi API")
+        max_length=1000, help_text=_("Default URL of the ZAAKTYPE in Catalogi API")
     )
     informatieobjecttype = models.URLField(
-        max_length=1000, help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
+        max_length=1000,
+        help_text=_("Default URL of the INFORMATIEOBJECTTYPE in Catalogi API"),
     )
     organisatie_rsin = models.CharField(
-        max_length=9, help_text=_("RSIN of organization, which creates the ZAAK")
+        max_length=9,
+        help_text=_("Default RSIN of organization, which creates the ZAAK"),
+    )
+    vertrouwelijkheidaanduiding = models.CharField(
+        max_length=12,
+        help_text=_(
+            "Default aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is."
+        ),
     )
 
     class Meta:
@@ -41,3 +56,10 @@ class ZgwConfig(SingletonModel):
         options.setdefault("zaaktype", self.zaaktype)
         options.setdefault("informatieobjecttype", self.informatieobjecttype)
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
+        options.setdefault(
+            "vertrouwelijkheidaanduiding", self.vertrouwelijkheidaanduiding
+        )
+
+    def clean(self):
+        # TODO verify zaaktype and informatieobjecttype are part of the configured services
+        pass
