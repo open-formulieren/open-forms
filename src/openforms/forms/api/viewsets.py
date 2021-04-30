@@ -24,11 +24,7 @@ from openforms.api.pagination import PageNumberPagination
 
 from ..models import Form, FormDefinition, FormStep
 from .permissions import IsStaffOrReadOnly
-from .serializers import (
-    FormDefinitionSerializer,
-    FormSerializer,
-    FormStepSerializer,
-)
+from .serializers import FormDefinitionSerializer, FormSerializer, FormStepSerializer
 
 
 @extend_schema(

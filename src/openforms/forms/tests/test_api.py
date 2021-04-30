@@ -1,5 +1,5 @@
-import uuid
 import json
+import uuid
 from io import BytesIO
 from unittest import expectedFailure
 from zipfile import ZipFile
