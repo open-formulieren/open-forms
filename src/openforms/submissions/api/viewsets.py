@@ -1,5 +1,6 @@
 import logging
 
+from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -101,6 +102,25 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         register_submission(submission)
+
+        if hasattr(submission.form, "confirmation_email_template"):
+            email_template = submission.form.confirmation_email_template
+
+            data = {}
+            for step in submission.steps:
+                data.update(step.data)
+
+            to_email = data[email_template.email_property_name]
+            content = email_template.render(data)
+
+            send_mail(
+                email_template.subject,
+                content,
+                "info@open-forms.nl",  # TODO configurable?
+                [to_email],
+                fail_silently=False,
+                html_message=content,
+            )
 
         submission.save()
         remove_submission_from_session(submission, self.request)

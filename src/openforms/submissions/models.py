@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.template import Context, Template, TemplateSyntaxError
 from django.utils.translation import gettext_lazy as _
 
 from openforms.forms.constants import AvailabilityOptions
@@ -229,3 +231,47 @@ class SubmissionStep(models.Model):
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
         return bool(self.pk and self.data is not None)
+
+
+class ConfirmationEmailTemplate(models.Model):
+    subject = models.CharField(
+        max_length=1000, help_text=_("Subject of the email message")
+    )
+    content = models.TextField(
+        help_text=_(
+            "The content of the email message, can contain variables that will be "
+            "templated form the submitted form data."
+        )
+    )
+    form = models.OneToOneField(
+        "forms.Form",
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name="confirmation_email_template",
+        help_text=_("The form for which this confirmation email template will be used"),
+    )
+    email_property_name = models.CharField(
+        max_length=200,
+        help_text=_(
+            "The name of the attribute in the submission data that contains the "
+            "email address to which the confirmation email will be sent."
+        ),
+    )
+
+    class Meta:
+        verbose_name = _("Confirmation email template")
+        verbose_name_plural = _("Confirmation email templates")
+
+    def __str__(self):
+        return f"Confirmation email template - {self.form}"
+
+    def render(self, context):
+        return Template(self.content).render(Context(context))
+
+    def clean(self):
+        try:
+            self.render({})
+        except TemplateSyntaxError as e:
+            raise ValidationError(e)
+        return super().clean()
