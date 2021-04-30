@@ -135,6 +135,10 @@ django-solo==1.1.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
+django-tinymce==3.3.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-webtest==1.9.7
     # via -r requirements/test-tools.in
 django==2.2.20

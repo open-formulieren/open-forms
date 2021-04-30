@@ -168,6 +168,10 @@ django-solo==1.1.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
+django-tinymce==3.3.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
