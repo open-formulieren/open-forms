@@ -36,6 +36,7 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
+    path("tinymce/", include("tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
     path("", include("openforms.forms.urls", namespace="core")),
     path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
