@@ -1,86 +1,53 @@
-// jshint ignore: start
-import BEM from 'bem.js';
-import {Formio} from 'formiojs';
+import {FormBuilder} from 'react-formio';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from './constants';
+const FormIOBuilder = ({ configuration, onChange }) => {
+    return (
+        <FormBuilder
+            form={configuration}
+            options={
+                {
+                    builder: {
+                        basic: false,
+                        advanced: false,
+                        data: false,
+                        layout: false,
+                        premium: false,
 
+                        custom: {
+                            default: true,
+                            title: 'Formuliervelden',
+                            weight: 0,
+                            components: {
+                                textfield: true,
+                                textarea: true,
+                                checkbox: true,
+                                selectboxes: true,
+                                select: true,
+                                radio: true,
+                            }
+                        },
+                        brp: {
+                            title: 'Basisregistratie Personen',
+                            weight: 10,
+                            components: {
+                                npFamilyMembers: true,
+                            },
+                        }
 
-/**
- * Installs Form.io on ELEMENT_CONTAINER.
- * @class
- */
-class FormIOBuilder {
-    /**
-     * Constructor method.
-     * @param {HTMLElement} node
-     */
-    constructor(node) {
-        /** @type {HTMLElement} */
-        this.node = node;
-
-        /** @type {HTMLElement} */
-        this.container = BEM.getChildBEMNode(this.node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER);
-
-        /** @type {string} */
-        this.configurationInput = BEM.getChildBEMNode(this.node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
-
-        this.configuration = {};
-        if (this.configurationInput.value) {
-            this.configuration = JSON.parse(this.configurationInput.value);
-        }
-
-        this.render();
-    }
-
-    /**
-     * Mounts Form.io
-     */
-    render() {
-        Formio.builder(this.container, this.configuration, {
-            builder: {
-                basic: false,
-                advanced: false,
-                data: false,
-                layout: false,
-                premium: false,
-
-                custom: {
-                    default: true,
-                    title: 'Formuliervelden',
-                    weight: 0,
-                    components: {
-                        textfield: true,
-                        textarea: true,
-                        checkbox: true,
-                        selectboxes: true,
-                        select: true,
-                        radio: true,
-                    }
-                },
-                brp: {
-                    title: 'Basisregistratie Personen',
-                    weight: 10,
-                    components: {
-                        npFamilyMembers: true,
                     },
+                    noDefaultSubmitButton: true,
                 }
+            }
+            onChange={formSchema => onChange(formSchema)}
+        />
+    );
+};
 
-            },
+FormIOBuilder.propTypes = {
+    configuration: PropTypes.object,
+    onChange: PropTypes.func,
+};
 
-            noDefaultSubmitButton: true,
-        })
-            .then(form => {
-                form.on('change', formObj => {
-                    this.configurationInput.setAttribute('value', JSON.stringify(formObj));
-                });
-            });
-    }
-}
-
-document.addEventListener("DOMContentLoaded", event => {
-    const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
-    [...FORM_BUILDERS].forEach(node => {
-        new FormIOBuilder(node);
-    });
-});
-
+export default FormIOBuilder;
