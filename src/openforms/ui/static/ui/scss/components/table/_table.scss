@@ -11,12 +11,12 @@
   &__head,
   &__cell {
     padding: 0;
-    @include margin($property: padding-right);
+    @include margin($properties: padding-right);
   }
 
   &__row:not(:last-child) &__head,
   &__row:not(:last-child) &__cell {
-    @include margin(true, $property: padding-bottoms, $value-mobile: $typography-margin-list);
+    @include margin(true, $properties: padding-bottoms, $value-mobile: $typography-margin-list);
   }
 
   &__head {
