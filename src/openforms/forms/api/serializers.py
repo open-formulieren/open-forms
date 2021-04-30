@@ -1,4 +1,4 @@
-import json
+from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
@@ -83,9 +83,11 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class FormStepSerializer(serializers.ModelSerializer):
-    index = serializers.IntegerField(source="order")
-    configuration = serializers.JSONField(source="form_definition.configuration")
+class FormStepSerializer(serializers.HyperlinkedModelSerializer):
+    index = serializers.IntegerField(source="order", read_only=True)
+    configuration = serializers.JSONField(
+        source="form_definition.configuration", read_only=True
+    )
 
     parent_lookup_kwargs = {
         "form_uuid": "form__uuid",
@@ -93,4 +95,17 @@ class FormStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration")
+        fields = ("index", "configuration", "form_definition")
+
+        extra_kwargs = {
+            "form_definition": {
+                "view_name": "api:formdefinition-detail",
+                "lookup_field": "uuid",
+            },
+        }
+
+    def create(self, validated_data):
+        validated_data["form"] = get_object_or_404(
+            Form, uuid=self.context["view"].kwargs["form_uuid"]
+        )
+        return super().create(validated_data)
