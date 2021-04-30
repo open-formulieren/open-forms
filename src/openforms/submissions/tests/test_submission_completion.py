@@ -6,6 +6,7 @@ sub-resource.
 
 The backend should perform total-form validation as part of this action.
 """
+from django.core import mail
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -17,7 +18,11 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import (
+    ConfirmationEmailTemplateFactory,
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -79,3 +84,44 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
+
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    def test_complete_submission_send_confirmation_email(self):
+        form = FormFactory.create()
+        email_template = ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+            email_property_name="email",
+        )
+        step1 = FormStepFactory.create(form=form, optional=True)
+        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step1, data={"email": "test@test.nl"}
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        submission.refresh_from_db()
+        self.assertEqual(submission.completed_on, timezone.now())
+
+        # test that submission ID removed from session
+        submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
+        self.assertNotIn(str(submission.uuid), submissions_in_session)
+        self.assertEqual(submissions_in_session, [])
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, "Confirmation mail")
+        self.assertEqual(email.from_email, "info@open-forms.nl")
+        self.assertEqual(email.to, ["test@test.nl"])
+        self.assertEqual(email.body, "Information filled in: bar")
