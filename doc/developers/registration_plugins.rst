@@ -104,4 +104,21 @@ this is not JSON-serializable, you can specify a serializer for this as well:
         ...
 
 
+Registration failure
+--------------------
+
+If the registration fails for whatever reason, then your plugin should raise
+:class:`openforms.registrations.exceptions.RegistrationFailed`. This will mark the
+submission with a failed state, making it possible to handle these failures.
+
+The submission handler extracts the traceback, so you should ideally raise this exception
+from the root exception to include the full traceback:
+
+.. code-block:: python
+
+    try:
+        ...  # do plugin stuff
+    except Exception as exc:
+        raise RegistrationFailed from exc
+
 .. _AppConfig: https://docs.djangoproject.com/en/2.2/ref/applications/

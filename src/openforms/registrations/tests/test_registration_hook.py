@@ -10,8 +10,10 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
 from openforms.forms.models import Form
+from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..exceptions import RegistrationFailed
 from ..registry import Registry
 from ..submissions import register_submission
 from .utils import patch_registry
@@ -69,7 +71,10 @@ class RegistrationHookTests(TestCase):
 
         self.submission.refresh_from_db()
         self.assertEqual(
-            self.submission.backend_result,
+            self.submission.registration_status, RegistrationStatuses.success
+        )
+        self.assertEqual(
+            self.submission.registration_result,
             {"result": "ok"},
         )
 
@@ -95,6 +100,34 @@ class RegistrationHookTests(TestCase):
 
         self.submission.refresh_from_db()
         self.assertEqual(
-            self.submission.backend_result,
+            self.submission.registration_status, RegistrationStatuses.success
+        )
+        self.assertEqual(
+            self.submission.registration_result,
             {"external_id": str(result_uuid)},
         )
+
+    def test_failing_registration(self):
+        register = Registry()
+
+        # register the callback, including the assertions
+        @register(
+            "callback",
+            "Assertion callback",
+            configuration_options=OptionsSerializer,
+        )
+        def callback(submission, options):
+            err = ZeroDivisionError("Can't divide by zero")
+            raise RegistrationFailed("zerodiv") from err
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with patch_registry(model_field, register):
+            register_submission(self.submission)
+
+        self.submission.refresh_from_db()
+        self.assertEqual(
+            self.submission.registration_status, RegistrationStatuses.failed
+        )
+        tb = self.submission.registration_result["traceback"]
+        self.assertIn("Can't divide by zero", tb)
