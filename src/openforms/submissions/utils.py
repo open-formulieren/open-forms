@@ -1,11 +1,14 @@
 from typing import Union
 
+from django.conf import settings
+from django.core.mail import get_connection, send_mail
 from django.http import HttpRequest
+from django.utils.module_loading import import_string
 
 from rest_framework.request import Request
 
 from .constants import SUBMISSIONS_SESSION_KEY
-from .models import Submission
+from .models import SMTPServerConfig, Submission
 
 
 def add_submmission_to_session(
@@ -31,3 +34,25 @@ def remove_submission_from_session(
     if id_to_check in submissions:
         submissions.remove(id_to_check)
         request.session[SUBMISSIONS_SESSION_KEY] = submissions
+
+
+def send_confirmation_email(submission):
+    email_template = submission.form.confirmation_email_template
+
+    data = {}
+    for step in submission.steps:
+        data.update(step.data)
+
+    smtp_config = SMTPServerConfig.get_solo()
+
+    to_email = submission.form.get_email_recipient(data)
+    content = email_template.render(data)
+
+    send_mail(
+        email_template.subject,
+        content,
+        smtp_config.default_from_email,
+        [to_email],
+        fail_silently=False,
+        html_message=content,
+    )

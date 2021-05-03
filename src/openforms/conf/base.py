@@ -213,7 +213,7 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 #
 # Sending EMAIL
 #
-EMAIL_BACKEND = "django_yubin.smtp_queue.EmailBackend"
+EMAIL_BACKEND = "openforms.submissions.email_backends.CustomYubinEmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config(
     "EMAIL_PORT", default=25

@@ -2,9 +2,16 @@ from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
+from solo.admin import SingletonModelAdmin
+
 from .exports import export_submissions
 from .forms import ConfirmationEmailTemplateForm
-from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
+from .models import (
+    ConfirmationEmailTemplate,
+    SMTPServerConfig,
+    Submission,
+    SubmissionStep,
+)
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -75,3 +82,8 @@ class SubmissionAdmin(admin.ModelAdmin):
 @admin.register(ConfirmationEmailTemplate)
 class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
     form = ConfirmationEmailTemplateForm
+
+
+@admin.register(SMTPServerConfig)
+class SMTPServerConfigAdmin(SingletonModelAdmin):
+    pass
