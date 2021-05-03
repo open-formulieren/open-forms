@@ -1,4 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.contrib.admin import AdminSite
+from django.contrib.admin.actions import delete_selected as _delete_selected
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -7,12 +9,34 @@ from ..forms import FormDefinitionForm
 from ..models import Form, FormDefinition
 
 
+def delete_selected(modeladmin, request, queryset):
+    for instance in queryset.exclude(formstep=None):
+        messages.error(
+            request,
+            f"{instance.name} mag niet verwijderen omdat het is in een Form gebruikt",
+        )
+    return _delete_selected(modeladmin, request, queryset.filter(formstep=None))
+
+
+delete_selected.allowed_permissions = ("delete",)
+delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
+
+
+class FormDefinitionAdminSite(AdminSite):
+    def __init__(self, name="admin"):
+        super().__init__(name=name)
+        self._actions = {"delete_selected": delete_selected}
+
+
 @admin.register(FormDefinition)
 class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
     list_display = ("name", "used_in_forms")
-    actions = ["make_copies"]
+    actions = ["overridden_delete_selected", "make_copies"]
+
+    def __init__(self, model, admin_site):
+        super().__init__(model, FormDefinitionAdminSite())
 
     def make_copies(self, request, queryset):
         for instance in queryset:
