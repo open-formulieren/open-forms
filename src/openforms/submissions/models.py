@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import Context, Template, TemplateSyntaxError
+from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
@@ -254,7 +255,9 @@ class ConfirmationEmailTemplate(models.Model):
         return f"Confirmation email template - {self.form}"
 
     def render(self, context):
-        return Template(self.content).render(Context(context))
+        default_template = get_template("confirmation_mail.html")
+        rendered_content = Template(self.content).render(Context(context))
+        return default_template.render({"body": rendered_content})
 
     def clean(self):
         try:
