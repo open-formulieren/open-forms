@@ -110,7 +110,8 @@ class SubmissionViewSet(
             for step in submission.steps:
                 data.update(step.data)
 
-            to_email = data[email_template.email_property_name]
+            # to_email = data[email_template.email_property_name]
+            to_email = submission.form.get_email_recipient(data)
             content = email_template.render(data)
 
             send_mail(

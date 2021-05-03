@@ -236,13 +236,13 @@ class ConfirmationEmailTemplate(models.Model):
         related_name="confirmation_email_template",
         help_text=_("The form for which this confirmation email template will be used"),
     )
-    email_property_name = models.CharField(
-        max_length=200,
-        help_text=_(
-            "The name of the attribute in the submission data that contains the "
-            "email address to which the confirmation email will be sent."
-        ),
-    )
+    # email_property_name = models.CharField(
+    #     max_length=200,
+    #     help_text=_(
+    #         "The name of the attribute in the submission data that contains the "
+    #         "email address to which the confirmation email will be sent."
+    #     ),
+    # )
 
     class Meta:
         verbose_name = _("Confirmation email template")
