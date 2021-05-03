@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: maykinmedia/open-forms
+  IMAGE_NAME: openformulieren/open-forms
 
 jobs:
   tests:
