@@ -10,10 +10,10 @@ from ..models import Form, FormDefinition
 
 
 def delete_selected(modeladmin, request, queryset):
-    for instance in queryset.exclude(formstep=None):
+    for name in queryset.exclude(formstep=None).values_list('name', flat=True):
         messages.error(
             request,
-            f"{instance.name} mag niet verwijderen omdat het is in een Form gebruikt",
+            f"{name} mag niet verwijderen omdat het is in een Form gebruikt",
         )
     return _delete_selected(modeladmin, request, queryset.filter(formstep=None))
 
