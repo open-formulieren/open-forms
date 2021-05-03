@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
+
+    <link rel="icon" type="image/png" href="{% static 'ico/favicon.png' %}">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans 'Administration' %}</a></h1>
+{% endblock %}
+
+{% block welcome-msg %}
+    {% trans 'Logged in as' %}
+    <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+{% endblock %}
+
+{% block userlinks %}
+    {% if site_url %}
+        <a href="{{ site_url }}">{{ settings.SITE_TITLE }}</a> /
+    {% endif %}
+    {% if user.has_usable_password %}
+    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+    {% endif %}
+    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block messages %}
+    {% if settings.ENVIRONMENT_SHOWN_IN_ADMIN %}
+        <div class="env env-{{ settings.ENVIRONMENT }}">{{ settings.ENVIRONMENT }}</div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block footer %}
+    <div id="footer">
+        <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
+            {% blocktrans with version=settings.RELEASE %}version: {{version}}{% endblocktrans %}
+        </div>
+    </div>
+{% endblock %}
