@@ -7,8 +7,10 @@ sub-resource.
 The backend should perform total-form validation as part of this action.
 """
 from django.core import mail
+from django.test import override_settings
 from django.utils import timezone
 
+from django_yubin.models import Message
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -85,6 +87,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
 
+    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email(self):
         form = FormFactory.create()
@@ -117,14 +120,15 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
         # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Message.objects.count(), 1)
 
-        email = mail.outbox[0]
-        self.assertEqual(email.subject, "Confirmation mail")
-        self.assertEqual(email.from_email, "info@open-forms.nl")
-        self.assertEqual(email.to, ["test@test.nl"])
-        self.assertEqual(email.body, "Information filled in: bar")
+        message = Message.objects.first()
+        self.assertEqual(message.subject, "Confirmation mail")
+        self.assertEqual(message.from_address, "info@open-forms.nl")
+        self.assertEqual(message.to_address, "test@test.nl")
+        self.assertIn("Information filled in: bar", message.encoded_message)
 
+    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email_custom_property_name(self):
         form = FormFactory.create(email_property_name="custom_email")
@@ -159,10 +163,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
         # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Message.objects.count(), 1)
 
-        email = mail.outbox[0]
-        self.assertEqual(email.subject, "Confirmation mail")
-        self.assertEqual(email.from_email, "info@open-forms.nl")
-        self.assertEqual(email.to, ["test@test.nl"])
-        self.assertEqual(email.body, "Information filled in: bar")
+        message = Message.objects.first()
+        self.assertEqual(message.subject, "Confirmation mail")
+        self.assertEqual(message.from_address, "info@open-forms.nl")
+        self.assertEqual(message.to_address, "test@test.nl")
+        self.assertIn("Information filled in: bar", message.encoded_message)
