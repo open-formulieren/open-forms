@@ -68,6 +68,8 @@ django-solo==1.1.3
     #   zgw-consumers
 django-tinymce==3.3.0
     # via -r requirements/base.in
+django-yubin==1.6.0
+    # via -r requirements/base.in
 django==2.2.20
     # via
     #   -r requirements/base.in
@@ -109,6 +111,8 @@ isodate==0.6.0
     # via python3-saml
 jsonschema==3.2.0
     # via drf-spectacular
+lockfile==0.12.2
+    # via django-yubin
 lxml==4.6.3
     # via xmlsec
 pillow==8.2.0
@@ -137,10 +141,13 @@ pytz==2021.1
     # via
     #   -r requirements/base.in
     #   django
+    #   django-yubin
 pyyaml==5.4.1
     # via
     #   drf-spectacular
     #   gemma-zds-client
+pyzmail36==1.0.4
+    # via django-yubin
 redis==3.5.3
     # via django-redis
 requests-mock==1.8.0
