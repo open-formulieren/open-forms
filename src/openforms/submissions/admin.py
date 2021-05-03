@@ -1,7 +1,14 @@
 from django.contrib import admin
 
+from solo.admin import SingletonModelAdmin
+
 from .forms import ConfirmationEmailTemplateForm
-from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
+from .models import (
+    ConfirmationEmailTemplate,
+    SMTPServerConfig,
+    Submission,
+    SubmissionStep,
+)
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -25,3 +32,8 @@ class SubmissionAdmin(admin.ModelAdmin):
 @admin.register(ConfirmationEmailTemplate)
 class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
     form = ConfirmationEmailTemplateForm
+
+
+@admin.register(SMTPServerConfig)
+class SMTPServerConfigAdmin(SingletonModelAdmin):
+    pass

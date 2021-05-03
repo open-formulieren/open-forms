@@ -9,6 +9,8 @@ from django.db import models
 from django.template import Context, Template, TemplateSyntaxError
 from django.utils.translation import gettext_lazy as _
 
+from solo.models import SingletonModel
+
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
@@ -260,3 +262,27 @@ class ConfirmationEmailTemplate(models.Model):
         except TemplateSyntaxError as e:
             raise ValidationError(e)
         return super().clean()
+
+
+class SMTPServerConfig(SingletonModel):
+    host = models.CharField(
+        max_length=1000, blank=True, help_text=_("De host van de SMTP server")
+    )
+    port = models.IntegerField(
+        null=True, blank=True, help_text=_("De port van de SMTP server")
+    )
+    username = models.CharField(
+        max_length=1000, blank=True, help_text=_("De username van de SMTP server")
+    )
+    password = models.CharField(
+        max_length=1000, blank=True, help_text=_("Het password van de SMTP server")
+    )
+    default_from_email = models.CharField(
+        max_length=1000,
+        blank=True,
+        help_text=_("De afzender waarvan de bevestigingsemails afkomstig zijn"),
+        verbose_name=_("Standaard e-mailadres afzender"),
+    )
+
+    class Meta:
+        verbose_name = _("SMTP Server Configuration")
