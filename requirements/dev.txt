@@ -176,6 +176,10 @@ django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-yubin==1.6.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django==2.2.20
     # via
     #   -c requirements/ci.txt
@@ -281,6 +285,11 @@ jsonschema==3.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
+lockfile==0.12.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-yubin
 lxml==4.6.3
     # via
     #   -c requirements/ci.txt
@@ -390,12 +399,18 @@ pytz==2021.1
     #   -r requirements/ci.txt
     #   babel
     #   django
+    #   django-yubin
 pyyaml==5.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
     #   gemma-zds-client
+pyzmail36==1.0.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-yubin
 redis==3.5.3
     # via
     #   -c requirements/ci.txt
