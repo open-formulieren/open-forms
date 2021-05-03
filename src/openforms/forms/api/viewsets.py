@@ -28,6 +28,7 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.api.pagination import PageNumberPagination
 
 from ..models import Form, FormDefinition, FormStep
+from ..utils import copy_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionSerializer,
@@ -35,8 +36,6 @@ from .serializers import (
     FormSerializer,
     FormStepSerializer,
 )
-from ..models import Form, FormDefinition, FormStep
-from ..utils import copy_form
 
 
 @extend_schema(
