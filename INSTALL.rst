@@ -18,7 +18,7 @@ Prerequisites
 
 You need the following libraries and/or programs:
 
-* `Python`_ 3.6 or above
+* `Python`_ 3.8 or above
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
 * `Node.js`_
@@ -46,7 +46,7 @@ development machine.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/open-forms.git
+       $ git clone git@bitbucket.org:open-formulieren/open-forms.git
        $ cd open-forms
 
 3. Install all required libraries.
@@ -65,7 +65,8 @@ development machine.
        $ npm run build
 
 5. Install the front-end CLI tool `yarn`_ if you've never installed them
-   before and install and build the frontend libraries for the React SPA demo app in the `src/spa` subdirectory:
+   before and install and build the frontend libraries for the React SPA demo 
+   app in the `src/spa` subdirectory:
 
    .. code-block:: bash
 
@@ -79,7 +80,6 @@ development machine.
 
    .. code-block:: bash
 
-       $ source env/bin/activate
        $ python src/manage.py collectstatic --link
        $ python src/manage.py migrate
 
@@ -106,11 +106,10 @@ development machine.
 example file included in the same directory.
 
 **Note:** You can run watch-tasks to compile `Sass`_ to CSS and `ECMA`_ to JS
-using `gulp`_. By default this will compile the files if they change.
+using ``npm run watch``.
 
 .. _ECMA: https://ecma-international.org/
 .. _Sass: https://sass-lang.com/
-.. _gulp: https://gulpjs.com/
 
 
 Update installation
@@ -184,7 +183,7 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:maykinmedia/open-forms.git
+       $ git clone git@bitbucket.org:open-formulieren/open-forms.git
        Cloning into 'open-forms'...
        ...
 
@@ -195,8 +194,9 @@ The easiest way to get the project started is by using `Docker Compose`_.
    .. code-block:: bash
 
        $ docker-compose up -d
-       Starting openforms_db_1 ... done
-       Starting openforms_web_1 ... done
+       Creating open-forms_db_1 ... done
+       Creating open-forms_redis_1 ... done
+       Creating open-forms_web_1 ... done
 
    It can take a while before everything is done. Even after starting the web
    container, the database might still be migrating. You can always check the
@@ -204,20 +204,17 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
    .. code-block:: bash
 
-       $ docker logs -f openforms_web_1
+       $ docker logs -f open-forms_web_1
 
 3. Create an admin user and load initial data. If different container names
    are shown above, use the container name ending with ``_web_1``:
 
    .. code-block:: bash
 
-       $ docker exec -it openforms_web_1 /app/src/manage.py createsuperuser
+       $ docker exec -it open-forms_web_1 /app/src/manage.py createsuperuser
        Username: admin
        ...
        Superuser created successfully.
-
-       $ docker exec -it openforms_web_1 /app/src/manage.py loaddata admin_index groups
-       Installed 5 object(s) from 2 fixture(s)
 
 4. Point your browser to ``http://localhost:8000/`` to access the project's
    management interface with the credentials used in step 3.
@@ -260,60 +257,7 @@ all settings.
         --name openforms \
         openforms
 
-    $ docker exec -it openforms /app/src/manage.py createsuperuser
-
-Building and publishing the image
----------------------------------
-
-Using ``bin/release-docker-image``, you can easily build and tag the image.
-
-The script is based on git branches and tags - if you're on the ``master``
-branch and the current ``HEAD`` is tagged, the tag will be used as
-``RELEASE_TAG`` and the image will be pushed. If you want to push the image
-without a git tag, you can use the ``RELEASE_TAG`` envvar.
-
-The image will only be pushed if the ``JOB_NAME`` envvar is set. The image
-will always be built, even if no envvar is set. The default release tag is
-``latest``.
-
-Example usage:
-
-.. code-block:: bash
-
-    JOB_NAME=publish RELEASE_TAG=dev ./bin/release-docker-image.sh
-
-
-Staging and production
-======================
-
-Ansible is used to deploy test, staging and production servers. It is assumed
-the target machine has a clean `Debian`_ installation.
-
-1. Make sure you have `Ansible`_ installed (globally or in the virtual
-   environment):
-
-   .. code-block:: bash
-
-       $ pip install ansible
-
-2. Navigate to the project directory, and install the Maykin deployment
-   submodule if you haven't already:
-
-   .. code-block:: bash
-
-       $ git submodule update --init
-
-3. Run the Ansible playbook to provision a clean Debian machine:
-
-   .. code-block:: bash
-
-       $ cd deployment
-       $ ansible-playbook <test/staging/production>.yml
-
-For more information, see the ``README`` file in the deployment directory.
-
-.. _Debian: https://www.debian.org/
-.. _Ansible: https://pypi.org/project/ansible/
+    $ docker exec -it openforms src/manage.py createsuperuser
 
 
 Settings
