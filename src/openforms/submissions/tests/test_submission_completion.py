@@ -137,6 +137,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(message.subject, "Confirmation mail")
         self.assertEqual(message.from_address, "info@open-forms.nl")
         self.assertEqual(message.to_address, "test@test.nl")
+
+        # Check that the template is used
+        self.assertIn('<table border="0">', message.encoded_message)
         self.assertIn("Information filled in: bar", message.encoded_message)
 
     @override_settings(
@@ -189,4 +192,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(message.subject, "Confirmation mail")
         self.assertEqual(message.from_address, "info@open-forms.nl")
         self.assertEqual(message.to_address, "test@test.nl")
+
+        # Check that the template is used
+        self.assertIn('<table border="0">', message.encoded_message)
         self.assertIn("Information filled in: bar", message.encoded_message)
