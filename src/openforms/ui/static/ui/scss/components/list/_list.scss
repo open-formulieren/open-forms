@@ -2,7 +2,7 @@
 
 .list {
   .caption + & {
-    @include margin(true, $property: margin-top);
+    @include margin(true, $properties: margin-top);
   }
 
   list-style: none;

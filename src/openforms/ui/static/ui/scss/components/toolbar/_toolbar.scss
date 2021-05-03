@@ -25,7 +25,7 @@
   }
 
   &--start &__list {
-    @include margin($property: margin-right);
+    @include margin($properties: margin-right);
   }
 
   &__list-item {
@@ -34,7 +34,7 @@
     align-items: center;
 
     @include laptop {
-      @include margin($property: margin-right);
+      @include margin($properties: margin-right);
     }
   }
 
@@ -45,14 +45,14 @@
 
     &__list:last-child &__list-item:last-child > .button--primary {
       @include absolute($right: 0, $bottom: 0);
-      @include margin(true, $property: margin-top);
+      @include margin(true, $properties: margin-top);
       justify-content: center;
       width: 100%;
     }
   }
 
   .image {
-    @include margin($property: margin-right);
+    @include margin($properties: margin-right);
     float: left;
     height: 34px;
   }

@@ -46,7 +46,7 @@ $button-padding-h: $grid-margin-2;
   @include body;
   @include body--big;
   @include border(all, $color: transparent, $size: 2px);
-  @include button-theme('primary', $color-background, scale_color($color-primary, $lightness: 10%, $saturation: 0), $color-primary);
+  @include button-theme('primary', $color-background, scale_color($color-primary, $lightness: 10%, $saturation: 0%), $color-primary);
   @include button-theme('', $typography-color-text, $color-background, $color-border);
   @include button-theme('anchor', $typography-color-link, transparent, transparent, true);
   appearance: none;
