@@ -24,30 +24,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--import_file",
+            "--import-file",
             type=str,
             help=_("The name of the .zip file to import from"),
-        )
-        parser.add_argument(
-            "--import_file_content",
-            type=bytes,
-            help=_("The .zip file content to import from"),
         )
 
     @transaction.atomic
     def handle(self, *args, **options):
-        import_file = options.pop("import_file")
-        import_file_content = options.pop("import_file_content")
-
-        if import_file and import_file_content:
-            raise CommandError(
-                _(
-                    "Please use either the --import_file or --import_file_content argument"
-                )
-            )
-
-        if import_file_content:
-            import_file = io.BytesIO(import_file_content)
+        import_file = options["import_file"]
 
         uuid_mapping = {}
 

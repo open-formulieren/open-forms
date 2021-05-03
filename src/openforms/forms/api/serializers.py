@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
@@ -105,3 +107,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         validated_data["form"] = self.context["form"]
         return super().create(validated_data)
+
+
+class FormImportSerializer(serializers.Serializer):
+    file = serializers.FileField(
+        help_text=_("The file that contains the Form, FormDefinitions and FormSteps")
+    )

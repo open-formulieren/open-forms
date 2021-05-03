@@ -26,7 +26,7 @@ class ImportExportTests(TestCase):
         form_step.form_definition = form_definition
         form_step.save()
 
-        call_command("export", archive_name=self.filepath, form_id=form.pk)
+        call_command("export", form.pk, archive_name=self.filepath)
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -69,7 +69,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", archive_name=self.filepath, form_id=form.pk)
+        call_command("export", form.pk, archive_name=self.filepath)
 
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"

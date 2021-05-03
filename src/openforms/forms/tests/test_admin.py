@@ -54,8 +54,12 @@ class FormAdminImportExportTests(WebTest):
     def test_form_admin_import_button(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
 
-        import_button = response.html("a", {"class": "addlink"})[-1]
-        self.assertEqual(import_button.attrs["href"], reverse("admin:forms_import"))
+        response = response.click("Import")
+
+        self.assertEqual(response.status_code, 200)
+
+        # Page should have the import form
+        self.assertIn("file", response.form.fields)
 
     def test_form_admin_import(self):
         file = BytesIO()

@@ -21,6 +21,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            "form_id",
+            help=_("ID of the Form to be exported"),
+            type=int,
+        )
+        parser.add_argument(
             "--archive_name", help=_("Name of the archive to write data to"), type=str
         )
         parser.add_argument(
@@ -28,16 +33,11 @@ class Command(BaseCommand):
             help=_("HttpResponse object to which the output data should be written"),
             type=HttpResponse,
         )
-        parser.add_argument(
-            "--form_id",
-            help=_("ID of the Form to be exported"),
-            type=int,
-        )
 
     def handle(self, *args, **options):
-        archive_name = options.pop("archive_name")
-        response = options.pop("response")
-        form_id = options.pop("form_id")
+        archive_name = options["archive_name"]
+        response = options.get("response", None)
+        form_id = options["form_id"]
 
         form = Form.objects.get(pk=form_id)
 
@@ -71,13 +71,7 @@ class Command(BaseCommand):
             "formDefinitions": json.dumps(form_definitions),
         }
 
-        if response:
-            f = io.BytesIO()
+        outfile = response or archive_name
+        with zipfile.ZipFile(outfile, "w") as zip_file:
             for name, data in resources.items():
-                with zipfile.ZipFile(f, "a") as zip_file:
-                    zip_file.writestr(f"{name}.json", data)
-            response.content = f.getvalue()
-        else:
-            for name, data in resources.items():
-                with zipfile.ZipFile(archive_name, "a") as zip_file:
-                    zip_file.writestr(f"{name}.json", data)
+                zip_file.writestr(f"{name}.json", data)

@@ -41,8 +41,6 @@ class FormAdmin(
     list_display = ("name", "registration_backend", "registration_backend_options")
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
-    change_form_template = "admin/forms/form_change_form.html"
-    change_list_template = "admin/forms/form_change_list.html"
 
     def response_post_save_change(self, request, obj):
         if "_export" in request.POST:
@@ -52,14 +50,8 @@ class FormAdmin(
                 pass
 
             response = HttpResponse(content_type="application/zip")
-            response["Content-Disposition"] = "attachment;filename={}".format(
-                f"{obj.slug}.zip"
-            )
-            call_command(
-                "export",
-                response=response,
-                form_id=obj.pk,
-            )
+            response["Content-Disposition"] = f"attachment;filename={obj.slug}.zip"
+            call_command("export", obj.pk, response=response)
 
             response["Content-Length"] = len(response.content)
 
@@ -87,17 +79,12 @@ class FormAdmin(
         if not self.has_add_permission(request):
             raise PermissionDenied
 
-        form = FormImportForm(request.POST, request.FILES)
-        context = dict(self.admin_site.each_context(request), form=form)
         if "_import" in request.POST:
             form = FormImportForm(request.POST, request.FILES)
             if form.is_valid():
                 try:
                     import_file = form.cleaned_data["file"]
-                    call_command(
-                        "import",
-                        import_file_content=import_file.read(),
-                    )
+                    call_command("import", import_file=import_file)
                     self.message_user(
                         request,
                         _("Catalogus successfully imported"),
@@ -111,7 +98,7 @@ class FormAdmin(
 
         context = dict(self.admin_site.each_context(request), form=form)
 
-        return TemplateResponse(request, "admin/forms/import_form.html", context)
+        return TemplateResponse(request, "admin/forms/form/import_form.html", context)
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == "backend":

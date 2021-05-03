@@ -25,7 +25,12 @@ from openforms.api.pagination import PageNumberPagination
 
 from ..models import Form, FormDefinition, FormStep
 from .permissions import IsStaffOrReadOnly
-from .serializers import FormDefinitionSerializer, FormSerializer, FormStepSerializer
+from .serializers import (
+    FormDefinitionSerializer,
+    FormImportSerializer,
+    FormSerializer,
+    FormStepSerializer,
+)
 
 
 @extend_schema(
@@ -117,6 +122,16 @@ class FormViewSet(
             return [TokenAuthentication()]
         return super().get_authenticators()
 
+    @extend_schema(
+        summary=_("Export form"),
+        tags=["forms"],
+        responses={
+            (
+                200,
+                "application/zip",
+            ): OpenApiTypes.BINARY
+        },
+    )
     @action(detail=True, methods=["post"])
     def export(self, request, *args, **kwargs):
         """
@@ -126,30 +141,36 @@ class FormViewSet(
 
         response = HttpResponse(content_type="application/zip")
         filename = instance.slug
-        response["Content-Disposition"] = "attachment;filename={}".format(
-            f"{filename}.zip"
-        )
+        response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
 
-        call_command("export", response=response, form_id=instance.id)
+        call_command("export", instance.id, response=response)
 
         response["Content-Length"] = len(response.content)
         return response
 
 
 class FormsImportAPIView(views.APIView):
+    serializer_class = FormImportSerializer
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(
+        summary=_("Import form"),
+        tags=["forms"],
+        responses={"204": {"description": _("No response body")}},
+    )
     def post(self, request, *args, **kwargs):
         """
-        Import a form
-
-        Import forms by uploading a .zip file
+        Import a Form by uploading a .zip file containing a Form, FormDefinitions
+        and FormSteps
         """
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            raise exceptions.ValidationError(serializer.errors["file"])
 
         try:
-            call_command("import", import_file_content=request.FILES["file"].read())
+            call_command("import", import_file=serializer.validated_data["file"])
         except CommandError as e:
             raise exceptions.ValidationError({"error": e})
 
