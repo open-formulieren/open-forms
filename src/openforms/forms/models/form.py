@@ -25,6 +25,15 @@ class Form(models.Model):
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
+    email_property_name = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=_(
+            "The name of the attribute in the submission data that contains the "
+            "email address to which the confirmation email will be sent. "
+            "If not specified, `email` will be used."
+        ),
+    )
 
     # backend integration - which registration to use?
     registration_backend = BackendChoiceField(_("registration backend"), blank=True)
@@ -72,6 +81,10 @@ class Form(models.Model):
             form_step.save()
 
         return copy
+
+    def get_email_recipient(self, submitted_data: dict) -> str:
+        property_name = self.email_property_name or "email"
+        return submitted_data[property_name]
 
     def __str__(self):
         return self.name
