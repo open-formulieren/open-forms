@@ -114,6 +114,10 @@ django-relativedelta==1.1.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
+django-reversion==3.0.9
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-rosetta==0.9.4
     # via
     #   -c requirements/base.txt
@@ -137,6 +141,7 @@ django==2.2.20
     #   django-jenkins
     #   django-redis
     #   django-relativedelta
+    #   django-reversion
     #   django-rosetta
     #   djangorestframework
     #   drf-nested-routers
