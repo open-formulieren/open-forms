@@ -13,10 +13,6 @@
             [
                 "auth",
                 "group"
-            ],
-            [
-                "authtoken",
-                "token"
             ]
         ]
     }
@@ -24,43 +20,17 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 8,
-        "name": "Logging",
-        "slug": "logging",
+        "order": 1,
+        "name": "Formulieren",
+        "slug": "formulieren",
         "models": [
             [
-                "axes",
-                "accessattempt"
-            ],
-            [
-                "axes",
-                "accesslog"
-            ]
-        ]
-    }
-},
-{
-    "model": "admin_index.appgroup",
-    "fields": {
-        "order": 3,
-        "name": "Core",
-        "slug": "core",
-        "models": [
-            [
-                "core",
+                "forms",
                 "form"
             ],
             [
-                "core",
+                "forms",
                 "formdefinition"
-            ],
-            [
-                "core",
-                "formstep"
-            ],
-            [
-                "core",
-                "product"
             ]
         ]
     }
@@ -68,9 +38,9 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 4,
-        "name": "Submissions",
-        "slug": "submissions",
+        "order": 2,
+        "name": "Inzendingen",
+        "slug": "inzendingen",
         "models": [
             [
                 "submissions",
@@ -82,13 +52,35 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 6,
+        "order": 3,
+        "name": "Producten",
+        "slug": "producten",
+        "models": [
+            [
+                "products",
+                "product"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 4,
         "name": "Configuratie",
         "slug": "configuratie",
         "models": [
             [
                 "admin_index",
                 "appgroup"
+            ],
+            [
+                "authtoken",
+                "token"
+            ],
+            [
+                "authtoken",
+                "tokenproxy"
             ],
             [
                 "brp",
@@ -105,6 +97,24 @@
             [
                 "zgw_consumers",
                 "service"
+            ]
+        ]
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 5,
+        "name": "Logs",
+        "slug": "logs",
+        "models": [
+            [
+                "axes",
+                "accessattempt"
+            ],
+            [
+                "axes",
+                "accesslog"
             ]
         ]
     }

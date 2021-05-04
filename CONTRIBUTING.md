@@ -69,8 +69,8 @@ All pull requests will be reviewed by a project memeber before they are merged
 to a release branch. 
 
 
-[issues]: https://github.com/maykinmedia/open-forms/issues
-[new_issue]: https://github.com/maykinmedia/open-forms/issues/new/choose
+[issues]: https://github.com/open-formulieren/open-forms/issues
+[new_issue]: https://github.com/open-formulieren/open-forms/issues/new/choose
 [mailinglist]: t.b.d.
 [Standard_for_Public_Code]: https://standard.publiccode.net
-[repository]: https://github.com/maykinmedia/open-forms
+[repository]: https://github.com/open-formulieren/open-forms
