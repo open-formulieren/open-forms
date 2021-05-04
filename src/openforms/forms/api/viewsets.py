@@ -19,6 +19,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
@@ -120,6 +121,7 @@ class FormViewSet(
     @extend_schema(
         summary=_("Export form"),
         tags=["forms"],
+        request=None,
         responses={
             (
                 200,
@@ -162,12 +164,11 @@ class FormsImportAPIView(views.APIView):
         and FormSteps
         """
         serializer = self.serializer_class(data=request.data)
-        if not serializer.is_valid():
-            raise exceptions.ValidationError(serializer.errors["file"])
+        serializer.is_valid(raise_exception=True)
 
         try:
             call_command("import", import_file=serializer.validated_data["file"])
         except CommandError as e:
-            raise exceptions.ValidationError({"error": e})
+            raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
