@@ -117,11 +117,6 @@ class FormViewSet(
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
 
-    def get_authenticators(self):
-        if self.name == "Export":
-            return [TokenAuthentication()]
-        return super().get_authenticators()
-
     @extend_schema(
         summary=_("Export form"),
         tags=["forms"],
@@ -132,7 +127,9 @@ class FormViewSet(
             ): OpenApiTypes.BINARY
         },
     )
-    @action(detail=True, methods=["post"])
+    @action(
+        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
+    )
     def export(self, request, *args, **kwargs):
         """
         Exports the Form and related FormDefinitions and FormSteps as a .zip
@@ -140,7 +137,6 @@ class FormViewSet(
         instance = self.get_object()
 
         response = HttpResponse(content_type="application/zip")
-        filename = instance.slug
         response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
 
         call_command("export", instance.id, response=response)
