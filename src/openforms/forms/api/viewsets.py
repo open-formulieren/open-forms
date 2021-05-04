@@ -1,22 +1,37 @@
+from django.core.management import CommandError, call_command
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import (
+    exceptions,
+    mixins,
+    parsers,
+    permissions,
+    response,
+    status,
+    views,
+    viewsets,
+)
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
 
-from ..api.permissions import IsStaffOrReadOnly
-from ..api.serializers import (
+from ..models import Form, FormDefinition, FormStep
+from .permissions import IsStaffOrReadOnly
+from .serializers import (
     FormDefinitionSerializer,
+    FormImportSerializer,
     FormSerializer,
     FormStepSerializer,
 )
-from ..models import Form, FormDefinition, FormStep
 
 
 @extend_schema(
@@ -40,6 +55,11 @@ class FormStepViewSet(
     queryset = FormStep.objects.all()
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = "uuid"
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid"])
+        return context
 
 
 @extend_schema_view(
@@ -97,3 +117,58 @@ class FormViewSet(
     lookup_field = "uuid"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    @extend_schema(
+        summary=_("Export form"),
+        tags=["forms"],
+        request=None,
+        responses={
+            (
+                200,
+                "application/zip",
+            ): OpenApiTypes.BINARY
+        },
+    )
+    @action(
+        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
+    )
+    def export(self, request, *args, **kwargs):
+        """
+        Exports the Form and related FormDefinitions and FormSteps as a .zip
+        """
+        instance = self.get_object()
+
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
+
+        call_command("export", instance.id, response=response)
+
+        response["Content-Length"] = len(response.content)
+        return response
+
+
+class FormsImportAPIView(views.APIView):
+    serializer_class = FormImportSerializer
+    parser_classes = (parsers.FileUploadParser,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
+    @extend_schema(
+        summary=_("Import form"),
+        tags=["forms"],
+        responses={"204": {"description": _("No response body")}},
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Import a Form by uploading a .zip file containing a Form, FormDefinitions
+        and FormSteps
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            call_command("import", import_file=serializer.validated_data["file"])
+        except CommandError as e:
+            raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
+
+        return response.Response(status=status.HTTP_204_NO_CONTENT)

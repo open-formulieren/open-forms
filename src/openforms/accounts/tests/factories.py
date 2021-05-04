@@ -12,3 +12,10 @@ class UserFactory(factory.django.DjangoModelFactory):
 class SuperUserFactory(UserFactory):
     is_staff = True
     is_superuser = True
+
+
+class TokenFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
+
+    class Meta:
+        model = "authtoken.Token"

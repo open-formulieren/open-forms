@@ -10,6 +10,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
+    FormsImportAPIView,
     FormStepViewSet,
     FormViewSet,
 )
@@ -61,6 +62,7 @@ urlpatterns = [
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
+                path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
             ]
         ),
     ),
