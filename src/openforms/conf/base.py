@@ -337,6 +337,9 @@ LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 #
 SESSION_COOKIE_SECURE = IS_HTTPS
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = (
+    None  # from Lax -> None to enable the SDK to send CORS requests
+)
 
 CSRF_COOKIE_SECURE = IS_HTTPS
 
@@ -428,6 +431,7 @@ CORS_ALLOW_HEADERS = list(default_cors_headers) + config(
     "CORS_EXTRA_ALLOW_HEADERS", split=True, default=[]
 )
 CORS_EXPOSE_HEADERS = []
+CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
 #
 # SENTRY - error monitoring
