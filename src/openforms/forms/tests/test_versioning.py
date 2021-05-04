@@ -11,9 +11,6 @@ from openforms.forms.tests.factories import (
 
 
 class VersionTestCase(TestCase):
-    def setUp(self):
-        pass
-
     def test_reversion_setup_basics(self):
         """
         run basic versioning operations to test reversion is setup correctly,
