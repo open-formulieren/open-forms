@@ -11,12 +11,10 @@ class SubmissionStepInline(admin.StackedInline):
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
-        "created_on",
-        "completed_on",
         "form",
-        "registration_status",
+        "completed_on",
     )
-    list_filter = ("form", "created_on", "completed_on",)
+    list_filter = ("form", "completed_on",)
     search_fields = ("form__name",)
     inlines = [
         SubmissionStepInline,

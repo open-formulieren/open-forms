@@ -80,7 +80,7 @@ class Submission(models.Model):
         max_length=50,
         choices=RegistrationStatuses,
         default=RegistrationStatuses.pending,
-        help_text=("Whether registration in the configured backend was succesful."),
+        help_text=_("Whether registration in the configured backend was succesful."),
     )
 
     class Meta:
