@@ -29,6 +29,8 @@ django-admin-index==1.4.0
     # via -r requirements/base.in
 django-appconf==1.0.4
     # via django-axes
+django-autoslug==1.9.8
+    # via -r requirements/base.in
 django-axes==5.5.0
     # via -r requirements/base.in
 django-choices==1.7.1
