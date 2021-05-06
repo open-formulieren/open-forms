@@ -135,10 +135,7 @@ class FormViewSet(
         """
         instance = self.get_object()
 
-        try:
-            copied_form = copy_form(instance)
-        except (DataError, IntegrityError) as e:
-            return Response({"error": f"Error occurred while copying: {e}"}, status=400)
+        copied_form = copy_form(instance)
 
         path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
         detail_url = request.build_absolute_uri(path)
