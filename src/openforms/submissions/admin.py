@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
@@ -10,6 +11,11 @@ from .models import Submission, SubmissionStep
 class SubmissionStepInline(admin.StackedInline):
     model = SubmissionStep
     extra = 0
+    fields = (
+        "uuid",
+        "form_step",
+        "data",
+    )
 
 
 @admin.register(Submission)
@@ -27,6 +33,16 @@ class SubmissionAdmin(admin.ModelAdmin):
         SubmissionStepInline,
     ]
     actions = ["export"]
+
+    def get_fields(self, request, obj=None):
+        fields = ["form", "completed_on"]
+        if obj:
+            for key, value in obj.get_merged_data().items():
+                fields.append(key)
+                self.form.declared_fields.update(
+                    {key: forms.CharField(initial=value, disabled=True, required=False)}
+                )
+        return fields
 
     def export(self, request, queryset):
         headers = []
