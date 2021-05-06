@@ -72,7 +72,7 @@ class Submission(models.Model):
         blank=True,
         null=True,
         help_text=_(
-            "Contains data returned by the registration backend while registrating the submission data."
+            "Contains data returned by the registration backend while registering the submission data."
         ),
     )
     registration_status = models.CharField(
@@ -80,7 +80,7 @@ class Submission(models.Model):
         max_length=50,
         choices=RegistrationStatuses,
         default=RegistrationStatuses.pending,
-        help_text=_("Whether registration in the configured backend was succesful."),
+        help_text=_("Whether registration in the configured backend was successful."),
     )
 
     class Meta:
