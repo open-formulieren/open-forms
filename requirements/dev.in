@@ -3,6 +3,7 @@
 # Helpers
 pip-tools~=6.0
 bump2version
+gitpython
 
 # Debug tooling
 django-debug-toolbar

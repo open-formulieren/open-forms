@@ -354,9 +354,25 @@ FIXTURE_DIRS = (os.path.join(DJANGO_PROJECT_DIR, "fixtures"),)
 #
 # Custom settings
 #
-PROJECT_NAME = "Open Forms"
+PROJECT_NAME = "Open Formulieren"
 ENVIRONMENT = config("ENVIRONMENT", "")
 SHOW_ALERT = True
+
+if "GIT_SHA" in os.environ:
+    GIT_SHA = config("GIT_SHA", "")
+# in docker (build) context, there is no .git directory
+elif os.path.exists(os.path.join(BASE_DIR, ".git")):
+    try:
+        import git
+    except ImportError:
+        GIT_SHA = None
+    else:
+        repo = git.Repo(search_parent_directories=True)
+        GIT_SHA = repo.head.object.hexsha
+else:
+    GIT_SHA = None
+
+RELEASE = config("VERSION_TAG", GIT_SHA)
 
 ##############################
 #                            #
@@ -437,7 +453,6 @@ CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 # SENTRY - error monitoring
 #
 SENTRY_DSN = config("SENTRY_DSN", None)
-RELEASE = config("VERSION_TAG", "VERSION_TAG not set")
 
 if SENTRY_DSN:
     SENTRY_CONFIG = {

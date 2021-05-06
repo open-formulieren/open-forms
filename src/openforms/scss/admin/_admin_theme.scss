@@ -1,0 +1,357 @@
+/*
+Generic admin styling overrides.
+
+DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
+ */
+@import "../vars";
+
+/* Overrides */
+body {
+  overflow-y: scroll;
+}
+
+a:link, a:visited {
+  color: $color_link;
+}
+a:focus, a:hover {
+  color: $color_link_hover;
+}
+
+#header {
+  color: $color_secondary_light;
+  background: $color_primary;
+  /* border-bottom: 8px solid $color_secondary; */
+  position: sticky;
+  top: 0;
+  z-index: 100000;
+
+  a:link, a:visited {
+    color: $color_lightest;
+  }
+}
+
+#user-tools a {
+  border-bottom: none;
+  text-decoration: underline;
+
+  &:focus, &:hover {
+    color: $color_darkest;
+  }
+}
+
+.module h2, .module caption, .inline-group h2 {
+  background: $color_primary;
+}
+
+#branding {
+  h1 {
+    color: $color_secondary;
+
+    a:link, a:visited {
+      color: $color_secondary;
+    }
+  }
+}
+
+div.breadcrumbs {
+  background: $color_secondary;
+  color: $color_primary;
+  position: sticky;
+  top: 60px;
+  z-index: 100000;
+
+  a {
+    color: $color_dark;
+
+    &:focus, &:hover {
+      color: $color_darkest;
+    }
+  }
+}
+
+/* Important is used because Django templates include their own style, after ours */
+#changelist-filter {
+  a:focus, a:hover {
+    color: $color_link !important;
+  }
+  li.selected a {
+    color: $color_link !important;
+    &:focus, &:hover {
+      color: $color_primary !important;
+    }
+  }
+}
+
+.object-tools {
+  a:focus, a:hover {
+    background-color: $color_dark;
+  }
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background: $color_primary;
+  color: $color_lightest;
+  /* border: 2px solid $color_dark; */
+}
+.button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
+  background: $color_primary_dark;
+}
+.button.default, input[type=submit].default, .submit-row input.default {
+  background: $color_primary_dark;
+}
+.button.default:active, input[type=submit].default:active, .button.default:focus, input[type=submit].default:focus, .button.default:hover, input[type=submit].default:hover {
+  background: $color_darkest;
+}
+
+.delete-confirmation {
+  form {
+    input[type=submit] {
+    }
+    .cancel-link {
+      background: $color_primary_light;
+      color: $color_lightest;
+      &:active, &:focus, &:hover {
+        background: $color_dark;
+      }
+    }
+  }
+}
+
+/* Many to many selector */
+.selector-chosen h2 {
+  background: $color_primary !important;
+}
+
+/* Calendar widget */
+.calendar {
+  caption {
+    background: $color_secondary_dark !important;
+    color: $color_dark !important;
+  }
+
+  td {
+    a {
+      &:active {
+        background: $color_primary !important;
+      }
+      &:focus, &:hover {
+        background: $color_primary_dark !important;
+      }
+    }
+
+    &.selected a {
+      background: $color_primary !important;
+    }
+  }
+}
+.calendarbox h2 {
+  background: $color_secondary_dark !important;
+  color: $color_dark !important;
+}
+
+/* Time widget */
+.timelist {
+  a:active {
+   background: $color_primary !important;
+  }
+  a:focus, a:hover {
+    background: $color_primary_dark !important;
+  }
+}
+.module.clockbox h2 {
+  /* Match the clock widget with the calendar widget */
+  background: $color_secondary_dark !important;
+  color: $color_dark !important;
+  font-weight: bold !important;
+}
+
+/* Icons */
+.addlink {
+  background: url('../img/admin/plus-square-regular.svg') 0 0/14px 14px no-repeat;
+}
+.changelink, .inlinechangelink {
+  background: url('../img/admin/edit-regular.svg') 0 0/14px 14px no-repeat;
+}
+.deletelink {
+  background: url('../img/admin/trash-alt-regular.svg') 0 0/14px 14px no-repeat;
+}
+.datetimeshortcuts .clock-icon {
+  background: url('../img/admin/clock-regular.svg') 0 0/14px 14px no-repeat !important;
+}
+.datetimeshortcuts .date-icon {
+  background: url('../img/admin/calendar-alt-regular.svg') 0 0/14px 14px no-repeat !important;
+}
+
+/* Footer */
+.login .version {
+  text-align: center;
+}
+.version {
+  color: $color_secondary_dark;
+  font-size: smaller;
+}
+
+/**
+ * Environment banner
+ */
+.env {
+  display: block;
+  line-height: 35px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $color_secondary;
+  background-color: $color_dark;
+  position: fixed;
+  top: 0;
+  height: 35px;
+  width: 300px;
+  left: 50%;
+  margin-left: -150px;
+  z-index: 1000001;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+/**
+ * DJANGO ADMIN INDEX
+ */
+
+.dropdown-menu {
+  /* Override for Environment banner */
+  top: 48px;
+  /* Added to attach body */
+  border-bottom: 8px solid $color_secondary;
+}
+
+.breadcrumbs {
+  top: 48px !important;
+}
+
+/* Integration into color scheme */
+.dropdown-menu {
+  background-color: $color_primary;
+
+  .dropdown-menu__item,
+  .dropdown-menu__item:link,
+  .dropdown-menu__item:visited {
+    color: $color_lightest;
+
+    &.dropdown-menu__item--active {
+      background-color: $color_secondary;
+      text-decoration: none;
+      color: $color_primary;
+
+      &:hover {
+        color: $color_lightest;
+      }
+    }
+
+    &:hover {
+      background-color: $color_primary_dark;
+    }
+  }
+
+  .dropdown-menu__drop {
+    background-color: $color_primary;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2)
+  }
+
+  .dropdown-menu__link,
+  .dropdown-menu__link:link,
+  .dropdown-menu__link:visited {
+    color: $color_lightest;
+
+    &:hover {
+      background-color: $color_primary_dark;
+    }
+
+    &.dropdown-menu__link--active {
+      background-color: $color_primary_dark;
+      text-decoration: none;
+    }
+  }
+}
+/* Override for wider dropdown */
+.dropdown-menu .dropdown-menu__drop {
+  min-width: 250px;
+}
+
+/**
+ * DJANGO-BETTER-ADMIN-ARRAYFIELD
+ * Some elements are marked as !important because the style is loaded after
+ * this theme.
+ */
+.dynamic-array-widget {
+  button {
+    background: $color_primary !important;
+    color: $color_lightest !important;
+    &:hover {
+      background: $color_primary_dark !important;
+      /* border: 2px solid $color_dark !important; */
+    }
+
+    /* Substitute theme style above with icon. Solves translation string as well. */
+    &.add-array-item {
+      background: url('../img/admin/plus-square-regular.svg') 0 0/14px 14px no-repeat !important;
+      width: 14px;
+      line-height: 16px;
+      text-indent: -9999px;
+      white-space: nowrap;
+      margin: 0 0 5px 170px;
+      display: block;
+
+      &:focus {
+        outline-width: 0;
+      }
+    }
+  }
+
+  /* Substitute with icon */
+  .remove {
+    background: url('../img/admin/trash-alt-regular.svg') 0 0/14px 14px no-repeat;
+    width: 14px;
+    line-height: 16px;
+
+    .remove_sign {
+      display: none;
+    }
+  }
+}
+
+/**
+ * Branding
+ */
+#branding h1 {
+  a:link, a:visited {
+    font-weight: bold;
+  }
+}
+
+
+/**
+ * Help text mouseover
+ */
+div.help:hover {
+  text-indent: inherit;
+  width: auto;
+  background-image: none;
+  padding-left: 5px !important;
+  position: absolute;
+}
+
+div.help {
+  cursor: help;
+  width: 16px;
+  height: 16px;
+  background-image: url(../admin/img/icon-unknown.svg);
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 14px;
+  margin-left: 0 !important;
+  text-indent: -9999px;
+}
+
+.aligned label + div.readonly {
+  display: inline-block;
+  margin-left: inherit !important;
+}
