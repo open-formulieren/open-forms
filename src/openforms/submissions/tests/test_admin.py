@@ -31,11 +31,10 @@ class TestSubmissionAdmin(TestCase):
                 "geboortedatum": "01-01-1991",
             },
         )
+        self.submission_admin = SubmissionAdmin(Submission, AdminSite())
 
     def test_export(self):
-        response = SubmissionAdmin(Submission, AdminSite()).export(
-            HttpRequest(), Submission.objects.all()
-        )
+        response = self.submission_admin.export(HttpRequest(), Submission.objects.all())
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -51,9 +50,7 @@ class TestSubmissionAdmin(TestCase):
         SubmissionFactory.create(form=step.form)
         request = HttpRequest()
 
-        response = SubmissionAdmin(Submission, AdminSite()).export(
-            request, Submission.objects.all()
-        )
+        response = self.submission_admin.export(request, Submission.objects.all())
 
         self.assertIsNone(response)
         messages_mock.assert_called_once_with(
