@@ -8,20 +8,14 @@ from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
+from accounts.tests.factories import UserFactory
 from ..models import Form, FormStep
 from .factories import FormFactory, FormStepFactory
 
 
 class FormAdminImportExportTests(WebTest):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john",
-            password="secret",
-            email="john@example.com",
-            is_superuser=True,
-            is_staff=True,
-        )
+        self.user = UserFactory.create()
 
     def test_form_admin_export(self):
         form = FormFactory.create()
@@ -203,15 +197,10 @@ class FormAdminCopyTests(WebTest):
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
         self.assertEqual(copied_form_step.form, copied_form)
 
-        copied_form_definition = copied_form_step.form_definition
-        self.assertNotEqual(copied_form_definition.uuid, form_step.form_definition.uuid)
-        self.assertEqual(
-            copied_form_definition.name, f"{form_step.form_definition.name} (kopie)"
-        )
-        self.assertEqual(
-            copied_form_definition.slug, f"{form_step.form_definition.slug}-kopie"
-        )
+        copied_form_step_form_definition = copied_form_step.form_definition
+        self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
 
+    # TODO Update this to ensure an error does not happen when copying twice
     def test_form_admin_copy_error_duplicate(self):
         form = FormFactory.create()
         FormFactory.create(slug=f"{form.slug}-kopie")

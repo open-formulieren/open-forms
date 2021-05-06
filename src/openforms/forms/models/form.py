@@ -46,6 +46,24 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
+    def copy(self):
+        form_steps = self.formstep_set.all()
+        self.pk = None
+        self.uuid = uuid.uuid4()
+        self.name = f"{self.name} (kopie)"
+        # TODO Update this to handle multiple copies
+        self.slug = f"{self.slug}-kopie"
+        self.product = None
+        self.save()
+
+        for form_step in form_steps:
+            form_step.pk = None
+            form_step.uuid = uuid.uuid4()
+            form_step.form = self
+            form_step.save()
+
+        return self
+
     def __str__(self):
         return self.name
 
