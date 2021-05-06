@@ -1,6 +1,5 @@
 from django.core.management import CommandError, call_command
 from django.db import transaction
-from django.db.utils import DataError, IntegrityError
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -140,7 +139,7 @@ class FormViewSet(
         path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
         detail_url = request.build_absolute_uri(path)
 
-        return Response(status=201, headers={"Location": detail_url})
+        return Response(status=201, headers={"Location": detail_url}, data=self.serializer_class(copied_form, context={'request': request}).data)
 
     @extend_schema(
         summary=_("Export form"),
