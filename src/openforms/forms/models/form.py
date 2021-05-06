@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 
 from openforms.registrations.fields import BackendChoiceField
@@ -17,7 +18,7 @@ class Form(models.Model):
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
     name = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = AutoSlugField(max_length=100, editable=True, unique=True)
     active = models.BooleanField(default=False)
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
@@ -46,31 +47,11 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
-    def _get_kopie_slug_and_name(self):
-        non_copy_slug = self.slug.split("-kopie")[0]
-        latest_copy = (
-            Form.objects.filter(slug__startswith=non_copy_slug).order_by("slug").last()
-        )
-
-        if latest_copy.slug.endswith("-kopie"):
-            name = f"{latest_copy.name} 1"
-            slug = f"{latest_copy.slug}1"
-        elif (
-            latest_copy.slug[:-1].endswith("-kopie") and latest_copy.slug[-1].isdigit()
-        ):
-            num = int(latest_copy.slug[-1]) + 1
-            name = f"{latest_copy.name[:-2]} {num}"
-            slug = f"{latest_copy.slug[:-1]}{num}"
-        else:
-            name = f"{latest_copy.name} Kopie"
-            slug = f"{latest_copy.slug}-kopie"
-        return name, slug
-
     def copy(self):
         form_steps = self.formstep_set.all()
         self.pk = None
         self.uuid = uuid.uuid4()
-        self.name, self.slug = self._get_kopie_slug_and_name()
+        self.name = f"{self.name} (kopie)"
         self.product = None
         self.save()
 

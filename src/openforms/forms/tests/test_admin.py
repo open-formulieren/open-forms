@@ -174,7 +174,7 @@ class FormAdminCopyTests(WebTest):
 
         response = response.form.submit("_copy")
 
-        copied_form = Form.objects.get(slug=f"{form.slug}-kopie")
+        copied_form = Form.objects.get(slug=f"{form.slug}-2")
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
@@ -183,7 +183,7 @@ class FormAdminCopyTests(WebTest):
         )
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
-        self.assertEqual(copied_form.name, f"{form.name} Kopie")
+        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
 
         copied_form_step = FormStep.objects.last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
