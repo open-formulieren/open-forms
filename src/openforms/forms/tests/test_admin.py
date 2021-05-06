@@ -162,14 +162,7 @@ class FormAdminImportExportTests(WebTest):
 
 class FormAdminCopyTests(WebTest):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john",
-            password="secret",
-            email="john@example.com",
-            is_superuser=True,
-            is_staff=True,
-        )
+        self.user = UserFactory.create()
 
     def test_form_admin_copy(self):
         form = FormFactory.create()

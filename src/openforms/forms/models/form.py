@@ -46,13 +46,27 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
+    def _get_kopie_slug_and_name(self):
+        non_copy_slug = self.slug.split('-kopie')[0]
+        latest_copy = Form.objects.filter(slug__startswith=non_copy_slug).order_by("slug").last()
+
+        if latest_copy.slug.endswith("-kopie"):
+            name = f"{latest_copy.name} 1"
+            slug = f"{latest_copy.slug}1"
+        elif latest_copy.slug[:-1].endswith("-kopie") and latest_copy.slug[-1].isdigit():
+            num = int(latest_copy.slug[-1]) + 1
+            name = f"{latest_copy.name[:-2]} {num}"
+            slug = f"{latest_copy.slug[:-1]}{num}"
+        else:
+            name = f"{latest_copy.name} Kopie"
+            slug = f"{latest_copy.slug}-kopie"
+        return name, slug
+
     def copy(self):
         form_steps = self.formstep_set.all()
         self.pk = None
         self.uuid = uuid.uuid4()
-        self.name = f"{self.name} (kopie)"
-        # TODO Update this to handle multiple copies
-        self.slug = f"{self.slug}-kopie"
+        self.name, self.slug = self._get_kopie_slug_and_name()
         self.product = None
         self.save()
 
