@@ -790,16 +790,22 @@ class CopyFormAPITests(APITestCase):
             url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
         )
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(response.has_header("Location"))
-
-        self.assertEqual(Form.objects.count(), 2)
-        self.assertEqual(FormDefinition.objects.count(), 2)
-        self.assertEqual(FormStep.objects.count(), 2)
-
         copied_form = Form.objects.last()
         copied_form_step = copied_form.formstep_set.first()
-        copied_form_definition = copied_form_step.form_definition
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.has_header("Location"))
+        self.assertEqual(response.json()['uuid'], str(copied_form.uuid))
+        self.assertEqual(response.json()['name'], copied_form.name)
+        self.assertEqual(response.json()['loginRequired'], copied_form.login_required)
+        self.assertEqual(response.json()['product'], copied_form.product)
+        self.assertEqual(response.json()['slug'], copied_form.slug)
+        self.assertEqual(response.json()['steps'][0]['uuid'], str(copied_form_step.uuid))
+        self.assertEqual(response.json()['steps'][0]['formDefinition'], copied_form_step.form_definition.name)
+
+        self.assertEqual(Form.objects.count(), 2)
+        self.assertEqual(FormDefinition.objects.count(), 1)
+        self.assertEqual(FormStep.objects.count(), 2)
 
         self.assertIn(
             reverse("api:form-detail", kwargs={"uuid": copied_form.uuid}),
@@ -814,24 +820,12 @@ class CopyFormAPITests(APITestCase):
         self.assertIsNone(copied_form.product)
         self.assertEqual(copied_form.slug, f"{form.slug}-kopie")
 
-        self.assertNotEqual(copied_form_definition.pk, form_definition.pk)
-        self.assertNotEqual(copied_form_definition.uuid, str(form_definition.uuid))
-        self.assertEqual(
-            copied_form_definition.configuration, form_definition.configuration
-        )
-        self.assertEqual(
-            copied_form_definition.login_required, form_definition.login_required
-        )
-        self.assertEqual(copied_form_definition.name, f"{form_definition.name} (kopie)")
-        self.assertEqual(copied_form_definition.slug, f"{form_definition.slug}-kopie")
-
         self.assertNotEqual(copied_form_step.pk, form_step.pk)
         self.assertNotEqual(copied_form_step.uuid, str(form_step.uuid))
         self.assertEqual(
             copied_form_step.availability_strategy, form_step.availability_strategy
         )
         self.assertEqual(copied_form_step.form.pk, copied_form.pk)
-        self.assertEqual(copied_form_step.form_definition.pk, copied_form_definition.pk)
         self.assertEqual(copied_form_step.optional, form_step.optional)
         self.assertEqual(copied_form_step.order, form_step.order)
 
