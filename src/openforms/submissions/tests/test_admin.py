@@ -1,6 +1,9 @@
+from unittest.mock import patch
+
 from django.contrib.admin import AdminSite
 from django.http import HttpRequest
 from django.test import TestCase
+from django.utils.translation import gettext_lazy as _
 
 from openforms.forms.tests.factories import FormStepFactory
 
@@ -10,7 +13,7 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 class TestSubmissionAdmin(TestCase):
-    def test_export(self):
+    def setUp(self) -> None:
         step = FormStepFactory.create()
         submission_1 = SubmissionFactory.create(form=step.form)
         submission_2 = SubmissionFactory.create(form=step.form)
@@ -29,6 +32,7 @@ class TestSubmissionAdmin(TestCase):
             },
         )
 
+    def test_export(self):
         response = SubmissionAdmin(Submission, AdminSite()).export(
             HttpRequest(), Submission.objects.all()
         )
@@ -37,6 +41,21 @@ class TestSubmissionAdmin(TestCase):
         self.assertEqual(
             response.content,
             b"Formuliernaam,Inzendingdatum,adres,voornaam,familienaam,geboortedatum\r\n"
-            b"Form 000,,Voorburg,shea,meyers,\r\n"
-            b"Form 000,,,shea,meyers,01-01-1991\r\n",
+            b"Form 051,,Voorburg,shea,meyers,\r\n"
+            b"Form 051,,,shea,meyers,01-01-1991\r\n",
+        )
+
+    @patch("openforms.submissions.admin.messages.error")
+    def test_exporting_multiple_forms_fails(self, messages_mock):
+        step = FormStepFactory.create()
+        SubmissionFactory.create(form=step.form)
+        request = HttpRequest()
+
+        response = SubmissionAdmin(Submission, AdminSite()).export(
+            request, Submission.objects.all()
+        )
+
+        self.assertIsNone(response)
+        messages_mock.assert_called_once_with(
+            request, _("Mag alleen de Submissions van een Form op een keer exporten")
         )

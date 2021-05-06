@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
@@ -45,6 +45,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         return fields
 
     def export(self, request, queryset):
+        if queryset.order_by().values("form").distinct().count() > 1:
+            messages.error(
+                request,
+                _("Mag alleen de Submissions van een Form op een keer exporten"),
+            )
+            return
+
         headers = []
         for submission in queryset:
             headers += list(submission.get_merged_data().keys())
