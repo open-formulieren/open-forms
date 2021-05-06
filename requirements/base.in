@@ -40,3 +40,5 @@ elastic-apm  # Elastic APM integration
 
 # Common Ground integration
 zgw-consumers
+
+tablib

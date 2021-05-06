@@ -163,6 +163,8 @@ six==1.15.0
     #   requests-mock
 sqlparse==0.3.1
     # via django
+tablib==3.0.0
+    # via -r requirements/base.in
 text-unidecode==1.3
     # via faker
 uritemplate==3.0.1

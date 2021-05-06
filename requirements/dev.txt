@@ -459,6 +459,10 @@ sqlparse==0.3.1
     #   -r requirements/ci.txt
     #   django
     #   django-debug-toolbar
+tablib==3.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 tblib==1.7.0
     # via
     #   -c requirements/ci.txt

@@ -341,6 +341,10 @@ sqlparse==0.3.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django
+tablib==3.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 tblib==1.7.0
     # via -r requirements/test-tools.in
 text-unidecode==1.3
