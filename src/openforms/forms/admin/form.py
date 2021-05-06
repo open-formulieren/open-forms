@@ -14,7 +14,6 @@ from openforms.registrations.admin import BackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
-from ..utils import copy_form
 
 
 class FormStepInline(OrderedTabularInline):
@@ -50,7 +49,7 @@ class FormAdmin(
             for i in storage:
                 pass
 
-            copied_form = copy_form(obj)
+            copied_form = obj.copy()
 
             messages.success(
                 request,

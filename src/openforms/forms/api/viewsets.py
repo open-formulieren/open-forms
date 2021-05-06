@@ -27,7 +27,6 @@ from rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.api.pagination import PageNumberPagination
 
 from ..models import Form, FormDefinition, FormStep
-from ..utils import copy_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionSerializer,
@@ -134,7 +133,7 @@ class FormViewSet(
         """
         instance = self.get_object()
 
-        copied_form = copy_form(instance)
+        copied_form = instance.copy()
 
         path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
         detail_url = request.build_absolute_uri(path)
