@@ -155,6 +155,20 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
 
+    def get_merged_data(self) -> dict:
+        merged_data = dict()
+
+        for step in self.submissionstep_set.exclude(data=None):
+            for key, value in step.data.items():
+                if key in merged_data:
+                    if not isinstance(merged_data[key], list):
+                        merged_data[key] = [merged_data[key]]
+                    merged_data[key].append(value)
+                else:
+                    merged_data[key] = value
+
+        return merged_data
+
 
 class SubmissionStep(models.Model):
     """
