@@ -3,10 +3,10 @@ from io import BytesIO
 from zipfile import ZipFile
 
 from django.urls import reverse
-from django.utils.translation import ugettext as _
 
-from accounts.tests.factories import UserFactory
 from django_webtest import WebTest
+
+from openforms.accounts.tests.factories import UserFactory
 
 from ..models import Form, FormStep
 from .factories import FormFactory, FormStepFactory
