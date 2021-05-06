@@ -7,18 +7,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('submissions', '0011_auto_20210430_1436'),
+        ("submissions", "0011_auto_20210430_1436"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='submission',
-            name='registration_result',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, help_text='Contains data returned by the registration backend while registering the submission data.', null=True, verbose_name='result of backend registration'),
+            model_name="submission",
+            name="registration_result",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                blank=True,
+                help_text="Contains data returned by the registration backend while registering the submission data.",
+                null=True,
+                verbose_name="result of backend registration",
+            ),
         ),
         migrations.AlterField(
-            model_name='submission',
-            name='registration_status',
-            field=models.CharField(choices=[('pending', 'Pending (not registered yet)'), ('success', 'Success'), ('failed', 'Failed')], default='pending', help_text='Whether registration in the configured backend was successful.', max_length=50, verbose_name='Backend registration status'),
+            model_name="submission",
+            name="registration_status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending (not registered yet)"),
+                    ("success", "Success"),
+                    ("failed", "Failed"),
+                ],
+                default="pending",
+                help_text="Whether registration in the configured backend was successful.",
+                max_length=50,
+                verbose_name="Backend registration status",
+            ),
         ),
     ]
