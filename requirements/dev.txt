@@ -91,6 +91,10 @@ django-appconf==1.0.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-axes
+django-autoslug==1.9.8
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-axes==5.5.0
     # via
     #   -c requirements/ci.txt

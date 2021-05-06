@@ -8,6 +8,7 @@ python-decouple  # processing of envvar configs
 # Framework libraries
 django < 3.0
 django-admin-index
+django-autoslug
 django-axes
 django-choices
 django-cors-headers
