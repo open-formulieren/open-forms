@@ -111,6 +111,10 @@ django-compat==1.0.15
     #   -r requirements/ci.txt
     #   django-hijack
     #   django-hijack-admin
+django-cors-headers==3.7.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-debug-toolbar==3.2.1
     # via -r requirements/dev.in
 django-extensions==3.0.7
@@ -174,6 +178,7 @@ django==2.2.20
     #   django-axes
     #   django-capture-on-commit-callbacks
     #   django-choices
+    #   django-cors-headers
     #   django-debug-toolbar
     #   django-jenkins
     #   django-redis

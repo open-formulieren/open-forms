@@ -15,6 +15,8 @@ def config(option: str, default=undefined, *args, **kwargs):
     if "split" in kwargs:
         kwargs.pop("split")
         kwargs["cast"] = Csv()
+        if default == []:
+            default = ""
 
     if default is not undefined and default is not None:
         kwargs.setdefault("cast", type(default))

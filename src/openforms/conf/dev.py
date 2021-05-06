@@ -13,6 +13,8 @@ os.environ.setdefault("DB_NAME", "openforms"),
 os.environ.setdefault("DB_USER", "openforms"),
 os.environ.setdefault("DB_PASSWORD", "openforms"),
 
+os.environ.setdefault("ENVIRONMENT", "development")
+
 from .base import *  # noqa isort:skip
 
 # Feel free to switch dev to sqlite3 for simple projects,

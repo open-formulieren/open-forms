@@ -40,6 +40,8 @@ django-compat==1.0.15
     # via
     #   django-hijack
     #   django-hijack-admin
+django-cors-headers==3.7.0
+    # via -r requirements/base.in
 django-hijack-admin==2.1.10
     # via -r requirements/base.in
 django-hijack==2.1.10
@@ -69,6 +71,7 @@ django==2.2.20
     #   django-appconf
     #   django-axes
     #   django-choices
+    #   django-cors-headers
     #   django-redis
     #   django-relativedelta
     #   django-reversion
