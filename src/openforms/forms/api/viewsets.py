@@ -124,6 +124,15 @@ class FormViewSet(
         summary=_("Copy form"),
         tags=["forms"],
         responses=OpenApiTypes.OBJECT,
+        parameters=[
+            OpenApiParameter(
+                name="Location",
+                type=OpenApiTypes.URI,
+                location=OpenApiParameter.HEADER,
+                description="URL of the created resource",
+                response=[201],
+            ),
+        ],
     )
     @transaction.atomic
     @action(
@@ -131,7 +140,7 @@ class FormViewSet(
     )
     def copy(self, request, *args, **kwargs):
         """
-        Copies a Form and all related FormSteps/FormDefinitions
+        Copies a Form and all related FormSteps
         """
         instance = self.get_object()
 
