@@ -126,7 +126,9 @@ class FormViewSet(
         responses=OpenApiTypes.OBJECT,
     )
     @transaction.atomic
-    @action(detail=True, methods=["post"], authentication_classes=(TokenAuthentication,))
+    @action(
+        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
+    )
     def copy(self, request, *args, **kwargs):
         """
         Copies a Form and all related FormSteps/FormDefinitions
@@ -138,7 +140,11 @@ class FormViewSet(
         path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
         detail_url = request.build_absolute_uri(path)
 
-        return Response(status=201, headers={"Location": detail_url}, data=self.serializer_class(copied_form, context={'request': request}).data)
+        return Response(
+            status=201,
+            headers={"Location": detail_url},
+            data=self.serializer_class(copied_form, context={"request": request}).data,
+        )
 
     @extend_schema(
         summary=_("Export form"),

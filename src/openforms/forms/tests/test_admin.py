@@ -2,20 +2,19 @@ import json
 from io import BytesIO
 from zipfile import ZipFile
 
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
+from accounts.tests.factories import UserFactory
 from django_webtest import WebTest
 
-from accounts.tests.factories import UserFactory
 from ..models import Form, FormStep
 from .factories import FormFactory, FormStepFactory
 
 
 class FormAdminImportExportTests(WebTest):
     def setUp(self):
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_form_admin_export(self):
         form = FormFactory.create()
@@ -162,7 +161,7 @@ class FormAdminImportExportTests(WebTest):
 
 class FormAdminCopyTests(WebTest):
     def setUp(self):
-        self.user = UserFactory.create()
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_form_admin_copy(self):
         form = FormFactory.create()
@@ -184,7 +183,7 @@ class FormAdminCopyTests(WebTest):
         )
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
-        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
+        self.assertEqual(copied_form.name, f"{form.name} Kopie")
 
         copied_form_step = FormStep.objects.last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
@@ -192,26 +191,3 @@ class FormAdminCopyTests(WebTest):
 
         copied_form_step_form_definition = copied_form_step.form_definition
         self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
-
-    # TODO Update this to ensure an error does not happen when copying twice
-    def test_form_admin_copy_error_duplicate(self):
-        form = FormFactory.create()
-        FormFactory.create(slug=f"{form.slug}-kopie")
-        form_step = FormStepFactory.create(form=form)
-        response = self.app.get(
-            reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        response = response.form.submit("_copy")
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        response = response.follow()
-
-        error = response.html.find("li", {"class": "error"})
-        self.assertIn(_("Error occurred while copying: duplicate key"), error.text)

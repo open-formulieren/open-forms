@@ -47,13 +47,17 @@ class Form(models.Model):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
     def _get_kopie_slug_and_name(self):
-        non_copy_slug = self.slug.split('-kopie')[0]
-        latest_copy = Form.objects.filter(slug__startswith=non_copy_slug).order_by("slug").last()
+        non_copy_slug = self.slug.split("-kopie")[0]
+        latest_copy = (
+            Form.objects.filter(slug__startswith=non_copy_slug).order_by("slug").last()
+        )
 
         if latest_copy.slug.endswith("-kopie"):
             name = f"{latest_copy.name} 1"
             slug = f"{latest_copy.slug}1"
-        elif latest_copy.slug[:-1].endswith("-kopie") and latest_copy.slug[-1].isdigit():
+        elif (
+            latest_copy.slug[:-1].endswith("-kopie") and latest_copy.slug[-1].isdigit()
+        ):
             num = int(latest_copy.slug[-1]) + 1
             name = f"{latest_copy.name[:-2]} {num}"
             slug = f"{latest_copy.slug[:-1]}{num}"
