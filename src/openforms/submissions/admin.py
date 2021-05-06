@@ -1,4 +1,7 @@
+import tablib
 from django.contrib import admin
+from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 
 from .models import Submission, SubmissionStep
 
@@ -19,3 +22,11 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
+    actions = ['export']
+
+    def export(self, request, queryset):
+        data = tablib.Dataset(headers=['Formuliernaam', 'Inzendingdatum'])
+        for submission in queryset:
+            data.append([submission.form.name, submission.completed_on])
+        return HttpResponse(data.export('csv'), content_type='text/csv')
+    export.short_description = _("Exporteren de geselecteerde submissions")
