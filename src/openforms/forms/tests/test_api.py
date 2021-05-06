@@ -821,9 +821,9 @@ class CopyFormAPITests(APITestCase):
         self.assertNotEqual(copied_form.uuid, str(form.uuid))
         self.assertEqual(copied_form.active, form.active)
         self.assertEqual(copied_form.registration_backend, form.registration_backend)
-        self.assertEqual(copied_form.name, f"{form.name} Kopie")
+        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
         self.assertIsNone(copied_form.product)
-        self.assertEqual(copied_form.slug, f"{form.slug}-kopie")
+        self.assertEqual(copied_form.slug, f"{form.slug}-2")
 
         self.assertNotEqual(copied_form_step.pk, form_step.pk)
         self.assertNotEqual(copied_form_step.uuid, str(form_step.uuid))
@@ -847,24 +847,24 @@ class CopyFormAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
-        self.assertEqual(response.json()["name"], f"{form.name} Kopie")
-        self.assertEqual(response.json()["slug"], f"{form.slug}-kopie")
+        self.assertEqual(response.json()["name"], f"{form.name} (kopie)")
+        self.assertEqual(response.json()["slug"], f"{form.slug}-2")
 
         response = self.client.post(
             url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
-        self.assertEqual(response.json()["name"], f"{form.name} Kopie 1")
-        self.assertEqual(response.json()["slug"], f"{form.slug}-kopie1")
+        self.assertEqual(response.json()["name"], f"{form.name} (kopie)")
+        self.assertEqual(response.json()["slug"], f"{form.slug}-3")
 
         response = self.client.post(
             url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
-        self.assertEqual(response.json()["name"], f"{form.name} Kopie 2")
-        self.assertEqual(response.json()["slug"], f"{form.slug}-kopie2")
+        self.assertEqual(response.json()["name"], f"{form.name} (kopie)")
+        self.assertEqual(response.json()["slug"], f"{form.slug}-4")
 
     def test_form_copy_token_auth_required(self):
         form = FormFactory.create()
