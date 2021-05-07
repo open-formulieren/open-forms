@@ -20,13 +20,13 @@ class SubmissionStepInline(admin.StackedInline):
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
+    date_hierarchy = "completed_on"
     list_display = (
         "form",
         "completed_on",
     )
     list_filter = (
         "form",
-        "completed_on",
     )
     search_fields = ("form__name",)
     inlines = [
