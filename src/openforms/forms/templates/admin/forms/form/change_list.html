@@ -1,13 +1,16 @@
-{% extends "admin/change_list.html" %}
+{% extends "reversion/change_list.html" %}
 {% load i18n admin_urls %}
 
 {% block object-tools-items %}
-    {{ block.super }}
 
+    {% if not is_popup and has_add_permission and has_change_permission %}
     <li>
         {% url 'admin:forms_import' as import %}
         <a href="{% add_preserved_filters import is_popup to_field %}" class="addlink">
             {% trans "Import form" %}
         </a>
     </li>
+    {% endif %}
+
+    {{ block.super }}
 {% endblock %}

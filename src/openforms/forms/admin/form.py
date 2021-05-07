@@ -8,6 +8,7 @@ from django.urls import path, reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+from reversion.admin import VersionAdmin
 
 from openforms.registrations.admin import BackendChoiceFieldMixin
 
@@ -35,12 +36,19 @@ class FormStepInline(OrderedTabularInline):
 
 
 @admin.register(Form)
-class FormAdmin(
-    BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, admin.ModelAdmin
-):
+class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAdmin):
     list_display = ("name", "registration_backend", "registration_backend_options")
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
+
+    change_list_template = (
+        "admin/forms/form/change_list.html"  # override reversion template
+    )
+
+    def _reversion_autoregister(self, model, follow):
+        # because this is called in the __init__, it seems to run before the
+        # `AppConfig.ready` hook runs, causing regisgration errors.
+        pass
 
     def response_post_save_change(self, request, obj):
         if "_copy" in request.POST:
