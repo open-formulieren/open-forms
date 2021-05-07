@@ -25,9 +25,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "form",
         "completed_on",
     )
-    list_filter = (
-        "form",
-    )
+    list_filter = ("form",)
     search_fields = ("form__name",)
     inlines = [
         SubmissionStepInline,
