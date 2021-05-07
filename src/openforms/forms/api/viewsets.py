@@ -2,7 +2,6 @@ from django.core.management import CommandError, call_command
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import reversion
@@ -107,14 +106,35 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @extend_schema_view(
-    list=extend_schema(summary=_("List forms")),
+    list=extend_schema(
+        summary=_("List forms"),
+        description=_(
+            "List the active forms, including the pointers to the form steps. "
+            "Form steps are included in order as they should appear."
+        ),
+    ),
     retrieve=extend_schema(summary=_("Retrieve form details")),
     create=extend_schema(summary=_("Create form")),
     update=extend_schema(summary=_("Update all details of a form")),
     partial_update=extend_schema(summary=_("Update given details of a form")),
-    destroy=extend_schema(summary=_("(Soft) delete a form")),
+    destroy=extend_schema(
+        summary=_("(Soft) delete a form"),
+        description=_(
+            "Destroying a form leads to a soft-delete to protect related submissions. "
+            "These deleted forms are no longer visible in the API endpoints."
+        ),
+    ),
 )
 class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
+    """
+    Manage forms.
+
+    Forms are collections of form steps, where each form step points to a formio.js
+    form definition. Multiple definitions are combined in logical steps to build a
+    multi-step/page form for end-users to fill out. Form definitions can be (and are)
+    re-used among different forms.
+    """
+
     queryset = Form.objects.filter(active=True, _is_deleted=False)
     lookup_field = "uuid"
     serializer_class = FormSerializer
@@ -123,14 +143,15 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     @extend_schema(
         summary=_("Copy form"),
         tags=["forms"],
-        responses=OpenApiTypes.OBJECT,
+        request=None,
+        responses={status.HTTP_201_CREATED: FormSerializer},
         parameters=[
             OpenApiParameter(
                 name="Location",
                 type=OpenApiTypes.URI,
                 location=OpenApiParameter.HEADER,
                 description="URL of the created resource",
-                response=[201],
+                response=[status.HTTP_201_CREATED],
             ),
         ],
     )
@@ -140,19 +161,18 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     )
     def copy(self, request, *args, **kwargs):
         """
-        Copies a Form and all related FormSteps
+        Create a copy of a form.
+
+        Copying a form copies the meta-data of the form and the steps included.
+        Referenced form definitions inside the form steps are re-used instead of
+        new copies being created.
         """
         instance = self.get_object()
-
         copied_form = instance.copy()
-
-        path = reverse("api:form-detail", kwargs={"uuid": copied_form.uuid})
-        detail_url = request.build_absolute_uri(path)
-
+        serializer = self.get_serializer(instance=copied_form)
+        headers = self.get_success_headers(serializer.data)
         return Response(
-            status=201,
-            headers={"Location": detail_url},
-            data=self.serializer_class(copied_form, context={"request": request}).data,
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
 
     @extend_schema(
@@ -161,7 +181,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
         request=None,
         responses={
             (
-                200,
+                status.HTTP_200_OK,
                 "application/zip",
             ): OpenApiTypes.BINARY
         },
@@ -171,7 +191,9 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     )
     def export(self, request, *args, **kwargs):
         """
-        Exports the Form and related FormDefinitions and FormSteps as a .zip
+        Export a form with the related steps and form definitions as a ZIP-file.
+
+        The exported ZIP-file can be used to import complete forms.
         """
         instance = self.get_object()
 
