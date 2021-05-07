@@ -1,4 +1,5 @@
 import uuid
+from copy import deepcopy
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
@@ -18,7 +19,9 @@ class Form(models.Model):
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
     name = models.CharField(max_length=50)
-    slug = AutoSlugField(max_length=100, editable=True, unique=True)
+    slug = AutoSlugField(
+        max_length=100, populate_from="name", editable=True, unique=True
+    )
     active = models.BooleanField(default=False)
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
@@ -50,19 +53,22 @@ class Form(models.Model):
     @transaction.atomic
     def copy(self):
         form_steps = self.formstep_set.all()
-        self.pk = None
-        self.uuid = uuid.uuid4()
-        self.name = f"{self.name} (kopie)"
-        self.product = None
-        self.save()
+
+        copy = deepcopy(self)
+        copy.pk = None
+        copy.uuid = uuid.uuid4()
+        copy.name = f"{self.name} (kopie)"
+        copy.slug = f"{self.slug}-kopie"
+        copy.product = None
+        copy.save()
 
         for form_step in form_steps:
             form_step.pk = None
             form_step.uuid = uuid.uuid4()
-            form_step.form = self
+            form_step.form = copy
             form_step.save()
 
-        return self
+        return copy
 
     def __str__(self):
         return self.name
