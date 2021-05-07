@@ -45,6 +45,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
+    actions = ["make_copies"]
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
@@ -141,3 +142,9 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
             )
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+    def make_copies(self, request, queryset):
+        for instance in queryset:
+            instance.copy()
+
+    make_copies.short_description = _("Kopie geselecteerde Form")
