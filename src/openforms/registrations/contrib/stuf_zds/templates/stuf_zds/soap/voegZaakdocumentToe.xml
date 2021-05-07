@@ -1,0 +1,64 @@
+<ZDS:voegZaakdocumentToe_EdcLk01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                                 xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
+                                 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
+    <ZKN:stuurgegevens>
+        <StUF:berichtcode>Lk01</StUF:berichtcode>
+        <StUF:zender>
+            <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:zender>
+        <StUF:ontvanger>
+            <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:ontvanger>
+{#        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>#}
+        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+        <StUF:entiteittype>EDC</StUF:entiteittype>
+    </ZKN:stuurgegevens>
+    <ZKN:parameters>
+        <StUF:mutatiesoort>T</StUF:mutatiesoort>
+        <StUF:indicatorOvername>I</StUF:indicatorOvername>
+    </ZKN:parameters>
+    <ZKN:object StUF:entiteittype="EDC" StUF:verwerkingssoort="T">
+        <ZKN:identificatie>{{ document_identificatie }}</ZKN:identificatie>
+        <ZKN:dct.omschrijving>{{ document_omschrijving }}</ZKN:dct.omschrijving>
+        <ZKN:creatiedatum>{{ datum_vandaag }}</ZKN:creatiedatum>
+{#        <ZKN:titel>titel</ZKN:titel>#}
+{#        <ZKN:formaat>formaat</ZKN:formaat>#}
+{#        <ZKN:taal>taal</ZKN:taal>#}
+        <ZKN:vertrouwelijkAanduiding>VERTROUWELIJK</ZKN:vertrouwelijkAanduiding>
+        <ZKN:auteur>auteur</ZKN:auteur>
+        <ZKN:inhoud StUF:bestandsnaam="{{ file_name }}">{{ file_content }}</ZKN:inhoud>
+        <StUF:tijdvakGeldigheid>
+            <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>
+            <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
+        </StUF:tijdvakGeldigheid>
+        <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+        <ZKN:isRelevantVoor StUF:entiteittype="EDCZAK" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde StUF:entiteittype="ZAK" StUF:verwerkingssoort="I">
+                <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
+                <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+{#                <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">#}
+{#                    <ZKN:gerelateerde StUF:entiteittype="ZKT" StUF:verwerkingssoort="I">#}
+{#                        <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>#}
+{#                        <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>#}
+{#                        <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>#}
+{#                    </ZKN:gerelateerde>#}
+{#                </ZKN:isVan>#}
+            </ZKN:gerelateerde>
+            <StUF:tijdvakRelatie>
+                <StUF:beginRelatie>{{ datum_eergisteren }}</StUF:beginRelatie>
+                <StUF:eindRelatie StUF:noValue="geenWaarde" xsi:nil="true"/>
+            </StUF:tijdvakRelatie>
+            <StUF:tijdvakGeldigheid>
+                <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>
+                <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
+            </StUF:tijdvakGeldigheid>
+            <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+        </ZKN:isRelevantVoor>
+    </ZKN:object>
+</ZDS:voegZaakdocumentToe_EdcLk01>

@@ -1,0 +1,62 @@
+<ZDS:creeerZaak_ZakLk01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+                        xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../../zds0120_msg_totaal.xsd">
+    <ZKN:stuurgegevens>
+        <StUF:berichtcode>Lk01</StUF:berichtcode>
+        <StUF:zender>
+            <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:zender>
+        <StUF:ontvanger>
+            <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:ontvanger>
+{#        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>#}
+        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+        <StUF:entiteittype>ZAK</StUF:entiteittype>
+    </ZKN:stuurgegevens>
+    <ZKN:parameters>
+        <StUF:mutatiesoort>T</StUF:mutatiesoort>
+        <StUF:indicatorOvername>V</StUF:indicatorOvername>
+    </ZKN:parameters>
+    <ZKN:object StUF:verwerkingssoort="T" StUF:entiteittype="ZAK">
+        <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
+        <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+        <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
+        <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
+        <ZKN:zaakniveau>1</ZKN:zaakniveau>
+        <ZKN:deelzakenIndicatie>J</ZKN:deelzakenIndicatie>
+        <StUF:tijdvakGeldigheid>
+            <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>
+            <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
+        </StUF:tijdvakGeldigheid>
+        <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+{#        <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">#}
+{#            <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">#}
+{#                <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>#}
+{#                <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>#}
+{#                <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>#}
+{#            </ZKN:gerelateerde>#}
+{#        </ZKN:isVan>#}
+{#        <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">#}
+{#            <ZKN:gerelateerde>#}
+{#                <ZKN:medewerker StUF:verwerkingssoort="I" StUF:entiteittype="MDW">#}
+{#                    <ZKN:medewerkeridentificatie>{{ gemeentecode }}56789</ZKN:medewerkeridentificatie>#}
+{#                </ZKN:medewerker>#}
+{#            </ZKN:gerelateerde>#}
+{#            <StUF:tijdvakRelatie>#}
+{#                <StUF:beginRelatie>{{ datum_eergisteren }}</StUF:beginRelatie>#}
+{#                <StUF:eindRelatie StUF:noValue="geenWaarde" xsi:nil="true"/>#}
+{#            </StUF:tijdvakRelatie>#}
+{#            <StUF:tijdvakGeldigheid>#}
+{#                <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>#}
+{#                <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>#}
+{#            </StUF:tijdvakGeldigheid>#}
+{#            <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>#}
+{#        </ZKN:heeftAlsInitiator>#}
+    </ZKN:object>
+</ZDS:creeerZaak_ZakLk01>

@@ -166,6 +166,10 @@ django-ordered-model==3.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-admin-index
+django-privates==1.2.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-redis==4.12.1
     # via
     #   -c requirements/ci.txt
@@ -183,6 +187,11 @@ django-rosetta==0.9.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-sendfile2==0.6.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-privates
 django-solo==1.1.3
     # via
     #   -c requirements/ci.txt
@@ -214,10 +223,12 @@ django==2.2.20
     #   django-debug-toolbar
     #   django-decorator-include
     #   django-jenkins
+    #   django-privates
     #   django-redis
     #   django-relativedelta
     #   django-reversion
     #   django-rosetta
+    #   django-sendfile2
     #   djangorestframework
     #   drf-nested-routers
     #   drf-spectacular

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header/>
+    <soapenv:Body>
+
+        <ZDS:genereerZaakIdentificatie_Du02
+            xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 zds0120_msg_zs-dms.xsd"
+            xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+            xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <!-- minimal interesting fields -->
+
+            <ZDS:zaak StUF:functie="entiteit" StUF:entiteittype="ZAK">
+                <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
+            </ZDS:zaak>
+        </ZDS:genereerZaakIdentificatie_Du02>
+
+    </soapenv:Body>
+</soapenv:Envelope>

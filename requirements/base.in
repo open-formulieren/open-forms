@@ -16,6 +16,7 @@ django-cors-headers
 django-decorator-include
 django-hijack
 django-hijack-admin
+django-privates
 django-redis
 django-rosetta
 django-solo
@@ -30,6 +31,7 @@ pyopenssl
 djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
+lxml
 
 # API schema generation (OpenAPI 3)
 drf-spectacular

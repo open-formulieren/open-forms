@@ -1,0 +1,21 @@
+<ZDS:genereerZaakIdentificatie_Di02
+    xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 zds0120_msg_zs-dms.xsd"
+    xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ZDS:stuurgegevens>
+        <StUF:berichtcode>Di02</StUF:berichtcode>
+        <StUF:zender>
+            <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:zender>
+        <StUF:ontvanger>
+            <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+            <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+            <StUF:gebruiker/>
+        </StUF:ontvanger>
+        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+        <StUF:functie>genereerZaakidentificatie</StUF:functie>
+    </ZDS:stuurgegevens>
+</ZDS:genereerZaakIdentificatie_Di02>
+
