@@ -32,7 +32,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    actions = ["export"]
+    actions = ["export_csv", "export_xls"]
 
     def get_fields(self, request, obj=None):
         fields = ["form", "completed_on"]
@@ -44,7 +44,12 @@ class SubmissionAdmin(admin.ModelAdmin):
                 )
         return fields
 
-    def export(self, request, queryset):
+    def _export(self, request, queryset, file_type):
+        file_type_to_content_type = {
+            "csv": "text/csv",
+            "xls": "application/vnd.ms-excel",
+        }
+
         if queryset.order_by().values("form").distinct().count() > 1:
             messages.error(
                 request,
@@ -63,6 +68,20 @@ class SubmissionAdmin(admin.ModelAdmin):
             for header in headers:
                 submission_data.append(merged_data.get(header))
             data.append(submission_data)
-        return HttpResponse(data.export("csv"), content_type="text/csv")
+        return HttpResponse(
+            data.export(file_type), content_type=file_type_to_content_type[file_type]
+        )
 
-    export.short_description = _("Exporteren de geselecteerde submissions")
+    def export_csv(self, request, queryset):
+        return self._export(request, queryset, "csv")
+
+    export_csv.short_description = _(
+        "Exporteren de geselecteerde Submissions als een csv file"
+    )
+
+    def export_xls(self, request, queryset):
+        return self._export(request, queryset, "xls")
+
+    export_xls.short_description = _(
+        "Exporteren de geselecteerde Submissions als een xls file"
+    )

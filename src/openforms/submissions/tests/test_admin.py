@@ -33,16 +33,23 @@ class TestSubmissionAdmin(TestCase):
         )
         self.submission_admin = SubmissionAdmin(Submission, AdminSite())
 
-    def test_export(self):
-        response = self.submission_admin.export(HttpRequest(), Submission.objects.all())
+    def test_export_csv_successfully_exports_csv_file(self):
+        response = self.submission_admin.export_csv(
+            HttpRequest(), Submission.objects.all()
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.content,
-            b"Formuliernaam,Inzendingdatum,adres,voornaam,familienaam,geboortedatum\r\n"
-            b"Form 051,,Voorburg,shea,meyers,\r\n"
-            b"Form 051,,,shea,meyers,01-01-1991\r\n",
+        self.assertEqual(response["content-type"], "text/csv")
+        self.assertIsNotNone(response.content)
+
+    def test_export_xls_successfully_exports_xls_file(self):
+        response = self.submission_admin.export_xls(
+            HttpRequest(), Submission.objects.all()
         )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["content-type"], "application/vnd.ms-excel")
+        self.assertIsNotNone(response.content)
 
     @patch("openforms.submissions.admin.messages.error")
     def test_exporting_multiple_forms_fails(self, messages_mock):
@@ -50,7 +57,7 @@ class TestSubmissionAdmin(TestCase):
         SubmissionFactory.create(form=step.form)
         request = HttpRequest()
 
-        response = self.submission_admin.export(request, Submission.objects.all())
+        response = self.submission_admin.export_csv(request, Submission.objects.all())
 
         self.assertIsNone(response)
         messages_mock.assert_called_once_with(
