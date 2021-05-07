@@ -5,11 +5,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import reversion
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
     exceptions,
-    mixins,
     parsers,
     permissions,
     response,
@@ -23,6 +23,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_nested.viewsets import NestedViewSetMixin
+from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
 
@@ -111,11 +112,10 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
     create=extend_schema(summary=_("Create form")),
     update=extend_schema(summary=_("Update all details of a form")),
     partial_update=extend_schema(summary=_("Update given details of a form")),
+    destroy=extend_schema(summary=_("(Soft) delete a form")),
 )
-class FormViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet
-):
-    queryset = Form.objects.filter(active=True)
+class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
+    queryset = Form.objects.filter(active=True, _is_deleted=False)
     lookup_field = "uuid"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
@@ -182,6 +182,11 @@ class FormViewSet(
 
         response["Content-Length"] = len(response.content)
         return response
+
+    def perform_destroy(self, instance):
+        instance._is_deleted = True
+        instance.save()
+        reversion.set_comment(_("Formulier verwijderd via API."))
 
 
 class FormsImportAPIView(views.APIView):

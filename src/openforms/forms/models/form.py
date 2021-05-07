@@ -22,7 +22,6 @@ class Form(models.Model):
     slug = AutoSlugField(
         max_length=100, populate_from="name", editable=True, unique=True
     )
-    active = models.BooleanField(default=False)
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
@@ -30,6 +29,10 @@ class Form(models.Model):
     # backend integration - which registration to use?
     registration_backend = BackendChoiceField(_("registration backend"), blank=True)
     registration_backend_options = JSONField(default=dict, blank=True, null=True)
+
+    # life cycle management
+    active = models.BooleanField(default=False)
+    _is_deleted = models.BooleanField(default=False)
 
     @property
     def login_required(self) -> bool:

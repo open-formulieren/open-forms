@@ -8,13 +8,13 @@ from ..models import Form
 
 
 class FormListView(UIListView):
-    model = Form
     template_name = "core/views/form/form_list.html"
+    queryset = Form.objects.filter(_is_deleted=False)
 
 
 class FormDetailView(UIDetailView):
-    model = Form
     template_name = "core/views/form/form_detail.html"
+    queryset = Form.objects.filter(_is_deleted=False)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
