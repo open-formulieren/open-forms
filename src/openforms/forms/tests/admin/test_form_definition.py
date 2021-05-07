@@ -5,6 +5,7 @@ from django.urls import reverse
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.admin import FormDefinitionAdmin
+from openforms.forms.models import FormDefinition
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -22,6 +23,9 @@ class TestFormDefinitionAdmin(TestCase):
             kwargs={"object_id": self.form.pk},
         )
         FormStepFactory.create(form=self.form, form_definition=self.form_definition)
+        self.form_definition_admin = FormDefinitionAdmin(
+            model=self.form_definition, admin_site=AdminSite()
+        )
         self.user = SuperUserFactory.create()
         assert self.client.login(
             request=HttpRequest(), username=self.user.username, password="secret"
@@ -29,9 +33,7 @@ class TestFormDefinitionAdmin(TestCase):
 
     def test_used_in_forms_returns_properly_formatted_html(self):
 
-        result = FormDefinitionAdmin(
-            model=self.form_definition, admin_site=AdminSite()
-        ).used_in_forms(self.form_definition)
+        result = self.form_definition_admin.used_in_forms(self.form_definition)
 
         self.assertEqual(
             result, f"<ul><li><a href={self.form_url}>{self.form.name}</a></li></ul>"
@@ -45,3 +47,13 @@ class TestFormDefinitionAdmin(TestCase):
             f"<ul><li><a href={self.form_url}>{self.form.name}</a></li></ul>",
             str(response.content),
         )
+
+    def test_make_copies_action_makes_copy_of_a_form_definition(self):
+        self.form_definition_admin.make_copies(
+            HttpRequest(), FormDefinition.objects.all()
+        )
+
+        self.assertEqual(FormDefinition.objects.count(), 2)
+        copied_form = FormDefinition.objects.exclude(pk=self.form_definition.pk).first()
+        self.assertEqual(copied_form.name, f"{self.form_definition.name} (kopie)")
+        self.assertEqual(copied_form.slug, f"{self.form_definition.slug}-kopie")
