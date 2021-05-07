@@ -1,10 +1,8 @@
 from django import forms
 from django.contrib import admin, messages
-from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
-import tablib
-
+from .exports import export_submissions
 from .models import Submission, SubmissionStep
 
 
@@ -30,7 +28,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    actions = ["export_csv", "export_xls"]
+    actions = ["export_csv", "export_xlsx"]
 
     def get_fields(self, request, obj=None):
         fields = ["form", "completed_on"]
@@ -43,43 +41,27 @@ class SubmissionAdmin(admin.ModelAdmin):
         return fields
 
     def _export(self, request, queryset, file_type):
-        file_type_to_content_type = {
-            "csv": "text/csv",
-            "xls": "application/vnd.ms-excel",
-        }
-
         if queryset.order_by().values("form").distinct().count() > 1:
             messages.error(
                 request,
-                _("Mag alleen de Submissions van een Form op een keer exporten"),
+                _(
+                    "Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
+                ),
             )
             return
 
-        headers = []
-        for submission in queryset:
-            headers += list(submission.get_merged_data().keys())
-        headers = list(dict.fromkeys(headers))  # Remove duplicates
-        data = tablib.Dataset(headers=["Formuliernaam", "Inzendingdatum"] + headers)
-        for submission in queryset:
-            submission_data = [submission.form.name, submission.completed_on]
-            merged_data = submission.get_merged_data()
-            for header in headers:
-                submission_data.append(merged_data.get(header))
-            data.append(submission_data)
-        return HttpResponse(
-            data.export(file_type), content_type=file_type_to_content_type[file_type]
-        )
+        return export_submissions(queryset, file_type)
 
     def export_csv(self, request, queryset):
         return self._export(request, queryset, "csv")
 
     export_csv.short_description = _(
-        "Exporteren de geselecteerde Submissions als een csv file"
+        "Geselecteerde %(verbose_name_plural)s exporteren als CSV-bestand."
     )
 
-    def export_xls(self, request, queryset):
-        return self._export(request, queryset, "xls")
+    def export_xlsx(self, request, queryset):
+        return self._export(request, queryset, "xlsx")
 
-    export_xls.short_description = _(
-        "Exporteren de geselecteerde Submissions als een xls file"
+    export_xlsx.short_description = _(
+        "Geselecteerde %(verbose_name_plural)s exporteren als Excel-bestand."
     )
