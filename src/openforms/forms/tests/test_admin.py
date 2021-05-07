@@ -174,7 +174,7 @@ class FormAdminCopyTests(WebTest):
 
         response = response.form.submit("_copy")
 
-        copied_form = Form.objects.get(slug=f"{form.slug}-2")
+        copied_form = Form.objects.get(slug=f"{form.slug}-kopie")
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
