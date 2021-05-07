@@ -1,10 +1,16 @@
+import os
 from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
+from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpRequest
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from django_webtest import WebTest
+
+from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormStepFactory
 
 from ..admin import SubmissionAdmin
@@ -12,14 +18,15 @@ from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
-class TestSubmissionAdmin(TestCase):
+class TestSubmissionAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):
         step = FormStepFactory.create()
-        submission_1 = SubmissionFactory.create(form=step.form)
+        cls.user = UserFactory.create(is_superuser=True, is_staff=True)
+        cls.submission_1 = SubmissionFactory.create(form=step.form)
         submission_2 = SubmissionFactory.create(form=step.form)
         SubmissionStepFactory.create(
-            submission=submission_1,
+            submission=cls.submission_1,
             form_step=step,
             data={"adres": "Voorburg", "voornaam": "shea", "familienaam": "meyers"},
         )
@@ -32,12 +39,19 @@ class TestSubmissionAdmin(TestCase):
                 "geboortedatum": "01-01-1991",
             },
         )
-        cls.submission_admin = SubmissionAdmin(Submission, AdminSite())
 
     def test_export_csv_successfully_exports_csv_file(self):
-        response = self.submission_admin.export_csv(
-            HttpRequest(), Submission.objects.all()
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
         )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "export_csv"
+        form["_selected_action"] = [
+            str(submission.pk) for submission in Submission.objects.all()
+        ]
+
+        response = form.submit()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["content-type"], "text/csv")
@@ -45,12 +59,20 @@ class TestSubmissionAdmin(TestCase):
             response["content-disposition"],
             'attachment; filename="submissions_export.csv"',
         )
-        self.assertIsNotNone(response.streaming_content)
+        self.assertIsNotNone(response.content)
 
     def test_export_xlsx_successfully_exports_xlsx_file(self):
-        response = self.submission_admin.export_xlsx(
-            HttpRequest(), Submission.objects.all()
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
         )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "export_xlsx"
+        form["_selected_action"] = [
+            str(submission.pk) for submission in Submission.objects.all()
+        ]
+
+        response = form.submit()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -61,20 +83,29 @@ class TestSubmissionAdmin(TestCase):
             response["content-disposition"],
             'attachment; filename="submissions_export.xlsx"',
         )
-        self.assertIsNotNone(response.streaming_content)
+        self.assertIsNotNone(response.content)
 
-    @patch("openforms.submissions.admin.messages.error")
-    def test_exporting_multiple_forms_fails(self, messages_mock):
+    def test_exporting_multiple_forms_fails(self):
         step = FormStepFactory.create()
         SubmissionFactory.create(form=step.form)
-        request = HttpRequest()
 
-        response = self.submission_admin.export_csv(request, Submission.objects.all())
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
 
-        self.assertIsNone(response)
-        messages_mock.assert_called_once_with(
-            request,
-            _(
-                "Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
-            ),
+        form = response.forms["changelist-form"]
+        form["action"] = "export_csv"
+        form["_selected_action"] = [
+            str(submission.pk) for submission in Submission.objects.all()
+        ]
+
+        response = form.submit()
+
+        # Assert redirected back to html page
+        self.assertEqual(response.status_code, 302)
+        response = response.follow()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response["content-type"],
+            "text/html; charset=utf-8",
         )
