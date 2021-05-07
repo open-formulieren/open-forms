@@ -57,7 +57,7 @@ class Submission(models.Model):
     """
 
     uuid = StringUUIDField(unique=True, default=uuid.uuid4)
-    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
+    form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
     created_on = models.DateTimeField(auto_now_add=True)
     completed_on = models.DateTimeField(blank=True, null=True)
     suspended_on = models.DateTimeField(blank=True, null=True)
