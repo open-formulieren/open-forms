@@ -1,7 +1,7 @@
 import uuid
 
 from django.contrib.postgres.fields import JSONField
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -47,6 +47,7 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
+    @transaction.atomic
     def copy(self):
         form_steps = self.formstep_set.all()
         self.pk = None
