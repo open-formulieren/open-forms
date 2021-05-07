@@ -161,11 +161,10 @@ class Submission(models.Model):
         for step in self.submissionstep_set.exclude(data=None):
             for key, value in step.data.items():
                 if key in merged_data:
-                    if not isinstance(merged_data[key], list):
-                        merged_data[key] = [merged_data[key]]
-                    merged_data[key].append(value)
-                else:
-                    merged_data[key] = value
+                    logger.warning(
+                        f"{key} was previously in merged_data and will be overwritten by {value}"
+                    )
+                merged_data[key] = value
 
         return merged_data
 

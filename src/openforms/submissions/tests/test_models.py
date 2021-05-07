@@ -24,5 +24,5 @@ class TestSubmission(TestCase):
 
         self.assertEqual(
             submission.get_merged_data(),
-            {"key1": "value1", "key2": ["value2", "value-a"], "key3": "value-b"},
+            {"key1": "value1", "key2": "value-a", "key3": "value-b"},
         )
