@@ -52,21 +52,15 @@ class FormDefinitionTestCase(TestCase):
             form_definition.delete()
         self.assertTrue(FormDefinition.objects.filter(pk=form_definition.pk).exists())
 
-    def test_creating_copy_of_form_definition(self):
-        pre_copy_name = self.form_definition.name
-        pre_copy_slug = self.form_definition.slug
+    def test_copying_a_form_definition(self):
+        form_definition_1 = FormDefinitionFactory.create(
+            slug="a-form-definition", name="A form definition"
+        )
 
-        self.form_definition.copy()
-        self.assertEqual(FormDefinition.objects.count(), 2)
-        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie")
-        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie")
+        form2 = form_definition_1.copy()
+        form3 = form_definition_1.copy()
 
-        self.form_definition.copy()
-        self.assertEqual(FormDefinition.objects.count(), 3)
-        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie 1")
-        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie1")
-
-        self.form_definition.copy()
-        self.assertEqual(FormDefinition.objects.count(), 4)
-        self.assertEqual(self.form_definition.name, f"{pre_copy_name} Kopie 2")
-        self.assertEqual(self.form_definition.slug, f"{pre_copy_slug}-kopie2")
+        self.assertEqual(form2.slug, "a-form-definition-kopie")
+        self.assertEqual(form2.name, "A form definition (kopie)")
+        self.assertEqual(form3.slug, "a-form-definition-kopie-2")
+        self.assertEqual(form3.name, "A form definition (kopie)")
