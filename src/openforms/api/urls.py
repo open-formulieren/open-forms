@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -38,6 +39,7 @@ submissions_router.register(
 
 
 urlpatterns = [
+    path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
     path(
         "v1/",
         include(
