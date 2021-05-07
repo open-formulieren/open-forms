@@ -1,19 +1,10 @@
-import os
-from unittest.mock import patch
-
-from django.contrib.admin import AdminSite
-from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpRequest
-from django.test import TestCase
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormStepFactory
 
-from ..admin import SubmissionAdmin
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
