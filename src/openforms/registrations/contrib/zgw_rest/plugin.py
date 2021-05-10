@@ -33,7 +33,7 @@ class ZaakOptionsSerializer(serializers.Serializer):
 
 @register(
     "zgw-create-zaak",
-    "Create ZGW Zaak",
+    "Registreer zaak met Zaakgericht werken API's",
     configuration_options=ZaakOptionsSerializer,
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )

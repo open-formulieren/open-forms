@@ -21,8 +21,8 @@ def create_zaak(options: dict) -> dict:
         "verantwoordelijkeOrganisatie": options["organisatie_rsin"],
         "registratiedatum": today,
         "startdatum": today,
-        # "omschrijving": "TODO",
-        # "toelichting": "TODO",
+        "omschrijving": "Zaak naar aanleiding van ingezonden formulier \"{form_name}\".",
+        "toelichting": "Aangemaakt door Open Formulieren",
         "vertrouwelijkheidaanduiding": options["vertrouwelijkheidaanduiding"],
         # "betalingsindicatie": "nvt",
         # "selectielijstklasse": "TODO",
@@ -48,7 +48,9 @@ def create_document(name: str, body: dict, options: dict) -> dict:
         "taal": "nld",
         "inhoud": base64_body,
         "vertrouwelijkheidaanduiding": options["vertrouwelijkheidaanduiding"],
-        # "beschrijving": "TODO",
+        "status": "definitief",
+        "bestandsnaam": f"{today}-{name}.txt",
+        "beschrijving": "Ingezonden formulier",
     }
 
     informatieobject = client.create("enkelvoudiginformatieobject", data)

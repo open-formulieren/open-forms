@@ -31,6 +31,7 @@ class ZgwConfig(SingletonModel):
         related_name="zgw_ztc_config",
         null=True,
     )
+    # Overridable defaults
     zaaktype = models.URLField(
         max_length=1000, help_text=_("Default URL of the ZAAKTYPE in Catalogi API")
     )

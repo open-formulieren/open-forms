@@ -10,9 +10,9 @@ class ServiceFactory(factory.django.DjangoModelFactory):
 
 
 class ZgwConfigFactory(factory.django.DjangoModelFactory):
-    zrc_service = factory.SubFactory(ServiceFactory)
-    drc_service = factory.SubFactory(ServiceFactory)
-    ztc_service = factory.SubFactory(ServiceFactory)
+    zrc_service = factory.SubFactory(ServiceFactory, api_type=APITypes.zrc)
+    drc_service = factory.SubFactory(ServiceFactory, api_type=APITypes.drc)
+    ztc_service = factory.SubFactory(ServiceFactory, api_type=APITypes.ztc)
 
     class Meta:
         model = ZgwConfig
