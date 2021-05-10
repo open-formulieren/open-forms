@@ -1,9 +1,10 @@
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class ZGWRestPlugin(AppConfig):
     name = "openforms.registrations.contrib.zgw_apis"
-    verbose_name = "Zaakgericht werken API's plugin"
+    verbose_name = _("Zaakgericht werken API's plugin")
 
     def ready(self):
         from . import plugin  # noqa

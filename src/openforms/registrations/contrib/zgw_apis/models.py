@@ -10,21 +10,21 @@ class ZgwConfig(SingletonModel):
     global configuration and defaults
     """
 
-    zrc_service = models.ForeignKey(
+    zrc_service = models.OneToOneField(
         "zgw_consumers.Service",
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.zrc},
         related_name="zgw_zrc_config",
         null=True,
     )
-    drc_service = models.ForeignKey(
+    drc_service = models.OneToOneField(
         "zgw_consumers.Service",
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
         related_name="zgw_drc_config",
         null=True,
     )
-    ztc_service = models.ForeignKey(
+    ztc_service = models.OneToOneField(
         "zgw_consumers.Service",
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.ztc},
@@ -43,12 +43,6 @@ class ZgwConfig(SingletonModel):
         max_length=9,
         help_text=_("Default RSIN of organization, which creates the ZAAK"),
     )
-    vertrouwelijkheidaanduiding = models.CharField(
-        max_length=12,
-        help_text=_(
-            "Default aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is."
-        ),
-    )
 
     class Meta:
         verbose_name = _("ZGW Configuration")
@@ -57,9 +51,6 @@ class ZgwConfig(SingletonModel):
         options.setdefault("zaaktype", self.zaaktype)
         options.setdefault("informatieobjecttype", self.informatieobjecttype)
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
-        options.setdefault(
-            "vertrouwelijkheidaanduiding", self.vertrouwelijkheidaanduiding
-        )
 
     def clean(self):
         # TODO verify zaaktype and informatieobjecttype are part of the configured services

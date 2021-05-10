@@ -3,6 +3,7 @@ from typing import Optional
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.service import (
@@ -17,17 +18,21 @@ from openforms.submissions.models import Submission
 
 
 class ZaakOptionsSerializer(serializers.Serializer):
-    zaaktype = serializers.URLField(help_text=_("URL of the ZAAKTYPE in Catalogi API"))
+    zaaktype = serializers.URLField(
+        required=False, help_text=_("URL of the ZAAKTYPE in Catalogi API")
+    )
     informatieobjecttype = serializers.URLField(
-        help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
+        required=False, help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
     )
     organisatie_rsin = serializers.CharField(
-        help_text=_("RSIN of organization, which creates the ZAAK")
+        required=False, help_text=_("RSIN of organization, which creates the ZAAK")
     )
-    vertrouwelijkheidaanduiding = serializers.CharField(
+    vertrouwelijkheidaanduiding = serializers.ChoiceField(
+        required=False,
+        choices=VertrouwelijkheidsAanduidingen.choices,
         help_text=_(
             "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is."
-        )
+        ),
     )
 
 

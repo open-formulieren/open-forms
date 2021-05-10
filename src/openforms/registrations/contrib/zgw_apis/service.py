@@ -21,13 +21,12 @@ def create_zaak(options: dict) -> dict:
         "verantwoordelijkeOrganisatie": options["organisatie_rsin"],
         "registratiedatum": today,
         "startdatum": today,
-        "omschrijving": "Zaak naar aanleiding van ingezonden formulier \"{form_name}\".",
+        "omschrijving": 'Zaak naar aanleiding van ingezonden formulier "{form_name}".',
         "toelichting": "Aangemaakt door Open Formulieren",
-        "vertrouwelijkheidaanduiding": options["vertrouwelijkheidaanduiding"],
         # "betalingsindicatie": "nvt",
-        # "selectielijstklasse": "TODO",
-        # "archiefnominatie": "vernietigen",
     }
+    if "vertrouwelijkheidaanduiding" in options:
+        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
 
     zaak = client.create("zaak", data)
     return zaak
@@ -47,11 +46,12 @@ def create_document(name: str, body: dict, options: dict) -> dict:
         "auteur": "openforms",
         "taal": "nld",
         "inhoud": base64_body,
-        "vertrouwelijkheidaanduiding": options["vertrouwelijkheidaanduiding"],
         "status": "definitief",
         "bestandsnaam": f"{today}-{name}.txt",
         "beschrijving": "Ingezonden formulier",
     }
+    if "vertrouwelijkheidaanduiding" in options:
+        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
 
     informatieobject = client.create("enkelvoudiginformatieobject", data)
     return informatieobject
