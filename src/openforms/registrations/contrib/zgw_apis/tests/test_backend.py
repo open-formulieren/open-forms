@@ -1,5 +1,3 @@
-import json
-
 from django.test import TestCase
 
 import requests_mock
@@ -22,22 +20,23 @@ from .factories import ServiceFactory, ZgwConfigFactory
 
 @requests_mock.Mocker()
 class ZGWBackendTests(TestCase):
-    def setUp(self):
-        self.form = FormFactory.create()
-        self.fd = FormDefinitionFactory.create()
-        self.fs = FormStepFactory.create(form=self.form, form_definition=self.fd)
+    @classmethod
+    def setUpTestData(cls):
+        cls.form = FormFactory.create()
+        cls.fd = FormDefinitionFactory.create()
+        cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
 
-        self.zaken_api = ServiceFactory.create(api_root="https://zaken.nl/api/v1/")
-        self.documenten_api = ServiceFactory.create(
+        cls.zaken_api = ServiceFactory.create(api_root="https://zaken.nl/api/v1/")
+        cls.documenten_api = ServiceFactory.create(
             api_root="https://documenten.nl/api/v1/", api_type=APITypes.drc
         )
-        self.catalogus_api = ServiceFactory.create(
+        cls.catalogus_api = ServiceFactory.create(
             api_root="https://catalogus.nl/api/v1/", api_type=APITypes.ztc
         )
-        self.zgw_config = ZgwConfigFactory.create(
-            zrc_service=self.zaken_api,
-            drc_service=self.documenten_api,
-            ztc_service=self.catalogus_api,
+        ZgwConfigFactory.create(
+            zrc_service=cls.zaken_api,
+            drc_service=cls.documenten_api,
+            ztc_service=cls.catalogus_api,
         )
 
     def test_submission_with_zgw_backend(self, m):
@@ -52,51 +51,44 @@ class ZGWBackendTests(TestCase):
         mock_service_oas_get(m, self.documenten_api.api_root, "documenten")
         mock_service_oas_get(m, self.catalogus_api.api_root, "catalogi")
 
-        # FIXME is there an equivalent for `get_operation_url` in zgw_consumers?
-        m.register_uri(
-            "POST",
-            f"{self.zaken_api.api_root}zaken",
+        m.post(
+            "https://zaken.nl/api/v1/zaken",
             status_code=201,
             json={
-                "url": f"{self.zaken_api.api_root}zaken/1",
+                "url": "https://zaken.nl/api/v1/zaken/1",
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
             },
         )
-        m.register_uri(
-            "POST",
-            f"{self.documenten_api.api_root}enkelvoudiginformatieobjecten",
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
             json={
-                "url": f"{self.documenten_api.api_root}enkelvoudiginformatieobjecten/1"
+                "url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1"
             },
         )
-        m.register_uri(
-            "POST",
-            f"{self.zaken_api.api_root}zaakinformatieobjecten",
+        m.post(
+            "https://zaken.nl/api/v1/zaakinformatieobjecten",
             status_code=201,
-            json={"url": f"{self.zaken_api.api_root}zaakinformatieobjecten/1"},
+            json={"url": "https://zaken.nl/api/v1/zaakinformatieobjecten/1"},
         )
 
-        m.register_uri(
-            "GET",
-            f"{self.catalogus_api.api_root}roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
+        m.get(
+            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
             status_code=200,
             json={
                 "count": 1,
                 "next": None,
                 "previous": None,
-                "results": [{"url": f"{self.catalogus_api.api_root}roltypen/1"}],
+                "results": [{"url": "https://catalogus.nl/api/v1/roltypen/1"}],
             },
         )
-        m.register_uri(
-            "POST",
-            f"{self.zaken_api.api_root}rollen",
+        m.post(
+            "https://zaken.nl/api/v1/rollen",
             status_code=201,
-            json={"url": f"{self.zaken_api.api_root}rollen/1"},
+            json={"url": "https://zaken.nl/api/v1/rollen/1"},
         )
-        m.register_uri(
-            "GET",
-            f"{self.catalogus_api.api_root}statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+        m.get(
+            "https://catalogus.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
             status_code=200,
             json={
                 "count": 2,
@@ -104,21 +96,20 @@ class ZGWBackendTests(TestCase):
                 "previous": None,
                 "results": [
                     {
-                        "url": f"{self.catalogus_api.api_root}statustypen/2",
+                        "url": "https://catalogus.nl/api/v1/statustypen/2",
                         "volgnummer": 2,
                     },
                     {
-                        "url": f"{self.catalogus_api.api_root}statustypen/1",
+                        "url": "https://catalogus.nl/api/v1/statustypen/1",
                         "volgnummer": 1,
                     },
                 ],
             },
         )
-        m.register_uri(
-            "POST",
-            f"{self.zaken_api.api_root}statussen",
+        m.post(
+            "https://zaken.nl/api/v1/statussen",
             status_code=201,
-            json={"url": f"{self.zaken_api.api_root}statussen/1"},
+            json={"url": "https://zaken.nl/api/v1/statussen/1"},
         )
 
         data = {
@@ -150,61 +141,59 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(len(m.request_history), 10)
 
         create_zaak = m.request_history[1]
-        create_zaak_body = json.loads(create_zaak.body)
+        create_zaak_body = create_zaak.json()
         self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(create_zaak.url, f"{self.zaken_api.api_root}zaken")
-        self.assertEqual(
-            create_zaak_body["bronorganisatie"], zgw_form_options["organisatie_rsin"]
-        )
+        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+        self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
         self.assertEqual(
             create_zaak_body["verantwoordelijkeOrganisatie"],
-            zgw_form_options["organisatie_rsin"],
+            "000000000",
         )
         self.assertEqual(
             create_zaak_body["vertrouwelijkheidaanduiding"],
-            zgw_form_options["vertrouwelijkheidaanduiding"],
+            "openbaar",
         )
-        self.assertEqual(create_zaak_body["zaaktype"], zgw_form_options["zaaktype"])
+        self.assertEqual(
+            create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+        )
 
         create_eio = m.request_history[3]
-        create_eio_body = json.loads(create_eio.body)
+        create_eio_body = create_eio.json()
         self.assertEqual(create_eio.method, "POST")
         self.assertEqual(
             create_eio.url,
-            f"{self.documenten_api.api_root}enkelvoudiginformatieobjecten",
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
-        self.assertEqual(
-            create_eio_body["bronorganisatie"], zgw_form_options["organisatie_rsin"]
-        )
+        self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
         self.assertEqual(
             create_eio_body["vertrouwelijkheidaanduiding"],
-            zgw_form_options["vertrouwelijkheidaanduiding"],
+            "openbaar",
         )
         self.assertEqual(
             create_eio_body["informatieobjecttype"],
-            zgw_form_options["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
 
         create_zio = m.request_history[4]
-        create_zio_body = json.loads(create_zio.body)
+        create_zio_body = create_zio.json()
         self.assertEqual(create_zio.method, "POST")
         self.assertEqual(
-            create_zio.url, f"{self.zaken_api.api_root}zaakinformatieobjecten"
+            create_zio.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
         )
-        self.assertEqual(create_zio_body["zaak"], f"{self.zaken_api.api_root}zaken/1")
+        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
         self.assertEqual(
             create_zio_body["informatieobject"],
-            f"{self.documenten_api.api_root}enkelvoudiginformatieobjecten/1",
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
         )
 
         create_rol = m.request_history[7]
-        create_rol_body = json.loads(create_rol.body)
+        create_rol_body = create_rol.json()
         self.assertEqual(create_rol.method, "POST")
-        self.assertEqual(create_rol.url, f"{self.zaken_api.api_root}rollen")
-        self.assertEqual(create_zio_body["zaak"], f"{self.zaken_api.api_root}zaken/1")
+        self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
+        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
         self.assertEqual(
             create_rol_body["roltype"],
-            f"{self.catalogus_api.api_root}roltypen/1",
+            "https://catalogus.nl/api/v1/roltypen/1",
         )
         self.assertEqual(
             create_rol_body["betrokkeneIdentificatie"]["voornamen"],
@@ -212,13 +201,11 @@ class ZGWBackendTests(TestCase):
         )
 
         create_status = m.request_history[9]
-        create_status_body = json.loads(create_status.body)
+        create_status_body = create_status.json()
         self.assertEqual(create_status.method, "POST")
-        self.assertEqual(create_status.url, f"{self.zaken_api.api_root}statussen")
-        self.assertEqual(
-            create_status_body["zaak"], f"{self.zaken_api.api_root}zaken/1"
-        )
+        self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
+        self.assertEqual(create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
         self.assertEqual(
             create_status_body["statustype"],
-            f"{self.catalogus_api.api_root}statustypen/1",
+            "https://catalogus.nl/api/v1/statustypen/1",
         )
