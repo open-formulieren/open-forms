@@ -1,4 +1,5 @@
 import factory
+from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_rest.models import ZgwConfig
