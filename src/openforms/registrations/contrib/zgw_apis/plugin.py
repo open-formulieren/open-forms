@@ -4,8 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.registrations.contrib.zgw_rest.models import ZgwConfig
-from openforms.registrations.contrib.zgw_rest.service import (
+from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
+from openforms.registrations.contrib.zgw_apis.service import (
     create_document,
     create_rol,
     create_status,

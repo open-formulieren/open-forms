@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from zgw_consumers.models import Service
 
-from openforms.registrations.contrib.zgw_rest.models import ZgwConfig
+from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 
 
 def create_zaak(options: dict) -> dict:

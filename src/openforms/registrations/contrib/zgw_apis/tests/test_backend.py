@@ -11,7 +11,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
-from openforms.registrations.contrib.zgw_rest.plugin import create_zaak_plugin
+from openforms.registrations.contrib.zgw_apis.plugin import create_zaak_plugin
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
