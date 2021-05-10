@@ -31,6 +31,23 @@ class TestSubmissionAdmin(WebTest):
             },
         )
 
+    def test_displaying_merged_data(self):
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertIn(
+            "<ol>"
+            "<li>adres: Voorburg</li>"
+            "<li>voornaam: shea</li>"
+            "<li>familienaam: meyers</li>"
+            "</ol>",
+            str(response.content),
+        )
+
     def test_export_csv_successfully_exports_csv_file(self):
         response = self.app.get(
             reverse("admin:submissions_submission_changelist"), user=self.user
