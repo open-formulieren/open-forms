@@ -17,16 +17,16 @@
         <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
         <StUF:functie>genereerDocumentidentificatie</StUF:functie>
     </ZDS:stuurgegevens>
-    <ZDS:parameters>
-        <StUF:extraElementen>
-            <StUF:extraElement StUF:exact="true"
-                               StUF:indOnvolledigeDatum="J"
-                               StUF:noValue="nietOndersteund" naam="String">String
-            </StUF:extraElement>
-            <StUF:extraElement StUF:exact="true"
-                               StUF:indOnvolledigeDatum="M"
-                               StUF:noValue="nietGeautoriseerd" naam="String">String
-            </StUF:extraElement>
-        </StUF:extraElementen>
-    </ZDS:parameters>
+{#    <ZDS:parameters>#}
+{#        <StUF:extraElementen>#}
+{#            <StUF:extraElement StUF:exact="true"#}
+{#                               StUF:indOnvolledigeDatum="J"#}
+{#                               StUF:noValue="nietOndersteund" naam="String">String#}
+{#            </StUF:extraElement>#}
+{#            <StUF:extraElement StUF:exact="true"#}
+{#                               StUF:indOnvolledigeDatum="M"#}
+{#                               StUF:noValue="nietGeautoriseerd" naam="String">String#}
+{#            </StUF:extraElement>#}
+{#        </StUF:extraElementen>#}
+{#    </ZDS:parameters>#}
 </ZDS:genereerDocumentIdentificatie_Di02>

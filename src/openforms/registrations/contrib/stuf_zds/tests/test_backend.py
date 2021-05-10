@@ -83,25 +83,10 @@ class StufTestBase(TestCase):
     #         self.fail(f"cannot find exactly 1 XML element with xpath {xpath}", )
     #     return elements[0]
 
-    def assertSoapXMLCommon(self, xml_doc, service: SoapService = None):
+    def assertSoapXMLCommon(self, xml_doc):
         self.assertIsNotNone(xml_doc)
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Header")
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Body")
-
-        if service:
-            self.assertXPathEqualDict(
-                xml_doc,
-                {
-                    "//zds:stuurgegevens/stuf:berichtcode": "Di02",
-                    "//zds:stuurgegevens/stuf:functie": "genereerZaakidentificatie",
-                    "//zds:stuurgegevens/stuf:zender/stuf:organisatie": service.zender_organisatie,
-                    "//zds:stuurgegevens/stuf:zender/stuf:applicatie": service.zender_applicatie,
-                    "//zds:stuurgegevens/stuf:ontvanger/stuf:organisatie": service.ontvanger_organisatie,
-                    "//zds:stuurgegevens/stuf:ontvanger/stuf:applicatie": service.ontvanger_applicatie,
-                    # TODO time
-                    # "//zds:stuurgegevens/stuf:tijdstipBericht": 'xxxx'
-                },
-            )
 
 
 @requests_mock.Mocker()
@@ -111,7 +96,12 @@ class StufZDSClientTests(StufTestBase):
     """
 
     def setUp(self):
-        self.service = SoapServiceFactory()
+        self.service = SoapServiceFactory(
+            zender_organisatie="ZenOrg",
+            zender_applicatie="ZenApp",
+            ontvanger_organisatie="OntOrg",
+            ontvanger_applicatie="OntApp",
+        )
         self.client = StufZDSClient(self.service)
 
     def test_create_zaak_identificatie(self, m):
@@ -131,10 +121,15 @@ class StufZDSClientTests(StufTestBase):
         self.assertEqual(identificatie, "foo")
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zds:genereerZaakIdentificatie_Di02")
         self.assertXPathEqualDict(
             xml_doc,
             {
+                "//zds:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zds:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zds:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zds:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zds:stuurgegevens/stuf:berichtcode": "Di02",
                 "//zds:stuurgegevens/stuf:functie": "genereerZaakidentificatie",
             },
@@ -153,8 +148,20 @@ class StufZDSClientTests(StufTestBase):
         self.client.create_zaak(options, "foo")
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml, self.service)
-        # self.assertXPathEquals(xml, "//")
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zds:creeerZaak_ZakLk01")
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                # TODO test more fields
+            },
+        )
 
     def test_create_document_identificatie(self, m):
         m.post(
@@ -170,7 +177,19 @@ class StufZDSClientTests(StufTestBase):
         self.assertEqual(identificatie, "bar")
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zds:genereerDocumentIdentificatie_Di02")
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zds:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zds:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zds:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zds:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zds:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zds:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
 
     def test_create_zaak_document(self, m):
         m.post(
@@ -188,7 +207,20 @@ class StufZDSClientTests(StufTestBase):
         )
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zds:voegZaakdocumentToe_EdcLk01")
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                # TODO test more fields
+            },
+        )
 
 
 @requests_mock.Mocker()
@@ -200,7 +232,7 @@ class StufZDSPluginTests(StufTestBase):
     def setUp(self):
         self.service = SoapServiceFactory()
         config = StufZDSConfig.get_solo()
-        config.soap_service = self.service
+        config.service = self.service
         config.save()
 
         self.form = FormFactory.create()
@@ -258,13 +290,13 @@ class StufZDSPluginTests(StufTestBase):
         )
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
 
         xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
 
         xml_doc = xml_from_request_history(m, 2)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
 
         xml_doc = xml_from_request_history(m, 3)
-        self.assertSoapXMLCommon(xml, self.service)
+        self.assertSoapXMLCommon(xml_doc)
