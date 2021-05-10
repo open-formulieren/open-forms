@@ -2,6 +2,7 @@ from django.test import TestCase
 
 import requests_mock
 from zgw_consumers.constants import APITypes
+from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.forms.tests.factories import (
@@ -54,22 +55,30 @@ class ZGWBackendTests(TestCase):
         m.post(
             "https://zaken.nl/api/v1/zaken",
             status_code=201,
-            json={
-                "url": "https://zaken.nl/api/v1/zaken/1",
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            },
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            ),
         )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
-            json={
-                "url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1"
-            },
+            json=generate_oas_component(
+                "documenten",
+                "schemas/EnkelvoudigInformatieObject",
+                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            ),
         )
         m.post(
             "https://zaken.nl/api/v1/zaakinformatieobjecten",
             status_code=201,
-            json={"url": "https://zaken.nl/api/v1/zaakinformatieobjecten/1"},
+            json=generate_oas_component(
+                "zaken",
+                "schemas/ZaakInformatieObject",
+                url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+            ),
         )
 
         m.get(
@@ -79,13 +88,21 @@ class ZGWBackendTests(TestCase):
                 "count": 1,
                 "next": None,
                 "previous": None,
-                "results": [{"url": "https://catalogus.nl/api/v1/roltypen/1"}],
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/RolType",
+                        url="https://catalogus.nl/api/v1/roltypen/1",
+                    )
+                ],
             },
         )
         m.post(
             "https://zaken.nl/api/v1/rollen",
             status_code=201,
-            json={"url": "https://zaken.nl/api/v1/rollen/1"},
+            json=generate_oas_component(
+                "zaken", "schemas/Rol", url="https://zaken.nl/api/v1/rollen/1"
+            ),
         )
         m.get(
             "https://catalogus.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
@@ -95,21 +112,27 @@ class ZGWBackendTests(TestCase):
                 "next": None,
                 "previous": None,
                 "results": [
-                    {
-                        "url": "https://catalogus.nl/api/v1/statustypen/2",
-                        "volgnummer": 2,
-                    },
-                    {
-                        "url": "https://catalogus.nl/api/v1/statustypen/1",
-                        "volgnummer": 1,
-                    },
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/2",
+                        volgnummer=2,
+                    ),
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/1",
+                        volgnummer=1,
+                    ),
                 ],
             },
         )
         m.post(
             "https://zaken.nl/api/v1/statussen",
             status_code=201,
-            json={"url": "https://zaken.nl/api/v1/statussen/1"},
+            json=generate_oas_component(
+                "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
+            ),
         )
 
         data = {
@@ -123,18 +146,14 @@ class ZGWBackendTests(TestCase):
 
         result = create_zaak_plugin(submission, zgw_form_options)
         self.assertEqual(
-            result,
-            {
-                "document": {
-                    "url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1"
-                },
-                "rol": {"url": "https://zaken.nl/api/v1/rollen/1"},
-                "status": {"url": "https://zaken.nl/api/v1/statussen/1"},
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                },
-            },
+            result["document"]["url"],
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
+        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
+        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
+        self.assertEqual(
+            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
 
         # 10 requests in total, 3 of which are GETs on the OAS and 2 are searches
