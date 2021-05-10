@@ -46,9 +46,7 @@ class ZaakOptionsSerializer(serializers.Serializer):
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )
 def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
-    data = {}
-    for step in submission.steps:
-        data.update(step.data)
+    data = submission.get_merged_data()
 
     zgw = ZgwConfig.get_solo()
     zgw.apply_defaults_to(options)
