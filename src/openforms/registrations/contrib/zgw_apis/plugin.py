@@ -15,6 +15,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
 )
 from openforms.registrations.registry import register
 from openforms.submissions.models import Submission
+from openforms.utils.validators import validate_rsin
 
 
 class ZaakOptionsSerializer(serializers.Serializer):
@@ -25,7 +26,9 @@ class ZaakOptionsSerializer(serializers.Serializer):
         required=False, help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
     )
     organisatie_rsin = serializers.CharField(
-        required=False, help_text=_("RSIN of organization, which creates the ZAAK")
+        required=False,
+        validators=[validate_rsin],
+        help_text=_("RSIN of organization, which creates the ZAAK"),
     )
     vertrouwelijkheidaanduiding = serializers.ChoiceField(
         required=False,

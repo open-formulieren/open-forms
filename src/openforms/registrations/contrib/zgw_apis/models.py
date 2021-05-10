@@ -1,8 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
+
+from openforms.utils.validators import validate_rsin
 
 
 class ZgwConfig(SingletonModel):
@@ -33,14 +36,19 @@ class ZgwConfig(SingletonModel):
     )
     # Overridable defaults
     zaaktype = models.URLField(
-        max_length=1000, help_text=_("Default URL of the ZAAKTYPE in Catalogi API")
+        max_length=1000,
+        blank=True,
+        help_text=_("Default URL of the ZAAKTYPE in Catalogi API"),
     )
     informatieobjecttype = models.URLField(
         max_length=1000,
+        blank=True,
         help_text=_("Default URL of the INFORMATIEOBJECTTYPE in Catalogi API"),
     )
     organisatie_rsin = models.CharField(
         max_length=9,
+        blank=True,
+        validators=[validate_rsin],
         help_text=_("Default RSIN of organization, which creates the ZAAK"),
     )
 
@@ -53,5 +61,20 @@ class ZgwConfig(SingletonModel):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
 
     def clean(self):
-        # TODO verify zaaktype and informatieobjecttype are part of the configured services
-        pass
+        super().clean()
+
+        if self.zrc_service and self.zaaktype:
+            if not self.zaaktype.startswith(self.zrc_service.api_root):
+                raise ValidationError(
+                    {"zaaktype": _("Zaaktype is not part of ZRC service's API root")}
+                )
+
+        if self.ztc_service and self.informatieobjecttype:
+            if not self.informatieobjecttype.startswith(self.ztc_service.api_root):
+                raise ValidationError(
+                    {
+                        "informatieobjecttype": _(
+                            "Informatieobjecttype is not part of ZTC service's API root"
+                        )
+                    }
+                )
