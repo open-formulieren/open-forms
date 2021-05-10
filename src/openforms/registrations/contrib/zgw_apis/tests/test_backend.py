@@ -27,17 +27,10 @@ class ZGWBackendTests(TestCase):
         cls.fd = FormDefinitionFactory.create()
         cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
 
-        cls.zaken_api = ServiceFactory.create(api_root="https://zaken.nl/api/v1/")
-        cls.documenten_api = ServiceFactory.create(
-            api_root="https://documenten.nl/api/v1/", api_type=APITypes.drc
-        )
-        cls.catalogus_api = ServiceFactory.create(
-            api_root="https://catalogus.nl/api/v1/", api_type=APITypes.ztc
-        )
         ZgwConfigFactory.create(
-            zrc_service=cls.zaken_api,
-            drc_service=cls.documenten_api,
-            ztc_service=cls.catalogus_api,
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogus.nl/api/v1/",
         )
 
     def test_submission_with_zgw_backend(self, m):
@@ -48,9 +41,9 @@ class ZGWBackendTests(TestCase):
             vertrouwelijkheidaanduiding="openbaar",
         )
 
-        mock_service_oas_get(m, self.zaken_api.api_root, "zaken")
-        mock_service_oas_get(m, self.documenten_api.api_root, "documenten")
-        mock_service_oas_get(m, self.catalogus_api.api_root, "catalogi")
+        mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+        mock_service_oas_get(m, "https://catalogus.nl/api/v1/", "catalogi")
 
         m.post(
             "https://zaken.nl/api/v1/zaken",
