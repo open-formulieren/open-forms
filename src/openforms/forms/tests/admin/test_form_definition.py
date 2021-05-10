@@ -23,9 +23,7 @@ class TestFormDefinitionAdmin(WebTest):
         )
         FormStepFactory.create(form=self.form, form_definition=self.form_definition)
         self.user = SuperUserFactory.create()
-        assert self.client.login(
-            request=HttpRequest(), username=self.user.username, password="secret"
-        )
+        self.client.force_login(self.user)
 
     def test_used_in_forms_shown_in_list_response(self):
 
