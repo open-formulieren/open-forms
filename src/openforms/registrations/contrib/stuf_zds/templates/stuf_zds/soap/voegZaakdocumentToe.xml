@@ -31,7 +31,7 @@
 {#        <ZKN:formaat>formaat</ZKN:formaat>#}
 {#        <ZKN:taal>taal</ZKN:taal>#}
         <ZKN:vertrouwelijkAanduiding>VERTROUWELIJK</ZKN:vertrouwelijkAanduiding>
-        <ZKN:auteur>auteur</ZKN:auteur>
+{#        <ZKN:auteur>auteur</ZKN:auteur>#}
         <ZKN:inhoud StUF:bestandsnaam="{{ file_name }}">{{ file_content }}</ZKN:inhoud>
         <StUF:tijdvakGeldigheid>
             <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>

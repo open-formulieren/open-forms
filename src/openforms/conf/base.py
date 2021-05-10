@@ -119,6 +119,7 @@ INSTALLED_APPS = [
     "solo",
     "reversion",
     "tinymce",
+    "privates",
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
@@ -211,6 +212,11 @@ STATICFILES_FINDERS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 MEDIA_URL = "/media/"
+
+PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, "private_media")
+
+PRIVATE_MEDIA_URL = "/private_media/"
+
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 

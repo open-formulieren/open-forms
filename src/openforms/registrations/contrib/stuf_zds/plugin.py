@@ -28,7 +28,7 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
 
     options["omschrijving"] = submission.form.name
 
-    client = config.soap_service.build_client()
+    client = config.service.build_client()
 
     zaak_id = client.create_zaak_identificatie()
     client.create_zaak(options, zaak_id)
