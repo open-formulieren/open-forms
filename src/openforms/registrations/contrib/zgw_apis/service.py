@@ -1,4 +1,5 @@
 import json
+import logging
 from base64 import b64encode
 from datetime import date
 from typing import Optional
@@ -9,6 +10,8 @@ from django.utils import timezone
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
+
+logger = logging.getLogger(__name__)
 
 
 def create_zaak(options: dict) -> dict:
@@ -74,10 +77,10 @@ def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
     }
     rol_typen = ztc_client.list("roltype", query_params)
     if not rol_typen:
-        # logger.info(
-        #     "Roltype specified, but no matching roltype found in the zaaktype.",
-        #     extra={"query_params": query_params},
-        # )
+        logger.info(
+            "Roltype specified, but no matching roltype found in the zaaktype.",
+            extra={"query_params": query_params},
+        )
         return None
 
     zrc_client = config.zrc_service.build_client()
