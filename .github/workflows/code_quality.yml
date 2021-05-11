@@ -24,7 +24,9 @@ jobs:
         with:
           python-version: '3.7'
       - name: Install OS dependencies
-        run: sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
       - uses: isort/isort-action@v0.1.0
         with:
           requirementsFiles: requirements/ci.txt
@@ -41,7 +43,9 @@ jobs:
         with:
           python-version: '3.7'
       - name: Install OS dependencies
-        run: sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
       - name: Install dependencies
         run: |
           pip install -r requirements/ci.txt
