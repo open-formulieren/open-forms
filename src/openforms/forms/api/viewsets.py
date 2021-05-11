@@ -21,10 +21,10 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework_nested.viewsets import NestedViewSetMixin
 from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
+from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Form, FormDefinition, FormStep
 from .permissions import IsStaffOrReadOnly
