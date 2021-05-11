@@ -1,90 +1,108 @@
-==========
-Open Forms
-==========
+================
+Open Formulieren
+================
 
 :Version: 0.1.0
 :Source: https://github.com/maykinmedia/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
-:PythonVersion: 3.7
 
-|build-status| |docs| |coverage| |black| |docker|
+|docs| |docker|
 
 Snel en eenvoudig slimme formulieren bouwen en publiceren. (`English version`_)
 
-Ontwikkeld door `Maykin Media B.V.`_.
+Ontwikkeld door `Maykin Media B.V.`_ in opdracht van Dimpact.
 
 
 Introductie
 ===========
 
-Met Open Forms kunnen beheerders snel slimme formulieren realiseren die 
-ontsloten worden middels een API. Met het bijbehorende webcomponent kan het 
-gepersonaliseerde formulier opgehaald en getoond worden aan de gebruiker, in de 
-stijl van de gemeente. Hierbij zijn velden vooringevuld indien mogelijk en zijn
-er keuzes beschikbaar afhankelijk van de, middels DigiD ingelogde, gebruiker.
+Met Open Formulieren kunnen beheerders snel slimme formulieren realiseren die 
+ontsloten worden middels een API. Met de JavaScript `SDK`_ kunnen 
+gepersonaliseerde formulieren opgehaald en getoond worden aan de gebruiker, in 
+de stijl van de gemeente. Hierbij zijn velden vooringevuld indien mogelijk en 
+zijn er keuzes beschikbaar afhankelijk van de gebruiker, mits deze is 
+geauthenticeerd.
 
-Open Forms is ontwikkeld volgens de `Common Ground`_ principes, specifiek voor
-gemeenten en met focus op gebruiksgemak voor zowel burger als beheerder.
+Door gebruik te maken van een plugin-architectuur kan Open Formulieren flexibel
+worden ingericht met submission backends (bijv. `Open Zaak`_), authenticatie 
+middelen, betaalproviders, kalender applicaties en pre-fill services.
 
-Verstuurde formulieren kunnen direct als document worden toegevoegd aan een 
-Zaak in bijv. `Open Zaak`_, of als input dienen voor een BPMN proces in 
-`Camunda`_ of `Alfresco Process Services`_.
+Open Formulieren is ontwikkeld volgens de `Common Ground`_ principes, specifiek 
+voor gemeenten en met focus op gebruiksgemak voor zowel burger als beheerder.
 
-Open Forms ondersteund o.a.:
-
-* Eenvoudig bouwen van formulieren
-* Formulieren opmaken in eigen huisstijl
-* Inloggen met DigiD
-* Slimme componenten tonen familieleden uit de `BRP`_ of panden in eigendom uit
-  de BAG
-* Vooringevulde velden indien deze gegevens reeds bekend zijn
-* Antwoorden opslaan in een database, doorsturen naar een proces aansturen 
-  in `Camunda`_ of als document bij een `Zaak`_ bewaren
-* Formulieren koppelen aan producten
-* Kosten berekenen en betaalmogelijkheden
-* Moderne REST API om formulieren te ontsluiten en op te sturen
-
-
-.. _`Camunda`: https://camunda.com/
-.. _`Alfresco Process Services`: https://www.alfresco.com/bpm-software
+.. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
-.. _`BRP`: https://open-personen.readthedocs.io/
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
-.. _`Zaak`: https://open-zaak.readthedocs.io/
+
+
+Component
+=========
+
+|build-status| |coverage| |code-quality| |black| |python-versions|
+
+Dit component omvat **Open Formulieren Beheer** en de **Open Formulieren API**.
+
+API specificatie
+----------------
+
+==============  ==============  =============================
+Versie          Release date    API specificatie
+==============  ==============  =============================
+latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`_,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`_
+==============  ==============  =============================
+
+Vorige versies worden nog 6 maanden ondersteund nadat de volgende versie is 
+uitgebracht.
+
+Zie: `Alle versies en wijzigingen <https://github.com/open-formulieren/open-forms/blob/master/CHANGELOG.rst>`_
 
 
 Links
 =====
 
-* `Issues <https://github.com/maykinmedia/open-forms/issues>`_
-* `Code <https://github.com/maykinmedia/open-forms>`_
-* `Community <https://commonground.nl/groups/view/54477660/open-forms>`_
 * `Documentatie <https://open-forms.readthedocs.io/>`_
+* `Community <https://commonground.nl/groups/view/0c79b387-4567-4522-bc35-7d3583978c9f/open-forms>`_
+* `Docker image <https://hub.docker.com/r/openformulieren/open-forms>`_
+* `Issues <https://github.com/open-formulieren/open-forms/issues>`_
+* `Code <https://github.com/open-formulieren/open-forms>`_
+
 
 
 Licentie
 ========
 
-Copyright © Maykin Media B.V., 2020
+Copyright © Maykin Media B.V., 2021
+
+NO PUBLIC LICENSE AVAILABLE YET.
 
 .. _`English version`: README.rst
-
 .. _`Maykin Media B.V.`: https://www.maykinmedia.nl
 
-.. |build-status| image:: https://travis-ci.org/maykinmedia/open-forms.svg?branch=master
+
+.. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg
     :alt: Build status
-    :target: https://travis-ci.org/maykinmedia/open-forms
+    :target: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml
+
+.. |code-quality| image:: https://github.com/open-formulieren/open-forms/actions//workflows/code_quality.yml/badge.svg
+    :alt: Code quality checks
+    :target: https://github.com/open-formulieren/open-forms/actions//workflows/code_quality.yml
 
 .. |docs| image:: https://readthedocs.org/projects/open-forms/badge/?version=latest
     :target: https://open-forms.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+    :alt: Documentation status
 
-.. |coverage| image:: https://codecov.io/github/maykinmedia/open-forms/branch/master/graphs/badge.svg?branch=master
+.. |coverage| image:: https://codecov.io/github/open-formulieren/open-forms/branch/master/graphs/badge.svg?branch=master
     :alt: Coverage
-    :target: https://codecov.io/gh/maykinmedia/open-forms
+    :target: https://codecov.io/gh/open-formulieren/open-forms
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :alt: Code style
     :target: https://github.com/psf/black
 
-.. |docker| image:: https://images.microbadger.com/badges/image/maykinmedia/open-forms.svg
-    :target: https://microbadger.com/images/maykinmedia/open-forms
+.. |docker| image:: https://images.microbadger.com/badges/image/open-formulieren/open-forms.svg
+    :alt: Docker image
+    :target: https://hub.docker.com/r/open-formulieren/open-forms
+
+.. |python-versions| image:: https://img.shields.io/badge/python-3.8-blue.svg
+    :alt: Supported Python versions
