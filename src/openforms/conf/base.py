@@ -559,4 +559,4 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
 
 # URLs that will not be stripped during confirmation email rendering
 # TODO configurable with envvar or django solo?
-EMAIL_TEMPLATE_URL_WHITELIST = ["localhost"] + ALLOWED_HOSTS
+EMAIL_TEMPLATE_URL_WHITELIST = [] + ALLOWED_HOSTS

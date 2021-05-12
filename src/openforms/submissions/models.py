@@ -275,7 +275,7 @@ class ConfirmationEmailTemplate(models.Model):
     def render(self, context):
         def replace_urls(match):
             parsed = urlparse(match.group())
-            if parsed.netloc in settings.EMAIL_TEMPLATE_URL_WHITELIST:
+            if parsed.netloc in settings.EMAIL_TEMPLATE_URL_ALLOWLIST:
                 return match.group()
             return ""
 
