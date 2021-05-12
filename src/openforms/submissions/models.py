@@ -162,7 +162,9 @@ class Submission(models.Model):
             for key, value in step.data.items():
                 if key in merged_data:
                     logger.warning(
-                        f"{key} was previously in merged_data and will be overwritten by {value}"
+                        "%s was previously in merged_data and will be overwritten by %s",
+                        key,
+                        value,
                     )
                 merged_data[key] = value
 

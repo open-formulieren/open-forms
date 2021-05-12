@@ -1,6 +1,5 @@
-from django import forms
 from django.contrib import admin, messages
-from django.utils.html import format_html
+from django.utils.html import format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from .exports import export_submissions
@@ -29,19 +28,18 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    fields = ["form", "completed_on", "display_merged_data"]
-    readonly_fields = ["display_merged_data"]
+    readonly_fields = ["created_on", "display_merged_data"]
     actions = ["export_csv", "export_xlsx"]
 
     def display_merged_data(self, obj):
         merged_data = obj.get_merged_data()
-        html = "<ol>"
-        for key, value in merged_data.items():
-            html += f"<li>{key}: {value}</li>"
-        html += "</ol>"
-        return format_html(html)
+        return format_html_join(
+            "\n",
+            "<li>{}: {}</li>",
+            ((key, value) for key, value in merged_data.items()),
+        )
 
-    display_merged_data.short_description = "Merged Data"
+    display_merged_data.short_description = _("Submitted data")
 
     def _export(self, request, queryset, file_type):
         if queryset.order_by().values("form").distinct().count() > 1:

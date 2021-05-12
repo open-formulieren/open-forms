@@ -39,12 +39,8 @@ class TestSubmissionAdmin(WebTest):
             user=self.user,
         )
 
-        self.assertIn(
-            "<ol>"
-            "<li>adres: Voorburg</li>"
-            "<li>voornaam: shea</li>"
-            "<li>familienaam: meyers</li>"
-            "</ol>",
+        self.assertInHTML(
+            "<li>adres: Voorburg</li>\\n<li>voornaam: shea</li>\\n<li>familienaam: meyers</li>",
             str(response.content),
         )
 
