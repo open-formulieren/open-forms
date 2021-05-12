@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from django.utils.html import format_html_join
+from django.utils.html import format_html_join, format_html
 from django.utils.translation import gettext_lazy as _
 
 from .exports import export_submissions
@@ -35,11 +35,12 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def display_merged_data(self, obj):
         merged_data = obj.get_merged_data()
-        return format_html_join(
+        ret = format_html_join(
             "\n",
             "<li>{}: {}</li>",
             ((key, value) for key, value in merged_data.items()),
         )
+        return format_html("<ul>{}</ul>", ret)
 
     display_merged_data.short_description = _("Submitted data")
 

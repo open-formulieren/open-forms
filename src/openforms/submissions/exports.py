@@ -1,6 +1,7 @@
 from django.http import FileResponse
 
 import tablib
+from django.utils.timezone import make_naive
 
 
 def export_submissions(queryset, file_type):
@@ -11,7 +12,7 @@ def export_submissions(queryset, file_type):
     data = tablib.Dataset(headers=["Formuliernaam", "Inzendingdatum"] + headers)
     for submission in queryset:
         inzending_datum = (
-            submission.completed_on.replace(tzinfo=None)
+            make_naive(submission.completed_on)
             if submission.completed_on
             else None
         )
