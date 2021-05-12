@@ -1,11 +1,12 @@
 from django.contrib import admin, messages
 from django.contrib.admin.actions import delete_selected as _delete_selected
+from django.db.models import Prefetch
 from django.urls import reverse
 from django.utils.html import escape, format_html
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms import FormDefinitionForm
-from ..models import Form, FormDefinition
+from ..models import FormDefinition, FormStep
 
 
 def delete_selected(modeladmin, request, queryset):
@@ -32,6 +33,15 @@ class FormDefinitionAdmin(admin.ModelAdmin):
     list_display = ("name", "used_in_forms")
     actions = ["overridden_delete_selected", "make_copies"]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request=request)
+        used_in_forms = Prefetch(
+            "formstep_set",
+            queryset=FormStep.objects.select_related("form").distinct("form"),
+            to_attr="used_in_steps",
+        )
+        return qs.prefetch_related(used_in_forms)
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         (old_func, name, short_description) = actions["delete_selected"]
@@ -45,7 +55,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
     make_copies.short_description = _("Kopieer geselecteerde %(verbose_name_plural)s.")
 
     def used_in_forms(self, obj) -> str:
-        forms = Form.objects.filter(formstep__form_definition=obj)
+        forms = [step.form for step in obj.used_in_steps]
         html = "<ul>"
         for form in forms:
             form_url = reverse(
