@@ -10,11 +10,11 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.registrations.submissions import register_submission
+from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Submission, SubmissionStep
 from ..utils import add_submmission_to_session, remove_submission_from_session

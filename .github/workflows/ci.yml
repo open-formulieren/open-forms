@@ -3,6 +3,8 @@ name: Run CI
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
+    paths-ignore:
+      - 'src/openapi.yaml'
     branches:
       - master
     tags:
@@ -68,12 +70,114 @@ jobs:
       # - name: Publish coverage report
       #   uses: codecov/codecov-action@v1
 
-  docker:
+      - name: Generate OAS
+        run: |
+          python src/manage.py spectacular > openapi.yaml
+      - name: Store OAS artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: open-forms-oas
+          path: openapi.yaml
+          retention-days: 1
+
+  oas-lint:
     needs: tests
+    name:  Validate OAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download generated OAS
+        uses: actions/download-artifact@v2
+        with:
+          name: open-forms-oas
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: Install spectral
+        run: npm install -g @stoplight/spectral
+      - name: Run OAS linter
+        run: spectral lint ./openapi.yaml
+
+  oas-postman:
+    needs: tests
+    name: Generate Postman collection from OAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download generated OAS
+        uses: actions/download-artifact@v2
+        with:
+          name: open-forms-oas
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: Install dependencies
+        run: npm install -g openapi-to-postmanv2
+      - name: Create tests folder
+        run: mkdir -p ./tests/postman
+      - name: Generate Postman collection
+        run: openapi2postmanv2 -s ./openapi.yaml -o ./tests/postman/collection.json --pretty
+
+  oas-generate-sdks:
+    needs: tests
+    name: Generate SDKs from OAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download generated OAS
+        uses: actions/download-artifact@v2
+        with:
+          name: open-forms-oas
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: Install dependencies
+        run: npm install -g @openapitools/openapi-generator-cli
+      - name: Validate schema
+        run: openapi-generator-cli validate -i ./openapi.yaml
+      - name: Generate Java client
+        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
+          -o ./sdks/java -g java --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
+      - name: Generate .NET Core client
+        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
+          -o ./sdks/netcore -g csharp-netcore --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
+      - name: Generate .NET Full Framework client
+        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
+          -o ./sdks/net -g csharp --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
+      - name: Generate Python client
+        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
+          -o ./sdks/python -g python --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
+
+  update-oas:
+    if: github.event_name == 'push'  # exclude PRs
+    needs:
+      - oas-lint
+      - oas-postman
+      - oas-generate-sdks
+    name: Update OAS in repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download generated OAS
+        uses: actions/download-artifact@v2
+        with:
+          name: open-forms-oas
+          path: src/openapi.yaml
+      - name: Commit OAS changes
+        continue-on-error: true
+        run: |
+          git config --global user.name 'Github actions'
+          git config --global user.email 'support@maykinmedia.com'
+          git add src/openapi.yaml
+          git commit -m ":package: Updated OAS."
+          git push
+
+  docker:
+    needs:
+      - update-oas
+      - tests
 
     name: Build (and push) Docker image
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
 

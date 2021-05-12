@@ -1,0 +1,1158 @@
+openapi: 3.0.3
+info:
+  title: Open Forms API
+  version: 1.0.0-alpha
+  description: |2
+
+    Open Forms provides an API to manage multi-page or multi-step forms.
+
+    It supports listing and retrieving forms, which are made up of form steps. Each form
+    step has a form definition driven by [FormIO.js](https://github.com/formio/formio.js/)
+    definitions.
+
+    Submissions of forms are supported, where each form step can be submitted individually.
+    Complete submissions are sent to the configured backend, which is a pluggable system
+    to hook into [Open Zaak](https://openzaak.org), [Camunda](https://camunda.com/) or
+    other systems.
+
+    Open Forms fits in the [Common Ground](https://commonground.nl) vision and architecture,
+    and it plays nice with other available components.
+  contact:
+    url: https://github.com/maykinmedia/open-forms
+    email: support@maykinmedia.nl
+  license:
+    name: UNLICENSED
+paths:
+  /api/v1/form-definitions:
+    get:
+      operationId: form_definitions_list
+      description: ''
+      summary: List form step definitions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFormDefinitionList'
+          description: ''
+  /api/v1/form-definitions/{uuid}:
+    get:
+      operationId: form_definitions_retrieve
+      description: ''
+      summary: Retrieve form step definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormDefinition'
+          description: ''
+  /api/v1/form-definitions/{uuid}/configuration:
+    get:
+      operationId: form_definitions_configuration_retrieve
+      description: |-
+        Return the raw FormIO.js configuration definition.
+
+        This excludes all the meta-data and just returns the JSON schema blob. In
+        theory, this can be fed directly to a FormIO.js renderer, but note that there
+        may be custom field types in play.
+      summary: Retrieve form definition JSON schema
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/forms:
+    get:
+      operationId: forms_list
+      description: List the active forms, including the pointers to the form steps.
+        Form steps are included in order as they should appear.
+      summary: List forms
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Form'
+          description: ''
+    post:
+      operationId: forms_create
+      description: |-
+        Manage forms.
+
+        Forms are collections of form steps, where each form step points to a formio.js
+        form definition. Multiple definitions are combined in logical steps to build a
+        multi-step/page form for end-users to fill out. Form definitions can be (and are)
+        re-used among different forms.
+      summary: Create form
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Form'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Form'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
+  /api/v1/forms-import:
+    post:
+      operationId: forms_import_create
+      description: |-
+        Import a Form by uploading a .zip file containing a Form, FormDefinitions
+        and FormSteps
+      summary: Import form
+      tags:
+      - forms
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/FormImport'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: No response body
+          description: ''
+  /api/v1/forms/{form_uuid}/steps:
+    get:
+      operationId: forms_steps_list
+      description: ''
+      summary: List form steps
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormStep'
+          description: ''
+    post:
+      operationId: forms_steps_create
+      description: ''
+      summary: Create a form step
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStep'
+          description: ''
+  /api/v1/forms/{form_uuid}/steps/{uuid}:
+    get:
+      operationId: forms_steps_retrieve
+      description: ''
+      summary: Retrieve form step details
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStep'
+          description: ''
+    put:
+      operationId: forms_steps_update
+      description: ''
+      summary: Update all details of a form step
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormStep'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStep'
+          description: ''
+    patch:
+      operationId: forms_steps_partial_update
+      description: ''
+      summary: Update some details of a form step
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFormStep'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFormStep'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFormStep'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStep'
+          description: ''
+    delete:
+      operationId: forms_steps_destroy
+      description: ''
+      summary: Delete a form step
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/forms/{uuid}:
+    get:
+      operationId: forms_retrieve
+      description: |-
+        Manage forms.
+
+        Forms are collections of form steps, where each form step points to a formio.js
+        form definition. Multiple definitions are combined in logical steps to build a
+        multi-step/page form for end-users to fill out. Form definitions can be (and are)
+        re-used among different forms.
+      summary: Retrieve form details
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
+    put:
+      operationId: forms_update
+      description: |-
+        Manage forms.
+
+        Forms are collections of form steps, where each form step points to a formio.js
+        form definition. Multiple definitions are combined in logical steps to build a
+        multi-step/page form for end-users to fill out. Form definitions can be (and are)
+        re-used among different forms.
+      summary: Update all details of a form
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Form'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Form'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
+    patch:
+      operationId: forms_partial_update
+      description: |-
+        Manage forms.
+
+        Forms are collections of form steps, where each form step points to a formio.js
+        form definition. Multiple definitions are combined in logical steps to build a
+        multi-step/page form for end-users to fill out. Form definitions can be (and are)
+        re-used among different forms.
+      summary: Update given details of a form
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedForm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedForm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedForm'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
+    delete:
+      operationId: forms_destroy
+      description: Destroying a form leads to a soft-delete to protect related submissions.
+        These deleted forms are no longer visible in the API endpoints.
+      summary: (Soft) delete a form
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/forms/{uuid}/copy:
+    post:
+      operationId: forms_copy_create
+      description: |-
+        Create a copy of a form.
+
+        Copying a form copies the meta-data of the form and the steps included.
+        Referenced form definitions inside the form steps are re-used instead of
+        new copies being created.
+      summary: Copy form
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL of the created resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
+  /api/v1/forms/{uuid}/export:
+    post:
+      operationId: forms_export_create
+      description: |-
+        Export a form with the related steps and form definitions as a ZIP-file.
+
+        The exported ZIP-file can be used to import complete forms.
+      summary: Export form
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/v1/submissions:
+    get:
+      operationId: submissions_list
+      description: Active submissions are submissions whose ID is in the user session.
+        This endpoint returns user-bound submissions. Note that you get different
+        results on different results because of the differing sessions.
+      summary: List active submissions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubmissionList'
+          description: ''
+    post:
+      operationId: submissions_create
+      description: Start a submission for a particular form. The submission is added
+        to the user session.
+      summary: Start a submission
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submission'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Submission'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Submission'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+          description: ''
+  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}:
+    get:
+      operationId: submissions_steps_retrieve
+      description: The details of a particular submission step always return the related
+        form step configuration. If there is no data yet for the step, the ID will
+        be `null`. Set the step data by making a `PUT` request.
+      summary: Retrieve step details
+      parameters:
+      - in: path
+        name: step_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionStep'
+          description: ''
+    put:
+      operationId: submissions_steps_update
+      description: |-
+        The submission data is either created or updated, depending on whether there was
+        submission data present before or not. Make sure to retrieve the step data to
+        display already filled out fields.
+
+        Note that the form step configuration is currently not validated - this may change
+        in the future. I.e. - a step that is marked as not available will still be submitted
+        at the time being.
+      summary: Store submission step data
+      parameters:
+      - in: path
+        name: step_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionStep'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmissionStep'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmissionStep'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionStep'
+          description: ''
+  /api/v1/submissions/{uuid}:
+    get:
+      operationId: submissions_retrieve
+      description: Get the state of a single submission in the user session.
+      summary: Retrieve submission details
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+          description: ''
+  /api/v1/submissions/{uuid}/_complete:
+    post:
+      operationId: submissions__complete_create
+      description: |-
+        Mark the submission as completed.
+
+        Submission completion requires that all required steps are completed.
+
+        Once a submission is completed, it's removed from the session. This means it's
+        no longer possible to change or read the submission data (including individual
+        steps).
+
+        The submission is persisted to the configured backend.
+      summary: Complete a submission
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '204':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompletionValidation'
+          description: ''
+  /api/v1/submissions/{uuid}/_suspend:
+    post:
+      operationId: submissions__suspend_create
+      description: |-
+        Suspend the submission.
+
+        Submission suspension requires contact details to send the end-user a URL to
+        resume the submission (possibly from another device).
+      summary: Suspend a submission
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionSuspension'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmissionSuspension'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmissionSuspension'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionSuspension'
+          description: ''
+components:
+  schemas:
+    CompletionValidation:
+      type: object
+      properties:
+        incompleteSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncompleteStep'
+      required:
+      - incompleteSteps
+    ContextAwareFormStep:
+      type: object
+      properties:
+        index:
+          type: integer
+          readOnly: true
+        configuration:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - configuration
+      - index
+    Form:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        loginRequired:
+          type: boolean
+          readOnly: true
+        product:
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalFormStep'
+          readOnly: true
+      required:
+      - loginRequired
+      - name
+      - product
+      - slug
+      - steps
+      - url
+      - uuid
+    FormDefinition:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        configuration:
+          type: object
+          additionalProperties: {}
+          title: Formio.js configuration
+          description: The form definition as Formio.js JSON schema
+      required:
+      - configuration
+      - name
+      - slug
+      - url
+    FormImport:
+      type: object
+      properties:
+        file:
+          type: string
+          format: uri
+          description: The file that contains the Form, FormDefinitions and FormSteps
+      required:
+      - file
+    FormStep:
+      type: object
+      properties:
+        index:
+          type: integer
+          readOnly: true
+        configuration:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        formDefinition:
+          type: string
+          format: uri
+      required:
+      - configuration
+      - formDefinition
+      - index
+    IncompleteStep:
+      type: object
+      properties:
+        formStep:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - formStep
+    MinimalFormStep:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        formDefinition:
+          type: string
+          readOnly: true
+        index:
+          type: integer
+        url:
+          type: string
+          format: uri
+      required:
+      - formDefinition
+      - index
+      - url
+      - uuid
+    NestedSubmissionStep:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        formStep:
+          type: string
+          format: uri
+          readOnly: true
+        available:
+          type: boolean
+          readOnly: true
+        completed:
+          type: boolean
+          readOnly: true
+        optional:
+          type: boolean
+          readOnly: true
+      required:
+      - available
+      - completed
+      - formStep
+      - id
+      - name
+      - optional
+      - url
+    PaginatedFormDefinitionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormDefinition'
+    PaginatedSubmissionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Submission'
+    PatchedForm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        loginRequired:
+          type: boolean
+          readOnly: true
+        product:
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalFormStep'
+          readOnly: true
+    PatchedFormStep:
+      type: object
+      properties:
+        index:
+          type: integer
+          readOnly: true
+        configuration:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        formDefinition:
+          type: string
+          format: uri
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 50
+        url:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^\d{0,8}(\.\d{0,2})?$
+      required:
+      - name
+      - price
+    Submission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        form:
+          type: string
+          format: uri
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedSubmissionStep'
+          readOnly: true
+          title: Submission steps
+          description: Details of every form step of this submission's form, tracking
+            the progress and other meta-data of each particular step.
+        nextStep:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+      required:
+      - form
+      - id
+      - nextStep
+      - steps
+      - url
+    SubmissionStep:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        formStep:
+          allOf:
+          - $ref: '#/components/schemas/ContextAwareFormStep'
+          readOnly: true
+        data:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      required:
+      - formStep
+      - id
+    SubmissionSuspension:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          title: Contact e-mail address
+          description: The e-mail address where the 'magic' resume link should be
+            sent to
+        suspendedOn:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - email
+      - suspendedOn
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Session
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
+externalDocs:
+  description: Functional and technical documentation
+  url: https://open-forms.readthedocs.io/

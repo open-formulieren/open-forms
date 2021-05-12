@@ -1,0 +1,5 @@
+This folder contains patches for various libraries. They are basically 
+workaround for issues with those libraries without the effort to create our own
+fork and use the fork instead. The benefit here is that any upgrade of the 
+will cause an exception so someone can review the updates to see if the problem
+was fixed.
