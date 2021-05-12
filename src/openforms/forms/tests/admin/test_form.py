@@ -6,10 +6,9 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 
-from openforms.accounts.tests.factories import UserFactory
-
-from ..models import Form, FormStep
-from .factories import FormFactory, FormStepFactory
+from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.forms.models import Form, FormStep
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 
 class FormAdminImportExportTests(WebTest):
@@ -191,3 +190,22 @@ class FormAdminCopyTests(WebTest):
 
         copied_form_step_form_definition = copied_form_step.form_definition
         self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
+
+
+class FormAdminActionsTests(WebTest):
+    def setUp(self) -> None:
+        self.form = FormFactory.create()
+        self.user = SuperUserFactory.create()
+
+    def test_make_copies_action_makes_copy_of_a_form(self):
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+
+        form = response.forms["changelist-form"]
+        form["action"] = "make_copies"
+        form["_selected_action"] = [str(form.pk) for form in Form.objects.all()]
+        form.submit()
+
+        self.assertEqual(Form.objects.count(), 2)
+        copied_form = Form.objects.exclude(pk=self.form.pk).first()
+        self.assertEqual(copied_form.name, f"{self.form.name} (kopie)")
+        self.assertEqual(copied_form.slug, f"{self.form.slug}-kopie")
