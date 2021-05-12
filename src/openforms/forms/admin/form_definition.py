@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.contrib.admin.actions import delete_selected as _delete_selected
 from django.db.models import Prefetch
 from django.urls import reverse
-from django.utils.html import escape, format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import ugettext_lazy as _
 
 from ..forms import FormDefinitionForm
@@ -56,14 +56,21 @@ class FormDefinitionAdmin(admin.ModelAdmin):
 
     def used_in_forms(self, obj) -> str:
         forms = [step.form for step in obj.used_in_steps]
-        html = "<ul>"
-        for form in forms:
-            form_url = reverse(
-                "admin:forms_form_change",
-                kwargs={"object_id": form.pk},
-            )
-            html += f"<li><a href={form_url}>{escape(form.name)}</a></li>"
-        html += "</ul>"
-        return format_html(html)
+        ret = format_html_join(
+            "\n",
+            '<li><a href="{}">{}</a></li>',
+            (
+                (
+                    reverse(
+                        "admin:forms_form_change",
+                        kwargs={"object_id": form.pk},
+                    ),
+                    form.name,
+                )
+                for form in forms
+            ),
+        )
+
+        return format_html("<ul>{}</ul>", ret)
 
     used_in_forms.short_description = _("In gebruik in:")
