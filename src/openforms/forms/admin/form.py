@@ -147,4 +147,6 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         for instance in queryset:
             instance.copy()
 
-    make_copies.short_description = _("Kopie geselecteerde Form")
+    make_copies.short_description = _(
+        "Kopieer de geselecteerde %(verbose_name_plural)s"
+    )
