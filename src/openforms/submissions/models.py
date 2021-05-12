@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import List, Optional
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -15,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
+from openforms.config.models import ConfirmationEmailConfig
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
@@ -273,9 +273,11 @@ class ConfirmationEmailTemplate(models.Model):
         return f"Confirmation email template - {self.form}"
 
     def render(self, context):
+        config = ConfirmationEmailConfig.get_solo()
+
         def replace_urls(match):
             parsed = urlparse(match.group())
-            if parsed.netloc in settings.EMAIL_TEMPLATE_URL_ALLOWLIST:
+            if parsed.netloc in config.email_template_url_allowlist:
                 return match.group()
             return ""
 

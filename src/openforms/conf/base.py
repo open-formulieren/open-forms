@@ -107,6 +107,7 @@ INSTALLED_APPS = [
     # External applications.
     "axes",
     "corsheaders",
+    "django_better_admin_arrayfield",
     "django_yubin",
     "hijack",
     "hijack_admin",
@@ -121,6 +122,11 @@ INSTALLED_APPS = [
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
+<<<<<<< HEAD
+=======
+    "openforms.contrib.zgw",
+    "openforms.config",
+>>>>>>> d73f2a7 (:sparkles: Confirmation email URL allowlist configurable via admin)
     "openforms.forms",
     "openforms.products",
     "openforms.ui",
@@ -555,8 +561,3 @@ ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files")
 ]
-
-
-# URLs that will not be stripped during confirmation email rendering
-# TODO configurable with envvar or django solo?
-EMAIL_TEMPLATE_URL_WHITELIST = [] + ALLOWED_HOSTS
