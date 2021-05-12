@@ -95,6 +95,8 @@ drf-spectacular==0.14.0
     # via -r requirements/base.in
 elastic-apm==5.8.1
     # via -r requirements/base.in
+et-xmlfile==1.1.0
+    # via openpyxl
 faker==7.0.1
     # via zgw-consumers
 gemma-zds-client==1.0.0
@@ -109,6 +111,8 @@ jsonschema==3.2.0
     # via drf-spectacular
 lxml==4.6.3
     # via xmlsec
+openpyxl==3.0.7
+    # via tablib
 pillow==8.2.0
     # via -r requirements/base.in
 polib==1.1.0
@@ -163,6 +167,8 @@ six==1.15.0
     #   requests-mock
 sqlparse==0.3.1
     # via django
+tablib[xlsx]==3.0.0
+    # via -r requirements/base.in
 text-unidecode==1.3
     # via faker
 uritemplate==3.0.1

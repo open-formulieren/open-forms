@@ -72,7 +72,7 @@ class Submission(models.Model):
         blank=True,
         null=True,
         help_text=_(
-            "Contains data returned by the registration backend while registrating the submission data."
+            "Contains data returned by the registration backend while registering the submission data."
         ),
     )
     registration_status = models.CharField(
@@ -80,7 +80,7 @@ class Submission(models.Model):
         max_length=50,
         choices=RegistrationStatuses,
         default=RegistrationStatuses.pending,
-        help_text=("Whether registration in the configured backend was succesful."),
+        help_text=_("Whether registration in the configured backend was successful."),
     )
 
     class Meta:
@@ -154,6 +154,21 @@ class Submission(models.Model):
         """
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
+
+    def get_merged_data(self) -> dict:
+        merged_data = dict()
+
+        for step in self.submissionstep_set.exclude(data=None):
+            for key, value in step.data.items():
+                if key in merged_data:
+                    logger.warning(
+                        "%s was previously in merged_data and will be overwritten by %s",
+                        key,
+                        value,
+                    )
+                merged_data[key] = value
+
+        return merged_data
 
 
 class SubmissionStep(models.Model):

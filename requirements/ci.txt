@@ -178,6 +178,11 @@ elastic-apm==5.8.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+et-xmlfile==1.1.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   openpyxl
 factory-boy==3.0.1
     # via -r requirements/test-tools.in
 faker==7.0.1
@@ -227,6 +232,11 @@ mccabe==0.6.1
     # via flake8
 mypy-extensions==0.4.3
     # via black
+openpyxl==3.0.7
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tablib
 pathspec==0.8.1
     # via black
 pep8==1.7.1
@@ -341,6 +351,10 @@ sqlparse==0.3.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django
+tablib[xlsx]==3.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 tblib==1.7.0
     # via -r requirements/test-tools.in
 text-unidecode==1.3
