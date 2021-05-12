@@ -11,10 +11,10 @@ class ConfirmationEmailTests(TestCase):
         with self.assertRaises(ValidationError):
             email.clean()
 
-    @override_settings(EMAIL_TEMPLATE_URL_WHITELIST=["whitelisted.com"])
+    @override_settings(EMAIL_TEMPLATE_URL_ALLOWLIST=["whitelisted.com"])
     def test_strip_non_whitelisted_urls(self):
         email = ConfirmationEmailTemplate(
-            content="test https://google.com https://www.google.com www.google.com google.com https://whitelisted.com test"
+            content="test https://google.com https://www.google.com https://whitelisted.com test"
         )
 
         rendered = email.render({})
@@ -22,7 +22,7 @@ class ConfirmationEmailTests(TestCase):
         self.assertNotIn("google.com", rendered)
         self.assertIn("https://whitelisted.com", rendered)
 
-    @override_settings(EMAIL_TEMPLATE_URL_WHITELIST=["whitelisted.com"])
+    @override_settings(EMAIL_TEMPLATE_URL_ALLOWLIST=["whitelisted.com"])
     def test_strip_non_whitelisted_urls_from_context(self):
         email = ConfirmationEmailTemplate(content="test {{url1}} {{url2}} test")
 
