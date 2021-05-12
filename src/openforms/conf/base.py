@@ -555,3 +555,8 @@ ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files")
 ]
+
+
+# URLs that will not be stripped during confirmation email rendering
+# TODO configurable with envvar or django solo?
+EMAIL_TEMPLATE_URL_WHITELIST = ["localhost"] + ALLOWED_HOSTS
