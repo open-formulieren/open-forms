@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings
+from django.test import TestCase
+
+from openforms.config.models import ConfirmationEmailConfig
 
 from ..models import ConfirmationEmailTemplate
 
@@ -11,24 +13,39 @@ class ConfirmationEmailTests(TestCase):
         with self.assertRaises(ValidationError):
             email.clean()
 
-    @override_settings(EMAIL_TEMPLATE_URL_ALLOWLIST=["whitelisted.com"])
-    def test_strip_non_whitelisted_urls(self):
+    def test_strip_non_allowed_urls(self):
+        config = ConfirmationEmailConfig.objects.create(
+            email_template_url_allowlist=["allowed.com"]
+        )
         email = ConfirmationEmailTemplate(
-            content="test https://google.com https://www.google.com https://whitelisted.com test"
+            content="test https://google.com https://www.google.com https://allowed.com test"
         )
 
         rendered = email.render({})
 
         self.assertNotIn("google.com", rendered)
-        self.assertIn("https://whitelisted.com", rendered)
+        self.assertIn("https://allowed.com", rendered)
 
-    @override_settings(EMAIL_TEMPLATE_URL_ALLOWLIST=["whitelisted.com"])
-    def test_strip_non_whitelisted_urls_from_context(self):
+    def test_strip_non_allowed_urls_from_context(self):
+        config = ConfirmationEmailConfig.objects.create(
+            email_template_url_allowlist=["allowed.com"]
+        )
+
         email = ConfirmationEmailTemplate(content="test {{url1}} {{url2}} test")
 
         rendered = email.render(
-            {"url1": "https://whitelisted.com", "url2": "https://google.com"}
+            {"url1": "https://allowed.com", "url2": "https://google.com"}
         )
 
         self.assertNotIn("google.com", rendered)
-        self.assertIn("https://whitelisted.com", rendered)
+        self.assertIn("https://allowed.com", rendered)
+
+    def test_strip_non_allowed_urls_without_config_strips_all_urls(self):
+        email = ConfirmationEmailTemplate(
+            content="test https://google.com https://www.google.com https://allowed.com test"
+        )
+
+        rendered = email.render({})
+
+        self.assertNotIn("google.com", rendered)
+        self.assertNotIn("allowed.com", rendered)
