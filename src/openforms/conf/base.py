@@ -552,3 +552,8 @@ SPECTACULAR_SETTINGS = {
 # ZGW Consumers
 #
 ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
+
+
+# URLs that will not be stripped during confirmation email rendering
+# TODO configurable with envvar or django solo?
+EMAIL_TEMPLATE_URL_WHITELIST = ["localhost"] + ALLOWED_HOSTS

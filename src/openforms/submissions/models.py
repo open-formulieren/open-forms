@@ -1,8 +1,11 @@
 import logging
+import re
 import uuid
 from dataclasses import dataclass
 from typing import List, Optional
+from urllib.parse import urlparse
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -17,7 +20,7 @@ from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
-from .constants import RegistrationStatuses
+from .constants import URL_REGEX, RegistrationStatuses
 
 logger = logging.getLogger(__name__)
 
@@ -255,9 +258,16 @@ class ConfirmationEmailTemplate(models.Model):
         return f"Confirmation email template - {self.form}"
 
     def render(self, context):
+        def replace_urls(match):
+            parsed = urlparse(match.group())
+            if parsed.netloc in settings.EMAIL_TEMPLATE_URL_WHITELIST:
+                return match.group()
+            return ""
+
         default_template = get_template("confirmation_mail.html")
         rendered_content = Template(self.content).render(Context(context))
-        return default_template.render({"body": rendered_content})
+        stripped = re.sub(URL_REGEX, replace_urls, rendered_content)
+        return default_template.render({"body": stripped})
 
     def clean(self):
         try:
