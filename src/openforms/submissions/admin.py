@@ -40,7 +40,8 @@ class SubmissionAdmin(admin.ModelAdmin):
             html += f"<li>{key}: {value}</li>"
         html += "</ol>"
         return format_html(html)
-    display_merged_data.short_description = 'Merged Data'
+
+    display_merged_data.short_description = "Merged Data"
 
     def _export(self, request, queryset, file_type):
         if queryset.order_by().values("form").distinct().count() > 1:
