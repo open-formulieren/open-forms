@@ -21,6 +21,8 @@ class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
     list_display = (
         "form",
+        "registration_status",
+        "created_on",
         "completed_on",
     )
     list_filter = ("form",)
