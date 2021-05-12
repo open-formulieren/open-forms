@@ -1,3 +1,4 @@
+from smtplib import SMTP, SMTPServerDisconnected
 from typing import Union
 
 from django.conf import settings
@@ -56,3 +57,16 @@ def send_confirmation_email(submission):
         fail_silently=False,
         html_message=content,
     )
+
+
+# Source: https://stackoverflow.com/a/14678470
+def test_conn_open(smtp_config):
+    try:
+        conn = SMTP(f"{smtp_config.host}:{smtp_config.port}")
+        status = conn.noop()[0]
+    except (
+        ConnectionRefusedError,
+        SMTPServerDisconnected,
+    ):  # smtplib.SMTPServerDisconnected
+        status = -1
+    return True if status == 250 else False
