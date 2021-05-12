@@ -33,6 +33,8 @@ django-autoslug==1.9.8
     # via -r requirements/base.in
 django-axes==5.5.0
     # via -r requirements/base.in
+django-better-admin-arrayfield==1.4.2
+    # via -r requirements/base.in
 django-choices==1.7.1
     # via
     #   -r requirements/base.in
