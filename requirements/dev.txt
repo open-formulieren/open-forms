@@ -99,6 +99,10 @@ django-axes==5.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-better-admin-arrayfield==1.4.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-capture-on-commit-callbacks==1.3.0
     # via
     #   -c requirements/ci.txt

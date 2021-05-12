@@ -10,6 +10,7 @@ django < 3.0
 django-admin-index
 django-autoslug
 django-axes
+django-better-admin-arrayfield
 django-choices
 django-cors-headers
 django-hijack
