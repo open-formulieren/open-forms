@@ -3,8 +3,7 @@ from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from .exports import export_submissions
-from .forms import ConfirmationEmailTemplateForm
-from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
+from .models import Submission, SubmissionStep
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -70,8 +69,3 @@ class SubmissionAdmin(admin.ModelAdmin):
     export_xlsx.short_description = _(
         "Geselecteerde %(verbose_name_plural)s exporteren als Excel-bestand."
     )
-
-
-@admin.register(ConfirmationEmailTemplate)
-class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
-    form = ConfirmationEmailTemplateForm

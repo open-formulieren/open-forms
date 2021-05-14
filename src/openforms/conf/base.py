@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     # Project applications.
     "openforms.accounts",
     "openforms.config",
+    "openforms.emails",
     "openforms.forms",
     "openforms.products",
     "openforms.ui",

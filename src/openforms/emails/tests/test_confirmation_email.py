@@ -14,7 +14,7 @@ class ConfirmationEmailTests(TestCase):
             email.clean()
 
     def test_strip_non_allowed_urls(self):
-        config = GlobalConfiguration.objects.create(
+        GlobalConfiguration.objects.create(
             email_template_netloc_allowlist=["allowed.com"]
         )
         email = ConfirmationEmailTemplate(
@@ -27,7 +27,7 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("https://allowed.com", rendered)
 
     def test_strip_non_allowed_urls_from_context(self):
-        config = GlobalConfiguration.objects.create(
+        GlobalConfiguration.objects.create(
             email_template_netloc_allowlist=["allowed.com"]
         )
 

@@ -46,6 +46,19 @@ class Form(models.Model):
     active = models.BooleanField(default=False)
     _is_deleted = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name = _("form")
+        verbose_name_plural = _("forms")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("forms:form-detail", kwargs={"slug": self.slug})
+
+    def get_api_url(self):
+        return reverse("api:form-detail", kwargs={"uuid": self.uuid})
+
     @property
     def login_required(self) -> bool:
         return any(
@@ -58,12 +71,6 @@ class Form(models.Model):
     @property
     def first_step(self):
         return self.formstep_set.first().order
-
-    def get_absolute_url(self):
-        return reverse("forms:form-detail", kwargs={"slug": self.slug})
-
-    def get_api_url(self):
-        return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
     @transaction.atomic
     def copy(self):
@@ -88,10 +95,3 @@ class Form(models.Model):
     def get_email_recipient(self, submitted_data: dict) -> Optional[str]:
         property_name = self.email_property_name or "email"
         return submitted_data.get(property_name)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Form"
-        verbose_name_plural = "Forms"
