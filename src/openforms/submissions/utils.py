@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 from django.conf import settings
@@ -8,6 +9,8 @@ from rest_framework.request import Request
 
 from .constants import SUBMISSIONS_SESSION_KEY
 from .models import Submission
+
+logger = logging.getLogger(__name__)
 
 
 def add_submmission_to_session(
@@ -39,6 +42,14 @@ def send_confirmation_email(submission: Submission):
     email_template = submission.form.confirmation_email_template
 
     to_email = submission.form.get_email_recipient(submission.data)
+    if to_email is None:
+        logger.warning(
+            "Could not determine the recipient e-mail address for submission %d, "
+            "skipping the confirmation e-mail.",
+            submission.id,
+        )
+        return
+
     content = email_template.render(submission.data)
 
     send_mail(

@@ -1,5 +1,6 @@
 import uuid
 from copy import deepcopy
+from typing import Optional
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
@@ -82,9 +83,9 @@ class Form(models.Model):
 
         return copy
 
-    def get_email_recipient(self, submitted_data: dict) -> str:
+    def get_email_recipient(self, submitted_data: dict) -> Optional[str]:
         property_name = self.email_property_name or "email"
-        return submitted_data[property_name]
+        return submitted_data.get(property_name)
 
     def __str__(self):
         return self.name

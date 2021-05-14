@@ -178,3 +178,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn("Information filled in: bar", message.body)
+
+    def test_complete_submission_without_email_recipient(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+        )
+        step1 = FormStepFactory.create(form=form, optional=True)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(submission=submission, form_step=step1, data={})
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # assert that no e-mail was sent
+        self.assertEqual(len(mail.outbox), 0)
