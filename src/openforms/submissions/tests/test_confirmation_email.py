@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from openforms.config.models import ConfirmationEmailConfig
+from openforms.config.models import GlobalConfiguration
 
 from ..models import ConfirmationEmailTemplate
 
@@ -14,8 +14,8 @@ class ConfirmationEmailTests(TestCase):
             email.clean()
 
     def test_strip_non_allowed_urls(self):
-        config = ConfirmationEmailConfig.objects.create(
-            email_template_url_allowlist=["allowed.com"]
+        config = GlobalConfiguration.objects.create(
+            email_template_netloc_allowlist=["allowed.com"]
         )
         email = ConfirmationEmailTemplate(
             content="test https://google.com https://www.google.com https://allowed.com test"
@@ -27,8 +27,8 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("https://allowed.com", rendered)
 
     def test_strip_non_allowed_urls_from_context(self):
-        config = ConfirmationEmailConfig.objects.create(
-            email_template_url_allowlist=["allowed.com"]
+        config = GlobalConfiguration.objects.create(
+            email_template_netloc_allowlist=["allowed.com"]
         )
 
         email = ConfirmationEmailTemplate(content="test {{url1}} {{url2}} test")
