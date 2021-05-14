@@ -5,12 +5,12 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
 
 
-class ConfirmationEmailConfig(SingletonModel):
-    email_template_url_allowlist = ArrayField(
+class GlobalConfiguration(SingletonModel):
+    email_template_netloc_allowlist = ArrayField(
         models.CharField(max_length=1000),
-        verbose_name=_("Email template URL allowlist"),
+        verbose_name=_("Email template netloc allowlist"),
         help_text=_(
-            "A list of URLs (without https://www.) that will not be stripped "
+            "A list of network localities (without https://www.) that will not be stripped "
             "from the content of confirmation emails"
         ),
         blank=True,
@@ -18,4 +18,4 @@ class ConfirmationEmailConfig(SingletonModel):
     )
 
     class Meta:
-        verbose_name = _("Confirmation email configuration")
+        verbose_name = _("Global configuration")

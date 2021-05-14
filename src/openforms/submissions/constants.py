@@ -9,6 +9,9 @@ SUBMISSIONS_SESSION_KEY = "form-submissions"
 
 # Regex to match URLs used by Django's URLValidator (slightly modified to match
 # all URLs in a string rather than match if the string is a valid URL)
+
+# To achieve this, the `^` was removed from the start of the regex, and `\Z`
+# was removed from the end of the regex
 ul = "\u00a1-\uffff"  # unicode letters range (must not be a raw string)
 
 # IP patterns

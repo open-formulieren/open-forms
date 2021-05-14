@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
-from openforms.config.models import ConfirmationEmailConfig
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
@@ -273,11 +273,11 @@ class ConfirmationEmailTemplate(models.Model):
         return f"Confirmation email template - {self.form}"
 
     def render(self, context):
-        config = ConfirmationEmailConfig.get_solo()
+        config = GlobalConfiguration.get_solo()
 
         def replace_urls(match):
             parsed = urlparse(match.group())
-            if parsed.netloc in config.email_template_url_allowlist:
+            if parsed.netloc in config.email_template_netloc_allowlist:
                 return match.group()
             return ""
 
