@@ -3,8 +3,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
+
+from decorator_include import decorator_include
 
 from .views import SPADemoView
 
@@ -36,7 +39,7 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-    path("tinymce/", include("tinymce.urls")),
+    path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
     path("", include("openforms.forms.urls", namespace="core")),
     path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
