@@ -26,7 +26,9 @@ class Form(models.Model):
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
+    # TODO: add validator that this field is present in the form step form definition(s)
     email_property_name = models.CharField(
+        _("veldnaam e-mailadres"),
         max_length=200,
         blank=True,
         help_text=_(
