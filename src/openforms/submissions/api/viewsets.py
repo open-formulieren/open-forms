@@ -1,6 +1,5 @@
 import logging
 
-from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
