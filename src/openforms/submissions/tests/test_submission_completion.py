@@ -10,7 +10,7 @@ from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
 
-from django_yubin.models import Message
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -87,11 +87,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
 
-    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email(self):
         form = FormFactory.create()
-        email_template = ConfirmationEmailTemplateFactory.create(
+        ConfirmationEmailTemplateFactory.create(
             form=form,
             subject="Confirmation mail",
             content="Information filled in: {{foo}}",
@@ -108,7 +108,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.post(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         submission.refresh_from_db()
@@ -120,22 +121,22 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
         # Verify that email was sent
-        self.assertEqual(Message.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
-        message = Message.objects.first()
+        message = mail.outbox[0]
         self.assertEqual(message.subject, "Confirmation mail")
-        self.assertEqual(message.from_address, "info@open-forms.nl")
-        self.assertEqual(message.to_address, "test@test.nl")
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["test@test.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.encoded_message)
-        self.assertIn("Information filled in: bar", message.encoded_message)
+        self.assertIn('<table border="0">', message.body)
+        self.assertIn("Information filled in: bar", message.body)
 
-    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email_custom_property_name(self):
         form = FormFactory.create(email_property_name="custom_email")
-        email_template = ConfirmationEmailTemplateFactory.create(
+        ConfirmationEmailTemplateFactory.create(
             form=form,
             subject="Confirmation mail",
             content="Information filled in: {{foo}}",
@@ -154,7 +155,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.post(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         submission.refresh_from_db()
@@ -166,13 +168,13 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
         # Verify that email was sent
-        self.assertEqual(Message.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
-        message = Message.objects.first()
+        message = mail.outbox[0]
         self.assertEqual(message.subject, "Confirmation mail")
-        self.assertEqual(message.from_address, "info@open-forms.nl")
-        self.assertEqual(message.to_address, "test@test.nl")
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["test@test.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.encoded_message)
-        self.assertIn("Information filled in: bar", message.encoded_message)
+        self.assertIn('<table border="0">', message.body)
+        self.assertIn("Information filled in: bar", message.body)
