@@ -26,6 +26,7 @@ const FormIOBuilder = ({ configuration, onChange }) => {
                                 selectboxes: true,
                                 select: true,
                                 radio: true,
+                                currency: true,
                             }
                         },
                         custom_layout: {
