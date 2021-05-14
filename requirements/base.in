@@ -13,6 +13,7 @@ django-axes
 django-better-admin-arrayfield
 django-choices
 django-cors-headers
+django-decorator-include
 django-hijack
 django-hijack-admin
 django-redis

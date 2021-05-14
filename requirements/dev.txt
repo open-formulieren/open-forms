@@ -125,6 +125,10 @@ django-cors-headers==3.7.0
     #   -r requirements/ci.txt
 django-debug-toolbar==3.2.1
     # via -r requirements/dev.in
+django-decorator-include==3.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-extensions==3.0.7
     # via -r requirements/dev.in
 django-hijack-admin==2.1.10
@@ -196,6 +200,7 @@ django==2.2.20
     #   django-choices
     #   django-cors-headers
     #   django-debug-toolbar
+    #   django-decorator-include
     #   django-jenkins
     #   django-redis
     #   django-relativedelta
