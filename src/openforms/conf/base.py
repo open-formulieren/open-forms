@@ -122,11 +122,8 @@ INSTALLED_APPS = [
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
-<<<<<<< HEAD
-=======
     "openforms.contrib.zgw",
     "openforms.config",
->>>>>>> d73f2a7 (:sparkles: Confirmation email URL allowlist configurable via admin)
     "openforms.forms",
     "openforms.products",
     "openforms.ui",
@@ -219,7 +216,7 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 #
 # Sending EMAIL
 #
-EMAIL_BACKEND = "openforms.submissions.email_backends.CustomYubinEmailBackend"
+EMAIL_BACKEND = "django_yubin.smtp_queue.EmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config(
     "EMAIL_PORT", default=25

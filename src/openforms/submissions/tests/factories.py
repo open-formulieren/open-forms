@@ -2,12 +2,7 @@ import factory
 
 from openforms.forms.tests.factories import FormFactory
 
-from ..models import (
-    ConfirmationEmailTemplate,
-    SMTPServerConfig,
-    Submission,
-    SubmissionStep,
-)
+from ..models import ConfirmationEmailTemplate, Submission, SubmissionStep
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -29,8 +24,3 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = ConfirmationEmailTemplate
-
-
-class SMTPServerConfigFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = SMTPServerConfig

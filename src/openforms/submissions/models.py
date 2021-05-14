@@ -12,8 +12,6 @@ from django.template import Context, Template, TemplateSyntaxError
 from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
 
-from solo.models import SingletonModel
-
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
@@ -178,6 +176,8 @@ class Submission(models.Model):
 
         return merged_data
 
+    data = property(get_merged_data)
+
 
 class SubmissionStep(models.Model):
     """
@@ -292,27 +292,3 @@ class ConfirmationEmailTemplate(models.Model):
         except TemplateSyntaxError as e:
             raise ValidationError(e)
         return super().clean()
-
-
-class SMTPServerConfig(SingletonModel):
-    host = models.CharField(
-        max_length=1000, blank=True, help_text=_("De host van de SMTP server")
-    )
-    port = models.IntegerField(
-        null=True, blank=True, help_text=_("De port van de SMTP server")
-    )
-    username = models.CharField(
-        max_length=1000, blank=True, help_text=_("De username van de SMTP server")
-    )
-    password = models.CharField(
-        max_length=1000, blank=True, help_text=_("Het password van de SMTP server")
-    )
-    default_from_email = models.CharField(
-        max_length=1000,
-        blank=True,
-        help_text=_("De afzender waarvan de bevestigingsemails afkomstig zijn"),
-        verbose_name=_("Standaard e-mailadres afzender"),
-    )
-
-    class Meta:
-        verbose_name = _("SMTP Server Configuration")

@@ -1,15 +1,13 @@
-from smtplib import SMTP, SMTPServerDisconnected
 from typing import Union
 
 from django.conf import settings
-from django.core.mail import get_connection, send_mail
+from django.core.mail import send_mail
 from django.http import HttpRequest
-from django.utils.module_loading import import_string
 
 from rest_framework.request import Request
 
 from .constants import SUBMISSIONS_SESSION_KEY
-from .models import SMTPServerConfig, Submission
+from .models import Submission
 
 
 def add_submmission_to_session(
@@ -37,36 +35,17 @@ def remove_submission_from_session(
         request.session[SUBMISSIONS_SESSION_KEY] = submissions
 
 
-def send_confirmation_email(submission):
+def send_confirmation_email(submission: Submission):
     email_template = submission.form.confirmation_email_template
 
-    data = {}
-    for step in submission.steps:
-        data.update(step.data)
-
-    smtp_config = SMTPServerConfig.get_solo()
-
-    to_email = submission.form.get_email_recipient(data)
-    content = email_template.render(data)
+    to_email = submission.form.get_email_recipient(submission.data)
+    content = email_template.render(submission.data)
 
     send_mail(
         email_template.subject,
         content,
-        smtp_config.default_from_email,
+        settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
         [to_email],
         fail_silently=False,
         html_message=content,
     )
-
-
-# Source: https://stackoverflow.com/a/14678470
-def test_conn_open(smtp_config):
-    try:
-        conn = SMTP(f"{smtp_config.host}:{smtp_config.port}")
-        status = conn.noop()[0]
-    except (
-        ConnectionRefusedError,
-        SMTPServerDisconnected,
-    ):  # smtplib.SMTPServerDisconnected
-        status = -1
-    return True if status == 250 else False

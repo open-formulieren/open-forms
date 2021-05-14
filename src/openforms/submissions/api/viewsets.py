@@ -1,5 +1,6 @@
 import logging
 
+from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -104,10 +105,11 @@ class SubmissionViewSet(
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
 
+        # TODO: use celery & queue the job with transaction.on_commit
         register_submission(submission)
 
         if hasattr(submission.form, "confirmation_email_template"):
-            send_confirmation_email(submission)
+            transaction.on_commit(lambda: send_confirmation_email(submission))
 
         submission.save()
         remove_submission_from_session(submission, self.request)

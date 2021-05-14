@@ -2,17 +2,9 @@ from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
-from solo.admin import SingletonModelAdmin
-
 from .exports import export_submissions
 from .forms import ConfirmationEmailTemplateForm
-from .models import (
-    ConfirmationEmailTemplate,
-    SMTPServerConfig,
-    Submission,
-    SubmissionStep,
-)
-from .utils import test_conn_open
+from .models import ConfirmationEmailTemplate, Submission, SubmissionStep
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -83,15 +75,3 @@ class SubmissionAdmin(admin.ModelAdmin):
 @admin.register(ConfirmationEmailTemplate)
 class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
     form = ConfirmationEmailTemplateForm
-
-
-@admin.register(SMTPServerConfig)
-class SMTPServerConfigAdmin(SingletonModelAdmin):
-    readonly_fields = ("get_smtp_status",)
-
-    def get_smtp_status(self, obj):
-        smtp_config = SMTPServerConfig.get_solo()
-        return test_conn_open(smtp_config)
-
-    get_smtp_status.short_description = _("SMTP connectie status")
-    get_smtp_status.boolean = True

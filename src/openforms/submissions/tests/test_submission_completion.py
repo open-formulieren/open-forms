@@ -6,7 +6,6 @@ sub-resource.
 
 The backend should perform total-form validation as part of this action.
 """
-from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
@@ -23,7 +22,6 @@ from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
 from .factories import (
     ConfirmationEmailTemplateFactory,
-    SMTPServerConfigFactory,
     SubmissionFactory,
     SubmissionStepFactory,
 )
@@ -89,18 +87,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
 
-    @override_settings(
-        EMAIL_BACKEND="openforms.submissions.email_backends.CustomYubinEmailBackend"
-    )
+    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email(self):
-        SMTPServerConfigFactory.create(
-            host="localhost",
-            port=25,
-            username="",
-            password="",
-            default_from_email="info@open-forms.nl",
-        )
         form = FormFactory.create()
         email_template = ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -142,18 +131,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn('<table border="0">', message.encoded_message)
         self.assertIn("Information filled in: bar", message.encoded_message)
 
-    @override_settings(
-        EMAIL_BACKEND="openforms.submissions.email_backends.CustomYubinEmailBackend"
-    )
+    @override_settings(EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email_custom_property_name(self):
-        SMTPServerConfigFactory.create(
-            host="localhost",
-            port=25,
-            username="",
-            password="",
-            default_from_email="info@open-forms.nl",
-        )
         form = FormFactory.create(email_property_name="custom_email")
         email_template = ConfirmationEmailTemplateFactory.create(
             form=form,
