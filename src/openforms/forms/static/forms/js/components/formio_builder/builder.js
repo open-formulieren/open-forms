@@ -33,6 +33,7 @@ const FormIOBuilder = ({ configuration, onChange }) => {
                             weight: 5,
                             components: {
                                 content: true,
+                                fieldset: true,
                             },
                         },
                         brp: {
