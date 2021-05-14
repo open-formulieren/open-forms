@@ -122,7 +122,6 @@ INSTALLED_APPS = [
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
-    "openforms.contrib.zgw",
     "openforms.config",
     "openforms.forms",
     "openforms.products",
