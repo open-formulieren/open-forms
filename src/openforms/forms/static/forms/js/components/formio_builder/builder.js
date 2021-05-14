@@ -28,6 +28,13 @@ const FormIOBuilder = ({ configuration, onChange }) => {
                                 radio: true,
                             }
                         },
+                        custom_layout: {
+                            title: 'Opmaak',
+                            weight: 5,
+                            components: {
+                                content: true,
+                            },
+                        },
                         brp: {
                             title: 'Basisregistratie Personen',
                             weight: 10,
