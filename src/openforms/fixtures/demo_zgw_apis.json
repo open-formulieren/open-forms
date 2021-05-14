@@ -1,0 +1,68 @@
+[
+    {
+        "model": "zgw_consumers.service",
+        "pk": 1,
+        "fields": {
+            "label": "test.openzaak.nl - ZRC",
+            "api_type": "zrc",
+            "api_root": "https://test.openzaak.nl/zaken/api/v1/",
+            "client_id": "openforms-dev",
+            "secret": "COPY FROM: https://test.openzaak.nl/admin/authorizations/applicatie/4982/change/",
+            "auth_type": "zgw",
+            "header_key": "",
+            "header_value": "",
+            "oas": "https://test.openzaak.nl/zaken/api/v1/schema/openapi.yaml",
+            "nlx": "",
+            "user_id": "",
+            "user_representation": ""
+        }
+    },
+    {
+        "model": "zgw_consumers.service",
+        "pk": 2,
+        "fields": {
+            "label": "test.openzaak.nl - DRC",
+            "api_type": "drc",
+            "api_root": "https://test.openzaak.nl/documenten/api/v1/",
+            "client_id": "openforms-dev",
+            "secret": "COPY FROM: https://test.openzaak.nl/admin/authorizations/applicatie/4982/change/",
+            "auth_type": "zgw",
+            "header_key": "",
+            "header_value": "",
+            "oas": "https://test.openzaak.nl/documenten/api/v1/schema/openapi.yaml",
+            "nlx": "",
+            "user_id": "",
+            "user_representation": ""
+        }
+    },
+    {
+        "model": "zgw_consumers.service",
+        "pk": 3,
+        "fields": {
+            "label": "test.openzaak.nl - ZTC",
+            "api_type": "ztc",
+            "api_root": "https://test.openzaak.nl/catalogi/api/v1/",
+            "client_id": "openforms-dev",
+            "secret": "COPY FROM: https://test.openzaak.nl/admin/authorizations/applicatie/4982/change/",
+            "auth_type": "zgw",
+            "header_key": "",
+            "header_value": "",
+            "oas": "https://test.openzaak.nl/catalogi/api/v1/schema/openapi.yaml",
+            "nlx": "",
+            "user_id": "",
+            "user_representation": ""
+        }
+    },
+    {
+        "model": "zgw_apis.zgwconfig",
+        "pk": 1,
+        "fields": {
+            "zrc_service": 1,
+            "drc_service": 2,
+            "ztc_service": 3,
+            "zaaktype": "https://test.openzaak.nl/catalogi/api/v1/zaaktypen/53340e34-7581-4b04-884f-8ff7e6a73c2c",
+            "informatieobjecttype": "https://test.openzaak.nl/catalogi/api/v1/informatieobjecttypen/1db73aba-cef4-42ec-bdf0-cd4c7c4f2514",
+            "organisatie_rsin": "000000000"
+        }
+    }
+]
