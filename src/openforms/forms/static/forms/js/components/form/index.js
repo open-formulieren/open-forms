@@ -9,3 +9,4 @@ import './checkbox';
 import './radio';
 import './select';
 import './np-family-members';
+import './iban';
