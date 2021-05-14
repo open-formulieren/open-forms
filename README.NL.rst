@@ -64,6 +64,7 @@ Links
 * `Documentatie <https://open-forms.readthedocs.io/>`_
 * `Community <https://commonground.nl/groups/view/0c79b387-4567-4522-bc35-7d3583978c9f/open-forms>`_
 * `Docker image <https://hub.docker.com/r/openformulieren/open-forms>`_
+* `Open Formulieren SDK <https://github.com/open-formulieren/open-forms-sdk>`_
 * `Issues <https://github.com/open-formulieren/open-forms/issues>`_
 * `Code <https://github.com/open-formulieren/open-forms>`_
 
@@ -100,9 +101,9 @@ NO PUBLIC LICENSE AVAILABLE YET.
     :alt: Code style
     :target: https://github.com/psf/black
 
-.. |docker| image:: https://images.microbadger.com/badges/image/open-formulieren/open-forms.svg
+.. |docker| image:: https://images.microbadger.com/badges/image/openformulieren/open-forms.svg
     :alt: Docker image
-    :target: https://hub.docker.com/r/open-formulieren/open-forms
+    :target: https://hub.docker.com/r/openformulieren/open-forms
 
 .. |python-versions| image:: https://img.shields.io/badge/python-3.8-blue.svg
     :alt: Supported Python versions
