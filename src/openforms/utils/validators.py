@@ -8,24 +8,27 @@ validate_digits = RegexValidator(
 )
 
 
-@deconstructible
-class BSNValidator:
+class Proef11ValidatorBase:
+    value_size = NotImplemented
     error_messages = {
-        "too_short": _("BSN moet 9 tekens lang zijn."),
-        "wrong": _("Onjuist BSN."),
+        "too_short": NotImplemented,
+        "wrong": NotImplemented,
     }
 
     def __call__(self, value):
         """
-        Validates that a string value is a valid BSN number by applying the
+        Validates that a string value is a valid 11-proef number (BSN, RSIN etc) by applying the
         '11-proef' checking.
-
-        :param value: String object representing a presumably good BSN number.
+        :param value: String object representing a presumably good 11-proef number.
         """
         # Initial sanity checks.
         validate_digits(value)
-        if len(value) != 9:
-            raise ValidationError(self.error_messages["too_short"])
+        if len(value) != self.value_size:
+            raise ValidationError(
+                self.error_messages["too_short"],
+                params={"size": self.value_size},
+                code="invalid",
+            )
 
         # 11-proef check.
         total = 0
@@ -39,4 +42,23 @@ class BSNValidator:
             raise ValidationError(self.error_messages["wrong"])
 
 
+@deconstructible
+class BSNValidator(Proef11ValidatorBase):
+    value_size = 9
+    error_messages = {
+        "too_short": _("BSN moet %(size) tekens lang zijn."),
+        "wrong": _("Onjuist BSN."),
+    }
+
+
+@deconstructible
+class RSINValidator(Proef11ValidatorBase):
+    value_size = 9
+    error_messages = {
+        "too_short": _(f"RSIN moet %(size) tekens lang zijn."),
+        "wrong": _("Onjuist RSIN."),
+    }
+
+
 validate_bsn = BSNValidator()
+validate_rsin = RSINValidator()
