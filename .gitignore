@@ -22,6 +22,7 @@ __pycache__
 .coverage
 
 # Environment
+/deployment/app.*.yml
 local.py
 /env/
 /media/
