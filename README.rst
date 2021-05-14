@@ -17,15 +17,15 @@ Introduction
 ============
 
 Using Open Forms, administrators can quickly create powerful and smart forms
-that are exposed via an API. With the JavaScript `SDK`_, personalized forms
-can be retrieved and shown to the user. The form blends in with an
-existing website using various styling options. Form fields are prefilled
+that are exposed via an API. With the Open Forms JavaScript `SDK`_, personalized
+forms can be retrieved and shown to the user. The form blends in with an 
+existing website using various styling options. Form fields are pre-filled
 whenever possible and personalized choices are shown depending on the user, if
 authenticated.
 
-Using a plugin-based architecture, Open Forms allows for a flexible 
-submission backends (ie. `Open Zaak`_), authentication schemes, 
-payment providers, calendar apps and pre-fill services.
+Using a plugin-based architecture, Open Forms allows for flexible submission 
+backends (ie. `Open Zaak`_), authentication schemes, payment providers, calendar
+apps and pre-fill services.
 
 Open Forms is developed in line with the `Common Ground`_ principles,
 specificly for municipalities and with a strong focus on usability for both
