@@ -29,13 +29,13 @@ $checkbox-label-padding-left: calc(#{1em * strip_unit($typography-line-height-te
     height: $checkbox-checkmark-size;
   }
 
-  [type=checkbox],
-  [type=radio] {
-    @include absolute($checkbox-label-padding-v, $checkbox-label-padding-h);
-    margin-top: calc((#{1em * strip_unit($typography-line-height-text-big)} - #{$checkbox-checkmark-size}) / 2);
-    opacity: 0;
-    z-index: 100;
-  }
+  // [type=checkbox],
+  // [type=radio] {
+  //   @include absolute($checkbox-label-padding-v, $checkbox-label-padding-h);
+  //   margin-top: calc((#{1em * strip_unit($typography-line-height-text-big)} - #{$checkbox-checkmark-size}) / 2);
+  //   opacity: 0;
+  //   z-index: 100;
+  // }
 
   &__checkmark:before,
   [type=radio] ~ &__checkmark:after {

@@ -122,6 +122,19 @@ export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
                             ]
                         }
                     ]
+                },
+                {
+                    key: 'validation',
+                    label: 'Validation',
+                    components: [
+                        {
+                            type: 'checkbox',
+                            input: true,
+                            label: 'Required',
+                            tooltip: 'A required field must be filled in before the form can be submitted.',
+                            key: 'validate.required'
+                        }
+                    ]
                 }
             ]
         }
