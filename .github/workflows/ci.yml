@@ -4,6 +4,8 @@ name: Run CI
 on:
   push:
     paths-ignore:
+      # Ignore src/openapi.yaml because it's automatically generated within 
+      # this workflow.
       - 'src/openapi.yaml'
     branches:
       - master
@@ -14,6 +16,7 @@ on:
 
 env:
   IMAGE_NAME: openformulieren/open-forms
+  DJANGO_SETTINGS_MODULE: openforms.conf.ci
 
 jobs:
   tests:
@@ -27,7 +30,7 @@ jobs:
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
+        # Needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -45,11 +48,15 @@ jobs:
           sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
 
       - name: Install dependencies
-        run: pip install -r requirements/dev.txt codecov
+        run: pip install -r requirements/ci.txt codecov
       - name: Build frontend
         run: |
           npm ci
           npm run build
+
+      - name: Build and test docs
+        working-directory: docs
+        run: pytest check_sphinx.py -v --tb=auto
 
       - name: Build demo SPA
         run: |
@@ -149,7 +156,7 @@ jobs:
           -o ./sdks/python -g python --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
 
   update-oas:
-    if: github.event_name == 'push'  # exclude PRs
+    if: github.event_name == 'push'  # Exclude PRs
     needs:
       - oas-lint
       - oas-postman
@@ -180,6 +187,7 @@ jobs:
     name: Build (and push) Docker image
     runs-on: ubuntu-latest
     steps:
+      # This will include the updated OAS (if updated) from the update-oas job.
       - uses: actions/checkout@v2
 
       - name: Set tag
@@ -202,11 +210,11 @@ jobs:
         run: docker build . --tag $IMAGE_NAME:$RELEASE_VERSION
 
       - name: Log into registry
-        if: github.event_name == 'push'  # exclude PRs
+        if: github.event_name == 'push'  # Exclude PRs
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push the Docker image
-        if: github.event_name == 'push'  # exclude PRs
+        if: github.event_name == 'push'  # Exclude PRs
         env:
           RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
         run: docker push $IMAGE_NAME:$RELEASE_VERSION
