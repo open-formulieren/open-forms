@@ -60,6 +60,8 @@ click==7.1.2
     #   -r requirements/ci.txt
     #   black
     #   pip-tools
+commonmark==0.9.1
+    # via recommonmark
 coverage==4.5.4
     # via
     #   -c requirements/ci.txt
@@ -221,7 +223,10 @@ djangorestframework==3.12.4
     #   drf-nested-routers
     #   drf-spectacular
 docutils==0.16
-    # via sphinx
+    # via
+    #   recommonmark
+    #   sphinx
+    #   sphinx-tabs
 drf-nested-routers==0.93.3
     # via
     #   -c requirements/ci.txt
@@ -305,6 +310,8 @@ lxml==4.6.3
     #   -r requirements/ci.txt
     #   pyquery
     #   xmlsec
+markdown==3.3.4
+    # via sphinx-markdown-tables
 markupsafe==1.1.1
     # via jinja2
 mccabe==0.6.1
@@ -366,7 +373,9 @@ pyflakes==2.2.0
     #   -r requirements/ci.txt
     #   flake8
 pygments==2.8.1
-    # via sphinx
+    # via
+    #   sphinx
+    #   sphinx-tabs
 pyjwt==1.7.1
     # via
     #   -c requirements/ci.txt
@@ -420,6 +429,8 @@ pyzmail36==1.0.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
+recommonmark==0.7.1
+    # via -r requirements/dev.in
 redis==3.5.3
     # via
     #   -c requirements/ci.txt
@@ -473,12 +484,18 @@ soupsieve==2.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   beautifulsoup4
+sphinx-markdown-tables==0.0.15
+    # via -r requirements/dev.in
 sphinx-rtd-theme==0.5.0
+    # via -r requirements/dev.in
+sphinx-tabs==3.0.0
     # via -r requirements/dev.in
 sphinx==3.2.1
     # via
     #   -r requirements/dev.in
+    #   recommonmark
     #   sphinx-rtd-theme
+    #   sphinx-tabs
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2

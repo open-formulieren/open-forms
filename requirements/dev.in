@@ -13,3 +13,6 @@ django-extensions
 # Documentation
 sphinx
 sphinx_rtd_theme
+recommonmark
+sphinx-markdown-tables
+sphinx-tabs
