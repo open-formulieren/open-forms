@@ -25,6 +25,10 @@
         "slug": "formulieren",
         "models": [
             [
+                "emails",
+                "confirmationemailtemplate"
+            ],
+            [
                 "forms",
                 "form"
             ],
@@ -87,6 +91,14 @@
                 "brpconfig"
             ],
             [
+                "config",
+                "globalconfiguration"
+            ],
+            [
+                "django_yubin",
+                "blacklist"
+            ],
+            [
                 "zgw_apis",
                 "zgwconfig"
             ],
@@ -115,6 +127,18 @@
             [
                 "axes",
                 "accesslog"
+            ],
+            [
+                "django_yubin",
+                "log"
+            ],
+            [
+                "django_yubin",
+                "message"
+            ],
+            [
+                "django_yubin",
+                "queuedmessage"
             ]
         ]
     }

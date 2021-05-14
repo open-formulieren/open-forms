@@ -1,5 +1,6 @@
 import uuid
 from copy import deepcopy
+from typing import Optional
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
@@ -25,6 +26,17 @@ class Form(models.Model):
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
+    # TODO: add validator that this field is present in the form step form definition(s)
+    email_property_name = models.CharField(
+        _("veldnaam e-mailadres"),
+        max_length=200,
+        blank=True,
+        help_text=_(
+            "The name of the attribute in the submission data that contains the "
+            "email address to which the confirmation email will be sent. "
+            "If not specified, `email` will be used."
+        ),
+    )
 
     # backend integration - which registration to use?
     registration_backend = BackendChoiceField(_("registration backend"), blank=True)
@@ -33,6 +45,19 @@ class Form(models.Model):
     # life cycle management
     active = models.BooleanField(default=False)
     _is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _("form")
+        verbose_name_plural = _("forms")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("forms:form-detail", kwargs={"slug": self.slug})
+
+    def get_api_url(self):
+        return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
     @property
     def login_required(self) -> bool:
@@ -46,12 +71,6 @@ class Form(models.Model):
     @property
     def first_step(self):
         return self.formstep_set.first().order
-
-    def get_absolute_url(self):
-        return reverse("forms:form-detail", kwargs={"slug": self.slug})
-
-    def get_api_url(self):
-        return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
     @transaction.atomic
     def copy(self):
@@ -73,9 +92,6 @@ class Form(models.Model):
 
         return copy
 
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Form"
-        verbose_name_plural = "Forms"
+    def get_email_recipient(self, submitted_data: dict) -> Optional[str]:
+        property_name = self.email_property_name or "email"
+        return submitted_data.get(property_name)

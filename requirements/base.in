@@ -10,14 +10,18 @@ django < 3.0
 django-admin-index
 django-autoslug
 django-axes
+django-better-admin-arrayfield
 django-choices
 django-cors-headers
+django-decorator-include
 django-hijack
 django-hijack-admin
 django-redis
 django-rosetta
 django-solo
 django-reversion
+django-tinymce
+django-yubin
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning
 -e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml
 pyopenssl

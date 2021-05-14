@@ -93,7 +93,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     # NOTE: If enabled, at least one Site object is required and
     # uncomment SITE_ID above.
-    # 'django.contrib.sites',
+    # "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
@@ -107,6 +107,8 @@ INSTALLED_APPS = [
     # External applications.
     "axes",
     "corsheaders",
+    "django_better_admin_arrayfield",
+    "django_yubin",
     "hijack",
     "hijack_admin",
     "compat",  # Part of hijack
@@ -116,9 +118,12 @@ INSTALLED_APPS = [
     "digid_eherkenning",
     "solo",
     "reversion",
+    "tinymce",
     "zgw_consumers",
     # Project applications.
     "openforms.accounts",
+    "openforms.config",
+    "openforms.emails",
     "openforms.forms",
     "openforms.products",
     "openforms.ui",
@@ -211,6 +216,7 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 #
 # Sending EMAIL
 #
+EMAIL_BACKEND = "django_yubin.smtp_queue.EmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config(
     "EMAIL_PORT", default=25

@@ -17,7 +17,11 @@ from openforms.registrations.submissions import register_submission
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Submission, SubmissionStep
-from ..utils import add_submmission_to_session, remove_submission_from_session
+from ..utils import (
+    add_submmission_to_session,
+    remove_submission_from_session,
+    send_confirmation_email,
+)
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
     SubmissionSerializer,
@@ -100,7 +104,11 @@ class SubmissionViewSet(
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
 
+        # TODO: use celery & queue the job with transaction.on_commit
         register_submission(submission)
+
+        if hasattr(submission.form, "confirmation_email_template"):
+            transaction.on_commit(lambda: send_confirmation_email(submission))
 
         submission.save()
         remove_submission_from_session(submission, self.request)

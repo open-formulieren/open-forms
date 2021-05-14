@@ -74,6 +74,10 @@ django-axes==5.5.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+django-better-admin-arrayfield==1.4.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-capture-on-commit-callbacks==1.3.0
     # via -r requirements/test-tools.in
 django-choices==1.7.1
@@ -89,6 +93,10 @@ django-compat==1.0.15
     #   django-hijack
     #   django-hijack-admin
 django-cors-headers==3.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -135,8 +143,16 @@ django-solo==1.1.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
+django-tinymce==3.3.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-webtest==1.9.7
     # via -r requirements/test-tools.in
+django-yubin==1.6.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django==2.2.20
     # via
     #   -c requirements/base.txt
@@ -147,6 +163,7 @@ django==2.2.20
     #   django-capture-on-commit-callbacks
     #   django-choices
     #   django-cors-headers
+    #   django-decorator-include
     #   django-jenkins
     #   django-redis
     #   django-relativedelta
@@ -222,6 +239,11 @@ jsonschema==3.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
+lockfile==0.12.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-yubin
 lxml==4.6.3
     # via
     #   -c requirements/base.txt
@@ -299,12 +321,18 @@ pytz==2021.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django
+    #   django-yubin
 pyyaml==5.4.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
     #   gemma-zds-client
+pyzmail36==1.0.4
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-yubin
 redis==3.5.3
     # via
     #   -c requirements/base.txt

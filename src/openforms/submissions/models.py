@@ -170,6 +170,8 @@ class Submission(models.Model):
 
         return merged_data
 
+    data = property(get_merged_data)
+
 
 class SubmissionStep(models.Model):
     """
