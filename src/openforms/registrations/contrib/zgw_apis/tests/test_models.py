@@ -1,9 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from zgw_consumers.constants import APITypes
-
-from .factories import ServiceFactory, ZgwConfigFactory
+from .factories import ZgwConfigFactory
 
 
 class ZGWBackendTests(TestCase):
@@ -16,7 +14,7 @@ class ZGWBackendTests(TestCase):
         self.config.full_clean()
 
     def test_model_validate(self):
-        self.config.zaaktype = "https://zaken.nl/api/v1/zaak/1"
+        self.config.zaaktype = "https://catalogus.nl/api/v1/zaaktype/1"
         self.config.informatieobjecttype = "https://catalogus.nl/api/v1/info/1"
         self.config.rsin = "619183020"
         self.config.full_clean()

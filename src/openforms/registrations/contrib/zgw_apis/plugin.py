@@ -58,7 +58,21 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     # for now grab fixed data value
     initiator = {
         "betrokkeneIdentificatie": {
+            # simple for demo
             "voornamen": data.get("voornaam", ""),
+            "geslachtsnaam": data.get("achternaam", ""),
+            "voorvoegselGeslachtsnaam": data.get("tussenvoegsel", ""),
+            "inpBsn": data.get("bsn", ""),
+            # actual
+            # "inpBsn": data.get("inpBsn", ""),
+            # "anpIdentificatie": data.get("anpIdentificatie", ""),
+            # "inpA_nummer": data.get("inpA_nummer", ""),
+            # "geslachtsnaam": data.get("geslachtsnaam", ""),
+            # "voorvoegselGeslachtsnaam": data.get("voorvoegselGeslachtsnaam", ""),
+            # "voorletters": data.get("voorletters", ""),
+            # "voornamen": data.get("voornamen", ""),
+            # "geslachtsaanduiding": data.get("geslachtsaanduiding", "o"),
+            # "geboortedatum": data.get("geboortedatum", ""),
         },
         "roltoelichting": "inzender formulier",
     }

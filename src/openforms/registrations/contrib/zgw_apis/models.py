@@ -63,8 +63,8 @@ class ZgwConfig(SingletonModel):
     def clean(self):
         super().clean()
 
-        if self.zrc_service and self.zaaktype:
-            if not self.zaaktype.startswith(self.zrc_service.api_root):
+        if self.ztc_service and self.zaaktype:
+            if not self.zaaktype.startswith(self.ztc_service.api_root):
                 raise ValidationError(
                     {"zaaktype": _("Zaaktype is not part of ZRC service's API root")}
                 )

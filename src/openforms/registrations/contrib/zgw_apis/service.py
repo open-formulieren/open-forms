@@ -24,7 +24,7 @@ def create_zaak(options: dict) -> dict:
         "verantwoordelijkeOrganisatie": options["organisatie_rsin"],
         "registratiedatum": today,
         "startdatum": today,
-        "omschrijving": 'Zaak naar aanleiding van ingezonden formulier "{form_name}".',
+        "omschrijving": "Zaak naar aanleiding van ingezonden formulier",
         "toelichting": "Aangemaakt door Open Formulieren",
         # "betalingsindicatie": "nvt",
     }
