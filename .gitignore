@@ -13,6 +13,9 @@ __pycache__
 # Javascript libraries
 /node_modules/
 
+# Generated files
+/docs/_build
+
 # Coverage reports
 /reports/
 /htmlcov/
