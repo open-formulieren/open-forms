@@ -216,7 +216,8 @@ div.breadcrumbs {
  * DJANGO ADMIN INDEX
  */
 
-.dropdown-menu {
+.dropdown-menu,
+div#container .dropdown-menu {
   /* Override for Environment banner */
   top: 48px;
   /* Added to attach body */
