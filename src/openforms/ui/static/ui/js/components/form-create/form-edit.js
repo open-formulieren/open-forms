@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
 import useAsync from 'react-use/esm/useAsync';
-import {get} from './api';
+import {get, post} from './api';
 
 
 const EditForm = () => {
@@ -57,7 +57,14 @@ const EditForm = () => {
                     </button>
                     <button
                         onClick={_ => {
-                            stepForms.map(stepForm => console.log(stepForm))
+                            for (const [key, value] of Object.entries(stepFormValues)) {
+                                const data = {
+                                    "formDefinition": value
+                                };
+                                post(`/api/v1/forms/${formUUID}/steps`, data).then(e => {
+                                    console.log(e);
+                                });
+                            }
                         }}
                     >
                         Submit

@@ -55,7 +55,7 @@ class FormStepViewSet(
 ):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all()
-    permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [permissions.AllowAny]
     lookup_field = "uuid"
 
     def get_serializer_context(self):
