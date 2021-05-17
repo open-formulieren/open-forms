@@ -15,7 +15,7 @@ from openforms.registrations.admin import BackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
-from ..views.form import FormCreateView
+from ..views.form import FormEditView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -134,16 +134,16 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         urls = super().get_urls()
         custom_urls = [
             path(
-                "<path:object_id>/create/",
-                self.admin_site.admin_view(self.formcreate_view),
-                name="form_create",
+                "<path:object_id>/edit/",
+                self.admin_site.admin_view(self.formedit_view),
+                name="form_edit",
             ),
         ]
         return custom_urls + urls
 
     @property
-    def formcreate_view(self):
-        return FormCreateView.as_view(
+    def formedit_view(self):
+        return FormEditView.as_view(
             admin_site=self.admin_site,
             model_admin=self,
         )

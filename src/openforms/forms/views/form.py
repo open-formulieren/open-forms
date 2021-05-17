@@ -26,9 +26,9 @@ class FormDetailView(UIDetailView):
             return super().get(request, *args, **kwargs)
 
 
-class FormCreateView(DetailView):
+class FormEditView(DetailView):
     model = Form
-    template_name = "core/views/form/form_create.html"
+    template_name = "core/views/form/form_edit.html"
     pk_url_kwarg = "object_id"
     # set these on the .as_viev(...) call
     admin_site = None
