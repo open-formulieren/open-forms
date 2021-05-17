@@ -1,15 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import CreateForm from './form-create';
+import EditForm from './form-edit';
 
 
 const mount = () => {
-    const node = document.getElementById('react-create');
+    const node = document.getElementById('react-edit');
     if (!node) return;
 
     ReactDOM.render(
-        <CreateForm />,
+        <EditForm />,
         node
     );
 };

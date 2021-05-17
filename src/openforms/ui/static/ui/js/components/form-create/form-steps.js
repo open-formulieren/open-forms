@@ -7,10 +7,10 @@ import {Form as FormioForm} from "react-formio";
 // TODO Create new Form definition
 
 
-const CreateStepForm = ({configuration}) => {
+const CreateStepForm = ({configuration, stepNumber}) => {
     return (
         <div>
-            <h2>Step</h2>
+            <h2>Step {stepNumber}</h2>
             <FormioForm form={configuration}/>
         </div>
     );

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import {Form as FormioForm} from 'react-formio';
 import useAsync from 'react-use/esm/useAsync';
-import {post} from './api';
+import {get} from './api';
 import CreateStepForm from './form-steps';
 
 // Need to send name and slug of form, just those two
@@ -65,44 +65,35 @@ const stepsConfiguration = {
 };
 
 
-const CreateForm = () => {
+const EditForm = () => {
 
     const [stepForms, setStepForms] = useState([]);
+    const formUUID = document.getElementById('form-uuid').innerHTML;
 
     const {loading, value, error} = useAsync(
-        async () => await get('/api/v1/forms')
+        async () => await get(`/api/v1/forms/${formUUID}`)
     );
 
     return (
         <div className="card">
             <header className="card__header">
-                <h2 className="title">Create Form</h2>
+                {value &&
+                    <h2 className="title">Edit Form: {value.name}</h2>
+                }
             </header>
             <div className="card__body" style={{display: 'flex'}}>
 
                 <div style={{width: '75%'}}>
-                    <div className="form-group">
-                        <label htmlFor="exampleInputEmail1">Name</label>
-                        <input type="text" className="form-control" id="inputFormName"/>
-                    </div>
                     <div>
                         {stepForms}
                     </div>
                     <FormioForm
                         form={configuration}
-                        onSubmit={e => {
-                            post('/api/v1/forms', e.data).then(response => {
-                                console.log(e);
-                                if (response.status === 201) {
-                                    setFormUUID(response.data.uuid);
-                                }
-                            });
-                        }}
                         onCustomEvent={customEvent => {
                           console.log(customEvent);
                           if (customEvent.type === 'addStep') {
                             console.log('Adding step');
-                            setStepForms(oldArray => [...oldArray, <CreateStepForm configuration={stepsConfiguration} key={oldArray.length}/>])
+                            setStepForms(oldArray => [...oldArray, <CreateStepForm configuration={stepsConfiguration} stepNumber={oldArray.length+1} key={oldArray.length}/>])
                           }
                         }}
                     />
@@ -112,4 +103,4 @@ const CreateForm = () => {
     );
 };
 
-export default CreateForm;
+export default EditForm;
