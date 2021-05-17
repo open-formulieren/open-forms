@@ -80,6 +80,30 @@ jobs:
           path: openapi.yaml
           retention-days: 1
 
+  js-tests:
+    name: Run Javascript tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14'
+
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get install chromium-browser
+
+      - name: Build Javascript
+        run: |
+          npm install
+          npm run build
+      - name: Run tests
+        run: |
+          npm run jest
+        env:
+          CI: 'true'
+
   oas-lint:
     needs: tests
     name:  Validate OAS
@@ -176,6 +200,7 @@ jobs:
     needs:
       - update-oas
       - tests
+      - tests-js
 
     name: Build (and push) Docker image
     runs-on: ubuntu-latest
