@@ -9,7 +9,6 @@
   & > div:first-of-type {
     width: 100%;
   }
-
 }
 
 li.nav-item {
@@ -19,5 +18,14 @@ li.nav-item {
 .card {
   &.form-builder-panel {
     padding: 0;
+  }
+}
+
+// django wrapper
+.aligned {
+  .field-configuration {
+    label {
+      float: none;
+    }
   }
 }
