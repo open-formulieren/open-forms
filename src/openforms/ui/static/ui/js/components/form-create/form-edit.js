@@ -7,6 +7,7 @@ import {get} from './api';
 const EditForm = () => {
 
     const [stepForms, setStepForms] = useState([]);
+    const [stepFormValues, setStepFormValues] = useState({});
     // TODO Get this from mount() in index.js
     const formUUID = document.getElementById('form-uuid').innerHTML;
 
@@ -23,7 +24,10 @@ const EditForm = () => {
             <div key={stepForms.length}>
                 <p>-------------------------</p>
                 <p>Step {stepForms.length+1}</p>
-                <select name="formDefinitions">
+                <select name="formDefinitions" onChange={event => {
+                    stepFormValues[stepForms.length+1] = event.target.value;
+                    setStepFormValues(stepFormValues);
+                }}>
                     {formDefinitionValue.results.map(definition => {
                         return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                     })}
@@ -52,7 +56,9 @@ const EditForm = () => {
                         Add Step
                     </button>
                     <button
-                        onClick={event => console.log(event)}
+                        onClick={_ => {
+                            stepForms.map(stepForm => console.log(stepForm))
+                        }}
                     >
                         Submit
                     </button>
