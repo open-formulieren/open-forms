@@ -6,8 +6,6 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.translation import ugettext_lazy as _
-from django.contrib import admin
-from django.urls import path
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from reversion.admin import VersionAdmin
@@ -145,7 +143,10 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
 
     @property
     def formcreate_view(self):
-        return FormCreateView.as_view(admin_site=self.admin_site, model_admin=self, )
+        return FormCreateView.as_view(
+            admin_site=self.admin_site,
+            model_admin=self,
+        )
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == "backend":

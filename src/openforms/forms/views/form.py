@@ -35,7 +35,6 @@ class FormCreateView(DetailView):
     model_admin = None
 
 
-
 class FormLoginButtonView(UIDetailView):
     model = Form
     template_name = "core/views/form/form_login.html"
