@@ -430,7 +430,7 @@ IPWARE_META_PRECEDENCE_ORDER = (
 #
 # DJANGO-HIJACK
 #
-HIJACK_LOGIN_REDIRECT_URL = "/"
+HIJACK_LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 HIJACK_LOGOUT_REDIRECT_URL = reverse_lazy("admin:accounts_user_changelist")
 HIJACK_REGISTER_ADMIN = False
 # This is a CSRF-security risk.
