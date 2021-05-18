@@ -59,9 +59,3 @@ SHOW_ALERT = False
 # 3RD PARTY LIBRARY SETTINGS #
 #                            #
 ##############################
-
-# APM
-MIDDLEWARE = ["elasticapm.contrib.django.middleware.TracingMiddleware"] + MIDDLEWARE
-INSTALLED_APPS = INSTALLED_APPS + [
-    "elasticapm.contrib.django",
-]
