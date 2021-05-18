@@ -1,12 +1,12 @@
 {% extends "admin/base.html" %}
-{% load i18n static %}
+{% load i18n static hijack_tags %}
 
 {% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
 {% block extrastyle %}
     {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
-
     <link rel="icon" type="image/png" href="{% static 'ico/favicon.png' %}">
 {% endblock %}
 
@@ -32,6 +32,7 @@
 {% block nav-global %}{% endblock %}
 
 {% block messages %}
+    {% hijack_notification %}
     {% if settings.ENVIRONMENT_SHOWN_IN_ADMIN %}
         <div class="env env-{{ settings.ENVIRONMENT }}">{{ settings.ENVIRONMENT }}</div>
     {% endif %}
