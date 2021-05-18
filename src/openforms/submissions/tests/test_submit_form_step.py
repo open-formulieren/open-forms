@@ -9,7 +9,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
@@ -131,3 +135,38 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         )
         submission_step.refresh_from_db()
         self.assertEqual(submission_step.data, {"modified": "data"})
+
+    def test_data_not_underscored(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "countryOfResidence",  # CamelCase
+                        "type": "textfield",
+                        "label": "Country of residence",
+                    }
+                ]
+            }
+        )
+        form_step = FormStepFactory.create(form_definition=form_definition)
+
+        submission = SubmissionFactory.create(form=form_step.form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+        body = {"data": {"countryOfResidence": "Netherlands"}}
+
+        response = self.client.put(endpoint, body)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        saved_data = submission.submissionstep_set.get().data
+
+        # Check that the data has not been converted to snake case
+        self.assertIn("countryOfResidence", saved_data)
+        self.assertNotIn("country_of_residence", saved_data)
