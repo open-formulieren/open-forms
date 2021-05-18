@@ -23,6 +23,7 @@ __pycache__
 
 # Environment
 /deployment/app.*.yml
+/deployment/hosts.*
 local.py
 /env/
 /media/
