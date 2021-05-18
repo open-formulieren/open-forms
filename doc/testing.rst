@@ -69,6 +69,13 @@ To trigger a test run on file change (source file or test file), run::
 
     $ karma start karma.conf.js --single-run=false --browsers=PhantomJS
 
+The tests can also be run with Jest. Jest will be installed in the development environment when
+running ``npm install``. After running ``npm run build``, the tests can be run with:
+
+    $ npm run jest
+
+The jest configurations are in the ``jest.config.json`` file. Here, it has been configured to look for tests in files
+with filename of this pattern: ``*.spec.js``.
 
 Jenkins
 -------
