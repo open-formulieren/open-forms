@@ -1,4 +1,4 @@
-location /private_media_serve/ {
+location /private-media/ {
     internal;
     alias /app/private_media/;
 }

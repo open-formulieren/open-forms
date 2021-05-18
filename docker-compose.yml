@@ -1,5 +1,4 @@
-# Inspired by https://docs.docker.com/compose/django/
-version: '3'
+version: '3.4'
 
 services:
   db:
@@ -13,8 +12,15 @@ services:
   redis:
     image: redis:6
 
+  busybox:
+    image: busybox
+    command: /bin/chown -R 1000 /private-media
+    volumes:
+      - private_media:/private-media
+
   web:
     build: .
+    image: openformulieren/open-forms:latest
     environment:
       - DJANGO_SETTINGS_MODULE=openforms.conf.docker
       - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a}
@@ -24,10 +30,23 @@ services:
       - CACHE_DEFAULT=redis:6379/0
       - CACHE_AXES=redis:6379/0
       - ALLOWED_HOSTS=*
+    volumes:
+      - private_media:/app/private-media
     ports:
       - 8000:8000
     depends_on:
       - db
 
+  nginx:
+    image: nginx
+    volumes:
+      - ./docker-nginx-default.conf:/etc/nginx/conf.d/default.conf
+      - private_media:/private-media
+    ports:
+      - "9000:80"
+    depends_on:
+      - web
+
 volumes:
   db:
+  private_media:
