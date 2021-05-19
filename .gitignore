@@ -22,6 +22,8 @@ __pycache__
 .coverage
 
 # Environment
+/deployment/app.*.yml
+/deployment/hosts.*
 local.py
 /env/
 /media/
