@@ -253,7 +253,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
         with capture_on_commit_callbacks(execute=True):
-            response = self.client.post(endpoint)
+            self.client.post(endpoint)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -269,3 +269,33 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn("<th>foovalue</th>", message.body)
         self.assertNotIn("<th>hello</th>", message.body)
         self.assertNotIn("<th>hellovalue</th>", message.body)
+
+    def test_complete_submission_send_confirmation_email_to_many_recipients(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+        )
+        step1 = FormStepFactory.create(form=form, optional=True)
+        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"email": ["aaa@aaa.aaa", "bbb@bbb.bbb"]},
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True):
+            self.client.post(endpoint)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["aaa@aaa.aaa", "bbb@bbb.bbb"])
