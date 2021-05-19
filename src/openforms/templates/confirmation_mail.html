@@ -1,3 +1,4 @@
+{% load i18n %}
 <table border="0">
     <tr>
         {% comment %} TODO add logo? {% endcomment %}
@@ -8,6 +9,20 @@
             {{ body|linebreaks }}
         </td>
     </tr>
+    {% if show_summary %}
+        <table>
+            <tr>
+                <th>{% trans "Field" %}</th>
+                <th>{% trans "Response" %}</th>
+            </tr>
+            {% for key, value in summary.items %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <th>{{ value }}</th>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
     <tr>
         <td align="center"></td>
     </tr>
