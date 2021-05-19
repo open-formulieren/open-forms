@@ -88,6 +88,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
     )
+    uuid = serializers.UUIDField(read_only=True)
 
     parent_lookup_kwargs = {
         "form_uuid": "form__uuid",
@@ -95,7 +96,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration", "form_definition")
+        fields = ("index", "configuration", "form_definition", "uuid")
 
         extra_kwargs = {
             "form_definition": {
