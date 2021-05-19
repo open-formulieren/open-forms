@@ -9,10 +9,8 @@ const mount = () => {
     const formUuid = document.getElementById('form-uuid').innerHTML;
     if (!node || !formUuid) return;
 
-
-    // TODO Pass props here, see https://github.com/open-formulieren/open-forms-sdk/blob/main/src/sdk.js#L32
     ReactDOM.render(
-        <EditForm />,
+        <EditForm formUUID={formUuid}/>,
         node
     );
 };
