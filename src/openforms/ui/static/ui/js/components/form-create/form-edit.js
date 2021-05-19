@@ -8,7 +8,7 @@ const EditForm = () => {
 
     const [stepForms, setStepForms] = useState([]);
     const [stepFormValues, setStepFormValues] = useState({});
-    const [formStepsToDelete, setFormStepsToDelete] = useState({});
+    const [formStepsToDelete, setFormStepsToDelete] = useState([]);
     // TODO Get this from mount() in index.js
     const formUUID = document.getElementById('form-uuid').innerHTML;
 
@@ -26,25 +26,27 @@ const EditForm = () => {
 
     useEffect(() => {
         if (formStepsValues) {
-            formStepsValues.forEach(formStepsValue => {
-                setStepForms([...stepForms,
-                    <div key={stepForms.length}>
+            const initialStepFormsValues = [];
+
+            formStepsValues.forEach((formStepsValue, index) => {
+                initialStepFormsValues.push(
+                    <div key={index}>
                         <p>-------------------------</p>
-                        <p>Step {stepForms.length+1}</p>
+                        <p>Step {index + 1}</p>
                         <button onClick={event => {
-                            delete stepFormValues[stepForms.length+1];
+                            delete stepFormValues[index + 1];
                             setStepFormValues(stepFormValues);
-                            setStepForms(stepForms.filter(element => element.key !== stepForms.length.toString()));
-                            // TODO Add uuid formStepsToDelete so the step is deleted on the backend
+                            setStepForms(stepForms.filter(element => element.key !== index.toString()));
+                            setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
                         }}>
                             Delete
                         </button>
                         <select name="formDefinitions"
                                 value={formStepsValue.formDefinition}
                                 onChange={event => {
-                            stepFormValues[stepForms.length+1] = event.target.value;
-                            setStepFormValues(stepFormValues);
-                        }}>
+                                    stepFormValues[index + 1] = event.target.value;
+                                    setStepFormValues(stepFormValues);
+                                }}>
                             <option key='---' value='---'>---</option>
                             {formDefinitionValues.results.map(definition => {
                                 return <option key={definition.slug} value={definition.url}>{definition.name}</option>
@@ -52,10 +54,14 @@ const EditForm = () => {
                         </select>
                         <p>-------------------------</p>
                     </div>
-                ]);
-                stepFormValues[stepForms.length+1] = formStepsValue.formDefinition;
-                setStepFormValues(stepFormValues);
+                )
             });
+
+            let initialStepFormValues = {};
+            formStepsValues.forEach((formStepsValue, index) => initialStepFormValues[index+1] = formStepsValue.formDefinition);
+
+            setStepFormValues(initialStepFormValues);
+            setStepForms(initialStepFormsValues);
         }
     }, [formStepsValues]);
 
@@ -127,6 +133,8 @@ const EditForm = () => {
                             console.log(stepFormValues);
                             console.log('stepForms');
                             console.log(stepForms);
+                            console.log('formStepsToDelete');
+                            console.log(formStepsToDelete);
                             console.log('-------------');
                         }}
                     >
