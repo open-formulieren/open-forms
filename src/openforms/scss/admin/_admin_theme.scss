@@ -356,3 +356,27 @@ div.help {
   display: inline-block;
   margin-left: inherit !important;
 }
+
+/**
+ * django-hijack
+ *
+ * The default styling overlaps with the menu from admin-index.
+ */
+#hijacked-warning-wrapper {
+
+  // default there's some 50px of nothingness
+  &:after {
+    display: none;
+  }
+
+  #hijacked-warning {
+    position: sticky;  // instead of fixed
+    min-height: 20px; // instead of 50px which had a lot of dead white-space
+    border-top: 2px solid #ae9e49;  // same as border-bottom, absent by default
+    z-index: auto;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: calc(100% - 2 * 7px);  // instead of 100% - the padding is subtracted because of the box-sizing
+  }
+}
