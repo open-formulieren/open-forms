@@ -26,7 +26,17 @@ const FormIOBuilder = ({ configuration, onChange }) => {
                                 selectboxes: true,
                                 select: true,
                                 radio: true,
+                                number: true,
+                                currency: true,
                             }
+                        },
+                        custom_layout: {
+                            title: 'Opmaak',
+                            weight: 5,
+                            components: {
+                                content: true,
+                                fieldset: true,
+                            },
                         },
                         brp: {
                             title: 'Basisregistratie Personen',
