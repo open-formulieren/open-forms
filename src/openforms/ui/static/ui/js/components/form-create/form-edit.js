@@ -32,7 +32,7 @@ const EditForm = () => {
                 initialStepFormsValues.push(
                     <div key={index}>
                         <p>-------------------------</p>
-                        <p>Step {index + 1}</p>
+                        <p>Step</p>
                         <button onClick={_ => {
                             setStepFormValues(previousState => {
                                 delete previousState[index + 1];
@@ -44,7 +44,7 @@ const EditForm = () => {
                             Delete
                         </button>
                         <select name="formDefinitions"
-                                value={formStepsValue.formDefinition}
+                                defaultValue={formStepsValue.formDefinition}
                                 onChange={event => {
                                     setStepFormValues(previousState => {
                                         previousState[index + 1] = event.target.value;
@@ -84,7 +84,7 @@ const EditForm = () => {
         return (
             <div key={stepForms.length}>
                 <p>-------------------------</p>
-                <p>Step {stepForms.length+1}</p>
+                <p>Step</p>
                 <button onClick={event => {
                     setStepFormValues(previousState => {
                         delete previousState[stepForms.length + 1];
