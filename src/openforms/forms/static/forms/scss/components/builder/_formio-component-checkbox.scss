@@ -1,0 +1,12 @@
+.formio-component-checkbox,
+.formio-component-selectboxes {
+
+  // undo django admin styles
+  @at-root .aligned & label:not(.vCheckboxLabel):after {
+    display: none;
+  }
+
+  .form-check-input {
+    margin-top: 2px;
+  }
+}

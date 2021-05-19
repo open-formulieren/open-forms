@@ -1,2 +1,5 @@
 @import 'builder';
 @import 'admin-fixes';
+
+// fixes of styling broken by django admin styling
+@import 'formio-component-checkbox';
