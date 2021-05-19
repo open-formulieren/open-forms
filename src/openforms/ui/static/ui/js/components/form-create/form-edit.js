@@ -24,10 +24,18 @@ const EditForm = () => {
             <div key={stepForms.length}>
                 <p>-------------------------</p>
                 <p>Step {stepForms.length+1}</p>
+                <button onClick={event => {
+                    delete stepFormValues[stepForms.length+1];
+                    setStepFormValues(stepFormValues);
+                    setStepForms(stepForms.filter(element => element.key !== stepForms.length.toString()));
+                }}>
+                    Delete
+                </button>
                 <select name="formDefinitions" onChange={event => {
                     stepFormValues[stepForms.length+1] = event.target.value;
                     setStepFormValues(stepFormValues);
                 }}>
+                    <option key='---' value='---'>---</option>
                     {formDefinitionValue.results.map(definition => {
                         return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                     })}
@@ -51,7 +59,9 @@ const EditForm = () => {
                         {stepForms}
                     </div>
                     <button
-                        onClick={event => setStepForms([...stepForms, getNewStep()])}
+                        onClick={event => {
+                            setStepForms([...stepForms, getNewStep()]);
+                        }}
                     >
                         Add Step
                     </button>
@@ -68,6 +78,18 @@ const EditForm = () => {
                         }}
                     >
                         Submit
+                    </button>
+                    <button
+                        onClick={event => {
+                            console.log('-------------');
+                            console.log('stepFormValues');
+                            console.log(stepFormValues);
+                            console.log('stepForms');
+                            console.log(stepForms);
+                            console.log('-------------');
+                        }}
+                    >
+                        Print info
                     </button>
                     {/*TODO*/}
                     {/*Need add step button*/}
