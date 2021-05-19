@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 import useAsync from 'react-use/esm/useAsync';
 import {get, post} from './api';
@@ -8,6 +8,7 @@ const EditForm = () => {
 
     const [stepForms, setStepForms] = useState([]);
     const [stepFormValues, setStepFormValues] = useState({});
+    const [formStepsToDelete, setFormStepsToDelete] = useState({});
     // TODO Get this from mount() in index.js
     const formUUID = document.getElementById('form-uuid').innerHTML;
 
@@ -15,9 +16,49 @@ const EditForm = () => {
         async () => await get(`/api/v1/forms/${formUUID}`)
     );
 
-    const {loading: formDefinitionLoading, value: formDefinitionValue, error: formDefinitionError} = useAsync(
+    const {loading: formDefinitionLoading, value: formDefinitionValues, error: formDefinitionError} = useAsync(
         async () => await get('/api/v1/form-definitions')
     );
+
+    const {loading: formStepsLoading, value: formStepsValues, error: formStepsError} = useAsync(
+        async () => await get(`/api/v1/forms/${formUUID}/steps`)
+    );
+
+    useEffect(() => {
+        if (formStepsValues) {
+            formStepsValues.forEach(formStepsValue => {
+                setStepForms([...stepForms,
+                    <div key={stepForms.length}>
+                        <p>-------------------------</p>
+                        <p>Step {stepForms.length+1}</p>
+                        <button onClick={event => {
+                            delete stepFormValues[stepForms.length+1];
+                            setStepFormValues(stepFormValues);
+                            setStepForms(stepForms.filter(element => element.key !== stepForms.length.toString()));
+                            // TODO Add uuid formStepsToDelete so the step is deleted on the backend
+                        }}>
+                            Delete
+                        </button>
+                        <select name="formDefinitions"
+                                value={formStepsValue.formDefinition}
+                                onChange={event => {
+                            stepFormValues[stepForms.length+1] = event.target.value;
+                            setStepFormValues(stepFormValues);
+                        }}>
+                            <option key='---' value='---'>---</option>
+                            {formDefinitionValues.results.map(definition => {
+                                return <option key={definition.slug} value={definition.url}>{definition.name}</option>
+                            })}
+                        </select>
+                        <p>-------------------------</p>
+                    </div>
+                ]);
+                stepFormValues[stepForms.length+1] = formStepsValue.formDefinition;
+                setStepFormValues(stepFormValues);
+            });
+        }
+    }, [formStepsValues]);
+
 
     const getNewStep = () => {
         return (
@@ -36,7 +77,7 @@ const EditForm = () => {
                     setStepFormValues(stepFormValues);
                 }}>
                     <option key='---' value='---'>---</option>
-                    {formDefinitionValue.results.map(definition => {
+                    {formDefinitionValues.results.map(definition => {
                         return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                     })}
                 </select>
