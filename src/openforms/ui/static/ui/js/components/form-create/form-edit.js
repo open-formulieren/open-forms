@@ -4,13 +4,11 @@ import useAsync from 'react-use/esm/useAsync';
 import {get, post, destroy} from './api';
 
 
-const EditForm = () => {
+const EditForm = ({formUUID}) => {
 
     const [stepForms, setStepForms] = useState([]);
     const [stepFormValues, setStepFormValues] = useState({});
     const [formStepsToDelete, setFormStepsToDelete] = useState([]);
-    // TODO Get this from mount() in index.js
-    const formUUID = document.getElementById('form-uuid').innerHTML;
 
     const {loading: formLoading, value: formValue, error: formError} = useAsync(
         async () => await get(`/api/v1/forms/${formUUID}`)
@@ -152,6 +150,10 @@ const EditForm = () => {
             </div>
         </div>
     );
+};
+
+EditForm.propTypes = {
+    formUUID: PropTypes.string.isRequired,
 };
 
 export default EditForm;
