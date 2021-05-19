@@ -17,7 +17,11 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
@@ -196,3 +200,72 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_complete_submission_send_confirmation_email_with_summary(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}, {{ bar }} and {{ hello }}. Submission summary: {{ summary }}",
+        )
+        definition1 = FormDefinitionFactory.create(
+            configuration={
+                "index": 0,
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {"key": "foo", "showInEmail": True},
+                    ],
+                },
+            }
+        )
+        step1 = FormStepFactory.create(
+            form=form, optional=True, form_definition=definition1
+        )
+        definition2 = FormDefinitionFactory.create(
+            configuration={
+                "index": 0,
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {"key": "bar", "showInEmail": True},
+                        {"key": "hello", "showInEmail": False},
+                    ],
+                },
+            }
+        )
+        step2 = FormStepFactory.create(
+            form=form, optional=True, form_definition=definition2
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"foo": "foovalue", "email": "test@test.nl"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"bar": "barvalue", "hello": "hellovalue"},
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.post(endpoint)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+
+        self.assertIn(
+            "Information filled in: foovalue, barvalue and hellovalue.", message.body
+        )
+        self.assertIn("<th>bar</th>", message.body)
+        self.assertIn("<th>barvalue</th>", message.body)
+        self.assertIn("<th>foo</th>", message.body)
+        self.assertIn("<th>foovalue</th>", message.body)
+        self.assertNotIn("<th>hello</th>", message.body)
+        self.assertNotIn("<th>hellovalue</th>", message.body)
