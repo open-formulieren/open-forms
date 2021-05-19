@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 
 import useAsync from 'react-use/esm/useAsync';
-import {get, post} from './api';
+import {get, post, destroy} from './api';
 
 
 const EditForm = () => {
@@ -46,6 +46,7 @@ const EditForm = () => {
                         <select name="formDefinitions"
                                 defaultValue={formStepsValue.formDefinition}
                                 onChange={event => {
+                                    setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
                                     setStepFormValues(previousState => {
                                         previousState[index + 1] = event.target.value;
                                         return previousState;
@@ -61,10 +62,6 @@ const EditForm = () => {
                 )
             });
 
-            let initialStepFormValues = {};
-            formStepsValues.forEach((formStepsValue, index) => initialStepFormValues[index+1] = formStepsValue.formDefinition);
-
-            setStepFormValues(initialStepFormValues);
             setStepForms(initialStepFormsValues);
         }
     }, [formStepsValues]);
@@ -131,7 +128,7 @@ const EditForm = () => {
                     <button
                         onClick={_ => {
                             formStepsToDelete.forEach(formStepUuid => {
-                                delete(`/api/v1/forms/${formUUID}/steps/${formStepUuid}`).then(e => {
+                                destroy(`/api/v1/forms/${formUUID}/steps/${formStepUuid}`).then(e => {
                                     console.log(e);
                                 });
                             });
@@ -151,11 +148,6 @@ const EditForm = () => {
                     <button onClick={event => getInfo()}>
                         Print info
                     </button>
-                    {/*TODO*/}
-                    {/*Need add step button*/}
-                    {/*- Add a new step component*/}
-                    {/*Need submit button*/}
-                    {/*- Submit all the steps*/}
                 </div>
             </div>
         </div>
