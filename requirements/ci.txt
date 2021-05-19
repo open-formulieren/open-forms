@@ -12,6 +12,8 @@
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+alabaster==0.7.12
+    # via sphinx
 appdirs==1.4.4
     # via black
 attrs==20.3.0
@@ -19,6 +21,9 @@ attrs==20.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   jsonschema
+    #   pytest
+babel==2.9.1
+    # via sphinx
 beautifulsoup4==4.9.1
     # via webtest
 black==20.8b1
@@ -42,6 +47,8 @@ chardet==3.0.4
     #   requests
 click==7.1.2
     # via black
+commonmark==0.9.1
+    # via recommonmark
 coverage==4.5.4
     # via -r requirements/test-tools.in
 cryptography==3.4.7
@@ -183,6 +190,12 @@ djangorestframework==3.12.4
     #   -r requirements/base.txt
     #   drf-nested-routers
     #   drf-spectacular
+docutils==0.16
+    # via
+    #   recommonmark
+    #   sphinx
+    #   sphinx-rtd-theme
+    #   sphinx-tabs
 drf-nested-routers==0.93.3
     # via
     #   -c requirements/base.txt
@@ -222,11 +235,15 @@ idna==2.10
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests
+imagesize==1.2.0
+    # via sphinx
 inflection==0.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
+iniconfig==1.1.1
+    # via pytest
 isodate==0.6.0
     # via
     #   -c requirements/base.txt
@@ -234,6 +251,8 @@ isodate==0.6.0
     #   python3-saml
 isort==5.7.0
     # via -r requirements/test-tools.in
+jinja2==2.11.3
+    # via sphinx
 jsonschema==3.2.0
     # via
     #   -c requirements/base.txt
@@ -250,6 +269,12 @@ lxml==4.6.3
     #   -r requirements/base.txt
     #   pyquery
     #   xmlsec
+markdown==3.3.4
+    # via sphinx-markdown-tables
+markupsafe==1.1.1
+    # via
+    #   jinja2
+    #   sphinx
 mccabe==0.6.1
     # via flake8
 mypy-extensions==0.4.3
@@ -259,6 +284,10 @@ openpyxl==3.0.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+packaging==20.9
+    # via
+    #   pytest
+    #   sphinx
 pathspec==0.8.1
     # via black
 pep8==1.7.1
@@ -267,6 +296,8 @@ pillow==8.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+pluggy==0.13.1
+    # via pytest
 polib==1.1.0
     # via
     #   -c requirements/base.txt
@@ -276,6 +307,8 @@ psycopg2==2.8.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+py==1.10.0
+    # via pytest
 pycodestyle==2.6.0
     # via flake8
 pycparser==2.20
@@ -285,6 +318,10 @@ pycparser==2.20
     #   cffi
 pyflakes==2.2.0
     # via flake8
+pygments==2.9.0
+    # via
+    #   sphinx
+    #   sphinx-tabs
 pyjwt==1.7.1
     # via
     #   -c requirements/base.txt
@@ -294,6 +331,8 @@ pyopenssl==19.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+pyparsing==2.4.7
+    # via packaging
 pyquery==1.4.1
     # via -r requirements/test-tools.in
 pyrsistent==0.17.3
@@ -301,6 +340,8 @@ pyrsistent==0.17.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   jsonschema
+pytest==6.2.4
+    # via -r requirements/test-tools.in
 python-dateutil==2.8.1
     # via
     #   -c requirements/base.txt
@@ -320,6 +361,7 @@ pytz==2021.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   babel
     #   django
     #   django-yubin
 pyyaml==5.4.1
@@ -333,6 +375,8 @@ pyzmail36==1.0.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-yubin
+recommonmark==0.7.1
+    # via -r requirements/docs.in
 redis==3.5.3
     # via
     #   -c requirements/base.txt
@@ -353,6 +397,7 @@ requests==2.24.0
     #   django-rosetta
     #   gemma-zds-client
     #   requests-mock
+    #   sphinx
     #   zgw-consumers
 sentry-sdk==0.17.3
     # via
@@ -372,8 +417,34 @@ six==1.15.0
     #   python-dateutil
     #   requests-mock
     #   webtest
+snowballstemmer==2.1.0
+    # via sphinx
 soupsieve==2.0.1
     # via beautifulsoup4
+sphinx-markdown-tables==0.0.15
+    # via -r requirements/docs.in
+sphinx-rtd-theme==0.5.2
+    # via -r requirements/docs.in
+sphinx-tabs==3.0.0
+    # via -r requirements/docs.in
+sphinx==4.0.1
+    # via
+    #   -r requirements/docs.in
+    #   recommonmark
+    #   sphinx-rtd-theme
+    #   sphinx-tabs
+sphinxcontrib-applehelp==1.0.2
+    # via sphinx
+sphinxcontrib-devhelp==1.0.2
+    # via sphinx
+sphinxcontrib-htmlhelp==1.0.3
+    # via sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via sphinx
+sphinxcontrib-qthelp==1.0.3
+    # via sphinx
+sphinxcontrib-serializinghtml==1.1.4
+    # via sphinx
 sqlparse==0.3.1
     # via
     #   -c requirements/base.txt
@@ -391,7 +462,9 @@ text-unidecode==1.3
     #   -r requirements/base.txt
     #   faker
 toml==0.10.2
-    # via black
+    # via
+    #   black
+    #   pytest
 typed-ast==1.4.1
     # via black
 typing-extensions==3.7.4.3

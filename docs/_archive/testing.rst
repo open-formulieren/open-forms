@@ -78,20 +78,6 @@ needs to be available.
 
 Run the tests by invoking ``./bin/jenkins_js.sh``.
 
-UI tests
-========
-
-To check that certain views work as expected, here is a checklist of things to check.
-
-Form builder
-------------
-
-Navigate to the admin. Then go to  **Formulieren > Form definitions**. Then click on **form definition toevoegen**.
-Here check that the following components are present under *configuration*:
-
-- Under *Formuliervelden* there should be: Text Field, IBAN Field, Text Area, Checkbox, Select Boxes, Select, Radio.
-- Under *Basisregistratie Personen* there should be: Gezinsleden.
-
 
 Jenkins jobs
 ============

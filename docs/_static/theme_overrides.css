@@ -1,0 +1,32 @@
+/* override table width restrictions */
+@media screen and (min-width: 767px) {
+
+   .wy-table-responsive table td {
+      /* !important prevents the common CSS stylesheets from overriding
+         this as on RTD they are loaded after this stylesheet */
+      white-space: normal !important;
+   }
+   .wy-table-responsive table td:first-child {
+      white-space: nowrap !important;
+   }
+   .wy-table-responsive table {
+      background-color: white;
+   }
+   .wy-table-responsive {
+      overflow: visible !important;
+   }
+}
+
+/* Depends on logo but default seems ok for this.
+.wy-side-nav-search {
+   background-color: #04A5BB;
+}
+*/
+
+.rst-content a:link, .rst-content a:visited {
+  color: #017092;
+}
+
+.rst-content a:focus, .rst-content a:hover {
+  color: #051F31;
+}

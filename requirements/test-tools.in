@@ -10,6 +10,7 @@ pyquery  # integrates with webtest
 requests-mock
 tblib
 pep8
+pytest  # documentation tests
 django-capture-on-commit-callbacks
 
 # Code formatting

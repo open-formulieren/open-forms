@@ -32,7 +32,8 @@ pip-compile \
     --output-file requirements/ci.txt \
     "$@" \
     requirements/base.txt \
-    requirements/test-tools.in
+    requirements/test-tools.in \
+    requirements/docs.in
 
 # Dev depedencies - exact same set as CI + some extra tooling
 pip-compile \
