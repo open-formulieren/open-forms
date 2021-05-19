@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import PropTypes from 'prop-types';
 
 import useAsync from 'react-use/esm/useAsync';
@@ -29,8 +29,7 @@ const EditForm = ({formUUID}) => {
 
             formStepsValues.forEach((formStepsValue, index) => {
                 initialStepFormsValues.push(
-                    <tr key={index}>
-                        <td>Step</td>
+                    <Fragment key={index}>
                         <td>
                             <select name="formDefinitions"
                                     defaultValue={formStepsValue.formDefinition}
@@ -46,8 +45,6 @@ const EditForm = ({formUUID}) => {
                                     return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                                 })}
                             </select>
-                        </td>
-                        <td>
                             <a
                                 onClick={_ => {
                                 setStepFormValues(previousState => {
@@ -60,7 +57,7 @@ const EditForm = ({formUUID}) => {
                                 <img src="/static/admin/img/icon-deletelink.svg" alt="Verwijderen"/>
                             </a>
                         </td>
-                    </tr>
+                    </Fragment>
                 )
             });
 
@@ -81,8 +78,7 @@ const EditForm = ({formUUID}) => {
 
     const getNewStep = () => {
         return (
-            <tr key={stepForms.length}>
-                <td>Step</td>
+            <Fragment key={index}>
                 <td>
                     <select name="formDefinitions" onChange={event => {
                         stepFormValues[stepForms.length+1] = event.target.value;
@@ -93,8 +89,6 @@ const EditForm = ({formUUID}) => {
                             return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                         })}
                     </select>
-                </td>
-                <td>
                     <a
                         onClick={event => {
                         setStepFormValues(previousState => {
@@ -106,7 +100,7 @@ const EditForm = ({formUUID}) => {
                         <img src="/static/admin/img/icon-deletelink.svg" alt="Verwijderen"/>
                     </a>
                 </td>
-            </tr>
+            </Fragment>
         )
     };
 
@@ -121,8 +115,21 @@ const EditForm = ({formUUID}) => {
 
                 <div style={{width: '75%'}}>
                     <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Form Definition</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            {stepForms}
+                            {stepForms.map((stepForm, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{index}</td>
+                                        {stepForm}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                     <div className="submit-row">
