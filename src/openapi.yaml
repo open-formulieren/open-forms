@@ -865,7 +865,6 @@ components:
         configuration:
           type: object
           additionalProperties: {}
-          title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
       required:
       - configuration
@@ -1062,7 +1061,8 @@ components:
         price:
           type: string
           format: decimal
-          pattern: ^\d{0,8}(\.\d{0,2})?$
+          maximum: 100000000
+          minimum: -100000000
       required:
       - name
       - price
@@ -1085,7 +1085,6 @@ components:
           items:
             $ref: '#/components/schemas/NestedSubmissionStep'
           readOnly: true
-          title: Submission steps
           description: Details of every form step of this submission's form, tracking
             the progress and other meta-data of each particular step.
         nextStep:
@@ -1133,7 +1132,6 @@ components:
           type: string
           format: email
           writeOnly: true
-          title: Contact e-mail address
           description: The e-mail address where the 'magic' resume link should be
             sent to
         suspendedOn:
