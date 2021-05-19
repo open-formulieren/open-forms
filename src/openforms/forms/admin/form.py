@@ -101,7 +101,12 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
                 "import/",
                 self.admin_site.admin_view(self.import_view),
                 name="forms_import",
-            )
+            ),
+            path(
+                "<path:object_id>/change_2/",
+                self.admin_site.admin_view(self.formedit_view),
+                name="forms_form_change_2",
+            ),
         ]
         return my_urls + urls
 
@@ -129,17 +134,6 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         context = dict(self.admin_site.each_context(request), form=form)
 
         return TemplateResponse(request, "admin/forms/form/import_form.html", context)
-
-    def get_urls(self) -> list:
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                "<path:object_id>/edit/",
-                self.admin_site.admin_view(self.formedit_view),
-                name="form_edit",
-            ),
-        ]
-        return custom_urls + urls
 
     @property
     def formedit_view(self):

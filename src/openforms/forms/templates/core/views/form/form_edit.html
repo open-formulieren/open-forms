@@ -2,12 +2,13 @@
 
 {% load admin_urls static i18n %}
 
-{% block content %}
-{#    TODO Remove below links#}
-    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
-    <link rel='stylesheet' href='https://cdn.form.io/formiojs/formio.full.min.css'>
-    <script src='https://cdn.form.io/formiojs/formio.full.min.js'></script>
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
+{% endblock %}
 
+{% block content %}
     <p id="form-uuid" hidden>{{ object.uuid }}</p>
     <div id="react-edit">
         {# empty on purpose - react managed #}
