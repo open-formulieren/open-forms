@@ -4,7 +4,7 @@ name: Run CI
 on:
   push:
     paths-ignore:
-      # Ignore src/openapi.yaml because it's automatically generated within 
+      # Ignore src/openapi.yaml because it's automatically generated within
       # this workflow.
       - 'src/openapi.yaml'
     branches:
@@ -54,10 +54,6 @@ jobs:
           npm ci
           npm run build
 
-      - name: Build and test docs
-        working-directory: docs
-        run: pytest check_sphinx.py -v --tb=auto
-
       - name: Build demo SPA
         run: |
           yarn install
@@ -86,6 +82,27 @@ jobs:
           name: open-forms-oas
           path: openapi.yaml
           retention-days: 1
+
+  docs:
+    name: Build and check documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+
+      - name: Install dependencies
+        run: pip install -r requirements/ci.txt
+
+      - name: Build and test docs
+        working-directory: docs
+        run: pytest check_sphinx.py -v --tb=auto
 
   oas-lint:
     needs: tests
