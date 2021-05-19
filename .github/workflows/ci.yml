@@ -157,18 +157,18 @@ jobs:
     name: Update OAS in repository
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Download generated OAS
         uses: actions/download-artifact@v2
         with:
           name: open-forms-oas
-          path: openapi.yaml
       - name: Commit OAS changes
         continue-on-error: true
         run: |
           git config --global user.name 'Github actions'
           git config --global user.email 'support@maykinmedia.com'
-          mv openapi.yaml src/openapi.yaml
-          git add src/openapi.yaml
+          mv ./openapi.yaml ./src/openapi.yaml
+          git add ./src/openapi.yaml
           git commit -m ":package: Updated OAS."
           git push
 
