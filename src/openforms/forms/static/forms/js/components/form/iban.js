@@ -1,4 +1,5 @@
 import {Formio} from "formiojs";
+import {defineCommonEditFormTabs} from "./abstract";
 
 const TextField = Formio.Components.components.textfield;
 
@@ -30,5 +31,8 @@ class IbanField extends TextField {
     }
 
 }
+
+defineCommonEditFormTabs(IbanField);
+
 
 Formio.registerComponent('iban', IbanField);

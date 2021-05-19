@@ -74,6 +74,12 @@ export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
                         {
                             type: 'textfield', key: 'description', label: 'Description'
                         },
+                        {
+                            type: 'checkbox',
+                            key: 'showInEmail',
+                            label: 'Show in email',
+                            tooltip: 'Whether to show this value in the confirmation email'
+                        },
                         ...extra,
                     ]
                 },
