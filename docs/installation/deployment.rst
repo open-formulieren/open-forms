@@ -8,8 +8,8 @@ Deployment is done via `Ansible`_. Currently, only single server deployments
 are described but you can just as easily deploy the application in a Kubernetes
 environment.
 
-.. warning:: The deployment configuration (called a "playbook") is very 
-   simplistic and also contains sensitive values. This makes the playbook more 
+.. warning:: The deployment configuration (called a "playbook") is very
+   simplistic and also contains sensitive values. This makes the playbook more
    readable but is not following best practices!
 
 Server preparation
@@ -28,7 +28,7 @@ Apart from Docker, you can install all these with something like:
 
 .. code:: shell
 
-   $ sudo apt-get install postgresql nginx python3 python3-pip
+   $ sudo apt-get install git postgresql nginx python3 python3-pip python3-venv
 
 For Docker, follow the instructions here: https://docs.docker.com/engine/install/
 
@@ -58,16 +58,16 @@ Installation
 
       $ python3 -m venv env/
       $ source env/bin/activate
-      $ pip install "ansible<3,>=2.10"
+      $ pip install "ansible~=2.10"
 
-   .. note:: Sometimes, additional or updates packages are needed if they 
-      are not installed by the Ansible setup installation. You can do so like 
+   .. note:: Sometimes, additional or updates packages are needed if they
+      are not installed by the Ansible setup installation. You can do so like
       this:
 
       .. code:: shell
 
          $ python -m pip install -U pip
-         $ pip install ordered_set packaging appdirs six
+         $ pip install ordered_set packaging appdirs six wheel
 
 3. Install Ansible collections:
 
