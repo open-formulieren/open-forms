@@ -33,10 +33,12 @@ const EditForm = () => {
                     <div key={index}>
                         <p>-------------------------</p>
                         <p>Step {index + 1}</p>
-                        <button onClick={event => {
-                            delete stepFormValues[index + 1];
-                            setStepFormValues(stepFormValues);
-                            setStepForms(stepForms.filter(element => element.key !== index.toString()));
+                        <button onClick={_ => {
+                            setStepFormValues(previousState => {
+                                delete previousState[index + 1];
+                                return previousState;
+                            });
+                            setStepForms(previousState => previousState.filter(element => element.key !== index.toString()));
                             setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
                         }}>
                             Delete
@@ -44,8 +46,10 @@ const EditForm = () => {
                         <select name="formDefinitions"
                                 value={formStepsValue.formDefinition}
                                 onChange={event => {
-                                    stepFormValues[index + 1] = event.target.value;
-                                    setStepFormValues(stepFormValues);
+                                    setStepFormValues(previousState => {
+                                        previousState[index + 1] = event.target.value;
+                                        return previousState;
+                                    });
                                 }}>
                             <option key='---' value='---'>---</option>
                             {formDefinitionValues.results.map(definition => {
@@ -65,6 +69,16 @@ const EditForm = () => {
         }
     }, [formStepsValues]);
 
+    const getInfo = () => {
+        console.log('-------------');
+        console.log('stepFormValues');
+        console.log(stepFormValues);
+        console.log('stepForms');
+        console.log(stepForms);
+        console.log('formStepsToDelete');
+        console.log(formStepsToDelete);
+    };
+
 
     const getNewStep = () => {
         return (
@@ -72,9 +86,11 @@ const EditForm = () => {
                 <p>-------------------------</p>
                 <p>Step {stepForms.length+1}</p>
                 <button onClick={event => {
-                    delete stepFormValues[stepForms.length+1];
-                    setStepFormValues(stepFormValues);
-                    setStepForms(stepForms.filter(element => element.key !== stepForms.length.toString()));
+                    setStepFormValues(previousState => {
+                        delete previousState[stepForms.length + 1];
+                        return previousState;
+                    });
+                    setStepForms(previousState => previousState.filter(element => element.key !== stepForms.length.toString()));
                 }}>
                     Delete
                 </button>
@@ -106,7 +122,7 @@ const EditForm = () => {
                         {stepForms}
                     </div>
                     <button
-                        onClick={event => {
+                        onClick={_ => {
                             setStepForms([...stepForms, getNewStep()]);
                         }}
                     >
@@ -114,6 +130,12 @@ const EditForm = () => {
                     </button>
                     <button
                         onClick={_ => {
+                            formStepsToDelete.forEach(formStepUuid => {
+                                delete(`/api/v1/forms/${formUUID}/steps/${formStepUuid}`).then(e => {
+                                    console.log(e);
+                                });
+                            });
+
                             for (const [key, value] of Object.entries(stepFormValues)) {
                                 const data = {
                                     "formDefinition": value
@@ -126,18 +148,7 @@ const EditForm = () => {
                     >
                         Submit
                     </button>
-                    <button
-                        onClick={event => {
-                            console.log('-------------');
-                            console.log('stepFormValues');
-                            console.log(stepFormValues);
-                            console.log('stepForms');
-                            console.log(stepForms);
-                            console.log('formStepsToDelete');
-                            console.log(formStepsToDelete);
-                            console.log('-------------');
-                        }}
-                    >
+                    <button onClick={event => getInfo()}>
                         Print info
                     </button>
                     {/*TODO*/}
