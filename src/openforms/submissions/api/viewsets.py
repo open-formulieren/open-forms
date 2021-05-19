@@ -17,6 +17,7 @@ from openforms.registrations.submissions import register_submission
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Submission, SubmissionStep
+from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
@@ -173,6 +174,7 @@ class SubmissionStepViewSet(
     permission_classes = [ActiveSubmissionPermission]
     lookup_url_kwarg = "step_uuid"
     submission_url_kwarg = "submission_uuid"
+    parser_classes = [IgnoreDataFieldCamelCaseJSONParser]
 
     def get_object(self):
         """
