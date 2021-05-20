@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<table>
+    <tr>
+        <th>{% trans "Field" %}</th>
+        <th>{% trans "Response" %}</th>
+    </tr>
+    {% for key, value in data.items %}
+        <tr>
+            <th>{{ key }}</th>
+            <th>{{ value }}</th>
+        </tr>
+    {% endfor %}
+</table>

@@ -1,16 +1,16 @@
 import re
-from typing import List
 from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import Context, Template, TemplateSyntaxError
 from django.template.loader import get_template
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models import FormDefinition
 
-from ..forms.models import FormDefinition
 from .constants import URL_REGEX
 
 
@@ -51,40 +51,16 @@ class ConfirmationEmailTemplate(models.Model):
                 return match.group()
             return ""
 
-        default_template = get_template("confirmation_mail.html")
-        rendered_content = Template(self.content).render(Context(context))
+        content_template = self.content
+        if re.search(r"\{% summary %\}", self.content):
+            context["form"] = self.form
+            content_template = "{% load form_summary %}" + self.content
+
+        rendered_content = Template(content_template).render(Context(context))
         stripped = re.sub(URL_REGEX, replace_urls, rendered_content)
 
-        processed_context = {"body": stripped, "show_summary": False}
-
-        # Check if the confirmation email should contain a summary of the submitted data
-        if re.search(r"\{\{ summary \}\}", self.content):
-            filtered_data = self.filter_data_to_show_in_email(context)
-            processed_context["show_summary"] = True
-            processed_context["summary"] = filtered_data
-
-        return default_template.render(processed_context)
-
-    def filter_data_to_show_in_email(self, submitted_data: dict) -> dict:
-        """Extract data that should be shown as a summary of submission in the confirmation email"""
-
-        # From the form definition, see which fields should be shown in the confirmation email
-        data_to_show_in_email = []
-        for form_definition in FormDefinition.objects.filter(formstep__form=self.form):
-            components = form_definition.configuration.get("configuration").get(
-                "components"
-            )
-            if components:
-                for component in components:
-                    if component.get("showInEmail"):
-                        data_to_show_in_email.append(component["key"])
-
-        # Return a dict with only the data that should be shown in the email
-        filtered_data = {}
-        for property in data_to_show_in_email:
-            if property in submitted_data:
-                filtered_data[property] = submitted_data[property]
-        return filtered_data
+        default_template = get_template("confirmation_mail.html")
+        return default_template.render({"body": mark_safe(stripped)})
 
     def clean(self):
         try:
