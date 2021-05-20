@@ -52,3 +52,23 @@ jobs:
       - name: Run black
         run: |
           black --check src/openforms docs
+
+  migrations:
+    name: Check for model changes not present in the migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/ci.txt
+      - name: Run manage.py makemigrations --check --dry-run
+        run: |
+          src/manage.py makemigrations --check --dry-run
