@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment} from "react";
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import {get, post, destroy} from './api';
+import {get, post, put, destroy} from './api';
 
 
 const EditForm = ({formUUID}) => {
@@ -9,6 +9,7 @@ const EditForm = ({formUUID}) => {
     const [stepForms, setStepForms] = useState([]);
     const [stepFormValues, setStepFormValues] = useState({});
     const [formStepsToDelete, setFormStepsToDelete] = useState([]);
+    const [formStepsToUpdate, setFormStepsToUpdate] = useState([]);
 
     const {loading: formLoading, value: formValue, error: formError} = useAsync(
         async () => await get(`/api/v1/forms/${formUUID}`)
@@ -33,9 +34,8 @@ const EditForm = ({formUUID}) => {
                             <select name="formDefinitions"
                                     defaultValue={formStepsValue.formDefinition}
                                     onChange={event => {
-                                        setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
-                                        setStepFormValues(previousState => {
-                                            previousState[index + 1] = event.target.value;
+                                        setFormStepsToUpdate(previousState => {
+                                            previousState[formStepsValue.uuid] = event.target.value;
                                             return previousState;
                                         });
                                     }}>
@@ -147,9 +147,18 @@ const EditForm = ({formUUID}) => {
                                     });
                                 });
 
-                                for (const [key, value] of Object.entries(stepFormValues)) {
+                                for (const [stepUUID, formDefinition] of Object.entries(formStepsToUpdate)) {
                                     const data = {
-                                        "formDefinition": value
+                                        "formDefinition": formDefinition
+                                    };
+                                    put(`/api/v1/forms/${formUUID}/steps/${stepUUID}`, data).then(e => {
+                                        console.log(e);
+                                    });
+                                }
+
+                                for (const [key, formDefinition] of Object.entries(stepFormValues)) {
+                                    const data = {
+                                        "formDefinition": formDefinition
                                     };
                                     post(`/api/v1/forms/${formUUID}/steps`, data).then(e => {
                                         console.log(e);
