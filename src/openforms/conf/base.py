@@ -184,7 +184,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "openforms.wsgi.application"
 
 # Translations
-LOCALE_PATHS = (os.path.join(DJANGO_PROJECT_DIR, "conf", "locale"),)
+LOCALE_PATHS = (
+    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale"),
+    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale_extensions"),
+)
 
 #
 # SERVING of static and media files
