@@ -25,7 +25,6 @@ RUN pip install pip setuptools -U
 COPY ./requirements /app/requirements
 RUN pip install -r requirements/production.txt
 
-
 # Stage 2 - Install frontend deps and build assets
 FROM node:15-buster AS frontend-build
 
@@ -64,6 +63,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         mime-support \
         postgresql-client \
         libxmlsec1 \
+        gettext \
         # lxml deps
         # libxslt \
     && rm -rf /var/lib/apt/lists/*
@@ -98,8 +98,10 @@ ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
 
 ARG SECRET_KEY=dummy
 
-# Run collectstatic, so the result is already included in the image
-RUN python src/manage.py collectstatic --noinput
+# Run collectstatic and compilemessages, so the result is already included in 
+# the image
+RUN python src/manage.py collectstatic --noinput \
+    && python src/manage.py compilemessages
 
 EXPOSE 8000
 CMD ["/start.sh"]
