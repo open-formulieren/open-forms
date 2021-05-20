@@ -46,6 +46,8 @@ const EditForm = ({formUUID}) => {
                                 })}
                             </select>
                             <a
+                                className="related-widget-wrapper-link delete-related"
+                                href=""
                                 onClick={_ => {
                                 setStepFormValues(previousState => {
                                     delete previousState[index + 1];
@@ -90,7 +92,9 @@ const EditForm = ({formUUID}) => {
                         })}
                     </select>
                     <a
-                        onClick={event => {
+                        className="related-widget-wrapper-link delete-related"
+                        href=""
+                        onClick={_ => {
                         setStepFormValues(previousState => {
                             delete previousState[stepForms.length + 1];
                             return previousState;
@@ -108,32 +112,35 @@ const EditForm = ({formUUID}) => {
         <div className="card">
             <header className="card__header">
                 {formValue &&
-                    <h2 className="title">Edit Form: {formValue.name}</h2>
+                    <h1 className="title">Edit Form: {formValue.name}</h1>
                 }
             </header>
-            <div className="card__body" style={{display: 'flex'}}>
-
-                <div style={{width: '75%'}}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order</th>
-                                <th>Form Definition</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stepForms.map((stepForm, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{index}</td>
-                                        {stepForm}
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+            <div>
+                <div className="inline-group tabular inline-related">
+                    <fieldset className="module">
+                        <h2>Form Steps</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Form Definition</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stepForms.map((stepForm, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>{index}</td>
+                                            {stepForm}
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </fieldset>
                     <div className="submit-row">
                         <button
+                            style={{float: 'right', marginLeft: 8}}
                             className="button"
                             onClick={_ => {
                                 setStepForms([...stepForms, getNewStep()]);
@@ -142,6 +149,7 @@ const EditForm = ({formUUID}) => {
                             Add Step
                         </button>
                         <button
+                            style={{float: 'right', marginLeft: 8}}
                             className="button"
                             onClick={_ => {
                                 formStepsToDelete.forEach(formStepUuid => {
@@ -162,7 +170,7 @@ const EditForm = ({formUUID}) => {
                         >
                             Submit
                         </button>
-                        <button className="button" onClick={event => getInfo()}>
+                        <button className="button" style={{float: 'right', marginLeft: 8}} onClick={_ => getInfo()}>
                             Print info
                         </button>
                     </div>
