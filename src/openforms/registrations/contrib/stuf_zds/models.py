@@ -24,6 +24,22 @@ class SoapService(models.Model):
         _("url"),
         help_text=_("URL of the StUF-ZDS service to connect to."),
     )
+    endpoint_sync = models.CharField(
+        _("endpoint sync requests"),
+        max_length=200,
+        blank=True,
+        help_text=_(
+            "Endpoint for synchronous Soap request, for example '/VerwerkSynchroonVrijBericht'."
+        ),
+    )
+    endpoint_async = models.CharField(
+        _("endpoint async requests"),
+        help_text=_(
+            "Endpoint for asynchronous Soap request, usually '/OntvangAsynchroon'."
+        ),
+        max_length=200,
+        blank=True,
+    )
     user = models.CharField(
         _("user"),
         max_length=200,
@@ -79,7 +95,16 @@ class StufZDSConfig(SingletonModel):
         null=True,
     )
 
-    gemeentecode = models.CharField(max_length=32)
+    gemeentecode = models.CharField(_("Gemeentecode to register Zaken"), max_length=32)
+    zds_zaaktype_code = models.CharField(
+        _("Zaaktype code for newly created Zaken in StUF-ZDS"), max_length=32
+    )
+    zds_zaaktype_omschrijving = models.CharField(
+        _("Zaaktype description for newly created Zaken in StUF-ZDS"),
+        max_length=32,
+    )
 
     def apply_defaults_to(self, options):
         options.setdefault("gemeentecode", self.gemeentecode)
+        options.setdefault("zds_zaaktype_code", self.zds_zaaktype_code)
+        options.setdefault("zds_zaaktype_omschrijving", self.zds_zaaktype_omschrijving)

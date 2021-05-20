@@ -1,3 +1,5 @@
+import uuid
+
 from django.template import loader
 from django.test import TestCase
 
@@ -77,12 +79,6 @@ class StufTestBase(TestCase):
         for path, value in path_value_dict.items():
             self.assertXPathEquals(xml_doc, path, value)
 
-    # def xpath_element(self, xml_doc, xpath):
-    #     elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
-    #     if len(elements) != 1:
-    #         self.fail(f"cannot find exactly 1 XML element with xpath {xpath}", )
-    #     return elements[0]
-
     def assertSoapXMLCommon(self, xml_doc):
         self.assertIsNotNone(xml_doc)
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Header")
@@ -102,7 +98,16 @@ class StufZDSClientTests(StufTestBase):
             ontvanger_organisatie="OntOrg",
             ontvanger_applicatie="OntApp",
         )
+
         self.client = StufZDSClient(self.service)
+
+        self.options = {
+            "gemeentecode": "1234",
+            "omschrijving": "my-form",
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "referentienummer": str(uuid.uuid4()),
+        }
 
     def test_create_zaak_identificatie(self, m):
         m.post(
@@ -116,22 +121,22 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_zaak_identificatie()
+        identificatie = self.client.create_zaak_identificatie(self.options)
 
         self.assertEqual(identificatie, "foo")
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-        self.assertXPathExists(xml_doc, "//zds:genereerZaakIdentificatie_Di02")
+        self.assertXPathExists(xml_doc, "//zkn:genereerZaakIdentificatie_Di02")
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zds:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zds:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zds:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zds:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
-                "//zds:stuurgegevens/stuf:berichtcode": "Di02",
-                "//zds:stuurgegevens/stuf:functie": "genereerZaakidentificatie",
+                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerZaakidentificatie",
             },
         )
 
@@ -139,17 +144,14 @@ class StufZDSClientTests(StufTestBase):
         m.post(
             self.service.url,
             content=load_mock("creeerZaak.xml"),
-            additional_matcher=match_text("creeerZaak_ZakLk01"),
+            additional_matcher=match_text("zakLk01"),
         )
 
-        options = {
-            "gemeentecode": "123",
-        }
-        self.client.create_zaak(options, "foo")
+        self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-        self.assertXPathExists(xml_doc, "//zds:creeerZaak_ZakLk01")
+        self.assertXPathExists(xml_doc, "//zkn:zakLk01")
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -159,7 +161,11 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
-                # TODO test more fields
+                "//zkn:object/zkn:identificatie": "foo",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
             },
         )
 
@@ -172,22 +178,22 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_document_identificatie()
+        identificatie = self.client.create_document_identificatie(self.options)
 
         self.assertEqual(identificatie, "bar")
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-        self.assertXPathExists(xml_doc, "//zds:genereerDocumentIdentificatie_Di02")
+        self.assertXPathExists(xml_doc, "//zkn:genereerDocumentIdentificatie_Di02")
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zds:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zds:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zds:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zds:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
-                "//zds:stuurgegevens/stuf:berichtcode": "Di02",
-                "//zds:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
             },
         )
 
@@ -198,12 +204,8 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
         )
 
-        options = {
-            "gemeentecode": "123",
-            "omschrijving": "xyz",
-        }
         self.client.create_zaak_document(
-            options, zaak_id="foo", doc_id="bar", body="bazz"
+            self.options, zaak_id="foo", doc_id="bar", body="bazz"
         )
 
         xml_doc = xml_from_request_history(m, 0)
@@ -218,7 +220,13 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
-                # TODO test more fields
+                "//zkn:object/zkn:identificatie": "bar",
+                "//zkn:object/zkn:dct.omschrijving": "my-form",
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "file-bar.b64.txt",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
             },
         )
 
@@ -245,7 +253,7 @@ class StufZDSPluginTests(StufTestBase):
             content=load_mock(
                 "genereerZaakIdentificatie.xml",
                 {
-                    "zaak_identificatie": "foo",
+                    "zaak_identificatie": "foo-zaak",
                 },
             ),
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
@@ -253,13 +261,14 @@ class StufZDSPluginTests(StufTestBase):
         m.post(
             self.service.url,
             content=load_mock("creeerZaak.xml"),
-            additional_matcher=match_text("creeerZaak_ZakLk01"),
+            additional_matcher=match_text("zakLk01"),
         )
 
         m.post(
             self.service.url,
             content=load_mock(
-                "genereerDocumentIdentificatie.xml", {"document_identificatie": "bar"}
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
             ),
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
@@ -284,8 +293,8 @@ class StufZDSPluginTests(StufTestBase):
         self.assertEqual(
             result,
             {
-                "zaak": "foo",
-                "document": "bar",
+                "zaak": "foo-zaak",
+                "document": "bar-document",
             },
         )
 

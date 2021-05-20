@@ -4,12 +4,11 @@ import os
 import uuid
 from collections import OrderedDict
 from datetime import timedelta
-from io import StringIO
 from typing import Tuple
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template import loader
-from django.utils import dateformat, timezone
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 import requests
@@ -27,14 +26,37 @@ nsmap = OrderedDict(
         ("zds", "http://www.stufstandaarden.nl/koppelvlak/zds0120"),
         ("gml", "http://www.opengis.net/gml"),
         ("xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-        # ("soap11env", "http://schemas.xmlsoap.org/soap/envelope/"), # ugly
-        ("soapenv", "http://schemas.xmlsoap.org/soap/envelope/"),  # added
+        # ("soap11env", "http://www.w3.org/2003/05/soap-envelope"), # ugly
+        ("soapenv", "http://www.w3.org/2003/05/soap-envelope"),  # added
     )
 )
 
 SCHEMA_DIR = os.path.join(
     os.path.dirname(__file__), "vendor", "Zaak_DocumentServices_1_1_02"
 )
+DATE_FORMAT = "%Y%m%d"
+TIME_FORMAT = "%H%M%S"
+DATETIME_FORMAT = "%Y%m%d%H%M%S"
+
+
+def fmt_soap_datetime(d):
+    return d.strftime(DATETIME_FORMAT)
+
+
+def fmt_soap_date(d):
+    return d.strftime(DATE_FORMAT)
+
+
+def fmt_soap_time(d):
+    return d.strftime(TIME_FORMAT)
+
+
+def xml_value(xml, xpath, namespaces=nsmap):
+    elements = xml.xpath(xpath, namespaces=namespaces)
+    if len(elements) == 1:
+        return elements[0].text
+    else:
+        raise ValueError(f"xpath not found {xpath}")
 
 
 class StufZDSClient:
@@ -49,18 +71,25 @@ class StufZDSClient:
             "Content-Type": "application/soap+xml",
         }
 
-    def _get_request_base_context(self):
+    def _get_request_base_context(self, options):
         return {
-            "created": timezone.now(),
-            "expired": timezone.now() + timedelta(minutes=5),
-            "username": self.service.user,
-            "password": self.service.password,
+            # "created": timezone.now(),
+            # "expired": timezone.now() + timedelta(minutes=5),
+            # "username": self.service.user,
+            # "password": self.service.password,
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
             "ontvanger_organisatie": self.service.ontvanger_organisatie,
             "ontvanger_applicatie": self.service.ontvanger_applicatie,
-            "referentienummer": str(uuid.uuid4()),
-            "tijdstip_bericht": dateformat.format(timezone.now(), "YmdHis"),
+            "tijdstip_bericht": fmt_soap_datetime(timezone.now()),
+            "gemeentecode": options["gemeentecode"],
+            "zds_zaaktype_code": options["zds_zaaktype_code"],
+            "zds_zaaktype_omschrijving": options["zds_zaaktype_omschrijving"],
+            "zaak_omschrijving": options["omschrijving"],
+            "document_omschrijving": options["omschrijving"],
+            "referentienummer": options["referentienummer"],
+            "tijdstip_registratie": fmt_soap_datetime(timezone.now()),
+            "datum_vandaag": fmt_soap_date(timezone.now()),
         }
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
@@ -69,7 +98,6 @@ class StufZDSClient:
         )
 
     def _load_schema(self, path: str):
-        # TODO cache schema?
         path = os.path.join(SCHEMA_DIR, path)
         with open(path, "r") as f:
             xmlschema_doc = etree.parse(f)
@@ -77,83 +105,83 @@ class StufZDSClient:
         return xmlschema
 
     def _make_request(
-        self, template_name: str, schema_path: str, context: dict
+        self,
+        template_name: str,
+        schema_path: str,
+        context: dict,
+        sync=False,
     ) -> Tuple[Response, Element]:
         cert = (
             (self.service.certificate.path, self.service.certificate_key.path)
             if self.service.certificate and self.service.certificate_key
             else (None, None)
         )
-        # xmlschema = self._load_schema(schema_path)
 
         request_body = loader.render_to_string(template_name, context)
 
-        doc = etree.parse(StringIO(request_body))
-        # el = (
-        #     doc.getroot()
-        #     .xpath(
-        #         "soap:Body",
-        #         namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-        #     )[0]
-        #     .getchildren()[0]
-        # )
+        # print(request_body)
+
+        # TODO enable schema validation
+        # doc = etree.parse(StringIO(request_body))
+        # xmlschema = self._load_schema(schema_path)
         # if not xmlschema.validate(doc):
         #     raise ValidationError(xmlschema.error_log.last_error.message)
 
         request_data = self._wrap_soap_envelope(request_body)
 
+        url = self.service.url
+        if sync:
+            url = f"{url}{self.service.endpoint_sync}"
+        else:
+            url = f"{url}{self.service.endpoint_async}"
+
         response = requests.post(
-            self.service.url,
+            url,
             data=request_data,
             headers=self._get_headers(),
             cert=cert,
         )
         # TODO error handling?
-        response.raise_for_status()
+        if response.status_code < 200 or response.status_code >= 400:
+            print(parse_soap_error_text(response))
+            response.raise_for_status()
         return response, etree.fromstring(response.content)
 
-    def create_zaak_identificatie(self):
+    def create_zaak_identificatie(self, options):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context()
-        response, xml = self._make_request(template, schema, context)
+        context = self._get_request_base_context(options)
+        response, xml = self._make_request(template, schema, context, sync=True)
 
-        zaak_identificatie = xml.xpath(
-            "//zds:zaak/zkn:identificatie", namespaces=nsmap
-        )[0].text
+        zaak_identificatie = xml_value(
+            xml, "//zkn:zaak/zkn:identificatie", namespaces=nsmap
+        )
 
         return zaak_identificatie
 
-    def create_zaak(self, options, zaak_identificatie):
+    def create_zaak(self, options, zaak_identificatie, data):
         template = "stuf_zds/soap/creeerZaak.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context()
+        context = self._get_request_base_context(options)
         context.update(
             {
                 "zaak_identificatie": zaak_identificatie,
-                "gemeentecode": options["gemeentecode"],
-                # "zds_zaaktype_code": options['zds_zaaktype_code'],
-                # "zds_zaaktype_omschrijving": options['zds_zaaktype_omschrijving'],
-                "tijdstip_registratie": dateformat.format(timezone.now(), "YmdHis"),
-                "datum_vandaag": dateformat.format(timezone.now(), "YmdHis"),
-                "datum_eergisteren": dateformat.format(
-                    timezone.now() - timedelta(days=2), "YmdHis"
-                ),
             }
         )
+        context.update(data)
         response, xml = self._make_request(template, schema, context)
 
         return None
 
-    def create_document_identificatie(self):
+    def create_document_identificatie(self, options):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context()
-        response, xml = self._make_request(template, schema, context)
+        context = self._get_request_base_context(options)
+        response, xml = self._make_request(template, schema, context, sync=True)
 
-        document_identificatie = xml.xpath(
-            "//zds:document/zkn:identificatie", namespaces=nsmap
-        )[0].text
+        document_identificatie = xml_value(
+            xml, "//zkn:document/zkn:identificatie", namespaces=nsmap
+        )
 
         return document_identificatie
 
@@ -165,25 +193,64 @@ class StufZDSClient:
             json.dumps(body, cls=DjangoJSONEncoder).encode()
         ).decode()
 
-        context = self._get_request_base_context()
+        context = self._get_request_base_context(options)
         context.update(
             {
-                "gemeentecode": options["gemeentecode"],
-                "document_omschrijving": options["omschrijving"],
-                "zaak_omschrijving": options["omschrijving"],
-                # "zds_zaaktype_code": options['zds_zaaktype_code'],
-                # "zds_zaaktype_omschrijving": options['zds_zaaktype_omschrijving'],
-                "file_content": file_content,
-                "document_identificatie": doc_id,
                 "zaak_identificatie": zaak_id,
-                "file_name": f"file-{zaak_id}-{doc_id}",
-                "tijdstip_registratie": dateformat.format(timezone.now(), "YmdHis"),
-                "datum_vandaag": dateformat.format(timezone.now(), "YmdHis"),
-                "datum_eergisteren": dateformat.format(
-                    timezone.now() - timedelta(days=2), "YmdHis"
-                ),
+                "document_identificatie": doc_id,
+                "file_content": file_content,
+                "file_name": f"file-{doc_id}.b64.txt",
             }
         )
         response, xml = self._make_request(template, schema, context)
 
         return None
+
+
+def parse_soap_error_text(response):
+    """
+    <?xml version='1.0' encoding='utf-8'?>
+    <soap11env:Envelope xmlns:soap11env="http://www.w3.org/2003/05/soap-envelope">
+      <soap11env:Body>
+        <soap11env:Fault>
+          <faultcode>soap11env:client</faultcode>
+          <faultstring>Berichtbody is niet conform schema in sectormodel</faultstring>
+          <faultactor/>
+          <detail>
+            <ns0:Fo02Bericht xmlns:ns0="http://www.egem.nl/StUF/StUF0301">
+              <ns0:stuurgegevens>
+                <ns0:berichtcode>Fo02</ns0:berichtcode>
+              </ns0:stuurgegevens>
+              <ns0:body>
+                <ns0:code>StUF055</ns0:code>
+                <ns0:plek>client</ns0:plek>
+                <ns0:omschrijving>Berichtbody is niet conform schema in sectormodel</ns0:omschrijving>
+                <ns0:details>:52:0:ERROR:SCHEMASV:SCHEMAV_ELEMENT_CONTENT: Element '{http://www.egem.nl/StUF/sector/zkn/0310}medewerkeridentificatie': This element is not expected. Expected is ( {http://www.egem.nl/StUF/sector/zkn/0310}identificatie ).</ns0:details>
+              </ns0:body>
+            </ns0:Fo02Bericht>
+          </detail>
+        </soap11env:Fault>
+      </soap11env:Body>
+    </soap11env:Envelope>
+    """
+
+    message = response.text
+    if response.headers["content-type"].startswith("text/html"):
+        message = response.status
+    else:
+        try:
+            xml = etree.fromstring(response.text.encode("utf8"))
+            faults = xml.xpath(
+                "/soapenv:Envelope/soapenv:Body/soapenv:Fault", namespaces=nsmap
+            )
+            if faults:
+                messages = []
+                for fault in faults:
+                    messages.append(
+                        etree.tostring(fault, pretty_print=True, encoding="unicode")
+                    )
+                message = "\n".join(messages)
+        except etree.XMLSyntaxError:
+            pass
+
+    return message
