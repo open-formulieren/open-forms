@@ -206,7 +206,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         ConfirmationEmailTemplateFactory.create(
             form=form,
             subject="Confirmation mail",
-            content="Information filled in: {{foo}}, {{ bar }} and {{ hello }}. Submission summary: {{ summary }}",
+            content="Information filled in: {{foo}}, {{ bar }} and {{ hello }}. Submission summary: {% summary %}",
         )
         definition1 = FormDefinitionFactory.create(
             configuration={
