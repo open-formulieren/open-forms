@@ -9,18 +9,18 @@ from solo.models import SingletonModel
 class GlobalConfiguration(SingletonModel):
     email_template_netloc_allowlist = ArrayField(
         models.CharField(max_length=1000),
-        verbose_name=_("Toegestane domeinen in e-mails."),
+        verbose_name=_("allowed email domain names"),
         help_text=_(
-            "Geef een lijst van toegelaten domeinen op (zonder 'https://www.'). "
-            "Hyperlinks in (bevestigings)e-mails worden verwijderd, tenzij het domein "
-            "hier opgegeven is."
+            "Provide a list of allowed domains (without 'https://www')."
+            "Hyperlinks in a (confirmation) email are removed, unless the "
+            "domain is provided here."
         ),
         blank=True,
         default=list,
     )
 
     class Meta:
-        verbose_name = _("Global configuration")
+        verbose_name = _("General configuration")
 
     def __str__(self):
         return force_str(self._meta.verbose_name)

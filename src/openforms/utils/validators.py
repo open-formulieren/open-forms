@@ -4,7 +4,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 
 validate_digits = RegexValidator(
-    regex="^[0-9]+$", message=_("Waarde moet numeriek zijn.")
+    regex="^[0-9]+$", message=_("Expected a numerical value.")
 )
 
 
@@ -46,8 +46,8 @@ class Proef11ValidatorBase:
 class BSNValidator(Proef11ValidatorBase):
     value_size = 9
     error_messages = {
-        "too_short": _("BSN moet %(size) tekens lang zijn."),
-        "wrong": _("Onjuist BSN."),
+        "too_short": _("BSN should have %(size)i characters."),
+        "wrong": _("Invalid BSN."),
     }
 
 
@@ -55,8 +55,8 @@ class BSNValidator(Proef11ValidatorBase):
 class RSINValidator(Proef11ValidatorBase):
     value_size = 9
     error_messages = {
-        "too_short": _(f"RSIN moet %(size) tekens lang zijn."),
-        "wrong": _("Onjuist RSIN."),
+        "too_short": _("RSIN should have %(size)i characters."),
+        "wrong": _("Invalid RSIN."),
     }
 
 

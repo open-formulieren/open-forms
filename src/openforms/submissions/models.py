@@ -56,19 +56,19 @@ class Submission(models.Model):
     Container for submission steps that hold the actual submitted data.
     """
 
-    uuid = StringUUIDField(unique=True, default=uuid.uuid4)
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
-    created_on = models.DateTimeField(auto_now_add=True)
-    completed_on = models.DateTimeField(blank=True, null=True)
-    suspended_on = models.DateTimeField(blank=True, null=True)
+    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
+    completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
+    suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
     bsn = models.CharField(
-        max_length=9, default="", blank=True, validators=(validate_bsn,)
+        _("BSN"), max_length=9, default="", blank=True, validators=(validate_bsn,)
     )
-    current_step = models.PositiveIntegerField(default=0)
+    current_step = models.PositiveIntegerField(_("current step"), default=0)
 
     # interaction with registration backend
     registration_result = JSONField(
-        _("result of backend registration"),
+        _("registration backend result"),
         blank=True,
         null=True,
         help_text=_(
@@ -76,16 +76,18 @@ class Submission(models.Model):
         ),
     )
     registration_status = models.CharField(
-        _("Backend registration status"),
+        _("registration backend status"),
         max_length=50,
         choices=RegistrationStatuses,
         default=RegistrationStatuses.pending,
-        help_text=_("Whether registration in the configured backend was successful."),
+        help_text=_(
+            "Indication whether the registration in the configured backend was successful."
+        ),
     )
 
     class Meta:
-        verbose_name = "Submission"
-        verbose_name_plural = "Submissions"
+        verbose_name = _("Submission")
+        verbose_name_plural = _("Submissions")
 
     def __str__(self):
         return _("{pk} - started on {started}").format(
@@ -182,16 +184,16 @@ class SubmissionStep(models.Model):
     changes made during filling out the form... but...
     """
 
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
     form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
-    data = JSONField(blank=True, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    data = JSONField(_("data"), blank=True, null=True)
+    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
+    modified = models.DateTimeField(_("modified on"), auto_now=True)
 
     class Meta:
-        verbose_name = "SubmissionStep"
-        verbose_name_plural = "SubmissionSteps"
+        verbose_name = _("Submission step")
+        verbose_name_plural = _("Submission steps")
         unique_together = (("submission", "form_step"),)
 
     def __str__(self):

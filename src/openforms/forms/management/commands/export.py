@@ -2,7 +2,7 @@ import io
 import json
 import zipfile
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
@@ -17,16 +17,18 @@ from ...models import Form, FormDefinition, FormStep
 
 
 class Command(BaseCommand):
-    help = "Export the objects with the ids for the specified resource as json"
+    help = "Export form as JSON using the API specification."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "form_id",
-            help=_("ID of the Form to be exported"),
+            help=_("ID of the form to be exported"),
             type=int,
         )
         parser.add_argument(
-            "--archive_name", help=_("Name of the archive to write data to"), type=str
+            "--archive_name",
+            help=_("Write the output to the specified ZIP-file"),
+            type=str,
         )
         parser.add_argument(
             "--response",

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils.translation import ugettext as _
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -29,10 +30,10 @@ class FormTestCase(TestCase):
         form2 = form1.copy()
         form3 = form1.copy()
 
-        self.assertEqual(form2.slug, "a-form-kopie")
-        self.assertEqual(form2.name, "A form (kopie)")
-        self.assertEqual(form3.slug, "a-form-kopie-2")
-        self.assertEqual(form3.name, "A form (kopie)")
+        self.assertEqual(form2.slug, _("{slug}-copy").format(slug=form1.slug))
+        self.assertEqual(form2.name, _("{name} (copy)").format(name=form1.name))
+        self.assertEqual(form3.slug, f"{form2.slug}-2")
+        self.assertEqual(form3.name, _("{name} (copy)").format(name=form1.name))
 
 
 class FormDefinitionTestCase(TestCase):
@@ -60,7 +61,13 @@ class FormDefinitionTestCase(TestCase):
         form2 = form_definition_1.copy()
         form3 = form_definition_1.copy()
 
-        self.assertEqual(form2.slug, "a-form-definition-kopie")
-        self.assertEqual(form2.name, "A form definition (kopie)")
-        self.assertEqual(form3.slug, "a-form-definition-kopie-2")
-        self.assertEqual(form3.name, "A form definition (kopie)")
+        self.assertEqual(
+            form2.slug, _("{slug}-copy").format(slug=form_definition_1.slug)
+        )
+        self.assertEqual(
+            form2.name, _("{name} (copy)").format(name=form_definition_1.name)
+        )
+        self.assertEqual(form3.slug, f"{form2.slug}-2")
+        self.assertEqual(
+            form3.name, _("{name} (copy)").format(name=form_definition_1.name)
+        )

@@ -3,6 +3,7 @@ from io import BytesIO
 from zipfile import ZipFile
 
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
@@ -47,7 +48,7 @@ class FormAdminImportExportTests(WebTest):
     def test_form_admin_import_button(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
 
-        response = response.click("Import")
+        response = response.click(_("Import form"))
 
         self.assertEqual(response.status_code, 200)
 
@@ -173,7 +174,7 @@ class FormAdminCopyTests(WebTest):
 
         response = response.form.submit("_copy")
 
-        copied_form = Form.objects.get(slug=f"{form.slug}-kopie")
+        copied_form = Form.objects.get(slug=_("{slug}-copy").format(slug=form.slug))
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
@@ -182,7 +183,7 @@ class FormAdminCopyTests(WebTest):
         )
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
-        self.assertEqual(copied_form.name, f"{form.name} (kopie)")
+        self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
 
         copied_form_step = FormStep.objects.last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
@@ -207,5 +208,7 @@ class FormAdminActionsTests(WebTest):
 
         self.assertEqual(Form.objects.count(), 2)
         copied_form = Form.objects.exclude(pk=self.form.pk).first()
-        self.assertEqual(copied_form.name, f"{self.form.name} (kopie)")
-        self.assertEqual(copied_form.slug, f"{self.form.slug}-kopie")
+        self.assertEqual(
+            copied_form.name, _("{name} (copy)").format(name=self.form.name)
+        )
+        self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=self.form.slug))

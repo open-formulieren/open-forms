@@ -14,16 +14,18 @@ from .constants import URL_REGEX
 
 class ConfirmationEmailTemplate(models.Model):
     subject = models.CharField(
-        max_length=1000, help_text=_("Subject of the email message")
+        _("subject"), max_length=1000, help_text=_("Subject of the email message")
     )
     content = models.TextField(
+        _("content"),
         help_text=_(
-            "The content of the email message, can contain variables that will be "
-            "templated form the submitted form data."
-        )
+            "The content of the email message can contain variables that will be "
+            "templated from the submitted form data."
+        ),
     )
     form = models.OneToOneField(
         "forms.Form",
+        verbose_name=_("form"),
         null=True,
         blank=True,
         on_delete=models.DO_NOTHING,

@@ -52,7 +52,7 @@ paths:
     get:
       operationId: form_definitions_retrieve
       description: ''
-      summary: Retrieve form step definition
+      summary: Retrieve form step definition details
       parameters:
       - in: path
         name: uuid
@@ -494,7 +494,7 @@ paths:
       operationId: forms_destroy
       description: Destroying a form leads to a soft-delete to protect related submissions.
         These deleted forms are no longer visible in the API endpoints.
-      summary: (Soft) delete a form
+      summary: Mark form as deleted
       parameters:
       - in: path
         name: uuid
@@ -871,7 +871,8 @@ components:
         file:
           type: string
           format: uri
-          description: The file that contains the Form, FormDefinitions and FormSteps
+          description: The file that contains the form, form definitions and form
+            steps.
       required:
       - file
     FormStep:
@@ -1126,8 +1127,8 @@ components:
           type: string
           format: email
           writeOnly: true
-          description: The e-mail address where the 'magic' resume link should be
-            sent to
+          description: The email address where the 'magic' resume link should be sent
+            to
         suspendedOn:
           type: string
           format: date-time

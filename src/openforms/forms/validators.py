@@ -12,19 +12,19 @@ def validate_formio_js_schema(value: dict):
     # very bare-bones checks
     if not isinstance(value, dict):
         raise ValidationError(
-            _("Top-level value must be an Object"),
+            _("Top-level value must be an Object."),
             code="invalid",
         )
 
     components = value.get("components")
     if components is None:
         raise ValidationError(
-            _("Top-level key 'components' is missing"),
+            _("Top-level key 'components' is missing."),
             code="invalid",
         )
 
     if not isinstance(components, list):
         raise ValidationError(
-            _("The 'components' value must be a list of components"),
+            _("The 'components' value must be a list of components."),
             code="invalid",
         )

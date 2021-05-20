@@ -20,10 +20,11 @@ from openforms.utils.validators import validate_rsin
 
 class ZaakOptionsSerializer(serializers.Serializer):
     zaaktype = serializers.URLField(
-        required=False, help_text=_("URL of the ZAAKTYPE in Catalogi API")
+        required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
     )
     informatieobjecttype = serializers.URLField(
-        required=False, help_text=_("URL of the INFORMATIEOBJECTTYPE in Catalogi API")
+        required=False,
+        help_text=_("URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
     )
     organisatie_rsin = serializers.CharField(
         required=False,
@@ -34,14 +35,14 @@ class ZaakOptionsSerializer(serializers.Serializer):
         required=False,
         choices=VertrouwelijkheidsAanduidingen.choices,
         help_text=_(
-            "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is."
+            "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
         ),
     )
 
 
 @register(
     "zgw-create-zaak",
-    "Registreer zaak met Zaakgericht werken API's",
+    _("ZGW API's"),
     configuration_options=ZaakOptionsSerializer,
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )
