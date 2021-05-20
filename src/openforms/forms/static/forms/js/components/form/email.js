@@ -7,6 +7,6 @@ defineCommonEditFormTabs(
         type: 'checkbox',
         key: 'multiple',
         label: 'Multiple values',
-        tooltip: 'Allow multiple values to e entered for this field'
+        tooltip: 'Allow multiple values to be entered for this field'
     }]
 );
