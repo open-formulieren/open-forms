@@ -72,3 +72,8 @@ jobs:
       - name: Run manage.py makemigrations --check --dry-run
         run: |
           src/manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SECRET_KEY: dummy
+          DB_USER: postgres
+          DB_PASSWORD: ''
