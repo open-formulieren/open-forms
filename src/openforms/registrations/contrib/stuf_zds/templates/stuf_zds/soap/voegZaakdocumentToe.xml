@@ -15,7 +15,7 @@
             <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
             <StUF:gebruiker/>
         </StUF:ontvanger>
-{#        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>#}
+        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
         <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
         <StUF:entiteittype>EDC</StUF:entiteittype>
     </ZKN:stuurgegevens>
@@ -27,14 +27,20 @@
         <ZKN:identificatie>{{ document_identificatie }}</ZKN:identificatie>
         <ZKN:dct.omschrijving>{{ document_omschrijving }}</ZKN:dct.omschrijving>
         <ZKN:creatiedatum>{{ datum_vandaag }}</ZKN:creatiedatum>
-{#        <ZKN:titel>titel</ZKN:titel>#}
-{#        <ZKN:formaat>formaat</ZKN:formaat>#}
-{#        <ZKN:taal>taal</ZKN:taal>#}
+        <ZKN:ontvangstdatum>{{ datum_vandaag }}</ZKN:ontvangstdatum>
+
+        <ZKN:titel>titel</ZKN:titel>
+        <ZKN:beschrijving>beschrijving</ZKN:beschrijving>
+        <ZKN:formaat>formaat</ZKN:formaat>
+        <ZKN:taal>taal</ZKN:taal>
+        <ZKN:status>status</ZKN:status>
+        <ZKN:verzenddatum>{{ datum_vandaag }}</ZKN:verzenddatum>
         <ZKN:vertrouwelijkAanduiding>VERTROUWELIJK</ZKN:vertrouwelijkAanduiding>
-{#        <ZKN:auteur>auteur</ZKN:auteur>#}
+        <ZKN:auteur>auteur</ZKN:auteur>
+
         <ZKN:inhoud StUF:bestandsnaam="{{ file_name }}">{{ file_content }}</ZKN:inhoud>
         <StUF:tijdvakGeldigheid>
-            <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>
+            <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
             <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
         </StUF:tijdvakGeldigheid>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
@@ -42,20 +48,20 @@
             <ZKN:gerelateerde StUF:entiteittype="ZAK" StUF:verwerkingssoort="I">
                 <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
                 <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
-{#                <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">#}
-{#                    <ZKN:gerelateerde StUF:entiteittype="ZKT" StUF:verwerkingssoort="I">#}
-{#                        <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>#}
-{#                        <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>#}
-{#                        <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>#}
-{#                    </ZKN:gerelateerde>#}
-{#                </ZKN:isVan>#}
+                <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
+                    <ZKN:gerelateerde StUF:entiteittype="ZKT" StUF:verwerkingssoort="I">
+                        <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>
+                        <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>
+                        <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
+                    </ZKN:gerelateerde>
+                </ZKN:isVan>
             </ZKN:gerelateerde>
             <StUF:tijdvakRelatie>
-                <StUF:beginRelatie>{{ datum_eergisteren }}</StUF:beginRelatie>
+                <StUF:beginRelatie>{{ datum_vandaag }}</StUF:beginRelatie>
                 <StUF:eindRelatie StUF:noValue="geenWaarde" xsi:nil="true"/>
             </StUF:tijdvakRelatie>
             <StUF:tijdvakGeldigheid>
-                <StUF:beginGeldigheid>{{ datum_eergisteren }}</StUF:beginGeldigheid>
+                <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
                 <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
             </StUF:tijdvakGeldigheid>
             <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>

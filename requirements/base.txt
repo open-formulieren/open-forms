@@ -152,7 +152,9 @@ kombu==4.6.11
 lockfile==0.12.2
     # via django-yubin
 lxml==4.6.3
-    # via xmlsec
+    # via
+    #   -r requirements/base.in
+    #   xmlsec
 openpyxl==3.0.7
     # via tablib
 pillow==8.2.0
