@@ -45,14 +45,18 @@ const EditForm = ({formUUID}) => {
                             </select>
                             <a
                                 className="related-widget-wrapper-link delete-related"
-                                href=""
+                                style={{opacity: 0.8}}
                                 onClick={_ => {
-                                setStepFormValues(previousState => {
-                                    delete previousState[index + 1];
-                                    return previousState;
-                                });
-                                setStepForms(previousState => previousState.filter(element => element.key !== index.toString()));
-                                setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
+                                    setStepFormValues(previousState => {
+                                        delete previousState[index + 1];
+                                        return previousState;
+                                    });
+                                    setFormStepsToUpdate(previousState => {
+                                        delete previousState[formStepsValue.uuid];
+                                        return previousState;
+                                    });
+                                    setStepForms(previousState => previousState.filter(element => element.key !== index.toString()));
+                                    setFormStepsToDelete([...formStepsToDelete, formStepsValue.uuid]);
                             }}>
                                 <img src="/static/admin/img/icon-deletelink.svg" alt="Verwijderen"/>
                             </a>
@@ -82,7 +86,7 @@ const EditForm = ({formUUID}) => {
                     </select>
                     <a
                         className="related-widget-wrapper-link delete-related"
-                        href=""
+                        style={{opacity: 0.8}}
                         onClick={_ => {
                             setStepFormValues(previousState => {
                                 delete previousState[stepForms.length + 1];
