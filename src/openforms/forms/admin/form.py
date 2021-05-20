@@ -103,9 +103,9 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
                 name="forms_import",
             ),
             path(
-                "<path:object_id>/change_2/",
+                "<path:object_id>/change/",
                 self.admin_site.admin_view(self.formedit_view),
-                name="forms_form_change_2",
+                name="forms_form_change",
             ),
         ]
         return my_urls + urls

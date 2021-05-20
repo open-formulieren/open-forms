@@ -1,6 +1,5 @@
 import React, {useState, useEffect, Fragment} from "react";
 import PropTypes from 'prop-types';
-
 import useAsync from 'react-use/esm/useAsync';
 import {get, post, destroy} from './api';
 
@@ -40,7 +39,6 @@ const EditForm = ({formUUID}) => {
                                             return previousState;
                                         });
                                     }}>
-                                <option key='---' value='---'>---</option>
                                 {formDefinitionValues.results.map(definition => {
                                     return <option key={definition.slug} value={definition.url}>{definition.name}</option>
                                 })}
@@ -67,24 +65,15 @@ const EditForm = ({formUUID}) => {
         }
     }, [formStepsValues]);
 
-    const getInfo = () => {
-        console.log('-------------');
-        console.log('stepFormValues');
-        console.log(stepFormValues);
-        console.log('stepForms');
-        console.log(stepForms);
-        console.log('formStepsToDelete');
-        console.log(formStepsToDelete);
-    };
-
-
     const getNewStep = () => {
         return (
-            <Fragment key={index}>
+            <Fragment key={stepForms.length}>
                 <td>
                     <select name="formDefinitions" onChange={event => {
-                        stepFormValues[stepForms.length+1] = event.target.value;
-                        setStepFormValues(stepFormValues);
+                        setStepFormValues(previousState => {
+                            previousState[stepForms.length+1] = event.target.value;
+                            return previousState;
+                        });
                     }}>
                         <option key='---' value='---'>---</option>
                         {formDefinitionValues.results.map(definition => {
@@ -95,9 +84,9 @@ const EditForm = ({formUUID}) => {
                         className="related-widget-wrapper-link delete-related"
                         href=""
                         onClick={_ => {
-                        setStepFormValues(previousState => {
-                            delete previousState[stepForms.length + 1];
-                            return previousState;
+                            setStepFormValues(previousState => {
+                                delete previousState[stepForms.length + 1];
+                                return previousState;
                         });
                         setStepForms(previousState => previousState.filter(element => element.key !== stepForms.length.toString()));
                     }}>
@@ -169,9 +158,6 @@ const EditForm = ({formUUID}) => {
                             }}
                         >
                             Submit
-                        </button>
-                        <button className="button" style={{float: 'right', marginLeft: 8}} onClick={_ => getInfo()}>
-                            Print info
                         </button>
                     </div>
                 </div>
