@@ -22,17 +22,11 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     for form_definition in FormDefinition.objects.filter(
         formstep__form=context["form"]
     ):
-        components = form_definition.configuration.get("configuration").get(
-            "components"
-        )
-        if components:
-            for component in components:
-                if component.get("showInEmail"):
-                    data_to_show_in_email.append(component["key"])
+        data_to_show_in_email += form_definition.get_keys_for_email_summary()
 
     # Return a dict with only the data that should be shown in the email
     filtered_data = {}
-    for property in data_to_show_in_email:
-        if property in context:
-            filtered_data[property] = context[property]
+    for property_name in data_to_show_in_email:
+        if property_name in context:
+            filtered_data[property_name] = context[property_name]
     return {"data": filtered_data}
