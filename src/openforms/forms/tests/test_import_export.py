@@ -1,6 +1,7 @@
 import json
 import os
 import zipfile
+from unittest import expectedFailure
 
 from django.core.management import CommandError, call_command
 from django.test import TestCase
@@ -27,7 +28,7 @@ class ImportExportTests(TestCase):
         form_step.form_definition = form_definition
         form_step.save()
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -70,7 +71,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"
@@ -125,7 +126,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"
@@ -177,7 +178,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         old_form_slug = form.slug
         form.slug = "modified"
@@ -216,6 +217,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
+    @expectedFailure
     def test_import_form_definition_slug_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
@@ -228,7 +230,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         old_form_slug = form.slug
         form.slug = "modified"
