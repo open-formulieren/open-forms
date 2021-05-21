@@ -8,8 +8,14 @@
     # via -r requirements/base.in
 -e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml
     # via -r requirements/base.in
+amqp==5.0.6
+    # via kombu
 attrs==20.3.0
     # via jsonschema
+billiard==3.6.4.0
+    # via celery
+celery==5.0.5
+    # via -r requirements/base.in
 certifi==2020.6.20
     # via
     #   elastic-apm
@@ -19,6 +25,18 @@ cffi==1.14.3
     # via cryptography
 chardet==3.0.4
     # via requests
+click-didyoumean==0.0.3
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.1.6
+    # via celery
+click==7.1.2
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
 cryptography==3.4.7
     # via pyopenssl
 defusedxml==0.6.0
@@ -118,6 +136,8 @@ isodate==0.6.0
     # via python3-saml
 jsonschema==3.2.0
     # via drf-spectacular
+kombu==5.0.2
+    # via celery
 lockfile==0.12.2
     # via django-yubin
 lxml==4.6.3
@@ -128,6 +148,8 @@ pillow==8.2.0
     # via -r requirements/base.in
 polib==1.1.0
     # via django-rosetta
+prompt-toolkit==3.0.18
+    # via click-repl
 psycopg2==2.8.6
     # via -r requirements/base.in
 pycparser==2.20
@@ -149,6 +171,7 @@ python-dotenv==0.14.0
 pytz==2021.1
     # via
     #   -r requirements/base.in
+    #   celery
     #   django
     #   django-yubin
 pyyaml==5.4.1
@@ -171,6 +194,7 @@ sentry-sdk==0.17.3
     # via -r requirements/base.in
 six==1.15.0
     # via
+    #   click-repl
     #   django-choices
     #   django-compat
     #   django-rosetta
@@ -194,6 +218,12 @@ urllib3==1.25.10
     #   sentry-sdk
 uwsgi==2.0.19.1
     # via -r requirements/base.in
+vine==5.0.0
+    # via
+    #   amqp
+    #   celery
+wcwidth==0.2.5
+    # via prompt-toolkit
 xmlsec==1.3.10
     # via python3-saml
 zgw-consumers==0.15.2
