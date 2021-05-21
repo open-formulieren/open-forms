@@ -21,7 +21,7 @@ services:
   web:
     build: .
     image: openformulieren/open-forms:latest
-    environment:
+    environment: &web_env
       - DJANGO_SETTINGS_MODULE=openforms.conf.docker
       - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a}
       - DB_NAME=openforms
@@ -30,6 +30,9 @@ services:
       - CACHE_DEFAULT=redis:6379/0
       - CACHE_AXES=redis:6379/0
       - ALLOWED_HOSTS=*
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_LOGLEVEL=DEBUG
     volumes:
       - private_media:/app/private-media
     ports:
@@ -46,6 +49,31 @@ services:
       - "9000:80"
     depends_on:
       - web
+
+  celery:
+    build: .
+    environment: *web_env
+    command: /celery_worker.sh
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: .
+    environment: *web_env
+    command: /celery_beat.sh
+    depends_on:
+      - db
+      - redis
+
+  celery-flower:
+    image: mher/flower
+    environment: *web_env
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
+      - celery
 
 volumes:
   db:
