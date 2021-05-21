@@ -50,7 +50,7 @@ def send_confirmation_email(submission: Submission):
         )
         return
 
-    content = email_template.render(submission.data)
+    content = email_template.render(submission)
 
     send_mail(
         email_template.subject,
