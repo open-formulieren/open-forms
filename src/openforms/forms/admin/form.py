@@ -1,13 +1,13 @@
 from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
-from django.core.management import CommandError, call_command
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+from rest_framework.exceptions import ValidationError
 from reversion.admin import VersionAdmin
 
 from openforms.registrations.admin import BackendChoiceFieldMixin
@@ -15,6 +15,7 @@ from openforms.registrations.admin import BackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
+from ..utils import export_form, import_form
 
 
 class FormStepInline(OrderedTabularInline):
@@ -80,7 +81,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
 
             response = HttpResponse(content_type="application/zip")
             response["Content-Disposition"] = f"attachment;filename={obj.slug}.zip"
-            call_command("export", obj.pk, response=response)
+            export_form(obj.pk, response=response)
 
             response["Content-Length"] = len(response.content)
 
@@ -113,15 +114,27 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
             if form.is_valid():
                 try:
                     import_file = form.cleaned_data["file"]
-                    call_command("import", import_file=import_file)
+                    created_fds = import_form(import_file)
+                    if created_fds:
+                        self.message_user(
+                            request,
+                            _(
+                                "Form Definitions were created with the following slugs: {}"
+                            ).format(created_fds),
+                            level=messages.WARNING,
+                        )
                     self.message_user(
                         request,
                         _("Catalogus successfully imported"),
                         level=messages.SUCCESS,
                     )
                     return HttpResponseRedirect(reverse("admin:forms_form_changelist"))
-                except CommandError as exc:
-                    self.message_user(request, exc, level=messages.ERROR)
+                except ValidationError as exc:
+                    self.message_user(
+                        request,
+                        _("Something went wrong while importing forms: {}").format(exc),
+                        level=messages.ERROR,
+                    )
         else:
             form = FormImportForm()
 
