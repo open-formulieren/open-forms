@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.models import FormDefinition
 
 from .constants import URL_REGEX
 
