@@ -215,7 +215,7 @@ MEDIA_URL = "/media/"
 
 PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, "private_media")
 
-PRIVATE_MEDIA_URL = "/private_media/"
+PRIVATE_MEDIA_URL = "/private-media/"
 
 
 FILE_UPLOAD_PERMISSIONS = 0o644

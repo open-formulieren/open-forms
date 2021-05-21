@@ -22,7 +22,7 @@ class ZaakOptionsSerializer(serializers.Serializer):
 
 @register(
     "stuf-zds-create-zaak",
-    "Create StUF-ZDS Zaak",
+    _("StUF-ZDS"),
     configuration_options=ZaakOptionsSerializer,
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )

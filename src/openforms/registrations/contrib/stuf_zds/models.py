@@ -21,7 +21,7 @@ class SoapService(models.Model):
     # zender_gebruiker = models.CharField(_("zender gebruiker"), max_length=200)
 
     url = models.URLField(
-        _("url"),
+        _("URL"),
         help_text=_("URL of the StUF-ZDS service to connect to."),
     )
     endpoint_sync = models.CharField(
