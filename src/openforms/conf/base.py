@@ -177,6 +177,9 @@ TEMPLATES = [
                 "openforms.utils.context_processors.settings",
             ],
             "loaders": TEMPLATE_LOADERS,
+            "builtins": [
+                "openforms.emails.templatetags.form_summary",
+            ],
         },
     },
 ]

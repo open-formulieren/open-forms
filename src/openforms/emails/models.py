@@ -51,9 +51,7 @@ class ConfirmationEmailTemplate(models.Model):
             return ""
 
         content_template = self.content
-        if re.search(r"\{% summary %\}", self.content):
-            context["form"] = self.form
-            content_template = "{% load form_summary %}" + self.content
+        context["form"] = self.form
 
         rendered_content = Template(content_template).render(Context(context))
         stripped = re.sub(URL_REGEX, replace_urls, rendered_content)
