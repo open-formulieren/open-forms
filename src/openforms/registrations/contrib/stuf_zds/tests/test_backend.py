@@ -5,6 +5,7 @@ from django.test import TestCase
 
 import requests_mock
 from lxml import etree
+from requests import RequestException
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -12,9 +13,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
-from openforms.registrations.contrib.stuf_zds.models import SoapService, StufZDSConfig
+from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.contrib.stuf_zds.plugin import create_zaak_plugin
 from openforms.registrations.contrib.stuf_zds.tests.factories import SoapServiceFactory
+from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -236,6 +238,57 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
             },
         )
+
+    def test_client_wraps_network_error(self, m):
+        m.post(self.service.url, exc=RequestException)
+
+        with self.assertRaisesRegex(
+            RegistrationFailed, r"^error while making backend "
+        ):
+            self.client.create_zaak_identificatie(self.options)
+
+        with self.assertRaisesRegex(
+            RegistrationFailed, r"^error while making backend "
+        ):
+            self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
+
+        with self.assertRaisesRegex(
+            RegistrationFailed, r"^error while making backend "
+        ):
+            self.client.create_document_identificatie(self.options)
+
+        with self.assertRaisesRegex(
+            RegistrationFailed, r"^error while making backend "
+        ):
+            self.client.create_zaak_document(
+                self.options, zaak_id="foo", doc_id="bar", body="bazz"
+            )
+
+    def test_client_wraps_xml_parse_error(self, m):
+        m.post(self.service.url, text="> > broken xml < <")
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
+            self.client.create_zaak_identificatie(self.options)
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
+            self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
+            self.client.create_document_identificatie(self.options)
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
+            self.client.create_zaak_document(
+                self.options, zaak_id="foo", doc_id="bar", body="bazz"
+            )
+
+    def test_client_wraps_bad_structure_error(self, m):
+        m.post(self.service.url, content=load_mock("dummy.xml"))
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
+            self.client.create_zaak_identificatie(self.options)
+
+        with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
+            self.client.create_document_identificatie(self.options)
 
 
 @requests_mock.Mocker()

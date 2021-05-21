@@ -1,9 +1,8 @@
 import base64
 import json
+import logging
 import os
-import uuid
 from collections import OrderedDict
-from datetime import timedelta
 from typing import Tuple
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -14,9 +13,12 @@ from django.utils.safestring import mark_safe
 import requests
 from lxml import etree
 from lxml.etree import Element
-from requests import Response
+from requests import RequestException, Response
 
 from openforms.registrations.contrib.stuf_zds.models import SoapService
+from openforms.registrations.exceptions import RegistrationFailed
+
+logger = logging.getLogger(__name__)
 
 nsmap = OrderedDict(
     (
@@ -82,14 +84,14 @@ class StufZDSClient:
             "ontvanger_gebruiker": self.service.ontvanger_gebruiker,
             "ontvanger_administratie": self.service.ontvanger_administratie,
             "tijdstip_bericht": fmt_soap_datetime(timezone.now()),
+            "tijdstip_registratie": fmt_soap_datetime(timezone.now()),
+            "datum_vandaag": fmt_soap_date(timezone.now()),
             "gemeentecode": options["gemeentecode"],
             "zds_zaaktype_code": options["zds_zaaktype_code"],
             "zds_zaaktype_omschrijving": options["zds_zaaktype_omschrijving"],
             "zaak_omschrijving": options["omschrijving"],
             "document_omschrijving": options["omschrijving"],
             "referentienummer": options["referentienummer"],
-            "tijdstip_registratie": fmt_soap_datetime(timezone.now()),
-            "datum_vandaag": fmt_soap_date(timezone.now()),
         }
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
@@ -119,13 +121,11 @@ class StufZDSClient:
 
         request_body = loader.render_to_string(template_name, context)
 
-        # print(request_body)
-
         # TODO enable schema validation
         # doc = etree.parse(StringIO(request_body))
         # xmlschema = self._load_schema(schema_path)
         # if not xmlschema.validate(doc):
-        #     raise ValidationError(xmlschema.error_log.last_error.message)
+        #     raise RegistrationFailed("failed to XML validate outgoing backend request")
 
         request_data = self._wrap_soap_envelope(request_body)
 
@@ -135,17 +135,30 @@ class StufZDSClient:
         else:
             url = f"{url}{self.service.endpoint_async}"
 
-        response = requests.post(
-            url,
-            data=request_data,
-            headers=self._get_headers(),
-            cert=cert,
-        )
-        # TODO error handling?
-        if response.status_code < 200 or response.status_code >= 400:
-            print(parse_soap_error_text(response))
-            response.raise_for_status()
-        return response, etree.fromstring(response.content)
+        try:
+            response = requests.post(
+                url,
+                data=request_data,
+                headers=self._get_headers(),
+                cert=cert,
+            )
+            if response.status_code < 200 or response.status_code >= 400:
+                logger.error(
+                    f"bad http response {response.status_code}:\n"
+                    + parse_soap_error_text(response)
+                )
+                response.raise_for_status()
+        except RequestException as e:
+            raise RegistrationFailed("error while making backend request") from e
+
+        try:
+            xml = etree.fromstring(response.content)
+        except etree.XMLSyntaxError as e:
+            raise RegistrationFailed(
+                "error while parsing incoming backend response XML"
+            ) from e
+
+        return response, xml
 
     def create_zaak_identificatie(self, options):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
@@ -153,9 +166,14 @@ class StufZDSClient:
         context = self._get_request_base_context(options)
         response, xml = self._make_request(template, schema, context, sync=True)
 
-        zaak_identificatie = xml_value(
-            xml, "//zkn:zaak/zkn:identificatie", namespaces=nsmap
-        )
+        try:
+            zaak_identificatie = xml_value(
+                xml, "//zkn:zaak/zkn:identificatie", namespaces=nsmap
+            )
+        except ValueError as e:
+            raise RegistrationFailed(
+                "cannot find '/zaak/identificatie' in backend response"
+            ) from e
 
         return zaak_identificatie
 
@@ -179,9 +197,14 @@ class StufZDSClient:
         context = self._get_request_base_context(options)
         response, xml = self._make_request(template, schema, context, sync=True)
 
-        document_identificatie = xml_value(
-            xml, "//zkn:document/zkn:identificatie", namespaces=nsmap
-        )
+        try:
+            document_identificatie = xml_value(
+                xml, "//zkn:document/zkn:identificatie", namespaces=nsmap
+            )
+        except ValueError as e:
+            raise RegistrationFailed(
+                "cannot find '/document/identificatie' in backend response"
+            ) from e
 
         return document_identificatie
 
