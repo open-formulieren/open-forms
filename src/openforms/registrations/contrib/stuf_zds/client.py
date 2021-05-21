@@ -73,14 +73,14 @@ class StufZDSClient:
 
     def _get_request_base_context(self, options):
         return {
-            # "created": timezone.now(),
-            # "expired": timezone.now() + timedelta(minutes=5),
-            # "username": self.service.user,
-            # "password": self.service.password,
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
+            "zender_gebruiker": self.service.zender_gebruiker,
+            "zender_administratie": self.service.zender_administratie,
             "ontvanger_organisatie": self.service.ontvanger_organisatie,
             "ontvanger_applicatie": self.service.ontvanger_applicatie,
+            "ontvanger_gebruiker": self.service.ontvanger_gebruiker,
+            "ontvanger_administratie": self.service.ontvanger_administratie,
             "tijdstip_bericht": fmt_soap_datetime(timezone.now()),
             "gemeentecode": options["gemeentecode"],
             "zds_zaaktype_code": options["zds_zaaktype_code"],
@@ -94,7 +94,7 @@ class StufZDSClient:
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
         return loader.render_to_string(
-            "stuf_zds/soap/envelope.xml", {"content": mark_safe(xml_str)}
+            "stuf_zds/soap/includes/envelope.xml", {"content": mark_safe(xml_str)}
         )
 
     def _load_schema(self, path: str):

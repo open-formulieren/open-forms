@@ -95,8 +95,12 @@ class StufZDSClientTests(StufTestBase):
         self.service = SoapServiceFactory(
             zender_organisatie="ZenOrg",
             zender_applicatie="ZenApp",
+            zender_administratie="ZenAdmin",
+            zender_gebruiker="ZenUser",
             ontvanger_organisatie="OntOrg",
             ontvanger_applicatie="OntApp",
+            ontvanger_administratie="OntAdmin",
+            ontvanger_gebruiker="OntUser",
         )
 
         self.client = StufZDSClient(self.service)
@@ -108,6 +112,21 @@ class StufZDSClientTests(StufTestBase):
             "zds_zaaktype_omschrijving": "zt-omschrijving",
             "referentienummer": str(uuid.uuid4()),
         }
+
+    def assertStuurgegevens(self, xml_doc):
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
+                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
+                "//zkn:stuurgegevens/stuf:zender/stuf:administratie": "ZenAdmin",
+                "//zkn:stuurgegevens/stuf:zender/stuf:gebruiker": "ZenUser",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:administratie": "OntAdmin",
+                "//zkn:stuurgegevens/stuf:ontvanger/stuf:gebruiker": "OntUser",
+            },
+        )
 
     def test_create_zaak_identificatie(self, m):
         m.post(
@@ -128,13 +147,10 @@ class StufZDSClientTests(StufTestBase):
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathExists(xml_doc, "//zkn:genereerZaakIdentificatie_Di02")
+        self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
                 "//zkn:stuurgegevens/stuf:functie": "genereerZaakidentificatie",
             },
@@ -152,13 +168,10 @@ class StufZDSClientTests(StufTestBase):
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathExists(xml_doc, "//zkn:zakLk01")
+        self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo",
@@ -185,13 +198,10 @@ class StufZDSClientTests(StufTestBase):
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathExists(xml_doc, "//zkn:genereerDocumentIdentificatie_Di02")
+        self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
                 "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
             },
@@ -211,13 +221,10 @@ class StufZDSClientTests(StufTestBase):
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathExists(xml_doc, "//zds:voegZaakdocumentToe_EdcLk01")
+        self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
-                "//zkn:stuurgegevens/stuf:zender/stuf:organisatie": "ZenOrg",
-                "//zkn:stuurgegevens/stuf:zender/stuf:applicatie": "ZenApp",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:organisatie": "OntOrg",
-                "//zkn:stuurgegevens/stuf:ontvanger/stuf:applicatie": "OntApp",
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
                 "//zkn:object/zkn:identificatie": "bar",

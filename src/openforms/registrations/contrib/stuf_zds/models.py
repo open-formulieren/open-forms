@@ -6,19 +6,51 @@ from solo.models import SingletonModel
 
 
 class SoapService(models.Model):
-    ontvanger_organisatie = models.CharField(_("ontvanger organisatie"), max_length=200)
-    ontvanger_applicatie = models.CharField(_("ontvanger applicatie"), max_length=200)
-    # ontvanger_administratie = models.CharField(
-    #     _("ontvanger administratie"), max_length=200
-    # )
-    # ontvanger_gebruiker = models.CharField(_("ontvanger gebruiker"), max_length=200)
+    ontvanger_organisatie = models.CharField(
+        _("receiving organisation"),
+        help_text=_("Field 'ontvanger organisatie' in StUF"),
+        max_length=200,
+    )
+    ontvanger_applicatie = models.CharField(
+        _("receiving application"),
+        help_text=_("Field 'ontvanger applicatie' in StUF"),
+        max_length=200,
+    )
+    ontvanger_administratie = models.CharField(
+        _("receiving administration"),
+        help_text=_("Field 'ontvanger administratie' in StUF"),
+        max_length=200,
+        blank=True,
+    )
+    ontvanger_gebruiker = models.CharField(
+        _("receiving user"),
+        help_text=_("Field 'ontvanger gebruiker' in StUF"),
+        max_length=200,
+        blank=True,
+    )
 
-    zender_organisatie = models.CharField(_("zender organisatie"), max_length=200)
-    zender_applicatie = models.CharField(_("zender applicatie"), max_length=200)
-    # zender_administratie = models.CharField(
-    #     _("zender administratie"), max_length=200
-    # )
-    # zender_gebruiker = models.CharField(_("zender gebruiker"), max_length=200)
+    zender_organisatie = models.CharField(
+        _("sending organisation"),
+        help_text=_("Field 'zender organisatie' in StUF"),
+        max_length=200,
+    )
+    zender_applicatie = models.CharField(
+        _("sending application"),
+        help_text=_("Field 'zender applicatie' in StUF"),
+        max_length=200,
+    )
+    zender_administratie = models.CharField(
+        _("sending administration"),
+        help_text=_("Field 'zender administratie' in StUF"),
+        max_length=200,
+        blank=True,
+    )
+    zender_gebruiker = models.CharField(
+        _("sending user"),
+        help_text=_("Field 'zender gebruiker' in StUF"),
+        max_length=200,
+        blank=True,
+    )
 
     url = models.URLField(
         _("URL"),

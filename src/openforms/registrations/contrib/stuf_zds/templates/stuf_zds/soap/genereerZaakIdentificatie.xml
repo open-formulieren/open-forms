@@ -6,17 +6,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Di02</StUF:berichtcode>
-        <StUF:zender>
-            <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
-            <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
-            <StUF:gebruiker/>
-        </StUF:zender>
-        <StUF:ontvanger>
-            <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
-            <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
-            <StUF:gebruiker/>
-        </StUF:ontvanger>
-        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
         <StUF:functie>genereerZaakidentificatie</StUF:functie>
     </ZKN:stuurgegevens>
 </ZKN:genereerZaakIdentificatie_Di02>
