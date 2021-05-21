@@ -1,5 +1,5 @@
 import {Formio} from 'react-formio';
-import {defineCommonEditFormTabs, defineInputInfo} from './abstract';
+import {defineCommonEditFormTabs} from './abstract';
 
 class TextField extends Formio.Components.components.textfield {
 

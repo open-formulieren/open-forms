@@ -2,7 +2,7 @@
  * A form widget to select family members.
  */
 import {Formio} from 'formiojs';
-import {defineEditFormTabs, defineInputInfo} from './abstract';
+import {defineEditFormTabs} from './abstract';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
 
