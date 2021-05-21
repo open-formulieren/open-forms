@@ -95,6 +95,26 @@ const VALIDATION = {
 };
 
 
+const PREFILL = {
+    key: 'prefill',
+    label: 'Pre-fill',
+    components: [
+        {
+            type: 'textfield',
+            key: 'prefill.plugin',
+            label: 'Plugin',
+            description: 'Select the plugin to use for the prefill functionality.',
+        },
+        {
+            type: 'textfield',
+            key: 'prefill.attribute',
+            label: 'Plugin attribute',
+            description: 'Specify the attribute holding the pre-fill data.',
+        }
+    ],
+};
+
+
 const DEFAULT_TABS = {
     type: 'tabs',
     key: 'tabs',
@@ -106,5 +126,5 @@ const DEFAULT_TABS = {
 };
 
 
-export { DEFAULT_TABS, BASIC, ADVANCED, VALIDATION };
+export { DEFAULT_TABS, BASIC, ADVANCED, VALIDATION, PREFILL };
 export default DEFAULT_TABS;
