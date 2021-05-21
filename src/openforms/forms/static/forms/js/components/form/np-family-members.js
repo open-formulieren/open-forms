@@ -41,6 +41,12 @@ defineEditFormTabs(NpFamilyMembers, [
                 'label': 'Basic',
                 components: [
                     {'type': 'textfield', key: 'label', label: 'Label'},
+                    {
+                        type: 'checkbox',
+                        key: 'showInEmail',
+                        label: 'Show in email',
+                        tooltip: 'Whether to show this value in the confirmation email'
+                    },
                 ]
             }
         ]

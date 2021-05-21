@@ -10,3 +10,5 @@ import './radio';
 import './select';
 import './np-family-members';
 import './iban';
+import './number';
+import './currency';

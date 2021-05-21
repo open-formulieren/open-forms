@@ -61,13 +61,32 @@ class FormDefinitionTestCase(TestCase):
         form2 = form_definition_1.copy()
         form3 = form_definition_1.copy()
 
+        self.assertEqual(form2.slug, _("{slug}-copy").format(slug="a-form-definition"))
         self.assertEqual(
-            form2.slug, _("{slug}-copy").format(slug=form_definition_1.slug)
-        )
-        self.assertEqual(
-            form2.name, _("{name} (copy)").format(name=form_definition_1.name)
+            form2.name, _("{name} (copy)").format(name="A form definition")
         )
         self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(
-            form3.name, _("{name} (copy)").format(name=form_definition_1.name)
+            form3.name, _("{name} (copy)").format(name="A form definition")
         )
+
+    def test_get_keys_for_email_summary(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "index": 0,
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {"key": "aaa", "showInEmail": True},
+                        {"key": "bbb", "showInEmail": False},
+                        {"key": "ccc", "showInEmail": True},
+                    ],
+                },
+            }
+        )
+
+        keys = form_definition.get_keys_for_email_summary()
+
+        self.assertIn("aaa", keys)
+        self.assertNotIn("bbb", keys)
+        self.assertIn("ccc", keys)

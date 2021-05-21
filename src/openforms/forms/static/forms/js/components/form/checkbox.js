@@ -1,35 +1,15 @@
 import {Formio} from 'formiojs';
-import {defineEditFormTabs, defineInputInfo} from './abstract';
+import {defineCommonEditFormTabs, defineInputInfo} from './abstract';
 
-
-defineEditFormTabs(Formio.Components.components.checkbox, [
+defineCommonEditFormTabs(Formio.Components.components.checkbox, [
     {
-        type: 'tabs', key: 'tabs', components: [
-            {
-                key: 'basic',
-                label: 'Basic',
-                components: [
-                    {
-                        type: 'textfield', key: 'label', label: 'Label'
-                    },
-                    {
-                        type: 'textfield', key: 'key', label: 'Property Name'
-                    },
-                    {
-                        type: 'textfield', key: 'description', label: 'Description',
-                    },
-                    {
-                        input: true,
-                        key: 'defaultValue',
-                        label: 'Default Value',
-                        placeholder: 'Default Value',
-                        tooltip: 'The will be the value for this field, before user interaction. Having a default value will override the placeholder text.',
-                        type: 'checkbox',
-                        weight: 5
-                    },
-                ]
-            }
-        ]
+        input: true,
+        key: 'defaultValue',
+        label: 'Default Value',
+        placeholder: 'Default Value',
+        tooltip: 'This will be the value for this field before user interaction. Having a default value will override the placeholder text.',
+        type: 'checkbox',
+        weight: 5
     }
 ]);
 
@@ -47,17 +27,17 @@ export const getTemplate = () => {
               id="{{ctx.instance.id}}-{{ctx.component.key}}"
               {% if (ctx.checked) { %}checked=true{% } %}
             >
-        
+
                 {{ctx.input.content}}
             </{{ctx.input.type}}>
-            
+
             <div class="checkbox__checkmark"></div>
             <label class="checkbox__label {{ctx.input.labelClass}}" for="{{ctx.instance.id}}-{{ctx.component.key}}">
                 {{ctx.input.label}}&nbsp;
                 {% if (ctx.component.tooltip) { %}
                     <i ref="tooltip" class="{{ctx.iconClass('question-sign')}}"></i>
                 {% } %}
-                
+
           </label>
         </div>
     `;
