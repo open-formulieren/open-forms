@@ -1,5 +1,5 @@
 # Core python libraries
-celery
+celery < 5
 Pillow  # handle images
 psycopg2  # database driver
 pytz  # handle timezones
