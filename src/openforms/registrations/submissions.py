@@ -20,7 +20,7 @@ def register_submission(submission: Submission) -> Optional[dict]:
     registry = form._meta.get_field("registration_backend").registry
 
     if not backend:
-        logger.info("Form %s has no registration plugin configured, aborting")
+        logger.info("Form %s has no registration plugin configured, aborting", form)
         return
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)

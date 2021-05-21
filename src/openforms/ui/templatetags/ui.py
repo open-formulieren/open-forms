@@ -29,12 +29,12 @@ def skiplink(**kwargs):
 
     Available options:
 
-        - label (str) (optional): The label. Defaults to "Direct naar de inhoud."
+        - label (str) (optional): The label. Defaults to "Show content."
         - target (str) (optional): The id of of the skiplink_target, defaults to "skiplink_target".
     """
     config = get_config(kwargs)
     return {
-        "label": config.get("label", _("Direct naar de inhoud.")),
+        "label": config.get("label", _("Show content.")),
         "target": config.get("target", "skiplink_target"),
     }
 

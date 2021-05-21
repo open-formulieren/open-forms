@@ -75,7 +75,7 @@ jobs:
 
       - name: Generate OAS
         run: |
-          python src/manage.py spectacular > openapi.yaml
+          python src/manage.py spectacular --lang=en > openapi.yaml
       - name: Store OAS artifact
         uses: actions/upload-artifact@v2
         with:

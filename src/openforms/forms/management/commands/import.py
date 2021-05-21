@@ -20,13 +20,13 @@ IMPORT_ORDER = {
 
 
 class Command(BaseCommand):
-    help = "Import Catalogi data from a .zip file"
+    help = "Import form from a ZIP-file."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--import-file",
             type=str,
-            help=_("The name of the .zip file to import from"),
+            help=_("The name of the ZIP-file to import from"),
         )
 
     @transaction.atomic

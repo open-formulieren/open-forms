@@ -2,6 +2,7 @@ import os
 
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
 from corsheaders.defaults import default_headers as default_cors_headers
@@ -36,7 +37,11 @@ IS_HTTPS = config("IS_HTTPS", default=not DEBUG)
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = "nl-nl"
+LANGUAGE_CODE = "nl"
+LANGUAGES = [
+    ("en", _("English")),
+    ("nl", _("Dutch")),
+]
 
 TIME_ZONE = "Europe/Amsterdam"  # note: this *may* affect the output of DRF datetimes
 
@@ -179,7 +184,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "openforms.wsgi.application"
 
 # Translations
-LOCALE_PATHS = (os.path.join(DJANGO_PROJECT_DIR, "conf", "locale"),)
+LOCALE_PATHS = (
+    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale"),
+    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale_extensions"),
+)
 
 #
 # SERVING of static and media files

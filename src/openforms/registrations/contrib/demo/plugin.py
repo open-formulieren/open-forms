@@ -1,5 +1,7 @@
 from typing import NoReturn
 
+from django.utils.translation import ugettext_lazy as _
+
 from openforms.submissions.models import Submission
 
 from ...exceptions import RegistrationFailed
@@ -9,7 +11,7 @@ from .config import DemoOptionsSerializer
 
 @register(
     unique_identifier="demo",
-    name="Demo - print to console",
+    name=_("Demo - print to console"),
     configuration_options=DemoOptionsSerializer,
 )
 def handle_submission(submission: Submission, options: dict) -> None:

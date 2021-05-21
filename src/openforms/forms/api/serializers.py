@@ -111,5 +111,5 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
-        help_text=_("The file that contains the Form, FormDefinitions and FormSteps")
+        help_text=_("The file that contains the form, form definitions and form steps.")
     )

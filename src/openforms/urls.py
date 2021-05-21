@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
+from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
@@ -14,7 +15,7 @@ from .views import SPADemoView
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
-admin.site.index_title = "Welcome to the openforms admin"
+admin.site.index_title = _("Welcome to the Open Forms admin")
 
 urlpatterns = [
     path(

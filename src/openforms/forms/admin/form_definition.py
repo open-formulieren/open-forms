@@ -15,7 +15,7 @@ def delete_selected(modeladmin, request, queryset):
         messages.error(
             request,
             _(
-                "{name} kan niet verwijderd worden omdat deze in één of meerdere formulieren gebruikt wordt."
+                "{name} cannot be removed because it is used in one or more forms."
             ).format(name=name),
         )
     safe_to_delete = queryset.exclude(id__in=actively_used.values_list("id", flat=True))
@@ -52,7 +52,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
         for instance in queryset:
             instance.copy()
 
-    make_copies.short_description = _("Kopieer geselecteerde %(verbose_name_plural)s.")
+    make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
 
     def used_in_forms(self, obj) -> str:
         forms = [step.form for step in obj.used_in_steps]
@@ -73,4 +73,4 @@ class FormDefinitionAdmin(admin.ModelAdmin):
 
         return format_html("<ul>{}</ul>", ret)
 
-    used_in_forms.short_description = _("In gebruik in:")
+    used_in_forms.short_description = _("used in")

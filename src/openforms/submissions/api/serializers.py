@@ -159,9 +159,9 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
         write_only=True,
-        label=_("Contact e-mail address"),
+        label=_("Contact email address"),
         help_text=_(
-            "The e-mail address where the 'magic' resume link should be sent to"
+            "The email address where the 'magic' resume link should be sent to"
         ),
     )
 

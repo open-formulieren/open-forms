@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from django_webtest import WebTest
 
@@ -59,5 +60,9 @@ class TestFormDefinitionAdmin(WebTest):
 
         self.assertEqual(FormDefinition.objects.count(), 2)
         copied_form = FormDefinition.objects.exclude(pk=self.form_definition.pk).first()
-        self.assertEqual(copied_form.name, f"{self.form_definition.name} (kopie)")
-        self.assertEqual(copied_form.slug, f"{self.form_definition.slug}-kopie")
+        self.assertEqual(
+            copied_form.name, _("{name} (copy)").format(name=self.form_definition.name)
+        )
+        self.assertEqual(
+            copied_form.slug, _("{slug}-copy").format(slug=self.form_definition.slug)
+        )

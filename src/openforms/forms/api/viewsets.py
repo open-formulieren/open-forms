@@ -70,7 +70,7 @@ class FormStepViewSet(
         tags=["forms"],
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve form step definition"),
+        summary=_("Retrieve form step definition details"),
         tags=["forms"],
     ),
 )
@@ -118,7 +118,7 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
     update=extend_schema(summary=_("Update all details of a form")),
     partial_update=extend_schema(summary=_("Update given details of a form")),
     destroy=extend_schema(
-        summary=_("(Soft) delete a form"),
+        summary=_("Mark form as deleted"),
         description=_(
             "Destroying a form leads to a soft-delete to protect related submissions. "
             "These deleted forms are no longer visible in the API endpoints."
@@ -208,7 +208,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance._is_deleted = True
         instance.save()
-        reversion.set_comment(_("Formulier verwijderd via API."))
+        reversion.set_comment(_("Form deleted via the API."))
 
 
 class FormsImportAPIView(views.APIView):

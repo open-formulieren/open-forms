@@ -19,17 +19,19 @@ class FormDefinition(models.Model):
     and used to render the form.
     """
 
-    uuid = StringUUIDField(unique=True, default=uuid.uuid4)
-    name = models.CharField(max_length=50)
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    name = models.CharField(_("name"), max_length=50)
     slug = AutoSlugField(
-        max_length=100, populate_from="name", editable=True, unique=True
+        _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
     configuration = JSONField(
         _("Formio.js configuration"),
         help_text=_("The form definition as Formio.js JSON schema"),
     )
     login_required = models.BooleanField(
-        default=False, help_text="DigID Login required for form step"
+        _("login required"),
+        default=False,
+        help_text="DigID Login required for form step",
     )
 
     def get_absolute_url(self):
@@ -40,8 +42,8 @@ class FormDefinition(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = uuid.uuid4()
-        copy.name = f"{self.name} (kopie)"
-        copy.slug = f"{self.slug}-kopie"
+        copy.name = _("{name} (copy)").format(name=self.name)
+        copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.save()
         return copy
 
@@ -52,12 +54,12 @@ class FormDefinition(models.Model):
         if Form.objects.filter(formstep__form_definition=self).exists():
             raise ValidationError(
                 _(
-                    "Deze Form Definitie is bij een Form gebruikt en daarvoor mag niet wiegeren worden"
+                    "This form definition cannot be removed because it is used in one or more forms."
                 )
             )
 
         return super().delete(using=using, keep_parents=keep_parents)
 
     class Meta:
-        verbose_name = "Form Definition"
-        verbose_name_plural = "Form Definitions"
+        verbose_name = _("Form definition")
+        verbose_name_plural = _("Form definitions")

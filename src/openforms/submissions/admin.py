@@ -48,9 +48,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         if queryset.order_by().values("form").distinct().count() > 1:
             messages.error(
                 request,
-                _(
-                    "Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
-                ),
+                _("You can only export the submissions of the same form type."),
             )
             return
 
@@ -60,12 +58,12 @@ class SubmissionAdmin(admin.ModelAdmin):
         return self._export(request, queryset, "csv")
 
     export_csv.short_description = _(
-        "Geselecteerde %(verbose_name_plural)s exporteren als CSV-bestand."
+        "Export selected %(verbose_name_plural)s as CSV-file."
     )
 
     def export_xlsx(self, request, queryset):
         return self._export(request, queryset, "xlsx")
 
     export_xlsx.short_description = _(
-        "Geselecteerde %(verbose_name_plural)s exporteren als Excel-bestand."
+        "Export selected %(verbose_name_plural)s as Excel-file."
     )

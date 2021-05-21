@@ -18,17 +18,17 @@ class Form(models.Model):
     Form model, containing a list of order form steps.
     """
 
-    uuid = StringUUIDField(unique=True, default=uuid.uuid4)
-    name = models.CharField(max_length=50)
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    name = models.CharField(_("name"), max_length=50)
     slug = AutoSlugField(
-        max_length=100, populate_from="name", editable=True, unique=True
+        _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
     # TODO: add validator that this field is present in the form step form definition(s)
     email_property_name = models.CharField(
-        _("veldnaam e-mailadres"),
+        _("email fieldname"),
         max_length=200,
         blank=True,
         help_text=_(
@@ -40,7 +40,9 @@ class Form(models.Model):
 
     # backend integration - which registration to use?
     registration_backend = BackendChoiceField(_("registration backend"), blank=True)
-    registration_backend_options = JSONField(default=dict, blank=True, null=True)
+    registration_backend_options = JSONField(
+        _("registration backend options"), default=dict, blank=True, null=True
+    )
 
     # life cycle management
     active = models.BooleanField(default=False)
@@ -79,8 +81,8 @@ class Form(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = uuid.uuid4()
-        copy.name = f"{self.name} (kopie)"
-        copy.slug = f"{self.slug}-kopie"
+        copy.name = _("{name} (copy)").format(name=self.name)
+        copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = None
         copy.save()
 
