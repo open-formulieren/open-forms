@@ -2,18 +2,28 @@
 <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
     <soapenv:Header/>
     <soapenv:Body>
-
         <ZKN:genereerDocumentIdentificatie_Du02
-            xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd"
-            xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
-            xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-            <!-- minimal interesting fields -->
-
-            <ZKN:document StUF:functie="entiteit" StUF:entiteittype="EDC">
+                xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310">
+            <ZKN:stuurgegevens>
+                <StUF:berichtcode>Du02</StUF:berichtcode>
+                <StUF:zender>
+                    <StUF:organisatie>KING</StUF:organisatie>
+                    <StUF:applicatie>STP</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>ORG</StUF:organisatie>
+                    <StUF:applicatie>TTA</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:ontvanger>
+                <StUF:tijdstipBericht>20210520125731</StUF:tijdstipBericht>
+                <StUF:functie>genereerDocumentidentificatie</StUF:functie>
+            </ZKN:stuurgegevens>
+            <ZKN:melding>melding</ZKN:melding>
+            <ZKN:document StUF:entiteittype="EDC" StUF:functie="entiteit">
                 <ZKN:identificatie>{{ document_identificatie }}</ZKN:identificatie>
             </ZKN:document>
         </ZKN:genereerDocumentIdentificatie_Du02>
-
     </soapenv:Body>
 </soapenv:Envelope>
