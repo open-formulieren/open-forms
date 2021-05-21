@@ -61,9 +61,7 @@ class FormDefinitionTestCase(TestCase):
         form2 = form_definition_1.copy()
         form3 = form_definition_1.copy()
 
-        self.assertEqual(
-            form2.slug, _("{slug}-copy").format(slug="a-form-definition")
-        )
+        self.assertEqual(form2.slug, _("{slug}-copy").format(slug="a-form-definition"))
         self.assertEqual(
             form2.name, _("{name} (copy)").format(name="A form definition")
         )
@@ -71,10 +69,6 @@ class FormDefinitionTestCase(TestCase):
         self.assertEqual(
             form3.name, _("{name} (copy)").format(name="A form definition")
         )
-        self.assertEqual(form2.slug, "a-form-definition-kopie")
-        self.assertEqual(form2.name, "A form definition (kopie)")
-        self.assertEqual(form3.slug, "a-form-definition-kopie-2")
-        self.assertEqual(form3.name, "A form definition (kopie)")
 
     def test_get_keys_for_email_summary(self):
         form_definition = FormDefinitionFactory.create(
