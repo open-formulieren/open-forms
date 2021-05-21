@@ -41,8 +41,8 @@ def remove_submission_from_session(
 def send_confirmation_email(submission: Submission):
     email_template = submission.form.confirmation_email_template
 
-    to_email = submission.form.get_email_recipient(submission.data)
-    if to_email is None:
+    to_emails = submission.form.get_email_recipients(submission.data)
+    if to_emails is None:
         logger.warning(
             "Could not determine the recipient e-mail address for submission %d, "
             "skipping the confirmation e-mail.",
@@ -56,7 +56,7 @@ def send_confirmation_email(submission: Submission):
         email_template.subject,
         content,
         settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
-        [to_email],
+        to_emails,
         fail_silently=False,
         html_message=content,
     )
