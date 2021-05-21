@@ -5,18 +5,8 @@
                                  xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
-        <StUF:zender>
-            <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
-            <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
-            <StUF:gebruiker/>
-        </StUF:zender>
-        <StUF:ontvanger>
-            <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
-            <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
-            <StUF:gebruiker/>
-        </StUF:ontvanger>
+        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
         <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
-        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
         <StUF:entiteittype>EDC</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>

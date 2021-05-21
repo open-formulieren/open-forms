@@ -1,0 +1,13 @@
+<StUF:zender>
+    <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+    {% if zender_administratie %}<StUF:administratie>{{ zender_administratie }}</StUF:administratie>{% endif %}
+    {% if zender_gebruiker %}<StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>{% endif %}
+</StUF:zender>
+<StUF:ontvanger>
+    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+    {% if ontvanger_administratie %}<StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>{% endif %}
+    {% if ontvanger_gebruiker %}<StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>{% endif %}
+</StUF:ontvanger>
+<StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
