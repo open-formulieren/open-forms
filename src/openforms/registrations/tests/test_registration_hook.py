@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
-from ..submissions import register_submission
+from ..tasks import register_submission
 from .utils import patch_registry
 
 
@@ -67,7 +67,7 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission)
+            register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -96,7 +96,7 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission)
+            register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -123,7 +123,7 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission)
+            register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
         self.assertEqual(

@@ -6,6 +6,8 @@ sub-resource.
 
 The backend should perform total-form validation as part of this action.
 """
+from unittest.mock import patch
+
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
@@ -88,9 +90,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
 
+    @patch("openforms.registrations.tasks.register_submission.delay")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission_send_confirmation_email(self):
+    def test_complete_submission_send_confirmation_email(self, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -133,9 +136,14 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn("Information filled in: bar", message.body)
 
+        delay_mock.assert_called_once_with(submission.id)
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission_send_confirmation_email_custom_property_name(self):
+    def test_complete_submission_send_confirmation_email_custom_property_name(
+        self, delay_mock
+    ):
         form = FormFactory.create(email_property_name="custom_email")
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -180,7 +188,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn("Information filled in: bar", message.body)
 
-    def test_complete_submission_without_email_recipient(self):
+        delay_mock.assert_called_once_with(submission.id)
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    def test_complete_submission_without_email_recipient(self, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -201,7 +212,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
 
-    def test_complete_submission_send_confirmation_email_with_summary(self):
+        delay_mock.assert_called_once_with(submission.id)
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    def test_complete_submission_send_confirmation_email_with_summary(self, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -270,7 +284,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn("<th>hello</th>", message.body)
         self.assertNotIn("<th>hellovalue</th>", message.body)
 
-    def test_complete_submission_send_confirmation_email_to_many_recipients(self):
+        delay_mock.assert_called_once_with(submission.id)
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    def test_complete_submission_send_confirmation_email_to_many_recipients(
+        self, delay_mock
+    ):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -299,3 +318,5 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         message = mail.outbox[0]
         self.assertEqual(message.to, ["aaa@aaa.aaa", "bbb@bbb.bbb"])
+
+        delay_mock.assert_called_once_with(submission.id)

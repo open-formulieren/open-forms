@@ -7,13 +7,16 @@ from django.db import transaction
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
+from ..celery import app
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
 
 
+@app.task()
 @transaction.atomic()
-def register_submission(submission: Submission) -> Optional[dict]:
+def register_submission(submission_id: int) -> Optional[dict]:
+    submission = Submission.objects.get(id=submission_id)
     # figure out which registry and backend to use from the model field used
     form = submission.form
     backend = form.registration_backend
