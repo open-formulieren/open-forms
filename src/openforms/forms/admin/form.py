@@ -125,14 +125,14 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
                         )
                     self.message_user(
                         request,
-                        _("Catalogus successfully imported"),
+                        _("Form successfully imported"),
                         level=messages.SUCCESS,
                     )
                     return HttpResponseRedirect(reverse("admin:forms_form_changelist"))
                 except ValidationError as exc:
                     self.message_user(
                         request,
-                        _("Something went wrong while importing forms: {}").format(exc),
+                        _("Something went wrong while importing form: {}").format(exc),
                         level=messages.ERROR,
                     )
         else:
