@@ -1,2 +1,2 @@
 #!/bin/bash
-exec celery flower --app bptl --workdir src
+exec celery flower --app open-forms --workdir src
