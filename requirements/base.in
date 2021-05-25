@@ -1,5 +1,5 @@
 # Core python libraries
-celery < 5
+celery < 5  # Flower does not work with Celery 5
 Pillow  # handle images
 psycopg2  # database driver
 pytz  # handle timezones
@@ -42,6 +42,7 @@ drf-spectacular
 uwsgi
 sentry-sdk  # error monitoring
 elastic-apm  # Elastic APM integration
+flower # task monitoring
 
 # Common Ground integration
 zgw-consumers
