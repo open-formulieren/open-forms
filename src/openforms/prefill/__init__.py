@@ -27,3 +27,31 @@ So, to recap:
 4. The submission-specific form definition configuration is enhanced with the pre-filled
    form field default values.
 """
+from typing import TYPE_CHECKING, Dict, List, Union
+
+from zgw_consumers.concurrent import parallel
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
+
+
+JSONPrimitive = Union[str, int, None, float]
+JSONValue = Union[JSONPrimitive, "JSONObject", List["JSONValue"]]
+JSONObject = Dict[str, JSONValue]
+
+
+def apply_prefill(configuration: JSONObject, submission: "Submission", register=None):
+    """
+    Takes a Formiojs definition and invokes all the pre-fill plugins.
+
+    The entire form definition is parsed, plugins and their attributes are extracted
+    and each plugin is invoked with the list of attributes (in parallel).
+    """
+    from .registry import register as default_register
+
+    register = register or default_register
+
+    with parallel() as executor:
+        ...
+
+    return configuration  # TODO
