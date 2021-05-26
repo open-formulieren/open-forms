@@ -117,10 +117,16 @@ const PREFILL = {
             template: '<span>{{ item.label }}</span>',
         },
         {
-            type: 'textfield',
+            type: 'select',
             key: 'prefill.attribute',
             label: 'Plugin attribute',
             description: 'Specify the attribute holding the pre-fill data.',
+            dataSrc: 'url',
+            data: {
+                url: getFullyQualifiedUrl('/api/v1/prefill/plugins/{{ row.prefill.plugin }}/attributes'),
+            },
+            valueProperty: 'id',
+            template: '<span>{{ item.label }}</span>',
         }
     ],
 };

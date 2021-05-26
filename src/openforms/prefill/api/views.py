@@ -60,4 +60,5 @@ class PluginAttributesListView(ListMixin, APIView):
                 detail=_("No plugin with ID '{plugin}' found").format(**self.kwargs)
             )
         choices = plugin.get_available_attributes()
+
         return [ChoiceWrapper(choice) for choice in choices]
