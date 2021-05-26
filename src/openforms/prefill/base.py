@@ -1,9 +1,16 @@
 from typing import Any, Dict, Iterable, List, Tuple
 
+from django.utils.translation import gettext_lazy as _
+
 from openforms.submissions.models import Submission
 
 
 class BasePlugin:
+    verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
+
+    def __init__(self, identifier: str):
+        self.identifier = identifier
+
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """
         Return a choice list of available attributes this plugin offers.

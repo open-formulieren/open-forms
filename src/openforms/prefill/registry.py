@@ -11,9 +11,8 @@ class Registry:
 
     def __call__(self, unique_identifier: str, *args, **kwargs) -> callable:
         def decorator(plugin_cls: Type) -> Type:
-
-            self._registry[unique_identifier] = plugin_cls
-
+            plugin = plugin_cls(identifier=unique_identifier)
+            self._registry[unique_identifier] = plugin
             return plugin_cls
 
         return decorator

@@ -62,7 +62,7 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
 
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item
-        plugin = register[plugin_id]()
+        plugin = register[plugin_id]
         values = plugin.get_prefill_values(submission, fields)
         return (plugin_id, values)
 
