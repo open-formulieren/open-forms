@@ -65,6 +65,7 @@ urlpatterns = [
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
+                path("prefill/", include("openforms.prefill.api.urls")),
             ]
         ),
     ),

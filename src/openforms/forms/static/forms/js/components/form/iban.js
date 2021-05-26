@@ -34,5 +34,4 @@ class IbanField extends TextField {
 
 defineCommonEditFormTabs(IbanField);
 
-
-Formio.registerComponent('iban', IbanField);
+export default IbanField;

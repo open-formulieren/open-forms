@@ -34,3 +34,11 @@ li.nav-item {
 .formio-dialog {
   z-index: 10000000;
 }
+
+.component-edit-container {
+  .tab-pane.active {
+    // the select dropdowns are overflowing, which is hidden by the modal. this is the
+    // easiest way to enforce they're always visible.
+    min-height: 550px;
+  }
+}

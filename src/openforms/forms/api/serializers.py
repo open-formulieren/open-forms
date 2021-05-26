@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.prefill import apply_prefill
 from openforms.products.api.serializers import ProductSerializer
 
 from ..custom_field_types import handle_custom_types
@@ -62,6 +63,10 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             representation["configuration"] = handle_custom_types(
                 representation["configuration"],
                 request=self.context["request"],
+                submission=self.context["submission"],
+            )
+            representation["configuration"] = apply_prefill(
+                representation["configuration"],
                 submission=self.context["submission"],
             )
         return representation

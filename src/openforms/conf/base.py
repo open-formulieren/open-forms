@@ -137,6 +137,8 @@ INSTALLED_APPS = [
     "openforms.contrib.brp",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
+    "openforms.prefill",
+    "openforms.prefill.contrib.demo",
 ]
 
 MIDDLEWARE = [

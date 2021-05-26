@@ -2,7 +2,7 @@
 Registration plugins
 ====================
 
-Open Forms has a plugin-system for the registrations module. The registrations module
+Open Forms has a plugin system for the registrations module. The registrations module
 is invoked when a form submission is completed, and is responsible for persisting the
 form data to the configured backend.
 
