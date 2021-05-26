@@ -1,28 +1,20 @@
-import uuid
 import base64
-import requests
-import xmltodict
+import uuid
 from datetime import timedelta
 
+from django.db import models
 from django.template import loader
 from django.utils import dateformat, timezone
-from django.db import models
+
+import requests
 from solo.models import SingletonModel
-
-
-NAMESPACE_REPLACEMENTS = {
-    "http://schemas.xmlsoap.org/soap/envelope/": None,
-    "http://www.egem.nl/StUF/sector/bg/0310": None,
-    "http://www.egem.nl/StUF/StUF0301": None,
-    "http://www.w3.org/1999/xlink": None,
-    "http://www.opengis.net/gml": None,
-}
 
 
 class StufBGConfig(SingletonModel):
     """
     global configuration and defaults
     """
+
     service = models.OneToOneField(
         "stuf_zds.SoapService",
         on_delete=models.PROTECT,
@@ -105,21 +97,4 @@ class StufBGConfig(SingletonModel):
 
         data = self.get_address_request_data(bsn)
 
-        xml_response = self._make_request(data).content
-
-        dict_response = xmltodict.parse(
-            xml_response,
-            process_namespaces=True,
-            namespaces=NAMESPACE_REPLACEMENTS,
-        )
-
-        address = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]["verblijfsadres"]
-
-        return {
-            'street_name': address.get('gor.straatnaam'),
-            'house_number': address.get('aoa.huisnummer'),
-            'house_letter': address.get('aoa.huisletter'),
-            'house_letter_addition': address.get('aoa.huisnummertoevoeging'),
-            'postcode': address.get('aoa.postcode'),
-            'city': address.get('wpl.woonplaatsNaam')
-        }
+        return self._make_request(data).content
