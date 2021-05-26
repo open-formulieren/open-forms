@@ -97,7 +97,7 @@ class StufBGConfig(SingletonModel):
         context = self._get_request_base_context()
         context.update({"bsn": bsn})
 
-        template = "request/RequestAddress.xml"
+        template = "get_address/stuf_bg/templates/RequestAddress.xml"
 
         return loader.render_to_string(template, context)
 
@@ -105,7 +105,7 @@ class StufBGConfig(SingletonModel):
 
         data = self.get_address_request_data(bsn)
 
-        xml_response = self._make_request(data)
+        xml_response = self._make_request(data).content
 
         dict_response = xmltodict.parse(
             xml_response,
@@ -116,10 +116,10 @@ class StufBGConfig(SingletonModel):
         address = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]["verblijfsadres"]
 
         return {
-            'street_name': address['gor.straatnaam'],
-            'house_number': address['huisnummer'],
-            'house_letter': address['huisletter'],
-            'house_letter_addition': address['aoa.huisnummertoevoeging'],
-            'postcode': address['aoa.postcode'],
-            'city': address['wpl.woonplaatsNaam']
+            'street_name': address.get('gor.straatnaam'),
+            'house_number': address.get('aoa.huisnummer'),
+            'house_letter': address.get('aoa.huisletter'),
+            'house_letter_addition': address.get('aoa.huisnummertoevoeging'),
+            'postcode': address.get('aoa.postcode'),
+            'city': address.get('wpl.woonplaatsNaam')
         }

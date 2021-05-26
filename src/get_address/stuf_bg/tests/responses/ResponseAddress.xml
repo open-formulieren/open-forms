@@ -1,0 +1,62 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:npsLa01>
+            <ns:stuurgegevens>
+                <StUF:berichtcode>?</StUF:berichtcode>
+                <!--Optional:-->
+                <StUF:zender>
+                    <!--Optional:-->
+                    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+                    <!--Optional:-->
+                    <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
+                    <!--Optional:-->
+                    <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
+                </StUF:zender>
+                <!--Optional:-->
+                <StUF:ontvanger>
+                    <!--Optional:-->
+                    <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+                    <!--Optional:-->
+                    <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
+                    <!--Optional:-->
+                    <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
+                </StUF:ontvanger>
+                <!--Optional:-->
+                <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
+                <!--Optional:-->
+                <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+                <!--Optional:-->
+                <StUF:crossRefnummer>?</StUF:crossRefnummer>
+                <StUF:entiteittype>?</StUF:entiteittype>
+            </ns:stuurgegevens>
+            <ns:parameters>
+                <StUF:indicatorVervolgvraag>?</StUF:indicatorVervolgvraag>
+                <!--Optional:-->
+                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+                <!--Optional:-->
+                <StUF:aantalVoorkomens>?</StUF:aantalVoorkomens>
+            </ns:parameters>
+            <!--Zero or more repetitions:-->
+            <ns:melding>?</ns:melding>
+            <!--Optional:-->
+            <ns:antwoord>
+                <!--1 or more repetitions:-->
+                <ns:object StUF:entiteittype="NPS">
+                    <ns:verblijfsadres>
+                        <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
+                        <ns:gor.straatnaam>Keizersgracht</ns:gor.straatnaam>
+                        <ns:aoa.postcode>1015 CJ</ns:aoa.postcode>
+                        <ns:aoa.huisnummer>117</ns:aoa.huisnummer>
+                        <ns:aoa.huisletter>A</ns:aoa.huisletter>
+                        <ns:aoa.huisnummertoevoeging>B</ns:aoa.huisnummertoevoeging>
+                    </ns:verblijfsadres>
+                </ns:object>
+            </ns:antwoord>
+        </ns:npsLa01>
+    </soapenv:Body>
+</soapenv:Envelope>
