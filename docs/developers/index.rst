@@ -11,4 +11,5 @@ integrating with Open Forms.
    :maxdepth: 3
 
    registration_plugins
+   prefill_plugins
    manual_testing

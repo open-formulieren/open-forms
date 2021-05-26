@@ -13,9 +13,8 @@ available, and for performing the actual look-up. Plugins receive the
 :class:`openforms.submissions.models.Submission` instance that represents the current
 form session of an end-user.
 
-Pre-fill values are embedded as default values for form fields, dynamically for every
-user session using the component rewrite functionality in
-:module:`openforms.forms.custom_field_types`.
+Prefill values are embedded as default values for form fields, dynamically for every
+user session using the component rewrite functionality in the serializers.
 
 So, to recap:
 

@@ -7,6 +7,9 @@ from openforms.submissions.models import Submission
 
 class BasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
+    """
+    Specify the human-readable label for the plugin.
+    """
 
     def __init__(self, identifier: str):
         self.identifier = identifier
