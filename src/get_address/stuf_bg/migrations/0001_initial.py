@@ -9,18 +9,34 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('stuf_zds', '0001_initial'),
+        ("stuf_zds", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='StufBGConfig',
+            name="StufBGConfig",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('service', models.OneToOneField(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='stuf_bg_config', to='stuf_zds.SoapService')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "service",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="stuf_bg_config",
+                        to="stuf_zds.SoapService",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]
