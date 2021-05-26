@@ -1,5 +1,5 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n openforms %}
+{% load i18n staticfiles openforms %}
 
 {% block after_field_sets %}
 <fieldset class="module aligned">
@@ -46,21 +46,19 @@
 </fieldset>
 {% endblock %}
 
-{% block submit_buttons_bottom %}
-    {{ block.super }}
+{% block field_sets %}
+<div
+    class="react-form-create"
+    data-form-uuid="{{ original.uuid|default:'' }}"
+    data-form-name="{{ original.name|default:'' }}"
+    data-form-slug="{{ original.slug|default:'' }}"
+    data-csrftoken="{{ csrf_token }}"
+> {# Managed by React #} </div>
+{% endblock %}
 
-    {% if has_change_permission %}
-    <div class="submit-row submit-row-extended">
 
-        {% block extra_submit_buttons %}
-            {{ block.super }}
+{% block submit_buttons_bottom %}{% endblock %}
 
-            {% if original %}
-                <input type="submit" value="{% trans 'Export' %}" name="_export"/>
-                <input type="submit" value="{% trans 'Copy' %}" name="_copy"/>
-            {% endif %}
-        {% endblock %}
-
-    </div>
-    {% endif %}
+{% block admin_change_form_document_ready %}
+    <script src="{% static 'bundles/core-js.js' %}"></script>
 {% endblock %}

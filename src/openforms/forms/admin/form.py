@@ -44,7 +44,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         "registration_backend",
         "registration_backend_options",
     )
-    inlines = (FormStepInline,)
+    # inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies"]
 
