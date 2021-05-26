@@ -27,12 +27,18 @@ So, to recap:
 4. The submission-specific form definition configuration is enhanced with the pre-filled
    form field default values.
 """
-from typing import TYPE_CHECKING, Dict, List, Union
+import logging
+from copy import deepcopy
+from itertools import groupby
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
 
 from zgw_consumers.concurrent import parallel
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
+
+
+logger = logging.getLogger(__name__)
 
 
 JSONPrimitive = Union[str, int, None, float]
@@ -51,7 +57,87 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
 
     register = register or default_register
 
-    with parallel() as executor:
-        ...
+    fields = _extract_prefill_fields(configuration)
+    grouped_fields = _group_prefills_by_plugin(fields)
 
-    return configuration  # TODO
+    def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
+        plugin_id, fields = item
+        plugin = register[plugin_id]()
+        values = plugin.get_prefill_values(submission, fields)
+        return (plugin_id, values)
+
+    with parallel() as executor:
+        results = executor.map(invoke_plugin, grouped_fields.items())
+
+    # process the pre-fill results and fill them out
+    prefilled_values: Dict[str, Dict[str, Any]] = dict(results)
+
+    # finally, ensure the ``defaultValue`` is set based on prefill results
+    config_copy = deepcopy(configuration)
+    _set_default_values(config_copy, prefilled_values)
+    return config_copy  # TODO
+
+
+def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
+    prefills = []
+    components = configuration.get("components", [])
+
+    for component in components:
+        if prefill := component.get("prefill"):
+            prefills.append(prefill)
+        else:
+            nested = _extract_prefill_fields(component)
+            prefills += nested
+
+    return prefills
+
+
+def _group_prefills_by_plugin(fields: List[JSONObject]) -> Dict[str, list]:
+    grouper = {}
+
+    def keyfunc(item):
+        return item.get("plugin", "")
+
+    sorted_fields = sorted(fields, key=keyfunc)
+    for group, _fields in groupby(sorted_fields, key=keyfunc):
+        grouper[group] = [field["attribute"] for field in _fields]
+    return grouper
+
+
+def _set_default_values(
+    configuration: JSONObject, prefilled_values: Dict[str, Dict[str, Any]]
+) -> None:
+    """
+    Mutates each component found in configuration according to the prefilled values.
+
+    :param configuration: The Formiojs JSON schema describing an entire form or an
+      individual component within the form.
+    :param prefilled_values: A dict keyed by plugin ID, with values a dict keyed by the
+      attribute ID. The value of each attribute key is the prefill value as retrieved.
+
+    This function recurses to deal with the nested component structure. Each component
+    is inspected for prefill configuration, which is then looked up in
+    ``prefilled_values`` to set the component ``defaultValue``.
+    """
+    if "prefill" in configuration:
+        default_value = configuration.get("defaultValue")
+        prefill_value = prefilled_values.get(
+            configuration["prefill"]["plugin"], {}
+        ).get(configuration["prefill"]["attribute"])
+
+        if prefill_value is None:
+            logger.debug(
+                "Prefill value for component %s is None, skipping.", configuration["id"]
+            )
+            return
+
+        if prefill_value != default_value and default_value is not None:
+            logger.info(
+                "Overwriting non-null default value for component %s",
+                configuration["id"],
+            )
+        configuration["defaultValue"] = prefill_value
+
+    if components := configuration.get("components"):
+        for component in components:
+            _set_default_values(component, prefilled_values)
