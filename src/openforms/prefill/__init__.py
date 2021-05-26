@@ -51,7 +51,23 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     Takes a Formiojs definition and invokes all the pre-fill plugins.
 
     The entire form definition is parsed, plugins and their attributes are extracted
-    and each plugin is invoked with the list of attributes (in parallel).
+    and each plugin is invoked with the list of attributes (in parallel). If a default
+    value was specified for a component, and the prefill plugin returns a value as well,
+    the prefill value overrides the default.
+
+    :param configuration: The formiojs form configuration, including all the components.
+      This must adhere to the formiojs proprietary JSON schema.
+    :param submission: the relevant for submission session, holding the optional BSN or
+      other identifying details obtained after authentication. This object is passed
+      down to the plugins so that they can inspect the submission context to retrieve
+      prefill data.
+    :param register: A :class:`openforms.prefill.registry.Registry` instance, holding
+      the registered plugins. Defaults to the default registry, but can be specified for
+      dependency injection purposes in tests.
+    :return: Returns a mutated copy of the configuration, where components
+      ``defaultValue`` is set to the value from prefill plugins where possible. If the
+      ``defaultValue`` was set through the form builder, it may be overridden by the
+      prefill plugin value (if it's not ``None``).
     """
     from .registry import register as default_register
 

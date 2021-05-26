@@ -29,5 +29,10 @@ class BasePlugin:
           the required context to fetch the correct prefill values.
         :param attributes: a list of requested prefill attributes, provided in bulk
           to efficiently fetch as much data as possible with the minimal amount of calls.
+        :return: a key-value dictionary, where the key is the requested attribute and
+          the value is the prefill value to use for that attribute.
+
+        When no pre-fill value can be found for a given attribute, you may omit the key
+        altogether, or use ``None``.
         """
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
