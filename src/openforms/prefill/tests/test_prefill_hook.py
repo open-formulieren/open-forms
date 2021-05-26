@@ -1,9 +1,12 @@
+from copy import deepcopy
+
 from django.test import TestCase
 
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import apply_prefill
+from ..base import BasePlugin
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry
 
@@ -99,3 +102,59 @@ class PrefillHookTests(TestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
+
+    def test_complex_components(self):
+        complex_configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "e1a2cv9",
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "components": CONFIGURATION["components"],
+                },
+            ],
+        }
+        form_step = FormStepFactory.create(
+            form_definition__configuration=complex_configuration
+        )
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        new_configuration = apply_prefill(
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        fieldset = new_configuration["components"][0]
+        self.assertNotIn("defaultValue", fieldset)
+
+        field = fieldset["components"][0]
+        self.assertIn("prefill", field)
+        self.assertIn("defaultValue", field)
+        self.assertIsNotNone(field["defaultValue"])
+        self.assertIsInstance(field["defaultValue"], str)
+
+    def test_prefill_no_result_and_default_value_set(self):
+        config = deepcopy(CONFIGURATION)
+        config["components"][0]["defaultValue"] = "some-default"
+        form_step = FormStepFactory.create(form_definition__configuration=config)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        register = Registry()
+
+        @register("demo")
+        class NoOp(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                return {}
+
+        new_configuration = apply_prefill(
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        self.assertIsNotNone(field["defaultValue"])
+        self.assertEqual(field["defaultValue"], "some-default")
