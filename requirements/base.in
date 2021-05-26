@@ -49,3 +49,5 @@ flower # task monitoring
 zgw-consumers
 
 tablib[xlsx]
+
+xmltodict
