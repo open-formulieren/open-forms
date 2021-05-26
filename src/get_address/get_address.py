@@ -20,6 +20,7 @@ def get_person_address(bsn: str):
             "verblijfsadres"
         ]
     except KeyError:
+        # TODO Do we want to throw our own exception here?  This should never happen
         address = {}
 
     return {

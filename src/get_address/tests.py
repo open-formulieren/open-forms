@@ -9,8 +9,10 @@ from get_address.get_address import get_person_address
 class GetAddressTest(TestCase):
     @patch("get_address.stuf_bg.models.StufBGConfig.get_solo")
     def test_get_address(self, client_mock):
-        client_mock.return_value.get_client.return_value.get_address.return_value = loader.render_to_string(
-            "get_address/stuf_bg/tests/responses/ResponseAddress.xml"
+        client_mock.return_value.get_client.return_value.get_address.return_value = (
+            loader.render_to_string(
+                "get_address/stuf_bg/tests/responses/ResponseAddress.xml"
+            )
         )
 
         address = get_person_address("123456789")
