@@ -7,6 +7,6 @@ urlpatterns = [
     path(
         "plugins/<slug:plugin>/attributes",
         PluginAttributesListView.as_view(),
-        name="plugin-list",
+        name="attribute-list",
     ),
 ]
