@@ -1,3 +1,4 @@
+# Namespacing in the XML we want to remove
 NAMESPACE_REPLACEMENTS = {
     "http://schemas.xmlsoap.org/soap/envelope/": None,
     "http://www.egem.nl/StUF/sector/bg/0310": None,
