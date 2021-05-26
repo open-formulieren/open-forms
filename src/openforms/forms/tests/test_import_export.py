@@ -1,9 +1,11 @@
 import json
 import os
 import zipfile
+from unittest import expectedFailure
 
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.test import TestCase
+from django.utils.translation import ugettext_lazy as _
 
 from openforms.products.tests.factories import ProductFactory
 
@@ -26,7 +28,7 @@ class ImportExportTests(TestCase):
         form_step.form_definition = form_definition
         form_step.save()
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -69,7 +71,7 @@ class ImportExportTests(TestCase):
             form_step.pk,
         )
 
-        call_command("export", form.pk, archive_name=self.filepath)
+        call_command("export", form.pk, self.filepath)
 
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"
@@ -100,6 +102,165 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.slug, old_form_definition_slug)
+
+        form_steps = FormStep.objects.all()
+        fs2 = form_steps.last()
+        self.assertEqual(form_steps.count(), 2)
+        self.assertNotEqual(fs2.pk, form_step_pk)
+        self.assertNotEqual(fs2.uuid, str(form_step.uuid))
+        self.assertEqual(fs2.availability_strategy, form_step.availability_strategy)
+        self.assertEqual(fs2.form.pk, forms.last().pk)
+        self.assertEqual(fs2.form_definition.pk, fd2.pk)
+        self.assertEqual(fs2.optional, form_step.optional)
+        self.assertEqual(fs2.order, form_step.order)
+
+    def test_import_form_slug_already_exists(self):
+        product = ProductFactory.create()
+        form = FormFactory.create(product=product)
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        form_pk, form_definition_pk, form_step_pk = (
+            form.pk,
+            form_definition.pk,
+            form_step.pk,
+        )
+
+        call_command("export", form.pk, self.filepath)
+
+        old_form_definition_slug = form_definition.slug
+        form_definition.slug = "modified"
+        form_definition.save()
+
+        with self.assertRaises(CommandError):
+            call_command("import", import_file=self.filepath)
+
+        forms = Form.objects.all()
+        self.assertEqual(forms.count(), 1)
+        self.assertEqual(forms.last().pk, form_pk)
+        self.assertEqual(forms.last().uuid, str(form.uuid))
+        self.assertEqual(forms.last().active, form.active)
+        self.assertEqual(forms.last().registration_backend, form.registration_backend)
+        self.assertEqual(forms.last().name, form.name)
+        self.assertEqual(forms.last().product, form.product)
+        self.assertEqual(forms.last().slug, form.slug)
+
+        form_definitions = FormDefinition.objects.all()
+        fd2 = form_definitions.last()
+        self.assertEqual(form_definitions.count(), 1)
+        self.assertEqual(fd2.pk, form_definition_pk)
+        self.assertEqual(fd2.uuid, str(form_definition.uuid))
+        self.assertEqual(fd2.configuration, form_definition.configuration)
+        self.assertEqual(fd2.login_required, form_definition.login_required)
+        self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.slug, form_definition.slug)
+
+        form_steps = FormStep.objects.all()
+        fs2 = form_steps.last()
+        self.assertEqual(form_steps.count(), 1)
+        self.assertEqual(fs2.pk, form_step_pk)
+        self.assertEqual(fs2.uuid, str(form_step.uuid))
+        self.assertEqual(fs2.availability_strategy, form_step.availability_strategy)
+        self.assertEqual(fs2.form.pk, forms.last().pk)
+        self.assertEqual(fs2.form_definition.pk, fd2.pk)
+        self.assertEqual(fs2.optional, form_step.optional)
+        self.assertEqual(fs2.order, form_step.order)
+
+    def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
+        product = ProductFactory.create()
+        form = FormFactory.create(product=product)
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        form_pk, form_definition_pk, form_step_pk = (
+            form.pk,
+            form_definition.pk,
+            form_step.pk,
+        )
+
+        call_command("export", form.pk, self.filepath)
+
+        old_form_slug = form.slug
+        form.slug = "modified"
+        form.save()
+
+        call_command("import", import_file=self.filepath)
+
+        forms = Form.objects.all()
+        self.assertEqual(forms.count(), 2)
+        self.assertNotEqual(forms.last().pk, form_pk)
+        self.assertNotEqual(forms.last().uuid, str(form.uuid))
+        self.assertEqual(forms.last().active, False)
+        self.assertEqual(forms.last().registration_backend, form.registration_backend)
+        self.assertEqual(forms.last().name, form.name)
+        self.assertIsNone(forms.last().product)
+        self.assertEqual(forms.last().slug, old_form_slug)
+
+        form_definitions = FormDefinition.objects.all()
+        fd2 = form_definitions.last()
+        self.assertEqual(form_definitions.count(), 1)
+        self.assertEqual(fd2.pk, form_definition_pk)
+        self.assertEqual(fd2.uuid, str(form_definition.uuid))
+        self.assertEqual(fd2.configuration, form_definition.configuration)
+        self.assertEqual(fd2.login_required, form_definition.login_required)
+        self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.slug, form_definition.slug)
+
+        form_steps = FormStep.objects.all()
+        fs2 = form_steps.last()
+        self.assertEqual(form_steps.count(), 2)
+        self.assertNotEqual(fs2.pk, form_step_pk)
+        self.assertNotEqual(fs2.uuid, str(form_step.uuid))
+        self.assertEqual(fs2.availability_strategy, form_step.availability_strategy)
+        self.assertEqual(fs2.form.pk, forms.last().pk)
+        self.assertEqual(fs2.form_definition.pk, fd2.pk)
+        self.assertEqual(fs2.optional, form_step.optional)
+        self.assertEqual(fs2.order, form_step.order)
+
+    @expectedFailure
+    def test_import_form_definition_slug_already_exists_configuration_different(self):
+        product = ProductFactory.create()
+        form = FormFactory.create(product=product)
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        form_pk, form_definition_pk, form_step_pk = (
+            form.pk,
+            form_definition.pk,
+            form_step.pk,
+        )
+
+        call_command("export", form.pk, self.filepath)
+
+        old_form_slug = form.slug
+        form.slug = "modified"
+        form.save()
+
+        old_fd_config = form_definition.configuration
+        form_definition.configuration = {"foo": ["bar"]}
+        form_definition.save()
+
+        call_command("import", import_file=self.filepath)
+
+        forms = Form.objects.all()
+        self.assertEqual(forms.count(), 2)
+        self.assertNotEqual(forms.last().pk, form_pk)
+        self.assertNotEqual(forms.last().uuid, str(form.uuid))
+        self.assertEqual(forms.last().active, False)
+        self.assertEqual(forms.last().registration_backend, form.registration_backend)
+        self.assertEqual(forms.last().name, form.name)
+        self.assertIsNone(forms.last().product)
+        self.assertEqual(forms.last().slug, old_form_slug)
+
+        form_definitions = FormDefinition.objects.all()
+        fd2 = form_definitions.last()
+        self.assertEqual(form_definitions.count(), 2)
+        self.assertNotEqual(fd2.pk, form_definition_pk)
+        self.assertNotEqual(fd2.uuid, str(form_definition.uuid))
+        self.assertEqual(fd2.configuration, old_fd_config)
+        self.assertEqual(fd2.login_required, form_definition.login_required)
+        self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.slug, f"{form_definition.slug}-1")
 
         form_steps = FormStep.objects.all()
         fs2 = form_steps.last()

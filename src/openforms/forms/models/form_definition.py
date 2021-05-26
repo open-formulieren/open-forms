@@ -1,3 +1,5 @@
+import hashlib
+import json
 import uuid
 from copy import deepcopy
 from typing import List
@@ -50,6 +52,11 @@ class FormDefinition(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_hash(self):
+        return hashlib.md5(
+            json.dumps(self.configuration, sort_keys=True).encode("utf-8")
+        ).hexdigest()
 
     def delete(self, using=None, keep_parents=False):
         if Form.objects.filter(formstep__form_definition=self).exists():

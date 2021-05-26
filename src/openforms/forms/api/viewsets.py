@@ -1,4 +1,3 @@
-from django.core.management import CommandError, call_command
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -27,6 +26,7 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Form, FormDefinition, FormStep
+from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionSerializer,
@@ -200,7 +200,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
 
-        call_command("export", instance.id, response=response)
+        export_form(instance.id, response=response)
 
         response["Content-Length"] = len(response.content)
         return response
@@ -231,8 +231,8 @@ class FormsImportAPIView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            call_command("import", import_file=serializer.validated_data["file"])
-        except CommandError as e:
+            import_form(serializer.validated_data["file"])
+        except exceptions.ValidationError as e:
             raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
