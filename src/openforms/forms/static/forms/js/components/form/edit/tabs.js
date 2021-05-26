@@ -1,5 +1,7 @@
 import {BuilderUtils, Utils} from 'formiojs';
 
+import {getFullyQualifiedUrl} from '../../../utils/urls';
+
 /**
  * Define the tabs available when editing components in the form builder.
  */
@@ -100,10 +102,19 @@ const PREFILL = {
     label: 'Pre-fill',
     components: [
         {
-            type: 'textfield',
+            type: 'select',
             key: 'prefill.plugin',
             label: 'Plugin',
             description: 'Select the plugin to use for the prefill functionality.',
+            dataSrc: 'url',
+            data: {
+                // if the url starts with '/', then formio will prefix it with the formio
+                // base URL, which is of course wrong. We there explicitly use the detected
+                // host.
+                url: getFullyQualifiedUrl('/api/v1/prefill/plugins'),
+            },
+            valueProperty: 'id',
+            template: '<span>{{ item.label }}</span>',
         },
         {
             type: 'textfield',

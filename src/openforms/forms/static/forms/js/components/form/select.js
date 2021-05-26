@@ -1,4 +1,4 @@
-import {Formio,} from 'formiojs';
+import {Formio} from 'formiojs';
 import {defineChoicesEditFormTabs} from './abstract';
 
 
