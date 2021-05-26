@@ -13,9 +13,10 @@ class StufBGConfigTests(TestCase):
     def setUp(self):
         super().setUp()
         self.service = SoapServiceFactory.create()
-        self.client = StufBGConfig.get_solo()
-        self.client.service = self.service
-        self.client.save()
+        self.config = StufBGConfig.get_solo()
+        self.config.service = self.service
+        self.config.save()
+        self.client = self.config.get_client()
 
     @patch("django.utils.dateformat.format")
     @patch("uuid.uuid4")
