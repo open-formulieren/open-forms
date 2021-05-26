@@ -105,11 +105,6 @@ class SoapService(models.Model):
     class Meta:
         verbose_name = _("Soap Service")
 
-    def build_client(self):
-        from .client import StufZDSClient
-
-        return StufZDSClient(self)
-
     def __str__(self):
         # ???
         return f"{self.url}"
@@ -140,3 +135,11 @@ class StufZDSConfig(SingletonModel):
         options.setdefault("gemeentecode", self.gemeentecode)
         options.setdefault("zds_zaaktype_code", self.zds_zaaktype_code)
         options.setdefault("zds_zaaktype_omschrijving", self.zds_zaaktype_omschrijving)
+
+    def get_client(self):
+        from .client import StufZDSClient
+
+        if not self.service:
+            raise RuntimeError("You must configure a service!")
+
+        return StufZDSClient(self.service)

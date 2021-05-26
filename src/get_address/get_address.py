@@ -5,7 +5,9 @@ from get_address.stuf_bg.models import StufBGConfig
 
 
 def get_person_address(bsn: str):
-    response_data = StufBGConfig.get_solo().get_address(bsn)
+    config = StufBGConfig.get_solo()
+    client = config.get_client()
+    response_data = client.get_address(bsn)
 
     dict_response = xmltodict.parse(
         response_data,
