@@ -48,3 +48,5 @@ elastic-apm  # Elastic APM integration
 zgw-consumers
 
 tablib[xlsx]
+
+xmltodict

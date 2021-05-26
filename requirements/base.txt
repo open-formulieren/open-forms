@@ -204,6 +204,8 @@ uwsgi==2.0.19.1
     # via -r requirements/base.in
 xmlsec==1.3.10
     # via python3-saml
+xmltodict==0.12.0
+    # via -r requirements/base.in
 zgw-consumers==0.15.2
     # via -r requirements/base.in
 
