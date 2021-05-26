@@ -13,9 +13,12 @@ def get_person_address(bsn: str):
         namespaces=NAMESPACE_REPLACEMENTS,
     )
 
-    address = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"][
-        "verblijfsadres"
-    ]
+    try:
+        address = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"][
+            "verblijfsadres"
+        ]
+    except KeyError:
+        address = {}
 
     return {
         "street_name": address.get("gor.straatnaam"),
