@@ -571,6 +571,48 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/v1/prefill/plugins:
+    get:
+      operationId: prefill_plugins_list
+      description: List all prefill plugins that have been registered.
+      summary: List available prefill plugins
+      tags:
+      - prefill
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plugin'
+          description: ''
+  /api/v1/prefill/plugins/{plugin}/attributes:
+    get:
+      operationId: prefill_plugins_attributes_list
+      description: List the available prefill attributes for a given plugin.
+      summary: List available attributes
+      parameters:
+      - in: path
+        name: plugin
+        schema:
+          type: string
+        required: true
+      tags:
+      - prefill
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attribute'
+          description: ''
   /api/v1/submissions:
     get:
       operationId: submissions_list
@@ -779,6 +821,18 @@ paths:
           description: ''
 components:
   schemas:
+    Attribute:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique attribute identifier
+        label:
+          type: string
+          description: The human-readable name for an attribute.
+      required:
+      - id
+      - label
     CompletionValidation:
       type: object
       properties:
@@ -1045,6 +1099,18 @@ components:
         formDefinition:
           type: string
           format: uri
+    Plugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+      required:
+      - id
+      - label
     Product:
       type: object
       properties:
