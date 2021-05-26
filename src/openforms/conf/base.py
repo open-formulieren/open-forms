@@ -134,6 +134,7 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.stuf_zds",
+    "get_address.stuf_bg",
 ]
 
 MIDDLEWARE = [
