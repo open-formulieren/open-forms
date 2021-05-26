@@ -11,6 +11,11 @@ class Registry:
 
     def __call__(self, unique_identifier: str, *args, **kwargs) -> callable:
         def decorator(plugin_cls: Type) -> Type:
+            if unique_identifier in self._registry:
+                raise ValueError(
+                    f"The unique identifier '{unique_identifier}' is already present "
+                    "in the registry."
+                )
             plugin = plugin_cls(identifier=unique_identifier)
             self._registry[unique_identifier] = plugin
             return plugin_cls

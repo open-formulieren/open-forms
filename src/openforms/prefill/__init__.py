@@ -91,7 +91,7 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     # finally, ensure the ``defaultValue`` is set based on prefill results
     config_copy = deepcopy(configuration)
     _set_default_values(config_copy, prefilled_values)
-    return config_copy  # TODO
+    return config_copy
 
 
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
