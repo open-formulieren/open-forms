@@ -27,6 +27,12 @@ class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
         (
             None,
             {
+                "fields": ("label",),
+            },
+        ),
+        (
+            _("StUF parameters"),
+            {
                 "fields": [
                     "ontvanger_organisatie",
                     "ontvanger_applicatie",
