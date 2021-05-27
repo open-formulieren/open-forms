@@ -26,7 +26,7 @@ python src/manage.py migrate
 
 # Start server
 >&2 echo "Starting server"
-uwsgi \
+exec uwsgi \
     --http :$uwsgi_port \
     --http-keepalive \
     --module openforms.wsgi \
