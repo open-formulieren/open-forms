@@ -46,6 +46,11 @@
 </fieldset>
 {% endblock %}
 
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
+{% endblock %}
+
 {% block field_sets %}
 <div
     class="react-form-create"
