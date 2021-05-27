@@ -76,7 +76,7 @@ class StufBGClient:
         context = self._get_request_base_context()
         context.update({"bsn": bsn})
 
-        template = "get_address/stuf_bg/templates/RequestAddress.xml"
+        template = "stuf/stuf_bg/templates/RequestAddress.xml"
 
         return loader.render_to_string(template, context)
 

@@ -21,4 +21,8 @@ class StufBgPrefill(BasePlugin):
     ) -> Dict[str, Any]:
         bsn = submission.bsn
 
+        # TODO get the list of attribute choices
+        #   make call to get these values
+        # return a dictionary with these values
+
         return {}

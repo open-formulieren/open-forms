@@ -8,7 +8,7 @@ from django.utils import timezone
 import requests_mock
 from freezegun import freeze_time
 
-from get_address.stuf_bg.models import StufBGConfig
+from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import SoapServiceFactory
 
 
@@ -23,7 +23,7 @@ class StufBGConfigTests(TestCase):
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     @patch(
-        "get_address.stuf_bg.client.uuid.uuid4",
+        "stuf.stuf_bg.client.uuid.uuid4",
         return_value=uuid.UUID("38151851-0fe9-4463-ba39-416042b8f406"),
     )
     def test_get_address(self, _mock):
@@ -32,7 +32,7 @@ class StufBGConfigTests(TestCase):
                 self.service.url,
                 content=bytes(
                     loader.render_to_string(
-                        "get_address/stuf_bg/tests/responses/ResponseAddress.xml",
+                        "stuf/stuf_bg/tests/responses/ResponseAddress.xml",
                         context={
                             "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
                             "tijdstip_bericht": timezone.now(),
