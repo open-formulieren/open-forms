@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     "privates",
     "zgw_consumers",
     "stuf",
+    "stuf.stuf_bg",
     # Project applications.
     "openforms.accounts",
     "openforms.config",
@@ -140,8 +141,8 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.prefill",
-    "openforms.prefill.contrib.demo",
-    "stuf.stuf_bg",
+    "openforms.prefill.contrib.demo.apps.DemoApp",
+    "openforms.prefill.contrib.stufbg.apps.StufBgApp"
 ]
 
 MIDDLEWARE = [
