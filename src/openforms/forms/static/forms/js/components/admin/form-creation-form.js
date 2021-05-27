@@ -9,7 +9,8 @@ import useAsync from 'react-use/esm/useAsync';
 import {get, post, put} from '../utils/fetch';
 import {FormSteps} from './formsteps-formset';
 
-const FORM_ENDPOINT = '/api/v1/_manage_forms/';
+const FORM_ENDPOINT = '/api/v1/_manage_forms';
+const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
 
 const initialFormState = {
     formName: '',
@@ -19,7 +20,9 @@ const initialFormState = {
         loading: true,
         data: []
     },
-    errors: {}
+    errors: {},
+    formDefinitions: {},
+    formDefinitionChoices: []
 };
 
 function reducer(draft, action) {
@@ -30,6 +33,18 @@ function reducer(draft, action) {
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             draft[name] = value;
+            break;
+        }
+        case 'FORM_DEFINITIONS_LOADED': {
+            const rawFormDefinitions = action.payload;
+            var formDefinitions = {};
+            var formDefinitionChoices = [['', '------']];
+            for (const definition of rawFormDefinitions) {
+                formDefinitions[definition.uuid] = definition;
+                formDefinitionChoices.push([definition.uuid, definition.name]);
+            }
+            draft.formDefinitions = formDefinitions;
+            draft.formDefinitionChoices = formDefinitionChoices;
             break;
         }
         /**
@@ -53,6 +68,22 @@ function reducer(draft, action) {
             draft.formSteps.data = [...unchangedSteps, ...updatedSteps];
             break;
         }
+        case 'ADD_STEP': {
+            const emptyStep = {
+                formDefinition: {
+                    configuration: {display: 'form'},
+                    uuid: '',
+                },
+                order: draft.formSteps.data.length,
+            };
+            draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
+            break;
+        }
+        case 'CHANGE_STEP': {
+            const {index, formDefinitionUuid} = action.payload;
+            draft.formSteps.data[index].formDefinition = draft.formDefinitions[formDefinitionUuid];
+            break;
+        }
         /**
          * Misc
          */
@@ -67,7 +98,7 @@ function reducer(draft, action) {
 
 const getFormData = async (formUuid, dispatch) => {
     try {
-        const formData = await get(`${FORM_ENDPOINT}${formUuid}`);
+        const formData = await get(`${FORM_ENDPOINT}/${formUuid}`);
         dispatch({
             type: 'FORM_STEPS_LOADED',
             payload: formData.formSteps,
@@ -77,12 +108,25 @@ const getFormData = async (formUuid, dispatch) => {
     }
 };
 
+const getFormDefinitions = async (dispatch) => {
+    try {
+        const response = await get(FORM_DEFINITIONS_ENDPOINT);
+        dispatch({
+            type: 'FORM_DEFINITIONS_LOADED',
+            payload: response.results,
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: e});
+    }
+}
+
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const initialState = {...initialFormState, formUuid, formName, formSlug};
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
         await getFormData(formUuid, dispatch);
+        await getFormDefinitions(dispatch);
     }, []);
 
     const onFieldChange = (event) => {
@@ -93,15 +137,28 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onChangeFormSteps = (event) => {
-      return 'hello';
-    };
-
     const onStepDelete = (index) => {
         dispatch({
             type: 'DELETE_STEP',
             payload: index
         });
+    };
+
+    const addStep = (event) => {
+        event.preventDefault();
+        dispatch({
+            type: 'ADD_STEP',
+        });
+    };
+
+    const onStepChange = (event, index) => {
+        dispatch({
+            type: 'CHANGE_STEP',
+            payload: {
+                index: index,
+                formDefinitionUuid: event.target.value
+            }
+        })
     };
 
     const hasErrors = state.errors.length;
@@ -147,12 +204,18 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 { state.formSteps.loading ? <div>Loading form steps...</div> :
                     <FormSteps
                         formSteps={state.formSteps.data}
-                        onChange={onChangeFormSteps}
+                        formDefinitionChoices={state.formDefinitionChoices}
+                        onChange={onStepChange}
                         onDelete={onStepDelete}
                         errors={state.errors}
                     />
                 }
             </Fieldset>
+            <div style={{marginBottom: '20px'}}>
+                <a href="#" onClick={addStep} className="addlink">
+                    Add step
+                </a>
+            </div>
         </>
     );
 };
