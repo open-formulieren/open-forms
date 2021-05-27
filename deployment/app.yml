@@ -76,9 +76,9 @@
       - "templates/nginx-includes.conf.tpl"
 
     # Celery
-    django_app_docker_use_celery: false
-    django_app_docker_use_celery_beat: false
-    django_app_docker_use_flower: false
+    django_app_docker_use_celery: true
+    django_app_docker_use_celery_beat: true
+    django_app_docker_use_flower: true
     django_app_docker_flower_port: 13555
 
   roles:
