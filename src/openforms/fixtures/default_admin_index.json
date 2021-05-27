@@ -99,6 +99,10 @@
                 "blacklist"
             ],
             [
+                "stuf",
+                "soapservice"
+            ],
+            [
                 "zgw_apis",
                 "zgwconfig"
             ],

@@ -5,6 +5,11 @@ from privates.fields import PrivateMediaFileField
 
 
 class SoapService(models.Model):
+    label = models.CharField(
+        _("label"),
+        max_length=100,
+        help_text=_("Human readable label to identify services"),
+    )
     ontvanger_organisatie = models.CharField(
         _("receiving organisation"),
         help_text=_("Field 'ontvanger organisatie' in StUF"),
@@ -102,8 +107,8 @@ class SoapService(models.Model):
     )
 
     class Meta:
-        verbose_name = _("Soap Service")
+        verbose_name = _("SOAP service")
+        verbose_name_plural = _("SOAP services")
 
     def __str__(self):
-        # ???
-        return f"{self.url}"
+        return f"{self.label} ({self.url})"
