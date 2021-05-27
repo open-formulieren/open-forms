@@ -8,6 +8,7 @@ from django.utils import timezone
 import requests_mock
 from freezegun import freeze_time
 
+from stuf.stuf_bg.constants import Attributes
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import SoapServiceFactory
 
@@ -32,7 +33,7 @@ class StufBGConfigTests(TestCase):
                 self.service.url,
                 content=bytes(
                     loader.render_to_string(
-                        "stuf/stuf_bg/tests/responses/ResponseAddress.xml",
+                        "stuf/stuf_bg/tests/responses/StufBgResponse.xml",
                         context={
                             "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
                             "tijdstip_bericht": timezone.now(),
@@ -49,7 +50,9 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            response_data = self.client.get_address("999992314")
+            response_data = self.client.get_data_for_attributes(
+                "999992314", list(Attributes.values.keys())
+            )
             # TODO Add additional asserts to better test call
             self.assertEqual(m.last_request.method, "POST")
 

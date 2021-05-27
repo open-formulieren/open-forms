@@ -1,0 +1,115 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
+    <soapenv:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <Timestamp>
+                <Created>{{ created }}</Created>
+                <Expires>{{ expired }}</Expires>
+            </Timestamp>
+            {% if username or password %}
+                <UsernameToken>
+                    {% if username %}
+                        <Username>{{ username }}</Username>
+                    {% endif %}
+                    {% if password %}
+                        <Password>{{ password }}</Password>
+                    {% endif %}
+                </UsernameToken>
+            {% endif %}
+        </Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <ns:npsLv01>
+            <ns:stuurgegevens>
+                <StUF:berichtcode>Lv01</StUF:berichtcode>
+                <!--Optional:-->
+                <StUF:zender>
+                    <!--Optional:-->
+                    {% if zender_organisatie %}
+                        <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+                    {% endif %}
+                    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+                    <!--Optional:-->
+                    {% if zender_administratie %}
+                        <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
+                    {% endif %}
+                    <!--Optional:-->
+                    {% if zender_gebruiker %}
+                        <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
+                    {% endif %}
+                </StUF:zender>
+                <!--Optional:-->
+                <StUF:ontvanger>
+                    <!--Optional:-->
+                    {% if ontvanger_organisatie %}
+                        <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    {% endif %}
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+                    <!--Optional:-->
+                    {% if ontvanger_administratie %}
+                        <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
+                    {% endif %}
+                    <!--Optional:-->
+                    {% if ontvanger_gebruiker %}
+                        <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
+                    {% endif %}
+                </StUF:ontvanger>
+                <!--Optional:-->
+                <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
+                <!--Optional:-->
+                <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
+            </ns:stuurgegevens>
+            <ns:parameters>
+                <StUF:sortering>0</StUF:sortering>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+                <!--Optional:-->
+                <StUF:maximumAantal>1</StUF:maximumAantal>
+                <!--Optional:-->
+                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+                <!--Optional:-->
+                <StUF:indicatorAantal>false</StUF:indicatorAantal>
+            </ns:parameters>
+            <!--Optional:-->
+            <ns:gelijk StUF:entiteittype="NPS">
+                {#             TODO Check is this escape is needed.  Django should auto-escape this.  Add unit test to check this #}
+                <ns:inp.bsn>{{ bsn|escape }}</ns:inp.bsn>
+            </ns:gelijk>
+            <!--Optional:-->
+            <ns:scope>
+                <ns:object StUF:entiteittype="NPS">
+                    <ns:inp.bsn/>
+                    {% if voornaam %}
+                        <ns:voornamen/>
+                    {% endif %}
+                    {% if geslachtsnaam %}
+                        <ns:geslachtsnaam/>
+                    {% endif %}
+                    {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
+                        <ns:verblijfsadres>
+                            {% if straatnaam %}
+                                <ns:gor.straatnaam/>
+                            {% endif %}
+                            {% if huisnummer %}
+                                <ns:aoa.huisnummer/>
+                            {% endif %}
+                            {% if huisletter %}
+                                <ns:aoa.huisletter/>
+                            {% endif %}
+                            {% if huisnummertoevoeging %}
+                                <ns:aoa.huisnummertoevoeging/>
+                            {% endif %}
+                            {% if postcode %}
+                                <ns:aoa.postcode/>
+                            {% endif %}
+                            {% if woonplaatsNaam %}
+                                <ns:wpl.woonplaatsNaam/>
+                            {% endif %}
+                        </ns:verblijfsadres>
+                    {% endif %}
+                </ns:object>
+            </ns:scope>
+        </ns:npsLv01>
+    </soapenv:Body>
+</soapenv:Envelope>

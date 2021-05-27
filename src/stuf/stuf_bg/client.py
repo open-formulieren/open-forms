@@ -72,18 +72,18 @@ class StufBGClient:
 
         return response
 
-    def get_address_request_data(self, bsn):
+    def get_request_data(self, bsn, attributes):
         context = self._get_request_base_context()
+        for attribute in attributes:
+            context.update({attribute: attribute})
         context.update({"bsn": bsn})
 
-        template = "stuf/stuf_bg/templates/RequestAddress.xml"
+        template = "stuf/stuf_bg/templates/StufBgRequest.xml"
 
         return loader.render_to_string(template, context)
 
-    # TODO should be generic and where this is called should pass in the
-    #   attributes to get
-    def get_address(self, bsn):
+    def get_data_for_attributes(self, bsn, attributes):
 
-        data = self.get_address_request_data(bsn)
+        data = self.get_request_data(bsn, attributes)
 
         return self._make_request(data).content
