@@ -15,8 +15,19 @@ const get = async (url, params={}) => {
         url += `?${searchparams}`;
     }
     const response = await fetch(url);
-    const data = await response.json();
-    return data;
+    if (!response.ok) {
+        return {
+            ok: response.ok,
+            status: response.status
+        };
+    } else {
+        const data = await response.json();
+        return {
+            ok: response.ok,
+            status: response.status,
+            data: data
+        };
+    }
 };
 
 const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
