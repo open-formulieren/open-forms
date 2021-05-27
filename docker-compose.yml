@@ -33,6 +33,9 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
+      # Needed for Celery Flower to match the TIME_ZONE configured in the 
+      # settings used by workers and beat containers.
+      - TZ=Europe/Amsterdam
     volumes:
       - private_media:/app/private-media
     ports:
@@ -52,6 +55,7 @@ services:
 
   celery:
     build: .
+    image: openformulieren/open-forms:latest
     environment: *web_env
     command: /celery_worker.sh
     depends_on:
@@ -60,6 +64,7 @@ services:
 
   celery-beat:
     build: .
+    image: openformulieren/open-forms:latest
     environment: *web_env
     command: /celery_beat.sh
     depends_on:

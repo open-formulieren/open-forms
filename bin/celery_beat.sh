@@ -8,7 +8,7 @@ mkdir -p celerybeat
 
 echo "Starting celery beat"
 exec celery beat \
-    --app open-forms \
+    --app openforms \
     -l $LOGLEVEL \
     --workdir src \
     -s ../celerybeat/beat
