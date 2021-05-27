@@ -105,8 +105,6 @@ class StufZDSClientTests(StufTestBase):
             ontvanger_gebruiker="OntUser",
         )
 
-        self.client = StufZDSClient(self.service)
-
         self.options = {
             "gemeentecode": "1234",
             "omschrijving": "my-form",
@@ -114,6 +112,7 @@ class StufZDSClientTests(StufTestBase):
             "zds_zaaktype_omschrijving": "zt-omschrijving",
             "referentienummer": str(uuid.uuid4()),
         }
+        self.client = StufZDSClient(self.service, self.options)
 
     def assertStuurgegevens(self, xml_doc):
         self.assertXPathEqualDict(
@@ -142,7 +141,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_zaak_identificatie(self.options)
+        identificatie = self.client.create_zaak_identificatie()
 
         self.assertEqual(identificatie, "foo")
 
@@ -165,7 +164,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
+        self.client.create_zaak("foo", {"bsn": "111222333"})
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -193,7 +192,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_document_identificatie(self.options)
+        identificatie = self.client.create_document_identificatie()
 
         self.assertEqual(identificatie, "bar")
 
@@ -216,9 +215,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
         )
 
-        self.client.create_zaak_document(
-            self.options, zaak_id="foo", doc_id="bar", body="bazz"
-        )
+        self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -245,50 +242,46 @@ class StufZDSClientTests(StufTestBase):
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak_identificatie(self.options)
+            self.client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"})
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_document_identificatie(self.options)
+            self.client.create_document_identificatie()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak_document(
-                self.options, zaak_id="foo", doc_id="bar", body="bazz"
-            )
+            self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
 
     def test_client_wraps_xml_parse_error(self, m):
         m.post(self.service.url, text="> > broken xml < <")
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak_identificatie(self.options)
+            self.client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak(self.options, "foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"})
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_document_identificatie(self.options)
+            self.client.create_document_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak_document(
-                self.options, zaak_id="foo", doc_id="bar", body="bazz"
-            )
+            self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
 
     def test_client_wraps_bad_structure_error(self, m):
         m.post(self.service.url, content=load_mock("dummy.xml"))
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
-            self.client.create_zaak_identificatie(self.options)
+            self.client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
-            self.client.create_document_identificatie(self.options)
+            self.client.create_document_identificatie()
 
 
 @requests_mock.Mocker()

@@ -62,8 +62,12 @@ def xml_value(xml, xpath, namespaces=nsmap):
 
 
 class StufZDSClient:
-    def __init__(self, service: SoapService):
+    def __init__(self, service: SoapService, options):
+        """
+        the options are the values from the ZaakOptionsSerializer plus 'omschrijving' and 'referentienummer'
+        """
         self.service = service
+        self.options = options
 
     def _get_headers(self):
         credentials = f"{self.service.user}:{self.service.password}".encode("utf-8")
@@ -73,7 +77,7 @@ class StufZDSClient:
             "Content-Type": "application/soap+xml",
         }
 
-    def _get_request_base_context(self, options):
+    def _get_request_base_context(self):
         return {
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
@@ -86,12 +90,12 @@ class StufZDSClient:
             "tijdstip_bericht": fmt_soap_datetime(timezone.now()),
             "tijdstip_registratie": fmt_soap_datetime(timezone.now()),
             "datum_vandaag": fmt_soap_date(timezone.now()),
-            "gemeentecode": options["gemeentecode"],
-            "zds_zaaktype_code": options["zds_zaaktype_code"],
-            "zds_zaaktype_omschrijving": options["zds_zaaktype_omschrijving"],
-            "zaak_omschrijving": options["omschrijving"],
-            "document_omschrijving": options["omschrijving"],
-            "referentienummer": options["referentienummer"],
+            "gemeentecode": self.options["gemeentecode"],
+            "zds_zaaktype_code": self.options["zds_zaaktype_code"],
+            "zds_zaaktype_omschrijving": self.options["zds_zaaktype_omschrijving"],
+            "zaak_omschrijving": self.options["omschrijving"],
+            "document_omschrijving": self.options["omschrijving"],
+            "referentienummer": self.options["referentienummer"],
         }
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
@@ -160,10 +164,10 @@ class StufZDSClient:
 
         return response, xml
 
-    def create_zaak_identificatie(self, options):
+    def create_zaak_identificatie(self):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context(options)
+        context = self._get_request_base_context()
         response, xml = self._make_request(template, schema, context, sync=True)
 
         try:
@@ -177,10 +181,10 @@ class StufZDSClient:
 
         return zaak_identificatie
 
-    def create_zaak(self, options, zaak_identificatie, data):
+    def create_zaak(self, zaak_identificatie, data):
         template = "stuf_zds/soap/creeerZaak.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context(options)
+        context = self._get_request_base_context()
         context.update(
             {
                 "zaak_identificatie": zaak_identificatie,
@@ -191,10 +195,10 @@ class StufZDSClient:
 
         return None
 
-    def create_document_identificatie(self, options):
+    def create_document_identificatie(self):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
-        context = self._get_request_base_context(options)
+        context = self._get_request_base_context()
         response, xml = self._make_request(template, schema, context, sync=True)
 
         try:
@@ -208,7 +212,7 @@ class StufZDSClient:
 
         return document_identificatie
 
-    def create_zaak_document(self, options, zaak_id, doc_id, body):
+    def create_zaak_document(self, zaak_id, doc_id, body):
         template = "stuf_zds/soap/voegZaakdocumentToe.xml"
         schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
 
@@ -216,7 +220,7 @@ class StufZDSClient:
             json.dumps(body, cls=DjangoJSONEncoder).encode()
         ).decode()
 
-        context = self._get_request_base_context(options)
+        context = self._get_request_base_context()
         context.update(
             {
                 "zaak_identificatie": zaak_id,

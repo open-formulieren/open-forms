@@ -30,7 +30,7 @@ class StufZDSConfig(SingletonModel):
         options.setdefault("zds_zaaktype_code", self.zds_zaaktype_code)
         options.setdefault("zds_zaaktype_omschrijving", self.zds_zaaktype_omschrijving)
 
-    def get_client(self):
+    def get_client(self, options):
         from .client import StufZDSClient
 
-        return StufZDSClient(self.service)
+        return StufZDSClient(self.service, options)
