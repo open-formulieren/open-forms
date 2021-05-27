@@ -10,4 +10,5 @@
     {% if ontvanger_administratie %}<StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>{% endif %}
     {% if ontvanger_gebruiker %}<StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>{% endif %}
 </StUF:ontvanger>
+<StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
 <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>

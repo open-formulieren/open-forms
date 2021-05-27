@@ -1,24 +1,11 @@
 <ZKN:genereerDocumentIdentificatie_Di02
-    xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd"
-    xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-    xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
-    xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Di02</StUF:berichtcode>
         {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
         <StUF:functie>genereerDocumentidentificatie</StUF:functie>
     </ZKN:stuurgegevens>
-{#    <ZDS:parameters>#}
-{#        <StUF:extraElementen>#}
-{#            <StUF:extraElement StUF:exact="true"#}
-{#                               StUF:indOnvolledigeDatum="J"#}
-{#                               StUF:noValue="nietOndersteund" naam="String">String#}
-{#            </StUF:extraElement>#}
-{#            <StUF:extraElement StUF:exact="true"#}
-{#                               StUF:indOnvolledigeDatum="M"#}
-{#                               StUF:noValue="nietGeautoriseerd" naam="String">String#}
-{#            </StUF:extraElement>#}
-{#        </StUF:extraElementen>#}
-{#    </ZDS:parameters>#}
 </ZKN:genereerDocumentIdentificatie_Di02>

@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
@@ -35,14 +36,31 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     options["omschrijving"] = submission.form.name
     options["referentienummer"] = str(submission.uuid)
 
+    # "bsn"
+    # "nnp_id"
+    # "vestigings_nummer"
+
     client = config.service.build_client()
 
-    zaak_id = client.create_zaak_identificatie(options)
-    client.create_zaak(options, zaak_id, data)
-    # zaak_id = "0000c765c781-cedc-4c17-bc25-6a80ec24de07"
+    data["test_stp"] = data.get("testStp")
+    data["nnp_id"] = data.get("nnpId")
+    data["vestigings_nummer"] = data.get("vestigingsNummer")
 
-    doc_id = client.create_document_identificatie(options)
-    client.create_zaak_document(options, zaak_id, doc_id, data)
+    pprint(data)
+
+    stp_test = data.get("test_stp")
+    zaak_id = None
+
+    if not stp_test or stp_test == "zaak":
+        zaak_id = client.create_zaak_identificatie(options)
+        client.create_zaak(options, zaak_id, data)
+
+    if not stp_test or stp_test == "document":
+        if not zaak_id:
+            zaak_id = "0000c765c781-cedc-4c17-bc25-6a80ec24de07"
+
+        doc_id = client.create_document_identificatie(options)
+        client.create_zaak_document(options, zaak_id, doc_id, data)
 
     result = {
         "zaak": zaak_id,

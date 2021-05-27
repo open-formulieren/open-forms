@@ -1,14 +1,12 @@
-<ZKN:zakLk01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-                        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
-                        xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
-                        xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../../zds0120_msg_totaal.xsd">
+<ZKN:zakLk01
+        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+        xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
         {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
-        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
-        <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
         <StUF:entiteittype>ZAK</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>
@@ -22,10 +20,6 @@
         <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
         <ZKN:zaakniveau>1</ZKN:zaakniveau>
         <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
-        <StUF:tijdvakGeldigheid>
-            <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
-            <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
-        </StUF:tijdvakGeldigheid>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
         <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">
@@ -34,40 +28,25 @@
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
         </ZKN:isVan>
-        <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
-            <ZKN:gerelateerde>
-                <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                    <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
-{#                    <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>#}
-                    <BG:geslachtsnaam>geslachtsnaam</BG:geslachtsnaam>
-                    <BG:voorvoegselGeslachtsnaam>voorvoeg</BG:voorvoegselGeslachtsnaam>
-                    <BG:voorletters>voorletters</BG:voorletters>
-                    <BG:voornamen>voornamen</BG:voornamen>
-                    <BG:geslachtsaanduiding>M</BG:geslachtsaanduiding>
-{#                    <BG:geboortedatum/>#}
-                    <BG:verblijfsadres>
-                        <BG:aoa.identificatie>0123456789101112</BG:aoa.identificatie>
-{#                        <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>#}
-                        <BG:wpl.woonplaatsNaam>woonplaatsNaam</BG:wpl.woonplaatsNaam>
-                        <BG:gor.openbareRuimteNaam>openbareRuimteNaam</BG:gor.openbareRuimteNaam>
-                        <BG:gor.straatnaam>straatnaam</BG:gor.straatnaam>
-                        <BG:aoa.postcode>1000</BG:aoa.postcode>
-                        <BG:aoa.huisnummer>99999</BG:aoa.huisnummer>
-                        <BG:aoa.huisletter>A</BG:aoa.huisletter>
-                        <BG:aoa.huisnummertoevoeging/>
-                        <BG:inp.locatiebeschrijving>locatiebeschrijving</BG:inp.locatiebeschrijving>
-                    </BG:verblijfsadres>
-                </ZKN:natuurlijkPersoon>
-            </ZKN:gerelateerde>
-            <StUF:tijdvakRelatie>
-                <StUF:beginRelatie>{{ datum_vandaag }}</StUF:beginRelatie>
-                <StUF:eindRelatie StUF:noValue="geenWaarde" xsi:nil="true"/>
-            </StUF:tijdvakRelatie>
-            <StUF:tijdvakGeldigheid>
-                <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
-                <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
-            </StUF:tijdvakGeldigheid>
-            <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
-        </ZKN:heeftAlsInitiator>
+        {% if bsn or nnp_id or vestigings_nummer %}
+            <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
+                <ZKN:gerelateerde>
+                    {% if bsn %}
+                        <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                            <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
+                        </ZKN:natuurlijkPersoon>
+                    {% elif nnp_id %}
+                        <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
+                            <BG:inn.nnpId>{{ nnp_id }}</BG:inn.nnpId>
+                        </ZKN:nietNatuurlijkPersoon>
+                    {% elif vestigings_nummer %}
+                        <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
+                            <BG:vestigingsNummer>{{ vestigings_nummer }}</BG:vestigingsNummer>
+                        </ZKN:vestiging>
+                    {% endif %}
+                </ZKN:gerelateerde>
+                <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+            </ZKN:heeftAlsInitiator>
+        {% endif %}
     </ZKN:object>
 </ZKN:zakLk01>

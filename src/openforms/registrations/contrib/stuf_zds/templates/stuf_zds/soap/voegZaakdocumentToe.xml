@@ -1,8 +1,9 @@
-<ZDS:voegZaakdocumentToe_EdcLk01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-                                 xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
-                                 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
-                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                 xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
+<ZDS:voegZaakdocumentToe_EdcLk01
+        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+        xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
+        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
         {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
@@ -46,14 +47,6 @@
                     </ZKN:gerelateerde>
                 </ZKN:isVan>
             </ZKN:gerelateerde>
-            <StUF:tijdvakRelatie>
-                <StUF:beginRelatie>{{ datum_vandaag }}</StUF:beginRelatie>
-                <StUF:eindRelatie StUF:noValue="geenWaarde" xsi:nil="true"/>
-            </StUF:tijdvakRelatie>
-            <StUF:tijdvakGeldigheid>
-                <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
-                <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
-            </StUF:tijdvakGeldigheid>
             <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
         </ZKN:isRelevantVoor>
     </ZKN:object>
