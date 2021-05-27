@@ -63,7 +63,7 @@
             <StUF:sortering>0</StUF:sortering>
             <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
             <!--Optional:-->
-            <StUF:maximumAantal>15</StUF:maximumAantal>
+            <StUF:maximumAantal>1</StUF:maximumAantal>
             <!--Optional:-->
             <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
             <!--Optional:-->
@@ -71,10 +71,12 @@
          </ns:parameters>
          <!--Optional:-->
          <ns:gelijk StUF:entiteittype="NPS">
+{#             TODO Check is this escape is needed.  Django should auto-escape this.  Add unit test to check this #}
             <ns:inp.bsn>{{ bsn|escape }}</ns:inp.bsn>
          </ns:gelijk>
          <!--Optional:-->
           <ns:scope>
+{#              TODO Only want to get relevant information. Probably should rename file too  #}
               <ns:object StUF:entiteittype="NPS" StUF:scope="alles"/>
           </ns:scope>
       </ns:npsLv01>

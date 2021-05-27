@@ -1,4 +1,6 @@
 # Namespacing in the XML we want to remove
+# Note:  This could cause a collision if two of the same elements
+#   are present in different namespaces
 NAMESPACE_REPLACEMENTS = {
     "http://schemas.xmlsoap.org/soap/envelope/": None,
     "http://www.egem.nl/StUF/sector/bg/0310": None,
@@ -6,3 +8,6 @@ NAMESPACE_REPLACEMENTS = {
     "http://www.w3.org/1999/xlink": None,
     "http://www.opengis.net/gml": None,
 }
+
+# StUF-BG requires some expiry time to be given so we just give it 5 minutes.
+STUF_BG_EXPIRY_MINUTES = 5

@@ -4,6 +4,8 @@ from get_address.stuf_bg.constants import NAMESPACE_REPLACEMENTS
 from get_address.stuf_bg.models import StufBGConfig
 
 
+# TODO Should be reworked to only retrieve and return the requested attributes
+#  conforming to the interface of openforms.prefill.base.BasePlugin.get_prefill_values
 def get_person_address(bsn: str):
     config = StufBGConfig.get_solo()
     client = config.get_client()

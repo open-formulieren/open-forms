@@ -1,12 +1,15 @@
+import uuid
 from unittest.mock import patch
 
 from django.template import loader
 from django.test import TestCase
+from django.utils import timezone
 
 import requests_mock
+from freezegun import freeze_time
 
 from get_address.stuf_bg.models import StufBGConfig
-from openforms.registrations.contrib.stuf_zds.tests.factories import SoapServiceFactory
+from stuf.tests.factories import SoapServiceFactory
 
 
 class StufBGConfigTests(TestCase):
@@ -18,15 +21,12 @@ class StufBGConfigTests(TestCase):
         self.config.save()
         self.client = self.config.get_client()
 
-    @patch("django.utils.dateformat.format")
-    @patch("uuid.uuid4")
-    def test_get_address(self, uuid_mock, dateformat_mock):
-        test_bsn = 123456789
-        test_uuid = "00000000-0000-0000-0000-000000000000"
-        test_dateformat = "20200919094000"
-        uuid_mock.return_value = test_uuid
-        dateformat_mock.return_value = test_dateformat
-
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    @patch(
+        "get_address.stuf_bg.client.uuid.uuid4",
+        return_value=uuid.UUID("38151851-0fe9-4463-ba39-416042b8f406"),
+    )
+    def test_get_address(self, _mock):
         with requests_mock.Mocker() as m:
             m.post(
                 self.service.url,
@@ -34,8 +34,8 @@ class StufBGConfigTests(TestCase):
                     loader.render_to_string(
                         "get_address/stuf_bg/tests/responses/ResponseAddress.xml",
                         context={
-                            "referentienummer": test_uuid,
-                            "tijdstip_bericht": test_dateformat,
+                            "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
+                            "tijdstip_bericht": timezone.now(),
                             "zender_organisatie": self.service.ontvanger_organisatie,
                             "zender_applicatie": self.service.ontvanger_applicatie,
                             "zender_administratie": self.service.ontvanger_administratie,
@@ -49,8 +49,9 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            response_data = self.client.get_address(test_bsn)
-            self.assertTrue(m.called)
+            response_data = self.client.get_address("999992314")
+            # TODO Add additional asserts to better test call
+            self.assertEqual(m.last_request.method, "POST")
 
         self.assertIn("Keizersgracht", str(response_data))
         self.assertIn("117", str(response_data))

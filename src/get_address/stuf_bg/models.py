@@ -2,6 +2,8 @@ from django.db import models
 
 from solo.models import SingletonModel
 
+from stuf.managers import ConfigManager
+
 
 class StufBGConfig(SingletonModel):
     """
@@ -9,11 +11,13 @@ class StufBGConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "stuf_zds.SoapService",
+        "stuf.SoapService",
         on_delete=models.PROTECT,
-        related_name="stuf_bg_config",
+        related_name="+",
         null=True,
     )
+
+    objects = ConfigManager()
 
     def get_client(self):
         from .client import StufBGClient
