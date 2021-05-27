@@ -7,7 +7,6 @@
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
         {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
-        <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
         <StUF:entiteittype>EDC</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>

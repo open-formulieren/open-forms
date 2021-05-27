@@ -25,7 +25,6 @@ class ZaakOptionsSerializer(serializers.Serializer):
     "stuf-zds-create-zaak",
     _("StUF-ZDS"),
     configuration_options=ZaakOptionsSerializer,
-    # backend_feedback_serializer=BackendFeedbackSerializer,
 )
 def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     data = submission.get_merged_data()
@@ -39,24 +38,15 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     # "bsn"
     # "nnp_id"
     # "vestigings_nummer"
+    # "anp_id"
 
     client = config.get_client(options)
 
-    # test code because we can only test either docs or zaken
-    stp_test = data.get("test_stp")
-    zaak_id = None
-    doc_id = None
+    zaak_id = client.create_zaak_identificatie()
+    client.create_zaak(zaak_id, data)
 
-    if not stp_test or stp_test == "zaak":
-        zaak_id = client.create_zaak_identificatie()
-        client.create_zaak(zaak_id, data)
-
-    if not stp_test or stp_test == "document":
-        if not zaak_id:
-            zaak_id = "0000c765c781-cedc-4c17-bc25-6a80ec24de07"
-
-        doc_id = client.create_document_identificatie()
-        client.create_zaak_document(zaak_id, doc_id, data)
+    doc_id = client.create_document_identificatie()
+    client.create_zaak_document(zaak_id, doc_id, data)
 
     result = {
         "zaak": zaak_id,
