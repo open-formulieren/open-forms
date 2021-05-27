@@ -107,6 +107,8 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
     "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"
 ]
 
+SENDFILE_BACKEND = "django_sendfile.backends.development"
+
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
     "error",

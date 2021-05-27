@@ -17,6 +17,7 @@ django-cors-headers
 django-decorator-include
 django-hijack
 django-hijack-admin
+django-privates
 django-redis
 django-rosetta
 django-solo

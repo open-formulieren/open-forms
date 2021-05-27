@@ -124,7 +124,9 @@ INSTALLED_APPS = [
     "solo",
     "reversion",
     "tinymce",
+    "privates",
     "zgw_consumers",
+    "stuf",
     # Project applications.
     "openforms.accounts",
     "openforms.config",
@@ -224,7 +226,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 MEDIA_URL = "/media/"
 
+PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, "private_media")
+
+PRIVATE_MEDIA_URL = "/private-media/"
+
 FILE_UPLOAD_PERMISSIONS = 0o644
+
+SENDFILE_BACKEND = "django_sendfile.backends.nginx"
+SENDFILE_ROOT = PRIVATE_MEDIA_ROOT
+SENDFILE_URL = PRIVATE_MEDIA_URL
 
 #
 # Sending EMAIL
