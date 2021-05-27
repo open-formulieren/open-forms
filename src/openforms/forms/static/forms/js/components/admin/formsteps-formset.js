@@ -21,9 +21,15 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, erro
     );
     const stepName = `Step ${formStepData.order}:`
 
+    const confirmDelete = () => {
+        if(window.confirm('Remove step from form?')){
+            onDelete(formStepData.order);
+        }
+    };
+
     return (
         <div>
-            <span className="material-icons" onClick={onDelete.bind(null, formStepData.order)} title='delete'>
+            <span className="material-icons" onClick={confirmDelete} title='delete'>
                 delete
             </span>
             <span>{stepName}</span>
