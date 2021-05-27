@@ -15,8 +15,8 @@ from lxml import etree
 from lxml.etree import Element
 from requests import RequestException, Response
 
-from openforms.registrations.contrib.stuf_zds.models import SoapService
 from openforms.registrations.exceptions import RegistrationFailed
+from stuf.models import SoapService
 
 logger = logging.getLogger(__name__)
 

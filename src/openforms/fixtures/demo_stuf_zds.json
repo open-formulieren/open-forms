@@ -1,6 +1,6 @@
 [
 {
-    "model": "stuf_zds.soapservice",
+    "model": "stuf.soapservice",
     "pk": 1,
     "fields": {
         "ontvanger_organisatie": "ORG",
@@ -17,7 +17,7 @@
     }
 },
 {
-    "model": "stuf_zds.soapservice",
+    "model": "stuf.soapservice",
     "pk": 2,
     "fields": {
         "ontvanger_organisatie": "ORG",
@@ -34,7 +34,7 @@
     }
 },
 {
-    "model": "stuf_zds.stufzdsconfig",
+    "model": "stuf.stufzdsconfig",
     "pk": 1,
     "fields": {
         "service": 2,

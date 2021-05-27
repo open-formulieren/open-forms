@@ -15,12 +15,12 @@ from openforms.forms.tests.factories import (
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.contrib.stuf_zds.plugin import create_zaak_plugin
-from openforms.registrations.contrib.stuf_zds.tests.factories import SoapServiceFactory
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from stuf.tests.factories import SoapServiceFactory
 
 
 def load_mock(name, context=None):
@@ -298,7 +298,7 @@ class StufZDSPluginTests(StufTestBase):
     """
 
     def setUp(self):
-        self.service = SoapServiceFactory()
+        self.service = SoapServiceFactory.create()
         config = StufZDSConfig.get_solo()
         config.service = self.service
         config.save()

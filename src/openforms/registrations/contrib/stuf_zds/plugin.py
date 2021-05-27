@@ -40,7 +40,7 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     # "nnp_id"
     # "vestigings_nummer"
 
-    client = config.service.build_client()
+    client = config.get_client()
 
     data["test_stp"] = data.get("testStp")
     data["nnp_id"] = data.get("nnpId")
