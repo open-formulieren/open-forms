@@ -179,7 +179,7 @@ class FormStepCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("form_definition",)
+        fields = ("form_definition", "order")
 
 
 class FormCreateSerializer(serializers.ModelSerializer):

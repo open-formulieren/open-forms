@@ -1,15 +1,18 @@
 import React, {useState} from 'react';
 
-const Collapsible = ({title, content}) => {
+const Collapsible = ({title, content, onDelete}) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const toggle = () => {
+    const toggleOpen = () => {
         setIsOpen(!isOpen);
     };
 
     return (
         <>
-            <button type="button" className="collapsible" onClick={toggle}>{title}</button>
+            <div>
+                <button type="button" className="collapsible" onClick={toggleOpen}>{title}</button>
+                <span className="material-icons" onClick={onDelete} title='delete'>delete</span>
+            </div>
             {isOpen ?
                 content : null
             }

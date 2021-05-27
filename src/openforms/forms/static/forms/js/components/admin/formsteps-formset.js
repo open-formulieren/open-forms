@@ -6,31 +6,36 @@ const FormIOWrapper = React.forwardRef((props, ref) => (
   <Form {...props} ref={ref} />
 ));
 
-const FormDefinitionBuilder = ({formDefinitionData, errors}) => {
+const FormStep = ({formStepData, onDelete, errors}) => {
     const formRef = useRef(null);
     const content = (
         <div>
             <FormIOWrapper
               ref={formRef}
-              form={formDefinitionData.configuration}
+              form={formStepData.formDefinition.configuration}
               onSubmit={(e) => {console.log(e)}}
               options={{noAlerts: true}}
             />
         </div>
     );
+    const stepName = `Step ${formStepData.order}: ${formStepData.formDefinition.name}`
 
     return (
         <>
-            <Collapsible title={formDefinitionData.name} content={content}/>
+            <Collapsible
+                title={stepName}
+                content={content}
+                onDelete={onDelete.bind(null, formStepData.order)}
+            />
         </>
     );
 };
 
-const FormSteps = ({formSteps, onChange, errors}) => {
+const FormSteps = ({formSteps, onChange, onDelete, errors}) => {
 
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
-            <FormDefinitionBuilder key={index} formDefinitionData={formStepData.formDefinition} />
+            <FormStep key={index} formStepData={formStepData} onDelete={onDelete}/>
         );
     });
 

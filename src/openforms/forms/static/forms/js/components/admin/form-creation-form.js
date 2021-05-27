@@ -32,11 +32,25 @@ function reducer(draft, action) {
             draft[name] = value;
             break;
         }
+        /**
+         * FormSteps-level actions
+         */
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = {
                 loading: false,
                 data: action.payload
             };
+            break;
+        }
+        case 'DELETE_STEP': {
+            const index = action.payload;
+            const unchangedSteps = draft.formSteps.data.slice(0, index);
+
+            const updatedSteps = draft.formSteps.data.slice(index+1).map((step) => {
+                step.order = step.order - 1;
+                return step;
+            });
+            draft.formSteps.data = [...unchangedSteps, ...updatedSteps];
             break;
         }
         /**
@@ -83,6 +97,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
       return 'hello';
     };
 
+    const onStepDelete = (index) => {
+        dispatch({
+            type: 'DELETE_STEP',
+            payload: index
+        });
+    };
+
     const hasErrors = state.errors.length;
     return (
         <>
@@ -127,6 +148,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     <FormSteps
                         formSteps={state.formSteps.data}
                         onChange={onChangeFormSteps}
+                        onDelete={onStepDelete}
                         errors={state.errors}
                     />
                 }
