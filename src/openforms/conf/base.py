@@ -141,7 +141,6 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.zgw_apis",
     "openforms.prefill",
     "openforms.prefill.contrib.demo",
-    "openforms.registrations.contrib.stuf_zds",
     "get_address.stuf_bg",
 ]
 
