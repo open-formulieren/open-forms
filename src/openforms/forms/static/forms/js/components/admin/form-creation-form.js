@@ -8,9 +8,11 @@ import {TextInput} from '../formsets/Inputs';
 import useAsync from 'react-use/esm/useAsync';
 import {get, post, put} from '../utils/fetch';
 import {FormSteps} from './formsteps-formset';
+import SubmitRow from "../formsets/SubmitRow";
 
 const FORM_ENDPOINT = '/api/v1/_manage_forms';
 const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
+const ADMIN_PAGE = '/admin/forms/form';
 
 const initialFormState = {
     formName: '',
@@ -97,12 +99,30 @@ function reducer(draft, action) {
 }
 
 const getFormData = async (formUuid, dispatch) => {
-    try {
-        const formData = await get(`${FORM_ENDPOINT}/${formUuid}`);
+    if (!formUuid) {
         dispatch({
             type: 'FORM_STEPS_LOADED',
-            payload: formData.formSteps,
+            payload: [],
         });
+        return;
+    }
+
+    try {
+        const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
+        if (!response.ok && response.status === 404) {
+            // When we are creating a form, the form endpoint doesn't exist yet
+            dispatch({
+                type: 'FORM_STEPS_LOADED',
+                payload: [],
+            });
+        } else if (!response.ok) {
+            throw new Error('An error occurred while fetching the form.');
+        } else {
+            dispatch({
+                type: 'FORM_STEPS_LOADED',
+                payload: response.data.formSteps,
+            });
+        }
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: e});
     }
@@ -113,12 +133,12 @@ const getFormDefinitions = async (dispatch) => {
         const response = await get(FORM_DEFINITIONS_ENDPOINT);
         dispatch({
             type: 'FORM_DEFINITIONS_LOADED',
-            payload: response.results,
+            payload: response.data.results,
         });
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: e});
     }
-}
+};
 
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const initialState = {...initialFormState, formUuid, formName, formSlug};
@@ -159,6 +179,41 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 formDefinitionUuid: event.target.value
             }
         })
+    };
+
+    const onSubmit = async () => {
+        const formData = {
+            uuid: state.formUuid,
+            name: state.formName,
+            slug: state.formSlug,
+            formSteps: state.formSteps.data
+        };
+
+        // Try to update form
+        const putResponse = await put(
+            `${FORM_ENDPOINT}/${state.formUuid}`,
+            csrftoken,
+            formData,
+        );
+
+        // If the form doesn't exist yet, create it
+        if (!putResponse.ok && putResponse.status === 404) {
+            const postResponse = await post(
+                FORM_ENDPOINT,
+                csrftoken,
+                formData,
+            );
+            if (!postResponse.ok) {
+                dispatch({type: 'SET_FETCH_ERRORS', payload: postResponse.data});
+                return;
+            }
+        } else if (!putResponse.ok) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: putResponse.data});
+            return;
+        }
+
+        // redirect back to list/overview page
+        window.location = ADMIN_PAGE;
     };
 
     const hasErrors = state.errors.length;
@@ -216,6 +271,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     Add step
                 </a>
             </div>
+            <SubmitRow onSubmit={onSubmit} />
         </>
     );
 };
