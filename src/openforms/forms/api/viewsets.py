@@ -31,6 +31,7 @@ from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
+    FormCreateSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
     FormSerializer,
@@ -289,3 +290,12 @@ class FormsImportAPIView(views.APIView):
             raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FormCreationViewSet(viewsets.ModelViewSet):
+    """Internal endpoint for front-end"""
+
+    serializer_class = FormCreateSerializer
+    queryset = Form.objects.all()
+    lookup_field = "uuid"
+    # TODO Auth

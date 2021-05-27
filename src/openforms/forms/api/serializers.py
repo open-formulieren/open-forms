@@ -160,3 +160,33 @@ class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+
+
+# TODO See if this can be merged with serializers above or move somewhere else?
+class FormDefinitionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormDefinition
+        fields = (
+            "uuid",
+            "name",
+            "slug",
+            "configuration",
+        )
+
+
+class FormStepCreateSerializer(serializers.ModelSerializer):
+    form_definition = FormDefinitionCreateSerializer()
+
+    class Meta:
+        model = FormStep
+        fields = ("form_definition",)
+
+
+class FormCreateSerializer(serializers.ModelSerializer):
+    form_steps = FormStepCreateSerializer(
+        many=True, required=False, source="formstep_set"
+    )
+
+    class Meta:
+        model = Form
+        fields = ("name", "uuid", "slug", "form_steps")
