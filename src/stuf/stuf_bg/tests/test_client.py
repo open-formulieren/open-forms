@@ -50,7 +50,7 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            response_data = self.client.get_data_for_attributes(
+            response_data = self.client.get_values_for_attributes(
                 "999992314", list(Attributes.values.keys())
             )
             # TODO Add additional asserts to better test call

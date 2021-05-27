@@ -82,7 +82,7 @@ class StufBGClient:
 
         return loader.render_to_string(template, context)
 
-    def get_data_for_attributes(self, bsn, attributes):
+    def get_values_for_attributes(self, bsn, attributes):
 
         data = self.get_request_data(bsn, attributes)
 

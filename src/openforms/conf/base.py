@@ -142,7 +142,7 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.zgw_apis",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
-    "openforms.prefill.contrib.stufbg.apps.StufBgApp"
+    "openforms.prefill.contrib.stufbg.apps.StufBgApp",
 ]
 
 MIDDLEWARE = [
