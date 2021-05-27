@@ -19,6 +19,7 @@ from rest_framework import (
 )
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -292,7 +293,9 @@ class FormsImportAPIView(views.APIView):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class FormCreationViewSet(viewsets.ModelViewSet):
+class FormCreationViewSet(
+    CreateModelMixin, UpdateModelMixin, viewsets.ReadOnlyModelViewSet
+):
     """Internal endpoint for front-end"""
 
     serializer_class = FormCreateSerializer
