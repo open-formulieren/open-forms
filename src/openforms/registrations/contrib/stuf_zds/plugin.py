@@ -42,12 +42,9 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
 
     client = config.get_client()
 
-    data["test_stp"] = data.get("testStp")
-    data["nnp_id"] = data.get("nnpId")
-    data["vestigings_nummer"] = data.get("vestigingsNummer")
-
     pprint(data)
 
+    # test code because we can only test either docs or zaken
     stp_test = data.get("test_stp")
     zaak_id = None
 
