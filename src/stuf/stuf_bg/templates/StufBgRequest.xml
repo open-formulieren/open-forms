@@ -1,6 +1,7 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                   xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <soapenv:Header>
         <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
             <Timestamp>
@@ -79,24 +80,24 @@
             <!--Optional:-->
             <ns:scope>
                 <ns:object StUF:entiteittype="NPS">
-                    <ns:inp.bsn/>
+                    <ns:inp.bsn xsi:nil="true"/>
                     {% if voornaam %}
-                        <ns:voornamen/>
+                        <ns:voornamen xsi:nil="true"/>
                     {% endif %}
                     {% if geslachtsnaam %}
-                        <ns:geslachtsnaam/>
+                        <ns:geslachtsnaam xsi:nil="true"/>
                     {% endif %}
                     {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
                         <ns:verblijfsadres>
                             {% if straatnaam %}
-                                <ns:gor.straatnaam/>
+                                <ns:gor.straatnaam xsi:nil="true"/>
                             {% endif %}
-{#                            {% if huisnummer %}#}
-{#                                <ns:aoa.huisnummer/>#}
-{#                            {% endif %}#}
-{#                            {% if huisletter %}#}
-{#                                <ns:aoa.huisletter/>#}
-{#                            {% endif %}#}
+                            {% if huisnummer %}
+                                <ns:aoa.huisnummer xsi:nil="true"/>
+                            {% endif %}
+                            {% if huisletter %}
+                                <ns:aoa.huisletter xsi:nil="true"/>
+                            {% endif %}
                             {% if huisnummertoevoeging %}
                                 <ns:aoa.huisnummertoevoeging/>
                             {% endif %}

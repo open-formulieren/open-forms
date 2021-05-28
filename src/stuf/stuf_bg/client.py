@@ -58,7 +58,7 @@ class StufBGClient:
             context.update({attribute: attribute})
         context.update({"bsn": bsn})
 
-        template = "stuf/stuf_bg/templates/StufBgRequestAlles.xml"
+        template = "stuf/stuf_bg/templates/StufBgRequest.xml"
 
         return loader.render_to_string(template, context)
 
