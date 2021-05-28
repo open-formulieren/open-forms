@@ -17,7 +17,7 @@ class StufBgPrefillTests(TestCase):
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
     def test_get_available_attributes_returns_correct_attributes(self, client_mock):
         client_mock.return_value.get_client.return_value.get_values_for_attributes.return_value = loader.render_to_string(
-            "openforms/prefill/contrib/stufbg/tests/StufBgResponse.xml"
+            "stuf/stuf_bg/tests/responses/StufBgResponse.xml"
         )
         attributes = Attributes.attributes.keys()
 
@@ -26,9 +26,9 @@ class StufBgPrefillTests(TestCase):
         self.assertEquals(values["bsn"], "999992314")
         self.assertEquals(values["voornamen"], "Media")
         self.assertEquals(values["geslachtsnaam"], "Maykin")
-        self.assertEquals(values["straatnaam"], "Straat")
+        self.assertEquals(values["straatnaam"], "Keizersgracht")
         self.assertEquals(values["huisnummer"], "117")
         self.assertEquals(values["huisletter"], "A")
         self.assertEquals(values["huisnummertoevoeging"], "B")
-        self.assertEquals(values["postcode"], "2525AB")
+        self.assertEquals(values["postcode"], "1015 CJ")
         self.assertEquals(values["woonplaatsNaam"], "Amsterdam")

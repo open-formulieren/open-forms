@@ -5,48 +5,30 @@
     <soapenv:Body>
         <ns:npsLa01>
             <ns:stuurgegevens>
-                <StUF:berichtcode>?</StUF:berichtcode>
-                <!--Optional:-->
+                <StUF:berichtcode>La01</StUF:berichtcode>
                 <StUF:zender>
-                    <!--Optional:-->
                     <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
                     <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
-                    <!--Optional:-->
                     <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
-                    <!--Optional:-->
                     <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
                 </StUF:zender>
-                <!--Optional:-->
                 <StUF:ontvanger>
-                    <!--Optional:-->
                     <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
                     <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
-                    <!--Optional:-->
                     <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
-                    <!--Optional:-->
                     <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
                 </StUF:ontvanger>
-                <!--Optional:-->
                 <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
-                <!--Optional:-->
                 <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
-                <!--Optional:-->
-                <StUF:crossRefnummer>?</StUF:crossRefnummer>
-                <StUF:entiteittype>?</StUF:entiteittype>
             </ns:stuurgegevens>
             <ns:parameters>
-                <StUF:indicatorVervolgvraag>?</StUF:indicatorVervolgvraag>
-                <!--Optional:-->
                 <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
-                <!--Optional:-->
-                <StUF:aantalVoorkomens>?</StUF:aantalVoorkomens>
             </ns:parameters>
-            <!--Zero or more repetitions:-->
-            <ns:melding>?</ns:melding>
-            <!--Optional:-->
             <ns:antwoord>
-                <!--1 or more repetitions:-->
                 <ns:object StUF:entiteittype="NPS">
+                    <ns:inp.bsn>999992314</ns:inp.bsn>
+                    <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
+                    <ns:voornamen>Media</ns:voornamen>
                     <ns:verblijfsadres>
                         <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
                         <ns:gor.straatnaam>Keizersgracht</ns:gor.straatnaam>
