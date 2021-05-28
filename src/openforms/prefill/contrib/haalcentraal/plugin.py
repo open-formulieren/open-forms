@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, List
 
 from django.utils.translation import gettext_lazy as _
+from glom import glom, GlomError
 
 from requests import RequestException
 
@@ -51,8 +52,8 @@ class HaalCentraalPrefill(BasePlugin):
         values = dict()
         for attr in attributes:
             try:
-                values[attr] = resolve_object_path(data, attr)
-            except KeyError:
+                values[attr] = glom(data, attr)
+            except GlomError:
                 logger.warning(
                     f"missing expected attribute '{attr}' in backend response"
                 )

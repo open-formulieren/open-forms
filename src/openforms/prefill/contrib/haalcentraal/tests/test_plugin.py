@@ -4,6 +4,7 @@ import os
 from django.test import TestCase
 
 import requests_mock
+from glom import glom
 
 from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.prefill.contrib.haalcentraal.models import HaalCentraalConfig
@@ -31,7 +32,7 @@ class HaalCentraalPrefillTest(TestCase):
 
         for key, label in Attributes.choices:
             with self.subTest(f"{label}: {key}"):
-                resolve_object_path(data, key)
+                glom(data, key)
 
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
@@ -59,8 +60,8 @@ class HaalCentraalPrefillTest(TestCase):
             submission, [Attributes.voornamen, Attributes.geslachtsnaam]
         )
         expected = {
-            "_embedded__naam__voornamen": "Cornelia Francisca",
-            "_embedded__naam__geslachtsnaam": "Wiegman",
+            "_embedded.naam.voornamen": "Cornelia Francisca",
+            "_embedded.naam.geslachtsnaam": "Wiegman",
         }
         self.assertEqual(values, expected)
 

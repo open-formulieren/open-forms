@@ -4,16 +4,16 @@ from djchoices import ChoiceItem, DjangoChoices
 
 
 class Attributes(DjangoChoices):
-    voornamen = ChoiceItem("_embedded__naam__voornamen", _("Voornamen"))
-    geslachtsnaam = ChoiceItem("_embedded__naam__geslachtsnaam", _("Geslachtsnaam"))
+    voornamen = ChoiceItem("_embedded.naam.voornamen", _("Voornamen"))
+    geslachtsnaam = ChoiceItem("_embedded.naam.geslachtsnaam", _("Geslachtsnaam"))
 
-    straatnaam = ChoiceItem("_embedded__verblijfplaats__straatnaam", _("Straatnaam"))
-    huisnummer = ChoiceItem("_embedded__verblijfplaats__huisnummer", _("Huisnummer"))
-    huisletter = ChoiceItem("_embedded__verblijfplaats__huisletter", _("Huisletter"))
+    straatnaam = ChoiceItem("_embedded.verblijfplaats.straatnaam", _("Straatnaam"))
+    huisnummer = ChoiceItem("_embedded.verblijfplaats.huisnummer", _("Huisnummer"))
+    huisletter = ChoiceItem("_embedded.verblijfplaats.huisletter", _("Huisletter"))
     huisnummertoevoeging = ChoiceItem(
-        "_embedded__verblijfplaats__huisnummertoevoeging", _("Huisnummer Toevoeging")
+        "_embedded.verblijfplaats.huisnummertoevoeging", _("Huisnummer Toevoeging")
     )
-    postcode = ChoiceItem("_embedded__verblijfplaats__postcode", _("Postcode"))
+    postcode = ChoiceItem("_embedded.verblijfplaats.postcode", _("Postcode"))
     woonplaatsNaam = ChoiceItem(
-        "_embedded__verblijfplaats__woonplaatsnaam", _("Woonplaats Naam")
+        "_embedded.verblijfplaats.woonplaatsnaam", _("Woonplaats Naam")
     )
