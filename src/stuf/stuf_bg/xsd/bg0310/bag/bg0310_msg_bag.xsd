@@ -1,0 +1,3980 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 rel. 2 sp2 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031005">
+	<include schemaLocation="../mutatie/bg0310_msg_mutatie.xsd"/>
+	<include schemaLocation="bg0310_ent_bag.xsd"/>
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_msg_stuf_bag.xsd"/>
+	<annotation>
+		<documentation xml:lang="nl">
+			   Vergeleken met versie 031000 zijn de volgende wijzigingen doorgevoerd:
+			   - de berichten zijn conform de best practice scherper gedefinieerd, zodat er geen spreadsheet meer nodig is die de inhoud van de berichten beschrijft.
+			   - de berichten bagCOR_Lk03, bagIO_Lk03 en bagOA_Lk03, braBOR_Lk03, braBWP_Lk03, braIOR_Lk03, braIWP_Lk03 en braOPC_Lk03,  zijn toegevoegd
+			   - De gebeurtenissen volgen de definitie in de BAG. In een aantal gevallen zal een wijziging in BAG+ gegevens doorgevoerd moeten worden via de BAG+ gebeurtenis BAG-MUT en niet in de logischer BAG-gebeurtenis, omdat er geen brondocument of verplichte statuswijziging mee samenhangt, bijv de geometrie op maaiveld in PND of de puntGeometrie in VBO, indien deze onafhankelijk van de geometrie c.q. de vlakgeometrie wordt gewijzigd.
+			   - Binnen VOCDEEL het afvoeren van een verblijfsobject en nummeraanduiding toegevoegd om bij het gedeeltelijk verdwijnen van een pand toch het geheel verdwijnen van een erbinnen gelegen verblijfsobject in deze gebeurtenis te kunnen doorgeven.
+			   - Bij het omdraaien van het hoofd- en nevenadres van een AOT wordt ervan uitgegaan dat door de wijziging van de NUM die nevenadres was dit automatisch (via foreign key) wordt doorgevoerd bij de AOT. Alleen de aanduiding wordt daarom in het bericht aangepast.
+			   - Een aantal problemen gemeld op het forum is verbeterd.
+			
+			   Dit schema bevat de samengestelde kennisgevingen uit de berichtencatalogus BAG. Per gebeurtenis die aanleiding kan geven tot meerdere berichten is er een samengestelde kennisgeving gedefinieerd.
+			   Per gebeurtenis worden de berichten in een vaste volgorde in het bericht geplaatst. Primair worden de berichten gesorteerd op 
+			   -	tijdstipRegistratie (als er meerdere tijdstipRegistratie elementen in een bericht voorkomen, dan wordt de grootste gebruikt);
+			   Bij gelijk tijdstipRegistratie wordt gesorteerd op:
+			   -	tijdvakGeldigheid/beginGeldigheid (ook hier de grootste als het element beginGeldigheid meerdere keren voorkomt);
+			   Bij gelijk tijdstipRegistratie en gelijk tijdvakGeldigheid/beginGeldigheid wordt gesorteerd op berichtsoort in de volgorde gemLK01, wplLk01, oprLk01, pndLk01, aoaLk01, tgoLk01
+			   Bij gelijk tijdstipRegistratie, gelijk tijdvakGeldigheid/beginGeldigheid en gelijk berichtsoort staan de berichten in de volgorde:
+			   -	F (correcties)
+			   -	T (toevoeging)
+			   -	W (beëindiging)
+			   -	W (overige wijzigingen).
+			
+			   Vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR223: In de berichtdefinitie van 'bagAGO_Lk03' en 'bagAOC_Lk03' was het type van het element 'ogoLk01' gedefinieerd als 'TGO-bag-OGO-afvoeren', dit is gewijzigd in
+			     'TGO-Lk01-bag-OGO-afvoeren'.
+			 
+			   Wijzigingen vergeleken met versie 031002 t.b.v. patch 16 (1-7-2013):
+			   - ERR232: Voor alle asynchrone berichten zijn nu ook synchrone berichten gespecificeerd. 
+							   In verband daarmee zijn voor elk asynchrone complexType in dit schema ook synchrone complexTypes gedefinieerd.
+			   - ERR261: Aan het bericht 'bagHER_Lk03' de berichten 'aoaLk01' en 'oprLk01' toegevoegd.
+							   Aan het bericht 'bagHER_Lk04' de berichten 'aoaLk02' en 'oprLk02' toegevoegd.
+
+			   Wijzigingen vergeleken met versie 031003 t.b.v. patch 19 (1-4-2014):
+			   - ERR312: Aan bgrVOCDEEL_Lk03 en bgrVOCDEEL_Lk04 is het enkelvoudige bericht aoaLk01 toegevoegd voor pndLk01 resp. aoaLk02 toegevoegd voor pndLk02.
+ 
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031004 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>5</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<element name="bagAGO_Lk03">
+		<annotation>
+			<documentation>Archivering geconstateerd object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagAGO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagAGO_Lk04">
+		<annotation>
+			<documentation>Archivering geconstateerd object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagAGO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagAOC_Lk03">
+		<annotation>
+			<documentation>Archivering bestaand object na constatering</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagAOC-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagAOC_Lk04">
+		<annotation>
+			<documentation>Archivering bestaand object na constatering</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagAOC-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagBN_Lk03">
+		<annotation>
+			<documentation>Benoemen nevenadres</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagBN-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-toevoegen"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenNevenadres"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenNevenadres"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagBN_Lk04">
+		<annotation>
+			<documentation>Benoemen nevenadres</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagBN-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-toevoegen"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenNevenadres"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenNevenadres"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagCOR_Lk03">
+		<annotation>
+			<documentation>Correctie object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagCOR-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-corrigeren"/>
+					<element name="gemLk01" type="BG:GEM-Lk01-bag-corrigeren"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-corrigeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-corrigeren"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-corrigeren"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-corrigeren"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-corrigeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-corrigeren"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-corrigeren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagCOR_Lk04">
+		<annotation>
+			<documentation>Correctie object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagCOR-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-corrigeren"/>
+					<element name="gemLk02" type="BG:GEM-Lk02-bag-corrigeren"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-corrigeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-corrigeren"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-corrigeren"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-corrigeren"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-corrigeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-corrigeren"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-corrigeren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagFGO_Lk03">
+		<annotation>
+			<documentation>Formalisering geconstateerd object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagFGO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-formalisering"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-formaliseren"/>
+					<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-formaliseren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagFGO_Lk04">
+		<annotation>
+			<documentation>Formalisering geconstateerd object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagFGO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-formalisering"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-formaliseren"/>
+					<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-formaliseren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagHER_Lk03">
+		<annotation>
+			<documentation>Gemeentelijke herindeling/grenscorrectie</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagHER-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-herindeling"/>
+					<sequence>
+						<element name="gemLk01-toevoegen" type="BG:GEM-Lk01-bag-toevoegen"/>
+						<element name="gemLk01-afvoeren" type="BG:GEM-Lk01-bag-opheffen"/>
+						<element name="gemLk01-grenscorrectie" type="BG:GEM-Lk01-bag-wijzigenGeometrie"/>
+					</sequence>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-herindeling"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-herindelenGemeente"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-herindeling"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-herindeling"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-herindeling"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-herindelen"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-herindeling"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagHER_Lk04">
+		<annotation>
+			<documentation>Gemeentelijke herindeling/grenscorrectie</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagHER-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-herindeling"/>
+					<sequence>
+						<element name="gemLk02-toevoegen" type="BG:GEM-Lk02-bag-toevoegen"/>
+						<element name="gemLk02-afvoeren" type="BG:GEM-Lk02-bag-opheffen"/>
+						<element name="gemLk02-grenscorrectie" type="BG:GEM-Lk02-bag-wijzigenGeometrie"/>
+					</sequence>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-herindeling"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-herindelenGemeente"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-herindeling"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-herindeling"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-herindeling"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-herindelen"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-herindeling"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagHLG_Lk03">
+		<annotation>
+			<documentation>Heropname legitiem gegeven</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagHLG-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-heropnameLegitiemGegeven"/>
+					<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-heropnameLegitiemGegeven"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagHLG_Lk04">
+		<annotation>
+			<documentation>Heropname legitiem gegeven</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagHLG-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-heropnameLegitiemGegeven"/>
+					<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-heropnameLegitiemGegeven"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagIO_Lk03">
+		<annotation>
+			<documentation>In onderzoek plaatsen object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagIO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-inOnderzoek"/>
+					<element name="gemLk01" type="BG:GEM-Lk01-bag-inOnderzoek"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-inOnderzoek"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-inOnderzoek"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-inOnderzoek"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-inOnderzoek"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-inOnderzoek"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagIO_Lk04">
+		<annotation>
+			<documentation>In onderzoek plaatsen object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagIO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-inOnderzoek"/>
+					<element name="gemLk02" type="BG:GEM-Lk02-bag-inOnderzoek"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-inOnderzoek"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-inOnderzoek"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-inOnderzoek"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-inOnderzoek"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-inOnderzoek"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagIN_Lk03">
+		<annotation>
+			<documentation>Intrekken adres</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagIN-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenNevenadres"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenNevenadres"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagIN_Lk04">
+		<annotation>
+			<documentation>Intrekken adres</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagIN-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenNevenadres"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenNevenadres"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagMUT_Lk03">
+		<annotation>
+			<documentation>Muteren naar aanleiding van signalering</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagMUT-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-muteren"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-muteren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-muteren"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-muteren"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-muteren"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-muteren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-muteren"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-muteren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagMUT_Lk04">
+		<annotation>
+			<documentation>Muteren naar aanleiding van signalering</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagMUT-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-muteren"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-muteren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-muteren"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-muteren"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-muteren"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-muteren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-muteren"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-muteren"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagOA_Lk03">
+		<annotation>
+			<documentation>Onderzoek object is afgerond</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagOA-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-inOnderzoek"/>
+					<element name="gemLk01" type="BG:GEM-Lk01-bag-inOnderzoek"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-inOnderzoek"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-inOnderzoek"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-inOnderzoek"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-inOnderzoek"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-inOnderzoek"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bagOA_Lk04">
+		<annotation>
+			<documentation>Onderzoek object is afgerond</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bagOA-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-inOnderzoek"/>
+					<element name="gemLk02" type="BG:GEM-Lk02-bag-inOnderzoek"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-inOnderzoek"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-inOnderzoek"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-inOnderzoek"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-inOnderzoek"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-inOnderzoek"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBIG_Lk03">
+		<annotation>
+			<documentation>Beschikbaar komen ingemeten geometrie</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBIG-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-geometrieBeschikbaar"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-geometrieBeschikbaar"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-geometrieBeschikbaar"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-geometrieBeschikbaar"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-geometrieBeschikbaar"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBIG_Lk04">
+		<annotation>
+			<documentation>Beschikbaar komen ingemeten geometrie</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBIG-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-geometrieBeschikbaar"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-geometrieBeschikbaar"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-geometrieBeschikbaar"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-geometrieBeschikbaar"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-geometrieBeschikbaar"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBSLSP_Lk03">
+		<annotation>
+			<documentation>Benoemen standplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBSLSP-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-toevoegen"/>
+					<choice>
+						<element name="staLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-toevoegen"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBSLSP_Lk04">
+		<annotation>
+			<documentation>Benoemen standplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBSLSP-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-toevoegen"/>
+					<choice>
+						<element name="staLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-toevoegen"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBSLLP_Lk03">
+		<annotation>
+			<documentation>Benoemen ligplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBSLLP-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-toevoegen"/>
+					<choice>
+						<element name="ligLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-toevoegen"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrBSLLP_Lk04">
+		<annotation>
+			<documentation>Benoemen ligplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrBSLLP-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-toevoegen"/>
+					<choice>
+						<element name="ligLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-toevoegen"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrCOG_Lk03">
+		<annotation>
+			<documentation>Constatering nieuw object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrCOG-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-toevoegen"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-toevoegen"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-toevoegen"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-toevoegen"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-toevoegen"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrCOG_Lk04">
+		<annotation>
+			<documentation>Constatering nieuw object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrCOG-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-toevoegen"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-toevoegen"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-toevoegen"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-toevoegen"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-toevoegen"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrIBV_Lk03">
+		<annotation>
+			<documentation>Intrekken bouwvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrIBV-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrIBV_Lk04">
+		<annotation>
+			<documentation>Intrekken bouwvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrIBV-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISLLP_Lk03">
+		<annotation>
+			<documentation>Intrekken ligplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISLLP-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ligLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-afvoeren"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISLLP_Lk04">
+		<annotation>
+			<documentation>Intrekken ligplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISLLP-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ligLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-afvoeren"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISLSP_Lk03">
+		<annotation>
+			<documentation>Intrekken standplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISLSP-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="staLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-afvoeren"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISLSP_Lk04">
+		<annotation>
+			<documentation>Intrekken standplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISLSP-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="staLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-afvoeren"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISV_Lk03">
+		<annotation>
+			<documentation>Intrekken sloopvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISV-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatus"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenStatus"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrISV_Lk04">
+		<annotation>
+			<documentation>Intrekken sloopvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrISV-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatus"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenStatus"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrKVO_Lk03">
+		<annotation>
+			<documentation>Kleine verbouwing object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrKVO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-kleineVerbouwing"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-verbouwing"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-verbouwing"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrKVO_Lk04">
+		<annotation>
+			<documentation>Kleine verbouwing object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrKVO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-kleineVerbouwing"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-verbouwing"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-verbouwing"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMAB_Lk03">
+		<annotation>
+			<documentation>Melding of waarneming afzien bouw</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMAB-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMAB_Lk04">
+		<annotation>
+			<documentation>Melding of waarneming afzien bouw</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMAB-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMSB_Lk03">
+		<annotation>
+			<documentation>Melding start bouw</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMSB-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatus"/>
+					<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMSB_Lk04">
+		<annotation>
+			<documentation>Melding start bouw</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMSB-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatus"/>
+					<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMGB_Lk03">
+		<annotation>
+			<documentation>Melding gebruiksgereed</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMGB-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-gebruiksgereed"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-gebruiksgereed"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenStatus"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMGB_Lk04">
+		<annotation>
+			<documentation>Melding gebruiksgereed</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMGB-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-gebruiksgereed"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-gebruiksgereed"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenStatus"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMGS_Lk03">
+		<annotation>
+			<documentation>Melding sloop afgerond</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMGS-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrMGS_Lk04">
+		<annotation>
+			<documentation>Melding sloop afgerond</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrMGS-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrOABSV_Lk03">
+		<annotation>
+			<documentation>Ontvangst aanvraag bouw-/sloopvergunning bestaand object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrOABSV-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatusVoortgangBouw"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenStatusVoortgangBouw"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrOABSV_Lk04">
+		<annotation>
+			<documentation>Ontvangst aanvraag bouw-/sloopvergunning bestaand object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrOABSV-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatusVoortgangBouw"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenStatusVoortgangBouw"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrPNO_Lk03">
+		<annotation>
+			<documentation>Pand onbewoonbaar</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrPNO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatus"/>
+					<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenStatus"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrPNO_Lk04">
+		<annotation>
+			<documentation>Pand onbewoonbaar</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrPNO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatus"/>
+					<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenStatus"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrSSVSAMEN_Lk03">
+		<annotation>
+			<documentation>Samenvoegen verblijfsobjecten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrSSVSAMEN-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk01-toevoegen" type="BG:AOA-Lk01-bag-toevoegen"/>
+						<element name="aoaLk01-afvoeren" type="BG:AOA-Lk01-bag-afvoeren"/>
+					</choice>
+					<choice>
+						<element name="ogoLk01-toevoegen" type="BG:TGO-Lk01-bag-OGO-toevoegen"/>
+						<element name="ogoLk01-afvoeren" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01-toevoegen" type="BG:TGO-Lk01-bag-VBO-toevoegen"/>
+						<element name="vboLk01-afvoeren" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrSSVSAMEN_Lk04">
+		<annotation>
+			<documentation>Samenvoegen verblijfsobjecten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrSSVSAMEN-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk02-toevoegen" type="BG:AOA-Lk02-bag-toevoegen"/>
+						<element name="aoaLk02-afvoeren" type="BG:AOA-Lk02-bag-afvoeren"/>
+					</choice>
+					<choice>
+						<element name="ogoLk02-toevoegen" type="BG:TGO-Lk02-bag-OGO-toevoegen"/>
+						<element name="ogoLk02-afvoeren" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02-toevoegen" type="BG:TGO-Lk02-bag-VBO-toevoegen"/>
+						<element name="vboLk02-afvoeren" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrSSVSPLITS_Lk03">
+		<annotation>
+			<documentation>Splitsen verblijfsobjecten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrSSVSPLITS-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk01-toevoegen" type="BG:AOA-Lk01-bag-toevoegen"/>
+						<element name="aoaLk01-afvoeren" type="BG:AOA-Lk01-bag-afvoeren"/>
+					</choice>
+					<choice>
+						<element name="ogoLk01-toevoegen" type="BG:TGO-Lk01-bag-OGO-toevoegen"/>
+						<element name="ogoLk01-afvoeren" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01-toevoegen" type="BG:TGO-Lk01-bag-VBO-toevoegen"/>
+						<element name="vboLk01-afvoeren" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrSSVSPLITS_Lk04">
+		<annotation>
+			<documentation>Splitsen verblijfsobjecten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrSSVSPLITS-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk02-toevoegen" type="BG:AOA-Lk02-bag-toevoegen"/>
+						<element name="aoaLk02-afvoeren" type="BG:AOA-Lk02-bag-afvoeren"/>
+					</choice>
+					<choice>
+						<element name="ogoLk02-toevoegen" type="BG:TGO-Lk02-bag-OGO-toevoegen"/>
+						<element name="ogoLk02-afvoeren" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02-toevoegen" type="BG:TGO-Lk02-bag-VBO-toevoegen"/>
+						<element name="vboLk02-afvoeren" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVB_Lk03">
+		<annotation>
+			<documentation>Melding verandering voortgang bouw/sloop</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVB-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatusVoortgangBouw"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenStatusVoortgangBouw"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVB_Lk04">
+		<annotation>
+			<documentation>Melding verandering voortgang bouw/sloop</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVB-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatusVoortgangBouw"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenStatusVoortgangBouw"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVBI_Lk03">
+		<annotation>
+			<documentation>Verlenen bouwvergunning ingrijpende verbouwing</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVBI-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk01-toevoegen" type="BG:AOA-Lk01-bag-toevoegen"/>
+						<element name="aoaLk01-afvoeren" type="BG:AOA-Lk01-bag-afvoeren"/>
+					</choice>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigen"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-verbouwing"/>
+						<element name="vboLk01-wijzigen" type="BG:TGO-Lk01-bag-VBO-verbouwing"/>
+						<element name="vboLk01-toevoegen" type="BG:TGO-Lk01-bag-VBO-toevoegen"/>
+						<element name="vboLk01-afvoeren" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVBI_Lk04">
+		<annotation>
+			<documentation>Verlenen bouwvergunning ingrijpende verbouwing</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVBI-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<choice>
+						<element name="aoaLk02-toevoegen" type="BG:AOA-Lk02-bag-toevoegen"/>
+						<element name="aoaLk02-afvoeren" type="BG:AOA-Lk02-bag-afvoeren"/>
+					</choice>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigen"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-verbouwing"/>
+						<element name="vboLk02-wijzigen" type="BG:TGO-Lk02-bag-VBO-verbouwing"/>
+						<element name="vboLk02-toevoegen" type="BG:TGO-Lk02-bag-VBO-toevoegen"/>
+						<element name="vboLk02-afvoeren" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVBN_Lk03">
+		<annotation>
+			<documentation>Verlenen bouwvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVBN-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-toevoegen"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-toevoegen"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-toevoegen"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVBN_Lk04">
+		<annotation>
+			<documentation>Verlenen bouwvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVBN-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-toevoegen"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-toevoegen"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-toevoegen"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-toevoegen"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVOCDEEL_Lk03">
+		<annotation>
+			<documentation>Gedeeltelijk verdwijnen object door calamiteit</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVOCDEEL-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigen"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-gedeeltelijkVerdwijnen"/>
+						<element name="vboLk01-gedeeltelijkVerdwijnen" type="BG:TGO-Lk01-bag-VBO-gedeeltelijkVerdwijnen"/>
+						<element name="vboLk01-afvoeren" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVOCDEEL_Lk04">
+		<annotation>
+			<documentation>Gedeeltelijk verdwijnen object door calamiteit</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVOCDEEL-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigen"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-gedeeltelijkVerdwijnen"/>
+						<element name="vboLk02-gedeeltelijkVerdwijnen" type="BG:TGO-Lk02-bag-VBO-gedeeltelijkVerdwijnen"/>
+						<element name="vboLk02-afvoeren" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVOCHEEL_Lk03">
+		<annotation>
+			<documentation>Geheel verdwijnen objecten door calamiteiten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVOCHEEL-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-afvoeren"/>
+					<element name="pndLk01" type="BG:PND-Lk01-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-afvoeren"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVOCHEEL_Lk04">
+		<annotation>
+			<documentation>Geheel verdwijnen objecten door calamiteiten</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVOCHEEL-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-afvoeren"/>
+					<element name="pndLk02" type="BG:PND-Lk02-bag-afvoeren"/>
+					<choice>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-afvoeren"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-afvoeren"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVSL_Lk03">
+		<annotation>
+			<documentation>Verlenen sloopvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVSL-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk01" type="BG:PND-Lk01-bag-wijzigenStatus"/>
+					<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="bgrVSL_Lk04">
+		<annotation>
+			<documentation>Verlenen sloopvergunning</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:bgrVSL-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="pndLk02" type="BG:PND-Lk02-bag-wijzigenStatus"/>
+					<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braBOR_Lk03">
+		<annotation>
+			<documentation>Benoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braBOR-Lk03-Stuurgegevens"/>
+				<element name="oprLk01" type="BG:OPR-Lk01-bag-toevoegen"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braBOR_Lk04">
+		<annotation>
+			<documentation>Benoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braBOR-Lk04-Stuurgegevens"/>
+				<element name="oprLk02" type="BG:OPR-Lk02-bag-toevoegen"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braBWP_Lk03">
+		<annotation>
+			<documentation>Benoemen woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braBWP-Lk03-Stuurgegevens"/>
+				<element name="wplLk01" type="BG:WPL-Lk01-bag-toevoegen"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braBWP_Lk04">
+		<annotation>
+			<documentation>Benoemen woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braBWP-Lk04-Stuurgegevens"/>
+				<element name="wplLk02" type="BG:WPL-Lk02-bag-toevoegen"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braGHO_Lk03">
+		<annotation>
+			<documentation>Gedeeltelijk hernoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braGHO-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-hernoemenOpenbareRuimte"/>
+					<sequence>
+						<element name="oprLk01-intrekken" type="BG:OPR-Lk01-bag-intrekken"/>
+						<element name="oprLk01-opvoeren" type="BG:OPR-Lk01-bag-toevoegen" minOccurs="2" maxOccurs="unbounded"/>
+					</sequence>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braGHO_Lk04">
+		<annotation>
+			<documentation>Gedeeltelijk hernoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braGHO-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-hernoemenOpenbareRuimte"/>
+					<sequence>
+						<element name="oprLk02-intrekken" type="BG:OPR-Lk02-bag-intrekken"/>
+						<element name="oprLk02-opvoeren" type="BG:OPR-Lk02-bag-toevoegen" minOccurs="2" maxOccurs="unbounded"/>
+					</sequence>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHNU_Lk03">
+		<annotation>
+			<documentation>Hernummeren adresseerbaar object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHNU-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-wijzigAanduiding"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHNU_Lk04">
+		<annotation>
+			<documentation>Hernummeren adresseerbaar object</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHNU-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-wijzigAanduiding"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHOB_Lk03">
+		<annotation>
+			<documentation>Hernoemen openbare ruimte buurgemeente</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHOB-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-hernoemenOpenbareRuimte"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHOB_Lk04">
+		<annotation>
+			<documentation>Hernoemen openbare ruimte buurgemeente</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHOB-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-hernoemenOpenbareRuimte"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHOR_Lk03">
+		<annotation>
+			<documentation>Hernoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHOR-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-hernoemenOpenbareRuimte"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-hernoemen"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHOR_Lk04">
+		<annotation>
+			<documentation>Hernoemen openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHOR-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-hernoemenOpenbareRuimte"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-hernoemen"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHWP_Lk03">
+		<annotation>
+			<documentation>Hernoemen woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHWP-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-hernoemenWoonplaats"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-hernoemen"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+					<element name="wplLk01" type="BG:WPL-Lk01-bag-hernoemen"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braHWP_Lk04">
+		<annotation>
+			<documentation>Hernoemen woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braHWP-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-hernoemenWoonplaats"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-hernoemen"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+					<element name="wplLk02" type="BG:WPL-Lk02-bag-hernoemen"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braIOR_Lk03">
+		<annotation>
+			<documentation>Intrekken openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braIOR-Lk03-Stuurgegevens"/>
+				<element name="oprLk01" type="BG:OPR-Lk01-bag-intrekken"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braIOR_Lk04">
+		<annotation>
+			<documentation>Intrekken openbare ruimte</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braIOR-Lk04-Stuurgegevens"/>
+				<element name="oprLk02" type="BG:OPR-Lk02-bag-intrekken"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braIWP_Lk03">
+		<annotation>
+			<documentation>Intrekken woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braIWP-Lk03-Stuurgegevens"/>
+				<element name="wplLk01" type="BG:WPL-Lk01-bag-intrekken"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braIWP_Lk04">
+		<annotation>
+			<documentation>Intrekken woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braIWP-Lk04-Stuurgegevens"/>
+				<element name="wplLk02" type="BG:WPL-Lk02-bag-intrekken"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braOHN_Lk03">
+		<annotation>
+			<documentation>Hoofd- en nevenadres adresseerbaar object omdraaien</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braOHN-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-wijzigAanduiding"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braOHN_Lk04">
+		<annotation>
+			<documentation>Hoofd- en nevenadres adresseerbaar object omdraaien</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braOHN-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-wijzigAanduiding"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braOPC_Lk03">
+		<annotation>
+			<documentation>Ontvangen postcode</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braOPC-Lk03-Stuurgegevens"/>
+				<element name="aoaLk01" type="BG:AOA-Lk01-bag-wijzigAanduiding"/>
+				<choice minOccurs="0">
+					<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+					<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+					<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+					<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braOPC_Lk04">
+		<annotation>
+			<documentation>Ontvangen postcode</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braOPC-Lk04-Stuurgegevens"/>
+				<element name="aoaLk02" type="BG:AOA-Lk02-bag-wijzigAanduiding"/>
+				<choice minOccurs="0">
+					<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+					<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+					<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+					<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braWGW_Lk03">
+		<annotation>
+			<documentation>Wijzigen grens woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braWGW-Lk03-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk01" type="BG:AOA-Lk01-bag-grenswijzigingWoonplaats"/>
+					<element name="oprLk01" type="BG:OPR-Lk01-bag-wijzigenWoonplaats"/>
+					<choice>
+						<element name="ligStaLk01" type="BG:TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk01" type="BG:TGO-Lk01-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk01" type="BG:TGO-Lk01-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk01" type="BG:TGO-Lk01-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+					<choice>
+						<element name="wplLk01-inmetenGrens" type="BG:WPL-Lk01-bag-wijzigenGrens"/>
+						<sequence>
+							<element name="wplLk01-intrekken" type="BG:WPL-Lk01-bag-intrekken"/>
+							<element name="wplLk01-opvoeren" type="BG:WPL-Lk01-bag-toevoegen"/>
+						</sequence>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="braWGW_Lk04">
+		<annotation>
+			<documentation>Wijzigen grens woonplaats</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:braWGW-Lk04-Stuurgegevens"/>
+				<choice maxOccurs="unbounded">
+					<element name="aoaLk02" type="BG:AOA-Lk02-bag-grenswijzigingWoonplaats"/>
+					<element name="oprLk02" type="BG:OPR-Lk02-bag-wijzigenWoonplaats"/>
+					<choice>
+						<element name="ligStaLk02" type="BG:TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding"/>
+						<element name="ogoLk02" type="BG:TGO-Lk02-bag-OGO-wijzigenAanduiding"/>
+						<element name="otrLk02" type="BG:TGO-Lk02-bag-OTR-wijzigenAanduiding"/>
+						<element name="vboLk02" type="BG:TGO-Lk02-bag-VBO-wijzigenAanduiding"/>
+					</choice>
+					<choice>
+						<element name="wplLk02-inmetenGrens" type="BG:WPL-Lk02-bag-wijzigenGrens"/>
+						<sequence>
+							<element name="wplLk02-intrekken" type="BG:WPL-Lk02-bag-intrekken"/>
+							<element name="wplLk02-opvoeren" type="BG:WPL-Lk02-bag-toevoegen"/>
+						</sequence>
+					</choice>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<!--ComplexTypes tbv gespecialiseerde berichtelementen-->
+	<complexType name="AOA-Lk01-bag-afvoeren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-afvoeren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-afvoerenGeconstateerd">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-afvoerenGeconstateerd">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:AOA-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:AOA-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-formalisering">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-formalisering" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-formalisering">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-formalisering" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-grenswijzigingWoonplaats">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-grensWijzigingWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-grenswijzigingWoonplaats">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-grensWijzigingWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-hernoemenOpenbareRuimte">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-hernoemenOpenbareRuimte" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-hernoemenOpenbareRuimte">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-hernoemenOpenbareRuimte" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-hernoemenWoonplaats">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-hernoemenWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-hernoemenWoonplaats">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-hernoemenWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-muteren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-muteren">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:AOA-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:AOA-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-wijzigAanduiding">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-wijzigAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-wijzigAanduiding">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-wijzigAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk01-bag-wijzigStatus">
+		<complexContent>
+			<restriction base="BG:AOA-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:AOA-bag-wijzigStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-Lk02-bag-wijzigStatus">
+		<complexContent>
+			<restriction base="BG:AOA-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:AOA-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:AOA-bag-wijzigStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk01-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:GEM-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:GEM-bag-corrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk02-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:GEM-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:GEM-bag-corrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk01-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:GEM-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:GEM-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk02-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:GEM-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:GEM-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk01-bag-opheffen">
+		<complexContent>
+			<restriction base="BG:GEM-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:GEM-bag-opheffen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk02-bag-opheffen">
+		<complexContent>
+			<restriction base="BG:GEM-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:GEM-bag-opheffen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk01-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:GEM-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:GEM-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk02-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:GEM-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:GEM-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk01-bag-wijzigenGeometrie">
+		<complexContent>
+			<restriction base="BG:GEM-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:GEM-bag-wijzigenGeometrie" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-Lk02-bag-wijzigenGeometrie">
+		<complexContent>
+			<restriction base="BG:GEM-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:GEM-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:GEM-bag-wijzigenGeometrie" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:OPR-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:OPR-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-hernoemen">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-hernoemen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-hernoemen">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-hernoemen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-hernoemenBuurgemeente">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-hernoemenBuurgemeente" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-hernoemenBuurgemeente">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-hernoemenBuurgemeente" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-intrekken">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-intrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-intrekken">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-intrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-muteren">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-muteren">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:OPR-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:OPR-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-wijzigenWoonplaats">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-wijzigenWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-wijzigenWoonplaats">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-wijzigenWoonplaats" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk01-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:OPR-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:OPR-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-Lk02-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:OPR-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:OPR-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:OPR-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-afvoeren">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-afvoeren">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:PND-bag-muterenCorrigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:PND-bag-muterenCorrigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-formaliseren">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-formaliseren">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-gebruiksgereed">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-gebruiksgereed" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-gebruiksgereed">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-gebruiksgereed" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-herindelenGemeente">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-herindelenGemeente" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-herindelenGemeente">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-herindelenGemeente" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-kleineVerbouwing">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-kleineVerbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-kleineVerbouwing">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-kleineVerbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-muteren">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-muterenCorrigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-muteren">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-muterenCorrigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:PND-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:PND-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-wijzigen">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-wijzigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-wijzigen">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-wijzigen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk01-bag-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:PND-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:PND-bag-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-Lk02-bag-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:PND-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:PND-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:PND-bag-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-formaliseren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-formaliseren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-wijzigenNevenadres">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenNevenadres" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-wijzigenNevenadres">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenNevenadres" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-AOTnietVBO-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-AOTnietVBO-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-AOTnietVBO-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-afzienIntrekken">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-afzienIntrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-afzienIntrekken">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-afzienIntrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:TGO-bag-OGO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:TGO-bag-OGO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-gebruiksgereed">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-gebruiksgereed" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-gebruiksgereed">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-gebruiksgereed" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:TGO-bag-OGO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:TGO-bag-OGO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-verbouwing">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-verbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-verbouwing">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-verbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OGO-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OGO-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OGO-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OGO-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:TGO-bag-OTR-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:TGO-bag-OTR-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-herindeling">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:TGO-bag-OTR-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:TGO-bag-OTR-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-OTR-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-OTR-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-OTR-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-OTR-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-afvoeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-afvoeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-afzienIntrekken">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-afzienIntrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-afzienIntrekken">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-afzienIntrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:TGO-bag-VBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-corrigeren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:TGO-bag-VBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-formaliseren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-formaliseren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-formaliseren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-gedeeltelijkVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-gedeeltelijkVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-geheelVerdwijnen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-geheelVerdwijnen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-geometrieBeschikbaar">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-geometrieBeschikbaar" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-herindelen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-herindelen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-herindelen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-herindelen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-heropnameLegitiemGegeven">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-heropnameLegitiemGegeven" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-muteren">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:TGO-bag-VBO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-toevoegen">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:TGO-bag-VBO-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-verbouwing">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-verbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-verbouwing">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-verbouwing" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-wijzigenAanduiding">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenAanduiding" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-wijzigenNevenadres">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenNevenadres" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-wijzigenNevenadres">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenNevenadres" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-wijzigenStatus">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenStatus" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk01-bag-VBO-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:TGO-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-Lk02-bag-VBO-wijzigenStatusVoortgangBouw">
+		<complexContent>
+			<restriction base="BG:TGO-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:TGO-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:TGO-bag-VBO-wijzigenStatusVoortgangBouw" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01F"/>
+					<element name="object" type="BG:WPL-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-corrigeren">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02F"/>
+					<element name="object" type="BG:WPL-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-herindeling">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-herindeling" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-hernoemen">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-hernoemen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-hernoemen">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-hernoemen" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-inOnderzoek">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-inOnderzoek" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-intrekken">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-intrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-intrekken">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-intrekken" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-muteren">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-muteren">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-muterenCorrigeren" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01T"/>
+					<element name="object" type="BG:WPL-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-toevoegen">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02T"/>
+					<element name="object" type="BG:WPL-bag-toevoegen" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk01-bag-wijzigenGrens">
+		<complexContent>
+			<restriction base="BG:WPL-Lk01">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk01"/>
+					<element name="parameters" type="StUF:ParametersLk01W"/>
+					<element name="object" type="BG:WPL-bag-wijzigenGrens" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WPL-Lk02-bag-wijzigenGrens">
+		<complexContent>
+			<restriction base="BG:WPL-Lk02">
+				<sequence>
+					<element name="stuurgegevens" type="StUF:WPL-StuurgegevensLk02"/>
+					<element name="parameters" type="StUF:ParametersLk02W"/>
+					<element name="object" type="BG:WPL-bag-wijzigenGrens" nillable="true" minOccurs="2" maxOccurs="2"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+</schema>

@@ -1,0 +1,2039 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.egem.nl/StUF/StUF0301" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031003">
+	<annotation>
+		<documentation>
+			   Dit schema bevat de definitie van de stuurgegevens complexTypes tbv de berichtencatalogus BAG.
+			
+			   Wijzigingen vergeleken met versie 031000:
+			   - Stuurgegevenselementen toegevoegd voor braOPC, braBOR, braIOR, braBWP, braIWP,
+			
+			   Wijzigingen vergeleken met versie 031001 t.b.v. patch 16 (1-7-2013):
+			   - ERR232: Voor alle asynchrone complexTypes zijn nu ook synchrone complexTypes gespecificeerd.
+			   - ERR267: Voor elke functie een simpleType toegevoegd in de vorm 'FunctiexxxXXX' waarbij 'xxxXXX' staat voor de betreffende functie, bijv. 'FunctiebgrIBV'.
+							   Verwijzingen daarheen zijn eveneens gewijzigd.
+							   Voor mutatiesoort zijn verwijzingen opgenomen naar nieuwe simpleTypes in de vorm van 'MutatiesoortX' waarbij 'X' staat voor de mutatiesoort, bijv. 'MutatiesoortF'.
+ 
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031002 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>3</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<include schemaLocation="../entiteiten/bg0310_stuf_simpleTypes.xsd"/>
+	<!--ComplexTypes voor de stuurgegevens elementen-->
+	<complexType name="bagAOC-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagAOC, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagAOC"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagAOC-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagAOC, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagAOC"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagAGO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagAGO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagAGO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagAGO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagAGO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagAGO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagBN-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagBN, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagBN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagBN-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagBN, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagBN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagCOR-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagCOR, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagCOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagCOR-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagCOR, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagCOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagFGO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagFGO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagFGO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagFGO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagFGO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagFGO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagHLG-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagHLG, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagHLG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagHLG-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagHLG, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagHLG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagIN-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagIN, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagIN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagIN-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagIN, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagIN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagIO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagIO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagIO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagIO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagIO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagIO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagMUT-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagMUT, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagMUT"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagMUT-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagMUT, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagMUT"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagOA-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagOA, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagOA"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagOA-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagOA, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagOA"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBIG-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBIG, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBIG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBIG-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBIG, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBIG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBSLLP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBSLLP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBSLLP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBSLLP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBSLLP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBSLLP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBSLSP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBSLSP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBSLSP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrBSLSP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrBSLSP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrBSLSP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrCOG-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrCOG, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrCOG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrCOG-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrCOG, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrCOG"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagHER-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagHER, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagHER"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bagHER-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bagHER, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebagHER"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrIBV-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrIBV, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrIBV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrIBV-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrIBV, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrIBV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISLLP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISLLP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISLLP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISLLP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISLLP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISLLP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISLSP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISLSP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISLSP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISLSP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISLSP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISLSP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISV-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISV, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrISV-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrISV, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrISV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrKVO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrKVO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrKVO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrKVO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrKVO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrKVO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMAB-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMAB, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMAB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMAB-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMAB, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMAB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMSB-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMSB, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMSB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMSB-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMSB, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMSB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMGB-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMGB, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMGB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMGB-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMGB, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMGB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMGS-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMGS, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMGS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrMGS-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrMGS, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrMGS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrPNO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrPNO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrPNO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrPNO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrPNO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrPNO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrOABSV-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrOABSV, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrOABSV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrOABSV-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrOABSV, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrOABSV"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrSSVSAMEN-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrSSVSAMEN, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrSSVSAMEN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrSSVSAMEN-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrSSVSAMEN, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrSSVSAMEN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrSSVSPLITS-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrSSVSPLITS, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrSSVSPLITS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrSSVSPLITS-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrSSVSPLITS, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrSSVSPLITS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVB-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVB, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVB-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVB, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVBI-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVBI, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVBI"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVBI-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVBI, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVBI"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVBN-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVBN, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVBN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVBN-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVBN, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVBN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVOCHEEL-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVOCHEEL, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVOCHEEL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVOCHEEL-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVOCHEEL, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVOCHEEL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVOCDEEL-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVOCDEEL, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVOCDEEL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVOCDEEL-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVOCDEEL, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVOCDEEL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVSL-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVSL, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVSL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="bgrVSL-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = bgrVSL, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebgrVSL"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braBOR-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braBOR, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraBOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braBOR-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braBOR, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraBOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braBWP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braBWP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraBWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braBWP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braBWP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraBWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braGHO-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braGHO, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraGHO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braGHO-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braGHO, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraGHO"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHNU-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHNU, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHNU"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHNU-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHNU, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHNU"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHOR-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHOR, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHOR-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHOR, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHOB-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHOB, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHOB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHOB-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHOB, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHOB"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHWP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHWP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braHWP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braHWP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraHWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braIOR-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braIOR, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraIOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braIOR-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braIOR, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraIOR"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braIWP-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braIWP, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraIWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braIWP-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braIWP, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraIWP"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braOHN-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braOHN, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraOHN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braOHN-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braOHN, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraOHN"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braOPC-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braOPC, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraOPC"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braOPC-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braOPC, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraOPC"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braWGW-Lk03-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braWGW, Berichtcode = Lk03</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk03">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk03"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraWGW"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="braWGW-Lk04-Stuurgegevens">
+		<annotation>
+			<documentation>Functie = braWGW, Berichtcode = Lk04</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:StuurgegevensLk04">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLk04"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="functie" type="StUF:FunctiebraWGW"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!--ComplexTypes voor de parametersKennisgeving elementen-->
+	<complexType name="ParametersLk01F">
+		<annotation>
+			<documentation>Mutatiesoort = F</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk01">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortF"/>
+					<element name="indicatorOvername" type="StUF:IndicatorOvername"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ParametersLk02F">
+		<annotation>
+			<documentation>Mutatiesoort = F</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk02">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortF"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ParametersLk01T">
+		<annotation>
+			<documentation>Mutatiesoort = T</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk01">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortT"/>
+					<element name="indicatorOvername" type="StUF:IndicatorOvername"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ParametersLk02T">
+		<annotation>
+			<documentation>Mutatiesoort = T</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk02">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortT"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ParametersLk01W">
+		<annotation>
+			<documentation>Mutatiesoort = W</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk01">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortW"/>
+					<element name="indicatorOvername" type="StUF:IndicatorOvername"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ParametersLk02W">
+		<annotation>
+			<documentation>Mutatiesoort = W</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersLk02">
+				<sequence>
+					<element name="mutatiesoort" type="StUF:MutatiesoortW"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!--SimpleTypes voor de Functie attributen-->
+	<simpleType name="FunctiebagAOC">
+		<annotation>
+			<documentation>Functie = bagAOC</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagAOC"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagAGO">
+		<annotation>
+			<documentation>Functie = bagAGO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagAGO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagBN">
+		<annotation>
+			<documentation>Functie = bagBN</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagBN"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagCOR">
+		<annotation>
+			<documentation>Functie = bagCOR</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagCOR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagFGO">
+		<annotation>
+			<documentation>Functie = bagFGO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagFGO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagHLG">
+		<annotation>
+			<documentation>Functie = bagHLG</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagHLG"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagIN">
+		<annotation>
+			<documentation>Functie = bagIN</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagIN"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagIO">
+		<annotation>
+			<documentation>Functie = bagIO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagIO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagMUT">
+		<annotation>
+			<documentation>Functie = bagMUT</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagMUT"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagOA">
+		<annotation>
+			<documentation>Functie = bagOA</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagOA"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrBIG">
+		<annotation>
+			<documentation>Functie = bgrBIG</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrBIG"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrBSLLP">
+		<annotation>
+			<documentation>Functie = bgrBSLLP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrBSLLP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrBSLSP">
+		<annotation>
+			<documentation>Functie = bgrBSLSP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrBSLSP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrCOG">
+		<annotation>
+			<documentation>Functie = bgrCOG</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrCOG"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebagHER">
+		<annotation>
+			<documentation>Functie = bagHER</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bagHER"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrIBV">
+		<annotation>
+			<documentation>Functie = bgrIBV</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrIBV"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrISLLP">
+		<annotation>
+			<documentation>Functie = bgrISLLP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrISLLP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrISLSP">
+		<annotation>
+			<documentation>Functie = bgrISLSP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrISLSP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrISV">
+		<annotation>
+			<documentation>Functie = bgrISV</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrISV"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrKVO">
+		<annotation>
+			<documentation>Functie = bgrKVO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrKVO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrMAB">
+		<annotation>
+			<documentation>Functie = bgrMAB</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrMAB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrMSB">
+		<annotation>
+			<documentation>Functie = bgrMSB</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrMSB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrMGB">
+		<annotation>
+			<documentation>Functie = bgrMGB</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrMGB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrMGS">
+		<annotation>
+			<documentation>Functie = bgrMGS</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrMGS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrPNO">
+		<annotation>
+			<documentation>Functie = bgrPNO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrPNO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrOABSV">
+		<annotation>
+			<documentation>Functie = bgrOABSV</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrOABSV"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrSSVSAMEN">
+		<annotation>
+			<documentation>Functie = bgrSSVSAMEN</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrSSVSAMEN"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrSSVSPLITS">
+		<annotation>
+			<documentation>Functie = bgrSSVSPLITS</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrSSVSPLITS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVB">
+		<annotation>
+			<documentation>Functie = bgrVB</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVBI">
+		<annotation>
+			<documentation>Functie = bgrVBI</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVBI"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVBN">
+		<annotation>
+			<documentation>Functie = bgrVBN</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVBN"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVOCHEEL">
+		<annotation>
+			<documentation>Functie = bgrVOCHEEL</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVOCHEEL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVOCDEEL">
+		<annotation>
+			<documentation>Functie = bgrVOCDEEL</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVOCDEEL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebgrVSL">
+		<annotation>
+			<documentation>Functie = bgrVSL</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="bgrVSL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraBOR">
+		<annotation>
+			<documentation>Functie = braBOR</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braBOR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraBWP">
+		<annotation>
+			<documentation>Functie = braBWP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braBWP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraGHO">
+		<annotation>
+			<documentation>Functie = braGHO</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braGHO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraHNU">
+		<annotation>
+			<documentation>Functie = braHNU</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braHNU"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraHOR">
+		<annotation>
+			<documentation>Functie = braHOR</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braHOR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraHOB">
+		<annotation>
+			<documentation>Functie = braHOB</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braHOB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraHWP">
+		<annotation>
+			<documentation>Functie = braHWP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braHWP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraIOR">
+		<annotation>
+			<documentation>Functie = braIOR</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braIOR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraIWP">
+		<annotation>
+			<documentation>Functie = braIWP</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braIWP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraOHN">
+		<annotation>
+			<documentation>Functie = braOHN</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braOHN"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraOPC">
+		<annotation>
+			<documentation>Functie = braOPC</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braOPC"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctiebraWGW">
+		<annotation>
+			<documentation>Functie = braWGW</documentation>
+		</annotation>
+		<restriction base="StUF:Functie">
+			<enumeration value="braWGW"/>
+		</restriction>
+	</simpleType>
+</schema>

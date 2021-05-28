@@ -1,0 +1,3517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031005">
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_stuf_simpleTypes.xsd"/>
+	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gml-3.1.1.2/gml/3.1.1/base/gml.xsd"/>
+	<annotation>
+		<documentation xml:lang="nl">
+			   - Nieuw bestand in verband met nieuwe werkwijze maken sectormodellen
+			   - Schema met de definitie van de simpleTypes, "-e" complexTypes en metagegevens complexTypes gebruikt in de basisentiteiten voor bg0310.
+			
+			   Wijzigingen t.b.v. patch 1-7-2012 vergeleken met versie bg0310_simpleTypes.xsd v031000:
+			   - ERR227: In enumeration van de complexType 'StatusWOZBeschikking' 'ambsthalve' gecorrigeerd in 'ambtshalve'.
+			   - ERR224: Aan het simpleType 'RedenOpschortingBijhouding' de enumeration waarde 'R' toegevoegd.
+			
+			   Wijzigingen t.b.v. patch 1-10-2012 vergeleken met versie bg0310_simpleTypes.xsd v031001:
+			   - ERR246: Update naar gmnl 3.1.1.2.
+			
+			   Wijzigingen t.b.v. patch 1-1-2013 vergeleken met versie bg0310_simpleTypes.xsd v031002:
+			   - ERR253: Definitie van complexType 'GeometrieIMGeo-e' gewijzigd. Extend niet meer 'BG:GeometrieIMGeo' maar 'gml:SurfacePropertyType'.		
+			
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031003 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0352: In het complexType IdentificatieBRK-e is de regular expression '[0-9]{1,15}' gewijzigd in '\S.*'.
+			   - ONV0370: simpleTypes 'Maateenheid8-2' en 'Maateenheid8-2-e' zijn aangemaakt.
+							     simpleTypes 'Maateenheid8-2-neg' en 'Maateenheid8-2-neg-e' zijn aangemaakt.
+							     simpleTypes 'Maateenheid20-2-neg' en 'Maateenheid20-2-neg-e' zijn aangemaakt.
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+			   Wijzigingen t.b.v. patch 25 (1-7-2016) vergeleken met versie 031004 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0433: Aan het simpleType 'aanduidingInhoudingVermissing' is de enumeration 'R' (van rechtswege vervallen) toegevoegd.
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>5</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<!--ComplexTypes voor metagegevens-->
+	<complexType name="Authentiek">
+		<simpleContent>
+			<extension base="BG:Indicatie-e">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheid">
+		<simpleContent>
+			<extension base="BG:AanduidingStrijdigNietig">
+				<attribute ref="StUF:metagegeven"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam"/>
+				<attribute ref="StUF:noValue"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheid-vraag">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheidNPS">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen"/>
+				<attribute name="elementnaam" type="StUF:NPSElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheidNPSNAT">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheidNPSNPSHUW">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSNPSHUWGroepen"/>
+				<attribute name="elementnaam" type="StUF:NPSNPSHUWElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheidNPSNPSKND">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingStrijdigheidNietigheidNPSNPSOUD">
+		<simpleContent>
+			<restriction base="BG:AanduidingStrijdigheidNietigheid">
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<!-- ComplexTypes voor elementen op alfabet-->
+	<complexType name="A-nummer-e">
+		<simpleContent>
+			<extension base="BG:A-nummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingBijzonderNederlanderschap-e">
+		<simpleContent>
+			<extension base="BG:AanduidingBijzonderNederlanderschap">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingDeelnameEuropeesKiesrecht-e">
+		<simpleContent>
+			<extension base="BG:AanduidingDeelnameEuropeesKiesrecht">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingEigenaarGebruiker-e">
+		<simpleContent>
+			<extension base="BG:AanduidingEigenaarGebruiker">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingEuropeesKiesrecht-e">
+		<simpleContent>
+			<extension base="BG:AanduidingEuropeesKiesrecht">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingInhoudingVermissing-e">
+		<simpleContent>
+			<extension base="BG:AanduidingInhoudingVermissing">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingNaamgebruik-e">
+		<simpleContent>
+			<extension base="BG:AanduidingNaamgebruik">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingOnttrekking-e">
+		<simpleContent>
+			<extension base="BG:AanduidingOnttrekking">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingSoortVreemdeling-e">
+		<simpleContent>
+			<extension base="BG:AanduidingSoortVreemdeling">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AanduidingUitgeslotenKiesrecht-e">
+		<simpleContent>
+			<extension base="BG:AanduidingUitgeslotenKiesrecht">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Aanhef-e">
+		<simpleContent>
+			<extension base="BG:Aanhef">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardAantekeningKOZ-e">
+		<simpleContent>
+			<extension base="BG:AardAantekeningKOZ">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardAantekeningZKR-e">
+		<simpleContent>
+			<extension base="BG:AardAantekeningZKR">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardBedrag-e">
+		<simpleContent>
+			<extension base="BG:AardBedrag">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardLIProject-e">
+		<simpleContent>
+			<extension base="BG:AardLIProject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardZakelijkRecht-e">
+		<simpleContent>
+			<extension base="BG:AardZakelijkRecht">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AardZakelijkRechtVerkort-e">
+		<simpleContent>
+			<extension base="BG:AardZakelijkRechtVerkort">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AcademischeTitelCode-e">
+		<simpleContent>
+			<extension base="BG:AcademischeTitelCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AcademischeTitelOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:AcademischeTitelOmschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AcademischeTitelPositie-e">
+		<simpleContent>
+			<extension base="BG:AcademischeTitelPositie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ActiviteitCode-e">
+		<simpleContent>
+			<extension base="BG:ActiviteitCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AdellijkeTitelPredikaat-e">
+		<simpleContent>
+			<extension base="BG:AdellijkeTitelPredikaat">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AdresBuitenland-e">
+		<simpleContent>
+			<extension base="BG:AdresBuitenland">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AdresHerkomst-e">
+		<simpleContent>
+			<extension base="BG:AdresHerkomst">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Appartementsindex-e">
+		<simpleContent>
+			<extension base="BG:Appartementsindex">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="AutoriteitInhoudingVermissing-e">
+		<simpleContent>
+			<extension base="BG:AutoriteitInhoudingVermissing">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BebouwingCode-e">
+		<simpleContent>
+			<extension base="BG:BebouwingCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Boolean-e">
+		<simpleContent>
+			<extension base="boolean">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BouwkundigeBestemming-e">
+		<simpleContent>
+			<extension base="BG:BouwkundigeBestemming">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Bouwlaag-e">
+		<simpleContent>
+			<extension base="BG:Bouwlaag">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BrondocumentCode-e">
+		<simpleContent>
+			<extension base="BG:BrondocumentCode">
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BrondocumentHouder-e">
+		<simpleContent>
+			<extension base="BG:BrondocumentHouder">
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BrondocumentOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:BrondocumentOmschrijving">
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BrondocumentOmschrijvingWOZ-e">
+		<simpleContent>
+			<restriction base="BG:BrondocumentOmschrijving-e">
+				<simpleType>
+					<restriction base="BG:BrondocumentOmschrijving">
+						<maxLength value="50"/>
+					</restriction>
+				</simpleType>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="BrondocumentSoort-e">
+		<simpleContent>
+			<extension base="BG:BrondocumentSoort">
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BSN-e">
+		<simpleContent>
+			<restriction base="BG:BsVesNummerOfId-e">
+				<simpleType>
+					<restriction base="BG:BSN"/>
+				</simpleType>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="BsVesNummerOfId-e">
+		<simpleContent>
+			<extension base="BG:BsVesNummerOfId">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BurgerlijkeStaat-e">
+		<simpleContent>
+			<extension base="BG:BurgerlijkeStaat">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BuurtCode-e">
+		<simpleContent>
+			<extension base="BG:BuurtCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BuurtNaam-e">
+		<simpleContent>
+			<extension base="BG:BuurtNaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="CodeWOZDeelObject-e">
+		<simpleContent>
+			<extension base="BG:CodeWOZDeelObject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="CultuurBebouwd-e">
+		<simpleContent>
+			<extension base="BG:CultuurBebouwd">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="CultuurOnbebouwd-e">
+		<simpleContent>
+			<extension base="BG:CultuurOnbebouwd">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="DeelperceelNummer-e">
+		<simpleContent>
+			<extension base="BG:DeelperceelNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="DocumentNummering-e">
+		<simpleContent>
+			<extension base="BG:DocumentNummering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Emailadres-e">
+		<simpleContent>
+			<extension base="BG:Emailadres">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="FunctieAdres-e">
+		<simpleContent>
+			<extension base="BG:FunctieAdres">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="FunctionarisType-e">
+		<simpleContent>
+			<extension base="BG:FunctionarisType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Gebruikscode-e">
+		<simpleContent>
+			<extension base="BG:Gebruikscode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Gebruiksdoeleinden-e">
+		<simpleContent>
+			<extension base="BG:Gebruiksdoeleinden">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Gemeentecodering-e">
+		<simpleContent>
+			<extension base="BG:Gemeentecodering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Gemeentedeel-e">
+		<simpleContent>
+			<extension base="BG:Gemeentedeel">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Gemeentenaam-e">
+		<simpleContent>
+			<extension base="BG:Gemeentenaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="GemeentenaamNen-e">
+		<simpleContent>
+			<extension base="BG:GemeentenaamNen">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="GeometrieIMGeo-e">
+		<complexContent>
+			<extension base="gml:SurfacePropertyType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeometriePunt-e">
+		<complexContent>
+			<extension base="gml:PointPropertyType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeometrieVlak-e">
+		<complexContent>
+			<extension base="gml:SurfacePropertyType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="Geslachtsaanduiding-e">
+		<simpleContent>
+			<extension base="BG:Geslachtsaanduiding">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Geslachtsnaam-e">
+		<simpleContent>
+			<extension base="BG:Geslachtsnaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Handelsnaam-e">
+		<simpleContent>
+			<extension base="BG:Handelsnaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="HandelsnaamVerkort-e">
+		<simpleContent>
+			<extension base="BG:HandelsnaamVerkort">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="HuishoudenGrootte-e">
+		<simpleContent>
+			<extension base="BG:HuishoudenGrootte">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="HuishoudenNummer-e">
+		<simpleContent>
+			<extension base="BG:HuishoudenNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="HuishoudenRelatieCode-e">
+		<simpleContent>
+			<extension base="BG:HuishoudenRelatieCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="HuishoudenSoort-e">
+		<simpleContent>
+			<extension base="BG:HuishoudenSoort">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Huislettering-e">
+		<simpleContent>
+			<extension base="BG:Huislettering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Huisnummering-e">
+		<simpleContent>
+			<extension base="BG:Huisnummering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Huisnummerrange-e">
+		<simpleContent>
+			<extension base="BG:Huisnummerrange">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Huisnummertoevoeging-e">
+		<simpleContent>
+			<extension base="BG:Huisnummertoevoeging">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IdentificatieBRK-e">
+		<simpleContent>
+			<restriction base="BG:DocumentNummering-e">
+				<simpleType>
+					<restriction base="BG:DocumentNummering">
+						<pattern value="\S.*"/>
+					</restriction>
+				</simpleType>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="IdentificatieIMGeo-e">
+		<simpleContent>
+			<extension base="BG:IdentificatieIMGeo">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IdentificatieRPSBTL-e">
+		<simpleContent>
+			<extension base="BG:IdentificatieRPSBTL">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Indicatie-e">
+		<simpleContent>
+			<extension base="BG:Indicatie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IndicatieBlokkering-e">
+		<simpleContent>
+			<extension base="BG:IndicatieBlokkering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IndicatieCuratele-e">
+		<simpleContent>
+			<extension base="BG:IndicatieCuratele">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IndicatieGeheim-e">
+		<simpleContent>
+			<extension base="BG:IndicatieGeheim">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="IndicatieGezag-e">
+		<simpleContent>
+			<extension base="BG:IndicatieGezag">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="InrichtingsElementType-e">
+		<simpleContent>
+			<extension base="BG:InrichtingsElementType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="InwinningswijzeGeometrie-e">
+		<simpleContent>
+			<extension base="BG:InwinningswijzeGeometrie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="InwinningswijzeOppervlakte-e">
+		<simpleContent>
+			<extension base="BG:InwinningswijzeOppervlakte">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Jaar-e">
+		<simpleContent>
+			<extension base="BG:Jaar">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KadastraalPerceelnummer-e">
+		<simpleContent>
+			<extension base="BG:KadastraalPerceelnummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KadastraleGemeentecode-e">
+		<simpleContent>
+			<extension base="BG:KadastraleGemeentecode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KadastraleGemeentenaam-e">
+		<simpleContent>
+			<extension base="BG:KadastraleGemeentenaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KadastraleIdentificatie-e">
+		<simpleContent>
+			<extension base="BG:KadastraleIdentificatie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KadastraleSectie-e">
+		<simpleContent>
+			<extension base="BG:KadastraleSectie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Koopsom-e">
+		<simpleContent>
+			<extension base="BG:Koopsom">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="KvKNummer-e">
+		<simpleContent>
+			<extension base="BG:KvKNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Landcode-e">
+		<simpleContent>
+			<extension base="BG:Landcode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="LandcodeIso-e">
+		<simpleContent>
+			<extension base="BG:LandcodeIso">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Landnaam-e">
+		<simpleContent>
+			<extension base="BG:Landnaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Locatiebeschrijving-e">
+		<simpleContent>
+			<extension base="BG:Locatiebeschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="LocatieOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:LocatieOmschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="LocatieOmschrijvingKOZ-e">
+		<simpleContent>
+			<extension base="BG:LocatieOmschrijvingKOZ">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid18-2-neg-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid18-2-neg">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid11-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid11">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid11-2-neg-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid11-2-neg">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid2-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid2">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid6-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid6">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid6-2-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid6-2">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid8-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid8">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid8-2-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid8-2">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Maateenheid8-2-neg-e">
+		<simpleContent>
+			<extension base="BG:Maateenheid8-2-neg">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="NaamgevingObject-e">
+		<simpleContent>
+			<extension base="BG:NaamgevingObject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Nationaliteitcode-e">
+		<simpleContent>
+			<extension base="BG:Nationaliteitcode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="NationaliteitOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:NationaliteitOmschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="NummerWOZDeelObject-e">
+		<simpleContent>
+			<extension base="BG:NummerWOZDeelObject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ObjectNummering-e">
+		<simpleContent>
+			<extension base="BG:ObjectNummering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Omschrijving100-e">
+		<simpleContent>
+			<extension base="BG:Omschrijving100">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Omschrijving200-e">
+		<simpleContent>
+			<extension base="BG:Omschrijving200">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OmschrijvingActiviteit-e">
+		<simpleContent>
+			<extension base="BG:OmschrijvingActiviteit">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OmschrijvingDeelperceel-e">
+		<simpleContent>
+			<extension base="BG:OmschrijvingDeelperceel">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OmschrijvingDocument-e">
+		<simpleContent>
+			<extension base="BG:OmschrijvingDocument">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OmschrijvingIdentiteitsbewijs-e">
+		<simpleContent>
+			<extension base="BG:OmschrijvingIdentiteitsbewijs">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OmschrijvingKZA-e">
+		<simpleContent>
+			<extension base="BG:OmschrijvingKZA">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OnroerendeZaakHistorie-e">
+		<simpleContent>
+			<extension base="BG:OnroerendeZaakHistorie">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OntsluitingVerdieping-e">
+		<simpleContent>
+			<extension base="BG:OntsluitingVerdieping">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="OuderAanduiding-e">
+		<simpleContent>
+			<extension base="BG:OuderAanduiding">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Peildatum-e">
+		<simpleContent>
+			<extension base="BG:Peildatum">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="PostadresNummer-e">
+		<simpleContent>
+			<extension base="BG:PostadresNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="PostadresType-e">
+		<simpleContent>
+			<extension base="BG:PostadresType">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Postcode-e">
+		<simpleContent>
+			<extension base="BG:Postcode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Rechtsvorm-e">
+		<simpleContent>
+			<extension base="BG:Rechtsvorm">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="RedenOntbinding-e">
+		<simpleContent>
+			<extension base="BG:RedenOntbinding">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="RedenOpschortingBijhouding-e">
+		<simpleContent>
+			<extension base="BG:RedenOpschortingBijhouding">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="RedenVerkrijgingVerliesNationaliteit-e">
+		<simpleContent>
+			<extension base="BG:RedenVerkrijgingVerliesNationaliteit">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ReisdocumentAutoriteit-e">
+		<simpleContent>
+			<extension base="BG:ReisdocumentAutoriteit">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ReisdocumentLengteHouder-e">
+		<simpleContent>
+			<extension base="BG:ReisdocumentLengteHouder">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Reisdocumentnummer-e">
+		<simpleContent>
+			<extension base="BG:Reisdocumentnummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ReisdocumentSoortCode-e">
+		<simpleContent>
+			<extension base="BG:ReisdocumentSoortCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ReisdocumentSoortOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:ReisdocumentSoortOmschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="RekeningnummerBankGiro-e">
+		<simpleContent>
+			<extension base="BG:RekeningnummerBankGiro">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="RelatieveHoogteligging-e">
+		<simpleContent>
+			<extension base="BG:RelatieveHoogteligging">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="ScopedName-e">
+		<simpleContent>
+			<extension base="BG:ScopedName">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="SignaleringGBA-e">
+		<simpleContent>
+			<extension base="BG:SignaleringGBA">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="SoortObjectCode-e">
+		<simpleContent>
+			<extension base="BG:SoortObjectCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="SoortVerbintenis-e">
+		<simpleContent>
+			<extension base="BG:SoortVerbintenis">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="SoortWoonobject-e">
+		<simpleContent>
+			<extension base="BG:SoortWoonobject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="SplitsingKZA-e">
+		<simpleContent>
+			<extension base="BG:SplitsingKZA">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusBelang-e">
+		<simpleContent>
+			<extension base="BG:StatusBelang">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusGeoElement-e">
+		<simpleContent>
+			<extension base="BG:StatusGeoElement">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusLigplaatsStandplaats-e">
+		<simpleContent>
+			<restriction base="BG:StatusTGO-e">
+				<simpleType>
+					<restriction base="BG:StatusLigplaatsStandplaats"/>
+				</simpleType>
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusNaamgeving-e">
+		<simpleContent>
+			<extension base="BG:StatusNaamgeving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusObject-e">
+		<simpleContent>
+			<extension base="BG:StatusObject">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusPand-e">
+		<simpleContent>
+			<extension base="BG:StatusPand">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusVerblijfsobject-e">
+		<simpleContent>
+			<restriction base="BG:StatusTGO-e">
+				<simpleType>
+					<restriction base="BG:StatusVerblijfsobject"/>
+				</simpleType>
+				<attribute ref="StUF:noValue"/>
+				<attribute ref="StUF:exact"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusTGO-e">
+		<simpleContent>
+			<extension base="BG:StatusTGO">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusVoortgangBouw-e">
+		<simpleContent>
+			<extension base="BG:StatusVoortgangBouw">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusWoonplaats-e">
+		<simpleContent>
+			<extension base="BG:StatusWoonplaats">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatusWOZBeschikking-e">
+		<simpleContent>
+			<extension base="BG:StatusWOZBeschikking">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatutaireNaam-e">
+		<simpleContent>
+			<extension base="BG:StatutaireNaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="StatutaireZetel-e">
+		<simpleContent>
+			<extension base="BG:StatutaireZetel">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Straatnaam-e">
+		<simpleContent>
+			<extension base="BG:Straatnaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Telefoonnummer-e">
+		<simpleContent>
+			<extension base="BG:Telefoonnummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeOGOofOTR-e">
+		<simpleContent>
+			<extension base="BG:TypeOGOofOTR">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeInfrastructuur-e">
+		<simpleContent>
+			<extension base="BG:TypeInfrastructuur">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeKunstwerk-e">
+		<simpleContent>
+			<extension base="BG:TypeKunstwerk">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingAdrTGO-e">
+		<simpleContent>
+			<extension base="BG:TyperingAdrTGO">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingAdrWOZ-e">
+		<simpleContent>
+			<extension base="BG:TyperingAdrWOZ">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingAOA-e">
+		<simpleContent>
+			<extension base="BG:TyperingAOA">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingCorAdr-e">
+		<simpleContent>
+			<extension base="BG:TyperingCorAdr">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingKOZ-e">
+		<simpleContent>
+			<extension base="BG:TyperingKOZ">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingNNP-e">
+		<simpleContent>
+			<extension base="BG:TyperingNNP">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingNPS-e">
+		<simpleContent>
+			<extension base="BG:TyperingNPS">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingOPR-e">
+		<simpleContent>
+			<extension base="BG:TyperingOPR">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingSUB-e">
+		<simpleContent>
+			<extension base="BG:TyperingSUB"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingTGO-e">
+		<simpleContent>
+			<extension base="BG:TyperingTGO">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TyperingVES-e">
+		<simpleContent>
+			<extension base="BG:TyperingVES">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeSpoorbaan-e">
+		<simpleContent>
+			<extension base="BG:TypeSpoorbaan">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeTerrein-e">
+		<simpleContent>
+			<extension base="BG:TypeTerrein">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeWater-e">
+		<simpleContent>
+			<extension base="BG:TypeWater">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="TypeWeg-e">
+		<simpleContent>
+			<extension base="BG:TypeWeg">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Url-e">
+		<simpleContent>
+			<extension base="BG:Url">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Valutasoort-e">
+		<simpleContent>
+			<extension base="BG:Valutasoort">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="VerblijfsobjectcodeBGR-e">
+		<simpleContent>
+			<extension base="BG:VerblijfsobjectcodeBGR">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Verblijfstitelcode-e">
+		<simpleContent>
+			<extension base="BG:Verblijfstitelcode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="VerblijfstitelOmschrijving-e">
+		<simpleContent>
+			<extension base="BG:VerblijfstitelOmschrijving">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Verharding-e">
+		<simpleContent>
+			<extension base="BG:Verharding">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="VestigingsNummer-e">
+		<simpleContent>
+			<extension base="BG:VestigingsNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Voorletters-e">
+		<simpleContent>
+			<extension base="BG:Voorletters">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="Voornamen-e">
+		<simpleContent>
+			<extension base="BG:Voornamen">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="VoorvoegselGeslachtsnaam-e">
+		<simpleContent>
+			<extension base="BG:VoorvoegselGeslachtsnaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WijkCode-e">
+		<simpleContent>
+			<extension base="BG:WijkCode">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WijkNaam-e">
+		<simpleContent>
+			<extension base="BG:WijkNaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WoonplaatsCodering-e">
+		<simpleContent>
+			<extension base="BG:WoonplaatsCodering">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WoonplaatsNaam-e">
+		<simpleContent>
+			<extension base="BG:WoonplaatsNaam">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WoonplaatsNaamNen-e">
+		<simpleContent>
+			<extension base="BG:WoonplaatsNaamNen">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="WOZObjectNummer-e">
+		<simpleContent>
+			<extension base="BG:WOZObjectNummer">
+				<attributeGroup ref="StUF:element"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<!--SimpleTypes op alfabet-->
+	<simpleType name="A-nummer">
+		<restriction base="integer">
+			<totalDigits value="10"/>
+			<pattern value="[1-9][0-9]{9}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingBijzonderNederlanderschap">
+		<restriction base="string">
+			<enumeration value="B">
+				<annotation>
+					<documentation>behandeld als Nederlander</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="V">
+				<annotation>
+					<documentation>vastgesteld niet-Nederlander</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingDeelnameEuropeesKiesrecht">
+		<restriction base="integer">
+			<enumeration value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingEigenaarGebruiker">
+		<restriction base="string">
+			<length value="1"/>
+			<enumeration value="B">
+				<annotation>
+					<documentation>Eigenaar-gebruiker</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="E">
+				<annotation>
+					<documentation>Eigenaar</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="G">
+				<annotation>
+					<documentation>Gebruiker</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="M">
+				<annotation>
+					<documentation>Medebelanghebbende</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingEuropeesKiesrecht">
+		<restriction base="string">
+			<enumeration value="1">
+				<annotation>
+					<documentation>persoon is uitgesloten</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>persoon ontvangt oproep</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingInhoudingVermissing">
+		<restriction base="string">
+			<enumeration value="I"/>
+			<enumeration value="R"/>
+			<enumeration value="V"/>
+			<enumeration value="."/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingNaamgebruik">
+		<restriction base="string">
+			<enumeration value="E"/>
+			<enumeration value="N"/>
+			<enumeration value="P"/>
+			<enumeration value="V"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingOnttrekking">
+		<restriction base="integer">
+			<enumeration value="1"/>
+			<enumeration value="2"/>
+			<enumeration value="3"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingSoortVreemdeling">
+		<restriction base="integer">
+			<enumeration value="1"/>
+			<enumeration value="2"/>
+			<enumeration value="3"/>
+			<enumeration value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingStrijdigNietig">
+		<restriction base="string">
+			<enumeration value="O"/>
+			<enumeration value="S"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AanduidingUitgeslotenKiesrecht">
+		<restriction base="string">
+			<enumeration value="A"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Aanhef">
+		<restriction base="string">
+			<minLength value="1"/>
+			<maxLength value="50"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardAantekeningKOZ">
+		<restriction base="string">
+			<pattern value="[A-Z]{2}[A-Z0]{0,1}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardAantekeningZKR">
+		<restriction base="string">
+			<pattern value="[A-Z]{2}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardBedrag">
+		<restriction base="string">
+			<enumeration value="deelbedrag"/>
+			<enumeration value="ongedeeld bedrag"/>
+			<enumeration value="totaalbedrag"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardLIProject">
+		<restriction base="string">
+			<enumeration value="D">
+				<annotation>
+					<documentation>Reconstructierente</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="G">
+				<annotation>
+					<documentation>Herinrichtingsrente</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="H">
+				<annotation>
+					<documentation>Herverkavelingsrente</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="R">
+				<annotation>
+					<documentation>Ruilverkavelingsrente</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="L">
+				<annotation>
+					<documentation>Landinrichtingsrente</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardZakelijkRecht">
+		<restriction base="string">
+			<pattern value="[A-Z]{2,6}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AardZakelijkRechtVerkort">
+		<restriction base="string">
+			<pattern value="[A-Z]{2,4}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AcademischeTitelCode">
+		<restriction base="string">
+			<maxLength value="3"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AcademischeTitelOmschrijving">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AcademischeTitelPositie">
+		<restriction base="string">
+			<enumeration value="N">
+				<annotation>
+					<documentation>Na de geslachtsnaam</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="V">
+				<annotation>
+					<documentation>Voor de geslachtsnaam</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="ActiviteitCode">
+		<restriction base="string">
+			<pattern value="[0-9]{15}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AdellijkeTitelPredikaat">
+		<restriction base="string">
+			<enumeration value="Baron"/>
+			<enumeration value="Barones"/>
+			<enumeration value="Graaf"/>
+			<enumeration value="Gravin"/>
+			<enumeration value="Hertog"/>
+			<enumeration value="Hertogin"/>
+			<enumeration value="Jonkheer"/>
+			<enumeration value="Jonkvrouw"/>
+			<enumeration value="Markies"/>
+			<enumeration value="Markiezin"/>
+			<enumeration value="Prins"/>
+			<enumeration value="Prinses"/>
+			<enumeration value="Ridder"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AdresBuitenland">
+		<restriction base="string">
+			<maxLength value="35"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AdresHerkomst">
+		<restriction base="string">
+			<enumeration value="B">
+				<annotation>
+					<documentation>correspondentie-adres is ontleend aan de GBA</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="W">
+				<annotation>
+					<documentation>woonadres cq. woonadreslocatie is ontleend aan de GBA</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="Appartementsindex">
+		<restriction base="string">
+			<maxLength value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AutoriteitInhoudingVermissing">
+		<restriction base="integer">
+			<totalDigits value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BebouwingCode">
+		<restriction base="string">
+			<enumeration value="1">
+				<annotation>
+					<documentation>Onbebouwd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>Onbebouwd met bebouwd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="3">
+				<annotation>
+					<documentation>Bebouwd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="4">
+				<annotation>
+					<documentation>Bijzonder object</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="BouwkundigeBestemming">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="4"/>
+			<enumeration value="1000">
+				<annotation>
+					<documentation>doeleinden voor wonen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1001">
+				<annotation>
+					<documentation>eensgezinswoning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1002">
+				<annotation>
+					<documentation>bejaardenwoning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1004">
+				<annotation>
+					<documentation>recreatiewoning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1005">
+				<annotation>
+					<documentation>meergezinswoning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1006">
+				<annotation>
+					<documentation>dienstwoning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1007">
+				<annotation>
+					<documentation>zorgwoonverblijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1008">
+				<annotation>
+					<documentation>aanleunwoonverblijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1009">
+				<annotation>
+					<documentation>bejaardenwoonverblijf (in bejaardenoord, centrale keuken)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1010">
+				<annotation>
+					<documentation>jongerenwooneenheid</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1011">
+				<annotation>
+					<documentation>gehandicaptenwooneenheid</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2000">
+				<annotation>
+					<documentation>doeleinden voor niet-wonen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2100">
+				<annotation>
+					<documentation>doeleinden voor handel, horeca en bedrijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2110">
+				<annotation>
+					<documentation>detailhandel</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2120">
+				<annotation>
+					<documentation>cafe/bar/restaurant</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2130">
+				<annotation>
+					<documentation>hotel/logies</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2150">
+				<annotation>
+					<documentation>kantoor</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2160">
+				<annotation>
+					<documentation>opslag en distributie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2170">
+				<annotation>
+					<documentation>fabricage en productie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2180">
+				<annotation>
+					<documentation>onderhoud en reparatie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2190">
+				<annotation>
+					<documentation>laboratoria</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2199">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2200">
+				<annotation>
+					<documentation>doeleinden voor cultuur</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2210">
+				<annotation>
+					<documentation>wijk-/buurt-/verenigingsactiviteiten</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2220">
+				<annotation>
+					<documentation>congres</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2230">
+				<annotation>
+					<documentation>theater en concert</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2240">
+				<annotation>
+					<documentation>musea</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2250">
+				<annotation>
+					<documentation>expositie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2260">
+				<annotation>
+					<documentation>bioscoop</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2270">
+				<annotation>
+					<documentation>bibliotheek</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2299">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2300">
+				<annotation>
+					<documentation>doeleinden voor recreatie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2310">
+				<annotation>
+					<documentation>sport buiten</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2320">
+				<annotation>
+					<documentation>sport binnen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2330">
+				<annotation>
+					<documentation>recreatie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2340">
+				<annotation>
+					<documentation>zwembad</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2350">
+				<annotation>
+					<documentation>dierenverzorging</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2360">
+				<annotation>
+					<documentation>natuur en landschap</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2399">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2400">
+				<annotation>
+					<documentation>doeleinden voor agrarisch bedrijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2410">
+				<annotation>
+					<documentation>akkerbouw</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2420">
+				<annotation>
+					<documentation>veeteelt</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2430">
+				<annotation>
+					<documentation>tuinbouw</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2440">
+				<annotation>
+					<documentation>gemengd bedrijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2499">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2500">
+				<annotation>
+					<documentation>doeleinden voor onderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2510">
+				<annotation>
+					<documentation>kinderopvang</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2520">
+				<annotation>
+					<documentation>basisschool</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2530">
+				<annotation>
+					<documentation>algemeen voortgezet onderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2540">
+				<annotation>
+					<documentation>hoger beroepsonderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2550">
+				<annotation>
+					<documentation>academisch onderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2560">
+				<annotation>
+					<documentation>bijzonder onderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2570">
+				<annotation>
+					<documentation>vrijetijds onderwijs</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2599">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2600">
+				<annotation>
+					<documentation>doeleinden voor gezondheidszorg</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2610">
+				<annotation>
+					<documentation>ziekenhuis</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2620">
+				<annotation>
+					<documentation>polikliniek</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2630">
+				<annotation>
+					<documentation>praktijkruimte</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2640">
+				<annotation>
+					<documentation>verpleegtehuis</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2650">
+				<annotation>
+					<documentation>verzorgingstehuis of bejaardentehuis</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2660">
+				<annotation>
+					<documentation>dagverblijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2670">
+				<annotation>
+					<documentation>wijkverzorging</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2680">
+				<annotation>
+					<documentation>psychiatrische inrichting</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2699">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2700">
+				<annotation>
+					<documentation>doeleinden voor verkeer</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2710">
+				<annotation>
+					<documentation>stalling (fietsen/auto's)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2720">
+				<annotation>
+					<documentation>wegverkeer</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2730">
+				<annotation>
+					<documentation>spoorwegverkeer</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2740">
+				<annotation>
+					<documentation>luchtvaart</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2750">
+				<annotation>
+					<documentation>scheepvaart</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2799">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2800">
+				<annotation>
+					<documentation>doeleinden voor nutsvoorzieningen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2810">
+				<annotation>
+					<documentation>waternuts doeleinden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2820">
+				<annotation>
+					<documentation>gas</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2830">
+				<annotation>
+					<documentation>elektriciteit</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2840">
+				<annotation>
+					<documentation>CAI</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2850">
+				<annotation>
+					<documentation>telecommunicatie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2860">
+				<annotation>
+					<documentation>waterschaps en waterverdediging</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2899">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2900">
+				<annotation>
+					<documentation>andere doeleinden van openbaar nut</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2910">
+				<annotation>
+					<documentation>gemeentehuis</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2920">
+				<annotation>
+					<documentation>politie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2930">
+				<annotation>
+					<documentation>brandweer</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2940">
+				<annotation>
+					<documentation>gevangenis/gesticht</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2950">
+				<annotation>
+					<documentation>begraafplaats/crematorium</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2960">
+				<annotation>
+					<documentation>godsdienst (kerk, klooster e.d.)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2970">
+				<annotation>
+					<documentation>defensie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2999">
+				<annotation>
+					<documentation>overige</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="Bouwlaag">
+		<restriction base="int">
+			<minInclusive value="-99"/>
+			<maxInclusive value="999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BrondocumentCode">
+		<restriction base="string">
+			<maxLength value="20"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BrondocumentHouder">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BrondocumentOmschrijving">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BrondocumentSoort">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BsVesNummerOfId">
+		<restriction base="string">
+			<maxLength value="17"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BSN">
+		<restriction base="BG:BsVesNummerOfId">
+			<maxLength value="9"/>
+			<pattern value="[0-9]{9}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BurgerlijkeStaat">
+		<restriction base="string">
+			<enumeration value="0">
+				<annotation>
+					<documentation>Onbekend</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1">
+				<annotation>
+					<documentation>Ongehuwd en nooit gehuwd geweest</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>Gehuwd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="3">
+				<annotation>
+					<documentation>Gescheiden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="4">
+				<annotation>
+					<documentation>Weduwe/weduwnaar</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="5">
+				<annotation>
+					<documentation>Partnerschap</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="6">
+				<annotation>
+					<documentation>Partnerschap beëindigd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="7">
+				<annotation>
+					<documentation>Achtergebleven partner</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="BuurtCode">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2" fixed="false"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BuurtNaam">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CodeWOZDeelObject">
+		<restriction base="string">
+			<length value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CultuurBebouwd">
+		<restriction base="string">
+			<maxLength value="65"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CultuurOnbebouwd">
+		<restriction base="string">
+			<maxLength value="65"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="DeelperceelNummer">
+		<restriction base="string">
+			<maxLength value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="DocumentNummering">
+		<restriction base="string">
+			<maxLength value="20"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Emailadres">
+		<restriction base="string">
+			<maxLength value="254"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctieAdres">
+		<restriction base="integer">
+			<enumeration value="1"/>
+			<enumeration value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="FunctionarisType">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Gebruikscode">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2"/>
+			<enumeration value="10">
+				<annotation>
+					<documentation>Woning dienend tot hoofdverblijf</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="11">
+				<annotation>
+					<documentation>Woning met "ruimte voor bedrijfsmatige activiteiten aan huis"</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="12">
+				<annotation>
+					<documentation>Recreatiewoning en overige woningen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="20">
+				<annotation>
+					<documentation>Boerderij</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="21">
+				<annotation>
+					<documentation>Niet-woning deels in gebruik als woning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="30">
+				<annotation>
+					<documentation>Niet-woning</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="31">
+				<annotation>
+					<documentation>Niet-woning verplicht uitgezonderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="40">
+				<annotation>
+					<documentation>Terrein</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="80">
+				<annotation>
+					<documentation>Ongebouwd object verplicht uitgezonderd</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="Gebruiksdoeleinden">
+		<restriction base="string">
+			<maxLength value="80"/>
+			<enumeration value="woonfunctie"/>
+			<enumeration value="bijeenkomstfunctie"/>
+			<enumeration value="celfunctie"/>
+			<enumeration value="gezondheidszorgfunctie"/>
+			<enumeration value="industriefunctie"/>
+			<enumeration value="kantoorfunctie"/>
+			<enumeration value="logiesfunctie"/>
+			<enumeration value="onderwijsfunctie"/>
+			<enumeration value="sportfunctie"/>
+			<enumeration value="winkelfunctie"/>
+			<enumeration value="overige gebruiksfunctie"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Gemeentecodering">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Gemeentedeel">
+		<restriction base="string">
+			<maxLength value="24"/>
+			<minLength value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Gemeentenaam">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="GemeentenaamNen">
+		<restriction base="string">
+			<maxLength value="24"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="GeometrieIMGeo">
+		<annotation>
+			<documentation>Nog te defnieren</documentation>
+		</annotation>
+		<restriction base="string"/>
+	</simpleType>
+	<simpleType name="Geslachtsaanduiding">
+		<restriction base="string">
+			<enumeration value="M"/>
+			<enumeration value="V"/>
+			<enumeration value="O"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Geslachtsnaam">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Handelsnaam">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="HandelsnaamVerkort">
+		<restriction base="string">
+			<maxLength value="45"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="HuishoudenGrootte">
+		<restriction base="positiveInteger">
+			<totalDigits value="2"/>
+			<maxInclusive value="99"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="HuishoudenNummer">
+		<restriction base="positiveInteger">
+			<totalDigits value="12"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="HuishoudenRelatieCode">
+		<restriction base="positiveInteger">
+			<enumeration value="1">
+				<annotation>
+					<documentation>hoofd van het huishouden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>partner van het hoofd van het huishouden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="3">
+				<annotation>
+					<documentation>kind</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="4">
+				<annotation>
+					<documentation>overig lid van het huishouden</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="HuishoudenSoort">
+		<restriction base="positiveInteger">
+			<totalDigits value="2"/>
+			<enumeration value="1">
+				<annotation>
+					<documentation>institutioneel huishouden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>alleenstaand (inclusief andere personen die in hetzelfde object wonen, maar een eigen huishouding voeren)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="3">
+				<annotation>
+					<documentation>2 personen, vaste partners, geen thuiswonende kinderen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="4">
+				<annotation>
+					<documentation>2 personen, vaste partners, een of meer thuiswonende kinderen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="5">
+				<annotation>
+					<documentation>eenoudergezin, ouder met een of meer thuiswonende kinderen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="6">
+				<annotation>
+					<documentation>overig particulier huishouden (samenwoning van personen die geen partnerrelatie onderhouden of een ouder-kindrelatie hebben, maar wel gezamenlijk een huishouding voeren)</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="Huislettering">
+		<restriction base="string">
+			<pattern value="[a-zA-Z]"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Huisnummering">
+		<restriction base="positiveInteger">
+			<maxInclusive value="99999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Huisnummerrange">
+		<restriction base="string">
+			<maxLength value="11"/>
+			<pattern value="[0-9]{1,5}-[0-9]{1,5}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Huisnummertoevoeging">
+		<restriction base="string">
+			<pattern value="[a-zA-Z0-9]{0,4}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IdentificatieRPSBTL">
+		<restriction base="nonNegativeInteger">
+			<pattern value="[0-9]{17}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IdentificatieIMGeo">
+		<restriction base="string">
+			<length value="25"/>
+			<pattern value="[A-Z]{2}.[A-Z]{5}.[0-9]{16}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Indicatie">
+		<restriction base="string">
+			<enumeration value="J"/>
+			<enumeration value="N"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IndicatieBlokkering">
+		<restriction base="integer">
+			<enumeration value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IndicatieCuratele">
+		<restriction base="integer">
+			<enumeration value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IndicatieGeheim">
+		<restriction base="string">
+			<enumeration value="0">
+				<annotation>
+					<documentation>geen beperking</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1">
+				<annotation>
+					<documentation>niet zonder toestemming aan derden ter uitvoering van een algemeen verbindend voorschrift</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>niet aan kerken</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="3">
+				<annotation>
+					<documentation>niet aan vrije derden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="4">
+				<annotation>
+					<documentation>niet zonder toestemming aan derden ter uitvoering van een algemeen verbindend voorschrift en niet aan kerken</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="5">
+				<annotation>
+					<documentation>niet zonder toestemming aan derden ter uitvoering van een algemeen verbindend voorschrift en niet aan vrije derden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="6">
+				<annotation>
+					<documentation>niet aan kerken en niet aan vrije derden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="7">
+				<annotation>
+					<documentation>niet zonder toestemming aan derden ter uitvoering van een algemeen verbindend voorschrift en niet aan vrije derden en niet aan kerken</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="IndicatieGezag">
+		<restriction base="string">
+			<enumeration value="1">
+				<annotation>
+					<documentation>ouder1 heeft het gezag</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2">
+				<annotation>
+					<documentation>ouder2 heeft het gezag</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="D">
+				<annotation>
+					<documentation>een of meer derden hebben het gezag</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1D">
+				<annotation>
+					<documentation>ouder1 + een derde hebben het gezag</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="2D">
+				<annotation>
+					<documentation>ouder2 + een derde hebben het gezag</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="12">
+				<annotation>
+					<documentation>ouder1 + ouder2 hebben het gezag</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="InrichtingsElementType">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InwinningswijzeGeometrie">
+		<restriction base="string">
+			<enumeration value="niet bekend"/>
+			<enumeration value="terrestrische meting"/>
+			<enumeration value="fotogrammetrische meting (stereo)"/>
+			<enumeration value="digitalisering kaart"/>
+			<enumeration value="scanning kaart"/>
+			<enumeration value="fotogrammetrische meting (mono)"/>
+			<enumeration value="ontleend aan de bouwplantekening"/>
+			<enumeration value="ontleend aan het matenplan"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InwinningswijzeOppervlakte">
+		<restriction base="string">
+			<maxLength value="70"/>
+			<enumeration value="overgenomen uit bouwaanvraag"/>
+			<enumeration value="ter plaatse ingemeten"/>
+			<enumeration value="gemeten op basis van de bouwtekening"/>
+			<enumeration value="initiële vulling d.m.v. conversietabel inhoud-oppervlak"/>
+			<enumeration value="initiële vulling d.m.v. gegevens woningbouwvereniging"/>
+			<enumeration value="initiële vulling d.m.v. oppervlaktegegevens WOZ-administratie"/>
+			<enumeration value="initiële vulling d.m.v. gegevens bouw- en woningtoezicht"/>
+			<enumeration value="initiële vulling d.m.v. overige brongegevens"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Jaar">
+		<restriction base="positiveInteger">
+			<maxInclusive value="9999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KadastraalPerceelnummer">
+		<restriction base="string">
+			<maxLength value="5"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KadastraleGemeentenaam">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KadastraleGemeentecode">
+		<restriction base="string">
+			<maxLength value="5"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KadastraleIdentificatie">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="15"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KadastraleSectie">
+		<restriction base="string">
+			<maxLength value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Koopsom">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="9"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="KvKNummer">
+		<restriction base="string">
+			<length value="8"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Landcode">
+		<restriction base="integer">
+			<pattern value="[0-9]{1,4}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="LandcodeIso">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Landnaam">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Locatiebeschrijving">
+		<restriction base="string">
+			<maxLength value="35"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="LocatieOmschrijving">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="LocatieOmschrijvingKOZ">
+		<restriction base="string">
+			<maxLength value="100"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid18-2-neg">
+		<restriction base="decimal">
+			<totalDigits value="20"/>
+			<fractionDigits value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid11">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="11"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid11-2-neg">
+		<restriction base="decimal">
+			<totalDigits value="13"/>
+			<fractionDigits value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid2">
+		<restriction base="integer">
+			<minInclusive value="0"/>
+			<maxInclusive value="99"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid6">
+		<restriction base="integer">
+			<minInclusive value="0"/>
+			<maxInclusive value="999999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid6-2">
+		<restriction base="decimal">
+			<totalDigits value="8"/>
+			<fractionDigits value="2"/>
+			<minInclusive value="0"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid8">
+		<restriction base="integer">
+			<minInclusive value="0"/>
+			<maxInclusive value="99999999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid8-2">
+		<restriction base="decimal">
+			<totalDigits value="10"/>
+			<fractionDigits value="2"/>
+			<minInclusive value="0"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Maateenheid8-2-neg">
+		<restriction base="decimal">
+			<totalDigits value="10"/>
+			<fractionDigits value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NaamgevingObject">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Nationaliteitcode">
+		<restriction base="integer">
+			<pattern value="[0-9]{1,4}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NationaliteitOmschrijving">
+		<restriction base="string">
+			<maxLength value="42"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NummerWOZDeelObject">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="6"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ObjectNummering">
+		<restriction base="string">
+			<length value="16"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Omschrijving100">
+		<restriction base="string">
+			<maxLength value="100"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Omschrijving200">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OmschrijvingActiviteit">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OmschrijvingDeelperceel">
+		<restriction base="string">
+			<maxLength value="1120"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OmschrijvingDocument">
+		<restriction base="string">
+			<maxLength value="100"/>
+			<minLength value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OmschrijvingIdentiteitsbewijs">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OmschrijvingKZA">
+		<restriction base="string">
+			<maxLength value="124"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OnroerendeZaakHistorie">
+		<annotation>
+			<documentation>Codes voor de filiatie van een kadastrale onroerende zaak</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="A">
+				<annotation>
+					<documentation>Overgegaan in app.rechten/-objekten</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="B">
+				<annotation>
+					<documentation>Vernummering wijziging bewaringsgrenzen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="C">
+				<annotation>
+					<documentation>Overgegaan in komplex</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="D">
+				<annotation>
+					<documentation>Overgegaan in deelpercelen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="E">
+				<annotation>
+					<documentation>Beklemming</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="F">
+				<annotation>
+					<documentation>Overgegaan in fysiek komplex</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="G">
+				<annotation>
+					<documentation>Opgeheven appartementsrecht/komplex</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="H">
+				<annotation>
+					<documentation>Herstel van fouten</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="K">
+				<annotation>
+					<documentation>Kavelruil</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="M">
+				<annotation>
+					<documentation>Herleving moederperceel</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="N">
+				<annotation>
+					<documentation>Restdeelperceel nul</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="O">
+				<annotation>
+					<documentation>Vernummering uit ongenummerd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="R">
+				<annotation>
+					<documentation>Ruilverkaveling</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="V">
+				<annotation>
+					<documentation>Vernummering</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="OntsluitingVerdieping">
+		<restriction base="string">
+			<maxLength value="3"/>
+			<pattern value="[TRL]{1,3}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="OuderAanduiding">
+		<restriction base="string">
+			<enumeration value="Ouder1"/>
+			<enumeration value="Ouder2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Peildatum">
+		<restriction base="StUF:Datum">
+			<pattern value="[1-2][0-9]{3}0101"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="PostadresNummer">
+		<restriction base="positiveInteger">
+			<minInclusive value="1"/>
+			<maxInclusive value="99999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="PostadresType">
+		<restriction base="string">
+			<length value="1"/>
+			<enumeration value="A">
+				<annotation>
+					<documentation>Antwoordnummer</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="P">
+				<annotation>
+					<documentation>Postbusnummer</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="Postcode">
+		<restriction base="string">
+			<pattern value="[1-9][0-9]{3}[A-Z]{0,2}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Rechtsvorm">
+		<restriction base="string">
+			<maxLength value="100"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="RedenOntbinding">
+		<restriction base="string">
+			<length value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="RedenOpschortingBijhouding">
+		<restriction base="string">
+			<enumeration value="O">
+				<annotation>
+					<documentation>overlijden</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="E">
+				<annotation>
+					<documentation>emigratie</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="M">
+				<annotation>
+					<documentation>ministerieel besluit</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="F">
+				<annotation>
+					<documentation>fout</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="R">
+				<annotation>
+					<documentation>in de RNI nieuw aangelegd</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="RedenVerkrijgingVerliesNationaliteit">
+		<restriction base="string">
+			<pattern value="[0-9]{3}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ReisdocumentAutoriteit">
+		<restriction base="string">
+			<minLength value="2"/>
+			<maxLength value="6"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ReisdocumentLengteHouder">
+		<restriction base="integer">
+			<pattern value="[0-9]{1,3}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Reisdocumentnummer">
+		<restriction base="string">
+			<length value="9"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ReisdocumentSoortCode">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ReisdocumentSoortOmschrijving">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="RekeningnummerBankGiro">
+		<restriction base="positiveInteger">
+			<totalDigits value="10"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="RelatieveHoogteligging">
+		<restriction base="int">
+			<minInclusive value="-5"/>
+			<maxInclusive value="5"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ScopedName">
+		<annotation>
+			<documentation>Nog te definiëren</documentation>
+		</annotation>
+		<restriction base="string"/>
+	</simpleType>
+	<simpleType name="SignaleringGBA">
+		<restriction base="string">
+			<enumeration value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="SoortObjectCode">
+		<restriction base="string">
+			<length value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="SoortVerbintenis">
+		<restriction base="string">
+			<enumeration value="H"/>
+			<enumeration value="P"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="SoortWoonobject">
+		<restriction base="string">
+			<enumeration value="woning"/>
+			<enumeration value="recreatiewoning"/>
+			<enumeration value="wooneenheid"/>
+			<enumeration value="bijzonder woongebouw"/>
+			<enumeration value="overig woonverblijf"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="SplitsingKZA">
+		<restriction base="boolean"/>
+	</simpleType>
+	<simpleType name="StatusBelang">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2"/>
+			<enumeration value="0">
+				<annotation>
+					<documentation>Actief</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1">
+				<annotation>
+					<documentation>Gevormd, niet actief</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="8">
+				<annotation>
+					<documentation>Beëindigd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="9">
+				<annotation>
+					<documentation>Ten onrechte opgevoerd</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusGeoElement">
+		<restriction base="string">
+			<maxLength value="8"/>
+			<enumeration value="Plan"/>
+			<enumeration value="Bestaand"/>
+			<enumeration value="Historie"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusLigplaatsStandplaats">
+		<restriction base="BG:StatusTGO">
+			<enumeration value="Plaats aangewezen"/>
+			<enumeration value="Plaats ingetrokken"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusNaamgeving">
+		<restriction base="string">
+			<maxLength value="80"/>
+			<enumeration value="Naamgeving uitgegeven"/>
+			<enumeration value="Naamgeving ingetrokken"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusObject">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2"/>
+			<enumeration value="0">
+				<annotation>
+					<documentation>Actief</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="1">
+				<annotation>
+					<documentation>Gevormd, niet actief</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="8">
+				<annotation>
+					<documentation>Beëindigd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="9">
+				<annotation>
+					<documentation>Ten onrechte opgevoerd</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusPand">
+		<restriction base="string">
+			<maxLength value="80"/>
+			<enumeration value="Bouwvergunning verleend"/>
+			<enumeration value="Niet gerealiseerd pand"/>
+			<enumeration value="Bouw gestart"/>
+			<enumeration value="Pand in gebruik (niet ingemeten)"/>
+			<enumeration value="Pand in gebruik"/>
+			<enumeration value="Sloopvergunning verleend"/>
+			<enumeration value="Pand gesloopt"/>
+			<enumeration value="Pand buiten gebruik"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusTGO">
+		<restriction base="string">
+			<maxLength value="80"/>
+			<enumeration value="Plaats aangewezen"/>
+			<enumeration value="Plaats ingetrokken"/>
+			<enumeration value="Verblijfsobject gevormd"/>
+			<enumeration value="Niet gerealiseerd verblijfsobject"/>
+			<enumeration value="Verblijfsobject in gebruik (niet ingemeten)"/>
+			<enumeration value="Verblijfsobject in gebruik"/>
+			<enumeration value="Verblijfsobject ingetrokken"/>
+			<enumeration value="Verblijfsobject buiten gebruik"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusVerblijfsobject">
+		<restriction base="BG:StatusTGO">
+			<enumeration value="Verblijfsobject gevormd"/>
+			<enumeration value="Niet gerealiseerd verblijfsobject"/>
+			<enumeration value="Verblijfsobject in gebruik (niet ingemeten)"/>
+			<enumeration value="Verblijfsobject in gebruik"/>
+			<enumeration value="Verblijfsobject ingetrokken"/>
+			<enumeration value="Verblijfsobject buiten gebruik"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusVoortgangBouw">
+		<restriction base="string">
+			<maxLength value="24"/>
+			<enumeration value="Vergunning aangevraagd"/>
+			<enumeration value="Vergunning verleend"/>
+			<enumeration value="Bouw of sloop gestart"/>
+			<enumeration value="Bouw of sloop gereed"/>
+			<enumeration value="Vergunning ingetrokken"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusWoonplaats">
+		<restriction base="string">
+			<maxLength value="80"/>
+			<enumeration value="Woonplaats aangewezen"/>
+			<enumeration value="Woonplaats ingetrokken"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusWOZBeschikking">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2"/>
+			<enumeration value="01">
+				<annotation>
+					<documentation>Beschikking genomen</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="02">
+				<annotation>
+					<documentation>Vernietiging beschikking</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="03">
+				<annotation>
+					<documentation>Herzieningsbeschikking</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="10">
+				<annotation>
+					<documentation>Bezwaar ingediend</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="11">
+				<annotation>
+					<documentation>Bezwaar afgehandeld, beschikking gehandhaafd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="12">
+				<annotation>
+					<documentation>Bezwaar afgehandeld, vastgestelde waarde veranderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="13">
+				<annotation>
+					<documentation>Waarde ambtshalve verminderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="20">
+				<annotation>
+					<documentation>Beroep aangetekend</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="21">
+				<annotation>
+					<documentation>Uitspraak beroep, beschikking gehandhaafd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="22">
+				<annotation>
+					<documentation>Uitspraak beroep, vastgestelde waarde veranderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="23">
+				<annotation>
+					<documentation>Hoger beroep aangetekend</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="24">
+				<annotation>
+					<documentation>Uitspraak hoger beroep, beschikking gehandhaafd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="25">
+				<annotation>
+					<documentation>Uitspraak hoger beroep, vastgestelde waarde veranderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="30">
+				<annotation>
+					<documentation>Cassatie ingesteld</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="31">
+				<annotation>
+					<documentation>Arrest Hoge Raad, beschikking gehandhaafd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="32">
+				<annotation>
+					<documentation>Arrest Hoge Raad, vastgestelde waarde veranderd</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="33">
+				<annotation>
+					<documentation>Arrest Hoge Raad, geding verwezen</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatutaireNaam">
+		<restriction base="string">
+			<maxLength value="500"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatutaireZetel">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Straatnaam">
+		<restriction base="string">
+			<maxLength value="24"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Telefoonnummer">
+		<restriction base="string">
+			<maxLength value="20"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeOGOofOTR">
+		<annotation>
+			<documentation>Nog te definieren </documentation>
+		</annotation>
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeInfrastructuur">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeKunstwerk">
+		<annotation>
+			<documentation>nog in te vullen aan de hand van document</documentation>
+		</annotation>
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingAdrTGO">
+		<restriction base="string">
+			<enumeration value="Nummeraanduiding"/>
+			<enumeration value="Nummeraanduiding plus locatieomschrijving"/>
+			<enumeration value="Overig adresseerbaar objectaanduiding"/>
+			<enumeration value="Openbare ruimte"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingAdrWOZ">
+		<restriction base="string">
+			<enumeration value="Adresseerbaar object"/>
+			<enumeration value="Adresseerbaar object met locatieomschrijving"/>
+			<enumeration value="Nevenadres bij adresseerbaar object"/>
+			<enumeration value="Openbare ruimte"/>
+			<enumeration value="Overig adresseerbaar objectaanduiding"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingAOA">
+		<restriction base="string">
+			<maxLength value="40"/>
+			<enumeration value="Nummeraanduiding"/>
+			<enumeration value="Overig adresseerbaar object aanduiding"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingCorAdr">
+		<restriction base="string">
+			<enumeration value="Postadres"/>
+			<enumeration value="Aanschrijvingsadres"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingKOZ">
+		<restriction base="string">
+			<enumeration value="G"/>
+			<enumeration value="D"/>
+			<enumeration value="A"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingNNP">
+		<restriction base="BG:TyperingSUB">
+			<enumeration value="Ingeschreven niet-natuurlijk persoon"/>
+			<enumeration value="Ander buitenlands niet-natuurlijk persoon"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingNPS">
+		<restriction base="BG:TyperingSUB">
+			<enumeration value="Ingezetene"/>
+			<enumeration value="Niet-ingezetene"/>
+			<enumeration value="Ander natuurlijk persoon"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingOPR">
+		<restriction base="string">
+			<maxLength value="40"/>
+			<enumeration value="Weg"/>
+			<enumeration value="Water"/>
+			<enumeration value="Spoorbaan"/>
+			<enumeration value="Terrein"/>
+			<enumeration value="Kunstwerk"/>
+			<enumeration value="Landschappelijk gebied"/>
+			<enumeration value="Administratief gebied"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingSUB">
+		<restriction base="string">
+			<enumeration value="Ingezetene"/>
+			<enumeration value="Niet-ingezetene"/>
+			<enumeration value="Ander natuurlijk persoon"/>
+			<enumeration value="Ingeschreven niet-natuurlijk persoon"/>
+			<enumeration value="Ander buitenlands niet-natuurlijk persoon"/>
+			<enumeration value="Vestiging"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingTGO">
+		<restriction base="string">
+			<enumeration value="Adresseerbaar objecttype"/>
+			<enumeration value="Benoemd terrein"/>
+			<enumeration value="Gebouwd object"/>
+			<enumeration value="Ligplaats"/>
+			<enumeration value="Overig gebouwd object"/>
+			<enumeration value="Overig terrein"/>
+			<enumeration value="Standplaats"/>
+			<enumeration value="Verblijfsobject"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TyperingVES">
+		<restriction base="string">
+			<enumeration value="Hoofdvestiging"/>
+			<enumeration value="Nevenvestiging"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeSpoorbaan">
+		<restriction base="string">
+			<maxLength value="40"/>
+			<enumeration value="breedspoor"/>
+			<enumeration value="normaalspoor"/>
+			<enumeration value="smalspoor"/>
+			<enumeration value="spoorbaan"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeTerrein">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeWater">
+		<restriction base="string">
+			<maxLength value="40"/>
+			<enumeration value="beek"/>
+			<enumeration value="gracht"/>
+			<enumeration value="kanaal"/>
+			<enumeration value="kreek"/>
+			<enumeration value="meer"/>
+			<enumeration value="plas"/>
+			<enumeration value="rivier"/>
+			<enumeration value="sloot"/>
+			<enumeration value="ven"/>
+			<enumeration value="vijver"/>
+			<enumeration value="waterniveaulijn"/>
+			<enumeration value="wiel"/>
+			<enumeration value="zee"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeWeg">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Url">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Valutasoort">
+		<restriction base="string">
+			<maxLength value="3"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="VerblijfsobjectcodeBGR">
+		<restriction base="integer">
+			<pattern value="[0-9]{10}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Verblijfstitelcode">
+		<restriction base="string">
+			<pattern value="[0-9]{2}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="VerblijfstitelOmschrijving">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Verharding">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="VestigingsNummer">
+		<restriction base="string">
+			<length value="12"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Voorletters">
+		<restriction base="string">
+			<maxLength value="20"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Voornamen">
+		<restriction base="string">
+			<maxLength value="200"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="VoorvoegselGeslachtsnaam">
+		<restriction base="string">
+			<maxLength value="10"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WijkCode">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WijkNaam">
+		<restriction base="string">
+			<maxLength value="40"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WoonplaatsCodering">
+		<restriction base="nonNegativeInteger">
+			<maxInclusive value="9999"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WoonplaatsNaam">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WoonplaatsNaamNen">
+		<restriction base="string">
+			<maxLength value="24"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="WOZObjectNummer">
+		<restriction base="nonNegativeInteger">
+			<pattern value="[0-9]{12}"/>
+		</restriction>
+	</simpleType>
+</schema>

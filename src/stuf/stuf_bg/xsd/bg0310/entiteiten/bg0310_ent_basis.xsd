@@ -1,0 +1,3440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 rel. 2 sp2 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031006">
+	<include schemaLocation="bg0310_simpleTypes.xsd"/>
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_stuf_simpleTypes.xsd"/>
+	<annotation>
+		<documentation xml:lang="nl">
+			   Nieuw bestand in verband met nieuwe werkwijze maken sectormodellen
+			   - ERR0178: binnen KadastraleAanduidingGrp-verplicht is de choice verplicht gemaakt
+			   - ERR0202: complexType KadastraleAanduidingGrp toegevoegd met maxOccurs="2" voor de choice
+			   - ERR0205: In complexType KOZZKR-basis element StUF:extraElementen toegevoegd
+			
+			   Vergeleken met versie 031000 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR238:	Binnen het complexType 'CorrespondentieAdresGrp-basis' zijn de elementen 'sub.postadresType' en 
+							    'sub.postadresNummer' optioneel gemaakt.
+							
+			   Wijzigingen t.b.v. patch 1-1-2013 vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR257:	Binnen het complexType 'RPS-kerngegevens' is het attribuut 'StUF:entiteittype' ontdaan van een fixed waarde.
+
+			   Wijzigingen t.b.v. patch 19 (1-4-2014) vergeleken met versie 031002 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR313: Bij alle complexTypes is het 'final' attribute verwijderd.
+			
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031003 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0365: In de complexTypes 'ZRA-kerngegevens' is het element 'omschrijving' verwijderd.
+			   - ONV0366: In KZA-basis is de kardinaliteit van de relatie 'hoortBij' (KZAKOZ) gewijzigd in 'unbounded'.
+							     In KZA-kerngegevens is de relatie 'hoortBij' (KZAKOZ) verwijderd.
+							     In ZRA-basis is de kardinaliteit van de relatie 'hoortBij' (ZRAZKR) gewijzigd in 'unbounded'.
+							     In ZRA-kerngegevens is de relatie 'hoortBij' (ZRAZKR) verwijderd.
+			   - ONV0370: Aan de elementen 'overgangsgrootte' in KOZKOZVAN en KOZKOZNAR is het type 'Maateenheid8-2-e' toegekend (was 'Maateenheid6-2-e').
+							    Aan het element 'kdp.grootte' in KOZ is het type 'Maateenheid8-2-neg-e' toegekend (was 'Maateenheid11-2-neg-e')
+							    Aan het element 'landinrichtingsrente/bedrag' in KOZ is het type 'Maateenheid18-2-neg-e' toegekend (was 'Maateenheid11-2-neg-e')
+							    Aan het element 'koopsom/bedrag' in KOZ is het type 'Maateenheid18-2-neg-e' toegekend (was 'Maateenheid11-2-neg-e')
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+			   Wijzigingen t.b.v. patch 22 (1-7-2015) vergeleken met versie 031004 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0355: Bij alle 'historieFormeel' elementen is de 'maxOccurs' op 'unbounded' ingesteld.
+
+			   Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031005 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0354: In het complexType 'KOZ-basis' is het element 'apr.heeftVerenigingVanEigenaars' uit de tweede choice gehaald en
+								 direct onder die choice geplaatst.			
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>6</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<!--ComplexTypes voor groepen-->
+	<complexType name="AandeelRechtGrp">
+		<sequence>
+			<element name="teller" type="BG:Maateenheid8-e" nillable="true"/>
+			<element name="noemer" type="BG:Maateenheid8-e" nillable="true"/>
+		</sequence>
+	</complexType>
+	<complexType name="AanduidingWOZobjectGrp-antwoord">
+		<complexContent>
+			<restriction base="BG:AanduidingWOZobjectGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingAdrWOZ-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="locatieOmschrijving" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumAanduiding" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AanduidingWOZobjectGrp-basis">
+		<sequence minOccurs="0">
+			<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="typering" type="BG:TyperingAdrWOZ-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+			<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+			<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+			<element name="locatieOmschrijving" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+			<element name="begindatumAanduiding" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="AanduidingWOZobjectGrp-kerngegevens">
+		<complexContent>
+			<restriction base="BG:AanduidingWOZobjectGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="locatieOmschrijving" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AanduidingWOZobjectGrp-vraag">
+		<complexContent>
+			<restriction base="BG:AanduidingWOZobjectGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingAdrWOZ-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="locatieOmschrijving" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumAanduiding" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ActiviteitGrp">
+		<sequence>
+			<element name="code" type="BG:ActiviteitCode-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:OmschrijvingActiviteit-e" nillable="true" minOccurs="0"/>
+			<element name="indicatieHoofdactiviteit" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="volgorde" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="ActiviteitGrpZonderVolgorde">
+		<complexContent>
+			<restriction base="BG:ActiviteitGrp">
+				<sequence>
+					<element name="code" type="BG:ActiviteitCode-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:OmschrijvingActiviteit-e" nillable="true" minOccurs="0"/>
+					<element name="indicatieHoofdactiviteit" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AdrGrp-basis">
+		<sequence minOccurs="0">
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="num.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+				<element name="oao.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+			</choice>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="typering" type="BG:TyperingAdrTGO-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+			<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+			<element name="ogo.locatieAanduiding" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="AdrGrp-kerngegevens">
+		<complexContent>
+			<restriction base="BG:AdrGrp-basis">
+				<sequence minOccurs="0">
+					<choice minOccurs="0">
+						<element name="num.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+						<element name="oao.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+					</choice>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="ogo.locatieAanduiding" type="BG:LocatieOmschrijving-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BeschikkingGrp">
+		<complexContent>
+			<restriction base="BG:BeschikkingGrp-basis">
+				<sequence>
+					<element name="statusBeschikking" type="BG:StatusWOZBeschikking-e" nillable="true" minOccurs="0"/>
+					<element name="brondocument" type="BG:BrondocumentWOZ" minOccurs="0"/>
+					<element name="inOnderzoek" type="StUF:InOnderzoekBeschikkingStatusInWRD" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BeschikkingGrp-basis">
+		<sequence>
+			<element name="statusBeschikking" type="BG:StatusWOZBeschikking-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekBeschikkingStatusInWRD-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="BeschikkingGrp-vraag">
+		<complexContent>
+			<restriction base="BG:BeschikkingGrp-basis">
+				<sequence>
+					<element name="statusBeschikking" type="BG:StatusWOZBeschikking-e" nillable="true" minOccurs="0"/>
+					<element name="brondocument" type="BG:BrondocumentWOZ-vraag" minOccurs="0"/>
+					<element name="inOnderzoek" type="StUF:InOnderzoekBeschikkingStatusInWRD-vraag" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-antwoord">
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-basis">
+				<sequence>
+					<element name="typering" type="BG:TyperingCorAdr-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+							<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+							<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+							<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-basis">
+		<sequence>
+			<element name="typering" type="BG:TyperingCorAdr-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+			<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<sequence>
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<sequence>
+					<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true" minOccurs="0"/>
+					<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</choice>
+		</sequence>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-kerngegevens">
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-basis">
+				<sequence>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-vraagScope">
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-basis">
+				<sequence>
+					<element name="typering" type="BG:TyperingCorAdr-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0" maxOccurs="2">
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+							<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+							<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-vraagSelectie">
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-basis">
+				<sequence>
+					<element name="typering" type="BG:TyperingCorAdr-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+							<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+							<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="InliggendeOPR">
+		<sequence minOccurs="0">
+			<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="opr.huisnummerrangeOneven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+			<element name="opr.huisnummerrangeEven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+			<element name="opr.huisnummerrangeEvenOneven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="KadastraleAanduidingGrp">
+		<sequence>
+			<element name="kadastraleGemeentecode" type="BG:KadastraleGemeentecode-e" nillable="true" minOccurs="0"/>
+			<element name="kadastraleSectie" type="BG:KadastraleSectie-e" nillable="true" minOccurs="0"/>
+			<element name="kadastraalPerceelnummer" type="BG:KadastraalPerceelnummer-e" nillable="true" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="kdp.deelperceelNummer" type="BG:DeelperceelNummer-e" nillable="true" minOccurs="0"/>
+				<element name="apr.appartementsIndex" type="BG:Appartementsindex-e" nillable="true" minOccurs="0"/>
+			</choice>
+		</sequence>
+	</complexType>
+	<complexType name="KadastraleAanduidingGrp-basis">
+		<complexContent>
+			<restriction base="BG:KadastraleAanduidingGrp">
+				<sequence>
+					<element name="kadastraleGemeentecode" type="BG:KadastraleGemeentecode-e" nillable="true" minOccurs="0"/>
+					<element name="kadastraleSectie" type="BG:KadastraleSectie-e" nillable="true" minOccurs="0"/>
+					<element name="kadastraalPerceelnummer" type="BG:KadastraalPerceelnummer-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<element name="kdp.deelperceelNummer" type="BG:DeelperceelNummer-e" nillable="true" minOccurs="0"/>
+						<element name="apr.appartementsIndex" type="BG:Appartementsindex-e" nillable="true" minOccurs="0"/>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KadastraleAanduidingGrp-verplicht">
+		<complexContent>
+			<restriction base="BG:KadastraleAanduidingGrp-basis">
+				<sequence>
+					<element name="kadastraleGemeentecode" type="BG:KadastraleGemeentecode-e" nillable="true"/>
+					<element name="kadastraleSectie" type="BG:KadastraleSectie-e" nillable="true"/>
+					<element name="kadastraalPerceelnummer" type="BG:KadastraalPerceelnummer-e" nillable="true"/>
+					<choice>
+						<element name="kdp.deelperceelNummer" type="BG:DeelperceelNummer-e" nillable="true"/>
+						<element name="apr.appartementsIndex" type="BG:Appartementsindex-e" nillable="true"/>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KoopsomGrp">
+		<sequence>
+			<sequence minOccurs="0">
+				<element name="bedrag" type="BG:Maateenheid18-2-neg-e" nillable="true"/>
+				<element name="valutasoort" type="BG:Valutasoort-e" nillable="true"/>
+				<element name="aardBedrag" type="BG:AardBedrag-e" nillable="true"/>
+			</sequence>
+			<element name="koopjaar" type="BG:Jaar-e" nillable="true" minOccurs="0"/>
+			<element name="transactiedatum" type="StUF:Tijdstip-e" nillable="true" minOccurs="0"/>
+			<element name="meerOnroerendGoed" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="LandinrichtingsrenteGrp">
+		<sequence>
+			<sequence minOccurs="0">
+				<element name="bedrag" type="BG:Maateenheid18-2-neg-e" nillable="true"/>
+				<element name="valutasoort" type="BG:Valutasoort-e" nillable="true"/>
+				<element name="aardBedrag" type="BG:AardBedrag-e" nillable="true"/>
+			</sequence>
+			<element name="aardLIProject" type="BG:AardLIProject-e" nillable="true" minOccurs="0"/>
+			<element name="eindjaar" type="BG:Jaar-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="LocatieKOZGrp">
+		<sequence minOccurs="0">
+			<element name="locatieOmschrijving" type="BG:LocatieOmschrijvingKOZ-e" nillable="true" minOccurs="0"/>
+			<element name="cultuurBebouwd" type="BG:CultuurBebouwd-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="VerblijfBuitenlandGrp">
+		<sequence>
+			<element name="lnd.landcode" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="lnd.landnaam" type="BG:Landnaam-e" nillable="true" minOccurs="0"/>
+			<element name="sub.adresBuitenland1" type="BG:AdresBuitenland-e" nillable="true" minOccurs="0"/>
+			<element name="sub.adresBuitenland2" type="BG:AdresBuitenland-e" nillable="true" minOccurs="0"/>
+			<element name="sub.adresBuitenland3" type="BG:AdresBuitenland-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-antwoord">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumVerblijf" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-basis">
+		<sequence minOccurs="0">
+			<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+			<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+			<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+			<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true" minOccurs="0"/>
+			<element name="begindatumVerblijf" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-kerngegevens">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-vraag">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumVerblijf" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrpNNPVES-antwoord">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumVerblijf" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrpNNPVES-kerngegevens">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrpNNPVES-vraag">
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-basis">
+				<sequence minOccurs="0">
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="begindatumVerblijf" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WaardeGegevensGrp">
+		<sequence>
+			<element name="waarde" type="BG:Maateenheid11-e" nillable="true"/>
+			<element name="waardepeildatum" type="BG:Peildatum-e" nillable="true"/>
+		</sequence>
+	</complexType>
+	<complexType name="WoonplaatsWaarinGelegenGrp">
+		<sequence minOccurs="0">
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!--ComplexTypes voor brondocumenten-->
+	<complexType name="Brondocument">
+		<sequence>
+			<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+			<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+			<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="aktegemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:metagegeven"/>
+		<attribute name="groepsnaam" type="StUF:Groepsnaam"/>
+		<attribute name="elementnaam" type="StUF:Groepsnaam"/>
+	</complexType>
+	<complexType name="BrondocumentBAG-basis">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentBAG">
+		<complexContent>
+			<restriction base="BG:BrondocumentBAG-basis">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentBGR">
+		<complexContent>
+			<restriction base="BG:BrondocumentBAG-basis">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="required" fixed="BGR-gegevens"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentBRA">
+		<complexContent>
+			<restriction base="BG:BrondocumentBAG-basis">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="required" fixed="BRA-gegevens"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentBRK">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentNAT">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentNPS">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="aktegemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen"/>
+				<attribute name="elementnaam" type="StUF:NPSElementen"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentNPSNPSHUW">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="aktegemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentNPSNPSKND">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="aktegemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentNPSNPSOUD">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="aktegemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentRSD">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="gemeente" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentWOZ">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="required"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="BrondocumentWOZ-vraag">
+		<complexContent>
+			<restriction base="BG:Brondocument">
+				<sequence>
+					<element name="identificatie" type="BG:DocumentNummering-e" nillable="true" minOccurs="0"/>
+					<element name="datum" type="StUF:Datum-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:BrondocumentOmschrijving-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<!--ComplexTypes voor entiteittypen-->
+	<complexType name="ACD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ACD-tabel">
+				<sequence>
+					<element name="code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0"/>
+					<element name="omschrijving" type="BG:AcademischeTitelOmschrijving-e" nillable="true" minOccurs="0"/>
+					<element name="positie" type="BG:AcademischeTitelPositie-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:tijdvakObject" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ACD-tabel">
+		<annotation>
+			<documentation>Academische titel</documentation>
+		</annotation>
+		<sequence>
+			<element name="code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:AcademischeTitelOmschrijving-e" nillable="true" minOccurs="0"/>
+			<element name="positie" type="BG:AcademischeTitelPositie-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="ACD"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="AOANUM-basis">
+		<annotation>
+			<documentation>Basis voor Adresseerbaar Object Aanduiding of Nummeraanduiding</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="typering" type="BG:TyperingAOA-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaamNen" type="BG:WoonplaatsNaamNen-e" nillable="true" minOccurs="0"/>
+			<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+			<element name="huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+			<element name="huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+			<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+			<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+			<element name="num.indicatieHoofdadres" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+			<element name="num.status" type="BG:StatusNaamgeving-e" nillable="true" minOccurs="0"/>
+			<element name="num.geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekAOA-basis" nillable="true" minOccurs="0"/>
+			<element name="bronDocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:AOANUM-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:AOANUM-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isVan" type="BG:AOATGO-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="AOA-basis">
+		<annotation>
+			<documentation>Adresseerbaar Object Aanduiding</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:AOANUM-basis">
+				<sequence>
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingAOA-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaamNen" type="BG:WoonplaatsNaamNen-e" nillable="true" minOccurs="0"/>
+					<element name="opr.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+					<element name="woonplaatsWaarinGelegen" type="BG:WoonplaatsWaarinGelegenGrp" minOccurs="0"/>
+					<element name="num.indicatieHoofdadres" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+					<element name="num.status" type="BG:StatusNaamgeving-e" nillable="true" minOccurs="0"/>
+					<element name="num.geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+					<element name="inOnderzoek" type="StUF:InOnderzoekAOA-basis" nillable="true" minOccurs="0"/>
+					<element name="bronDocument" type="BG:Brondocument" minOccurs="0"/>
+					<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+					<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="historieMaterieel" type="BG:AOA-basis" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="historieFormeel" type="BG:AOA-basis" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="isVan" type="BG:AOATGO-basis" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" fixed="AOA"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOA-kerngegevens">
+		<complexContent>
+			<restriction base="BG:AOA-basis">
+				<sequence>
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingAOA-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+					<element name="huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+					<element name="huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="AOA"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="AOATGO-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is van Benoemd object</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+		</sequence>
+		<attributeGroup ref="StUF:entiteit"/>
+		<attribute ref="StUF:entiteittype" use="required" fixed="AOATGO"/>
+	</complexType>
+	<complexType name="ARV-tabel">
+		<annotation>
+			<documentation>Aanduiding recht verkort</documentation>
+		</annotation>
+		<sequence>
+			<element name="aardVerkort" type="BG:AardZakelijkRechtVerkort-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijvingVerkort" type="BG:Omschrijving100-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="ARV"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="AVR-tabel">
+		<annotation>
+			<documentation>Aanduiding verkregen recht</documentation>
+		</annotation>
+		<sequence>
+			<element name="aard" type="BG:AardZakelijkRecht-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:Omschrijving200-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="AVR"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="BRT-basis">
+		<annotation>
+			<documentation>Buurt</documentation>
+		</annotation>
+		<sequence>
+			<element name="buurtCode" type="BG:BuurtCode-e" nillable="true" minOccurs="0"/>
+			<element name="buurtNaam" type="BG:BuurtNaam-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkNaam" type="BG:WijkNaam-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:BRT-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:BRT-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="BRT"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="BRT-kerngegevens">
+		<complexContent>
+			<restriction base="BG:BRT-basis">
+				<sequence>
+					<element name="buurtCode" type="BG:BuurtCode-e" nillable="true" minOccurs="0"/>
+					<element name="buurtNaam" type="BG:BuurtNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="wyk.wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="BRT"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GEM-basis">
+		<annotation>
+			<documentation>Gemeente</documentation>
+		</annotation>
+		<sequence>
+			<element name="gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="gemeenteNaamNen" type="BG:GemeentenaamNen-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="gemeenteWaarinOvergegaan" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekGEM-basis" nillable="true" minOccurs="0" maxOccurs="2"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:GEM-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:GEM-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="GEM"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="GEM-kerngegevens">
+		<complexContent>
+			<restriction base="BG:GEM-basis">
+				<sequence>
+					<element name="gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="GEM"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="GOR-basis">
+		<annotation>
+			<documentation>Gemeentelijke openbare ruimte</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<sequence minOccurs="0">
+				<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+				<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			</sequence>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="inliggendeOPR" type="BG:InliggendeOPR" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="type" type="BG:TyperingOPR-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusNaamgeving-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekGOR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="bronDocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:GOR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:GOR-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="GOR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="HHD-basis">
+		<annotation>
+			<documentation>Huishouden</documentation>
+		</annotation>
+		<sequence>
+			<element name="nummer" type="BG:HuishoudenNummer-e" nillable="true" minOccurs="0"/>
+			<element name="soort" type="BG:HuishoudenSoort-e" nillable="true" minOccurs="0"/>
+			<element name="grootte" type="BG:HuishoudenGrootte-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:HHD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isGehuisvestIn" type="BG:HHDTGO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAlsLeden" type="BG:HHDNPS-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="HHD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="HHD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:HHD-basis">
+				<sequence>
+					<element name="nummer" type="BG:HuishoudenNummer-e" nillable="true" minOccurs="0"/>
+					<element name="isGehuisvestIn" type="BG:HHDTGO-kerngegevens" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="HHD"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="HHDNPS-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+			</appinfo>
+			<documentation>Huishouden heeft als leden Natuurlijke personen</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element name="code" type="BG:HuishoudenRelatieCode-e" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:HHDNPS-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="HHDNPS"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="HHDTGO-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+			</appinfo>
+			<documentation>Huishouden is gehuisvest in Adresseerbaar Object Type</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGOAOT-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="HHDTGO"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="HHDTGO-kerngegevens">
+		<complexContent>
+			<restriction base="BG:HHDTGO-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:TGO-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="HHDTGO"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="IRE-basis">
+		<annotation>
+			<documentation>Inrichtingselement</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:InrichtingsElementType-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:IRE-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:IRE-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="IRE"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="IRE-kerngegevens">
+		<complexContent>
+			<restriction base="BG:IRE-basis">
+				<sequence>
+					<element name="type" type="BG:InrichtingsElementType-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="IRE"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KGM-tabel">
+		<annotation>
+			<documentation>Tabel Kadastrale gemeente</documentation>
+		</annotation>
+		<sequence>
+			<element name="code" type="BG:KadastraleGemeentecode-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:KadastraleGemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="indicatieVervallen" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="KGM"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<!-- ONV0354: Het element 'apr.heeftVerenigingVanEigenaars' is uit de tweede choice van dit complexType gehaald en direct daaronder geplaatst. -->
+	<complexType name="KOZ-basis">
+		<annotation>
+			<documentation>Kadastrale Onroerende Zaak</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="kadastraleIdentificatie" type="BG:KadastraleIdentificatie-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="typering" type="BG:TyperingKOZ-e" nillable="true" minOccurs="0"/>
+			<element name="kadastraleAanduiding" type="BG:KadastraleAanduidingGrp" nillable="true" minOccurs="0"/>
+			<element name="kadastraleGemeentenaam" type="BG:KadastraleGemeentenaam-e" nillable="true" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="locatieOnroerendeZaak" type="BG:LocatieKOZGrp" minOccurs="0"/>
+				<element name="hoortBij" type="BG:KOZTGO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			</choice>
+			<choice minOccurs="0" maxOccurs="2">
+				<sequence minOccurs="0">
+					<element name="kdp.plaatscoordinaten" type="BG:GeometriePunt-e" nillable="true" minOccurs="0"/>
+					<element name="kdp.grootte" type="BG:Maateenheid8-2-neg-e" nillable="true" minOccurs="0"/>
+					<element name="kdp.vastgesteldeGrootte" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+					<element name="kdp.begrenzing" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+					<element name="kdp.omschrijvingDeelperceel" type="BG:OmschrijvingDeelperceel-e" nillable="true" minOccurs="0"/>
+					<element name="kdp.ligtBinnen" type="BG:KOZKOZGHP-basis" nillable="true" minOccurs="0"/>
+				</sequence>
+				<sequence minOccurs="0">
+					<element name="apr.staatOp" type="BG:KOZKOZAPR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</choice>
+			<element name="apr.heeftVerenigingVanEigenaars" type="BG:KOZNNP-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="koopsom" type="BG:KoopsomGrp" minOccurs="0"/>
+			<element name="landinrichtingsRente" type="BG:LandinrichtingsrenteGrp" minOccurs="0"/>
+			<element name="cultuurOnbebouwd" type="BG:CultuurOnbebouwd-e" nillable="true" minOccurs="0"/>
+			<element name="aardBebouwing" type="BG:BebouwingCode-e" nillable="true" minOccurs="0"/>
+			<element name="meerCulturen" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isOvergegaanIn" type="BG:KOZKOZNAR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isOntstaanUit" type="BG:KOZKOZVAN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAantekening" type="BG:KOZKZA-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="alsHoofdPerceelHeeftMandelige" type="BG:KOZKOZMDL-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAlsVoornaamsteZakelijkGerechtigde" type="BG:KOZRPSVZG-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftZakelijkeRechten" type="BG:KOZZKR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:KOZ-basis">
+				<sequence minOccurs="0">
+					<element name="kadastraleIdentificatie" type="BG:KadastraleIdentificatie-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="kadastraleAanduiding" type="BG:KadastraleAanduidingGrp-basis" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="KOZ"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KOZKOZAPR-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>maakt deel uit van appartementencomplex dat staat op</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KOZKOZAPR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KOZKOZAPR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKOZAPR-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKOZAPR"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZKOZGHP-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is deelperceel van</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:KOZKOZGHP-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKOZGHP-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKOZGHP"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZKOZMDL-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Sortering antwoordbericht: gerelateerde.kadastraleAanduiding.kadastraleGemeentecode, gerelateerde.kadastraleAanduiding.kadastraleSectie, gerelateerde.kadastraleAanduiding.kadastraalPerceelnummer, gerelateerde.kadastraleAanduiding.deelPerceelnummer, gerelateerde.kadastraleAanduiding.appartementsIndex</documentation>
+			<documentation>als hoofdperceel heeft mandelige</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KOZKOZMDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KOZKOZMDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKOZMDL-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKOZMDL"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZKOZNAR-basis">
+		<annotation>
+			<documentation>is overgegaan in</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="overgangsgrootte" type="BG:Maateenheid8-2-e" nillable="true" minOccurs="0"/>
+			<element name="aard" type="BG:OnroerendeZaakHistorie-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:KOZKOZNAR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKOZNAR-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKOZNAR"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZKOZVAN-basis">
+		<annotation>
+			<documentation>is ontstaan uit</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="overgangsgrootte" type="BG:Maateenheid8-2-e" nillable="true" minOccurs="0"/>
+			<element name="aard" type="BG:OnroerendeZaakHistorie-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:KOZKOZVAN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKOZVAN-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKOZVAN"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZKZA-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft kadastrale onroerende zaak aantekening</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KZA-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:KOZKZA-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZKZA"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KOZNNP-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>maakt deel uit van appartementencomplex met als vereniging van eigenaars</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NNPINN-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KOZNNP-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KOZNNP-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZNNP-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZNNP"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KOZRPSVZG-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als voornaamste zakelijk gerechtigde</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:KOZRPSVZG-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZRPSVZG-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZRPSVZG"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KOZTGO-basis">
+		<annotation>
+			<documentation>is ondergrond van</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element name="cultuurBebouwd" type="BG:CultuurBebouwd-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KOZTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KOZTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:KOZTGO-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZTGO"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="KOZZKR-basis">
+		<annotation>
+			<documentation>heeft als zakelijke rechten</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:ZKR-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:KOZZKR-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KOZZKR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KWD-basis">
+		<annotation>
+			<documentation>Kunstwerkdeel</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:TypeKunstwerk-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KWD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KWD-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KWD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KWD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:KWD-basis">
+				<sequence>
+					<element name="type" type="BG:TypeKunstwerk-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="KWD"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KZA-basis">
+		<annotation>
+			<documentation>Kadastrale Onroerende Zaak Aantekening</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+			<element name="aard" type="BG:AardAantekeningKOZ-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:OmschrijvingKZA-e" nillable="true" minOccurs="0"/>
+			<element name="splitsing" type="BG:SplitsingKZA-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:KZA-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:KZA-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="hoortBij" type="BG:KZAKOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="heeftBetrokken" type="BG:KZARPS-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KZA"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KZA-kerngegevens">
+		<complexContent>
+			<restriction base="BG:KZA-basis">
+				<sequence>
+					<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+					<element name="hoortBij" type="BG:KZAKOZ-kerngegevens" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="KZA"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KZAKOZ-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>hoort bij</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:KZAKOZ-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KZAKOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="KZAKOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:KZAKOZ-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:KOZ-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="KZAKOZ"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="KZARPS-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft betrokken</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:KZARPS-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="KZARPS"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="LND-tabel">
+		<annotation>
+			<documentation>Land</documentation>
+		</annotation>
+		<sequence>
+			<element name="code" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="codeIso" type="BG:LandcodeIso-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:Landnaam-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="LND"/>
+		<attributeGroup ref="StUF:entiteitZonderSleutels"/>
+	</complexType>
+	<complexType name="MAC-basis">
+		<annotation>
+			<documentation>Maatschappelijke activiteit</documentation>
+		</annotation>
+		<sequence>
+			<element name="kvkNummer" type="BG:KvKNummer-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="datumAanvang" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumVoortzetting" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumEinde" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<sequence minOccurs="0" maxOccurs="unbounded">
+				<element name="handelsnaam" type="BG:Handelsnaam-e" nillable="true" minOccurs="0"/>
+				<element name="handelsnaamVerkort" type="BG:HandelsnaamVerkort-e" nillable="true" minOccurs="0"/>
+				<element name="volgorde" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			</sequence>
+			<element name="activiteit" type="BG:ActiviteitGrp" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekMAC-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:MAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:MAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAlsEigenaar" type="BG:MACRPS-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="oefentActiviteitUitIn" type="BG:MACVES-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="MAC"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="MAC-kerngegevens">
+		<complexContent>
+			<restriction base="BG:MAC-basis">
+				<sequence>
+					<element name="kvkNummer" type="BG:KvKNummer-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<sequence minOccurs="0" maxOccurs="unbounded">
+						<element name="handelsnaam" type="BG:Handelsnaam-e" nillable="true" minOccurs="0"/>
+					</sequence>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="MAC"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="MACRPS-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Maatschappelijke activiteit heeft als eigenaar Rechtspersoon</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:MACRPS-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:MACRPS-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:MACRPS-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="MACRPS"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="MACVES-basis">
+		<annotation>
+			<documentation>Maatschappelijke activiteit oefent activiteit uit in Vestiging</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:VES-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:MACVES-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:MACVES-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:MACVES-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="MACVES"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NAT-tabel">
+		<annotation>
+			<documentation>Nationaliteit</documentation>
+		</annotation>
+		<sequence>
+			<element name="code" type="BG:Nationaliteitcode-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:NationaliteitOmschrijving-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="NAT"/>
+		<attributeGroup ref="StUF:entiteitZonderSleutels"/>
+	</complexType>
+	<complexType name="NNP-kerngegevens">
+		<complexContent>
+			<restriction base="BG:NNPINN-basis">
+				<sequence>
+					<choice minOccurs="0">
+						<sequence>
+							<element name="inn.nnpId" type="BG:BSN-e" nillable="true" minOccurs="0"/>
+							<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+						</sequence>
+						<element name="ann.identificatie" type="BG:IdentificatieRPSBTL-e" nillable="true"/>
+					</choice>
+					<element name="statutaireNaam" type="BG:StatutaireNaam-e" nillable="true" minOccurs="0"/>
+					<element name="inn.rechtsvorm" type="BG:Rechtsvorm-e" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<element name="bezoekadres" type="BG:VerblijfsadresGrpNNPVES-kerngegevens" minOccurs="0"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NNP"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NNPINN-basis">
+		<annotation>
+			<documentation>Basistype voor niet-natuurlijk persoon en ingeschreven niet-natuurlijk persoon</documentation>
+		</annotation>
+		<sequence>
+			<choice minOccurs="0" maxOccurs="2">
+				<sequence minOccurs="0">
+					<element name="inn.nnpId" type="BG:BSN-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+				</sequence>
+				<element name="ann.identificatie" type="BG:IdentificatieRPSBTL-e" nillable="true" minOccurs="0"/>
+			</choice>
+			<element name="sub.typering" type="BG:TyperingNNP-e" nillable="true" minOccurs="0"/>
+			<element name="statutaireNaam" type="BG:StatutaireNaam-e" nillable="true" minOccurs="0"/>
+			<element name="inn.rechtsvorm" type="BG:Rechtsvorm-e" nillable="true" minOccurs="0"/>
+			<element name="inn.statutaireZetel" type="BG:StatutaireZetel-e" nillable="true" minOccurs="0"/>
+			<element name="datumAanvang" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inn.datumVoortzetting" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumEinde" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-basis" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="bezoekadres" type="BG:VerblijfsadresGrp-basis" minOccurs="0"/>
+				<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+			</choice>
+			<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+			<element name="sub.url" type="BG:Url-e" nillable="true" minOccurs="0"/>
+			<element name="sub.rekeningnummerBankGiro" type="BG:RekeningnummerBankGiro-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekNNP-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NNPINN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NNPINN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inn.heeftAlsFunctionaris" type="BG:NNPRPS-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="rps.isEigenaarVan" type="BG:NNPMAC-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NNPMAC-basis">
+		<annotation>
+			<documentation>Relatie naar Maatschappelijke activiteiten waarvan een persoon eigenaar is.</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:MAC-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NNPMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NNPMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NNPMAC-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NNPMAC"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NNPRPS-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Basistype voor de heeftAlsFunctionaris relatie van NNP</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" minOccurs="0"/>
+			<element name="functionarisType" type="BG:FunctionarisType-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekNNPRPS-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NNPRPS-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NNPRPS-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NNPRPS-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NNPRPS"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NPS-kerngegevens">
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<choice minOccurs="0">
+						<sequence minOccurs="0">
+							<element name="inp.bsn" type="BG:BSN-e" nillable="true" minOccurs="0"/>
+							<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+						</sequence>
+						<element name="anp.identificatie" type="BG:IdentificatieRPSBTL-e" nillable="true" minOccurs="0"/>
+					</choice>
+					<element name="inp.a-nummer" type="BG:A-nummer-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true" minOccurs="0"/>
+					<element name="voornamen" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-e" nillable="true" minOccurs="0"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-kerngegevens" minOccurs="0"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSMAC-basis">
+		<annotation>
+			<documentation>Relatie naar Maatschappelijke activiteiten waarvan een persoon eigenaar is.</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:MAC-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSMAC-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSMAC"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NPSNAT-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Basistype voor de relatie naar de nationaliteit</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NAT-tabel" minOccurs="0"/>
+			<element name="inp.redenVerkrijging" type="BG:RedenVerkrijgingVerliesNationaliteit-e" nillable="true" minOccurs="0"/>
+			<element name="inp.datumVerkrijging" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.redenVerlies" type="BG:RedenVerkrijgingVerliesNationaliteit-e" nillable="true" minOccurs="0"/>
+			<element name="inp.datumVerlies" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekNAT-basis" nillable="true" minOccurs="0"/>
+			<element name="aanduidingStrijdigheidNietigheid" type="BG:AanduidingStrijdigheidNietigheid" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSNAT-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSNAT-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSNAT-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSNAT"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NPSNINING-basis">
+		<annotation>
+			<documentation>Gezamenlijk basistype voor Natuurlijk persoon, ingezetene en niet-ingezetene</documentation>
+		</annotation>
+		<sequence>
+			<choice minOccurs="0" maxOccurs="2">
+				<sequence minOccurs="0">
+					<element name="inp.bsn" type="BG:BSN-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+				</sequence>
+				<element name="anp.identificatie" type="BG:IdentificatieRPSBTL-e" nillable="true" minOccurs="0"/>
+			</choice>
+			<element name="sub.typering" type="BG:TyperingNPS-e" nillable="true" minOccurs="0"/>
+			<element name="inp.a-nummer" type="BG:A-nummer-e" nillable="true" minOccurs="0"/>
+			<element name="geslachtsnaam" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+			<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true" minOccurs="0"/>
+			<element name="voorletters" type="BG:Voorletters-e" nillable="true" minOccurs="0"/>
+			<element name="voornamen" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+			<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true" minOccurs="0"/>
+			<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+			<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true" minOccurs="0"/>
+			<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+			<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+			<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+			<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+			<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-e" nillable="true" minOccurs="0"/>
+			<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.overlijdenplaats" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="inp.overlijdenLand" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="inp.verblijftIn" type="BG:NPSTGO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="verblijfsadres" type="BG:VerblijfsadresGrp-basis" minOccurs="0"/>
+				<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+			</choice>
+			<element name="inp.adresHerkomst" type="BG:AdresHerkomst-e" nillable="true" minOccurs="0"/>
+			<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-basis" minOccurs="0"/>
+			<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+			<element name="sub.url" type="BG:Url-e" nillable="true" minOccurs="0"/>
+			<element name="sub.rekeningnummerBankGiro" type="BG:RekeningnummerBankGiro-e" nillable="true" minOccurs="0"/>
+			<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0" maxOccurs="3"/>
+			<element name="inp.burgerlijkeStaat" type="BG:BurgerlijkeStaat-e" nillable="true" minOccurs="0"/>
+			<element name="inp.gemeenteVanInschrijving" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="inp.datumInschrijving" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="vbt.aanduidingVerblijfstitel" type="BG:Verblijfstitelcode-e" nillable="true" minOccurs="0"/>
+			<element name="ing.datumVerkrijgingVerblijfstitel" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="ing.datumVerliesVerblijfstitel" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.datumVestigingInNederland" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.immigratieLand" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="inp.datumVertrekUitNederland" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.emigratieLand" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="inp.signaleringReisdocument" type="BG:SignaleringGBA-e" nillable="true" minOccurs="0"/>
+			<element name="inp.aanduidingBijzonderNederlanderschap" type="BG:AanduidingBijzonderNederlanderschap-e" nillable="true" minOccurs="0"/>
+			<element name="inp.buitenlandsReisdocument" type="BG:SignaleringGBA-e" nillable="true" minOccurs="0"/>
+			<element name="ing.aanduidingEuropeesKiesrecht" type="BG:AanduidingEuropeesKiesrecht-e" nillable="true" minOccurs="0"/>
+			<element name="ing.aanduidingUitgeslotenKiesrecht" type="BG:AanduidingUitgeslotenKiesrecht-e" nillable="true" minOccurs="0"/>
+			<element name="ing.indicatieGezagMinderjarige" type="BG:IndicatieGezag-e" nillable="true" minOccurs="0"/>
+			<element name="ing.indicatieCurateleRegister" type="BG:IndicatieCuratele-e" nillable="true" minOccurs="0"/>
+			<element name="inp.datumOpschortingBijhouding" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inp.redenOpschortingBijhouding" type="BG:RedenOpschortingBijhouding-e" nillable="true" minOccurs="0"/>
+			<element name="inp.indicatieGeheim" type="BG:IndicatieGeheim-e" nillable="true" minOccurs="0"/>
+			<element name="ing.indicatieBlokkering" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekNPS-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="aanduidingStrijdigheidNietigheid" type="BG:AanduidingStrijdigheidNietigheid" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSNINING-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSNINING-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inp.heeftAlsEchtgenootPartner" type="BG:NPSNPSHUW-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inp.heeftAlsKinderen" type="BG:NPSNPSKND-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inp.heeftAlsOuders" type="BG:NPSNPSOUD-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="ing.isHouderVan" type="BG:NPSRSDHDR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="ing.isBijgeschrevenOp" type="BG:NPSRSDBIJ-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="rps.isEigenaarVan" type="BG:NPSMAC-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NPSNPSHUW-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Relatie naar de echtgenoten/partners van een persoon</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element name="soortVerbintenis" type="BG:SoortVerbintenis-e" nillable="true" minOccurs="0"/>
+			<element name="datumSluiting" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="plaatsSluiting" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="landSluiting" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="datumOntbinding" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="plaatsOntbinding" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="landOntbinding" type="BG:Landcode-e" nillable="true" minOccurs="0"/>
+			<element name="redenOntbinding" type="BG:RedenOntbinding-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekNPSNPSHUW-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="aanduidingStrijdigheidNietigheid" type="BG:AanduidingStrijdigheidNietigheid" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSNPSHUW-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSNPSHUW-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSNPSHUW-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSNPSHUW"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NPSNPSKND-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Relatie naar de kinderen van een persoon</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element name="ouderAanduiding" type="BG:OuderAanduiding-e" nillable="true" minOccurs="0"/>
+			<element name="datumIngangFamilierechtelijkeBetrekking" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumEindeFamilierechtelijkeBetrekking" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="aanduidingStrijdigheidNietigheid" type="BG:AanduidingStrijdigheidNietigheid" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSNPSKND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSNPSKND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSNPSKND-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSNPSKND"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NPSNPSOUD-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Relatie naar de ouders van een persoon</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element name="ouderAanduiding" type="BG:OuderAanduiding-e" nillable="true" minOccurs="0"/>
+			<element name="datumIngangFamilierechtelijkeBetrekking" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumEindeFamilierechtelijkeBetrekking" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="aanduidingStrijdigheidNietigheid" type="BG:AanduidingStrijdigheidNietigheid" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSNPSOUD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSNPSOUD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSNPSOUD-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSNPSOUD"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NPSRSDBIJ-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Relatie naar de reisdocumenten waarop een persoon is bijgeschreven</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RSD-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSRSDBIJ"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="NPSRSDHDR-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Relatie naar de reisdocumenten waarvan een persoon de houder is</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RSD-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSRSDHDR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NPSTGO-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Basistype voor de relatie naar het object waarin verbleven wordt tbv NPS en zijn subtypen ING en NIN en tbv TGO en zijn subtypen LPL, SPL en VBO</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGOAOT-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekVerblijfplaats-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:NPSTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:NPSTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:NPSTGO-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="NPSTGO"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="NPSTGO-kerngegevens">
+		<complexContent>
+			<restriction base="BG:NPSTGO-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:TGO-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPSTGO"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="OPR-basis">
+		<annotation>
+			<documentation>Openbare ruimte</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+			<element name="gor.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true" minOccurs="0"/>
+			<element name="huisnummerrangeOneven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+			<element name="huisnummerrangeEven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+			<element name="huisnummerrangeEvenOneven" type="BG:Huisnummerrange-e" nillable="true" minOccurs="0"/>
+			<element name="gor.geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="gor.type" type="BG:TyperingOPR-e" nillable="true" minOccurs="0"/>
+			<element name="gor.status" type="BG:StatusNaamgeving-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekOPR-basis" nillable="true" minOccurs="0"/>
+			<element name="bronDocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:OPR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:OPR-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="OPR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="OPR-kerngegevens">
+		<complexContent>
+			<restriction base="BG:OPR-basis">
+				<sequence minOccurs="0">
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="OPR"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PND-basis">
+		<annotation>
+			<documentation>Pand</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="brt.buurtCode" type="BG:BuurtCode-e" nillable="true" minOccurs="0"/>
+			<element name="brt.buurtNaam" type="BG:BuurtNaam-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkNaam" type="BG:WijkNaam-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="inwinningswijzeGeometrieBovenaanzicht" type="BG:InwinningswijzeGeometrie-e" nillable="true" minOccurs="0"/>
+			<element name="geometrieOpMaaiveld" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="inwinningswijzeGeometrieMaaiveld" type="BG:InwinningswijzeGeometrie-e" nillable="true" minOccurs="0"/>
+			<element name="bouwjaar" type="BG:Jaar-e" nillable="true" minOccurs="0"/>
+			<element name="oppervlakte" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			<element name="brutoInhoud" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			<element name="laagsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+			<element name="hoogsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusPand-e" nillable="true" minOccurs="0"/>
+			<element name="statusVoortgangBouw" type="BG:StatusVoortgangBouw-e" nillable="true" minOccurs="0"/>
+			<element name="geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekPND-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:PND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:PND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftInliggend" type="BG:PNDTGO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="PND"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="PND-kerngegevens">
+		<complexContent>
+			<restriction base="BG:PND-basis">
+				<sequence minOccurs="0">
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="PND"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="PNDTGO-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft inliggend Verblijfsobject</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:PNDTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:PNDTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:PNDTGO-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="PNDTGO"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="RDS-tabel">
+		<annotation>
+			<documentation>Reisdocumentsoort</documentation>
+		</annotation>
+		<sequence>
+			<element name="code" type="BG:ReisdocumentSoortCode-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:ReisdocumentSoortOmschrijving-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="RDS"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="RPS-basis">
+		<complexContent>
+			<restriction base="BG:SUBRPS-basis">
+				<choice minOccurs="0">
+					<sequence minOccurs="0">
+						<element name="naam" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+						<element name="bsVesNummerOfId" type="BG:BsVesNummerOfId-e" nillable="true" minOccurs="0"/>
+						<element name="kvkNummer" type="BG:KvKNummer-e" nillable="true" minOccurs="0"/>
+						<choice minOccurs="0">
+							<element name="adresNederland" type="BG:CorrespondentieAdresGrp-basis" minOccurs="0"/>
+							<element name="adresBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+						</choice>
+					</sequence>
+					<choice minOccurs="0" maxOccurs="2">
+						<element name="natuurlijkPersoon" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+						<element name="nietNatuurlijkPersoon" type="BG:NNPINN-basis" nillable="true" minOccurs="0"/>
+					</choice>
+				</choice>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="RPS-kerngegevens">
+		<complexContent>
+			<restriction base="BG:RPS-basis">
+				<choice minOccurs="0">
+					<choice minOccurs="0">
+						<element name="natuurlijkPersoon" type="BG:NPS-kerngegevens" nillable="true"/>
+						<element name="nietNatuurlijkPersoon" type="BG:NNP-kerngegevens" nillable="true"/>
+					</choice>
+				</choice>
+				<attribute ref="StUF:entiteittype" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="RSD-basis">
+		<annotation>
+			<documentation>Reisdocument</documentation>
+		</annotation>
+		<sequence>
+			<element name="rds.code" type="BG:ReisdocumentSoortCode-e" nillable="true" minOccurs="0"/>
+			<element name="nummer" type="BG:Reisdocumentnummer-e" nillable="true" minOccurs="0"/>
+			<element name="isVan" type="BG:RSDNPSHDR-basis" nillable="true" minOccurs="0"/>
+			<element name="datumUitgifte" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="autoriteitUitgifte" type="BG:ReisdocumentAutoriteit-e" nillable="true" minOccurs="0"/>
+			<element name="einddatumGeldigheid" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumInhoudingVermissing" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="aanduidingInhoudingVermissing" type="BG:AanduidingInhoudingVermissing-e" nillable="true" minOccurs="0"/>
+			<element name="lengteHouder" type="BG:ReisdocumentLengteHouder-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:RSD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:RSD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftEropBijgeschreven" type="BG:RSDNPSBIJ-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="RSD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="RSD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:RSD-basis">
+				<sequence>
+					<element name="rds.code" type="BG:ReisdocumentSoortCode-e" nillable="true" minOccurs="0"/>
+					<element name="nummer" type="BG:Reisdocumentnummer-e" nillable="true" minOccurs="0"/>
+					<element name="isVan" type="BG:RSDNPSHDR-kerngegevens" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="RSD"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="RSDNPSBIJ-basis">
+		<annotation>
+			<documentation>heeft erop bijgeschreven</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:RSDNPSBIJ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:RSDNPSBIJ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:RSDNPSBIJ-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="RSDNPSBIJ"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="RSDNPSBIJ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:RSDNPSBIJ-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="RSDNPSBIJ"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="RSDNPSHDR-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als houder</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:RSDNPSHDR-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="RSDNPSHDR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="RSDNPSHDR-kerngegevens">
+		<complexContent>
+			<restriction base="BG:RSDNPSHDR-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="RSDNPSHDR"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="SBD-basis">
+		<annotation>
+			<documentation>Spoorbaandeel</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:TypeSpoorbaan-e" nillable="true" minOccurs="0"/>
+			<element name="typeInfrastructuur" type="BG:TypeInfrastructuur-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:SBD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:SBD-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="SBD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="SBD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:SBD-basis">
+				<sequence>
+					<element name="type" type="BG:TypeSpoorbaan-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="SBD"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="SRV-tabel">
+		<annotation>
+			<documentation>Soort rechtsvorm</documentation>
+		</annotation>
+		<sequence>
+			<element name="rechtsvorm" type="BG:Rechtsvorm-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="SRV"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="SUB-kerngegevens">
+		<complexContent>
+			<restriction base="BG:SUBRPS-basis">
+				<choice minOccurs="0">
+					<choice minOccurs="0">
+						<element name="natuurlijkPersoon" type="BG:NPS-kerngegevens"/>
+						<element name="nietNatuurlijkPersoon" type="BG:NNP-kerngegevens"/>
+						<element name="vestiging" type="BG:VES-kerngegevens"/>
+					</choice>
+				</choice>
+				<attribute ref="StUF:entiteittype" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="SUBRPS-basis">
+		<annotation>
+			<documentation>Basis superentiteittype voor Rechtspersoon en Subject</documentation>
+		</annotation>
+		<choice minOccurs="0">
+			<sequence minOccurs="0">
+				<element name="naam" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+				<element name="bsVesNummerOfId" type="BG:BsVesNummerOfId-e" nillable="true" minOccurs="0"/>
+				<element name="kvkNummer" type="BG:KvKNummer-e" nillable="true" minOccurs="0"/>
+				<choice minOccurs="0">
+					<element name="adresNederland" type="BG:CorrespondentieAdresGrp-basis" minOccurs="0"/>
+					<element name="adresBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+				</choice>
+			</sequence>
+			<choice minOccurs="0" maxOccurs="3">
+				<element name="natuurlijkPersoon" type="BG:NPSNINING-basis" nillable="true" minOccurs="0"/>
+				<element name="nietNatuurlijkPersoon" type="BG:NNPINN-basis" nillable="true" minOccurs="0"/>
+				<element name="vestiging" type="BG:VES-basis" nillable="true" minOccurs="0"/>
+			</choice>
+		</choice>
+		<attribute ref="StUF:entiteittype"/>
+	</complexType>
+	<complexType name="TDL-basis">
+		<annotation>
+			<documentation>Terreindeel</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:TypeTerrein-e" nillable="true" minOccurs="0"/>
+			<element name="verharding" type="BG:Verharding-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:TDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:TDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="TDL"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="TDL-kerngegevens">
+		<complexContent>
+			<restriction base="BG:TDL-basis">
+				<sequence>
+					<element name="type" type="BG:TypeTerrein-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="TDL"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-basis">
+		<annotation>
+			<documentation>Terrein/gebouwd object</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:TGOAOT-basis">
+				<sequence>
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingTGO-e" nillable="true" minOccurs="0"/>
+					<element name="adresAanduidingGrp" type="BG:AdrGrp-basis" minOccurs="0"/>
+					<element name="brt.buurtCode" type="BG:BuurtCode-e" nillable="true" minOccurs="0"/>
+					<element name="brt.buurtNaam" type="BG:BuurtNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+					<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+					<element name="wyk.wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+					<element name="wyk.wijkNaam" type="BG:WijkNaam-e" nillable="true" minOccurs="0"/>
+					<element name="gbo.puntGeometrie" type="BG:GeometriePunt-e" nillable="true" minOccurs="0"/>
+					<element name="vlakGeometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+					<element name="type" type="BG:TypeOGOofOTR-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.soortWoonobject" type="BG:SoortWoonobject-e" nillable="true" minOccurs="0"/>
+					<element name="gbo.bouwkundigeBestemming" type="BG:BouwkundigeBestemming-e" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="gebruiksdoel" type="BG:Gebruiksdoeleinden-e" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="gbo.brutoInhoud" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+					<element name="gbo.oppervlakte" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+					<element name="gbo.inwinningswijzeOppervlakte" type="BG:InwinningswijzeOppervlakte-e" nillable="true" minOccurs="0"/>
+					<element name="ogo.bouwjaar" type="BG:Jaar-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.laagsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.hoogsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.toegangBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.aantalKamers" type="BG:Maateenheid2-e" nillable="true" minOccurs="0"/>
+					<element name="vbo.ontsluitingVerdieping" type="BG:OntsluitingVerdieping-e" nillable="true" minOccurs="0"/>
+					<element name="aot.status" type="BG:StatusTGO-e" nillable="true" minOccurs="0"/>
+					<element name="gbo.statusVoortgangBouw" type="BG:StatusVoortgangBouw-e" nillable="true" minOccurs="0"/>
+					<element name="aot.geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+					<element name="inOnderzoek" type="StUF:InOnderzoekTGO-basis" nillable="true" minOccurs="0"/>
+					<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+					<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+					<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="historieMaterieel" type="BG:TGOAOT-basis" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="historieFormeel" type="BG:TGOAOT-basis" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="heeftNevenadressen" type="BG:TGOAOANVN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="vbo.maaktDeelUitVan" type="BG:TGOPND-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="heeftOverlapMet" type="BG:TGOKOZ-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="isOvergegaanIn" type="BG:TGOTGONAR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="isOntstaanUit" type="BG:TGOTGOVAN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" fixed="TGO"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGO-kerngegevens">
+		<complexContent>
+			<restriction base="BG:TGO-basis">
+				<sequence>
+					<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="typering" type="BG:TyperingTGO-e" nillable="true" minOccurs="0"/>
+					<element name="adresAanduidingGrp" type="BG:AdrGrp-kerngegevens" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="TGO"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="TGOAOANVN-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Basistype voor de nevenadres relatie binnen zowel TGO als LPL, SPL en VBO</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:AOANUM-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:TGOAOANVN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:TGOAOANVN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:TGOAOANVN-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="TGOAOT-basis">
+		<annotation>
+			<documentation>Basistype voor TGO, VBO, LPL en SPL</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="typering" type="BG:TyperingTGO-e" nillable="true" minOccurs="0"/>
+			<element name="adresAanduidingGrp" type="BG:AdrGrp-basis" minOccurs="0"/>
+			<element name="brt.buurtCode" type="BG:BuurtCode-e" nillable="true" minOccurs="0"/>
+			<element name="brt.buurtNaam" type="BG:BuurtNaam-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+			<element name="wyk.wijkNaam" type="BG:WijkNaam-e" nillable="true" minOccurs="0"/>
+			<element name="gbo.puntGeometrie" type="BG:GeometriePunt-e" nillable="true" minOccurs="0"/>
+			<element name="vlakGeometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="type" type="BG:TypeOGOofOTR-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.soortWoonobject" type="BG:SoortWoonobject-e" nillable="true" minOccurs="0"/>
+			<element name="gbo.bouwkundigeBestemming" type="BG:BouwkundigeBestemming-e" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="gebruiksdoel" type="BG:Gebruiksdoeleinden-e" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="gbo.brutoInhoud" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			<element name="gbo.oppervlakte" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			<element name="gbo.inwinningswijzeOppervlakte" type="BG:InwinningswijzeOppervlakte-e" nillable="true" minOccurs="0"/>
+			<element name="ogo.bouwjaar" type="BG:Jaar-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.laagsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.hoogsteBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.toegangBouwlaag" type="BG:Bouwlaag-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.aantalKamers" type="BG:Maateenheid2-e" nillable="true" minOccurs="0"/>
+			<element name="vbo.ontsluitingVerdieping" type="BG:OntsluitingVerdieping-e" nillable="true" minOccurs="0"/>
+			<element name="aot.status" type="BG:StatusTGO-e" nillable="true" minOccurs="0"/>
+			<element name="gbo.statusVoortgangBouw" type="BG:StatusVoortgangBouw-e" nillable="true" minOccurs="0"/>
+			<element name="aot.geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekTGO-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:TGOAOT-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:TGOAOT-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftNevenadressen" type="BG:TGOAOANVN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="vbo.maaktDeelUitVan" type="BG:TGOPND-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftOverlapMet" type="BG:TGOKOZ-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isOvergegaanIn" type="BG:TGOTGONAR-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isOntstaanUit" type="BG:TGOTGOVAN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="TGOKOZ-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als ondergrond (Alleen van toepassing voor een LPL, SPL of VBO)</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:TGOKOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:TGOKOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:TGOKOZ-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="TGOKOZ"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="TGOPND-basis">
+		<annotation>
+			<documentation>maakt deel uit van (Alleen van toepassing voor een LPL, SPL of VBO)</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:PND-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:TGOPND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:TGOPND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:TGOPND-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="VBOPND"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="TGOTGONAR-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is overgegaan in</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:TGOTGONAR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:TGOTGONAR-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="TGOTGONAR"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="TGOTGOVAN-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is ontstaan uit</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:TGOTGOVAN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:TGOTGOVAN-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="TGOTGOVAN"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="VBT-tabel">
+		<annotation>
+			<documentation>Verblijfstitel</documentation>
+		</annotation>
+		<sequence>
+			<element name="aanduiding" type="BG:Verblijfstitelcode-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:Omschrijving100-e" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" use="required" fixed="VBT"/>
+		<attribute ref="StUF:scope"/>
+		<attribute ref="StUF:verwerkingssoort"/>
+	</complexType>
+	<complexType name="VES-basis">
+		<annotation>
+			<documentation>Vestiging</documentation>
+		</annotation>
+		<sequence>
+			<element name="vestigingsNummer" type="BG:VestigingsNummer-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<sequence minOccurs="0" maxOccurs="unbounded">
+				<element name="handelsnaam" type="BG:Handelsnaam-e" nillable="true" minOccurs="0"/>
+				<element name="handelsnaamVerkort" type="BG:HandelsnaamVerkort-e" nillable="true" minOccurs="0"/>
+				<element name="volgorde" type="BG:Maateenheid6-e" nillable="true" minOccurs="0"/>
+			</sequence>
+			<element name="datumAanvang" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="datumEinde" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="activiteit" type="BG:ActiviteitGrpZonderVolgorde" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="typeringVestiging" type="BG:TyperingVES-e" nillable="true" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="verblijfsadres" type="BG:VerblijfsadresGrp-basis" minOccurs="0"/>
+				<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+			</choice>
+			<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-basis" minOccurs="0"/>
+			<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+			<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+			<element name="sub.url" type="BG:Url-e" nillable="true" minOccurs="0"/>
+			<element name="sub.rekeningnummerBankGiro" type="BG:RekeningnummerBankGiro-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekVES-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:VES-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:VES-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="oefentActiviteitenUitVoor" type="BG:VESMAC-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAlsHoofdLocatie" type="BG:VESTGOHFD-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftAlsNevenLocatie" type="BG:VESTGONVN-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="VES"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="VES-kerngegevens">
+		<complexContent>
+			<restriction base="BG:VES-basis">
+				<sequence>
+					<element name="vestigingsNummer" type="BG:VestigingsNummer-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<sequence minOccurs="0" maxOccurs="unbounded">
+						<element name="handelsnaam" type="BG:Handelsnaam-e" nillable="true" minOccurs="0"/>
+					</sequence>
+					<choice minOccurs="0">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrpNNPVES-kerngegevens" minOccurs="0"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="VES"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VESMAC-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>oefent activiteiten uit voor</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:MAC-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:VESMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:VESMAC-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:VESMAC-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="VESMAC"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="VESTGOHFD-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als hoofdlocatie</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:VESTGOHFD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:VESTGOHFD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:VESTGOHFD-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="VESTGOHFD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="VESTGONVN-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als nevenlocatie</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:VESTGONVN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:VESTGONVN-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:VESTGONVN-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="VESTGONVN"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="WDL-basis">
+		<annotation>
+			<documentation>Waterdeel</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:TypeWater-e" nillable="true" minOccurs="0"/>
+			<element name="typeInfrastructuur" type="BG:TypeInfrastructuur-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WDL-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WDL"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WDL-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WDL-basis">
+				<sequence>
+					<element name="type" type="BG:TypeWater-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WDL"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WDO-basis">
+		<annotation>
+			<documentation>WOZ-deelobject</documentation>
+		</annotation>
+		<sequence>
+			<element name="nummerWOZDeelObject" type="BG:NummerWOZDeelObject-e" nillable="true" minOccurs="0"/>
+			<element name="codeWOZDeelObject" type="BG:CodeWOZDeelObject-e" nillable="true" minOccurs="0"/>
+			<element name="statusWOZDeelObject" type="BG:StatusObject-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="isOnderdeelVan" type="BG:WDOWOZ-basis" nillable="true" minOccurs="0"/>
+			<choice minOccurs="0" maxOccurs="2">
+				<element name="bestaatUit" type="BG:WDOTGO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="bestaatUitPand" type="BG:WDOPND-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			</choice>
+			<element name="historieMaterieel" type="BG:WDO-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WDO"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WDO-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WDO-basis">
+				<sequence>
+					<element name="nummerWOZDeelObject" type="BG:NummerWOZDeelObject-e" nillable="true" minOccurs="0"/>
+					<element name="isOnderdeelVan" type="BG:WDOWOZ-kerngegevens" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0">
+						<element name="bestaatUit" type="BG:WDOTGO-kerngegevens" nillable="true" minOccurs="0"/>
+						<element name="bestaatUitPand" type="BG:WDOPND-kerngegevens" nillable="true" minOccurs="0"/>
+					</choice>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WDO"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WDOPND-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is onderdeel van/bestaat uit</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:PND-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:WDOPND-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:WDOPND-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WDOPND"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WDOPND-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WDOPND-basis">
+				<sequence minOccurs="0">
+					<element name="gerelateerde" type="BG:PND-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WDOPND"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WDOTGO-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is onderdeel van/bestaat uit</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:TGO-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:WDOTGO-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:WDOTGO-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WDOTGO"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WDOTGO-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WDOTGO-basis">
+				<sequence minOccurs="0">
+					<element name="gerelateerde" type="BG:TGO-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WDOTGO"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WDOWOZ-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is onderdeel van</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:WOZ-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WDOWOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WDOWOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WDOWOZ-basis">
+				<sequence minOccurs="0">
+					<element name="gerelateerde" type="BG:WOZ-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WDOWOZ"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WGD-basis">
+		<annotation>
+			<documentation>Wegdeel</documentation>
+		</annotation>
+		<sequence>
+			<element name="type" type="BG:TypeWeg-e" nillable="true" minOccurs="0"/>
+			<element name="typeInfrastructuur" type="BG:TypeInfrastructuur-e" nillable="true" minOccurs="0"/>
+			<element name="verharding" type="BG:Verharding-e" nillable="true" minOccurs="0"/>
+			<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusGeoElement-e" nillable="true" minOccurs="0"/>
+			<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieIMGeo-e" nillable="true" minOccurs="0"/>
+			<element name="relatieveHoogteligging" type="BG:RelatieveHoogteligging-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WGD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WGD-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WGD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WGD-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WGD-basis">
+				<sequence>
+					<element name="type" type="BG:TypeWeg-e" nillable="true" minOccurs="0"/>
+					<element name="identificatie" type="BG:IdentificatieIMGeo-e" nillable="true" minOccurs="0"/>
+					<element name="naam" type="BG:ScopedName-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WGD"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WOZ-basis">
+		<annotation>
+			<documentation>WOZ-object</documentation>
+		</annotation>
+		<sequence>
+			<element name="wozObjectNummer" type="BG:WOZObjectNummer-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="aanduidingWOZobject" type="BG:AanduidingWOZobjectGrp-basis" minOccurs="0"/>
+			<element name="wozObjectGeometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="statusWozObject" type="BG:StatusObject-e" nillable="true" minOccurs="0"/>
+			<element name="grondoppervlakte" type="BG:Maateenheid11-e" nillable="true" minOccurs="0"/>
+			<element name="gebruikscode" type="BG:Gebruikscode-e" nillable="true" minOccurs="0"/>
+			<element name="soortObjectCode" type="BG:SoortObjectCode-e" nillable="true" minOccurs="0"/>
+			<element name="vastgesteldeWaarde" type="BG:WaardeGegevensGrp" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekWOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="heeftDeelobject" type="BG:WOZWDO-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="bevatKadastraleObjecten" type="BG:WOZKOZ-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftBelanghebbende" type="BG:WOZSUB-basis" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieMaterieel" type="BG:WOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WOZ-basis">
+				<sequence>
+					<element name="wozObjectNummer" type="BG:WOZObjectNummer-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="aanduidingWOZobject" type="BG:AanduidingWOZobjectGrp-kerngegevens" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WOZ"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WOZKOZ-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>WOZ-object omvat Kadastrale Onroerende Zaken</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="toegekendeOppervlakte" type="BG:Maateenheid11-2-neg-e" nillable="true" minOccurs="0"/>
+			<element name="meegetaxeerdeOppervlakte" type="BG:Maateenheid11-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WOZKOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WOZKOZ-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:WOZKOZ-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WOZKOZ"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="WOZKOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WOZKOZ-basis">
+				<sequence minOccurs="0">
+					<element name="gerelateerde" type="BG:KOZ-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WOZKOZ"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WOZSUB-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>WOZ-object heeft als belanghebbende Subject</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:SUBRPS-basis" nillable="true" minOccurs="0"/>
+			<element name="aanduidingEigenaarGebruiker" type="BG:AanduidingEigenaarGebruiker-e" nillable="true" minOccurs="0"/>
+			<element name="statusBelang" type="BG:StatusBelang-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:StatusMetagegevenNoValue" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WOZSUB-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WOZSUB-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:WOZSUB-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WOZSUB"/>
+		<attributeGroup ref="StUF:relatie"/>
+	</complexType>
+	<complexType name="WOZSUB-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WOZSUB-basis">
+				<sequence minOccurs="0">
+					<element name="gerelateerde" type="BG:SUB-kerngegevens"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WOZSUB"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WOZWDO-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als onderdelen</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element name="gerelateerde" type="BG:WDO-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WOZWDO"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WPL-basis">
+		<annotation>
+			<documentation>Woonplaats</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+			<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+			<element name="woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+			<element name="woonplaatsNaamNen" type="BG:WoonplaatsNaamNen-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="status" type="BG:StatusWoonplaats-e" nillable="true" minOccurs="0"/>
+			<element name="geconstateerd" type="BG:Indicatie-e" nillable="true" minOccurs="0"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekWPL-basis" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WPL-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WPL-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WPL"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WPL-kerngegevens">
+		<complexContent>
+			<restriction base="BG:WPL-basis">
+				<sequence>
+					<element name="identificatie" type="BG:WoonplaatsCodering-e" nillable="true" minOccurs="0"/>
+					<element name="authentiek" type="BG:Authentiek" default="N" nillable="true" minOccurs="0"/>
+					<element name="woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="WPL"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="WRD-basis">
+		<annotation>
+			<documentation>Waarde WOZ-object (peildatum afhankelijk)</documentation>
+		</annotation>
+		<sequence>
+			<element name="waardepeildatum" type="BG:Peildatum-e" nillable="true" minOccurs="0"/>
+			<element name="toestandspeildatum" type="BG:Peildatum-e" nillable="true" minOccurs="0"/>
+			<element name="vastgesteldeWaarde" type="BG:Maateenheid11-e" nillable="true" minOccurs="0"/>
+			<element name="beschikking" type="BG:BeschikkingGrp-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="inOnderzoek" type="StUF:InOnderzoekWRD-basis" nillable="true" minOccurs="0" maxOccurs="4"/>
+			<element ref="StUF:tijdvakObject" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WRD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WRD-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="isVoor" type="BG:WRDWOZ-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WRD"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WRDWOZ-basis">
+		<annotation>
+			<documentation>heeft betrekking op</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:WOZ-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WRDWOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="WYK-basis">
+		<annotation>
+			<documentation>Wijk</documentation>
+		</annotation>
+		<sequence>
+			<element name="wijkCode" type="BG:WijkCode-e" nillable="true" minOccurs="0"/>
+			<element name="wijkNaam" type="BG:WijkNaam-e" nillable="true" minOccurs="0"/>
+			<element name="geometrie" type="BG:GeometrieVlak-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteCode" type="BG:Gemeentecodering-e" nillable="true" minOccurs="0"/>
+			<element name="gem.gemeenteNaam" type="BG:Gemeentenaam-e" nillable="true" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:WYK-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:WYK-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="WYK"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZKR-basis">
+		<annotation>
+			<documentation>Zakelijk recht</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+			<element name="avr.aard" type="BG:AardZakelijkRecht-e" nillable="true" minOccurs="0"/>
+			<element name="avr.omschrijving" type="BG:Omschrijving200-e" nillable="true" minOccurs="0"/>
+			<element name="arv.aardVerkort" type="BG:AardZakelijkRechtVerkort-e" nillable="true" minOccurs="0"/>
+			<element name="arv.omschrijvingVerkort" type="BG:Omschrijving100-e" nillable="true" minOccurs="0"/>
+			<element name="aandeelRecht" type="BG:AandeelRechtGrp" minOccurs="0"/>
+			<element name="betrokkenInSplitsing" type="BG:Boolean-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumRecht" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumRecht" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:ZKR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:ZKR-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="heeftBetrekkingOp" type="BG:ZKRKOZ-basis" nillable="true" minOccurs="0"/>
+			<element name="heeftAlsGerechtigde" type="BG:ZKRRPS-basis" nillable="true" minOccurs="0"/>
+			<element name="heeftAlsAantekening" type="BG:ZKRZRA-basis" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZKR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZKR-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ZKR-basis">
+				<sequence>
+					<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+					<element name="avr.aard" type="BG:AardZakelijkRecht-e" nillable="true" minOccurs="0"/>
+					<element name="heeftBetrekkingOp" type="BG:ZKRKOZ-kerngegevens" nillable="true" minOccurs="0"/>
+					<element name="heeftAlsGerechtigde" type="BG:ZKRRPS-kerngegevens" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="ZKR"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ZKRKOZ-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is voor</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:KOZ-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:ZKRKOZ-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZKRKOZ"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZKRKOZ-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ZKRKOZ-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:KOZ-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="ZKRKOZ"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ZKRRPS-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als gerechtigde</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeelRelatie" type="BG:ZKRRPS-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZKRRPS"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZKRRPS-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ZKRRPS-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:RPS-kerngegevens"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="ZKRRPS"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ZKRZRA-basis">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:ZRA-basis" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element name="historieFormeel" type="BG:ZKRZRA-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeelRelatie" type="BG:ZKRZRA-basis" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZKRZRA"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZRA-basis">
+		<annotation>
+			<documentation>Zakelijk Recht Aantekening</documentation>
+		</annotation>
+		<sequence>
+			<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+			<element name="aard" type="BG:AardAantekeningZKR-e" nillable="true" minOccurs="0"/>
+			<element name="omschrijving" type="BG:OmschrijvingKZA-e" nillable="true" minOccurs="0"/>
+			<element name="brondocument" type="BG:Brondocument" minOccurs="0"/>
+			<element name="ingangsdatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element name="einddatumObject" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+			<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
+			<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+			<element ref="StUF:extraElementen" minOccurs="0"/>
+			<element name="historieMaterieel" type="BG:ZRA-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="historieFormeel" type="BG:ZRA-basis" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="hoortBij" type="BG:ZRAZKR-basis" nillable="true" minOccurs="0"/>
+			<element name="heeftBetrokken" type="BG:ZRARPS-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZRA"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZRA-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ZRA-basis">
+				<sequence>
+					<element name="identificatie" type="BG:IdentificatieBRK-e" nillable="true" minOccurs="0"/>
+					<element name="hoortBij" type="BG:ZRAZKR-kerngegevens" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="ZRA"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="ZRARPS-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>heeft als betrokken rechtspersoon</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:RPS-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZRARPS"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZRAZKR-basis">
+		<annotation>
+			<appinfo>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>is voor</documentation>
+		</annotation>
+		<sequence>
+			<element name="gerelateerde" type="BG:ZKR-basis" nillable="true" minOccurs="0"/>
+		</sequence>
+		<attribute ref="StUF:entiteittype" fixed="ZRAZKR"/>
+		<attributeGroup ref="StUF:entiteit"/>
+	</complexType>
+	<complexType name="ZRAZKR-kerngegevens">
+		<complexContent>
+			<restriction base="BG:ZRAZKR-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:ZKR-kerngegevens" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="ZRAZKR"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+</schema>
