@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 import {Collapsible} from "../formsets/Collapsible";
 import { Form } from 'react-formio';
 import Select from "../formsets/Select";
+import ErrorList from "../formsets/ErrorList";
 
 const FormIOWrapper = React.forwardRef((props, ref) => (
   <Form {...props} ref={ref} />
@@ -43,15 +44,17 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, erro
     );
 
     return (
-        <Collapsible
-            header={collapsibleHeader}
-            content={collapsibleContent}
-        />
+        <>
+            { Object.keys(errors).length ? <div className='fetch-error'>The form step below is invalid.</div> : null }
+            <Collapsible
+                header={collapsibleHeader}
+                content={collapsibleContent}
+            />
+        </>
     );
 };
 
 const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, errors}) => {
-
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
             <FormStep
@@ -60,6 +63,7 @@ const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, errors
                 formDefinitionChoices={formDefinitionChoices}
                 onDelete={onDelete}
                 onChange={onChange}
+                errors={errors.formSteps ? errors.formSteps[index] : {}}
             />
         );
     });

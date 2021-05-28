@@ -1,4 +1,5 @@
 @import '../../../../../../scss/vars';
+@import '~microscope-sass/lib/color';
 
 // Django admin styling fixes!!
 // These are overridden by the form-builder because of clashing class names
@@ -50,4 +51,10 @@ div#container {
 div#content h1 {
   font-weight: 300;
   font-size: 20px;
+}
+
+.fetch-error {
+    @include color-danger;
+    color: $color-danger;
+    font-weight: bold;
 }

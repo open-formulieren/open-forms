@@ -84,7 +84,11 @@ function reducer(draft, action) {
         }
         case 'CHANGE_STEP': {
             const {index, formDefinitionUuid} = action.payload;
-            draft.formSteps.data[index].formDefinition = draft.formDefinitions[formDefinitionUuid];
+            if (!formDefinitionUuid) {
+                draft.formSteps.data[index].formDefinition = {};
+            } else {
+                draft.formSteps.data[index].formDefinition = draft.formDefinitions[formDefinitionUuid];
+            }
             break;
         }
         /**
@@ -213,10 +217,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             );
             if (!postResponse.ok) {
                 dispatch({type: 'SET_FETCH_ERRORS', payload: postResponse.data});
+                window.scrollTo(0, 0);
                 return;
             }
         } else if (!putResponse.ok) {
             dispatch({type: 'SET_FETCH_ERRORS', payload: putResponse.data});
+            window.scrollTo(0, 0);
             return;
         }
 
@@ -224,20 +230,19 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         window.location = ADMIN_PAGE;
     };
 
-    const hasErrors = state.errors.length;
     return (
         <>
-            {hasErrors ? <div className='fetch-error'>Dit formulier is ongeldig. Corrigeer de onderstaande fouten.</div> : null}
+            {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
             <Fieldset>
                 <FormRow>
                     <Field
                         name='formUuid'
                         label='Form UUID'
                         helpText='Unique identifier for the form'
-                        errors={state.errors.name}
+                        errors={state.errors.uuid}
                         required
                     >
-                        <TextInput value={state.formUuid} onChange={onFieldChange} />
+                        <TextInput value={state.formUuid} onChange={onFieldChange} disabled={true}/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -256,14 +261,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name='formSlug'
                         label='Form slug'
                         helpText='Slug of the form'
-                        errors={state.errors.name}
+                        errors={state.errors.slug}
                         required
                     >
                         <TextInput value={state.formSlug} onChange={onFieldChange} />
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset title='Form steps definitions'>
+            <Fieldset title='Form steps'>
                 { state.formSteps.loading ? <div>Loading form steps...</div> :
                     <FormSteps
                         formSteps={state.formSteps.data}
