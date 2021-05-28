@@ -5,6 +5,11 @@ from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
 
+class HaalCentraalConfigManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("service")
+
+
 class HaalCentraalConfig(SingletonModel):
     """
     global configuration and defaults
@@ -15,6 +20,8 @@ class HaalCentraalConfig(SingletonModel):
         verbose_name=_("Haal Centraal API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
-        related_name="haalcentraal_prefill",
+        related_name="+",
         null=True,
     )
+
+    objects = HaalCentraalConfigManager()
