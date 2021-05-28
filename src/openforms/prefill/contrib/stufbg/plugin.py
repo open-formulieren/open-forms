@@ -5,13 +5,12 @@ from django.utils.translation import gettext_lazy as _
 import xmltodict
 
 from openforms.submissions.models import Submission
-from stuf.stuf_bg.enum import FieldChoices
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS
+from stuf.stuf_bg.enum import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...registry import register
-
 
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
     "bsn": "inp.bsn",

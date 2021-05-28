@@ -72,15 +72,15 @@ class StufBGConfigTests(TestCase):
                 doc.getroot()
                 .xpath(
                     "soap:Body",
-                    namespaces={
-                        "soap": "http://schemas.xmlsoap.org/soap/envelope/"
-                    },
+                    namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
                 )[0]
                 .getchildren()[0]
             )
             if not xmlschema.validate(el):
-                self.fail(f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
-                          f'Error: {xmlschema.error_log.last_error.message}')
+                self.fail(
+                    f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
+                    f"Error: {xmlschema.error_log.last_error.message}"
+                )
 
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.attributes.keys()
