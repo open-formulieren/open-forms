@@ -12,7 +12,7 @@ import requests_mock
 from freezegun import freeze_time
 from lxml import etree
 
-from stuf.stuf_bg.constants import Attributes
+from stuf.stuf_bg.enum import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import SoapServiceFactory
 
@@ -55,10 +55,11 @@ class StufBGConfigTests(TestCase):
                 ),
             )
             self.client.get_values_for_attributes(
-                "999992314", list(Attributes.values.keys())
+                "999992314", list(FieldChoices.values.keys())
             )
 
         self.assertEqual(m.last_request.method, "POST")
+
         with open(
             f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
             "r",
@@ -82,7 +83,7 @@ class StufBGConfigTests(TestCase):
                           f'Error: {xmlschema.error_log.last_error.message}')
 
     def test_getting_request_data_returns_valid_data(self):
-        available_attribute = Attributes.attributes.keys()
+        available_attributes = FieldChoices.attributes.keys()
         test_bsn = "999992314"
 
         subsets = []
@@ -90,8 +91,8 @@ class StufBGConfigTests(TestCase):
         # This gets all possible subsets that can be requested and tests them
         # Since the order of attributes matter it is important all possible combinations
         #   are tested to ensure certain combinations aren't invalid
-        for L in range(1, len(available_attribute) + 1):
-            for subset in itertools.combinations(available_attribute, L):
+        for L in range(1, len(available_attributes) + 1):
+            for subset in itertools.combinations(available_attributes, L):
                 subsets.append(list(subset))
 
         with open(

@@ -4,7 +4,7 @@ from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
-from stuf.stuf_bg.constants import Attributes
+from stuf.stuf_bg.enum import FieldChoices
 
 from ..plugin import StufBgPrefill
 
@@ -19,7 +19,7 @@ class StufBgPrefillTests(TestCase):
         client_mock.return_value.get_client.return_value.get_values_for_attributes.return_value = loader.render_to_string(
             "stuf/stuf_bg/tests/responses/StufBgResponse.xml"
         )
-        attributes = Attributes.attributes.keys()
+        attributes = FieldChoices.attributes.keys()
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
 

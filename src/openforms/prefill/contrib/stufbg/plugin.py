@@ -5,15 +5,25 @@ from django.utils.translation import gettext_lazy as _
 import xmltodict
 
 from openforms.submissions.models import Submission
-from stuf.stuf_bg.constants import (
-    NAMESPACE_REPLACEMENTS,
-    Attributes,
-    attributes_to_stuf_bg_mapping,
-)
+from stuf.stuf_bg.enum import FieldChoices
+from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS
 from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...registry import register
+
+
+ATTRIBUTES_TO_STUF_BG_MAPPING = {
+    "bsn": "inp.bsn",
+    "voornamen": "voornamen",
+    "geslachtsnaam": "geslachtsnaam",
+    "straatnaam": "gor.straatnaam",
+    "huisnummer": "aoa.huisnummer",
+    "huisletter": "aoa.huisletter",
+    "huisnummertoevoeging": "aoa.huisnummertoevoeging",
+    "postcode": "aoa.postcode",
+    "woonplaatsNaam": "wpl.woonplaatsNaam",
+}
 
 
 @register("stufbg")
@@ -21,7 +31,7 @@ class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
-        return Attributes.choices
+        return FieldChoices.choices
 
     def get_prefill_values(
         self, submission: Submission, attributes: List[str]
@@ -53,7 +63,7 @@ class StufBgPrefill(BasePlugin):
         response_dict = {}
         for attribute in attributes:
             response_dict[attribute] = data.get(
-                attributes_to_stuf_bg_mapping[attribute]
+                ATTRIBUTES_TO_STUF_BG_MAPPING[attribute]
             )
 
         return response_dict
