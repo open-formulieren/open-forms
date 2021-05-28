@@ -1,15 +1,19 @@
 import React, {useState} from 'react';
 
-const Collapsible = ({title, content}) => {
+const Collapsible = ({header, content}) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const toggleOpen = () => {
+    const toggleOpen = (event) => {
+        event.preventDefault();
         setIsOpen(!isOpen);
     };
 
     return (
         <>
-            <a href='#' onClick={toggleOpen}>{title}</a>
+            <div className="collapsible-header">
+                <div className='collapsible-header-title'>{header}</div>
+                <a href='#' onClick={toggleOpen}>{isOpen ? 'Collapse' : 'Expand'}</a>
+            </div>
             {isOpen ?
                 content : null
             }

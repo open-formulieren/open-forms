@@ -9,8 +9,15 @@ const FormIOWrapper = React.forwardRef((props, ref) => (
 
 const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, errors}) => {
     const formRef = useRef(null);
-    const content = (
-        <div>
+    const stepName = `Step ${formStepData.order}:`
+    const confirmDelete = () => {
+        if(window.confirm('Remove step from form?')){
+            onDelete(formStepData.order);
+        }
+    };
+
+    const collapsibleContent = (
+        <div className='form-definition'>
             <FormIOWrapper
               ref={formRef}
               form={formStepData.formDefinition.configuration}
@@ -19,31 +26,27 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, erro
             />
         </div>
     );
-    const stepName = `Step ${formStepData.order}:`
-
-    const confirmDelete = () => {
-        if(window.confirm('Remove step from form?')){
-            onDelete(formStepData.order);
-        }
-    };
-
-    return (
-        <div>
+    const collapsibleHeader = (
+        <>
             <span className="material-icons" onClick={confirmDelete} title='delete'>
                 delete
             </span>
-            <span>{stepName}</span>
+            <span className="step-name">{stepName}</span>
             <Select
                 name="Form definition"
                 choices={formDefinitionChoices}
                 value={formStepData.formDefinition.uuid}
                 onChange={(event) => {onChange(event, formStepData.order)}}
+                className={"step-select"}
             />
-            <Collapsible
-                title='Expand'
-                content={content}
-            />
-        </div>
+        </>
+    );
+
+    return (
+        <Collapsible
+            header={collapsibleHeader}
+            content={collapsibleContent}
+        />
     );
 };
 
