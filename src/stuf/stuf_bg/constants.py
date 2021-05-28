@@ -33,7 +33,7 @@ class Attributes(DjangoChoices):
 
 attributes_to_stuf_bg_mapping = {
     "bsn": "inp.bsn",
-    "voornaam": "voornaam",
+    "voornamen": "voornamen",
     "geslachtsnaam": "geslachtsnaam",
     "straatnaam": "gor.straatnaam",
     "huisnummer": "aoa.huisnummer",

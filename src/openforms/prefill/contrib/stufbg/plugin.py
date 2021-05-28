@@ -41,17 +41,18 @@ class StufBgPrefill(BasePlugin):
         )
 
         try:
-            address = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"][
-                "object"
-            ]["verblijfsadres"]
+            data = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
         except KeyError:
             # TODO Do we want to throw our own exception here?  This should never happen
-            address = {}
+            data = {}
+
+        for key, value in data.get("verblijfsadres", {}).items():
+            # Copy verblijfsadres fields up a level for easier access
+            data[key] = value
 
         response_dict = {}
-
         for attribute in attributes:
-            response_dict[attribute] = address.get(
+            response_dict[attribute] = data.get(
                 attributes_to_stuf_bg_mapping[attribute]
             )
 

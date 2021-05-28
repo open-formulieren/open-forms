@@ -1,0 +1,44 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:npsLa01>
+            <ns:stuurgegevens>
+                <StUF:berichtcode>La01</StUF:berichtcode>
+                <StUF:zender>
+                    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+                    <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
+                    <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+                    <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
+                    <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
+                </StUF:ontvanger>
+                <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
+                <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+            </ns:stuurgegevens>
+            <ns:parameters>
+                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+            </ns:parameters>
+            <ns:antwoord>
+                <ns:object StUF:entiteittype="NPS">
+                    <ns:inp.bsn>999992314</ns:inp.bsn>
+                    <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
+                    <ns:voornamen>Media</ns:voornamen>
+                    <ns:verblijfsadres>
+                        <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
+                        <ns:gor.straatnaam>Straat</ns:gor.straatnaam>
+                        <ns:aoa.postcode>2525AB</ns:aoa.postcode>
+                        <ns:aoa.huisnummer>117</ns:aoa.huisnummer>
+                        <ns:aoa.huisletter>A</ns:aoa.huisletter>
+                        <ns:aoa.huisnummertoevoeging>B</ns:aoa.huisnummertoevoeging>
+                    </ns:verblijfsadres>
+                </ns:object>
+            </ns:antwoord>
+        </ns:npsLa01>
+    </soapenv:Body>
+</soapenv:Envelope>
