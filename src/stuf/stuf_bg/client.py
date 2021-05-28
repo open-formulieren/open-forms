@@ -42,26 +42,6 @@ class StufBGClient:
 
     def _make_request(self, data):
 
-        # TODO Move this validation to a unit test
-        # with open(
-        #     f"{settings.DJANGO_PROJECT_DIR}/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
-        #     "r",
-        # ) as f:
-        #     xmlschema_doc = etree.parse(f)
-        #     xmlschema = etree.XMLSchema(xmlschema_doc)
-        #
-        # doc = etree.parse(BytesIO(bytes(data, encoding="UTF-8")))
-        # el = (
-        #     doc.getroot()
-        #     .xpath(
-        #         "soap:Body",
-        #         namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-        #     )[0]
-        #     .getchildren()[0]
-        # )
-        # if not xmlschema.validate(el):
-        #     raise ValidationError(xmlschema.error_log.last_error.message)
-
         response = requests.post(
             self.service.url,
             data=data,
@@ -78,7 +58,7 @@ class StufBGClient:
             context.update({attribute: attribute})
         context.update({"bsn": bsn})
 
-        template = "stuf/stuf_bg/templates/StufBgRequest.xml"
+        template = "stuf/stuf_bg/templates/StufBgRequestAlles.xml"
 
         return loader.render_to_string(template, context)
 

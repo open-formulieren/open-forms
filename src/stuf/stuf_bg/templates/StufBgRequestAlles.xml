@@ -73,42 +73,11 @@
             </ns:parameters>
             <!--Optional:-->
             <ns:gelijk StUF:entiteittype="NPS">
-                {#             TODO Check is this escape is needed.  Django should auto-escape this.  Add unit test to check this #}
                 <ns:inp.bsn>{{ bsn|escape }}</ns:inp.bsn>
             </ns:gelijk>
             <!--Optional:-->
             <ns:scope>
-                <ns:object StUF:entiteittype="NPS">
-                    <ns:inp.bsn/>
-                    {% if voornaam %}
-                        <ns:voornamen/>
-                    {% endif %}
-                    {% if geslachtsnaam %}
-                        <ns:geslachtsnaam/>
-                    {% endif %}
-                    {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
-                        <ns:verblijfsadres>
-                            {% if straatnaam %}
-                                <ns:gor.straatnaam/>
-                            {% endif %}
-{#                            {% if huisnummer %}#}
-{#                                <ns:aoa.huisnummer/>#}
-{#                            {% endif %}#}
-{#                            {% if huisletter %}#}
-{#                                <ns:aoa.huisletter/>#}
-{#                            {% endif %}#}
-                            {% if huisnummertoevoeging %}
-                                <ns:aoa.huisnummertoevoeging/>
-                            {% endif %}
-{#                            {% if postcode %}#}
-{#                                <ns:aoa.postcode/>#}
-{#                            {% endif %}#}
-{#                            {% if woonplaatsNaam %}#}
-{#                                <ns:wpl.woonplaatsNaam/>#}
-{#                            {% endif %}#}
-                        </ns:verblijfsadres>
-                    {% endif %}
-                </ns:object>
+                <ns:object StUF:entiteittype="NPS" StUF:scope="alles" />
             </ns:scope>
         </ns:npsLv01>
     </soapenv:Body>

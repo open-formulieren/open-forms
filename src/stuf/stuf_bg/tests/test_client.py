@@ -1,12 +1,16 @@
+import itertools
 import uuid
+from io import BytesIO
 from unittest.mock import patch
 
+from django.conf import settings
 from django.template import loader
 from django.test import TestCase
 from django.utils import timezone
 
 import requests_mock
 from freezegun import freeze_time
+from lxml import etree
 
 from stuf.stuf_bg.constants import Attributes
 from stuf.stuf_bg.models import StufBGConfig
@@ -62,3 +66,42 @@ class StufBGConfigTests(TestCase):
         self.assertIn("B", str(response_data))
         self.assertIn("1015 CJ", str(response_data))
         self.assertIn("Amsterdam", str(response_data))
+
+    def test_getting_request_data_returns_valid_data(self):
+        available_attribute = Attributes.attributes.keys()
+        test_bsn = "999992314"
+
+        subsets = []
+
+        # This gets all possible subsets that can be requested and tests them
+        # Possibly overkill but this ensure certain combinations won't fail while others pass
+        for L in range(1, len(available_attribute) + 1):
+            for subset in itertools.combinations(available_attribute, L):
+                subsets.append(list(subset))
+
+        with open(
+            f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
+            "r",
+        ) as f:
+            xmlschema_doc = etree.parse(f)
+            xmlschema = etree.XMLSchema(xmlschema_doc)
+
+            for subset in subsets:
+                with self.subTest(subset=subset):
+                    data = self.client.get_request_data(test_bsn, subset)
+                    doc = etree.parse(BytesIO(bytes(data, encoding="UTF-8")))
+                    el = (
+                        doc.getroot()
+                        .xpath(
+                            "soap:Body",
+                            namespaces={
+                                "soap": "http://schemas.xmlsoap.org/soap/envelope/"
+                            },
+                        )[0]
+                        .getchildren()[0]
+                    )
+                    if not xmlschema.validate(el):
+                        self.fail(
+                            f'Attributes "{subset}" produces an invalid xml '
+                            f"with error {xmlschema.error_log.last_error.message}"
+                        )
