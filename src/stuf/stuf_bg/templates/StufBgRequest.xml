@@ -89,8 +89,14 @@
                     {% endif %}
                     {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
                         <ns:verblijfsadres>
+                            {% if woonplaatsNaam %}
+                                <ns:wpl.woonplaatsNaam xsi:nil="true"/>
+                            {% endif %}
                             {% if straatnaam %}
                                 <ns:gor.straatnaam xsi:nil="true"/>
+                            {% endif %}
+                            {% if postcode %}
+                                <ns:aoa.postcode xsi:nil="true"/>
                             {% endif %}
                             {% if huisnummer %}
                                 <ns:aoa.huisnummer xsi:nil="true"/>
@@ -99,14 +105,8 @@
                                 <ns:aoa.huisletter xsi:nil="true"/>
                             {% endif %}
                             {% if huisnummertoevoeging %}
-                                <ns:aoa.huisnummertoevoeging/>
+                                <ns:aoa.huisnummertoevoeging xsi:nil="true"/>
                             {% endif %}
-{#                            {% if postcode %}#}
-{#                                <ns:aoa.postcode/>#}
-{#                            {% endif %}#}
-{#                            {% if woonplaatsNaam %}#}
-{#                                <ns:wpl.woonplaatsNaam/>#}
-{#                            {% endif %}#}
                         </ns:verblijfsadres>
                     {% endif %}
                 </ns:object>

@@ -74,7 +74,8 @@ class StufBGConfigTests(TestCase):
         subsets = []
 
         # This gets all possible subsets that can be requested and tests them
-        # Possibly overkill but this ensure certain combinations won't fail while others pass
+        # Since the order of attributes matter it is important all possible combinations
+        #   are tested to ensure certain combinations aren't invalid
         for L in range(1, len(available_attribute) + 1):
             for subset in itertools.combinations(available_attribute, L):
                 subsets.append(list(subset))
