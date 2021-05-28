@@ -54,18 +54,32 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            response_data = self.client.get_values_for_attributes(
+            self.client.get_values_for_attributes(
                 "999992314", list(Attributes.values.keys())
             )
-            # TODO Add additional asserts to better test call
-            self.assertEqual(m.last_request.method, "POST")
 
-        self.assertIn("Keizersgracht", str(response_data))
-        self.assertIn("117", str(response_data))
-        self.assertIn("A", str(response_data))
-        self.assertIn("B", str(response_data))
-        self.assertIn("1015 CJ", str(response_data))
-        self.assertIn("Amsterdam", str(response_data))
+        self.assertEqual(m.last_request.method, "POST")
+        with open(
+            f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
+            "r",
+        ) as f:
+            xmlschema_doc = etree.parse(f)
+            xmlschema = etree.XMLSchema(xmlschema_doc)
+
+            doc = etree.parse(BytesIO(bytes(m.last_request.body, encoding="UTF-8")))
+            el = (
+                doc.getroot()
+                .xpath(
+                    "soap:Body",
+                    namespaces={
+                        "soap": "http://schemas.xmlsoap.org/soap/envelope/"
+                    },
+                )[0]
+                .getchildren()[0]
+            )
+            if not xmlschema.validate(el):
+                self.fail(f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
+                          f'Error: {xmlschema.error_log.last_error.message}')
 
     def test_getting_request_data_returns_valid_data(self):
         available_attribute = Attributes.attributes.keys()
@@ -103,6 +117,6 @@ class StufBGConfigTests(TestCase):
                     )
                     if not xmlschema.validate(el):
                         self.fail(
-                            f'Attributes "{subset}" produces an invalid xml '
-                            f"with error {xmlschema.error_log.last_error.message}"
+                            f'Attributes "{subset}" produces an invalid StUF-BG. '
+                            f"Error: {xmlschema.error_log.last_error.message}"
                         )
