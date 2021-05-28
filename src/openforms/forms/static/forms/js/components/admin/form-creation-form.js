@@ -9,6 +9,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {get, post, put} from '../utils/fetch';
 import {FormSteps} from './formsteps-formset';
 import SubmitRow from "../formsets/SubmitRow";
+import { v4 as uuidv4 } from 'uuid';
 
 const FORM_ENDPOINT = '/api/v1/_manage_forms';
 const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
@@ -141,7 +142,14 @@ const getFormDefinitions = async (dispatch) => {
 };
 
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
-    const initialState = {...initialFormState, formUuid, formName, formSlug};
+    const initialState = {
+        ...initialFormState,
+        ...{
+            formUuid: formUuid ? formUuid :  uuidv4(),
+            formName: formName,
+            formSlug: formSlug
+        }
+    };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
