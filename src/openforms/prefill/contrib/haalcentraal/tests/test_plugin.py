@@ -11,7 +11,6 @@ from openforms.prefill.contrib.haalcentraal.models import HaalCentraalConfig
 from openforms.prefill.contrib.haalcentraal.plugin import HaalCentraalPrefill
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.utils.objectpath import resolve_object_path
 
 
 def load_json_mock(name):
@@ -28,10 +27,15 @@ def load_binary_mock(name):
 
 class HaalCentraalPrefillTest(TestCase):
     def test_defined_attributes_paths_resolve(self):
-        data = load_json_mock("ingeschrevenpersonen.999990676.json")
-
-        for key, label in Attributes.choices:
-            with self.subTest(f"{label}: {key}"):
+        # data = generate_oas_component(
+        #     "personen",
+        #     "schemas/IngeschrevenPersoon"
+        # )
+        # print(json.dumps(data, indent=4))
+        # data = load_json_mock("ingeschrevenpersonen.999990676.json")
+        data = load_json_mock("ingeschrevenpersonen.999990676-full.json")
+        for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
+            with self.subTest(key):
                 glom(data, key)
 
     @requests_mock.Mocker()
@@ -57,7 +61,6 @@ class HaalCentraalPrefillTest(TestCase):
 
         submission = SubmissionFactory(bsn="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
-            # submission, [Attributes.voornamen, Attributes.geslachtsnaam]
             submission,
             [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )

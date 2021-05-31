@@ -7,7 +7,6 @@ from glom import glom, GlomError
 from requests import RequestException
 
 from openforms.submissions.models import Submission
-from openforms.utils.objectpath import resolve_object_path
 
 from ...base import BasePlugin
 from ...registry import register
@@ -29,6 +28,9 @@ class HaalCentraalPrefill(BasePlugin):
     def get_prefill_values(
         submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
+
+        print('\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n')
+
         if not submission.bsn:
             return {}
 
