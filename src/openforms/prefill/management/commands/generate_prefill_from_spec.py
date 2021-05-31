@@ -3,8 +3,9 @@ import os.path
 from collections import OrderedDict
 from dataclasses import dataclass
 from json import JSONDecodeError
-from typing import List
+from typing import List, Tuple
 
+import black
 from django.core.management import BaseCommand
 from glom import GlomError, Path, glom
 from zds_client.oas import SchemaFetcher
@@ -60,7 +61,7 @@ def select_call(root_schema, api_path):
     return None
 
 
-def generate_prefill_from_spec_url(url, api_path, output_file, word_map):
+def generate_prefill_from_spec_url(url, api_path, word_map, output):
     schema_fetcher = SchemaFetcher()
     root_schema = schema_fetcher.fetch(url)
 
@@ -76,61 +77,80 @@ def generate_prefill_from_spec_url(url, api_path, output_file, word_map):
         ref = content_type["schema"]["$ref"]
         schema = json_path(root_schema, ref)
     else:
+        schema = content_type["schema"]
         raise NotImplementedError(f"cannot handle embedded schema here")
 
     props = list()
 
-    generate_prefill_from_schema(root_schema, props, schema, word_map)
+    generate_prefill_from_schema(root_schema, props, word_map, schema)
 
-    output_file.write("from django.utils.translation import gettext_lazy as _")
-    output_file.write("from djchoices import ChoiceItem, DjangoChoices")
-    output_file.write("")
-    output_file.write("class Attributes(DjangoChoices):")
-    output_file.write(f"    # schema: {url}")
-    output_file.write(f"    # path:   {api_path}")
-    output_file.write("")
+    output.append("from django.utils.text import format_lazy")
+    output.append("from django.utils.translation import gettext_lazy as _")
+    output.append("from django.utils.translation import pgettext_lazy as pg")
+    output.append("from djchoices import ChoiceItem, DjangoChoices")
+    output.append("")
+    output.append("class Attributes(DjangoChoices):")
+    output.append(f"    # schema: {url}")
+    output.append(f"    # path:   {api_path}")
+    output.append("")
 
     for c in sorted(props, key=lambda o: o.name):
-        output_file.write(f'    {c.name} = ChoiceItem("{c.path}", _("{c.label}"))')
+        # label = " > ".join(word_map[label] for label in c.label)
+        # label = f'_("{label}")'
+
+        if len(c.label) == 1:
+            # label = f'_("{c.label[0]}")'
+            label = f'pg("{c.label[0]}", "{word_map[c.label[0]]}")'
+        else:
+            fmt = " > ".join("{}" for i in range(len(c.label)))
+            # parts = ", ".join(f'_("{word_map[label]}")' for label in c.label)
+            parts = ", ".join(
+                f'pg("{label}", "{word_map[label]}")' for label in c.label
+            )
+            label = f"format_lazy('{fmt}', {parts})"
+        output.append(f'    {c.name} = ChoiceItem("{c.path}", {label})')
 
 
 def generate_prefill_from_schema(
     root_schema: dict,
     props: List,
-    schema: dict,
     words: dict,
+    schema: dict,
     parent: str = "",
-    titles: str = "",
+    labels: Tuple[str] = None,
 ):
     if schema["type"] == "object":
-        for property, sub_schema in schema["properties"].items():
+        for prop, sub_schema in schema["properties"].items():
             if "$ref" in sub_schema:
                 sub_schema = json_path(root_schema, sub_schema["$ref"])
                 if parent:
-                    key = f"{parent}._embedded.{property}"
+                    key = f"{parent}._embedded.{prop}"
                 else:
-                    key = f"_embedded.{property}"
+                    key = f"_embedded.{prop}"
             else:
                 if parent:
-                    key = f"{parent}.{property}"
+                    key = f"{parent}.{prop}"
                 else:
-                    key = property
+                    key = prop
 
-            title = sub_schema.get("title")
-            if title:
-                if title in words:
-                    title = words[title]
+            label = sub_schema.get("title")
+            if label:
+                if label in words:
+                    # label = words[label]
+                    pass
                 else:
-                    words[title] = f"__{title}__"
+                    words[label] = f"__{label}__"
 
-                if titles:
-                    title = f"{titles} > {title}"
+                label = (label,)
+                if labels:
+                    # title = f"{titles} > {title}"
+                    label = labels + label
             else:
-                title = titles
+                label = labels
 
             if sub_schema["type"] == "object":
                 generate_prefill_from_schema(
-                    root_schema, props, sub_schema, words, key, title
+                    root_schema, props, words, sub_schema, key, label
                 )
 
             elif sub_schema["type"] == "array":
@@ -141,7 +161,7 @@ def generate_prefill_from_schema(
                 choice = Choice(
                     key.replace("_embedded.", "").replace(".", "_"),
                     key,
-                    title,
+                    label,
                 )
                 props.append(choice)
             else:
@@ -218,7 +238,12 @@ class Command(BaseCommand):
             word_map = dict()
 
         # run generations
-        generate_prefill_from_spec_url(url, options["path"], self.stdout, word_map)
+        output = list()
+        generate_prefill_from_spec_url(url, options["path"], word_map, output)
+
+        mode = black.FileMode()
+        out = black.format_str("\n".join(output), mode=mode)
+        self.stdout.write(out)
 
         # save new words
         with open(words_path, "w") as f:
@@ -226,4 +251,3 @@ class Command(BaseCommand):
             for k in sorted(word_map.keys()):
                 s[k] = word_map[k]
             json.dump(s, f, indent=4)
-

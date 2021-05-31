@@ -29,7 +29,7 @@ class HaalCentraalPrefill(BasePlugin):
         submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
 
-        print('\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n')
+        print("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n")
 
         if not submission.bsn:
             return {}
