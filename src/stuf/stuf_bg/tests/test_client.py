@@ -12,7 +12,7 @@ import requests_mock
 from freezegun import freeze_time
 from lxml import etree
 
-from stuf.stuf_bg.enum import FieldChoices
+from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import SoapServiceFactory
 

@@ -3,25 +3,28 @@ from typing import Any, Dict, Iterable, List, Tuple
 from django.utils.translation import gettext_lazy as _
 
 import xmltodict
+from glom import T as Target, glom
 
 from openforms.submissions.models import Submission
-from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS
-from stuf.stuf_bg.enum import FieldChoices
+from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...registry import register
 
+
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
-    "bsn": "inp.bsn",
-    "voornamen": "voornamen",
-    "geslachtsnaam": "geslachtsnaam",
-    "straatnaam": "gor.straatnaam",
-    "huisnummer": "aoa.huisnummer",
-    "huisletter": "aoa.huisletter",
-    "huisnummertoevoeging": "aoa.huisnummertoevoeging",
-    "postcode": "aoa.postcode",
-    "woonplaatsNaam": "wpl.woonplaatsNaam",
+    FieldChoices.bsn: Target["inp.bsn"],
+    FieldChoices.voornamen: Target["voornamen"],
+    FieldChoices.geslachtsnaam: Target["geslachtsnaam"],
+    FieldChoices.straatnaam: Target["verblijfsadres"]["gor.straatnaam"],
+    FieldChoices.huisnummer: Target["verblijfsadres"]["aoa.huisnummer"],
+    FieldChoices.huisletter: Target["verblijfsadres"]["aoa.huisletter"],
+    FieldChoices.huisnummertoevoeging: Target["verblijfsadres"][
+        "aoa.huisnummertoevoeging"
+    ],
+    FieldChoices.postcode: Target["verblijfsadres"]["aoa.postcode"],
+    FieldChoices.woonplaatsNaam: Target["verblijfsadres"]["wpl.woonplaatsNaam"],
 }
 
 
@@ -35,7 +38,7 @@ class StufBgPrefill(BasePlugin):
     def get_prefill_values(
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
-        if submission.bsn is None:
+        if not submission.bsn:
             #  If there is no bsn we can't prefill any values so just return
             return {}
 
@@ -55,14 +58,10 @@ class StufBgPrefill(BasePlugin):
             # TODO Do we want to throw our own exception here?  This should never happen
             data = {}
 
-        for key, value in data.get("verblijfsadres", {}).items():
-            # Copy verblijfsadres fields up a level for easier access
-            data[key] = value
-
         response_dict = {}
         for attribute in attributes:
-            response_dict[attribute] = data.get(
-                ATTRIBUTES_TO_STUF_BG_MAPPING[attribute]
+            response_dict[attribute] = glom(
+                data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None
             )
 
         return response_dict

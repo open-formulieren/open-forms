@@ -4,7 +4,7 @@ from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
-from stuf.stuf_bg.enum import FieldChoices
+from stuf.stuf_bg.constants import FieldChoices
 
 from ..plugin import StufBgPrefill
 
