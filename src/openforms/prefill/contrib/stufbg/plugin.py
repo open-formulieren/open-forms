@@ -12,7 +12,6 @@ from stuf.stuf_bg.models import StufBGConfig
 from ...base import BasePlugin
 from ...registry import register
 
-
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.bsn: Target["inp.bsn"],
     FieldChoices.voornamen: Target["voornamen"],
