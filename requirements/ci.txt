@@ -25,6 +25,7 @@ attrs==20.3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   glom
     #   jsonschema
     #   pytest
 babel==2.9.1
@@ -38,6 +39,12 @@ billiard==3.6.4.0
     #   celery
 black==20.8b1
     # via -r requirements/test-tools.in
+boltons==21.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   face
+    #   glom
 celery==4.4.7
     # via
     #   -c requirements/base.txt
@@ -239,6 +246,11 @@ et-xmlfile==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   openpyxl
+face==20.1.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   glom
 factory-boy==3.0.1
     # via -r requirements/test-tools.in
 faker==7.0.1
@@ -260,6 +272,10 @@ gemma-zds-client==1.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
+glom==20.11.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 humanize==3.5.0
     # via
     #   -c requirements/base.txt
