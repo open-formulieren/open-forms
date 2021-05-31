@@ -11,9 +11,15 @@
 amqp==2.6.1
     # via kombu
 attrs==20.3.0
-    # via jsonschema
+    # via
+    #   glom
+    #   jsonschema
 billiard==3.6.4.0
     # via celery
+boltons==21.0.0
+    # via
+    #   face
+    #   glom
 celery==4.4.7
     # via
     #   -r requirements/base.in
@@ -31,6 +37,7 @@ cryptography==3.4.7
     # via pyopenssl
 defusedxml==0.6.0
     # via
+    #   -r requirements/base.in
     #   digid-eherkenning
     #   python3-saml
 django-admin-index==1.4.0
@@ -120,12 +127,16 @@ elastic-apm==5.8.1
     # via -r requirements/base.in
 et-xmlfile==1.1.0
     # via openpyxl
+face==20.1.1
+    # via glom
 faker==7.0.1
     # via zgw-consumers
 flower==0.9.7
     # via -r requirements/base.in
 gemma-zds-client==1.0.0
     # via zgw-consumers
+glom==20.11.0
+    # via -r requirements/base.in
 humanize==3.5.0
     # via flower
 idna==2.10
@@ -227,6 +238,8 @@ vine==1.3.0
     #   flower
 xmlsec==1.3.10
     # via python3-saml
+xmltodict==0.12.0
+    # via -r requirements/base.in
 zgw-consumers==0.15.2
     # via -r requirements/base.in
 

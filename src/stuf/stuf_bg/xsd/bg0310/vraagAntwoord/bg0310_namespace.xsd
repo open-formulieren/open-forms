@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/" name="StUF-BG0310">
+  <import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_msg_stuf_vraagAntwoord.xsd"/>
+  <import namespace="http://www.egem.nl/StUF/sector/bg/0310" schemaLocation="bg0310_msg_vraagAntwoord.xsd"/>
+</schema>

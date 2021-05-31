@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031002">
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_msg_stuf_prs.xsd"/>
+	<include schemaLocation="bg0310_ent_prs.xsd"/>
+	<annotation>
+		<documentation xml:lang="nl">
+			16 september 2014 Joost Wijnings: 
+				- In element vesLa01-prs-Vestiging voor de stuurgegevens werd verwezen naar type StUF:stuurgegevensLa01-prs-NatuurlijkPersoon. Dat moest zijn StUF:stuurgegevensLa01-prs-Vestiging. Dit is gecorrigeerd. (issue PRS-07)
+				- In element vesLa01-prs-Vestiging werd voor de parameters verwezen naar parametersLa01-prs-NatuurlijkPersoon. Dat moest zijn StUF:parametersLa01-prs-Vestiging. Dit is gecorrigeerd. (issue PRS-10)
+
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>2</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<element name="npsLv01-prs-NatuurlijkPersoon">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLv01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLv01-prs-NatuurlijkPersoon"/>
+				<group ref="BG:prs-NatuurlijkPersoonBody"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="npsLa01-prs-NatuurlijkPersoon">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLa01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLa01-prs-NatuurlijkPersoon"/>
+				<element name="melding" type="StUF:Melding" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="antwoord">
+					<complexType>
+						<sequence>
+							<element name="object" type="BG:NPS-antwoord-prs-r"/>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="npsLv01-prs-GezinssituatieOpAdresAanvrager">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLv01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLv01-prs-NatuurlijkPersoon"/>
+				<group ref="BG:prs-GezinssituatieOpAdresAanvragerBody"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="npsLa01-prs-GezinssituatieOpAdresAanvrager">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLa01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLa01-prs-NatuurlijkPersoon"/>
+				<element name="melding" type="StUF:Melding" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="antwoord">
+					<complexType>
+						<sequence>
+							<element name="object" type="BG:NPS-prs-gezin-aanvrager-r"/>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="npsLv01-prs-KinderenVanAanvrager">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLv01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLv01-prs-NatuurlijkPersoon"/>
+				<group ref="BG:prs-KinderenVanAanvragerBody"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="npsLa01-prs-KinderenVanAanvrager">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLa01-prs-NatuurlijkPersoon"/>
+				<element name="parameters" type="StUF:parametersLa01-prs-NatuurlijkPersoon"/>
+				<element name="melding" type="StUF:Melding" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="antwoord">
+					<complexType>
+						<sequence>
+							<element name="object" type="BG:NPS-prs-kinderen-aanvrager-r"/>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="vesLv01-prs-Vestiging">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLv01-prs-Vestiging"/>
+				<element name="parameters" type="StUF:parametersLv01-prs-Vestiging"/>
+				<group ref="BG:prs-VestigingBody"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="vesLa01-prs-Vestiging">
+		<complexType>
+			<sequence>
+				<element name="stuurgegevens" type="StUF:stuurgegevensLa01-prs-Vestiging"/>
+				<element name="parameters" type="StUF:parametersLa01-prs-Vestiging"/>
+				<element name="melding" type="StUF:Melding" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="antwoord">
+					<complexType>
+						<sequence>
+							<element name="object" type="BG:VES-antwoord-prs-r"/>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<group name="prs-NatuurlijkPersoonBody">
+		<sequence>
+			<element name="gelijk" type="BG:NPS-vraagSelectie-prs-r"/>
+			<element name="scope">
+				<complexType>
+					<sequence>
+						<element name="object" type="BG:NPS-scope-prs-r"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</group>
+	<group name="prs-GezinssituatieOpAdresAanvragerBody">
+		<sequence>
+			<element name="gelijk" type="BG:NPS-vraagSelectie-prs-r"/>
+			<element name="scope">
+				<complexType>
+					<sequence>
+						<element name="object" type="BG:NPS-scope-prs-gezinsituatieOpAdresAanvrager-r"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</group>
+	<group name="prs-KinderenVanAanvragerBody">
+		<sequence>
+			<element name="gelijk" type="BG:NPS-vraagSelectie-prs-r"/>
+			<element name="scope">
+				<complexType>
+					<sequence>
+						<element name="object" type="BG:NPS-scope-prs-kinderenVanAanvrager-r"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</group>
+	<group name="prs-VestigingBody">
+		<sequence>
+			<element name="gelijk" type="BG:VES-vraagSelectie-prs-r"/>
+			<element name="scope">
+				<complexType>
+					<sequence>
+						<element name="object" type="BG:VES-scope-prs-r"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</group>
+</schema>

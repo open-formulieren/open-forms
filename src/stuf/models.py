@@ -110,5 +110,14 @@ class SoapService(models.Model):
         verbose_name = _("SOAP service")
         verbose_name_plural = _("SOAP services")
 
+    def get_cert(self):
+        cert = (
+            (self.certificate.path, self.certificate_key.path)
+            if self.certificate and self.certificate_key
+            else (None, None)
+        )
+
+        return cert
+
     def __str__(self):
         return f"{self.label} ({self.url})"

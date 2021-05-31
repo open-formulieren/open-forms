@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 rel. 2 sp1 (http://www.altova.com) by Michiel Verhoef (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031003">
+	<include schemaLocation="../vraagAntwoord/bg0310_ent_vraagAntwoord.xsd"/>
+	<include schemaLocation="bg0310_simpleTypes_prs.xsd"/>
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="../../0301/stuf0301mtom.xsd"/>
+	<annotation>
+		<documentation>
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-13:
+					- In CorrespondentieAdresGrp-prs-r attribuut 'nillable=false' voor postcode binnen correspondentieadres (was 'nillable=true')
+					- In VerblijfsadresGrpVes-prs-r conform spec ('o*') attribuut 'nillable=true' gezet voor aoa.huisnummer, aoa.postcode, gor.straatnaam, wpl.woonplaatsNaam.
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-12:
+					- base van CorrespondentieAdresGrp-scope-prs-r gewijzigd van BG:CorrespondentieAdresGrp-kerngegevens naar BG:CorrespondentieAdresGrp-basis (conform StUF-BG bericht vesLv01)
+					- dezelfde restrictie gemaakt als in de oude situatie met als verschil nu de choice voor normaal/postadres op minOccurs=1, maxOccurs=2.
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-18:
+					- acd.code binnen NPS-prs-gezin-aanvrager-r een maxOccurs van 3 gegeven in plaats van 1.
+					- acd.code binnen NPS-prs-kinderen-aanvrager-r een maxOrrcus van 3 gegeven in plaats van 1.
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-15:
+					- uit NPSNAT-antwoord-prs-r de volgende elementen verwijderd via restrictie:
+						- BG:inOnderzoek
+						- StUF:tijdvakRelatie
+						- StUF:tijdvakGeldigheid
+						- StUF:tijdstipRegistratie
+				17 september 2014 Joost Wijnings: in het kader van issue PRS-11:
+					- ComplexType CorrespondentieAdresGrp-scope-prs-r toegevoegd (obv CorrespondentieAdresGrp-prs-r met als verschil nillable=true voor BG:wpl.woonplaatsNaam)
+					- Type gewijzigd naar het nieuwe complexType in:
+						- NPS-scope-prs-r
+						- NPS-scope-prs-gezinsituatieOpAdresAanvrager-r
+						- NPS-scope-prs-kinderenVanAanvrager-r
+						- VES-scope-prs-r
+				16 september 2014 Joost Wijnings: in het kader van issue PRS-09:
+					- ComplexType VerblijfsadresGrpVes-prs-r toegevoegd, omdat VerblijfsadresGrp-prs-r niet voor vestigingen bruikbaar is.
+					- Type van 'verblijfsadres' binnen VES-antwoord-prs-r gewijzigd naar VerblijfsadresGrpVes-prs-r.
+					- ComplexType VerblijfsadresGrpVes-scope-prs-r toegevoegd
+					- Type van 'verblijfsadres' binnen VES-scope-prs-r gewijzigd naar VerblijfsadresGrpVes-scope-prs-r
+					- Choice van verblijfsadres/verblijfbuitenland binnen 'VES-antwoord-prs-r' aangepast naar min en max van '1'.
+
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			   - issue 396051: 11 februari 2015 Michiel Verhoef: ComplexType VerblijfsadresGrpVes-scope-prs-r uitgebreid met verplicht element
+							   inp:locatiebeschrijving
+
+			   Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031002 zijn de volgende wijzigingen doorgevoerd:
+			   - Patchhistorie gecorrigeerd.
+			   - issue 487481: 28-01-2016 Michiel Verhoef: verblijfsadres Buitenland CorrespondentieAdresGrp-scope-prs-r aangepast naar schema:
+							   onderliggende elementen optioneel gemaakt.
+			   - issue 487482: 28-01-2016 Michiel Verhoef: NPS-scope-prs-gezinsituatieOpAdresAanvrager-r  element heeftAlsNationaliteit optioneel gemaakt
+							   volgens specificatie. Cardinaliteit aangepast naar 0 - unbounded in verband met antwoordbericht. Idem voor NPS-scope-prs-kinderenVanAanvrager-r
+			   - issue 487483: 28-01-2016 Michiel Verhoef: scope vraagbericht en antwoordbericht gelijk gemaakt
+			   - issue 487296: 15-01-2016 Michiel Verhoef: Prohibited attribuut noValue optioneel gemaakt zodat de berichten weer kunnen voldoen aan de StUF
+							   standaard.
+			   - issue 487296: 04-12-2015 Michiel Verhoef: Prohibited attribuut sleutelVerzendend optioneel gemaakt zodat de berichten weer kunnen voldoen
+							   aan de StUF standaard.
+
+				</documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>3</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<complexType name="VES-antwoord-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Vestiging, zoveel mogelijk overbodige elementen voor pefill
+ verwijderd. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VES-basis">
+				<sequence>
+					<element name="vestigingsNummer" type="BG:VestigingsNummer-r" nillable="false"/>
+					<sequence maxOccurs="unbounded">
+						<element name="handelsnaam" type="BG:Handelsnaam-r" nillable="false"/>
+						<element name="handelsnaamVerkort" type="BG:HandelsnaamVerkort-e" nillable="true"/>
+					</sequence>
+					<choice>
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrpVes-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="sub.url" type="BG:Url-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="VES"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VES-vraagSelectie-prs-r">
+		<annotation>
+			<documentation>Restrictie op Vestiging tot alleen het vestigingsnummer t.b.v. vraagberichten</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VES-vraagSelectie">
+				<sequence>
+					<element name="vestigingsNummer" type="BG:VestigingsNummer-r" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:entiteittype" use="required" fixed="VES"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSNPSOUD-prs-r" final="">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Restrictie op Relatie naar de ouders van een persoon, elementen die niet
+ van belang zijn voor prefill zijn verwijderd. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNPSOUD-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-scope-prs-gezinslid-r" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPSNPSOUD"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+				<attribute ref="StUF:aantalVoorkomens" use="prohibited"/>
+				<attribute ref="StUF:aardAantal" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSNPSKND-prs-r" final="">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Restrictie op Relatie naar de kinderen van een persoon, elementen die niet van belang zijn voor prefill zijn verwijderd. Zonder verblijfsadres. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNPSKND-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-scope-prs-gezinslid-r" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPSNPSKND"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+				<attribute ref="StUF:aantalVoorkomens" use="prohibited"/>
+				<attribute ref="StUF:aardAantal" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSNPSKND-prs-r2" final="">
+		<annotation>
+			<appinfo>
+				<historieMaterieel>J</historieMaterieel>
+				<historieFormeel>J</historieFormeel>
+			</appinfo>
+			<documentation>Restrictie op Relatie naar de kinderen van een persoon, elementen die niet van belang zijn voor prefill zijn verwijderd. Met verblijfsadres. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNPSKND-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-scope-prs-kind-r" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPSNPSKND"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+				<attribute ref="StUF:aantalVoorkomens" use="prohibited"/>
+				<attribute ref="StUF:aardAantal" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSNPSHUW-prs-r">
+		<annotation>
+			<documentation>Restrictie op de (huwelijks)relatie tussen twee NatuurlijkPersonen, elementen die niet van belang zijn voor prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNPSHUW-basis">
+				<sequence>
+					<element name="gerelateerde" type="BG:NPS-scope-prs-gezinslid-r" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPSNPSHUW"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+				<attribute ref="StUF:aantalVoorkomens" use="prohibited"/>
+				<attribute ref="StUF:aardAantal" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPSNAT-antwoord-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNAT-antwoord">
+				<sequence>
+					<element name="gerelateerde" type="BG:NAT-gerelateerde"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-prs-r">
+		<annotation>
+			<documentation>Restrictie op Verblijfsadres, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-antwoord">
+				<sequence>
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-r" nillable="false"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="false"/>
+					<element name="aoa.postcode" type="BG:Postcode-r" nillable="false"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="false"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrpVes-prs-r">
+		<annotation>
+			<documentation>Restrictie op Verblijfsadres specifiek voor VES, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-antwoord">
+				<sequence>
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-r" nillable="true"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true"/>
+					<element name="aoa.postcode" type="BG:Postcode-r" nillable="true"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-prs-r">
+		<annotation>
+			<documentation>Restrictie op Correspontentieadres, elementen die niet van belang zijn
+	 voor prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-kerngegevens">
+				<sequence>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingsObject-r" nillable="false"/>
+					<element name="postcode" type="BG:Postcode-r" nillable="true"/>
+					<choice>
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="CorrespondentieAdresGrp-scope-prs-r">
+		<annotation>
+			<documentation>Restrictie op Correspontentieadres, elementen die niet van belang zijn
+	 voor prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:CorrespondentieAdresGrp-basis">
+				<sequence>
+					<element name="wpl.woonplaatsNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+					<element name="postcode" type="BG:Postcode-e" nillable="true" minOccurs="0"/>
+					<choice maxOccurs="2">
+						<sequence>
+							<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true" minOccurs="0"/>
+							<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true" minOccurs="0"/>
+							<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true" minOccurs="0"/>
+						</sequence>
+						<sequence>
+							<element name="sub.postadresType" type="BG:PostadresType-e" nillable="true" minOccurs="0"/>
+							<element name="sub.postadresNummer" type="BG:PostadresNummer-e" nillable="true" minOccurs="0"/>
+						</sequence>
+					</choice>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-antwoord-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="false"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="false"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-e" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="false"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0" maxOccurs="3"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-vraagSelectie-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon tot alleen het bsn t.b.v. de
+ vraagberichten. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPS-vraagSelectie">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="0"/>
+				</sequence>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-prs-gezin-aanvrager-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon met gezinsleden (gegevens aanvrager) bijvoorbeeld voor een verhuizing , elementen die niet van belang zijn voor prefill
+				zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="false"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="false"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="false"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0" maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0" maxOccurs="3"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsEchtgenootPartner" type="BG:NPSNPSHUW-prs-r" nillable="true" minOccurs="0"/>
+					<element name="inp.heeftAlsKinderen" type="BG:NPSNPSKND-prs-r" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="inp.heeftAlsOuders" type="BG:NPSNPSOUD-prs-r" nillable="true" minOccurs="0" maxOccurs="4"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-prs-kinderen-aanvrager-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon met kinderen (gegevens aanvrager) bijvoorbeeld voor aanvraag leerlingvervoer, elementen die niet van belang zijn voor
+				prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="false"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="false"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice minOccurs="0" maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0" maxOccurs="3"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsKinderen" type="BG:NPSNPSKND-prs-r2" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-prs-gezinslid-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon als gezinslid bijvoorbeeld voor
+ verhuizing (zeer miniem), elementen die niet van belang zijn voor prefill zijn
+				verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="false"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="false"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="false"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-prs-kind-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon als gezinslid bijvoorbeeld voor
+ verhuizing (zeer miniem), elementen die niet van belang zijn voor prefill zijn
+				verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="false"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="false"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="false"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<choice minOccurs="0">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrp-scope-prs-r">
+		<annotation>
+			<documentation>Restrictie op Verblijfsadres, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-antwoord">
+				<sequence>
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-r" nillable="true"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true"/>
+					<element name="aoa.postcode" type="BG:Postcode-r" nillable="true"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-scope-prs-gezinslid-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon als gezinslid bijvoorbeeld voor
+ verhuizing (zeer miniem), elementen die niet van belang zijn voor prefill zijn
+				verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="true"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="true"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-scope-prs-kind-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon als gezinslid bijvoorbeeld voor
+ verhuizing (zeer miniem), elementen die niet van belang zijn voor prefill zijn
+				verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="true"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="true"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="verblijfsadres" type="BG:VerblijfsadresGrp-scope-prs-r"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-scope-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon t.b.v. scope, elementen die niet van belang zijn voor prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-e" nillable="true"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-e" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-e" nillable="true"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-scope-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-scope-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-scope-prs-gezinsituatieOpAdresAanvrager-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon met gezinsleden (gegevens aanvrager) t.b.v. scope. Bijvoorbeeld voor een verhuizing , elementen die niet van belang zijn voor prefill
+				zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="true"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="true"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-scope-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-scope-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsEchtgenootPartner" type="BG:NPSNPSHUW-prs-r" nillable="true"/>
+					<element name="inp.heeftAlsKinderen" type="BG:NPSNPSKND-prs-r" nillable="true"/>
+					<element name="inp.heeftAlsOuders" type="BG:NPSNPSOUD-prs-r" nillable="true"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="NPS-scope-prs-kinderenVanAanvrager-r" final="">
+		<annotation>
+			<documentation>Restrictie op Natuurlijk Persoon met kinderen (gegevens aanvrager)
+ bijvoorbeeld voor aanvraag leerlingvervoer, elementen die niet van belang zijn voor
+				prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:NPSNINING-basis">
+				<sequence>
+					<element name="inp.bsn" type="BG:BSN-r" nillable="true"/>
+					<element name="geslachtsnaam" type="BG:Geslachtsnaam-r" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaam" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="voorletters" type="BG:Voorletters-e" nillable="true"/>
+					<element name="voornamen" type="BG:Voornamen-r" nillable="true"/>
+					<element name="aanduidingNaamgebruik" type="BG:AanduidingNaamgebruik-e" nillable="true"/>
+					<element name="geslachtsnaamPartner" type="BG:Geslachtsnaam-e" nillable="true"/>
+					<element name="voorvoegselGeslachtsnaamPartner" type="BG:VoorvoegselGeslachtsnaam-e" nillable="true"/>
+					<element name="aanhefAanschrijving" type="BG:Aanhef-e" nillable="true" minOccurs="0"/>
+					<element name="voornamenAanschrijving" type="BG:Voornamen-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsnaamAanschrijving" type="BG:Geslachtsnaam-e" nillable="true" minOccurs="0"/>
+					<element name="adellijkeTitelPredikaat" type="BG:AdellijkeTitelPredikaat-e" nillable="true" minOccurs="0"/>
+					<element name="geslachtsaanduiding" type="BG:Geslachtsaanduiding-r" nillable="true"/>
+					<element name="geboortedatum" type="StUF:DatumMetIndicator" nillable="true"/>
+					<element name="inp.geboorteplaats" type="BG:Gemeentenaam-e" nillable="true"/>
+					<element name="inp.geboorteLand" type="BG:Landcode-e" nillable="true"/>
+					<element name="overlijdensdatum" type="StUF:DatumMetIndicator" nillable="true" minOccurs="0"/>
+					<choice maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrp-scope-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-scope-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="acd.code" type="BG:AcademischeTitelCode-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+					<element name="inp.heeftAlsKinderen" type="BG:NPSNPSKND-prs-r2" nillable="true"/>
+					<element name="inp.heeftAlsNationaliteit" type="BG:NPSNAT-antwoord-prs-r" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="NPS"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VerblijfsadresGrpVes-scope-prs-r">
+		<annotation>
+			<documentation>Restrictie op Verblijfsadres voor Vestiging, elementen die niet van belang zijn voor
+ prefill zijn verwijderd.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VerblijfsadresGrp-antwoord">
+				<sequence>
+					<element name="aoa.identificatie" type="BG:ObjectNummering-e" nillable="true"/>
+					<element name="wpl.identificatie" type="BG:WoonplaatsCodering-e" nillable="true"/>
+					<element name="wpl.woonplaatsNaam" type="BG:WoonplaatsNaam-r" nillable="true"/>
+					<element name="gor.openbareRuimteNaam" type="BG:NaamgevingObject-e" nillable="true"/>
+					<element name="gor.straatnaam" type="BG:Straatnaam-e" nillable="true"/>
+					<element name="aoa.postcode" type="BG:Postcode-r" nillable="true"/>
+					<element name="aoa.huisnummer" type="BG:Huisnummering-e" nillable="true"/>
+					<element name="aoa.huisletter" type="BG:Huislettering-e" nillable="true"/>
+					<element name="aoa.huisnummertoevoeging" type="BG:Huisnummertoevoeging-e" nillable="true"/>
+					<element name="inp.locatiebeschrijving" type="BG:Locatiebeschrijving-e" nillable="true"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="VES-scope-prs-r" final="">
+		<annotation>
+			<documentation>Restrictie op Vestiging t.b.v. scope, zoveel mogelijk overbodige elementen voor pefill
+ verwijderd. </documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="BG:VES-basis">
+				<sequence>
+					<element name="vestigingsNummer" type="BG:VestigingsNummer-r" nillable="true"/>
+					<sequence maxOccurs="unbounded">
+						<element name="handelsnaam" type="BG:Handelsnaam-r" nillable="true"/>
+						<element name="handelsnaamVerkort" type="BG:HandelsnaamVerkort-e" nillable="true"/>
+					</sequence>
+					<choice maxOccurs="2">
+						<element name="verblijfsadres" type="BG:VerblijfsadresGrpVes-scope-prs-r"/>
+						<element name="sub.verblijfBuitenland" type="BG:VerblijfBuitenlandGrp" minOccurs="0"/>
+					</choice>
+					<element name="sub.correspondentieAdres" type="BG:CorrespondentieAdresGrp-scope-prs-r" minOccurs="0"/>
+					<element name="sub.telefoonnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.faxnummer" type="BG:Telefoonnummer-e" nillable="true" minOccurs="0"/>
+					<element name="sub.emailadres" type="BG:Emailadres-e" nillable="true" minOccurs="0"/>
+					<element name="sub.url" type="BG:Url-e" nillable="true" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
+				</sequence>
+				<attribute ref="StUF:entiteittype" use="required" fixed="VES"/>
+				<attribute ref="StUF:sleutelVerzendend" use="optional"/>
+				<attribute ref="StUF:sleutelOntvangend" use="prohibited"/>
+				<attribute ref="StUF:sleutelGegevensbeheer" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:scope" use="prohibited"/>
+				<attribute ref="StUF:verwerkingssoort" use="prohibited"/>
+			</restriction>
+		</complexContent>
+	</complexType>
+</schema>

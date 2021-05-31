@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031002">
+	<include schemaLocation="../entiteiten/bg0310_ent_basis.xsd"/>
+	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="../../0301/stuf0301mtom.xsd"/>
+	<annotation>
+		<documentation>
+			Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031000 zijn de volgende wijzigingen doorgevoerd:
+		    - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+
+			Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:
+			- Patchhistorie gecorrigeerd.
+			- issue 487296: 15-01-2016 Michiel Verhoef: Prohibited attribuut noValue optioneel gemaakt zodat de berichten weer kunnen voldoen aan de StUF
+						    standaard.
+			- issue 487296: 04-12-2015 Michiel Verhoef: Prohibited attributen optioneel gemaakt zodat de berichten weer kunnen voldoen aan de StUF standaard.
+
+		   </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>2</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<!--ComplexTypes voor simpleContent. -->
+	<complexType name="VestigingsNummer-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:VestigingsNummer-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:exact"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="BSN-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:BSN-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+				<attribute ref="StUF:exact" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="Voornamen-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:Voornamen-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="Geslachtsnaam-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:Geslachtsnaam-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="Geslachtsaanduiding-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:Geslachtsaanduiding-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="Postcode-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:Postcode-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="WoonplaatsNaam-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:WoonplaatsNaam-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="NaamgevingsObject-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:NaamgevingObject-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="Handelsnaam-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:Handelsnaam-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="HandelsnaamVerkort-r">
+		<annotation>
+			<documentation> Restrictie om de StUF: noValue te verwijderen voor attributen die
+				verplicht van een waarde voorzien moeten worden</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="BG:HandelsnaamVerkort-e">
+				<attribute ref="StUF:noValue" use="optional"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+</schema>

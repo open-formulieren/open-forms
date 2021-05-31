@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 3 (http://www.altova.com) by Maarten van den Broek (messageDesign) -->
+<schema xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031001">
+	<annotation>
+		<documentation>
+			   Dit schema bevat verwijzingen naar de schema's met de elementdefinities, zodat vanuit één schema alle berichtelementen gevalideerd kunnen worden. Dit schema zal elke keer als er een koppelvlak wordt toegevoegd in de namespace http://www.egem.nl/StUF/sector/bg/0310 worden uitgebreid met een verwijzing naar het msg-schema voor dat koppelvlak.
+ 
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031000 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>1</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<include schemaLocation="bag/bg0310_msg_bag.xsd"/>
+	<include schemaLocation="mutatie/bg0310_msg_mutatie.xsd"/>
+	<include schemaLocation="vraagAntwoord/bg0310_msg_vraagAntwoord.xsd"/>
+	<include schemaLocation="prs/bg0310_msg_prs.xsd"/>
+</schema>

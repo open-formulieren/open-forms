@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/StUF0301" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031003">
+	<include schemaLocation="../../0301/stuf0301mtom.xsd"/>
+	<include schemaLocation="../vraagAntwoord/bg0310_msg_stuf_vraagAntwoord.xsd"/>
+	<!-- import namespace="http://www.egem.nl/StUF/sector/bg/0310" schemaLocation="bg0310_simpleTypes_prs.xsd"/ -->
+	<annotation>
+		<documentation> 
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031000 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+			   Wijzigingen t.b.v. patch 22 (1-7-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			   - bug #413262: 2015-04-01 Michiel Verhoef (KING): fixed values van elementen NPS-sortering, VES-sortering en MaximumAantal verwijderd. 
+
+			   Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031002 zijn de volgende wijzigingen doorgevoerd:			
+			   - Patchhistorie gecorrigeerd.
+			   - issue 487296: 2015-12-09 Michiel Verhoef (KING): tijdstipBericht in stuurgegevens optioneel gemaakt om te voldoen aan StUF standaard
+			   - bug #476130: 2015-09-28 Michiel Verhoef (KING): foutieve import van bg0310_simpleTypes_prs.xsd verwijderd.
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>2</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<complexType name="stuurgegevensLv01-prs-NatuurlijkPersoon">
+		<complexContent>
+			<restriction base="StUF:NPS-StuurgegevensLv01">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLv01" fixed="Lv01"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="entiteittype" type="StUF:EntiteittypeNPS" fixed="NPS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="stuurgegevensLa01-prs-NatuurlijkPersoon">
+		<complexContent>
+			<restriction base="StUF:NPS-StuurgegevensLa01">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLa01" fixed="La01"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="crossRefnummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="entiteittype" type="StUF:EntiteittypeNPS" fixed="NPS"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="parametersLv01-prs-NatuurlijkPersoon">
+		<annotation>
+			<documentation>Vraag om één persoon. (hergebruik voor gezinssituatie en persoon met kinderen)</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:NPS-parametersVraagSynchroon">
+				<sequence>
+					<element name="sortering" type="StUF:NPS-sortering"/>
+					<!--  fixed="0" -->
+					<element name="indicatorVervolgvraag" type="boolean" fixed="false"/>
+					<element name="maximumAantal" type="StUF:MaximumAantal"/>
+					<!-- fixed="1" -->
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="parametersLa01-prs-NatuurlijkPersoon">
+		<annotation>
+			<documentation>Antwoord met één persoon.(hergebruik voor gezinssituatie en persoon met kinderen)</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersAntwoordSynchroon">
+				<sequence>
+					<element name="indicatorVervolgvraag" type="boolean" fixed="false"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="stuurgegevensLv01-prs-Vestiging">
+		<complexContent>
+			<restriction base="StUF:VES-StuurgegevensLv01">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLv01" fixed="Lv01"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="entiteittype" type="StUF:EntiteittypeVES" fixed="VES"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="stuurgegevensLa01-prs-Vestiging">
+		<complexContent>
+			<restriction base="StUF:VES-StuurgegevensLa01">
+				<sequence>
+					<element name="berichtcode" type="StUF:BerichtcodeLa01" fixed="La01"/>
+					<element name="zender" type="StUF:Systeem"/>
+					<element name="ontvanger" type="StUF:Systeem"/>
+					<element name="referentienummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="tijdstipBericht" type="StUF:Tijdstip"/>
+					<element name="crossRefnummer" type="StUF:Refnummer" minOccurs="0"/>
+					<element name="entiteittype" type="StUF:EntiteittypeVES" fixed="VES"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="parametersLv01-prs-Vestiging">
+		<annotation>
+			<documentation>Vraag om één vestiging.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:VES-parametersVraagSynchroon">
+				<sequence>
+					<element name="sortering" type="StUF:VES-sortering"/>
+					<!-- fixed="0" -->
+					<element name="indicatorVervolgvraag" type="boolean" fixed="false"/>
+					<element name="maximumAantal" type="StUF:MaximumAantal"/>
+					<!-- fixed="1" -->
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<complexType name="parametersLa01-prs-Vestiging">
+		<annotation>
+			<documentation>Antwoord met één vestiging.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="StUF:ParametersAntwoordSynchroon">
+				<sequence>
+					<element name="indicatorVervolgvraag" type="boolean" fixed="false"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+</schema>

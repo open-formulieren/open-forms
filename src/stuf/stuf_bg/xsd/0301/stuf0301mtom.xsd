@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by Maarten van den Broek (messageDesign) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" targetNamespace="http://www.egem.nl/StUF/StUF0301" elementFormDefault="qualified" attributeFormDefault="unqualified" version="030102">
+	<annotation>
+		<documentation>
+				Dit schema definieert een complexType, een attribute en en een simpleType ten behoeve van het opnemen van binaire bijlagen in StUF-berichten. Het is een uitbreiding op StUF0301 ten behoeve van protocolbinding 0301 die het verzenden van binaire bijlagen door middel van MTOM voorschrijft.
+			
+				Wijziging vergeleken met versie 030100:
+				- import van http://www.w3.org/2005/05/xmlmime verwijst nu naar een bestandslocatie ipv een URL
+
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 030101 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het annotation element is voorzien van een standaard 'appinfo' structuur met daarin informatie over het schema.
+			
+		</documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/StUF0301</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20170401</StUF:patchdatum>
+			<StUF:schemaversie>2</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<include schemaLocation="stuf0301.xsd"/>
+	<import namespace="http://www.w3.org/2005/05/xmlmime" schemaLocation="../xmlmime/xmlmime.xsd"/>
+	<complexType name="BinaireInhoud">
+		<simpleContent>
+			<restriction base="StUF:BinaireInhoud-basis">
+				<attribute ref="StUF:bestandsnaam" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="BinaireInhoud-basis">
+		<simpleContent>
+			<extension base="xmime:base64Binary">
+				<attribute ref="StUF:bestandsnaam"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="BinaireInhoud-vraag">
+		<simpleContent>
+			<restriction base="StUF:BinaireInhoud-basis">
+				<attribute ref="xmime:contentType" use="prohibited"/>
+				<attribute ref="StUF:bestandsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<attribute name="bestandsnaam" type="StUF:Bestandsnaam"/>
+	<simpleType name="Bestandsnaam">
+		<restriction base="string">
+			<maxLength value="255"/>
+		</restriction>
+	</simpleType>
+</schema>

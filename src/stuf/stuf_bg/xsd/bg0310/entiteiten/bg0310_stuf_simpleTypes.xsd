@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
+<schema xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.egem.nl/StUF/StUF0301" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031002">
+	<annotation>
+		<documentation>
+			   Nieuw bestand in verband met nieuwe werkwijze maken sectormodellen
+			   Het schema met restrictions op de in StUF gedefinieerde simpleTypes en complexTypes gebruikt in de definitie van de basisentiteiten in bg0310.
+			
+			   Wijzigingen t.b.v. patch 16 (1-7-2013) vergeleken met versie bg0310_stuf_simpleTypes.xsd v031000:
+			   - ERR267: Voor elke entiteit een simpleType toegevoegd in de vorm 'EntiteittypeXXX' waarbij 'XXX' staat voor de mnemonic van de betreffende entiteit, bijv. 'EntiteittypeAOA'.
+ 
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:			
+			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
+			
+        </documentation>
+		<appinfo>
+			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
+			<StUF:patch>28</StUF:patch>
+			<StUF:patchdatum>20180401</StUF:patchdatum>
+			<StUF:schemaversie>2</StUF:schemaversie>
+		</appinfo>
+	</annotation>
+	<include schemaLocation="../../0301/stuf0301.xsd"/>
+	<!--Definitie van complexTypes en simpleTypes voor inOnderzoek elementen-->
+	<complexType name="InOnderzoekAOA">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekAOA-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekAOA-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekAOAGroepen"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekAOA-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekAOA-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekAOAGroepen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekBeschikkingStatusInWRD">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekBeschikkingStatusInWRD-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekBeschikkingStatusInWRD-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="Beschikking"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekBeschikkingStatusInWRD-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekBeschikkingStatusInWRD-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGEM">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekGEM-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGEM-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekGEMElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGEM-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekGEM-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekGEMElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGOR">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekGOR-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGOR-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekGORGroepen"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekGORElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekGOR-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekGOR-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekGORGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekGORElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekMAC">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekMAC-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekMAC-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekMACGroepen"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekMACElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekMAC-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekMAC-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekMACGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekMACElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNAT">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNAT-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNAT-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNAT-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNAT-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNP">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNNP-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNP-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekNNPGroepen"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekNNPElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNP-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNNP-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekNNPGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekNNPElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNPRPS">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNNPRPS-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNPRPS-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekNNPRPSElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNNPRPS-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNNPRPS-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekNNPRPSElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPS">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNPS-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPS-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:NPSGroepen"/>
+				<attribute name="elementnaam" type="StUF:NPSElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPS-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNPS-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:NPSGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:NPSElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPSNPSHUW">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNPSNPSHUW-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPSNPSHUW-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:NPSNPSHUWGroepen"/>
+				<attribute name="elementnaam" type="StUF:NPSNPSHUWElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekNPSNPSHUW-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekNPSNPSHUW-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:NPSNPSHUWGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:NPSNPSHUWElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekOPR">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekOPR-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekOPR-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="BRA-gegevens"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekOPR-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekOPR-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekPND">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekPND-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekPND-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="BGR-gegevens"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekPND-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekPND-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekTGO">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekTGO-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekTGO-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="BGR-gegevens"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekTGO-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekTGO-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVerblijfplaats">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekVerblijfplaats-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVerblijfplaats-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="Verblijfplaats"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVerblijfplaats-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekVerblijfplaats-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVES">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekVES-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVES-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekVESGroepen"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekVESElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekVES-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekVES-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekVESGroepen" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekVESElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWOZ">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWOZ-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWOZ-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:InOnderzoekWOZGroep"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekWOZElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWOZ-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWOZ-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:InOnderzoekWOZGroep" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekWOZElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWPL">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWPL-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWPL-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" fixed="BRA-gegevens"/>
+				<attribute name="elementnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWPL-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWPL-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWRD">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWRD-basis">
+				<attribute ref="StUF:metagegeven" use="required"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWRD-basis">
+		<simpleContent>
+			<restriction base="StUF:StatusMetagegeven-basis">
+				<attribute name="groepsnaam" type="StUF:Groepsnaam" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekWRDElementen"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<complexType name="InOnderzoekWRD-vraag">
+		<simpleContent>
+			<restriction base="StUF:InOnderzoekWRD-basis">
+				<attribute ref="StUF:metagegeven" use="prohibited"/>
+				<attribute ref="StUF:noValue" use="prohibited"/>
+				<attribute name="elementnaam" type="StUF:InOnderzoekWRDElementen" use="prohibited"/>
+			</restriction>
+		</simpleContent>
+	</complexType>
+	<simpleType name="EntiteittypeACD">
+		<annotation>
+			<documentation>Entiteittype = ACD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="ACD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeAOA">
+		<annotation>
+			<documentation>Entiteittype = AOA</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="AOA"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeARV">
+		<annotation>
+			<documentation>Entiteittype = ARV</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="ARV"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeAVR">
+		<annotation>
+			<documentation>Entiteittype = AVR</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="AVR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeBRT">
+		<annotation>
+			<documentation>Entiteittype = BRT</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="BRT"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeGEM">
+		<annotation>
+			<documentation>Entiteittype = GEM</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="GEM"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeGOR">
+		<annotation>
+			<documentation>Entiteittype = GOR</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="GOR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeHHD">
+		<annotation>
+			<documentation>Entiteittype = HHD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="HHD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeIRE">
+		<annotation>
+			<documentation>Entiteittype = IRE</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="IRE"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeKGM">
+		<annotation>
+			<documentation>Entiteittype = KGM</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="KGM"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeKOZ">
+		<annotation>
+			<documentation>Entiteittype = KOZ</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="KOZ"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeKWD">
+		<annotation>
+			<documentation>Entiteittype = KWD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="KWD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeKZA">
+		<annotation>
+			<documentation>Entiteittype = KZA</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="KZA"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeLND">
+		<annotation>
+			<documentation>Entiteittype = LND</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="LND"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeMAC">
+		<annotation>
+			<documentation>Entiteittype = MAC</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="MAC"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeNAT">
+		<annotation>
+			<documentation>Entiteittype = NAT</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="NAT"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeNNP">
+		<annotation>
+			<documentation>Entiteittype = NNP</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="NNP"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeNPS">
+		<annotation>
+			<documentation>Entiteittype = NPS</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="NPS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeOPR">
+		<annotation>
+			<documentation>Entiteittype = OPR</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="OPR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypePND">
+		<annotation>
+			<documentation>Entiteittype = PND</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="PND"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeRDS">
+		<annotation>
+			<documentation>Entiteittype = RDS</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="RDS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeRPS">
+		<annotation>
+			<documentation>Entiteittype = RPS</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="RPS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeRSD">
+		<annotation>
+			<documentation>Entiteittype = RSD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="RSD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeSBD">
+		<annotation>
+			<documentation>Entiteittype = SBD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="SBD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeSRV">
+		<annotation>
+			<documentation>Entiteittype = SRV</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="SRV"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeSUB">
+		<annotation>
+			<documentation>Entiteittype = SUB</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="SUB"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeTDL">
+		<annotation>
+			<documentation>Entiteittype = TDL</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="TDL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeTGO">
+		<annotation>
+			<documentation>Entiteittype = TGO</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="TGO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeVBT">
+		<annotation>
+			<documentation>Entiteittype = VBT</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="VBT"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeVES">
+		<annotation>
+			<documentation>Entiteittype = VES</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="VES"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWDL">
+		<annotation>
+			<documentation>Entiteittype = WDL</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WDL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWDO">
+		<annotation>
+			<documentation>Entiteittype = WDO</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WDO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWGD">
+		<annotation>
+			<documentation>Entiteittype = WGD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WGD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWOZ">
+		<annotation>
+			<documentation>Entiteittype = WOZ</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WOZ"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWPL">
+		<annotation>
+			<documentation>Entiteittype = WPL</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WPL"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWRD">
+		<annotation>
+			<documentation>Entiteittype = WRD</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WRD"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeWYK">
+		<annotation>
+			<documentation>Entiteittype = WYK</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="WYK"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeZKR">
+		<annotation>
+			<documentation>Entiteittype = ZKR</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="ZKR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="EntiteittypeZRA">
+		<annotation>
+			<documentation>Entiteittype = ZRA</documentation>
+		</annotation>
+		<restriction base="StUF:Entiteittype">
+			<enumeration value="ZRA"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekAOAGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="BRA-gegevens"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekGEMElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="gemeenteNaam"/>
+			<enumeration value="gemeenteGeometrie"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekGORElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="straatnaam"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekGORGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="BRA-gegevens"/>
+			<enumeration value="inliggendeOPR"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekMACElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="kvkNummer"/>
+			<enumeration value="beginObject"/>
+			<enumeration value="datumVoortzetting"/>
+			<enumeration value="eindObject"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekMACGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="Handelsnamen"/>
+			<enumeration value="Activiteiten"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekNNPElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="statutaireNaam"/>
+			<enumeration value="inn.nnpId"/>
+			<enumeration value="inn.rechtsvorm"/>
+			<enumeration value="inn.statutaireZetel"/>
+			<enumeration value="inn.datumVoortzetting"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekNNPGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="VerblijfBuitenland"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekNNPRPSElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="functionarisType"/>
+			<enumeration value="beginRelatie"/>
+			<enumeration value="eindRelatie"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekVESElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="vestigingsNummer"/>
+			<enumeration value="handelsnaam"/>
+			<enumeration value="activiteit"/>
+			<enumeration value="typeringVestiging"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekVESGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="Activiteiten"/>
+			<enumeration value="Handelsnamen"/>
+			<enumeration value="VerblijfBuitenland"/>
+			<enumeration value="Locatieadres"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekWOZElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="wozObjectGeometrie"/>
+			<enumeration value="grondOppervlakte"/>
+			<enumeration value="gebruikscode"/>
+			<enumeration value="ingangsdatumObject"/>
+			<enumeration value="einddatumObject"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekWOZGroep">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="aanduidingWOZobject"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="InOnderzoekWRDElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="waardepeildatum"/>
+			<enumeration value="toestandspeildatum"/>
+			<enumeration value="vastgesteldeWaarde"/>
+			<enumeration value="statusBeschikking"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NPSNPSHUWElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="soortVerbintenis"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NPSNPSHUWGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="sluiting"/>
+			<enumeration value="ontbinding"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NPSElementen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="aanduidingVerblijfstitel"/>
+			<enumeration value="aanduidingBijzonderNederlanderschap"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NPSGroepen">
+		<restriction base="StUF:Groepsnaam">
+			<enumeration value="Gezagsverhouding"/>
+			<enumeration value="Inschrijving"/>
+			<enumeration value="Kiesrecht"/>
+			<enumeration value="Nationaliteit"/>
+			<enumeration value="Overlijden"/>
+			<enumeration value="Persoonsgegevens"/>
+			<enumeration value="Postadres"/>
+			<enumeration value="Reisdocument"/>
+			<enumeration value="VerblijfBuitenland"/>
+			<enumeration value="Verblijfsplaats"/>
+		</restriction>
+	</simpleType>
+</schema>

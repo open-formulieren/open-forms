@@ -1,0 +1,100 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <Timestamp>
+                <Created>{{ created }}</Created>
+                <Expires>{{ expired }}</Expires>
+            </Timestamp>
+            {% if username or password %}
+                <UsernameToken>
+                    {% if username %}
+                        <Username>{{ username }}</Username>
+                    {% endif %}
+                    {% if password %}
+                        <Password>{{ password }}</Password>
+                    {% endif %}
+                </UsernameToken>
+            {% endif %}
+        </Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <ns:npsLv01>
+            <ns:stuurgegevens>
+                <StUF:berichtcode>Lv01</StUF:berichtcode>
+                <StUF:zender>
+                    {% if zender_organisatie %}
+                        <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
+                    {% endif %}
+                    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
+                    {% if zender_administratie %}
+                        <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
+                    {% endif %}
+                    {% if zender_gebruiker %}
+                        <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
+                    {% endif %}
+                </StUF:zender>
+                <StUF:ontvanger>
+                    {% if ontvanger_organisatie %}
+                        <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    {% endif %}
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+                    {% if ontvanger_administratie %}
+                        <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
+                    {% endif %}
+                    {% if ontvanger_gebruiker %}
+                        <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
+                    {% endif %}
+                </StUF:ontvanger>
+                <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
+                <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
+            </ns:stuurgegevens>
+            <ns:parameters>
+                <StUF:sortering>0</StUF:sortering>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+                <StUF:maximumAantal>1</StUF:maximumAantal>
+                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+                <StUF:indicatorAantal>false</StUF:indicatorAantal>
+            </ns:parameters>
+            <ns:gelijk StUF:entiteittype="NPS">
+                <ns:inp.bsn>{{ bsn }}</ns:inp.bsn>
+            </ns:gelijk>
+            <ns:scope>
+                <ns:object StUF:entiteittype="NPS">
+                    <ns:inp.bsn xsi:nil="true"/>
+                    {% if voornaam %}
+                        <ns:voornamen xsi:nil="true"/>
+                    {% endif %}
+                    {% if geslachtsnaam %}
+                        <ns:geslachtsnaam xsi:nil="true"/>
+                    {% endif %}
+                    {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
+                        <ns:verblijfsadres>
+                            {% if woonplaatsNaam %}
+                                <ns:wpl.woonplaatsNaam xsi:nil="true"/>
+                            {% endif %}
+                            {% if straatnaam %}
+                                <ns:gor.straatnaam xsi:nil="true"/>
+                            {% endif %}
+                            {% if postcode %}
+                                <ns:aoa.postcode xsi:nil="true"/>
+                            {% endif %}
+                            {% if huisnummer %}
+                                <ns:aoa.huisnummer xsi:nil="true"/>
+                            {% endif %}
+                            {% if huisletter %}
+                                <ns:aoa.huisletter xsi:nil="true"/>
+                            {% endif %}
+                            {% if huisnummertoevoeging %}
+                                <ns:aoa.huisnummertoevoeging xsi:nil="true"/>
+                            {% endif %}
+                        </ns:verblijfsadres>
+                    {% endif %}
+                </ns:object>
+            </ns:scope>
+        </ns:npsLv01>
+    </soapenv:Body>
+</soapenv:Envelope>
