@@ -8,7 +8,7 @@ const FormIOWrapper = React.forwardRef((props, ref) => (
   <Form {...props} ref={ref} />
 ));
 
-const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, errors}) => {
+const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, onReorder, errors}) => {
     const formRef = useRef(null);
     const stepName = `Step ${formStepData.order}:`
     const confirmDelete = () => {
@@ -27,9 +27,16 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, erro
             />
         </div>
     );
+
     const collapsibleHeader = (
         <>
-            <span className="material-icons" onClick={confirmDelete} title='delete'>
+            <span className="material-icons" onClick={() => onReorder(formStepData.order, 'up')} title='Move up'>
+                keyboard_arrow_up
+            </span>
+            <span className="material-icons" onClick={() => onReorder(formStepData.order, 'down')} title='Move down'>
+                keyboard_arrow_down
+            </span>
+            <span className="material-icons danger" onClick={confirmDelete} title='delete'>
                 delete
             </span>
             <span className="step-name">{stepName}</span>
@@ -54,7 +61,7 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, erro
     );
 };
 
-const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, errors}) => {
+const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReorder, errors}) => {
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
             <FormStep
@@ -63,6 +70,7 @@ const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, errors
                 formDefinitionChoices={formDefinitionChoices}
                 onDelete={onDelete}
                 onChange={onChange}
+                onReorder={onReorder}
                 errors={errors.formSteps ? errors.formSteps[index] : {}}
             />
         );

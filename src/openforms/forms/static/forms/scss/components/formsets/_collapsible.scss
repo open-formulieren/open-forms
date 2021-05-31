@@ -19,9 +19,7 @@
   }
 
   .material-icons {
-    @include color-danger;
     cursor: pointer;
-    color: $color-danger;
   }
 }
 

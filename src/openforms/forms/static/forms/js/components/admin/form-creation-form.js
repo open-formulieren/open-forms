@@ -50,9 +50,6 @@ function reducer(draft, action) {
             draft.formDefinitionChoices = formDefinitionChoices;
             break;
         }
-        /**
-         * FormSteps-level actions
-         */
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = {
                 loading: false,
@@ -60,6 +57,9 @@ function reducer(draft, action) {
             };
             break;
         }
+        /**
+         * FormStep-level actions
+         */
         case 'DELETE_STEP': {
             const index = action.payload;
             const unchangedSteps = draft.formSteps.data.slice(0, index);
@@ -89,6 +89,17 @@ function reducer(draft, action) {
             } else {
                 draft.formSteps.data[index].formDefinition = draft.formDefinitions[formDefinitionUuid];
             }
+            break;
+        }
+        case 'MOVE_UP_STEP': {
+            const index = action.payload;
+            if (index <= 0 || index >= draft.formSteps.data.length) break;
+
+            let updatedSteps = draft.formSteps.data.slice(0, index-1);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index], ...{order: index-1}}]);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index-1], ...{order: index}}]);
+
+            draft.formSteps.data = [...updatedSteps, ...draft.formSteps.data.slice(index+1)];
             break;
         }
         /**
@@ -193,6 +204,20 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         })
     };
 
+    const onStepReorder = (index, direction) => {
+        if (direction === 'up') {
+            dispatch({
+                type: 'MOVE_UP_STEP',
+                payload: index,
+            });
+        } else if (direction === 'down') {
+            dispatch({
+                type: 'MOVE_UP_STEP',
+                payload: index+1,
+            });
+        }
+    };
+
     const onSubmit = async () => {
         const formData = {
             uuid: state.formUuid,
@@ -275,6 +300,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         formDefinitionChoices={state.formDefinitionChoices}
                         onChange={onStepChange}
                         onDelete={onStepDelete}
+                        onReorder={onStepReorder}
                         errors={state.errors}
                     />
                 }
