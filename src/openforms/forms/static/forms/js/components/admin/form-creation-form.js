@@ -256,6 +256,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         window.location = `${ADMIN_PAGE}/${response.data.newPk}/change/`;
     };
 
+    const onExport = async (event) => {
+        event.preventDefault();
+        window.location = `${FORM_ENDPOINT}/${state.formUuid}/export_form`;
+    };
+
     return (
         <>
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
@@ -321,6 +326,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name="_copy"
                         title="Duplicate this form"
                         onClick={onCopy}
+                    />
+                    <input
+                        type="submit"
+                        value="Export"
+                        className="default"
+                        name="_export"
+                        title="Export this form"
+                        onClick={onExport}
                     />
                 </div> : null
             }

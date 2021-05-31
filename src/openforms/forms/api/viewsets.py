@@ -294,6 +294,7 @@ class FormsImportAPIView(views.APIView):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# TODO merge with endpoint above when serializers are merged
 class FormCreationViewSet(
     CreateModelMixin, UpdateModelMixin, viewsets.ReadOnlyModelViewSet
 ):
@@ -310,3 +311,12 @@ class FormCreationViewSet(
         form = self.get_object()
         copied_form = form.copy()
         return Response(data={"new_pk": copied_form.pk})
+
+    @action(detail=True, methods=["GET"])
+    def export_form(self, request: Request, uuid: str) -> HttpResponse:
+        form = self.get_object()
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = f"attachment;filename={form.slug}.zip"
+        call_command("export", form.pk, response=response)
+        response["Content-Length"] = len(response.content)
+        return response
