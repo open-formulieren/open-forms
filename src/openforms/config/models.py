@@ -18,6 +18,13 @@ class GlobalConfiguration(SingletonModel):
         blank=True,
         default=list,
     )
+    enable_react_form = models.BooleanField(
+        _("enable React form page"),
+        default=False,
+        help_text=_(
+            "If enabled, the admin page to create forms will use the new React page."
+        ),
+    )
 
     # for testing purposes!
     default_test_bsn = models.CharField(

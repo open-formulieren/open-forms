@@ -10,6 +10,7 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 from rest_framework.exceptions import ValidationError
 from reversion.admin import VersionAdmin
 
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import BackendChoiceFieldMixin
 
 from ..backends import registry
@@ -44,7 +45,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         "registration_backend",
         "registration_backend_options",
     )
-    # inlines = (FormStepInline,)
+    inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies"]
 
@@ -52,9 +53,17 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         "admin/forms/form/change_list.html"  # override reversion template
     )
 
+    def render_change_form(
+        self, request, context, add=False, change=False, form_url="", obj=None
+    ):
+        config = GlobalConfiguration.get_solo()
+        if config.enable_react_form:
+            self.change_form_template = "admin/forms/form/change_form_react.html"
+        return super().render_change_form(request, context, add, change, form_url, obj)
+
     def _reversion_autoregister(self, model, follow):
         # because this is called in the __init__, it seems to run before the
-        # `AppConfig.ready` hook runs, causing regisgration errors.
+        # `AppConfig.ready` hook runs, causing registration errors.
         pass
 
     def response_post_save_change(self, request, obj):

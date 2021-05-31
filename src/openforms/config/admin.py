@@ -25,7 +25,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Feature flags"),
             {
-                "fields": ("display_sdk_information",),
+                "fields": ("display_sdk_information", "enable_react_form",),
             },
         ),
     )

@@ -46,25 +46,21 @@
 </fieldset>
 {% endblock %}
 
-{% block extrastyle %}
+{% block submit_buttons_bottom %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
-    <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,400,600|Material+Icons|Material+Icons+Outlined" rel="stylesheet">
-{% endblock %}
 
-{% block field_sets %}
-<div
-    class="react-form-create"
-    data-form-uuid="{{ original.uuid|default:'' }}"
-    data-form-name="{{ original.name|default:'' }}"
-    data-form-slug="{{ original.slug|default:'' }}"
-    data-csrftoken="{{ csrf_token }}"
-> {# Managed by React #} </div>
-{% endblock %}
+    {% if has_change_permission %}
+    <div class="submit-row submit-row-extended">
 
+        {% block extra_submit_buttons %}
+            {{ block.super }}
 
-{% block submit_buttons_bottom %}{% endblock %}
+            {% if original %}
+                <input type="submit" value="{% trans 'Export' %}" name="_export"/>
+                <input type="submit" value="{% trans 'Copy' %}" name="_copy"/>
+            {% endif %}
+        {% endblock %}
 
-{% block admin_change_form_document_ready %}
-    <script src="{% static 'bundles/core-js.js' %}"></script>
+    </div>
+    {% endif %}
 {% endblock %}
