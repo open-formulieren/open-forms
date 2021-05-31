@@ -11,10 +11,15 @@ they are available for Django settings initialization.
 """
 import os
 
+import defusedxml
 from dotenv import load_dotenv
 
 
 def setup_env():
+    # install defusedxml - note that this monkeypatches the stdlib and is experimental.
+    # xmltodict only supports defusedexpat, which hasn't been updated since python 3.3
+    defusedxml.defuse_stdlib()
+
     # load the environment variables containing the secrets/config
     dotenv_path = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env")
     load_dotenv(dotenv_path)

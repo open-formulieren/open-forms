@@ -1,5 +1,6 @@
 # Core python libraries
 celery < 5  # Flower does not work with Celery 5
+defusedxml
 glom
 Pillow  # handle images
 psycopg2  # database driver

@@ -37,6 +37,7 @@ cryptography==3.4.7
     # via pyopenssl
 defusedxml==0.6.0
     # via
+    #   -r requirements/base.in
     #   digid-eherkenning
     #   python3-saml
 django-admin-index==1.4.0
