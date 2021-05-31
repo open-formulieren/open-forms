@@ -137,6 +137,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
 
     queryset = Form.objects.filter(active=True, _is_deleted=False)
     lookup_field = "uuid"
+    lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
 
@@ -204,6 +205,20 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
 
         response["Content-Length"] = len(response.content)
         return response
+
+    @action(
+        methods=["get"],
+        detail=False,
+        url_path="(?P<slug>(?![0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})[\w-]+)",
+        url_name="detail-slug",
+        lookup_field="slug",
+        lookup_value_regex="[\w-]+",
+    )
+    def slug(self, request, *args, **kwargs):
+        """
+        Retrieve lookup but use slug field instead of uuid field
+        """
+        return super().retrieve(self, request, *args, **kwargs)
 
     def perform_destroy(self, instance):
         instance._is_deleted = True

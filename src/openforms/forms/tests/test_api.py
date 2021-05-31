@@ -52,6 +52,25 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
 
+    def test_retrieve_form_by_uuid(self):
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["uuid"], str(form.uuid))
+
+    def test_retrieve_form_by_slug(self):
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail-slug", kwargs={"slug": form.slug})
+
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["slug"], form.slug)
+
     def test_create_form_successful(self):
         self.user.is_staff = True
         self.user.save()
