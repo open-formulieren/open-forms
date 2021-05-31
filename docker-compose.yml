@@ -12,6 +12,9 @@ services:
   redis:
     image: redis:6
 
+  sdk:
+    image: openformulieren/open-forms-sdk
+
   busybox:
     image: busybox
     command: /bin/chown -R 1000 /private-media
@@ -33,7 +36,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
-      # Needed for Celery Flower to match the TIME_ZONE configured in the 
+      # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
     volumes:
