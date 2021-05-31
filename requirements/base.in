@@ -1,10 +1,13 @@
 # Core python libraries
 celery < 5  # Flower does not work with Celery 5
+glom
 Pillow  # handle images
 psycopg2  # database driver
 pytz  # handle timezones
 python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
+tablib[xlsx]
+xmltodict
 
 # Framework libraries
 django < 3.0
@@ -47,9 +50,3 @@ flower # task monitoring
 
 # Common Ground integration
 zgw-consumers
-
-tablib[xlsx]
-
-xmltodict
-
-glom
