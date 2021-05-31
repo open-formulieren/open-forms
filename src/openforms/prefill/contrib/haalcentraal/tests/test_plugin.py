@@ -57,7 +57,9 @@ class HaalCentraalPrefillTest(TestCase):
 
         submission = SubmissionFactory(bsn="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
-            submission, [Attributes.voornamen, Attributes.geslachtsnaam]
+            # submission, [Attributes.voornamen, Attributes.geslachtsnaam]
+            submission,
+            [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
         expected = {
             "_embedded.naam.voornamen": "Cornelia Francisca",
