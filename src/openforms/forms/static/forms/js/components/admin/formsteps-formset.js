@@ -72,7 +72,7 @@ FormStep.propTypes = {
     onDelete: PropTypes.func,
     onChange: PropTypes.func,
     onReorder: PropTypes.func,
-    errors: PropTypes.array,
+    errors: PropTypes.object,
 };
 
 const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReorder, errors}) => {
@@ -106,7 +106,7 @@ FormSteps.propTypes = {
     onDelete: PropTypes.func,
     onChange: PropTypes.func,
     onReorder: PropTypes.func,
-    errors: PropTypes.array,
+    errors: PropTypes.object,
 };
 
 export {FormSteps};

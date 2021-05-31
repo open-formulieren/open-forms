@@ -19,6 +19,7 @@ const initialFormState = {
     formName: '',
     formUuid: '',
     formSlug: '',
+    newForm: true,
     formSteps: {
         loading: true,
         data: []
@@ -125,13 +126,7 @@ const getFormData = async (formUuid, dispatch) => {
 
     try {
         const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
-        if (!response.ok && response.status === 404) {
-            // When we are creating a form, the form endpoint doesn't exist yet
-            dispatch({
-                type: 'FORM_STEPS_LOADED',
-                payload: [],
-            });
-        } else if (!response.ok) {
+        if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         } else {
             dispatch({
@@ -162,7 +157,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         ...{
             formUuid: formUuid ? formUuid :  uuidv4(),
             formName: formName,
-            formSlug: formSlug
+            formSlug: formSlug,
+            newForm: !formUuid,
         }
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
@@ -226,33 +222,38 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             formSteps: state.formSteps.data
         };
 
-        // Try to update form
-        const putResponse = await put(
-            `${FORM_ENDPOINT}/${state.formUuid}`,
+        const createOrUpdate = state.newForm ? post : put;
+        const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.formUuid}`;
+
+        const response = await createOrUpdate(
+            endPoint,
             csrftoken,
             formData,
         );
 
-        // If the form doesn't exist yet, create it
-        if (!putResponse.ok && putResponse.status === 404) {
-            const postResponse = await post(
-                FORM_ENDPOINT,
-                csrftoken,
-                formData,
-            );
-            if (!postResponse.ok) {
-                dispatch({type: 'SET_FETCH_ERRORS', payload: postResponse.data});
-                window.scrollTo(0, 0);
-                return;
-            }
-        } else if (!putResponse.ok) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: putResponse.data});
+        if (!response.ok) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
             window.scrollTo(0, 0);
             return;
         }
 
         // redirect back to list/overview page
         window.location = ADMIN_PAGE;
+    };
+
+    const onCopy = async (event) => {
+        event.preventDefault();
+        const response = await post(
+            `${FORM_ENDPOINT}/${state.formUuid}/copy_form`,
+            csrftoken,
+        );
+
+        if (!response.ok) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+            window.scrollTo(0, 0);
+        }
+
+        window.location = `${ADMIN_PAGE}/${response.data.newPk}/change/`;
     };
 
     return (
@@ -311,6 +312,18 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 </a>
             </div>
             <SubmitRow onSubmit={onSubmit} />
+            { !state.newForm ?
+                <div className="submit-row">
+                    <input
+                        type="submit"
+                        value="Copy"
+                        className="default"
+                        name="_copy"
+                        title="Duplicate this form"
+                        onClick={onCopy}
+                    />
+                </div> : null
+            }
         </>
     );
 };

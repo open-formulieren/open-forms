@@ -304,3 +304,9 @@ class FormCreationViewSet(
     lookup_field = "uuid"
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @action(detail=True, methods=["POST"])
+    def copy_form(self, request: Request, uuid: str) -> Response:
+        form = self.get_object()
+        copied_form = form.copy()
+        return Response(data={"new_pk": copied_form.pk})
