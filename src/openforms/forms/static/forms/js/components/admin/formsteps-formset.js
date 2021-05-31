@@ -3,6 +3,8 @@ import {Collapsible} from "../formsets/Collapsible";
 import { Form } from 'react-formio';
 import Select from "../formsets/Select";
 import ErrorList from "../formsets/ErrorList";
+import PropTypes from "prop-types";
+import {FormCreationForm} from "./form-creation-form";
 
 const FormIOWrapper = React.forwardRef((props, ref) => (
   <Form {...props} ref={ref} />
@@ -61,6 +63,18 @@ const FormStep = ({formStepData, formDefinitionChoices, onDelete, onChange, onRe
     );
 };
 
+FormStep.propTypes = {
+    formStepData: PropTypes.shape({
+        formDefinition: PropTypes.object,
+        order: PropTypes.number
+    }),
+    formDefinitionChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    onDelete: PropTypes.func,
+    onChange: PropTypes.func,
+    onReorder: PropTypes.func,
+    errors: PropTypes.array,
+};
+
 const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReorder, errors}) => {
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
@@ -83,5 +97,16 @@ const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReor
     );
 };
 
+FormSteps.propTypes = {
+    formSteps: PropTypes.arrayOf(PropTypes.shape({
+        formDefinition: PropTypes.object,
+        order: PropTypes.number
+    })),
+    formDefinitionChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    onDelete: PropTypes.func,
+    onChange: PropTypes.func,
+    onReorder: PropTypes.func,
+    errors: PropTypes.array,
+};
 
 export {FormSteps};

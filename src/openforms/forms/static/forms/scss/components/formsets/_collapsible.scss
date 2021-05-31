@@ -21,6 +21,10 @@
   .material-icons {
     cursor: pointer;
   }
+
+  .danger {
+    @include color-danger;
+  }
 }
 
 .form-definition {
