@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict, Iterable, List, Tuple
 
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +12,8 @@ from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...registry import register
+
+logger = logging.getLogger(__name__)
 
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.bsn: Target["inp.bsn"],
@@ -53,9 +56,13 @@ class StufBgPrefill(BasePlugin):
 
         try:
             data = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
-        except KeyError:
-            # TODO Do we want to throw our own exception here?  This should never happen
-            data = {}
+        except KeyError as exc:
+            logger.error(
+                "Response data has an unexpected shape",
+                extra={"response": dict_response},
+                exc_info=exc,
+            )
+            return {}
 
         response_dict = {}
         for attribute in attributes:
