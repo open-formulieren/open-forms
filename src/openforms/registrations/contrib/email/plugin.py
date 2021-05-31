@@ -35,11 +35,9 @@ def email_submission(submission: Submission, options: dict) -> None:
     )
 
     template += """
-        <table>
         {% for field, value in submitted_data.items %}
             {{field}}: {{value}}
         {% endfor %}
-        </table>
     """
 
     # render the e-mail body - the template from this model.
