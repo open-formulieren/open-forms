@@ -217,7 +217,6 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
-    @expectedFailure
     def test_import_form_definition_slug_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
@@ -260,7 +259,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.configuration, old_fd_config)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
-        self.assertEqual(fd2.slug, f"{form_definition.slug}-1")
+        self.assertEqual(fd2.slug, f"{form_definition.slug}-2")
 
         form_steps = FormStep.objects.all()
         fs2 = form_steps.last()
