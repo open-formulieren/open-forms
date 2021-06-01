@@ -12,7 +12,7 @@
   hosts: open_forms_sdk
 
   vars:
-    sdk_image: docker.io/openformulieren/open-forms-sdk@sha256:a48ceaca5233bf8179bab58adb81b7829f3daf1bfb80c68b15970a3513461350
+    sdk_image: docker.io/openformulieren/open-forms-sdk@sha256:dbd44d5700e16aeed2142443b6ff8ea3b5a272291ded15a0605ce9fee8c047fa
     sdk_port: 14010
     sdk_nginx_config: /etc/nginx/sites-enabled/open-forms.conf
 
