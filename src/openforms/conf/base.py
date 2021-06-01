@@ -152,6 +152,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.demo.apps.DemoApp",
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.appointments.contrib.demo",
+    "openforms.appointments.contrib.qmatic",
 ]
 
 MIDDLEWARE = [
