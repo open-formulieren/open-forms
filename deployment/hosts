@@ -1,2 +1,5 @@
 [open_forms]
 localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+
+[open_forms_sdk]
+open-forms.test.maykin.opengem.nl ansible_ssh_user=maykin

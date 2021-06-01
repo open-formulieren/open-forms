@@ -1,0 +1,52 @@
+---
+
+# Invoke using:
+#
+#     ansible-playbook sdk.yml --become --ask-become-pass
+#
+
+# this playbook patches the Open Forms nginx config to include a route to the SDK.
+# The SDK static files themselves are run as Docker container
+
+- name: Open Forms SDK
+  hosts: open_forms_sdk
+
+  vars:
+    sdk_image: docker.io/openformulieren/open-forms-sdk@sha256:a48ceaca5233bf8179bab58adb81b7829f3daf1bfb80c68b15970a3513461350
+    sdk_port: 14010
+    sdk_nginx_config: /etc/nginx/sites-enabled/open-forms.conf
+
+  tasks:
+
+    - name: Run the SDK container
+      community.docker.docker_container:
+        container_default_behavior: no_defaults
+        name: open-forms-sdk
+        image: "{{ sdk_image }}"
+        hostname: open-forms-sdk
+        state: started
+        pull: yes  # always pull
+        restart_policy: always
+        privileged: no
+        log_driver: json-file
+        log_options:
+          max-size: 10m
+          max-file: '10'
+        published_ports:
+          - "127.0.0.1:{{ sdk_port }}:80"
+        comparisons:
+          env: strict
+          volumes: strict
+
+    - name: Patch the nginx config
+      ansible.builtin.blockinfile:
+        path: "{{ sdk_nginx_config }}"
+        block: "{{ lookup('template', 'templates/sdk-block.conf.j2') }}"
+        insertbefore: 'location / {'
+      register: nginx_conf
+
+    - name: Reload nginx
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx_conf.changed
