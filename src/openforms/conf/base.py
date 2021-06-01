@@ -405,6 +405,9 @@ else:
 
 RELEASE = config("VERSION_TAG", GIT_SHA)
 
+# Base URL of where the SDK is hosted.
+SDK_BASE_URL = config("SDK_BASE_URL", "todo://")
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #
