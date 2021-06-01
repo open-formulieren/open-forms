@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 
+from openforms.appointments.fields import AppointmentBackendChoiceField
 from openforms.authentication.fields import BackendMultiSelectField
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
@@ -54,9 +55,18 @@ class Form(models.Model):
         _("registration backend options"), default=dict, blank=True, null=True
     )
 
+<<<<<<< HEAD
     authentication_backends = BackendMultiSelectField(
         _("authentication backend(s)"),
         blank=True,
+=======
+    # appointment integration
+    appointment_backend = AppointmentBackendChoiceField(
+        _("appointment backend"), blank=True
+    )
+    appointment_backend_options = JSONField(
+        _("appointment backend options"), default=dict, blank=True, null=True
+>>>>>>> :sparkles: Add basic registry for appointment plugins
     )
 
     # life cycle management

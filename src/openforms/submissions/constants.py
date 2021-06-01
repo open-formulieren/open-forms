@@ -11,3 +11,9 @@ class RegistrationStatuses(DjangoChoices):
     pending = ChoiceItem("pending", _("Pending (not registered yet)"))
     success = ChoiceItem("success", _("Success"))
     failed = ChoiceItem("failed", _("Failed"))
+
+
+class AppointmentStatuses(DjangoChoices):
+    pending = ChoiceItem("pending", _("Pending (not created yet)"))
+    success = ChoiceItem("success", _("Success"))
+    failed = ChoiceItem("failed", _("Failed"))

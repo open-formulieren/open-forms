@@ -15,7 +15,7 @@ from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from ..utils.helpers import get_flattened_components
-from .constants import RegistrationStatuses
+from .constants import AppointmentStatuses, RegistrationStatuses
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +106,25 @@ class Submission(models.Model):
         default=RegistrationStatuses.pending,
         help_text=_(
             "Indication whether the registration in the configured backend was successful."
+        ),
+    )
+
+    # interaction with appointment backend
+    appointment_result = JSONField(
+        _("appointment backend result"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Contains data returned by the appointment backend while creating the appointment."
+        ),
+    )
+    appointment_status = models.CharField(
+        _("appointment backend status"),
+        max_length=50,
+        choices=AppointmentStatuses,
+        default=AppointmentStatuses.pending,
+        help_text=_(
+            "Indication whether the appointment was created successfully in the backend."
         ),
     )
 

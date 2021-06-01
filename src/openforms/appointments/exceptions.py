@@ -1,0 +1,2 @@
+class AppointmentFailed(Exception):
+    pass

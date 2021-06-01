@@ -10,6 +10,7 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 from rest_framework.exceptions import ValidationError
 from reversion.admin import VersionAdmin
 
+from openforms.appointments.admin import AppointmentBackendChoiceFieldMixin
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import BackendChoiceFieldMixin
 
@@ -38,13 +39,20 @@ class FormStepInline(OrderedTabularInline):
 
 
 @admin.register(Form)
-class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAdmin):
+class FormAdmin(
+    AppointmentBackendChoiceFieldMixin,
+    BackendChoiceFieldMixin,
+    OrderedInlineModelAdminMixin,
+    VersionAdmin,
+):
     list_display = (
         "name",
         "active",
         "maintenance_mode",
         "registration_backend",
         "registration_backend_options",
+        "appointment_backend",
+        "appointment_backend_options",
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}

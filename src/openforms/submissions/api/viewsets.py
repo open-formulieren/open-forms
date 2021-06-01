@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
+from openforms.appointments.utils import create_appointment
 from openforms.registrations.tasks import register_submission
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -107,6 +108,9 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         transaction.on_commit(lambda: register_submission.delay(submission.id))
+
+        # TODO should probably be a celery task
+        create_appointment(submission.id)
 
         if hasattr(submission.form, "confirmation_email_template"):
             transaction.on_commit(lambda: send_confirmation_email(submission))
