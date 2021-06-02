@@ -1,7 +1,4 @@
-import re
-from functools import partial
-from typing import Any, Dict, List
-from urllib.parse import urlparse
+from typing import Any, Dict
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -10,17 +7,9 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 
-from .constants import URL_REGEX
-
-
-def sanitize_urls(allowlist: List[str], match) -> str:
-    parsed = urlparse(match.group())
-    if parsed.netloc in allowlist:
-        return match.group()
-    return ""
+from .utils import sanitize_content
 
 
 class ConfirmationEmailTemplate(models.Model):
@@ -64,19 +53,16 @@ class ConfirmationEmailTemplate(models.Model):
         return context
 
     def render(self, submission: Submission):
-        config = GlobalConfiguration.get_solo()
         context = self.get_context_data(submission)
 
         # render the e-mail body - the template from this model.
         rendered_content = Template(self.content).render(Context(context))
 
-        # strip out any hyperlinks that are not in the configured allowlist
-        replace_urls = partial(sanitize_urls, config.email_template_netloc_allowlist)
-        stripped = re.sub(URL_REGEX, replace_urls, rendered_content)
+        sanitized = sanitize_content(rendered_content)
 
         # render the content in the system-controlled wrapper template
         default_template = get_template("confirmation_mail.html")
-        return default_template.render({"body": mark_safe(stripped)})
+        return default_template.render({"body": mark_safe(sanitized)})
 
     def clean(self):
         try:

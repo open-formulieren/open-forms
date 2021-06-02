@@ -1,6 +1,3 @@
-import re
-from functools import partial
-
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template import Context, Template
@@ -8,9 +5,7 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from openforms.config.models import GlobalConfiguration
-from openforms.emails.constants import URL_REGEX
-from openforms.emails.models import sanitize_urls
+from openforms.emails.utils import sanitize_content
 from openforms.submissions.models import Submission
 
 from ...exceptions import RegistrationFailed
@@ -25,7 +20,6 @@ from .config import EmailOptionsSerializer
 )
 def email_submission(submission: Submission, options: dict) -> None:
     submitted_data = submission.get_merged_data()
-    config = GlobalConfiguration.get_solo()
 
     if not submission.completed_on:
         raise RegistrationFailed("Submission should be completed first")
@@ -44,13 +38,10 @@ def email_submission(submission: Submission, options: dict) -> None:
     rendered_content = Template(template).render(
         Context({"submitted_data": submitted_data})
     )
-
-    # strip out any hyperlinks that are not in the configured allowlist
-    replace_urls = partial(sanitize_urls, config.email_template_netloc_allowlist)
-    stripped = re.sub(URL_REGEX, replace_urls, rendered_content)
+    sanitized = sanitize_content(rendered_content)
 
     default_template = get_template("confirmation_mail.html")
-    content = default_template.render({"body": mark_safe(stripped)})
+    content = default_template.render({"body": mark_safe(sanitized)})
 
     send_mail(
         _("[Open Forms] {} - submission {}").format(
