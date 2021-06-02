@@ -30,7 +30,7 @@ def email_submission(submission: Submission, options: dict) -> None:
 
     template += """
         {% for field, value in submitted_data.items %}
-            {{field}}: {{value}}
+            {{field}}: {% display_value value %}
         {% endfor %}
     """
 

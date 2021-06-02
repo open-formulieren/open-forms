@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import template
 
 from openforms.forms.models import FormDefinition
@@ -29,3 +31,10 @@ def filter_data_to_show_in_email(context: dict) -> dict:
         if property_name in context:
             filtered_data[property_name] = context[property_name]
     return {"data": filtered_data}
+
+
+@register.simple_tag()
+def display_value(value: Any):
+    if isinstance(value, (list, tuple)):
+        return ", ".join(value)
+    return value

@@ -8,7 +8,7 @@
     {% for key, value in data.items %}
         <tr>
             <th>{{ key }}</th>
-            <th>{{ value }}</th>
+            <th>{% display_value value %}</th>
         </tr>
     {% endfor %}
 </table>
