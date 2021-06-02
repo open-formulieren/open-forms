@@ -67,7 +67,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
                 const baseUrl = '{ scheme }{ self.request.get_host() }/api/v1/';
                 const targetNode = document.getElementById('form-root');
 
-                const form = new OpenForms.OpenForm(targetNode, '{' baseUrl, formId '}';
+                const form = new OpenForms.OpenForm(targetNode, '{' baseUrl, formId '}');
                 form.init();
             </script>
         """
