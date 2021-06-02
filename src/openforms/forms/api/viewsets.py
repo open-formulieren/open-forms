@@ -206,6 +206,12 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
         response["Content-Length"] = len(response.content)
         return response
 
+    @extend_schema(
+        operation_id="forms_retrieve_2",
+        summary=_("Retrieve form details by slug"),
+        tags=["forms"],
+        request=None,
+    )
     @action(
         methods=["get"],
         detail=False,
@@ -216,7 +222,12 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     )
     def slug(self, request, *args, **kwargs):
         """
-        Retrieve lookup but use slug field instead of uuid field
+        Manage forms.
+
+        Forms are collections of form steps, where each form step points to a formio.js
+        form definition. Multiple definitions are combined in logical steps to build a
+        multi-step/page form for end-users to fill out. Form definitions can be (and are)
+        re-used among different forms.
         """
         return super().retrieve(self, request, *args, **kwargs)
 
