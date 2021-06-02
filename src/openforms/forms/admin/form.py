@@ -48,18 +48,18 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies"]
-    readonly_fields = ['display_javascript_snippet']
+    readonly_fields = ["display_javascript_snippet"]
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
     )
 
     def get_queryset(self, request):
-        self.request = request
+        self.request = request  # Needed to access the request later
         return super().get_queryset(request)
 
     def display_javascript_snippet(self, obj):
-        scheme = 'https://' if self.request.is_secure() else 'http://'
+        scheme = "https://" if self.request.is_secure() else "http://"
         return f"""
             <script src="{ settings.SDK_BASE_URL }/open-forms-sdk.js"></script>
             <script>
