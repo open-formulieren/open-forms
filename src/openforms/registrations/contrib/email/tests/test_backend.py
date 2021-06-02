@@ -7,7 +7,6 @@ from django.utils import timezone
 import requests_mock
 
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -39,13 +38,13 @@ class EmailBackendTests(TestCase):
         }
 
         submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        result = email_submission(submission, email_form_options)
+        email_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -77,13 +76,13 @@ class EmailBackendTests(TestCase):
         }
 
         submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        result = email_submission(submission, email_form_options)
+        email_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -118,13 +117,13 @@ class EmailBackendTests(TestCase):
         }
 
         submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        result = email_submission(submission, email_form_options)
+        email_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
