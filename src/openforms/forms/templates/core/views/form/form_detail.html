@@ -16,7 +16,7 @@
     <script src="{{ settings.SDK_BASE_URL }}/open-forms-sdk.js"></script>
     <script>
         const formId = '{{ form.slug }}';
-        const baseUrl = 'http://localhost:8000/api/v1/';
+        const baseUrl = '{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}/api/v1/';
         const targetNode = document.getElementById('form-root');
 
         const form = new OpenForms.OpenForm(targetNode, { baseUrl, formId });
