@@ -140,6 +140,7 @@ INSTALLED_APPS = [
     "openforms.contrib.brp",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
+    "openforms.registrations.contrib.email",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
