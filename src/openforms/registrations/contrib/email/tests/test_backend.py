@@ -33,9 +33,7 @@ class EmailBackendTests(TestCase):
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
 
-        data = {
-            "foo": "bar",
-        }
+        data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
         submission = SubmissionFactory.create(form=self.form)
         SubmissionStepFactory.create(
@@ -64,6 +62,7 @@ class EmailBackendTests(TestCase):
             message.body,
         )
         self.assertIn("foo: bar", message.body)
+        self.assertIn("some_list: value1, value2", message.body)
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_strip_out_urls(self, m):
