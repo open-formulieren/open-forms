@@ -15,7 +15,7 @@
 
     <script src="{{ settings.SDK_BASE_URL }}/open-forms-sdk.js"></script>
     <script>
-        const formId = '{{ form.uuid|escapejs }}';
+        const formId = '{{ form.slug }}';
         const baseUrl = 'http://localhost:8000/api/v1/';
         const targetNode = document.getElementById('form-root');
 
