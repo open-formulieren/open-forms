@@ -39,11 +39,11 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
 
     def test_retrieve_submission_nothing_submitted(self):
         self._add_submission_to_session(self.submission)
-        form_path = reverse("api:form-detail", kwargs={"uuid": self.form.uuid})
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": self.form.uuid})
         form_step_path = reverse(
             "api:form-steps-detail",
             kwargs={
-                "form_uuid": self.form.uuid,
+                "form_uuid_or_slug": self.form.uuid,
                 "uuid": self.step.uuid,
             },
         )

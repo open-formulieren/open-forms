@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -38,7 +40,12 @@ from .serializers import (
 
 @extend_schema(
     parameters=[
-        OpenApiParameter("form_uuid", OpenApiTypes.UUID, location=OpenApiParameter.PATH)
+        OpenApiParameter(
+            name="form_uuid_or_slug",
+            location=OpenApiParameter.PATH,
+            type=str,
+            description=_("Either a UUID4 or a slug identifiying the form."),
+        )
     ]
 )
 @extend_schema_view(
@@ -60,7 +67,7 @@ class FormStepViewSet(
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid"])
+        context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         return context
 
 
@@ -105,6 +112,14 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(data=definition.configuration, status=status.HTTP_200_OK)
 
 
+UUID_OR_SLUG_PARAMETER = OpenApiParameter(
+    name="uuid_or_slug",
+    location=OpenApiParameter.PATH,
+    type=str,
+    description=_("Either a UUID4 or a slug identifiying the form."),
+)
+
+
 @extend_schema_view(
     list=extend_schema(
         summary=_("List forms"),
@@ -113,16 +128,26 @@ class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
             "Form steps are included in order as they should appear."
         ),
     ),
-    retrieve=extend_schema(summary=_("Retrieve form details")),
+    retrieve=extend_schema(
+        summary=_("Retrieve form details"),
+        parameters=[UUID_OR_SLUG_PARAMETER],
+    ),
     create=extend_schema(summary=_("Create form")),
-    update=extend_schema(summary=_("Update all details of a form")),
-    partial_update=extend_schema(summary=_("Update given details of a form")),
+    update=extend_schema(
+        summary=_("Update all details of a form"),
+        parameters=[UUID_OR_SLUG_PARAMETER],
+    ),
+    partial_update=extend_schema(
+        summary=_("Update given details of a form"),
+        parameters=[UUID_OR_SLUG_PARAMETER],
+    ),
     destroy=extend_schema(
         summary=_("Mark form as deleted"),
         description=_(
             "Destroying a form leads to a soft-delete to protect related submissions. "
             "These deleted forms are no longer visible in the API endpoints."
         ),
+        parameters=[UUID_OR_SLUG_PARAMETER],
     ),
 )
 class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
@@ -136,10 +161,29 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     """
 
     queryset = Form.objects.filter(active=True, _is_deleted=False)
-    lookup_field = "uuid"
-    lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
+    lookup_url_kwarg = "uuid_or_slug"
+    # lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def initialize_request(self, request, *args, **kwargs):
+        """
+        Method overridden to account for the lookup on uuid OR slug.
+        """
+        request = super().initialize_request(request, *args, **kwargs)
+
+        if not self.kwargs:
+            return request
+
+        # mutate self.kwargs based on the type of the lookup_value
+        lookup_value = self.kwargs[self.lookup_url_kwarg]
+        try:
+            UUID(lookup_value)
+            self.lookup_field = "uuid"
+        except (TypeError, ValueError, AttributeError):  # not a valid UUID
+            self.lookup_field = "slug"
+
+        return request
 
     @extend_schema(
         summary=_("Copy form"),
@@ -147,6 +191,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
         request=None,
         responses={status.HTTP_201_CREATED: FormSerializer},
         parameters=[
+            UUID_OR_SLUG_PARAMETER,
             OpenApiParameter(
                 name="Location",
                 type=OpenApiTypes.URI,
@@ -179,6 +224,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     @extend_schema(
         summary=_("Export form"),
         tags=["forms"],
+        parameters=[UUID_OR_SLUG_PARAMETER],
         request=None,
         responses={
             (
@@ -205,31 +251,6 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
 
         response["Content-Length"] = len(response.content)
         return response
-
-    @extend_schema(
-        operation_id="forms_retrieve_2",
-        summary=_("Retrieve form details by slug"),
-        tags=["forms"],
-        request=None,
-    )
-    @action(
-        methods=["get"],
-        detail=False,
-        url_path="(?P<slug>(?![0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})[\w-]+)",
-        url_name="detail-slug",
-        lookup_field="slug",
-        lookup_value_regex="[\w-]+",
-    )
-    def slug(self, request, *args, **kwargs):
-        """
-        Manage forms.
-
-        Forms are collections of form steps, where each form step points to a formio.js
-        form definition. Multiple definitions are combined in logical steps to build a
-        multi-step/page form for end-users to fill out. Form definitions can be (and are)
-        re-used among different forms.
-        """
-        return super().retrieve(self, request, *args, **kwargs)
 
     def perform_destroy(self, instance):
         instance._is_deleted = True

@@ -32,7 +32,7 @@ class IncompleteStepSerializer(serializers.Serializer):
         lookup_field="uuid",
         lookup_url_kwarg="uuid",
         instance_lookup_kwargs={
-            "form_uuid": "form__uuid",
+            "form_uuid_or_slug": "form__uuid",
         },
     )
 

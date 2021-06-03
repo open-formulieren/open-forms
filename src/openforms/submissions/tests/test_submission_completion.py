@@ -46,7 +46,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         form_step_url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": step.form.uuid, "uuid": step.uuid},
+            kwargs={"form_uuid_or_slug": step.form.uuid, "uuid": step.uuid},
         )
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
         assert not SubmissionStep.objects.filter(

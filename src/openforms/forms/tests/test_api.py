@@ -55,7 +55,7 @@ class FormsAPITests(APITestCase):
     def test_retrieve_form_by_uuid(self):
         form = FormFactory.create()
 
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.get(url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -64,7 +64,7 @@ class FormsAPITests(APITestCase):
     def test_retrieve_form_by_slug(self):
         form = FormFactory.create()
 
-        url = reverse("api:form-detail-slug", kwargs={"slug": form.slug})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.slug})
 
         response = self.client.get(url, format="json")
 
@@ -119,7 +119,7 @@ class FormsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "name": "Test Patch Form",
         }
@@ -131,7 +131,7 @@ class FormsAPITests(APITestCase):
 
     def test_partial_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "name": "Test Patch Form",
         }
@@ -145,7 +145,7 @@ class FormsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid": uuid.uuid4()})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": uuid.uuid4()})
         data = {
             "name": "Test Patch Form",
         }
@@ -158,7 +158,7 @@ class FormsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
@@ -175,7 +175,7 @@ class FormsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "name": "Test Put Form",
         }
@@ -186,7 +186,7 @@ class FormsAPITests(APITestCase):
 
     def test_complete_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
@@ -202,7 +202,7 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
-        url = reverse("api:form-detail", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "bad": "data",
         }
@@ -218,7 +218,7 @@ class FormsAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid": uuid.uuid4()})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": uuid.uuid4()})
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
@@ -244,7 +244,9 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_steps_list(self):
-        url = reverse("api:form-steps-list", kwargs={"form_uuid": self.step.form.uuid})
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
         response = self.client.get(url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -253,7 +255,9 @@ class FormsStepsAPITests(APITestCase):
     def test_create_form_step_successful(self):
         self.user.is_staff = True
         self.user.save()
-        url = reverse("api:form-steps-list", kwargs={"form_uuid": self.step.form.uuid})
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
@@ -270,7 +274,9 @@ class FormsStepsAPITests(APITestCase):
     def test_create_form_step_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
-        url = reverse("api:form-steps-list", kwargs={"form_uuid": self.step.form.uuid})
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
         data = {
             "bad": "data",
         }
@@ -283,7 +289,7 @@ class FormsStepsAPITests(APITestCase):
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
         self.user.save()
-        url = reverse("api:form-steps-list", kwargs={"form_uuid": uuid.uuid4()})
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": uuid.uuid4()})
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
         )
@@ -294,7 +300,9 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 1)
 
     def test_create_form_step_unsuccessful_without_authorization(self):
-        url = reverse("api:form-steps-list", kwargs={"form_uuid": self.step.form.uuid})
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
         )
@@ -309,7 +317,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail",
@@ -329,7 +337,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": uuid.uuid4()},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": uuid.uuid4()},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail",
@@ -350,7 +358,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail",
@@ -373,7 +381,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         data = {
             "bad": "data",
@@ -387,7 +395,7 @@ class FormsStepsAPITests(APITestCase):
     def test_complete_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
@@ -405,7 +413,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail",
@@ -425,7 +433,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": uuid.uuid4()},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": uuid.uuid4()},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
@@ -443,7 +451,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": uuid.uuid4()}
@@ -463,7 +471,7 @@ class FormsStepsAPITests(APITestCase):
     def test_partial_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         form_detail_url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.step.form_definition.uuid}
@@ -481,7 +489,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         response = self.client.delete(url)
 
@@ -493,7 +501,7 @@ class FormsStepsAPITests(APITestCase):
         self.user.save()
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": uuid.uuid4()},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": uuid.uuid4()},
         )
         response = self.client.delete(url)
 
@@ -503,7 +511,7 @@ class FormsStepsAPITests(APITestCase):
     def test_delete_form_step_unsuccessful_when_not_authorized(self):
         url = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid": self.step.form.uuid, "uuid": self.step.uuid},
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
         )
         response = self.client.delete(url)
 
@@ -519,7 +527,7 @@ class FormsStepsAPITests(APITestCase):
         submission = SubmissionFactory.create(form=form)
 
         response = self.client.delete(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
             HTTP_AUTHORIZATION=f"Token {token.key}",
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -528,7 +536,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertTrue(form._is_deleted)
 
         response = self.client.get(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -543,7 +551,7 @@ class FormsStepsAPITests(APITestCase):
         form = FormFactory.create()
 
         response = self.client.delete(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
             HTTP_AUTHORIZATION=f"Token {token.key}",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -552,7 +560,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertFalse(form._is_deleted)
 
         response = self.client.get(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -561,7 +569,7 @@ class FormsStepsAPITests(APITestCase):
         form = FormFactory.create()
 
         response = self.client.delete(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -569,7 +577,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertFalse(form._is_deleted)
 
         response = self.client.get(
-            reverse("api:form-detail", kwargs={"uuid": form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -898,7 +906,7 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 2)
 
         self.assertIn(
-            reverse("api:form-detail", kwargs={"uuid": copied_form.uuid}),
+            reverse("api:form-detail", kwargs={"uuid_or_slug": copied_form.uuid}),
             response["Location"],
         )
 
@@ -963,7 +971,7 @@ class CopyFormAPITests(APITestCase):
 
     def test_form_copy_token_auth_required(self):
         form = FormFactory.create()
-        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-copy", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -977,7 +985,7 @@ class CopyFormAPITests(APITestCase):
         )
 
         form = FormFactory.create()
-        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-copy", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -987,7 +995,7 @@ class CopyFormAPITests(APITestCase):
         self.user.save()
 
         form = FormFactory.create()
-        url = reverse("api:form-copy", kwargs={"uuid": form.uuid})
+        url = reverse("api:form-copy", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.post(
             url,
             HTTP_AUTHORIZATION=f"Token {self.token.key}",

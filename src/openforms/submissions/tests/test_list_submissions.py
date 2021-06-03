@@ -51,11 +51,11 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
         submission_path = reverse(
             "api:submission-detail", kwargs={"uuid": submission.uuid}
         )
-        form_path = reverse("api:form-detail", kwargs={"uuid": self.form.uuid})
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": self.form.uuid})
         form_step_path = reverse(
             "api:form-steps-detail",
             kwargs={
-                "form_uuid": self.form.uuid,
+                "form_uuid_or_slug": self.form.uuid,
                 "uuid": self.step.uuid,
             },
         )
