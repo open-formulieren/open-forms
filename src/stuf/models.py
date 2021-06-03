@@ -119,5 +119,11 @@ class SoapService(models.Model):
 
         return cert
 
+    def get_endpoint(self, *, sync: bool):
+        if sync:
+            return f"{self.url}{self.endpoint_sync}"
+        else:
+            return f"{self.url}{self.endpoint_async}"
+
     def __str__(self):
         return f"{self.label} ({self.url})"

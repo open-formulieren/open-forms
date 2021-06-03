@@ -283,6 +283,19 @@ class StufZDSClientTests(StufTestBase):
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
             self.client.create_document_identificatie()
 
+    def test_parse_error(self, m):
+        m.post(
+            self.service.url,
+            status_code=500,
+            content=load_mock("soap-error.xml"),
+            headers={"content-type": "text/xml"},
+        )
+
+        with self.assertRaisesMessage(
+            RegistrationFailed, "error while making backend request"
+        ):
+            self.client.create_zaak_identificatie()
+
 
 @requests_mock.Mocker()
 class StufZDSPluginTests(StufTestBase):

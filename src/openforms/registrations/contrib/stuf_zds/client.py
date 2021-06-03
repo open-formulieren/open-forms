@@ -117,11 +117,6 @@ class StufZDSClient:
         context: dict,
         sync=False,
     ) -> Tuple[Response, Element]:
-        cert = (
-            (self.service.certificate.path, self.service.certificate_key.path)
-            if self.service.certificate and self.service.certificate_key
-            else (None, None)
-        )
 
         request_body = loader.render_to_string(template_name, context)
 
@@ -133,23 +128,20 @@ class StufZDSClient:
 
         request_data = self._wrap_soap_envelope(request_body)
 
-        url = self.service.url
-        if sync:
-            url = f"{url}{self.service.endpoint_sync}"
-        else:
-            url = f"{url}{self.service.endpoint_async}"
+        url = self.service.get_endpoint(sync=sync)
 
         try:
             response = requests.post(
                 url,
                 data=request_data,
                 headers=self._get_headers(),
-                cert=cert,
+                cert=self.service.get_cert(),
             )
             if response.status_code < 200 or response.status_code >= 400:
                 logger.error(
-                    f"bad http response {response.status_code}:\n"
-                    + parse_soap_error_text(response)
+                    "bad http response %s\n%s",
+                    response.status_code,
+                    parse_soap_error_text(response),
                 )
                 response.raise_for_status()
         except RequestException as e:
@@ -262,7 +254,7 @@ def parse_soap_error_text(response):
     """
 
     message = response.text
-    if response.headers["content-type"].startswith("text/html"):
+    if response.headers.get("content-type", "").startswith("text/html"):
         message = response.status
     else:
         try:

@@ -4,6 +4,12 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
 
+class StufZDSConfigManager(models.Manager):
+    def get_queryset(self) -> models.QuerySet:
+        qs = super().get_queryset()
+        return qs.select_related("service")
+
+
 class StufZDSConfig(SingletonModel):
     """
     global configuration and defaults
@@ -24,6 +30,8 @@ class StufZDSConfig(SingletonModel):
         _("Zaaktype description for newly created Zaken in StUF-ZDS"),
         max_length=32,
     )
+
+    objects = StufZDSConfigManager()
 
     def apply_defaults_to(self, options):
         options.setdefault("gemeentecode", self.gemeentecode)
