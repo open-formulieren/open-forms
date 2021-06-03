@@ -1,0 +1,46 @@
+[
+{
+    "model": "stuf.soapservice",
+    "pk": 1,
+    "fields": {
+        "ontvanger_organisatie": "ORG",
+        "ontvanger_applicatie": "TTA",
+        "zender_organisatie": "ORG",
+        "zender_applicatie": "TTA",
+        "url": "http://localhost:8019",
+        "endpoint_sync": "/VerwerkSynchroonVrijBericht",
+        "endpoint_async": "/OntvangAsynchroon",
+        "user": "",
+        "password": "",
+        "certificate": "",
+        "certificate_key": ""
+    }
+},
+{
+    "model": "stuf.soapservice",
+    "pk": 2,
+    "fields": {
+        "ontvanger_organisatie": "ORG",
+        "ontvanger_applicatie": "TTA",
+        "zender_organisatie": "KING",
+        "zender_applicatie": "TTA",
+        "url": "http://stuftestplatform.nl:7080/opentunnel/00000000000000000000041/51037857/AllTypes",
+        "endpoint_sync": "",
+        "endpoint_async": "",
+        "user": "",
+        "password": "",
+        "certificate": "",
+        "certificate_key": ""
+    }
+},
+{
+    "model": "stuf.stufzdsconfig",
+    "pk": 1,
+    "fields": {
+        "service": 2,
+        "gemeentecode": "123",
+        "zds_zaaktype_code": "12345",
+        "zds_zaaktype_omschrijving": "Aanvragen koffie"
+    }
+}
+]

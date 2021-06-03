@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <StUF:Bv03Bericht xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://www.egem.nl/StUF/StUF0301 stuf0301.xsd">
+            <StUF:stuurgegevens>
+                <StUF:berichtcode>Bv03</StUF:berichtcode>
+                <StUF:zender>
+                    <StUF:organisatie>KING</StUF:organisatie>
+                    <StUF:applicatie>STP</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>ORG</StUF:organisatie>
+                    <StUF:applicatie>TTA</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:ontvanger>
+                <!-- NOTE: these mock values are meaningless -->
+                <StUF:referentienummer>7771605337</StUF:referentienummer>
+                <StUF:tijdstipBericht>20210520125824</StUF:tijdstipBericht>
+                <StUF:crossRefnummer>abeab17b-03cb-477b-95af-410f07947f40</StUF:crossRefnummer>
+            </StUF:stuurgegevens>
+        </StUF:Bv03Bericht>
+    </soapenv:Body>
+</soapenv:Envelope>

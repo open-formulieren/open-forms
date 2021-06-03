@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ZKN:genereerZaakIdentificatie_Du02
+                xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310">
+            <ZKN:stuurgegevens>
+                <StUF:berichtcode>Du02</StUF:berichtcode>
+                <StUF:zender>
+                    <StUF:organisatie>KING</StUF:organisatie>
+                    <StUF:applicatie>STP</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>ORG</StUF:organisatie>
+                    <StUF:applicatie>TTA</StUF:applicatie>
+                    <StUF:gebruiker/>
+                </StUF:ontvanger>
+                <StUF:tijdstipBericht>20210520125824</StUF:tijdstipBericht>
+                <StUF:functie>genereerZaakidentificatie</StUF:functie>
+            </ZKN:stuurgegevens>
+            <ZKN:melding>melding</ZKN:melding>
+            <ZKN:zaak StUF:entiteittype="ZAK" StUF:functie="entiteit">
+                <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
+            </ZKN:zaak>
+        </ZKN:genereerZaakIdentificatie_Du02>
+    </soapenv:Body>
+</soapenv:Envelope>
+
+

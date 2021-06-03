@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<soap11env:Envelope xmlns:soap11env="http://www.w3.org/2003/05/soap-envelope">
+    <soap11env:Body>
+        <soap11env:Fault>
+            <faultcode>soap11env:client</faultcode>
+            <faultstring>Berichtbody is niet conform schema in sectormodel</faultstring>
+            <faultactor/>
+            <detail>
+                <ns0:Fo02Bericht xmlns:ns0="http://www.egem.nl/StUF/StUF0301">
+                    <ns0:stuurgegevens>
+                        <ns0:berichtcode>Fo02</ns0:berichtcode>
+                    </ns0:stuurgegevens>
+                    <ns0:body>
+                        <ns0:code>StUF055</ns0:code>
+                        <ns0:plek>client</ns0:plek>
+                        <ns0:omschrijving>Berichtbody is niet conform schema in sectormodel</ns0:omschrijving>
+                        <ns0:details>:52:0:ERROR:SCHEMASV:SCHEMAV_ELEMENT_CONTENT: Element
+                            '{http://www.egem.nl/StUF/sector/zkn/0310}medewerkeridentificatie': This element is not
+                            expected. Expected is ( {http://www.egem.nl/StUF/sector/zkn/0310}identificatie ).
+                        </ns0:details>
+                    </ns0:body>
+                </ns0:Fo02Bericht>
+            </detail>
+        </soap11env:Fault>
+    </soap11env:Body>
+</soap11env:Envelope>

@@ -1,0 +1,55 @@
+<ZKN:zakLk01
+        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
+        xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
+    <ZKN:stuurgegevens>
+        <StUF:berichtcode>Lk01</StUF:berichtcode>
+        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
+        <StUF:entiteittype>ZAK</StUF:entiteittype>
+    </ZKN:stuurgegevens>
+    <ZKN:parameters>
+        <StUF:mutatiesoort>T</StUF:mutatiesoort>
+        <StUF:indicatorOvername>V</StUF:indicatorOvername>
+    </ZKN:parameters>
+    <ZKN:object StUF:verwerkingssoort="T" StUF:entiteittype="ZAK">
+        <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
+        <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+        <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
+        <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
+        <ZKN:zaakniveau>1</ZKN:zaakniveau>
+        <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
+        <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+        <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">
+                <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>
+                <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>
+                <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
+            </ZKN:gerelateerde>
+        </ZKN:isVan>
+        <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
+            <ZKN:gerelateerde>
+                {% if bsn %}
+                    <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                        <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
+                    </ZKN:natuurlijkPersoon>
+                {% elif nnp_id %}
+                    <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
+                        <BG:inn.nnpId>{{ nnp_id }}</BG:inn.nnpId>
+                        <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                    </ZKN:nietNatuurlijkPersoon>
+                {% elif vestigings_nummer %}
+                    <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
+                        <BG:vestigingsNummer>{{ vestigings_nummer }}</BG:vestigingsNummer>
+                    </ZKN:vestiging>
+                {% else %}
+                    <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                        <BG:anp.identificatie>{{ anp_id }}</BG:anp.identificatie>
+                    </ZKN:natuurlijkPersoon>
+                {% endif %}
+            </ZKN:gerelateerde>
+            <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+        </ZKN:heeftAlsInitiator>
+    </ZKN:object>
+</ZKN:zakLk01>
