@@ -30,7 +30,9 @@ class SubmissionStartTests(APITestCase):
         # ensure there is a form definition
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(form=cls.form)
-        cls.form_url = reverse("api:form-detail", kwargs={"uuid": cls.form.uuid})
+        cls.form_url = reverse(
+            "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
+        )
 
     def test_start_submission(self):
         body = {

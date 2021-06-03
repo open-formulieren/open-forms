@@ -40,7 +40,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         lookup_field="form_step__uuid",
         lookup_url_kwarg="uuid",
         parent_lookup_kwargs={
-            "form_uuid": "submission__form__uuid",
+            "form_uuid_or_slug": "submission__form__uuid",
         },
     )
 
@@ -105,6 +105,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "form": {
                 "view_name": "api:form-detail",
                 "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
         }
 

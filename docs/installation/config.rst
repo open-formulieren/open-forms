@@ -49,6 +49,9 @@ Common settings
 * ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery. 
   Defaults to ``redis://127.0.0.1:6379/1``.
 
+* ``SDK_BASE_URL``: URL for the retrieving Open Forms SDK files.
+  Defaults to ``https://open-forms.test.maykin.opengem.nl/sdk``.
+
 Email settings
 --------------
 

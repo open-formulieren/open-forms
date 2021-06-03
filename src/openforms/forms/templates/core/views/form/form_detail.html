@@ -1,36 +1,11 @@
 {% extends 'ui/views/abstract/detail.html' %}
 {% load static %}
 
-{% block card_body %}
-    <div id="form-root"></div>
+{% block extra_css %}
+{{ block.super }}
+{% include "forms/sdk_css_snippet.html" %}
 {% endblock %}
 
-{% block extra_js %}
-    {{ block.super }}
-    <script src="{% static 'bundles/core-js.js' %}"></script>
-    <script>
-        console.log('load sdk here...');
-
-        class OpenForm {
-            constructor( targetNode, { baseUrl, formId } ) {
-                this.targetNode = targetNode;
-                this.baseUrl = baseUrl;
-                this.formId = formId;
-            }
-
-            init() {
-                const url = `${this.baseUrl}forms/${this.formId}`;
-                console.log(`Simulate loading form '${url}'`);
-                this.targetNode.textContent = `Will load form ${url}`;
-            }
-        }
-    </script>
-    <script>
-        const formId = '{{ form.uuid|escapejs }}';
-        const baseUrl = 'http://localhost:8000/api/v1/';
-        const targetNode = document.getElementById('form-root');
-
-        const form = new OpenForm(targetNode, { baseUrl, formId });
-        form.init();
-    </script>
+{% block card %}
+    {% include "forms/sdk_snippet.html" %}
 {% endblock %}

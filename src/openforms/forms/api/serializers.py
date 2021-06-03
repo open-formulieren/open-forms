@@ -18,7 +18,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         source="*",
         view_name="api:form-steps-detail",
         lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid": "form__uuid"},
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
     )
 
     class Meta:
@@ -50,6 +50,7 @@ class FormSerializer(serializers.ModelSerializer):
             "url": {
                 "view_name": "api:form-detail",
                 "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
         }
 
@@ -95,7 +96,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     parent_lookup_kwargs = {
-        "form_uuid": "form__uuid",
+        "form_uuid_or_slug": "form__uuid",
     }
 
     class Meta:

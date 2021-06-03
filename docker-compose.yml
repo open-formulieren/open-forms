@@ -12,6 +12,11 @@ services:
   redis:
     image: redis:6
 
+  sdk:
+    image: openformulieren/open-forms-sdk
+    ports:
+    - 8001:80
+
   busybox:
     image: busybox
     command: /bin/chown -R 1000 /private-media
@@ -33,7 +38,8 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
-      # Needed for Celery Flower to match the TIME_ZONE configured in the 
+      - SDK_BASE_URL=${SDK_BASE_URL:-http://localhost:8001}
+      # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
     volumes:
@@ -42,6 +48,7 @@ services:
       - 8000:8000
     depends_on:
       - db
+      - sdk
 
   nginx:
     image: nginx

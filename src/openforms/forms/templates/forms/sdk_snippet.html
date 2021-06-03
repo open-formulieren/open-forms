@@ -1,0 +1,12 @@
+{% load openforms %}
+{% with 'openforms-container' as div_id %}
+<div id="{{ div_id }}"></div>
+<script src="{{ settings.SDK_BASE_URL }}/open-forms-sdk.js"></script>
+<script>
+    const formId = '{{ form.slug|escapejs }}';
+    const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
+    const targetNode = document.getElementById('{{ div_id|escapejs }}');
+    const form = new OpenForms.OpenForm(targetNode, { baseUrl, formId });
+    form.init();
+</script>
+{% endwith %}

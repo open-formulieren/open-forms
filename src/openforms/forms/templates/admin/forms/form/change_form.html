@@ -1,5 +1,50 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n %}
+{% load i18n openforms %}
+
+{% block after_field_sets %}
+<fieldset class="module aligned">
+    <h2>{% trans "Snippets" %}</h2>
+
+    <div class="form-row">
+        <div>
+            {# TODO: add copy button #}
+            <label for="_snippet-sdk-js">{% trans "SDK Javascript" %}</label>
+            {% spaceless %}
+            <textarea id="_snippet-sdk-js" cols="100" rows="10" readonly>{% filter trim %}
+                {% if original %}
+                    {% include "forms/sdk_snippet.html" with form=original %}
+                {% else %}
+                    {% trans "You must save the form before the snippet can be generated." %}
+                {% endif %}
+            {% endfilter %}</textarea>
+            {% endspaceless %}
+            <div class="help">{% blocktrans trimmed %}
+                Embed this snippet where you want to display the form in your (CMS) page.
+                This snippet will load and render the form.
+            {% endblocktrans %}</div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            {# TODO: add copy button #}
+            <label for="_snippet-sdk-js">{% trans "SDK default styles" %}</label>
+            {% spaceless %}
+            <textarea id="_snippet-sdk-js" cols="100" rows="1" readonly>
+                {% include "forms/sdk_css_snippet.html" %}
+            </textarea>
+            {% endspaceless %}
+            <div class="help">{% blocktrans trimmed %}
+                Include this snippet close to where other styles (CSS) are loaded.
+                This snippet provides the default form styling. If you have own styles
+                overriding the default styles, ensure this snippet is included BEFORE
+                your custom styles.
+            {% endblocktrans %}</div>
+        </div>
+    </div>
+
+</fieldset>
+{% endblock %}
 
 {% block submit_buttons_bottom %}
     {{ block.super }}

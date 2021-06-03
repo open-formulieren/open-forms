@@ -1,4 +1,4 @@
-import uuid
+import uuid as _uuid
 from copy import deepcopy
 from typing import List, Optional
 
@@ -18,7 +18,7 @@ class Form(models.Model):
     Form model, containing a list of order form steps.
     """
 
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     name = models.CharField(_("name"), max_length=50)
     slug = AutoSlugField(
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
@@ -80,7 +80,7 @@ class Form(models.Model):
 
         copy = deepcopy(self)
         copy.pk = None
-        copy.uuid = uuid.uuid4()
+        copy.uuid = _uuid.uuid4()
         copy.name = _("{name} (copy)").format(name=self.name)
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = None
@@ -88,7 +88,7 @@ class Form(models.Model):
 
         for form_step in form_steps:
             form_step.pk = None
-            form_step.uuid = uuid.uuid4()
+            form_step.uuid = _uuid.uuid4()
             form_step.form = copy
             form_step.save()
 
