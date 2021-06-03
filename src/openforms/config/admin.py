@@ -16,4 +16,10 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": ("email_template_netloc_allowlist",),
             },
         ),
+        (
+            _("Submissions"),
+            {
+                "fields": ("default_test_bsn",),
+            },
+        ),
     )

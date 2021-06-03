@@ -19,6 +19,17 @@ class GlobalConfiguration(SingletonModel):
         default=list,
     )
 
+    # for testing purposes!
+    default_test_bsn = models.CharField(
+        _("default test BSN"),
+        default="",
+        max_length=9,
+        help_text=_(
+            "When provided, submissions that are started will have this BSN set as "
+            "default for the session. Useful to test/demo prefill functionality."
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 

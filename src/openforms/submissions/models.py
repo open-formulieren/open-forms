@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
@@ -51,6 +52,11 @@ class SubmissionState:
         return next(candidates, None)
 
 
+def get_default_bsn() -> str:
+    config = GlobalConfiguration.get_solo()
+    return config.default_test_bsn if config.default_test_bsn else ""
+
+
 class Submission(models.Model):
     """
     Container for submission steps that hold the actual submitted data.
@@ -62,7 +68,11 @@ class Submission(models.Model):
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
     bsn = models.CharField(
-        _("BSN"), max_length=9, default="", blank=True, validators=(validate_bsn,)
+        _("BSN"),
+        max_length=9,
+        default=get_default_bsn,
+        blank=True,
+        validators=(validate_bsn,),
     )
     current_step = models.PositiveIntegerField(_("current step"), default=0)
 

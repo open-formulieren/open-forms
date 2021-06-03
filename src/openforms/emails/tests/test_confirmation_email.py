@@ -20,9 +20,9 @@ class ConfirmationEmailTests(TestCase):
             email.clean()
 
     def test_strip_non_allowed_urls(self):
-        GlobalConfiguration.objects.create(
-            email_template_netloc_allowlist=["allowed.com"]
-        )
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["allowed.com"]
+        config.save()
         email = ConfirmationEmailTemplate(
             content="test https://google.com https://www.google.com https://allowed.com test"
         )
@@ -39,9 +39,9 @@ class ConfirmationEmailTests(TestCase):
             form_step=form_step,
             submission__form=form_step.form,
         )
-        GlobalConfiguration.objects.create(
-            email_template_netloc_allowlist=["allowed.com"]
-        )
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["allowed.com"]
+        config.save()
 
         email = ConfirmationEmailTemplate(content="test {{url1}} {{url2}} test")
 
