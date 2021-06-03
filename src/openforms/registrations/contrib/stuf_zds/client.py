@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 import requests
+from defusedxml.lxml import fromstring as df_fromstring
 from lxml import etree
 from lxml.etree import Element
 from requests import RequestException, Response
@@ -103,29 +104,14 @@ class StufZDSClient:
             "stuf_zds/soap/includes/envelope.xml", {"content": mark_safe(xml_str)}
         )
 
-    def _load_schema(self, path: str):
-        path = os.path.join(SCHEMA_DIR, path)
-        with open(path, "r") as f:
-            xmlschema_doc = etree.parse(f)
-            xmlschema = etree.XMLSchema(xmlschema_doc)
-        return xmlschema
-
     def _make_request(
         self,
         template_name: str,
-        schema_path: str,
         context: dict,
         sync=False,
     ) -> Tuple[Response, Element]:
 
         request_body = loader.render_to_string(template_name, context)
-
-        # TODO enable schema validation
-        # doc = etree.parse(StringIO(request_body))
-        # xmlschema = self._load_schema(schema_path)
-        # if not xmlschema.validate(doc):
-        #     raise RegistrationFailed("failed to XML validate outgoing backend request")
-
         request_data = self._wrap_soap_envelope(request_body)
 
         url = self.service.get_endpoint(sync=sync)
@@ -148,7 +134,7 @@ class StufZDSClient:
             raise RegistrationFailed("error while making backend request") from e
 
         try:
-            xml = etree.fromstring(response.content)
+            xml = df_fromstring(response.content)
         except etree.XMLSyntaxError as e:
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
@@ -158,9 +144,8 @@ class StufZDSClient:
 
     def create_zaak_identificatie(self):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
-        schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, schema, context, sync=True)
+        response, xml = self._make_request(template, context, sync=True)
 
         try:
             zaak_identificatie = xml_value(
@@ -175,7 +160,6 @@ class StufZDSClient:
 
     def create_zaak(self, zaak_identificatie, data):
         template = "stuf_zds/soap/creeerZaak.xml"
-        schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
         context = self._get_request_base_context()
         context.update(
             {
@@ -183,15 +167,14 @@ class StufZDSClient:
             }
         )
         context.update(data)
-        response, xml = self._make_request(template, schema, context)
+        response, xml = self._make_request(template, context)
 
         return None
 
     def create_document_identificatie(self):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
-        schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, schema, context, sync=True)
+        response, xml = self._make_request(template, context, sync=True)
 
         try:
             document_identificatie = xml_value(
@@ -206,7 +189,6 @@ class StufZDSClient:
 
     def create_zaak_document(self, zaak_id, doc_id, body):
         template = "stuf_zds/soap/voegZaakdocumentToe.xml"
-        schema = "zkn0310/zs-dms/zkn0310_msg_zs-dms.xsd"
 
         file_content = base64.b64encode(
             json.dumps(body, cls=DjangoJSONEncoder).encode()
@@ -221,7 +203,7 @@ class StufZDSClient:
                 "file_name": f"file-{doc_id}.b64.txt",
             }
         )
-        response, xml = self._make_request(template, schema, context)
+        response, xml = self._make_request(template, context)
 
         return None
 
@@ -258,7 +240,7 @@ def parse_soap_error_text(response):
         message = response.status
     else:
         try:
-            xml = etree.fromstring(response.text.encode("utf8"))
+            xml = df_fromstring(response.text.encode("utf8"))
             faults = xml.xpath(
                 "/soapenv:Envelope/soapenv:Body/soapenv:Fault", namespaces=nsmap
             )
