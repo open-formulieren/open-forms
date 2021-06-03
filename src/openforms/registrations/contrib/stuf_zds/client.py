@@ -70,14 +70,6 @@ class StufZDSClient:
         self.service = service
         self.options = options
 
-    def _get_headers(self):
-        credentials = f"{self.service.user}:{self.service.password}".encode("utf-8")
-        encoded_credentials = base64.b64encode(credentials).decode("utf-8")
-        return {
-            "Authorization": "Basic " + encoded_credentials,
-            "Content-Type": "application/soap+xml",
-        }
-
     def _get_request_base_context(self):
         return {
             "zender_organisatie": self.service.zender_organisatie,
@@ -120,7 +112,8 @@ class StufZDSClient:
             response = requests.post(
                 url,
                 data=request_data,
-                headers=self._get_headers(),
+                headers={"Content-Type": "application/soap+xml"},
+                auth=(self.service.user, self.service.password),
                 cert=self.service.get_cert(),
             )
             if response.status_code < 200 or response.status_code >= 400:
