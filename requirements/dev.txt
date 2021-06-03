@@ -206,9 +206,7 @@ django-reversion==3.0.9
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 django-rosetta==0.9.4
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
+    # via -r requirements/dev.in
 django-sendfile2==0.6.0
     # via
     #   -c requirements/ci.txt
@@ -445,10 +443,7 @@ pluggy==0.13.1
     #   -r requirements/ci.txt
     #   pytest
 polib==1.1.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-rosetta
+    # via django-rosetta
 prometheus-client==0.8.0
     # via
     #   -c requirements/ci.txt
