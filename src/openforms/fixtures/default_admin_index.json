@@ -107,6 +107,10 @@
                 "zgwconfig"
             ],
             [
+                "stuf_zds",
+                "stufzdsconfig"
+            ],
+            [
                 "zgw_consumers",
                 "nlxconfig"
             ],
