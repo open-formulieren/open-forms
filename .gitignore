@@ -25,6 +25,8 @@ __pycache__
 # Environment
 /deployment/app.*.yml
 /deployment/hosts.*
+/deployment/templates/stuf-bg.conf
+
 local.py
 /env/
 /media/
