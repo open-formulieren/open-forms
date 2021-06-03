@@ -33,7 +33,6 @@ from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
-    FormCreateSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
     FormSerializer,
@@ -292,31 +291,3 @@ class FormsImportAPIView(views.APIView):
             raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# TODO merge with endpoint above when serializers are merged
-class FormCreationViewSet(
-    CreateModelMixin, UpdateModelMixin, viewsets.ReadOnlyModelViewSet
-):
-    """Internal endpoint for front-end"""
-
-    serializer_class = FormCreateSerializer
-    queryset = Form.objects.all()
-    lookup_field = "uuid"
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
-
-    @action(detail=True, methods=["POST"])
-    def copy_form(self, request: Request, uuid: str) -> Response:
-        form = self.get_object()
-        copied_form = form.copy()
-        return Response(data={"new_pk": copied_form.pk})
-
-    @action(detail=True, methods=["GET"])
-    def export_form(self, request: Request, uuid: str) -> HttpResponse:
-        form = self.get_object()
-        response = HttpResponse(content_type="application/zip")
-        response["Content-Disposition"] = f"attachment;filename={form.slug}.zip"
-        call_command("export", form.pk, response=response)
-        response["Content-Length"] = len(response.content)
-        return response

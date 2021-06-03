@@ -10,7 +10,6 @@ from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.forms.api.viewsets import (
-    FormCreationViewSet,
     FormDefinitionViewSet,
     FormsImportAPIView,
     FormStepViewSet,
@@ -37,13 +36,6 @@ submissions_router = NestedSimpleRouter(router, r"submissions", lookup="submissi
 submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
 )
-# forms for front end
-router.register(
-    "_manage_forms",
-    FormCreationViewSet,
-    basename="manage-forms",
-)
-
 
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
