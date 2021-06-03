@@ -182,17 +182,17 @@ paths:
               schema:
                 description: No response body
           description: ''
-  /api/v1/forms/{form_uuid}/steps:
+  /api/v1/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
       description: ''
       summary: List form steps
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -214,10 +214,10 @@ paths:
       summary: Create a form step
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -243,17 +243,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormStep'
           description: ''
-  /api/v1/forms/{form_uuid}/steps/{uuid}:
+  /api/v1/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
       description: ''
       summary: Retrieve form step details
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       - in: path
         name: uuid
@@ -279,10 +279,10 @@ paths:
       summary: Update all details of a form step
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       - in: path
         name: uuid
@@ -320,10 +320,10 @@ paths:
       summary: Update some details of a form step
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       - in: path
         name: uuid
@@ -360,10 +360,10 @@ paths:
       summary: Delete a form step
       parameters:
       - in: path
-        name: form_uuid
+        name: form_uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       - in: path
         name: uuid
@@ -379,7 +379,7 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/v1/forms/{uuid}:
+  /api/v1/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
       description: |-
@@ -392,10 +392,10 @@ paths:
       summary: Retrieve form details
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -421,10 +421,10 @@ paths:
       summary: Update all details of a form
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -462,10 +462,10 @@ paths:
       summary: Update given details of a form
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -497,10 +497,10 @@ paths:
       summary: Mark form as deleted
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -510,7 +510,7 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/v1/forms/{uuid}/copy:
+  /api/v1/forms/{uuid_or_slug}/copy:
     post:
       operationId: forms_copy_create
       description: |-
@@ -522,10 +522,10 @@ paths:
       summary: Copy form
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
@@ -544,7 +544,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
-  /api/v1/forms/{uuid}/export:
+  /api/v1/forms/{uuid_or_slug}/export:
     post:
       operationId: forms_export_create
       description: |-
@@ -554,10 +554,10 @@ paths:
       summary: Export form
       parameters:
       - in: path
-        name: uuid
+        name: uuid_or_slug
         schema:
           type: string
-          format: uuid
+        description: Either a UUID4 or a slug identifiying the form.
         required: true
       tags:
       - forms
