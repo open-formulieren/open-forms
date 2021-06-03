@@ -43,7 +43,7 @@ class StufBGClient:
     def _make_request(self, data):
 
         response = requests.post(
-            self.service.url,
+            f"{self.service.url}{self.service.endpoint_sync}",
             data=data,
             headers={"Content-Type": "application/soap+xml"},
             cert=self.service.get_cert(),
