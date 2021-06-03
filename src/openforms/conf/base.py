@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
+    "openforms.prefill.contrib.haalcentraal.apps.HaalCentraalApp",
 ]
 
 MIDDLEWARE = [
@@ -612,5 +613,6 @@ SPECTACULAR_SETTINGS = {
 #
 ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
-    os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files")
+    os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
 ]
