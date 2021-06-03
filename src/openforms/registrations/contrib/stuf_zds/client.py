@@ -118,12 +118,16 @@ class StufZDSClient:
             )
             if response.status_code < 200 or response.status_code >= 400:
                 logger.error(
-                    "bad http response %s\n%s",
-                    response.status_code,
+                    "bad response for referentienummer/submission '%s'\n%s",
+                    self.options["referentienummer"],
                     parse_soap_error_text(response),
                 )
-                response.raise_for_status()
+                raise RegistrationFailed("error while making backend request")
         except RequestException as e:
+            logger.error(
+                "bad request for referentienummer/submission '%s'\n%s",
+                self.options["referentienummer"],
+            )
             raise RegistrationFailed("error while making backend request") from e
 
         try:
