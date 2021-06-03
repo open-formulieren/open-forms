@@ -22,6 +22,7 @@ class GlobalConfiguration(SingletonModel):
     # for testing purposes!
     default_test_bsn = models.CharField(
         _("default test BSN"),
+        blank=True,
         default="",
         max_length=9,
         help_text=_(
