@@ -1,5 +1,4 @@
 from django import forms
-from django.conf import settings
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -48,31 +47,10 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies"]
-    readonly_fields = ["display_javascript_snippet"]
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
     )
-
-    def get_queryset(self, request):
-        self.request = request  # Needed to access the request later
-        return super().get_queryset(request)
-
-    def display_javascript_snippet(self, obj):
-        scheme = "https://" if self.request.is_secure() else "http://"
-        return f"""
-            <script src="{ settings.SDK_BASE_URL }/open-forms-sdk.js"></script>
-            <script>
-                const formId = '{ obj.slug }';
-                const baseUrl = '{ scheme }{ self.request.get_host() }/api/v1/';
-                const targetNode = document.getElementById('form-root');
-
-                const form = new OpenForms.OpenForm(targetNode, '{' baseUrl, formId '}');
-                form.init();
-            </script>
-        """
-
-    display_javascript_snippet.short_description = _("JavaScript Snippet")
 
     def _reversion_autoregister(self, model, follow):
         # because this is called in the __init__, it seems to run before the
