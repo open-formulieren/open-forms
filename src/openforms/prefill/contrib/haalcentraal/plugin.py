@@ -2,8 +2,8 @@ import logging
 from typing import Any, Dict, List
 
 from django.utils.translation import gettext_lazy as _
-from glom import glom, GlomError
 
+from glom import GlomError, glom
 from requests import RequestException
 
 from openforms.submissions.models import Submission
@@ -28,9 +28,6 @@ class HaalCentraalPrefill(BasePlugin):
     def get_prefill_values(
         submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
-
-        print("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n")
-
         if not submission.bsn:
             return {}
 

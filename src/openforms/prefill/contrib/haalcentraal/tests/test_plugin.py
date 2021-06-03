@@ -27,12 +27,6 @@ def load_binary_mock(name):
 
 class HaalCentraalPrefillTest(TestCase):
     def test_defined_attributes_paths_resolve(self):
-        # data = generate_oas_component(
-        #     "personen",
-        #     "schemas/IngeschrevenPersoon"
-        # )
-        # print(json.dumps(data, indent=4))
-        # data = load_json_mock("ingeschrevenpersonen.999990676.json")
         data = load_json_mock("ingeschrevenpersonen.999990676-full.json")
         for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
             with self.subTest(key):
