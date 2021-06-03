@@ -99,7 +99,8 @@ def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
 
     for component in components:
         if prefill := component.get("prefill"):
-            prefills.append(prefill)
+            if prefill.get("plugin"):
+                prefills.append(prefill)
         else:
             nested = _extract_prefill_fields(component)
             prefills += nested
