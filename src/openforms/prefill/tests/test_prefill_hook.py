@@ -158,3 +158,18 @@ class PrefillHookTests(TestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertEqual(field["defaultValue"], "some-default")
+
+    def tests_no_prefill_configured(self):
+        config = deepcopy(CONFIGURATION)
+        config["components"][0]["prefill"] = {"plugin": "", "attribute": ""}
+        form_step = FormStepFactory.create(form_definition__configuration=config)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        try:
+            apply_prefill(
+                configuration=form_step.form_definition.configuration,
+                submission=submission,
+                register=register,
+            )
+        except Exception:
+            self.fail("Pre-fill can't handle empty/no plugins")
