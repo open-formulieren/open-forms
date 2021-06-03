@@ -103,6 +103,10 @@
                 "soapservice"
             ],
             [
+                "prefill.haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
                 "zgw_apis",
                 "zgwconfig"
             ],
