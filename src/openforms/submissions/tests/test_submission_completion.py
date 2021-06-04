@@ -224,13 +224,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         definition1 = FormDefinitionFactory.create(
             configuration={
-                "index": 0,
-                "configuration": {
-                    "display": "form",
-                    "components": [
-                        {"key": "foo", "showInEmail": True},
-                    ],
-                },
+                "display": "form",
+                "components": [
+                    {"key": "foo", "showInEmail": True, "label": "Foo"},
+                ],
             }
         )
         step1 = FormStepFactory.create(
@@ -238,14 +235,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         definition2 = FormDefinitionFactory.create(
             configuration={
-                "index": 0,
-                "configuration": {
-                    "display": "form",
-                    "components": [
-                        {"key": "bar", "showInEmail": True},
-                        {"key": "hello", "showInEmail": False},
-                    ],
-                },
+                "display": "form",
+                "components": [
+                    {"key": "bar", "label": "Bar", "showInEmail": True},
+                    {"key": "hello", "label": "Hello", "showInEmail": False},
+                ],
             }
         )
         step2 = FormStepFactory.create(
@@ -277,11 +271,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn(
             "Information filled in: foovalue, barvalue and hellovalue.", message.body
         )
-        self.assertIn("<th>bar</th>", message.body)
+        self.assertIn("<th>Bar</th>", message.body)
         self.assertIn("<th>barvalue</th>", message.body)
-        self.assertIn("<th>foo</th>", message.body)
+        self.assertIn("<th>Foo</th>", message.body)
         self.assertIn("<th>foovalue</th>", message.body)
-        self.assertNotIn("<th>hello</th>", message.body)
+        self.assertNotIn("<th>Hello</th>", message.body)
         self.assertNotIn("<th>hellovalue</th>", message.body)
 
         delay_mock.assert_called_once_with(submission.id)

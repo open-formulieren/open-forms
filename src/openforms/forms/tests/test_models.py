@@ -73,20 +73,17 @@ class FormDefinitionTestCase(TestCase):
     def test_get_keys_for_email_summary(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
-                "index": 0,
-                "configuration": {
-                    "display": "form",
-                    "components": [
-                        {"key": "aaa", "showInEmail": True},
-                        {"key": "bbb", "showInEmail": False},
-                        {"key": "ccc", "showInEmail": True},
-                    ],
-                },
+                "display": "form",
+                "components": [
+                    {"key": "aaa", "label": "AAA", "showInEmail": True},
+                    {"key": "bbb", "label": "BBB", "showInEmail": False},
+                    {"key": "ccc", "label": "CCC", "showInEmail": True},
+                ],
             }
         )
 
         keys = form_definition.get_keys_for_email_summary()
 
-        self.assertIn("aaa", keys)
-        self.assertNotIn("bbb", keys)
-        self.assertIn("ccc", keys)
+        self.assertIn(("aaa", "AAA"), keys)
+        self.assertNotIn(("bbb", "BBB"), keys)
+        self.assertIn(("ccc", "CCC"), keys)
