@@ -65,13 +65,13 @@ class SoapService(models.Model):
         max_length=200,
         blank=True,
         help_text=_(
-            "Endpoint for synchronous Soap request, for example '/VerwerkSynchroonVrijBericht'."
+            "Endpoint for synchronous SOAP request, usually '/VerwerkSynchroonVrijBericht'."
         ),
     )
     endpoint_async = models.CharField(
         _("endpoint async requests"),
         help_text=_(
-            "Endpoint for asynchronous Soap request, usually '/OntvangAsynchroon'."
+            "Endpoint for asynchronous SOAP request, usually '/OntvangAsynchroon'."
         ),
         max_length=200,
         blank=True,

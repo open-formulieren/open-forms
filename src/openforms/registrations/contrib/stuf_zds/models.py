@@ -22,13 +22,20 @@ class StufZDSConfig(SingletonModel):
         null=True,
     )
 
-    gemeentecode = models.CharField(_("Gemeentecode to register Zaken"), max_length=32)
+    gemeentecode = models.CharField(
+        _("Municipality code"),
+        max_length=32,
+        help_text=_("Municipality code to register zaken"),
+    )
     zds_zaaktype_code = models.CharField(
-        _("Zaaktype code for newly created Zaken in StUF-ZDS"), max_length=32
+        _("Zaaktype code"),
+        max_length=32,
+        help_text=_("Zaaktype code for newly created zaken in StUF-ZDS"),
     )
     zds_zaaktype_omschrijving = models.CharField(
-        _("Zaaktype description for newly created Zaken in StUF-ZDS"),
+        _("Zaaktype description"),
         max_length=32,
+        help_text=_("Zaaktype description for newly created zaken in StUF-ZDS"),
     )
 
     objects = StufZDSConfigManager()

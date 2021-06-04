@@ -119,7 +119,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
                         self.message_user(
                             request,
                             _(
-                                "Form Definitions were created with the following slugs: {}"
+                                "Form definitions were created with the following slugs: {}"
                             ).format(created_fds),
                             level=messages.WARNING,
                         )
