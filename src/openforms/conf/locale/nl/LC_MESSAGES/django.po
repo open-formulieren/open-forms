@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-04 14:09+0200\n"
-"PO-Revision-Date: 2021-06-04 15:01+0020\n"
+"POT-Creation-Date: 2021-06-04 15:24+0200\n"
+"PO-Revision-Date: 2021-06-04 15:27+0020\n"
 "Last-Translator: b'Sergei Maertens <sergei@maykinmedia.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -89,6 +89,10 @@ msgstr "Bevestigingse-mail configuratie"
 msgid "Submissions"
 msgstr "Inzendingen"
 
+#: openforms/config/admin.py:26
+msgid "Feature flags"
+msgstr "Feature flags"
+
 #: openforms/config/models.py:12
 msgid "allowed email domain names"
 msgstr "toegestane e-maildomeinen"
@@ -115,6 +119,15 @@ msgstr ""
 "Voornamelijk bedoeld voor test doeleinden."
 
 #: openforms/config/models.py:35
+msgid "display SDK information"
+msgstr "toon SDK informatie"
+
+#: openforms/config/models.py:37
+msgid "When enabled, information about the used SDK is displayed."
+msgstr ""
+"Wanneer dit ingeschakeld is wordt informatie over de gebruikte SDK getoond."
+
+#: openforms/config/models.py:41
 msgid "General configuration"
 msgstr "Algemene configuratie"
 
@@ -558,6 +571,11 @@ msgstr "Importeren"
 #: openforms/forms/templates/core/widgets/form_builder.html:5
 msgid "Loading form builder."
 msgstr "Laden van formulier editor."
+
+#: openforms/forms/templates/forms/sdk_info_banner.html:3
+#| msgid "SDK Javascript"
+msgid "Javascript SDK used"
+msgstr "Gebruikte Javascript SDK"
 
 #: openforms/forms/validators.py:15
 msgid "Top-level value must be an Object."
@@ -1803,26 +1821,24 @@ msgid "SOAP services"
 msgstr "SOAP service"
 
 #: stuf/stuf_bg/constants.py:22
-#| msgid "first name"
 msgid "First Name"
 msgstr "Voornamen"
 
 #: stuf/stuf_bg/constants.py:23
-#| msgid "last name"
 msgid "Last Name"
 msgstr "Geslachtsnaam"
 
 #: stuf/stuf_bg/constants.py:24
 msgid "Street Name"
-msgstr ""
+msgstr "Straatnaam"
 
 #: stuf/stuf_bg/constants.py:25
 msgid "House Number"
-msgstr ""
+msgstr "Huisnummer"
 
 #: stuf/stuf_bg/constants.py:26
 msgid "House Letter"
-msgstr ""
+msgstr "Huisletter"
 
 #: stuf/stuf_bg/constants.py:28
 msgid "House Number Addition"
