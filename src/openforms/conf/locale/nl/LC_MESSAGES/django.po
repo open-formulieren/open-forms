@@ -5,14 +5,15 @@ msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-04 14:09+0200\n"
-"PO-Revision-Date: 2021-06-03 20:39+0020\n"
-"Last-Translator: Joeri Bekker <joeri@maykinmedia.nl>\n"
+"PO-Revision-Date: 2021-06-04 15:01+0020\n"
+"Last-Translator: b'Sergei Maertens <sergei@maykinmedia.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.9.4\n"
 
 #: openforms/accounts/models.py:18
 msgid "username"
@@ -226,7 +227,7 @@ msgstr ""
 
 #: openforms/forms/api/viewsets.py:47 openforms/forms/api/viewsets.py:119
 msgid "Either a UUID4 or a slug identifiying the form."
-msgstr ""
+msgstr "Een UUID4 of een slug die het formulier identificeert."
 
 #: openforms/forms/api/viewsets.py:52
 msgid "List form steps"
@@ -386,9 +387,9 @@ msgid ""
 "address to which the confirmation email will be sent. If not specified, "
 "`email` will be used."
 msgstr ""
-"De naam van het attribuut in de inzendingsgegevens dat het e-mailadres bevat "
-"waarnaar de bevestigingse-mail verstuurd zal worden. Indien niet opgegeven, "
-"dan wordt het veld `email` gebruikt."
+"De naam van het attribuut in de inzendingsgegevens dat het e-mailadres bevat"
+" waarnaar de bevestigingse-mail verstuurd zal worden. Indien niet opgegeven,"
+" dan wordt het veld `email` gebruikt."
 
 #: openforms/forms/models/form.py:42
 msgid "registration backend"
@@ -463,8 +464,9 @@ msgstr "optioneel"
 
 #: openforms/forms/models/form_step.py:31
 msgid ""
-"Designates whether this step is an optional step in the form. Currently used "
-"for form-rendering purposes, this is not (yet) used for validation purposes."
+"Designates whether this step is an optional step in the form. Currently used"
+" for form-rendering purposes, this is not (yet) used for validation "
+"purposes."
 msgstr "Geeft aan of deze stap optioneel is binnen het formulier."
 
 #: openforms/forms/models/form_step.py:37
@@ -477,8 +479,8 @@ msgid ""
 "filled out. Note that this is not validated (yet) during step submission."
 msgstr ""
 "Te gebruiken beschikbaarheidsstrategie. Een stap moet beschikbaar zijn "
-"voordat deze ingevuld kan worden. Merk op dat deze (nog) niet gevalideerd is "
-"tijdens het verzenden van de stap."
+"voordat deze ingevuld kan worden. Merk op dat deze (nog) niet gevalideerd is"
+" tijdens het verzenden van de stap."
 
 #: openforms/forms/models/form_step.py:50
 msgid "form step"
@@ -503,13 +505,15 @@ msgstr "SDK Javascript"
 
 #: openforms/forms/templates/admin/forms/form/change_form.html:17
 msgid "You must save the form before the snippet can be generated."
-msgstr ""
+msgstr "Je moet het formulier bewaren voor een snippet beschikbaar is."
 
 #: openforms/forms/templates/admin/forms/form/change_form.html:21
 msgid ""
 "Embed this snippet where you want to display the form in your (CMS) page. "
 "This snippet will load and render the form."
 msgstr ""
+"Voeg dit snippet in op de locatie waar je het formulier wil weergeven in je "
+"(CMS) pagina. Dit snippet laadt het formulier en geeft het weer."
 
 #: openforms/forms/templates/admin/forms/form/change_form.html:31
 msgid "SDK default styles"
@@ -518,8 +522,8 @@ msgstr "SDK standaard stijl"
 #: openforms/forms/templates/admin/forms/form/change_form.html:37
 msgid ""
 "Include this snippet close to where other styles (CSS) are loaded. This "
-"snippet provides the default form styling. If you have own styles overriding "
-"the default styles, ensure this snippet is included BEFORE your custom "
+"snippet provides the default form styling. If you have own styles overriding"
+" the default styles, ensure this snippet is included BEFORE your custom "
 "styles."
 msgstr ""
 "Voeg dit snippet toe op de HTML pagina waar de andere CSS-bestanden "
@@ -1210,7 +1214,7 @@ msgstr ""
 
 #: openforms/prefill/contrib/haalcentraal/models.py:20
 msgid "Haal Centraal API"
-msgstr ""
+msgstr "Haal Centraal API"
 
 #: openforms/prefill/contrib/haalcentraal/models.py:30
 msgid "Haal Centraal configuration"
@@ -1258,7 +1262,7 @@ msgstr "Demo - print naar console"
 
 #: openforms/registrations/contrib/email/apps.py:8
 msgid "Email plugin"
-msgstr ""
+msgstr "E-mailplugin"
 
 #: openforms/registrations/contrib/email/config.py:9
 msgid "The email addresses to which the submission details will be sent"
@@ -1278,7 +1282,7 @@ msgstr "[Open Formulieren] {} - inzending {}"
 
 #: openforms/registrations/contrib/stuf_zds/models.py:26
 msgid "Municipality code"
-msgstr ""
+msgstr "Gemeentecode"
 
 #: openforms/registrations/contrib/stuf_zds/models.py:28
 msgid "Municipality code to register zaken"
@@ -1403,7 +1407,8 @@ msgstr "Verzonden gegevens"
 #: openforms/submissions/admin.py:51
 msgid "You can only export the submissions of the same form type."
 msgstr ""
-"Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
+"Je kan alleen de inzendingen van één enkel formuliertype tegelijk "
+"exporteren."
 
 #: openforms/submissions/admin.py:61
 #, python-format
@@ -1435,7 +1440,8 @@ msgstr "Contact e-mailadres"
 #: openforms/submissions/api/serializers.py:165
 msgid "The email address where the 'magic' resume link should be sent to"
 msgstr ""
-"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet worden"
+"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet "
+"worden"
 
 #: openforms/submissions/api/serializers.py:191
 #: openforms/submissions/tests/test_submission_suspension.py:90
@@ -1449,8 +1455,8 @@ msgstr "Actieve inzendingen weergeven"
 #: openforms/submissions/api/viewsets.py:41
 msgid ""
 "Active submissions are submissions whose ID is in the user session. This "
-"endpoint returns user-bound submissions. Note that you get different results "
-"on different results because of the differing sessions."
+"endpoint returns user-bound submissions. Note that you get different results"
+" on different results because of the differing sessions."
 msgstr ""
 "Actieve inzendingen zijn inzendingen waarvan het ID zich in de "
 "gebruikerssessie bevindt. Dit endpoint geeft alle inzendingen terug die "
@@ -1463,7 +1469,8 @@ msgstr "Inzending detail weergeven"
 
 #: openforms/submissions/api/viewsets.py:48
 msgid "Get the state of a single submission in the user session."
-msgstr "Haal de status op van een enkele inzending op van de gebruikerssessie."
+msgstr ""
+"Haal de status op van een enkele inzending op van de gebruikerssessie."
 
 #: openforms/submissions/api/viewsets.py:51
 msgid "Start a submission"
@@ -1553,8 +1560,10 @@ msgstr "registratie backend status"
 
 #: openforms/submissions/models.py:94
 msgid ""
-"Indication whether the registration in the configured backend was successful."
-msgstr "Indicatie of de doorzetting naar de registratie backend succesvol was."
+"Indication whether the registration in the configured backend was "
+"successful."
+msgstr ""
+"Indicatie of de doorzetting naar de registratie backend succesvol was."
 
 #: openforms/submissions/models.py:99
 msgid "Submission"
@@ -1742,11 +1751,11 @@ msgstr "endpoint voor synchrone berichten"
 
 #: stuf/models.py:68
 msgid ""
-"Endpoint for synchronous SOAP request, usually '/"
-"VerwerkSynchroonVrijBericht'."
+"Endpoint for synchronous SOAP request, usually "
+"'/VerwerkSynchroonVrijBericht'."
 msgstr ""
-"Endpoint voor synchrone SOAP berichten, typisch '/"
-"VerwerkSynchroonVrijBericht'."
+"Endpoint voor synchrone SOAP berichten, typisch "
+"'/VerwerkSynchroonVrijBericht'."
 
 #: stuf/models.py:72
 msgid "endpoint async requests"
@@ -1794,16 +1803,14 @@ msgid "SOAP services"
 msgstr "SOAP service"
 
 #: stuf/stuf_bg/constants.py:22
-#, fuzzy
 #| msgid "first name"
 msgid "First Name"
-msgstr "voornaam"
+msgstr "Voornamen"
 
 #: stuf/stuf_bg/constants.py:23
-#, fuzzy
 #| msgid "last name"
 msgid "Last Name"
-msgstr "achternaam"
+msgstr "Geslachtsnaam"
 
 #: stuf/stuf_bg/constants.py:24
 msgid "Street Name"
@@ -1819,15 +1826,15 @@ msgstr ""
 
 #: stuf/stuf_bg/constants.py:28
 msgid "House Number Addition"
-msgstr ""
+msgstr "Huisnummertoevoeging"
 
 #: stuf/stuf_bg/constants.py:30
 msgid "Post Code"
-msgstr ""
+msgstr "Postcode"
 
 #: stuf/stuf_bg/constants.py:31
 msgid "Residence Name"
-msgstr ""
+msgstr "Woonplaatsnaam"
 
 #: stuf/stuf_bg/models.py:32
 msgid "StUF-BG configuration"
