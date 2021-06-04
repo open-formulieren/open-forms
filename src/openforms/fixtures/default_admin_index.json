@@ -99,20 +99,24 @@
                 "blacklist"
             ],
             [
-                "stuf",
-                "soapservice"
-            ],
-            [
                 "prefill.haalcentraal",
                 "haalcentraalconfig"
             ],
             [
-                "zgw_apis",
-                "zgwconfig"
+                "stuf",
+                "soapservice"
+            ],
+            [
+                "stuf_bg",
+                "stufbgconfig"
             ],
             [
                 "stuf_zds",
                 "stufzdsconfig"
+            ],
+            [
+                "zgw_apis",
+                "zgwconfig"
             ],
             [
                 "zgw_consumers",

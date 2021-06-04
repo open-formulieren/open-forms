@@ -26,7 +26,7 @@ class BRPConfig(SingletonModel):
     objects = BRPConfigManager()
 
     class Meta:
-        verbose_name = _("BRP Configuration")
+        verbose_name = _("BRP configuration")
 
     def __str__(self):
         return force_str(self._meta.verbose_name)
