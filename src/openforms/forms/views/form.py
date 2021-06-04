@@ -1,6 +1,8 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
+from django.views.generic import RedirectView
 
 from openforms.ui.views.generic import UIDetailView, UIListView
 
@@ -15,14 +17,6 @@ class FormListView(UIListView):
 class FormDetailView(UIDetailView):
     template_name = "core/views/form/form_detail.html"
     queryset = Form.objects.filter(_is_deleted=False)
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if self.object.login_required and not self.request.session.get("bsn"):
-            return redirect("forms:form-login", slug=self.kwargs["slug"])
-        else:
-            return super().get(request, *args, **kwargs)
 
 
 class FormLoginButtonView(UIDetailView):
@@ -54,3 +48,33 @@ class FormLoginButtonView(UIDetailView):
         }
         ctx.update({"digid_button_url": f"{url}?{urlencode(params)}"})
         return ctx
+
+
+class DigidStartRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        form_url = self.request.GET.get("next")
+        if not form_url:
+            return HttpResponseBadRequest("missing 'next' parameter")
+
+        url = reverse("digid-mock:login")
+        params = {
+            "acs": self.request.build_absolute_uri(reverse("digid-login-return")),
+            "next": form_url,
+            "cancel": form_url,
+        }
+        url = f"{url}?{urlencode(params)}"
+        return url
+
+
+class DigidReturnRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.GET.get("bsn"):
+            self.request.session["bsn"] = self.request.GET["bsn"]
+        else:
+            return HttpResponseBadRequest("missing 'bsn' parameter")
+
+        url = self.request.GET.get("next")
+        if not url:
+            return HttpResponseBadRequest("missing 'next' parameter")
+        else:
+            return url

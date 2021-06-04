@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
@@ -39,10 +40,20 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
 class FormSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
+    login_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
-        fields = ("uuid", "name", "login_required", "product", "slug", "url", "steps")
+        fields = (
+            "uuid",
+            "name",
+            "login_required",
+            "login_url",
+            "product",
+            "slug",
+            "url",
+            "steps",
+        )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -53,6 +64,10 @@ class FormSerializer(serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+
+    def get_login_url(self, form):
+        request = self.context.get("request", None)
+        return reverse("digid-login-start", request=request)
 
 
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):

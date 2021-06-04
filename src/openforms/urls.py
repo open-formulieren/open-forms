@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
+from .forms.views.form import DigidReturnRedirectView, DigidStartRedirectView
 from .views import SPADemoView
 
 handler500 = "openforms.utils.views.server_error"
@@ -42,11 +43,13 @@ urlpatterns = [
     ),
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
-    path("", include("openforms.forms.urls", namespace="core")),
     path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
+    path("digid/login", DigidStartRedirectView.as_view(), name="digid-login-start"),
+    path("digid/return", DigidReturnRedirectView.as_view(), name="digid-login-return"),
+    path("", include("openforms.forms.urls", namespace="core")),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
