@@ -68,17 +68,20 @@ class FormDefinition(models.Model):
 
         return super().delete(using=using, keep_parents=keep_parents)
 
+    def _extract_keys_from_configuration(self, configuration: dict):
+        keys_for_email_summary = []
+        components = configuration.get("components", [])
+
+        for component in components:
+            if component.get("showInEmail"):
+                keys_for_email_summary.append((component["key"], component["label"]))
+            keys_for_email_summary += self._extract_keys_from_configuration(component)
+
+        return keys_for_email_summary
+
     def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
         """Return the key and the label of fields to include in the confirmation email"""
-        keys_for_email_summary = []
-        components = self.configuration.get("components")
-        if components:
-            for component in components:
-                if component.get("showInEmail"):
-                    keys_for_email_summary.append(
-                        (component["key"], component["label"])
-                    )
-        return keys_for_email_summary
+        return self._extract_keys_from_configuration(self.configuration)
 
     class Meta:
         verbose_name = _("Form definition")
