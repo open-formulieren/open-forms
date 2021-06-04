@@ -31,6 +31,12 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    display_sdk_information = models.BooleanField(
+        _("display SDK information"),
+        default=False,
+        help_text=_("When enabled, information about the used SDK is displayed."),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 

@@ -22,4 +22,10 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": ("default_test_bsn",),
             },
         ),
+        (
+            _("Feature flags"),
+            {
+                "fields": ("display_sdk_information",),
+            },
+        ),
     )
