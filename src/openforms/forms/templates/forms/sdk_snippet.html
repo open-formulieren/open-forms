@@ -1,7 +1,7 @@
 {% load openforms %}
 {% with 'openforms-container' as div_id %}
 <div id="{{ div_id }}"></div>
-<script src="{{ settings.SDK_BASE_URL }}/open-forms-sdk.js"></script>
+<script src="{{ sdk_js_url }}"></script>
 <script>
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
