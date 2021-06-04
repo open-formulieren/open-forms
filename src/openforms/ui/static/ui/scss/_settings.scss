@@ -26,7 +26,7 @@ $color-green: green !default;
 $color-red: #D52B1E;
 $color-orange: #E17000;
 $color-yellow: #FFB612;
-$color-primary: $color-orange;
+$color-primary: $color-blue;
 $color-secondary: scale_color($color-primary, $lightness: 80%, $saturation: -60%);
 $color-background: $color-white !default;
 $color-border: $color-gray;
