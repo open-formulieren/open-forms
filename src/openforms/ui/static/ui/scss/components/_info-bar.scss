@@ -1,0 +1,24 @@
+@import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/grid';
+
+.info-bar {
+  @include border(all);
+  @include rows(0.25, (padding-top, padding-bottom));
+  @include margin;
+  @include container('flex');
+  @include container-padding;
+  justify-content: space-between;
+
+  background-size: 50px 50px;
+  background-color: #ffe761;
+  background-image: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, .04) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(0, 0, 0, .04) 50%,
+    rgba(0, 0, 0, .04) 75%,
+    transparent 75%,
+    transparent
+  );
+}

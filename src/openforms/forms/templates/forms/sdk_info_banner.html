@@ -1,5 +1,6 @@
-{% if enabled %}
-<div>
-    Javascript SDK: {{ sdk_js_url }}
+{% load i18n %}{% if enabled %}
+<div class="info-bar">
+    <span>{% trans "Javascript SDK used" %}</span>
+    <code>{{ sdk_js_url }}</code>
 </div>
 {% endif %}
