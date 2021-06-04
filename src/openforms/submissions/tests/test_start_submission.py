@@ -88,3 +88,18 @@ class SubmissionStartTests(APITestCase):
                 set(response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]),
                 {str(uuid) for uuid in ids},
             )
+
+    def test_start_submission_bsn_in_session(self):
+        session = self.client.session
+        session["bsn"] = "123456782"
+        session.save()
+
+        body = {
+            "form": f"http://testserver{self.form_url}",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        submission = Submission.objects.get()
+        self.assertEqual(submission.bsn, "123456782")

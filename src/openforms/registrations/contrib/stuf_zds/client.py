@@ -125,7 +125,7 @@ class StufZDSClient:
                 raise RegistrationFailed("error while making backend request")
         except RequestException as e:
             logger.error(
-                "bad request for referentienummer/submission '%s'\n%s",
+                "bad request for referentienummer/submission '%s'",
                 self.options["referentienummer"],
             )
             raise RegistrationFailed("error while making backend request") from e
