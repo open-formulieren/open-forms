@@ -2,7 +2,7 @@ import hashlib
 import json
 import uuid
 from copy import deepcopy
-from typing import List
+from typing import List, Tuple
 
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
@@ -68,13 +68,16 @@ class FormDefinition(models.Model):
 
         return super().delete(using=using, keep_parents=keep_parents)
 
-    def get_keys_for_email_summary(self) -> List[str]:
+    def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
+        """Return the key and the label of fields to include in the confirmation email"""
         keys_for_email_summary = []
-        components = self.configuration.get("configuration", {}).get("components")
+        components = self.configuration.get("components")
         if components:
             for component in components:
                 if component.get("showInEmail"):
-                    keys_for_email_summary.append(component["key"])
+                    keys_for_email_summary.append(
+                        (component["key"], component["label"])
+                    )
         return keys_for_email_summary
 
     class Meta:

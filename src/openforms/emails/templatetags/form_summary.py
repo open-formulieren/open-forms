@@ -27,9 +27,9 @@ def filter_data_to_show_in_email(context: dict) -> dict:
 
     # Return a dict with only the data that should be shown in the email
     filtered_data = {}
-    for property_name in data_to_show_in_email:
-        if property_name in context:
-            filtered_data[property_name] = context[property_name]
+    for property_key, property_label in data_to_show_in_email:
+        if property_key in context:
+            filtered_data[property_label] = context[property_key]
     return {"data": filtered_data}
 
 
