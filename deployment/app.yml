@@ -44,6 +44,9 @@
         mode: "rw"
         owner: 1000
 
+    sdk_port: 14100
+    sdk_image: docker.io/openformulieren/open-forms-sdk:latest
+
     # Uncomment if you enable the PostgreSQL role.
     #
     # postgresql_version: "12"
