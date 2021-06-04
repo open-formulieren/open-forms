@@ -1,5 +1,5 @@
 {% extends 'ui/views/abstract/detail.html' %}
-{% load static %}
+{% load static openforms %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -7,5 +7,6 @@
 {% endblock %}
 
 {% block card %}
+    {% sdk_info_banner %}
     {% include "forms/sdk_snippet.html" %}
 {% endblock %}

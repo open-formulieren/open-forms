@@ -183,6 +183,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "openforms.forms.context_processors.sdk_urls",
                 "openforms.utils.context_processors.settings",
             ],
             "loaders": TEMPLATE_LOADERS,
