@@ -3,6 +3,7 @@ from datetime import datetime
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
 
@@ -50,7 +51,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            f"[Open Forms] {submission.form.name} - submission {submission.uuid}",
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.name, submission.uuid
+            ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -58,7 +61,9 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            f"Submission details for {self.form.name} (submitted on 12:00:00 01-01-2021)",
+            _("Submission details for {} (submitted on {})").format(
+                self.form.name, "12:00:00 01-01-2021"
+            ),
             message.body,
         )
         self.assertIn("foo: bar", message.body)
@@ -89,7 +94,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            f"[Open Forms] {submission.form.name} - submission {submission.uuid}",
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.name, submission.uuid
+            ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -97,7 +104,9 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            f"Submission details for {self.form.name} (submitted on 12:00:00 01-01-2021)",
+            _("Submission details for {} (submitted on {})").format(
+                self.form.name, "12:00:00 01-01-2021"
+            ),
             message.body,
         )
         self.assertNotIn("https://someurl.com", message.body)
@@ -130,7 +139,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            f"[Open Forms] {submission.form.name} - submission {submission.uuid}",
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.name, submission.uuid
+            ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -138,7 +149,9 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            f"Submission details for {self.form.name} (submitted on 12:00:00 01-01-2021)",
+            _("Submission details for {} (submitted on {})").format(
+                self.form.name, "12:00:00 01-01-2021"
+            ),
             message.body,
         )
         self.assertNotIn("https://allowed.com", message.body)
