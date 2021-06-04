@@ -61,3 +61,6 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
     urlpatterns = [
         path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
+
+if apps.is_installed("rosetta"):
+    urlpatterns = [path("rosetta/", include("rosetta.urls"))] + urlpatterns

@@ -5,6 +5,9 @@ pip-tools~=6.0
 bump2version
 gitpython
 
+# Translations
+django-rosetta
+
 # Debug tooling
 django-debug-toolbar
 ddt-api-calls

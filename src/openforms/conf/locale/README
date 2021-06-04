@@ -4,6 +4,6 @@ management, merging and translating.
 
 Usage::
 
-    cd src/project_name
+    cd src
     python ../manage.py makemessages --all
     python ../manage.py compilemessages

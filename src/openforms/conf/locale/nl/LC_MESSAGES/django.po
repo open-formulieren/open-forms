@@ -1,18 +1,19 @@
-# This file is distributed under the same license as the Open Forms 
+# This file is distributed under the same license as the Open Forms
 # documentation.
 msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-20 14:04+0200\n"
-"PO-Revision-Date: 2021-05-19 14:39+0200\n"
-"Last-Translator: Joeri Bekker <joeri@maykinmedia.nl>\n"
+"POT-Creation-Date: 2021-06-04 14:09+0200\n"
+"PO-Revision-Date: 2021-06-04 15:01+0020\n"
+"Last-Translator: b'Sergei Maertens <sergei@maykinmedia.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.9.4\n"
 
 #: openforms/accounts/models.py:18
 msgid "username"
@@ -64,7 +65,7 @@ msgstr ""
 msgid "date joined"
 msgstr "datum toegetreden"
 
-#: openforms/accounts/models.py:53
+#: openforms/accounts/models.py:53 stuf/models.py:80
 msgid "user"
 msgstr "gebruiker"
 
@@ -84,6 +85,10 @@ msgstr "Nederlands"
 msgid "Confirmation email configuration"
 msgstr "Bevestigingse-mail configuratie"
 
+#: openforms/config/admin.py:20 openforms/submissions/models.py:100
+msgid "Submissions"
+msgstr "Inzendingen"
+
 #: openforms/config/models.py:12
 msgid "allowed email domain names"
 msgstr "toegestane e-maildomeinen"
@@ -97,7 +102,19 @@ msgstr ""
 "Hyperlinks in (bevestigings)e-mails worden verwijderd, tenzij het domein "
 "hier opgegeven is."
 
-#: openforms/config/models.py:23
+#: openforms/config/models.py:24
+msgid "default test BSN"
+msgstr "Standaard test BSN"
+
+#: openforms/config/models.py:29
+msgid ""
+"When provided, submissions that are started will have this BSN set as "
+"default for the session. Useful to test/demo prefill functionality."
+msgstr ""
+"Indien opgegeven dan krijgen inzendingen dit BSN automatisch mee. "
+"Voornamelijk bedoeld voor test doeleinden."
+
+#: openforms/config/models.py:35
 msgid "General configuration"
 msgstr "Algemene configuratie"
 
@@ -110,8 +127,8 @@ msgid "Select which service to use for the BRP API."
 msgstr "Selecteer welke service gebruikt moet worden voor de BRP API."
 
 #: openforms/contrib/brp/models.py:29
-msgid "BRP Configuration"
-msgstr "BRP Configuratie"
+msgid "BRP configuration"
+msgstr "BRP configuratie"
 
 #: openforms/emails/models.py:17
 msgid "subject"
@@ -149,19 +166,38 @@ msgstr "Bevestigingse-mail sjabloon"
 msgid "Confirmation email templates"
 msgstr "Bevestigingse-mail sjablonen"
 
-#: openforms/forms/admin/form.py:70
+#: openforms/emails/templates/form_summary.html:5
+msgid "Field"
+msgstr "Veld"
+
+#: openforms/emails/templates/form_summary.html:6
+msgid "Response"
+msgstr "Antwoord"
+
+#: openforms/forms/admin/form.py:71
 msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
-#: openforms/forms/admin/form.py:89
+#: openforms/forms/admin/form.py:90
 msgid "{} {} was successfully exported"
 msgstr "{} {} is met succes geëxporteerd"
 
-#: openforms/forms/admin/form.py:119
-msgid "Catalogus successfully imported"
-msgstr "Catalogus is met succes geïmporteerd"
+#: openforms/forms/admin/form.py:122
+#: openforms/forms/tests/admin/test_form.py:260
+msgid "Form definitions were created with the following slugs: {}"
+msgstr "Formulier definities zijn aangemaakt met de volgende URL-delen: {}"
 
-#: openforms/forms/admin/form.py:150
+#: openforms/forms/admin/form.py:128
+#: openforms/forms/tests/admin/test_form.py:266
+msgid "Form successfully imported"
+msgstr "Formulier is succesvol geïmporteerd"
+
+#: openforms/forms/admin/form.py:135
+#: openforms/forms/tests/admin/test_form.py:165
+msgid "Something went wrong while importing form: {}"
+msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
+
+#: openforms/forms/admin/form.py:163
 #: openforms/forms/admin/form_definition.py:55
 #, python-format
 msgid "Copy selected %(verbose_name_plural)s"
@@ -183,53 +219,57 @@ msgstr "Verwijder geselecteerde %(verbose_name_plural)s"
 msgid "used in"
 msgstr "gebruikt in"
 
-#: openforms/forms/api/serializers.py:114
+#: openforms/forms/api/serializers.py:120
 msgid "The file that contains the form, form definitions and form steps."
 msgstr ""
 "Het bestand dat het formulier, de formulier definities en de "
 "formulierstappen bevat."
 
-#: openforms/forms/api/viewsets.py:45
+#: openforms/forms/api/viewsets.py:47 openforms/forms/api/viewsets.py:119
+msgid "Either a UUID4 or a slug identifiying the form."
+msgstr "Een UUID4 of een slug die het formulier identificeert."
+
+#: openforms/forms/api/viewsets.py:52
 msgid "List form steps"
 msgstr "formulierstappen weergeven"
 
-#: openforms/forms/api/viewsets.py:46
+#: openforms/forms/api/viewsets.py:53
 msgid "Retrieve form step details"
 msgstr "formulierstap details weergeven"
 
-#: openforms/forms/api/viewsets.py:47
+#: openforms/forms/api/viewsets.py:54
 msgid "Create a form step"
 msgstr "formulierstap aanmaken"
 
-#: openforms/forms/api/viewsets.py:48
+#: openforms/forms/api/viewsets.py:55
 msgid "Update all details of a form step"
 msgstr "formulierstap in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:49
+#: openforms/forms/api/viewsets.py:56
 msgid "Update some details of a form step"
 msgstr "formulierstap gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:50
+#: openforms/forms/api/viewsets.py:57
 msgid "Delete a form step"
 msgstr "formulierstap verwijderen"
 
-#: openforms/forms/api/viewsets.py:69
+#: openforms/forms/api/viewsets.py:76
 msgid "List form step definitions"
 msgstr "formulierstap definities weergeven"
 
-#: openforms/forms/api/viewsets.py:73
+#: openforms/forms/api/viewsets.py:80
 msgid "Retrieve form step definition details"
 msgstr "formulierstap definitie details weergeven"
 
-#: openforms/forms/api/viewsets.py:91
+#: openforms/forms/api/viewsets.py:98
 msgid "Retrieve form definition JSON schema"
 msgstr "Formulier definitie JSON schema weergeven"
 
-#: openforms/forms/api/viewsets.py:110
+#: openforms/forms/api/viewsets.py:125
 msgid "List forms"
 msgstr "Formulieren weergeven"
 
-#: openforms/forms/api/viewsets.py:112
+#: openforms/forms/api/viewsets.py:127
 msgid ""
 "List the active forms, including the pointers to the form steps. Form steps "
 "are included in order as they should appear."
@@ -238,27 +278,27 @@ msgstr ""
 "stappen. formulierstappen zijn opgenomen in de volgorde waarin ze doorlopen "
 "moeten worden."
 
-#: openforms/forms/api/viewsets.py:116
+#: openforms/forms/api/viewsets.py:132
 msgid "Retrieve form details"
 msgstr "Formulier details weergeven"
 
-#: openforms/forms/api/viewsets.py:117
+#: openforms/forms/api/viewsets.py:135
 msgid "Create form"
 msgstr "Formulier aanmaken"
 
-#: openforms/forms/api/viewsets.py:118
+#: openforms/forms/api/viewsets.py:137
 msgid "Update all details of a form"
 msgstr "Formulier in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:119
+#: openforms/forms/api/viewsets.py:141
 msgid "Update given details of a form"
 msgstr "Formulier gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:121
+#: openforms/forms/api/viewsets.py:145
 msgid "Mark form as deleted"
 msgstr "Formulier markeren als verwijderd"
 
-#: openforms/forms/api/viewsets.py:123
+#: openforms/forms/api/viewsets.py:147
 msgid ""
 "Destroying a form leads to a soft-delete to protect related submissions. "
 "These deleted forms are no longer visible in the API endpoints."
@@ -267,27 +307,27 @@ msgstr ""
 "verwijderd om gerelateerde inzendingen te beschermen. Formulieren die "
 "gemarkeerd zijn als verwijderd komen niet meer in de API naar voren."
 
-#: openforms/forms/api/viewsets.py:144
+#: openforms/forms/api/viewsets.py:189
 msgid "Copy form"
 msgstr "Formulier kopieren"
 
-#: openforms/forms/api/viewsets.py:179
+#: openforms/forms/api/viewsets.py:225
 msgid "Export form"
 msgstr "Formulier exporteren"
 
-#: openforms/forms/api/viewsets.py:211
+#: openforms/forms/api/viewsets.py:258
 msgid "Form deleted via the API."
 msgstr "Formulier verwijderd via de API."
 
-#: openforms/forms/api/viewsets.py:221
+#: openforms/forms/api/viewsets.py:268
 #: openforms/forms/templates/admin/forms/form/change_list.html:10
 #: openforms/forms/templates/admin/forms/form/import_form.html:10
 #: openforms/forms/templates/admin/forms/form/import_form.html:15
-#: openforms/forms/tests/admin/test_form.py:51
+#: openforms/forms/tests/admin/test_form.py:55
 msgid "Import form"
 msgstr "Formulier importeren"
 
-#: openforms/forms/api/viewsets.py:223
+#: openforms/forms/api/viewsets.py:270
 msgid "No response body"
 msgstr "Geen antwoordbericht inhoud"
 
@@ -307,37 +347,33 @@ msgstr "bestand"
 msgid "The ZIP-file that contains an exported form."
 msgstr "Het ZIP-bestand met daarin het geëxporteerde formulier."
 
-#: openforms/forms/management/commands/export.py:25
+#: openforms/forms/management/commands/export.py:13
 msgid "ID of the form to be exported"
 msgstr "ID van het formulier dat geëxporteerd moet worden"
 
-#: openforms/forms/management/commands/export.py:30
-msgid "Write the output to the specified ZIP-file"
-msgstr "Schrijf de gegevens naar het opgegeven ZIP-bestand"
+#: openforms/forms/management/commands/export.py:17
+msgid "Name of the archive to write data to"
+msgstr "Naam van het archiefbestand"
 
-#: openforms/forms/management/commands/export.py:35
-msgid "HttpResponse object to which the output data should be written"
-msgstr "HttpResponse object waar de gegevens naar weggeschreven moeten worden"
-
-#: openforms/forms/management/commands/import.py:29
+#: openforms/forms/management/commands/import.py:17
 msgid "The name of the ZIP-file to import from"
 msgstr "De naam van het ZIP-bestand om te importeren"
 
 #: openforms/forms/models/form.py:21
-#: openforms/forms/models/form_definition.py:22
-#: openforms/forms/models/form_step.py:20 openforms/submissions/models.py:59
-#: openforms/submissions/models.py:187
+#: openforms/forms/models/form_definition.py:25
+#: openforms/forms/models/form_step.py:20 openforms/submissions/models.py:65
+#: openforms/submissions/models.py:197
 msgid "UUID"
 msgstr "UUID"
 
 #: openforms/forms/models/form.py:22
-#: openforms/forms/models/form_definition.py:23
+#: openforms/forms/models/form_definition.py:26
 #: openforms/products/models/product.py:10
 msgid "name"
 msgstr "naam"
 
 #: openforms/forms/models/form.py:24
-#: openforms/forms/models/form_definition.py:25
+#: openforms/forms/models/form_definition.py:28
 msgid "slug"
 msgstr "URL-deel"
 
@@ -351,9 +387,9 @@ msgid ""
 "address to which the confirmation email will be sent. If not specified, "
 "`email` will be used."
 msgstr ""
-"De naam van het attribuut in de inzendingsgegevens dat het e-mailadres bevat "
-"waarnaar de bevestigingse-mail verstuurd zal worden. Indien niet opgegeven, "
-"dan wordt het veld `email` gebruikt."
+"De naam van het attribuut in de inzendingsgegevens dat het e-mailadres bevat"
+" waarnaar de bevestigingse-mail verstuurd zal worden. Indien niet opgegeven,"
+" dan wordt het veld `email` gebruikt."
 
 #: openforms/forms/models/form.py:42
 msgid "registration backend"
@@ -368,45 +404,45 @@ msgid "forms"
 msgstr "formulieren"
 
 #: openforms/forms/models/form.py:84
-#: openforms/forms/models/form_definition.py:45
-#: openforms/forms/tests/admin/test_form.py:186
-#: openforms/forms/tests/admin/test_form.py:212
+#: openforms/forms/models/form_definition.py:48
+#: openforms/forms/tests/admin/test_form.py:308
+#: openforms/forms/tests/admin/test_form.py:334
 #: openforms/forms/tests/admin/test_form_definition.py:64
-#: openforms/forms/tests/test_api.py:890 openforms/forms/tests/test_api.py:917
-#: openforms/forms/tests/test_api.py:931 openforms/forms/tests/test_api.py:941
+#: openforms/forms/tests/test_api.py:917 openforms/forms/tests/test_api.py:944
+#: openforms/forms/tests/test_api.py:958 openforms/forms/tests/test_api.py:968
 #: openforms/forms/tests/test_models.py:34
 #: openforms/forms/tests/test_models.py:36
-#: openforms/forms/tests/test_models.py:68
-#: openforms/forms/tests/test_models.py:72
+#: openforms/forms/tests/test_models.py:66
+#: openforms/forms/tests/test_models.py:70
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
 #: openforms/forms/models/form.py:85
-#: openforms/forms/models/form_definition.py:46
-#: openforms/forms/tests/admin/test_form.py:177
-#: openforms/forms/tests/admin/test_form.py:214
+#: openforms/forms/models/form_definition.py:49
+#: openforms/forms/tests/admin/test_form.py:299
+#: openforms/forms/tests/admin/test_form.py:336
 #: openforms/forms/tests/admin/test_form_definition.py:67
-#: openforms/forms/tests/test_api.py:892 openforms/forms/tests/test_api.py:920
+#: openforms/forms/tests/test_api.py:919 openforms/forms/tests/test_api.py:947
 #: openforms/forms/tests/test_models.py:33
-#: openforms/forms/tests/test_models.py:65
+#: openforms/forms/tests/test_models.py:64
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form_definition.py:28
+#: openforms/forms/models/form_definition.py:31
 msgid "Formio.js configuration"
 msgstr "Formio.js configuratie"
 
-#: openforms/forms/models/form_definition.py:29
+#: openforms/forms/models/form_definition.py:32
 msgid "The form definition as Formio.js JSON schema"
 msgstr "De formulier definitie als Formio.js JSON schema"
 
-#: openforms/forms/models/form_definition.py:32
+#: openforms/forms/models/form_definition.py:35
 msgid "login required"
 msgstr "inloggen verplicht"
 
-#: openforms/forms/models/form_definition.py:57
+#: openforms/forms/models/form_definition.py:65
 msgid ""
 "This form definition cannot be removed because it is used in one or more "
 "forms."
@@ -414,11 +450,11 @@ msgstr ""
 "Deze formulier definitie kan niet verwijderd worden omdat deze in één of "
 "meerdere formulieren gebruikt wordt."
 
-#: openforms/forms/models/form_definition.py:64
+#: openforms/forms/models/form_definition.py:81
 msgid "Form definition"
 msgstr "Formulier definitie"
 
-#: openforms/forms/models/form_definition.py:65
+#: openforms/forms/models/form_definition.py:82
 msgid "Form definitions"
 msgstr "formulier definities"
 
@@ -428,8 +464,9 @@ msgstr "optioneel"
 
 #: openforms/forms/models/form_step.py:31
 msgid ""
-"Designates whether this step is an optional step in the form. Currently used "
-"for form-rendering purposes, this is not (yet) used for validation purposes."
+"Designates whether this step is an optional step in the form. Currently used"
+" for form-rendering purposes, this is not (yet) used for validation "
+"purposes."
 msgstr "Geeft aan of deze stap optioneel is binnen het formulier."
 
 #: openforms/forms/models/form_step.py:37
@@ -442,8 +479,8 @@ msgid ""
 "filled out. Note that this is not validated (yet) during step submission."
 msgstr ""
 "Te gebruiken beschikbaarheidsstrategie. Een stap moet beschikbaar zijn "
-"voordat deze ingevuld kan worden. Merk op dat deze (nog) niet gevalideerd is "
-"tijdens het verzenden van de stap."
+"voordat deze ingevuld kan worden. Merk op dat deze (nog) niet gevalideerd is"
+" tijdens het verzenden van de stap."
 
 #: openforms/forms/models/form_step.py:50
 msgid "form step"
@@ -458,11 +495,47 @@ msgstr "formulierstappen"
 msgid "Form step {order}"
 msgstr "formulierstap {order}"
 
-#: openforms/forms/templates/admin/forms/form/change_form.html:14
+#: openforms/forms/templates/admin/forms/form/change_form.html:6
+msgid "Snippets"
+msgstr "Snippets"
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:11
+msgid "SDK Javascript"
+msgstr "SDK Javascript"
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:17
+msgid "You must save the form before the snippet can be generated."
+msgstr "Je moet het formulier bewaren voor een snippet beschikbaar is."
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:21
+msgid ""
+"Embed this snippet where you want to display the form in your (CMS) page. "
+"This snippet will load and render the form."
+msgstr ""
+"Voeg dit snippet in op de locatie waar je het formulier wil weergeven in je "
+"(CMS) pagina. Dit snippet laadt het formulier en geeft het weer."
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:31
+msgid "SDK default styles"
+msgstr "SDK standaard stijl"
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:37
+msgid ""
+"Include this snippet close to where other styles (CSS) are loaded. This "
+"snippet provides the default form styling. If you have own styles overriding"
+" the default styles, ensure this snippet is included BEFORE your custom "
+"styles."
+msgstr ""
+"Voeg dit snippet toe op de HTML pagina waar de andere CSS-bestanden "
+"ingeladen worden. Dit snippet gebruikt een standaard formulier opmaak. "
+"Indien u een andere opmaak wilt gebruiken, dan voegt u dit snippet toe VOOR "
+"uw eigen CSS-bestanden."
+
+#: openforms/forms/templates/admin/forms/form/change_form.html:59
 msgid "Export"
 msgstr "Exporteren"
 
-#: openforms/forms/templates/admin/forms/form/change_form.html:15
+#: openforms/forms/templates/admin/forms/form/change_form.html:60
 msgid "Copy"
 msgstr "Kopieëren"
 
@@ -498,7 +571,668 @@ msgstr "De sleutel 'components' ontbreekt op het hoogste niveau."
 msgid "The 'components' value must be a list of components."
 msgstr "De waarde van 'components' moet een lijst van componenten zijn."
 
-#: openforms/products/models/product.py:11
+#: openforms/prefill/api/serializers.py:11
+#: openforms/prefill/api/serializers.py:33
+msgid "ID"
+msgstr "ID"
+
+#: openforms/prefill/api/serializers.py:12
+msgid "The unique plugin identifier"
+msgstr "De unieke plugin identificatie"
+
+#: openforms/prefill/api/serializers.py:16
+#: openforms/prefill/api/serializers.py:37
+msgid "Label"
+msgstr "Label"
+
+#: openforms/prefill/api/serializers.py:17
+msgid "The human-readable name for a plugin."
+msgstr "De eenvoudige naam van de plugin."
+
+#: openforms/prefill/api/serializers.py:34
+msgid "The unique attribute identifier"
+msgstr "De unieke attribuut identificatie"
+
+#: openforms/prefill/api/serializers.py:38
+msgid "The human-readable name for an attribute."
+msgstr "De eenvoudige naam van het attribuut."
+
+#: openforms/prefill/api/tests/test_endpoints.py:86
+#: openforms/prefill/contrib/demo/plugin.py:21
+msgid "Demo"
+msgstr "Demo"
+
+#: openforms/prefill/api/tests/test_endpoints.py:101
+#: openforms/prefill/contrib/demo/constants.py:7
+msgid "Random number"
+msgstr "Willekeurig getal"
+
+#: openforms/prefill/api/tests/test_endpoints.py:105
+#: openforms/prefill/contrib/demo/constants.py:8
+msgid "Random string"
+msgstr "Willekeurige tekens"
+
+#: openforms/prefill/api/views.py:28
+msgid "List available prefill plugins"
+msgstr "Lijst van beschikbare prefill plugins"
+
+#: openforms/prefill/api/views.py:44
+msgid "List available attributes"
+msgstr "Lijst van beschikbare attributen"
+
+#: openforms/prefill/api/views.py:60
+#, python-brace-format
+msgid "No plugin with ID '{plugin}' found"
+msgstr "Geen plugin met ID '{plugin}' gevonden"
+
+#: openforms/prefill/base.py:9
+msgid "Set the 'verbose_name' attribute for a human-readable name"
+msgstr ""
+"Gebruik het 'verbose_name' attribuut om een eenvoudige naam weer te geven"
+
+#: openforms/prefill/contrib/demo/apps.py:8
+msgid "Demo prefill plugin"
+msgstr "Demo prefill plugin"
+
+#: openforms/prefill/contrib/haalcentraal/apps.py:8
+msgid "Haal Centraal prefill plugin"
+msgstr "Haal Centraal prefill plugin"
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:13
+msgid "Burgerservicenummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:15
+msgid "Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:18
+msgid "Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:21
+msgid "Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:24
+msgid "Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:28
+msgid "Geboorte > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:32
+msgid "Geboorte > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:36
+msgid "Geboorte > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:40
+msgid "Geboorte > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:44
+msgid "Geboorte > Inonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:48
+msgid "Geboorte > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:52
+msgid "Geboorte > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:56
+msgid "Geboorte > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:60
+msgid "Geboorte > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:64
+msgid "Geboorte > Inonderzoek > Land"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:68
+msgid "Geboorte > Inonderzoek > Plaats"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:71
+#: openforms/prefill/contrib/haalcentraal/constants.py:78
+msgid "Geboorte > Land > Code"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:75
+#: openforms/prefill/contrib/haalcentraal/constants.py:82
+msgid "Geboorte > Land > Omschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:85
+msgid "Geheimhoudingpersoonsgegevens"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:87
+msgid "Geslachtsaanduiding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:90
+msgid "Gezagsverhouding > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:94
+msgid "Gezagsverhouding > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:98
+msgid "Gezagsverhouding > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:102
+msgid "Gezagsverhouding > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:106
+msgid "Gezagsverhouding > Inonderzoek > Indicatiecurateleregister"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:110
+msgid "Gezagsverhouding > Inonderzoek > Indicatiegezagminderjarige"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:114
+msgid "Gezagsverhouding > Indicatiecurateleregister"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:118
+msgid "Gezagsverhouding > Indicatiegezagminderjarige"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:122
+msgid "Inonderzoek > Burgerservicenummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:126
+msgid "Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:130
+msgid "Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:134
+msgid "Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:138
+msgid "Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:142
+msgid "Inonderzoek > Geslachtsaanduiding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:146
+#: openforms/prefill/contrib/haalcentraal/constants.py:162
+msgid "Kiesrecht > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:150
+#: openforms/prefill/contrib/haalcentraal/constants.py:166
+msgid "Kiesrecht > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:154
+#: openforms/prefill/contrib/haalcentraal/constants.py:170
+msgid "Kiesrecht > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:158
+#: openforms/prefill/contrib/haalcentraal/constants.py:174
+msgid "Kiesrecht > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:177
+msgid "Kiesrecht > Europeeskiesrecht"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:181
+msgid "Kiesrecht > Uitgeslotenvankiesrecht"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:183
+msgid "Leeftijd"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:185
+msgid "Naam > Aanduidingnaamgebruik"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:187
+msgid "Naam > Aanhef"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:189
+msgid "Naam > Aanschrijfwijze"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:192
+msgid "Naam > Gebruikinlopendetekst"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:195
+msgid "Naam > Geslachtsnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:199
+msgid "Naam > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:203
+msgid "Naam > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:207
+msgid "Naam > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:211
+msgid "Naam > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:215
+msgid "Naam > Inonderzoek > Geslachtsnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:219
+msgid "Naam > Inonderzoek > Voornamen"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:223
+msgid "Naam > Inonderzoek > Voorvoegsel"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:225
+msgid "Naam > Voorletters"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:226
+msgid "Naam > Voornamen"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:227
+msgid "Naam > Voorvoegsel"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:230
+msgid "Opschortingbijhouding > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:234
+msgid "Opschortingbijhouding > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:238
+msgid "Opschortingbijhouding > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:242
+msgid "Opschortingbijhouding > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:245
+msgid "Opschortingbijhouding > Reden"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:249
+msgid "Overlijden > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:253
+msgid "Overlijden > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:257
+msgid "Overlijden > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:261
+msgid "Overlijden > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:265
+msgid "Overlijden > Inonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:269
+msgid "Overlijden > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:273
+msgid "Overlijden > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:277
+msgid "Overlijden > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:281
+msgid "Overlijden > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:285
+msgid "Overlijden > Inonderzoek > Land"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:289
+msgid "Overlijden > Inonderzoek > Plaats"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:292
+msgid "Overlijden > Indicatieoverleden"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:295
+#: openforms/prefill/contrib/haalcentraal/constants.py:302
+msgid "Overlijden > Land > Code"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:299
+#: openforms/prefill/contrib/haalcentraal/constants.py:306
+msgid "Overlijden > Land > Omschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:310
+msgid "Verblijfplaats > Aanduidingbijhuisnummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:314
+#: openforms/prefill/contrib/haalcentraal/constants.py:330
+#: openforms/prefill/contrib/haalcentraal/constants.py:346
+#: openforms/prefill/contrib/haalcentraal/constants.py:362
+msgid "Verblijfplaats > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:318
+#: openforms/prefill/contrib/haalcentraal/constants.py:334
+#: openforms/prefill/contrib/haalcentraal/constants.py:350
+#: openforms/prefill/contrib/haalcentraal/constants.py:366
+msgid "Verblijfplaats > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:322
+#: openforms/prefill/contrib/haalcentraal/constants.py:338
+#: openforms/prefill/contrib/haalcentraal/constants.py:354
+#: openforms/prefill/contrib/haalcentraal/constants.py:370
+msgid "Verblijfplaats > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:326
+#: openforms/prefill/contrib/haalcentraal/constants.py:342
+#: openforms/prefill/contrib/haalcentraal/constants.py:358
+#: openforms/prefill/contrib/haalcentraal/constants.py:374
+msgid "Verblijfplaats > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:377
+msgid "Verblijfplaats > Functieadres"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:381
+#: openforms/prefill/contrib/haalcentraal/constants.py:503
+msgid "Verblijfplaats > Land > Code"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:385
+#: openforms/prefill/contrib/haalcentraal/constants.py:507
+msgid "Verblijfplaats > Land > Omschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:388
+msgid "Verblijfplaats > Huisletter"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:391
+msgid "Verblijfplaats > Huisnummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:395
+msgid "Verblijfplaats > Huisnummertoevoeging"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:399
+msgid "Verblijfplaats > Identificatiecodeadresseerbaarobject"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:403
+msgid "Verblijfplaats > Identificatiecodenummeraanduiding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:407
+msgid "Verblijfplaats > Inonderzoek > Aanduidingbijhuisnummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:411
+msgid "Verblijfplaats > Inonderzoek > Datumaanvangadreshouding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:415
+msgid "Verblijfplaats > Inonderzoek > Datuminganggeldigheid"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:419
+msgid "Verblijfplaats > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:423
+msgid "Verblijfplaats > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:427
+msgid "Verblijfplaats > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:431
+msgid "Verblijfplaats > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:435
+msgid "Verblijfplaats > Inonderzoek > Datuminschrijvingingemeente"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:439
+msgid "Verblijfplaats > Inonderzoek > Datumvestiginginnederland"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:443
+msgid "Verblijfplaats > Inonderzoek > Functieadres"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:447
+msgid "Verblijfplaats > Inonderzoek > Gemeentevaninschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:451
+msgid "Verblijfplaats > Inonderzoek > Huisletter"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:455
+msgid "Verblijfplaats > Inonderzoek > Huisnummer"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:459
+msgid "Verblijfplaats > Inonderzoek > Huisnummertoevoeging"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:463
+msgid "Verblijfplaats > Inonderzoek > Identificatiecodeadresseerbaarobject"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:467
+msgid "Verblijfplaats > Inonderzoek > Identificatiecodenummeraanduiding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:471
+msgid "Verblijfplaats > Inonderzoek > Landvanwaaringeschreven"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:475
+msgid "Verblijfplaats > Inonderzoek > Locatiebeschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:479
+msgid "Verblijfplaats > Inonderzoek > Naamopenbareruimte"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:483
+msgid "Verblijfplaats > Inonderzoek > Postcode"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:487
+msgid "Verblijfplaats > Inonderzoek > Straatnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:491
+msgid "Verblijfplaats > Inonderzoek > Verblijfbuitenland"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:495
+msgid "Verblijfplaats > Inonderzoek > Woonplaatsnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:499
+msgid "Verblijfplaats > Indicatievestigingvanuitbuitenland"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:511
+msgid "Verblijfplaats > Locatiebeschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:515
+msgid "Verblijfplaats > Naamopenbareruimte"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:518
+msgid "Verblijfplaats > Postcode"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:521
+msgid "Verblijfplaats > Straatnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:525
+msgid "Verblijfplaats > Vanuitvertrokkenonbekendwaarheen"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:529
+msgid "Verblijfplaats > Verblijfbuitenland > Adresregel1"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:533
+msgid "Verblijfplaats > Verblijfbuitenland > Adresregel2"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:537
+msgid "Verblijfplaats > Verblijfbuitenland > Adresregel3"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:541
+msgid "Verblijfplaats > Verblijfbuitenland > Land > Code"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:545
+msgid "Verblijfplaats > Verblijfbuitenland > Land > Omschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:549
+msgid "Verblijfplaats > Verblijfbuitenland > Vertrokkenonbekendwaarheen"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:552
+msgid "Verblijfplaats > Woonplaatsnaam"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:556
+msgid "Verblijfstitel > Land > Code"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:560
+msgid "Verblijfstitel > Land > Omschrijving"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:564
+#: openforms/prefill/contrib/haalcentraal/constants.py:580
+msgid "Verblijfstitel > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:568
+#: openforms/prefill/contrib/haalcentraal/constants.py:584
+msgid "Verblijfstitel > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:572
+#: openforms/prefill/contrib/haalcentraal/constants.py:588
+msgid "Verblijfstitel > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:576
+#: openforms/prefill/contrib/haalcentraal/constants.py:592
+msgid "Verblijfstitel > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:596
+msgid "Verblijfstitel > Inonderzoek > Aanduiding"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:600
+msgid "Verblijfstitel > Inonderzoek > Datumeinde"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:604
+msgid "Verblijfstitel > Inonderzoek > Datumingang"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:608
+msgid "Verblijfstitel > Inonderzoek > Datumingangonderzoek > Dag"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:612
+msgid "Verblijfstitel > Inonderzoek > Datumingangonderzoek > Datum"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:616
+msgid "Verblijfstitel > Inonderzoek > Datumingangonderzoek > Jaar"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/constants.py:620
+msgid "Verblijfstitel > Inonderzoek > Datumingangonderzoek > Maand"
+msgstr ""
+
+#: openforms/prefill/contrib/haalcentraal/models.py:20
+msgid "Haal Centraal API"
+msgstr "Haal Centraal API"
+
+#: openforms/prefill/contrib/haalcentraal/models.py:30
+msgid "Haal Centraal configuration"
+msgstr "Haal Centraal configuratie"
+
+#: openforms/prefill/contrib/haalcentraal/plugin.py:21
+msgid "Haal Centraal"
+msgstr "Haal Centraal"
+
+#: openforms/prefill/contrib/stufbg/apps.py:8
+msgid "StUF-BG prefill plugin"
+msgstr "StUF-BG prefill plugin"
+
+#: openforms/prefill/contrib/stufbg/plugin.py:35
+msgid "StUF-BG"
+msgstr "StUF-bG"
+
+#: openforms/products/models/product.py:11 stuf/models.py:60
 msgid "URL"
 msgstr "URL"
 
@@ -525,6 +1259,66 @@ msgstr "Extra print statement"
 #: openforms/registrations/contrib/demo/plugin.py:14
 msgid "Demo - print to console"
 msgstr "Demo - print naar console"
+
+#: openforms/registrations/contrib/email/apps.py:8
+msgid "Email plugin"
+msgstr "E-mailplugin"
+
+#: openforms/registrations/contrib/email/config.py:9
+msgid "The email addresses to which the submission details will be sent"
+msgstr "Het e-mailadres waar de inzendingen naar toe gemaild worden"
+
+#: openforms/registrations/contrib/email/plugin.py:18
+msgid "Email registration"
+msgstr "E-mail registratie"
+
+#: openforms/registrations/contrib/email/plugin.py:27
+msgid "Submission details for {} (submitted on {})"
+msgstr "Inzending details van {} (verzonden op {})"
+
+#: openforms/registrations/contrib/email/plugin.py:47
+msgid "[Open Forms] {} - submission {}"
+msgstr "[Open Formulieren] {} - inzending {}"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:26
+msgid "Municipality code"
+msgstr "Gemeentecode"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:28
+msgid "Municipality code to register zaken"
+msgstr "Gemeentecode om zaken aan te maken"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:31
+msgid "Zaaktype code"
+msgstr "zaaktype code"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:33
+msgid "Zaaktype code for newly created zaken in StUF-ZDS"
+msgstr "Zaaktype code voor nieuw aangemaakte zaken via StUF-ZDS"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:36
+msgid "Zaaktype description"
+msgstr "Zaaktype omschrijving"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:38
+msgid "Zaaktype description for newly created zaken in StUF-ZDS"
+msgstr "Zaaktype omschrijving voor nieuw aangemaakt zaken via StUF-ZDS"
+
+#: openforms/registrations/contrib/stuf_zds/models.py:54
+msgid "StUF-ZDS configuration"
+msgstr "StUF-ZDS configuratie"
+
+#: openforms/registrations/contrib/stuf_zds/plugin.py:16
+msgid "Zaaktype code for newly created Zaken in StUF-ZDS"
+msgstr "Zaaktype code voor nieuw aangemaakte zaken via StUF-ZDS"
+
+#: openforms/registrations/contrib/stuf_zds/plugin.py:20
+msgid "Zaaktype description for newly created Zaken in StUF-ZDS"
+msgstr "Zaaktype omschrijving voor nieuw aangemaakt zaken via StUF-ZDS"
+
+#: openforms/registrations/contrib/stuf_zds/plugin.py:26
+msgid "StUF-ZDS"
+msgstr "StUF-ZDS"
 
 #: openforms/registrations/contrib/zgw_apis/apps.py:7
 msgid "ZGW API's plugin"
@@ -613,7 +1407,8 @@ msgstr "Verzonden gegevens"
 #: openforms/submissions/admin.py:51
 msgid "You can only export the submissions of the same form type."
 msgstr ""
-"Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
+"Je kan alleen de inzendingen van één enkel formuliertype tegelijk "
+"exporteren."
 
 #: openforms/submissions/admin.py:61
 #, python-format
@@ -626,7 +1421,7 @@ msgid "Export selected %(verbose_name_plural)s as Excel-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s alsExcel-bestand."
 
 #: openforms/submissions/api/serializers.py:67
-#: openforms/submissions/models.py:196
+#: openforms/submissions/models.py:206
 msgid "Submission steps"
 msgstr "Inzendingsstappen"
 
@@ -638,16 +1433,17 @@ msgstr ""
 "Details van elke formulierstap van deze inzending waarmee de voortgang en "
 "andere gegevens van elke stap bekeken kan worden."
 
-#: openforms/submissions/api/serializers.py:162
+#: openforms/submissions/api/serializers.py:163
 msgid "Contact email address"
 msgstr "Contact e-mailadres"
 
-#: openforms/submissions/api/serializers.py:164
+#: openforms/submissions/api/serializers.py:165
 msgid "The email address where the 'magic' resume link should be sent to"
 msgstr ""
-"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet worden"
+"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet "
+"worden"
 
-#: openforms/submissions/api/serializers.py:190
+#: openforms/submissions/api/serializers.py:191
 #: openforms/submissions/tests/test_submission_suspension.py:90
 msgid "Your form submission"
 msgstr "Uw formulier inzending"
@@ -659,8 +1455,8 @@ msgstr "Actieve inzendingen weergeven"
 #: openforms/submissions/api/viewsets.py:41
 msgid ""
 "Active submissions are submissions whose ID is in the user session. This "
-"endpoint returns user-bound submissions. Note that you get different results "
-"on different results because of the differing sessions."
+"endpoint returns user-bound submissions. Note that you get different results"
+" on different results because of the differing sessions."
 msgstr ""
 "Actieve inzendingen zijn inzendingen waarvan het ID zich in de "
 "gebruikerssessie bevindt. Dit endpoint geeft alle inzendingen terug die "
@@ -673,7 +1469,8 @@ msgstr "Inzending detail weergeven"
 
 #: openforms/submissions/api/viewsets.py:48
 msgid "Get the state of a single submission in the user session."
-msgstr "Haal de status op van een enkele inzending op van de gebruikerssessie."
+msgstr ""
+"Haal de status op van een enkele inzending op van de gebruikerssessie."
 
 #: openforms/submissions/api/viewsets.py:51
 msgid "Start a submission"
@@ -691,15 +1488,15 @@ msgstr ""
 msgid "Complete a submission"
 msgstr "Inzending voltooien"
 
-#: openforms/submissions/api/viewsets.py:119
+#: openforms/submissions/api/viewsets.py:118
 msgid "Suspend a submission"
 msgstr "Inzending onderbreken"
 
-#: openforms/submissions/api/viewsets.py:156
+#: openforms/submissions/api/viewsets.py:155
 msgid "Retrieve step details"
 msgstr "Stap details weergeven"
 
-#: openforms/submissions/api/viewsets.py:158
+#: openforms/submissions/api/viewsets.py:157
 msgid ""
 "The details of a particular submission step always return the related form "
 "step configuration. If there is no data yet for the step, the ID will be "
@@ -709,7 +1506,7 @@ msgstr ""
 "formulierstap configuratie terug. Indien er nog geen gegevens zijn voor de "
 "stap dan zal het ID `null` zijn."
 
-#: openforms/submissions/api/viewsets.py:212
+#: openforms/submissions/api/viewsets.py:211
 msgid "Store submission step data"
 msgstr "Inzendingsstap gegevens bewaren"
 
@@ -725,31 +1522,31 @@ msgstr "Succes"
 msgid "Failed"
 msgstr "Mislukt"
 
-#: openforms/submissions/models.py:61 openforms/submissions/models.py:191
+#: openforms/submissions/models.py:67 openforms/submissions/models.py:201
 msgid "created on"
 msgstr "aangemaakt op"
 
-#: openforms/submissions/models.py:62
+#: openforms/submissions/models.py:68
 msgid "completed on"
 msgstr "afgerond op"
 
-#: openforms/submissions/models.py:63
+#: openforms/submissions/models.py:69
 msgid "suspended on"
 msgstr "onderbroken op"
 
-#: openforms/submissions/models.py:65
+#: openforms/submissions/models.py:71 stuf/stuf_bg/constants.py:21
 msgid "BSN"
 msgstr "BSN"
 
-#: openforms/submissions/models.py:67
+#: openforms/submissions/models.py:77
 msgid "current step"
 msgstr "huidige stap"
 
-#: openforms/submissions/models.py:71
+#: openforms/submissions/models.py:81
 msgid "registration backend result"
 msgstr "registratie backend resultaat"
 
-#: openforms/submissions/models.py:75
+#: openforms/submissions/models.py:85
 msgid ""
 "Contains data returned by the registration backend while registering the "
 "submission data."
@@ -757,45 +1554,43 @@ msgstr ""
 "Bevat de gegevens zoals teruggegeven door de registratie backend bij het "
 "versturen van de inzending."
 
-#: openforms/submissions/models.py:79
+#: openforms/submissions/models.py:89
 msgid "registration backend status"
 msgstr "registratie backend status"
 
-#: openforms/submissions/models.py:84
+#: openforms/submissions/models.py:94
 msgid ""
-"Indication whether the registration in the configured backend was successful."
-msgstr "Indicatie of de doorzetting naar de registratie backend succesvol was."
+"Indication whether the registration in the configured backend was "
+"successful."
+msgstr ""
+"Indicatie of de doorzetting naar de registratie backend succesvol was."
 
-#: openforms/submissions/models.py:89
+#: openforms/submissions/models.py:99
 msgid "Submission"
 msgstr "Inzending"
 
-#: openforms/submissions/models.py:90
-msgid "Submissions"
-msgstr "Inzendingen"
-
-#: openforms/submissions/models.py:93
+#: openforms/submissions/models.py:103
 #, python-brace-format
 msgid "{pk} - started on {started}"
 msgstr "{pk} - gestart op {started}"
 
-#: openforms/submissions/models.py:94
+#: openforms/submissions/models.py:104
 msgid "(unsaved)"
 msgstr "(niet bewaard)"
 
-#: openforms/submissions/models.py:95
+#: openforms/submissions/models.py:105
 msgid "(no timestamp yet)"
 msgstr "(nog geen datum)"
 
-#: openforms/submissions/models.py:190
+#: openforms/submissions/models.py:200
 msgid "data"
 msgstr "gegevens"
 
-#: openforms/submissions/models.py:192
+#: openforms/submissions/models.py:202
 msgid "modified on"
 msgstr "gewijzigd op"
 
-#: openforms/submissions/models.py:195
+#: openforms/submissions/models.py:205
 msgid "Submission step"
 msgstr "Inzendingsstap"
 
@@ -857,3 +1652,190 @@ msgstr "RSIN moet %(size)i tekens lang zijn."
 #: openforms/utils/validators.py:59
 msgid "Invalid RSIN."
 msgstr "Onjuist RSIN."
+
+#: stuf/admin.py:34
+msgid "StUF parameters"
+msgstr "StUF parameters"
+
+#: stuf/admin.py:49
+msgid "Connection"
+msgstr "Verbinding"
+
+#: stuf/admin.py:59
+msgid "Authentication"
+msgstr "Authenticatie"
+
+#: stuf/apps.py:7
+msgid "StUF Settings & Services"
+msgstr "StUF Instellingen & Services"
+
+#: stuf/models.py:9
+msgid "label"
+msgstr "label"
+
+#: stuf/models.py:11
+msgid "Human readable label to identify services"
+msgstr "Eenvoudige naam om services te identificeren"
+
+#: stuf/models.py:14
+msgid "receiving organisation"
+msgstr "ontvangende organisatie"
+
+#: stuf/models.py:15
+msgid "Field 'ontvanger organisatie' in StUF"
+msgstr "Veld 'ontvanger organisatie' in StUF-berichten"
+
+#: stuf/models.py:19
+msgid "receiving application"
+msgstr "ontvangende applicatie"
+
+#: stuf/models.py:20
+msgid "Field 'ontvanger applicatie' in StUF"
+msgstr "Veld 'ontvanger applicatie' in StUF-berichten"
+
+#: stuf/models.py:24
+msgid "receiving administration"
+msgstr "ontvangende administratie"
+
+#: stuf/models.py:25
+msgid "Field 'ontvanger administratie' in StUF"
+msgstr "Veld 'ontvanger administratie' in StUF-berichten"
+
+#: stuf/models.py:30
+msgid "receiving user"
+msgstr "ontvangende gebruiker"
+
+#: stuf/models.py:31
+msgid "Field 'ontvanger gebruiker' in StUF"
+msgstr "Veld 'ontvanger gebruiker' in StUF-berichten"
+
+#: stuf/models.py:37
+msgid "sending organisation"
+msgstr "versturende organisatie"
+
+#: stuf/models.py:38
+msgid "Field 'zender organisatie' in StUF"
+msgstr "Veld 'zender organisatie' in StUF-berichten"
+
+#: stuf/models.py:42
+msgid "sending application"
+msgstr "versturende applicatie"
+
+#: stuf/models.py:43
+msgid "Field 'zender applicatie' in StUF"
+msgstr "Veld 'zender applicatie' in StUF-berichten"
+
+#: stuf/models.py:47
+msgid "sending administration"
+msgstr "versturende administratie"
+
+#: stuf/models.py:48
+msgid "Field 'zender administratie' in StUF"
+msgstr "Veld 'zender administratie' in StUF-berichten"
+
+#: stuf/models.py:53
+msgid "sending user"
+msgstr "versturende gebruiker"
+
+#: stuf/models.py:54
+msgid "Field 'zender gebruiker' in StUF"
+msgstr "Veld 'zender gebruiker' in StUF-berichten"
+
+#: stuf/models.py:61
+msgid "URL of the StUF-ZDS service to connect to."
+msgstr "URL naar de StUF-ZDS service om mee te verbinden."
+
+#: stuf/models.py:64
+msgid "endpoint sync requests"
+msgstr "endpoint voor synchrone berichten"
+
+#: stuf/models.py:68
+msgid ""
+"Endpoint for synchronous SOAP request, usually "
+"'/VerwerkSynchroonVrijBericht'."
+msgstr ""
+"Endpoint voor synchrone SOAP berichten, typisch "
+"'/VerwerkSynchroonVrijBericht'."
+
+#: stuf/models.py:72
+msgid "endpoint async requests"
+msgstr "endpoint voor a-synchrone berichten"
+
+#: stuf/models.py:74
+msgid "Endpoint for asynchronous SOAP request, usually '/OntvangAsynchroon'."
+msgstr ""
+"Endpoint voor a-synchrone SOAP berichten, typisch '/OntvangAsynchroon'."
+
+#: stuf/models.py:83
+msgid "Username to use in the XML security context."
+msgstr "Gebruikersnaam voor de XML security context."
+
+#: stuf/models.py:86
+msgid "password"
+msgstr "wachtwoord"
+
+#: stuf/models.py:89
+msgid "Password to use in the XML security context."
+msgstr "Wachtwoord voor de XML security context."
+
+#: stuf/models.py:97
+msgid ""
+"The SSL certificate file used for client identification. If left empty, "
+"mutual TLS is disabled."
+msgstr ""
+"Het SSL-certificaat bestand dat gebruikt wordt voor client-side "
+"identificatie. Indien leeg wordt mutual TLS uitschakeld."
+
+#: stuf/models.py:103
+msgid ""
+"The SSL certificate key file used for client identification. If left empty, "
+"mutual TLS is disabled."
+msgstr ""
+"Het SSL-certificaat sleutelbestand dat gebruikt wordt voor client-side "
+"identificatie. Indien leeg wordt mutual TLS uitschakeld."
+
+#: stuf/models.py:110
+msgid "SOAP service"
+msgstr "SOAP service"
+
+#: stuf/models.py:111
+msgid "SOAP services"
+msgstr "SOAP service"
+
+#: stuf/stuf_bg/constants.py:22
+#| msgid "first name"
+msgid "First Name"
+msgstr "Voornamen"
+
+#: stuf/stuf_bg/constants.py:23
+#| msgid "last name"
+msgid "Last Name"
+msgstr "Geslachtsnaam"
+
+#: stuf/stuf_bg/constants.py:24
+msgid "Street Name"
+msgstr ""
+
+#: stuf/stuf_bg/constants.py:25
+msgid "House Number"
+msgstr ""
+
+#: stuf/stuf_bg/constants.py:26
+msgid "House Letter"
+msgstr ""
+
+#: stuf/stuf_bg/constants.py:28
+msgid "House Number Addition"
+msgstr "Huisnummertoevoeging"
+
+#: stuf/stuf_bg/constants.py:30
+msgid "Post Code"
+msgstr "Postcode"
+
+#: stuf/stuf_bg/constants.py:31
+msgid "Residence Name"
+msgstr "Woonplaatsnaam"
+
+#: stuf/stuf_bg/models.py:32
+msgid "StUF-BG configuration"
+msgstr "StUF-BG configuratie"

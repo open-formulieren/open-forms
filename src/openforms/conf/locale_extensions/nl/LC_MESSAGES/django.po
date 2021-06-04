@@ -1,6 +1,5 @@
 # This file is distributed under the same license as the Open Forms 
-# documentation. Some libraries don't support the language we use. This file
-# adds the visible language for that library. This needs to be done manually.
+# documentation.
 msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"

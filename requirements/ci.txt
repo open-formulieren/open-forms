@@ -167,10 +167,6 @@ django-reversion==3.0.9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-rosetta==0.9.4
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 django-sendfile2==0.6.0
     # via
     #   -c requirements/base.txt
@@ -207,7 +203,6 @@ django==2.2.20
     #   django-redis
     #   django-relativedelta
     #   django-reversion
-    #   django-rosetta
     #   django-sendfile2
     #   djangorestframework
     #   drf-nested-routers
@@ -354,11 +349,6 @@ pillow==8.2.0
     #   -r requirements/base.txt
 pluggy==0.13.1
     # via pytest
-polib==1.1.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-rosetta
 prometheus-client==0.8.0
     # via
     #   -c requirements/base.txt
@@ -457,7 +447,6 @@ requests==2.24.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-rosetta
     #   gemma-zds-client
     #   requests-mock
     #   sphinx
@@ -472,7 +461,6 @@ six==1.15.0
     #   -r requirements/base.txt
     #   django-choices
     #   django-compat
-    #   django-rosetta
     #   freezegun
     #   isodate
     #   jsonschema

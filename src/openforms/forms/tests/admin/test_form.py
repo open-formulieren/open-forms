@@ -87,13 +87,13 @@ class FormAdminImportExportTests(WebTest):
 
         file.seek(0)
 
-        form = response.form
-        form["file"] = (
+        html_form = response.form
+        html_form["file"] = (
             "file.zip",
             file.read(),
         )
 
-        response = form.submit("_import")
+        response = html_form.submit("_import")
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, reverse("admin:forms_form_changelist"))
@@ -149,18 +149,22 @@ class FormAdminImportExportTests(WebTest):
 
         file.seek(0)
 
-        form = response.form
-        form["file"] = (
+        html_form = response.form
+        html_form["file"] = (
             "file.zip",
             file.read(),
         )
 
-        response = form.submit("_import")
+        response = html_form.submit("_import")
 
         self.assertEqual(response.status_code, 200)
 
         error_message = response.html.find("li", {"class": "error"})
-        self.assertIn("Something went wrong while importing", error_message.text)
+        self.assertTrue(
+            error_message.text.startswith(
+                _("Something went wrong while importing form: {}").format("")
+            )
+        )
 
     def test_form_admin_import_warning_created_form_definitions(self):
         form = FormFactory.create(slug="test")
@@ -238,13 +242,13 @@ class FormAdminImportExportTests(WebTest):
 
         file.seek(0)
 
-        form = response.form
-        form["file"] = (
+        html_form = response.form
+        html_form["file"] = (
             "file.zip",
             file.read(),
         )
 
-        response = form.submit("_import")
+        response = html_form.submit("_import")
 
         self.assertEqual(response.status_code, 302)
 
@@ -253,8 +257,8 @@ class FormAdminImportExportTests(WebTest):
         warning_message = response.html.find("li", {"class": "warning"})
         self.assertEqual(
             warning_message.text,
-            _("Form Definitions were created with the following slugs: ['{}']").format(
-                "testform-2"
+            _("Form definitions were created with the following slugs: {}").format(
+                "['testform-2']"
             ),
         )
 
@@ -319,10 +323,10 @@ class FormAdminActionsTests(WebTest):
     def test_make_copies_action_makes_copy_of_a_form(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
 
-        form = response.forms["changelist-form"]
-        form["action"] = "make_copies"
-        form["_selected_action"] = [str(form.pk) for form in Form.objects.all()]
-        form.submit()
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "make_copies"
+        html_form["_selected_action"] = [str(form.pk) for form in Form.objects.all()]
+        html_form.submit()
 
         self.assertEqual(Form.objects.count(), 2)
         copied_form = Form.objects.exclude(pk=self.form.pk).first()

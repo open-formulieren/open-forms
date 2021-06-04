@@ -98,16 +98,19 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 # Django extensions
-
 INSTALLED_APPS += ["django_extensions"]
 
 # DRF - browsable API
-
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
     "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"
 ]
 
+# Django privates
 SENDFILE_BACKEND = "django_sendfile.backends.development"
+
+# Django rosetta
+ROSETTA_SHOW_AT_ADMIN_PANEL = True
+INSTALLED_APPS += ["rosetta"]
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
