@@ -25,3 +25,6 @@ class HaalCentraalConfig(SingletonModel):
     )
 
     objects = HaalCentraalConfigManager()
+
+    class Meta:
+        verbose_name = _("Haal Centraal configuration")

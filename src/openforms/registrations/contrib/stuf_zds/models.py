@@ -42,3 +42,6 @@ class StufZDSConfig(SingletonModel):
         from .client import StufZDSClient
 
         return StufZDSClient(self.service, options)
+
+    class Meta:
+        verbose_name = _("StUF-ZDS configuration")

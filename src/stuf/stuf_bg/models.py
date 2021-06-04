@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
@@ -26,3 +27,6 @@ class StufBGConfig(SingletonModel):
             raise RuntimeError("You must configure a service!")
 
         return StufBGClient(self.service)
+
+    class Meta:
+        verbose_name = _("StUF-BG configuration")
