@@ -3,13 +3,53 @@ from django.template import TemplateSyntaxError
 from django.test import TestCase
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
 
 from ..models import ConfirmationEmailTemplate
+from .factories import ConfirmationEmailTemplateFactory
+
+NESTED_COMPONENT_CONF = {
+    "display": "form",
+    "components": [
+        {
+            "id": "e4jv16",
+            "key": "fieldset",
+            "type": "fieldset",
+            "label": "",
+            "components": [
+                {
+                    "id": "e66yf7q",
+                    "key": "name",
+                    "type": "textfield",
+                    "label": "Name",
+                    "showInEmail": True,
+                },
+                {
+                    "id": "ewr4r44",
+                    "key": "lastName",
+                    "type": "textfield",
+                    "label": "Last name",
+                    "showInEmail": True,
+                },
+                {
+                    "id": "emccur",
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "showInEmail": False,
+                },
+            ],
+        }
+    ],
+}
 
 
 class ConfirmationEmailTests(TestCase):
@@ -78,3 +118,21 @@ class ConfirmationEmailTests(TestCase):
 
         submission.refresh_from_db()
         self.assertIsNotNone(submission.pk)
+
+    def test_nested_components(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration=NESTED_COMPONENT_CONF
+        )
+        submission_step = SubmissionStepFactory.create(
+            data={"name": "Jane", "lastName": "Doe", "email": "test@example.com"},
+            form_step=form_step,
+            submission__form=form_step.form,
+        )
+        submission = submission_step.submission
+        email = ConfirmationEmailTemplate(content="{% summary %}")
+        rendered_content = email.render(submission)
+
+        self.assertIn("<th>Name</th>", rendered_content)
+        self.assertIn("<th>Jane</th>", rendered_content)
+        self.assertIn("<th>Last name</th>", rendered_content)
+        self.assertIn("<th>Doe</th>", rendered_content)
