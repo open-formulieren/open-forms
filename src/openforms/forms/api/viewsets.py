@@ -17,10 +17,8 @@ from rest_framework import (
     views,
     viewsets,
 )
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -63,7 +61,7 @@ class FormStepViewSet(
     viewsets.ModelViewSet,
 ):
     serializer_class = FormStepSerializer
-    queryset = FormStep.objects.all()
+    queryset = FormStep.objects.all().order_by("order")
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = "uuid"
 

@@ -127,9 +127,16 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FormStepSerializer(serializers.HyperlinkedModelSerializer):
-    index = serializers.IntegerField(source="order", read_only=True)
+    index = serializers.IntegerField(source="order")
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
+    )
+    url = NestedHyperlinkedRelatedField(
+        source="*",
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        read_only=True,
     )
 
     parent_lookup_kwargs = {
@@ -143,6 +150,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             # "slug",
             "configuration",
             "form_definition",
+            "url"
         )
 
         extra_kwargs = {
