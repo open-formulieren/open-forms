@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class DemoApp(AppConfig):
     name = "openforms.prefill.contrib.demo"
-    label = "prefill.demo"
+    label = "prefill_demo"
     verbose_name = _("Demo prefill plugin")
 
     def ready(self):
