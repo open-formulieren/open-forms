@@ -58,4 +58,15 @@ const put = async (url, csrftoken, data = {}) => {
     return resp;
 };
 
-export {get, post, put, apiCall};
+const apiDelete = async (url, csrftoken) => {
+    const opts = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+    };
+    return await fetch(url, opts);
+};
+
+export {get, post, put, apiDelete, apiCall};

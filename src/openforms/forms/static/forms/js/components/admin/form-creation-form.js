@@ -6,12 +6,13 @@ import FormRow from '../formsets/FormRow';
 import Fieldset from '../formsets/Fieldset';
 import {TextInput} from '../formsets/Inputs';
 import useAsync from 'react-use/esm/useAsync';
-import {get, post, put} from '../utils/fetch';
+import {apiDelete, get, post, put} from '../utils/fetch';
 import {FormSteps} from './formsteps-formset';
 import SubmitRow from "../formsets/SubmitRow";
 import { v4 as uuidv4 } from 'uuid';
+import {getFormDefinitionChoices} from "../utils/form-definition-choices";
 
-const FORM_ENDPOINT = '/api/v1/_manage_forms';
+const FORM_ENDPOINT = '/api/v1/forms';
 const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
 const ADMIN_PAGE = '/admin/forms/form';
 
@@ -26,7 +27,7 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: {},
-    formDefinitionChoices: []
+    stepsToDelete: []
 };
 
 function reducer(draft, action) {
@@ -42,13 +43,10 @@ function reducer(draft, action) {
         case 'FORM_DEFINITIONS_LOADED': {
             const rawFormDefinitions = action.payload;
             var formDefinitions = {};
-            var formDefinitionChoices = [['', '------']];
             for (const definition of rawFormDefinitions) {
-                formDefinitions[definition.uuid] = definition;
-                formDefinitionChoices.push([definition.uuid, definition.name]);
+                formDefinitions[definition.url] = definition;
             }
             draft.formDefinitions = formDefinitions;
-            draft.formDefinitionChoices = formDefinitionChoices;
             break;
         }
         case 'FORM_STEPS_LOADED': {
@@ -62,11 +60,12 @@ function reducer(draft, action) {
          * FormStep-level actions
          */
         case 'DELETE_STEP': {
-            const index = action.payload;
-            const unchangedSteps = draft.formSteps.data.slice(0, index);
+            const {index, step} = action.payload;
+            draft.stepsToDelete.push(draft.formSteps.data[index].url);
 
+            const unchangedSteps = draft.formSteps.data.slice(0, index);
             const updatedSteps = draft.formSteps.data.slice(index+1).map((step) => {
-                step.order = step.order - 1;
+                step.index = step.index - 1;
                 return step;
             });
             draft.formSteps.data = [...unchangedSteps, ...updatedSteps];
@@ -74,21 +73,22 @@ function reducer(draft, action) {
         }
         case 'ADD_STEP': {
             const emptyStep = {
-                formDefinition: {
-                    configuration: {display: 'form'},
-                    uuid: '',
-                },
-                order: draft.formSteps.data.length,
+                formDefinition: '',
+                configuration:  {display: 'form'},
+                // index: draft.formSteps.data.length,
+                url: ''
             };
             draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
             break;
         }
         case 'CHANGE_STEP': {
-            const {index, formDefinitionUuid} = action.payload;
-            if (!formDefinitionUuid) {
-                draft.formSteps.data[index].formDefinition = {};
+            const {index, formDefinitionUrl} = action.payload;
+            if (!formDefinitionUrl) {
+                draft.formSteps.data[index].formDefinition = '';
+                draft.formSteps.data[index].configuration = {display: 'form'};
             } else {
-                draft.formSteps.data[index].formDefinition = draft.formDefinitions[formDefinitionUuid];
+                draft.formSteps.data[index].formDefinition = formDefinitionUrl;
+                draft.formSteps.data[index].configuration = draft.formDefinitions[formDefinitionUrl].configuration;
             }
             break;
         }
@@ -97,8 +97,8 @@ function reducer(draft, action) {
             if (index <= 0 || index >= draft.formSteps.data.length) break;
 
             let updatedSteps = draft.formSteps.data.slice(0, index-1);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index], ...{order: index-1}}]);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index-1], ...{order: index}}]);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index], ...{index: index-1}}]);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index-1], ...{index: index}}]);
 
             draft.formSteps.data = [...updatedSteps, ...draft.formSteps.data.slice(index+1)];
             break;
@@ -115,6 +115,19 @@ function reducer(draft, action) {
     }
 }
 
+const getFormStepsData = async (formUuid) => {
+    try {
+        var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
+        if (!response.ok) {
+            throw new Error('An error occurred while fetching the form steps.');
+        }
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: e});
+    }
+
+    return response.data;
+};
+
 const getFormData = async (formUuid, dispatch) => {
     if (!formUuid) {
         dispatch({
@@ -129,9 +142,11 @@ const getFormData = async (formUuid, dispatch) => {
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         } else {
+            // Get the form definition data from the form steps
+            const formStepsData = await getFormStepsData(formUuid);
             dispatch({
                 type: 'FORM_STEPS_LOADED',
-                payload: response.data.formSteps,
+                payload: formStepsData,
             });
         }
     } catch (e) {
@@ -176,10 +191,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onStepDelete = (index) => {
+    const onStepDelete = (index, formStepData) => {
+        console.log(formStepData);
         dispatch({
             type: 'DELETE_STEP',
-            payload: index
+            payload: {index: index, step: formStepData}
         });
     };
 
@@ -190,12 +206,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onStepChange = (event, index) => {
+    const onStepChange = (index, event) => {
         dispatch({
             type: 'CHANGE_STEP',
             payload: {
                 index: index,
-                formDefinitionUuid: event.target.value
+                formDefinitionUrl: event.target.value
             }
         })
     };
@@ -215,24 +231,69 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     };
 
     const onSubmit = async () => {
+        // Update the form
         const formData = {
-            uuid: state.formUuid,
             name: state.formName,
             slug: state.formSlug,
-            formSteps: state.formSteps.data
         };
 
         const createOrUpdate = state.newForm ? post : put;
         const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.formUuid}`;
 
-        const response = await createOrUpdate(
-            endPoint,
-            csrftoken,
-            formData,
-        );
 
-        if (!response.ok) {
+        try {
+            var response = await createOrUpdate(
+                endPoint,
+                csrftoken,
+                formData,
+            );
+
+            if (!response.ok) {
+                throw new Error('An error occurred while saving the form.');
+            }
+        } catch (e) {
             dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        // Update the form steps
+        await Promise.all(state.formSteps.data.map(async (step, index) => {
+            const createOrUpdate = step.url ? put : post;
+            const endpoint = step.url ? step.url : `${FORM_ENDPOINT}/${state.formUuid}/steps`;
+
+            try {
+                var response = await createOrUpdate(
+                    endpoint,
+                    csrftoken,
+                    {...step, ...{index: index}}
+                );
+                if (!response.ok) {
+                    throw new Error('An error occurred while updating the form steps.');
+                }
+            } catch (e) {
+                dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+            }
+        }));
+
+        if (state.stepsToDelete) {
+            await Promise.all(state.stepsToDelete.map(async (step, index) => {
+                // Steps that were added but are not saved in the backend yet don't have a URL.
+                if (!step) return;
+
+                try {
+                     var response = await apiDelete(step, csrftoken);
+                     if (!response.ok) {
+                         throw new Error('An error occurred while deleting form steps.');
+                    }
+                } catch (e) {
+                    dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+                }
+
+            }));
+        }
+
+        if (Object.keys(state.errors).length) {
             window.scrollTo(0, 0);
             return;
         }
@@ -303,7 +364,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 { state.formSteps.loading ? <div>Loading form steps...</div> :
                     <FormSteps
                         formSteps={state.formSteps.data}
-                        formDefinitionChoices={state.formDefinitionChoices}
+                        formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
                         onChange={onStepChange}
                         onDelete={onStepDelete}
                         onReorder={onStepReorder}
