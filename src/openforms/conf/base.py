@@ -150,6 +150,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "openforms.middleware.SameSiteNoneCookieMiddlware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     # 'django.middleware.locale.LocaleMiddleware',
     "corsheaders.middleware.CorsMiddleware",
