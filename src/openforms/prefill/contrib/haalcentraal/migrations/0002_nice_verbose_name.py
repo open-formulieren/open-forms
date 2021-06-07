@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("prefill.haalcentraal", "0001_initial"),
+        ("prefill_haalcentraal", "0001_initial"),
     ]
 
     operations = [

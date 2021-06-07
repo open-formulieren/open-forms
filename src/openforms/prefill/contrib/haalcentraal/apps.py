@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class HaalCentraalApp(AppConfig):
     name = "openforms.prefill.contrib.haalcentraal"
-    label = "prefill.haalcentraal"
+    label = "prefill_haalcentraal"
     verbose_name = _("Haal Centraal prefill plugin")
 
     def ready(self):
