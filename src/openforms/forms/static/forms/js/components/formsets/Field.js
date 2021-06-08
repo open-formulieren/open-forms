@@ -19,6 +19,10 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children }
         {id: htmlFor, name: originalName},
     );
 
+    if( typeof errors === 'string' ) {
+        errors = [ errors ];
+    }
+
     const hasErrors = Boolean(errors && errors.length);
 
     return (
@@ -39,7 +43,10 @@ Field.propTypes = {
     children: PropTypes.element.isRequired,
     helpText: PropTypes.string,
     required: PropTypes.bool,
-    errors: PropTypes.arrayOf(PropTypes.string),
+    errors: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.string,
+    ]),
 };
 
 

@@ -2,19 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const ErrorList = ({ children=[] }) => {
-    if (!children.length) return null;
+const ErrorList = ({ children }) => {
+    const errors = React.Children.map(children, (error, i) => {
+        <li key={i}>{error}</li>
+    })
+    if (!errors) return null;
+
     return (
         <ul className="errorlist">
-            {children.map((error, i) => (
-                <li key={i}>{error}</li>
-            ))}
+            {errors}
         </ul>
     );
 };
 
 ErrorList.propTypes = {
-    children: PropTypes.arrayOf(PropTypes.string),
+    children: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.string,
+    ]),
 };
 
 
