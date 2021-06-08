@@ -306,7 +306,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -328,7 +328,13 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
-        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
+
+        errors = response.json()
+
+        self.assertIn("formDefinition", errors)
+        self.assertIn("index", errors)
+        self.assertEqual(errors["formDefinition"], ["Dit veld is vereist."])
+        self.assertEqual(errors["index"], ["Dit veld is vereist."])
 
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
@@ -367,7 +373,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -408,7 +414,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": uuid.uuid4()},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -434,7 +440,12 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
-        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
+
+        errors = response.json()
+        self.assertIn("formDefinition", errors)
+        self.assertIn("index", errors)
+        self.assertEqual(errors["formDefinition"], ["Dit veld is vereist."])
+        self.assertEqual(errors["index"], ["Dit veld is vereist."])
 
     def test_complete_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
