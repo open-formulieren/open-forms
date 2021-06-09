@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
@@ -5,6 +7,9 @@ import useDebounce from 'react-use/esm/useDebounce';
 
 import FormIOBuilder from '../formio_builder/builder';
 import FormStepDefinition from './FormStepDefinition';
+
+import { useImmerReducer } from 'use-immer';
+
 
 
 const configuration = {
@@ -96,12 +101,35 @@ const configuration = {
 
 
 
+const initialState = {
+    configuration: null,
+};
+
+
+const reducer = (draft, action) => {
+    switch (action.type) {
+        case 'UPDATE_CONFIGURATION': {
+            draft.configuration = action.payload;
+            break;
+        }
+        default: {
+            throw new Error(`Unknown action ${action.type}`);
+        }
+    }
+};
+
+
 const Debug = () => {
-    const [schema, setSchema] = useState(null);
+    const [state, dispatch] = useImmerReducer(reducer, initialState);
+
+    console.log(state.configuration);
 
     const onChange = (formSchema) => {
         console.log('onChange triggered');
-        setSchema({...formSchema});
+        dispatch({
+            type: 'UPDATE_CONFIGURATION',
+            payload: formSchema,
+        });
     };
     return (
         <FormStepDefinition initialConfiguration={configuration} onChange={onChange} />
