@@ -5,7 +5,8 @@
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~formiojs/dist/formio.full.css';
 
-.field-configuration {
+.field-configuration,
+.form-definition {
 
   & > div:first-of-type {
     width: 100%;
