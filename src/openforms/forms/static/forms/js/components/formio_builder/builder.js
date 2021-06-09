@@ -1,4 +1,4 @@
-import {FormBuilder} from 'react-formio';
+import {FormBuilder} from './patched-builder';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -51,12 +51,17 @@ const BUILDER_OPTIONS = {
 };
 
 
-const FormIOBuilder = ({ configuration, onChange }) => {
+const FormIOBuilder = ({ configuration, onChange, onAddComponent, onSaveComponent, onEditComponent, onUpdateComponent, onDeleteComponent }) => {
     return (
         <FormBuilder
             form={configuration}
             options={BUILDER_OPTIONS}
             onChange={formSchema => onChange(formSchema)}
+            onAddComponent={formSchema => onAddComponent(formSchema)}
+            onSaveComponent={formSchema => onSaveComponent(formSchema)}
+            onEditComponent={formSchema => onEditComponent(formSchema)}
+            onUpdateComponent={formSchema => onUpdateComponent(formSchema)}
+            onDeleteComponent={formSchema => onDeleteComponent(formSchema)}
         />
     );
 };

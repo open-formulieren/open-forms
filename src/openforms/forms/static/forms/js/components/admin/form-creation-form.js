@@ -81,7 +81,7 @@ function reducer(draft, action) {
             draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
             break;
         }
-        case 'CHANGE_STEP': {
+        case 'REPLACE_STEP': {
             const {index, formDefinitionUrl} = action.payload;
             if (!formDefinitionUrl) {
                 draft.formSteps.data[index].formDefinition = '';
@@ -90,6 +90,11 @@ function reducer(draft, action) {
                 draft.formSteps.data[index].formDefinition = formDefinitionUrl;
                 draft.formSteps.data[index].configuration = draft.formDefinitions[formDefinitionUrl].configuration;
             }
+            break;
+        }
+        case 'EDIT_STEP': {
+            const {index, configuration} = action.payload;
+            draft.formSteps.data[index].configuration = configuration;
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -159,12 +164,22 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onStepChange = (index, event) => {
+    const onStepReplace = (index, event) => {
         dispatch({
-            type: 'CHANGE_STEP',
+            type: 'REPLACE_STEP',
             payload: {
                 index: index,
                 formDefinitionUrl: event.target.value
+            }
+        })
+    };
+
+    const onStepEdit = (index, configuration) => {
+        dispatch({
+            type: 'EDIT_STEP',
+            payload: {
+                index: index,
+                configuration: configuration
             }
         })
     };
@@ -344,7 +359,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 <FormSteps
                     formSteps={state.formSteps.data}
                     formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
-                    onChange={onStepChange}
+                    onReplace={onStepReplace}
+                    onEdit={onStepEdit}
                     onDelete={onStepDelete}
                     onReorder={onStepReorder}
                     errors={state.errors}

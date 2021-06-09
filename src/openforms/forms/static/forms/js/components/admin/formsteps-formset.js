@@ -1,16 +1,23 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {Collapsible} from "../formsets/Collapsible";
-import { Form } from 'react-formio';
 import Select from "../formsets/Select";
 import PropTypes from "prop-types";
+import FormIOBuilder from "../formio_builder/builder";
 
-const FormIOWrapper = React.forwardRef((props, ref) => (
-  <Form {...props} ref={ref} />
-));
+const emptyComponentsIds = (configuration) => {
+    const updatedConfiguration = {...configuration, id: ''};
 
-const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onChange, onReorder, errors}) => {
-    const formRef = useRef(null);
-    const stepName = `Step ${position}:`
+    if ('components' in configuration) {
+        updatedConfiguration.components = updatedConfiguration.components.map((componentConfig, index) => {
+            return emptyComponentsIds(componentConfig);
+        });
+    }
+    return updatedConfiguration;
+};
+
+const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onReplace, onEdit, onReorder, errors}) => {
+    const stepName = `Step ${position}:`;
+
     const confirmDelete = () => {
         if(window.confirm('Remove step from form?')){
             onDelete(formStepData);
@@ -19,11 +26,15 @@ const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onCh
 
     const collapsibleContent = (
         <div className='form-definition'>
-            <FormIOWrapper
-              ref={formRef}
-              form={formStepData.configuration}
-              onSubmit={(e) => {console.log(e)}}
-              options={{noAlerts: true}}
+            <FormIOBuilder
+                // The builder will fail to render if the components have a pre-filled ID
+                configuration={emptyComponentsIds(formStepData.configuration)}
+                onChange={(formSchema) => {}}
+                onAddComponent={formSchema => onEdit(formSchema)}
+                onSaveComponent={formSchema => onEdit(formSchema)}
+                onEditComponent={formSchema => onEdit(formSchema)}
+                onUpdateComponent={formSchema => onEdit(formSchema)}
+                onDeleteComponent={formSchema => onEdit(formSchema)}
             />
         </div>
     );
@@ -44,7 +55,7 @@ const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onCh
                 name="Form definition"
                 choices={formDefinitionChoices}
                 value={formStepData.formDefinition}
-                onChange={(event) => {onChange(event)}}
+                onChange={(event) => {onReplace(event)}}
                 className={"step-select"}
             />
         </>
@@ -74,7 +85,7 @@ FormStep.propTypes = {
     errors: PropTypes.object,
 };
 
-const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReorder, errors}) => {
+const FormSteps = ({formSteps, formDefinitionChoices, onReplace, onEdit, onDelete, onReorder, errors}) => {
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
             <FormStep
@@ -83,7 +94,8 @@ const FormSteps = ({formSteps, formDefinitionChoices, onChange, onDelete, onReor
                 formStepData={formStepData}
                 formDefinitionChoices={formDefinitionChoices}
                 onDelete={onDelete.bind(null, index)}
-                onChange={onChange.bind(null, index)}
+                onReplace={onReplace.bind(null, index)}
+                onEdit={onEdit.bind(null, index)}
                 onReorder={onReorder.bind(null, index)}
                 errors={errors.formSteps ? errors.formSteps[index] : {}}
             />
