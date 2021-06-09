@@ -1,4 +1,5 @@
-import React from 'react';
+import _ from 'lodash';
+import React, {useRef} from 'react';
 import {Collapsible} from "../formsets/Collapsible";
 import Select from "../formsets/Select";
 import PropTypes from "prop-types";
@@ -15,8 +16,16 @@ const emptyComponentsIds = (configuration) => {
     return updatedConfiguration;
 };
 
-const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onReplace, onEdit, onReorder, errors}) => {
+const FormStep = ({position, formStepData, initialData, formDefinitionChoices, onDelete, onReplace, onEdit, onReorder, errors}) => {
     const stepName = `Step ${position}:`;
+
+    console.log(initialData);
+
+    const builderRef = useRef(null);
+
+    // if (builderRef.current) {
+    //     debugger;
+    // }
 
     const confirmDelete = () => {
         if(window.confirm('Remove step from form?')){
@@ -28,13 +37,10 @@ const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onRe
         <div className='form-definition'>
             <FormIOBuilder
                 // The builder will fail to render if the components have a pre-filled ID
-                configuration={emptyComponentsIds(formStepData.configuration)}
-                onChange={(formSchema) => {}}
-                onAddComponent={formSchema => onEdit(formSchema)}
-                onSaveComponent={formSchema => onEdit(formSchema)}
-                onEditComponent={formSchema => onEdit(formSchema)}
-                onUpdateComponent={formSchema => onEdit(formSchema)}
-                onDeleteComponent={formSchema => onEdit(formSchema)}
+                // configuration={emptyComponentsIds(formStepData.configuration)}
+                configuration={_.cloneDeep(initialData.configuration)}
+                onChange={onEdit}
+                ref={builderRef}
             />
         </div>
     );
@@ -61,13 +67,19 @@ const FormStep = ({position, formStepData, formDefinitionChoices, onDelete, onRe
         </>
     );
 
+    console.log(`render ${stepName}`);
+
     return (
         <>
             { Object.keys(errors).length ? <div className='fetch-error'>The form step below is invalid.</div> : null }
+            <span className="step-name">{stepName}</span>
+            {collapsibleContent}
+            {/*
             <Collapsible
                 header={collapsibleHeader}
                 content={collapsibleContent}
             />
+            */}
         </>
     );
 };
@@ -85,13 +97,14 @@ FormStep.propTypes = {
     errors: PropTypes.object,
 };
 
-const FormSteps = ({formSteps, formDefinitionChoices, onReplace, onEdit, onDelete, onReorder, errors}) => {
+const FormSteps = ({formSteps, initialFormSteps, formDefinitionChoices, onReplace, onEdit, onDelete, onReorder, errors}) => {
     const formStepsBuilders = formSteps.map((formStepData, index) => {
         return (
             <FormStep
                 key={index}
                 position={index}
                 formStepData={formStepData}
+                initialData={initialFormSteps[index]}
                 formDefinitionChoices={formDefinitionChoices}
                 onDelete={onDelete.bind(null, index)}
                 onReplace={onReplace.bind(null, index)}

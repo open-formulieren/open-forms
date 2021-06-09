@@ -1,5 +1,8 @@
+import _ from 'lodash';
+
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
+import {original} from 'immer';
 import PropTypes from 'prop-types';
 import Field from '../formsets/Field';
 import FormRow from '../formsets/FormRow';
@@ -23,7 +26,11 @@ const initialFormState = {
     newForm: true,
     formSteps: {
         loading: true,
-        data: []
+        data: [],
+        // keep a copy of the initial page load data around to essentially freeze the
+        // formio builder configuration. This is a workaround for a bug in react-formio:
+        // https://github.com/formio/react/issues/386
+        initialData: [],
     },
     errors: {},
     formDefinitions: {},
@@ -52,7 +59,8 @@ function reducer(draft, action) {
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = {
                 loading: false,
-                data: action.payload
+                data: action.payload,
+                initialData: action.payload,
             };
             break;
         }
@@ -93,8 +101,15 @@ function reducer(draft, action) {
             break;
         }
         case 'EDIT_STEP': {
+            console.log('EDIT_STEP fired');
             const {index, configuration} = action.payload;
-            draft.formSteps.data[index].configuration = configuration;
+            const currentConfiguration = original(draft.formSteps.data[index].configuration);
+
+            const equal = _.isEqual(currentConfiguration, configuration);
+            if (!equal) {
+                console.log('Updating draft');
+                draft.formSteps.data[index].configuration = configuration;
+            }
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -358,6 +373,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             return (
                 <FormSteps
                     formSteps={state.formSteps.data}
+                    initialFormSteps={state.formSteps.initialData}
                     formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
                     onReplace={onStepReplace}
                     onEdit={onStepEdit}

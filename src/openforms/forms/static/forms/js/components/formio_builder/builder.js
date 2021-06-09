@@ -1,6 +1,9 @@
-import {FormBuilder} from './patched-builder';
+import _ from 'lodash';
+import {FormBuilder} from 'react-formio';
+
+//import {FormBuilder} from './patched-builder';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 
 
 const BUILDER_OPTIONS = {
@@ -51,20 +54,20 @@ const BUILDER_OPTIONS = {
 };
 
 
-const FormIOBuilder = ({ configuration, onChange, onAddComponent, onSaveComponent, onEditComponent, onUpdateComponent, onDeleteComponent }) => {
+const FormIOBuilder = React.forwardRef(({ configuration, onChange }, ref) => {
+    console.log("Render builder");
+
+    const [config, setConfig] = useState(_.cloneDeep(configuration));
+
     return (
         <FormBuilder
-            form={configuration}
+            form={config}
             options={BUILDER_OPTIONS}
-            onChange={formSchema => onChange(formSchema)}
-            onAddComponent={formSchema => onAddComponent(formSchema)}
-            onSaveComponent={formSchema => onSaveComponent(formSchema)}
-            onEditComponent={formSchema => onEditComponent(formSchema)}
-            onUpdateComponent={formSchema => onUpdateComponent(formSchema)}
-            onDeleteComponent={formSchema => onDeleteComponent(formSchema)}
+            // onChange={formSchema => onChange(formSchema)}
+            ref={ref}
         />
     );
-};
+});
 
 FormIOBuilder.propTypes = {
     configuration: PropTypes.object,
