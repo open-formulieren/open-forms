@@ -134,6 +134,10 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     form_step = ContextAwareFormStepSerializer(read_only=True)
+    slug = serializers.SlugField(
+        source="form_step.form_definition.slug",
+        read_only=True,
+    )
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
@@ -143,6 +147,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         model = SubmissionStep
         fields = (
             "id",
+            "slug",
             "form_step",
             "data",
         )

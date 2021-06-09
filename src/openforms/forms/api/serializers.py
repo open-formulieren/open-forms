@@ -13,6 +13,7 @@ from ..models import Form, FormDefinition, FormStep
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
+    slug = serializers.SlugField(source="form_definition.slug")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -25,6 +26,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         model = FormStep
         fields = (
             "uuid",
+            "slug",
             "form_definition",
             "index",
             "url",
@@ -101,7 +103,12 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration", "form_definition")
+        fields = (
+            "index",
+            # "slug",
+            "configuration",
+            "form_definition",
+        )
 
         extra_kwargs = {
             "form_definition": {
