@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {FormCreationForm} from './form-creation-form';
 
+import Debug from './Debug';
+
+
 const mountForm = () => {
     const formCreationFormNodes = document.getElementsByClassName('react-form-create');
     if (!formCreationFormNodes.length) return;
@@ -10,12 +13,13 @@ const mountForm = () => {
         const { formUuid, formName, formSlug, csrftoken } = formCreationFormNode.dataset;
 
         ReactDOM.render(
-            <FormCreationForm
-                csrftoken={csrftoken}
-                formUuid={formUuid}
-                formName={formName}
-                formSlug={formSlug}
-            />,
+            // <FormCreationForm
+            //     csrftoken={csrftoken}
+            //     formUuid={formUuid}
+            //     formName={formName}
+            //     formSlug={formSlug}
+            // />,
+            <Debug />,
             formCreationFormNode
         );
     }
