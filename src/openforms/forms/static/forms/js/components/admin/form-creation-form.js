@@ -27,11 +27,8 @@ const initialFormState = {
     formSteps: {
         loading: true,
         data: [],
-        // keep a copy of the initial page load data around to essentially freeze the
-        // formio builder configuration. This is a workaround for a bug in react-formio:
-        // https://github.com/formio/react/issues/386
-        initialData: [],
     },
+    newStepConfigurations: [],
     errors: {},
     formDefinitions: {},
     stepsToDelete: []
@@ -101,15 +98,11 @@ function reducer(draft, action) {
             break;
         }
         case 'EDIT_STEP': {
-            console.log('EDIT_STEP fired');
+            console.log('called');
             const {index, configuration} = action.payload;
-            const currentConfiguration = original(draft.formSteps.data[index].configuration);
+            // const currentConfiguration = original(draft.formSteps.data[index].configuration);
 
-            const equal = _.isEqual(currentConfiguration, configuration);
-            if (!equal) {
-                console.log('Updating draft');
-                draft.formSteps.data[index].configuration = configuration;
-            }
+            // draft.newStepConfigurations[index] = _.cloneDeep(configuration);
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -147,6 +140,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         }
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
+
+    console.log(state.newStepConfigurations);
 
     useAsync(async () => {
         await getFormData(formUuid, dispatch);

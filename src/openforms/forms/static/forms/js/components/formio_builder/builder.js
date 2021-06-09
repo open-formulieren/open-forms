@@ -56,14 +56,11 @@ const BUILDER_OPTIONS = {
 
 const FormIOBuilder = React.forwardRef(({ configuration, onChange }, ref) => {
     console.log("Render builder");
-
-    const [config, setConfig] = useState(_.cloneDeep(configuration));
-
     return (
         <FormBuilder
-            form={config}
+            form={configuration}
             options={BUILDER_OPTIONS}
-            // onChange={formSchema => onChange(formSchema)}
+            onChange={formSchema => onChange(formSchema)}
             ref={ref}
         />
     );

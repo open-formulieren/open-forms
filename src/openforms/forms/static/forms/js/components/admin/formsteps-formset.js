@@ -97,42 +97,142 @@ FormStep.propTypes = {
     errors: PropTypes.object,
 };
 
-const FormSteps = ({formSteps, initialFormSteps, formDefinitionChoices, onReplace, onEdit, onDelete, onReorder, errors}) => {
-    const formStepsBuilders = formSteps.map((formStepData, index) => {
-        return (
-            <FormStep
-                key={index}
-                position={index}
-                formStepData={formStepData}
-                initialData={initialFormSteps[index]}
-                formDefinitionChoices={formDefinitionChoices}
-                onDelete={onDelete.bind(null, index)}
-                onReplace={onReplace.bind(null, index)}
-                onEdit={onEdit.bind(null, index)}
-                onReorder={onReorder.bind(null, index)}
-                errors={errors.formSteps ? errors.formSteps[index] : {}}
-            />
-        );
-    });
+// const FormSteps = ({formSteps, initialFormSteps, formDefinitionChoices, onReplace, onEdit, onDelete, onReorder, errors}) => {
+//     const formStepsBuilders = formSteps.map((formStepData, index) => {
+//         return (
+//             <FormStep
+//                 key={index}
+//                 position={index}
+//                 formStepData={formStepData}
+//                 initialData={initialFormSteps[index]}
+//                 formDefinitionChoices={formDefinitionChoices}
+//                 onDelete={onDelete.bind(null, index)}
+//                 onReplace={onReplace.bind(null, index)}
+//                 onEdit={onEdit.bind(null, index)}
+//                 onReorder={onReorder.bind(null, index)}
+//                 errors={errors.formSteps ? errors.formSteps[index] : {}}
+//             />
+//         );
+//     });
+
+//     return (
+//         <>
+//             {formStepsBuilders}
+//         </>
+//     );
+// };
+
+// FormSteps.propTypes = {
+//     formSteps: PropTypes.arrayOf(PropTypes.shape({
+//         formDefinition: PropTypes.string,
+//         index: PropTypes.number,
+//         configuration: PropTypes.object
+//     })),
+//     formDefinitionChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+//     onDelete: PropTypes.func,
+//     onChange: PropTypes.func,
+//     onReorder: PropTypes.func,
+//     errors: PropTypes.object,
+// };
+
+
+const FormSteps = (props) => {
+    // const configuration = props.formSteps[0].configuration;
+
+    const configuration = {
+        "display": "form",
+        "components": [
+            {
+                "id": "ecrw1um",
+                "key": "voornamen",
+                "mask": false,
+                "type": "textfield",
+                "input": true,
+                "label": "Voornamen",
+                "hidden": false,
+                "plugin": "stufbg",
+                "prefix": "",
+                "suffix": "",
+                "unique": false,
+                "widget": {
+                    "type": "input"
+                },
+                "dbIndex": false,
+                "overlay": {
+                    "top": "",
+                    "left": "",
+                    "style": "",
+                    "width": "",
+                    "height": ""
+                },
+                "prefill": {
+                    "plugin": "stufbg",
+                    "attribute": "voornamen"
+                },
+                "tooltip": "",
+                "disabled": false,
+                "multiple": false,
+                "redrawOn": "",
+                "tabindex": "",
+                "validate": {
+                    "custom": "",
+                    "unique": false,
+                    "pattern": "",
+                    "multiple": false,
+                    "required": false,
+                    "maxLength": "",
+                    "minLength": "",
+                    "customPrivate": false,
+                    "strictDateValidation": false
+                },
+                "attribute": "bg310:object/bg310:voornamen",
+                "autofocus": false,
+                "encrypted": false,
+                "hideLabel": false,
+                "inputMask": "",
+                "inputType": "text",
+                "modalEdit": false,
+                "protected": false,
+                "refreshOn": "",
+                "tableView": true,
+                "attributes": {},
+                "errorLabel": "",
+                "persistent": true,
+                "properties": {},
+                "spellcheck": true,
+                "validateOn": "change",
+                "clearOnHide": true,
+                "conditional": {
+                    "eq": "",
+                    "show": null,
+                    "when": null
+                },
+                "customClass": "",
+                "description": "",
+                "inputFormat": "plain",
+                "placeholder": "",
+                "showInEmail": false,
+                "defaultValue": null,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "showCharCount": false,
+                "showWordCount": false,
+                "calculateValue": "",
+                "calculateServer": false,
+                "allowMultipleMasks": false,
+                "customDefaultValue": "",
+                "allowCalculateOverride": false
+            }
+        ]
+    };
 
     return (
-        <>
-            {formStepsBuilders}
-        </>
+        <FormIOBuilder
+            configuration={configuration}
+            onChange={props.onEdit.bind(null, 0)}
+        />
     );
 };
 
-FormSteps.propTypes = {
-    formSteps: PropTypes.arrayOf(PropTypes.shape({
-        formDefinition: PropTypes.string,
-        index: PropTypes.number,
-        configuration: PropTypes.object
-    })),
-    formDefinitionChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    onDelete: PropTypes.func,
-    onChange: PropTypes.func,
-    onReorder: PropTypes.func,
-    errors: PropTypes.object,
-};
 
 export {FormSteps};
