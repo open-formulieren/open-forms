@@ -26,6 +26,7 @@ const BUILDER_OPTIONS = {
                 currency: true,
                 iban: true,
                 email: true,
+                date: true,
             }
         },
         custom_layout: {
