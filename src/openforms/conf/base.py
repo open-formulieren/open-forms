@@ -146,6 +146,9 @@ INSTALLED_APPS = [
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
     "openforms.prefill.contrib.haalcentraal.apps.HaalCentraalApp",
+    "openforms.authentication",
+    "openforms.authentication.contrib.demo.apps.DemoApp",
+    "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
 ]
 
 MIDDLEWARE = [
