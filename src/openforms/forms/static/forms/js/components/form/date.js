@@ -26,9 +26,9 @@ class DateField extends DateTimeField {
         };
     }
 
-    constructor(component, options, data) {
-        super(component, options, data);
-        this.component.widget.type = null;
+    get suffix() {
+      // Don't show an icon
+      return null;
     }
 
     get defaultSchema() {
