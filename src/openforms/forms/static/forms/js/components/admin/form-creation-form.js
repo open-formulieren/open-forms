@@ -91,9 +91,13 @@ function reducer(draft, action) {
             if (!formDefinitionUrl) {
                 draft.formSteps.data[index].formDefinition = '';
                 draft.formSteps.data[index].configuration = {display: 'form'};
+                draft.formSteps.data[index].name = '';
+                draft.formSteps.data[index].slug = '';
             } else {
                 draft.formSteps.data[index].formDefinition = formDefinitionUrl;
                 draft.formSteps.data[index].configuration = draft.formDefinitions[formDefinitionUrl].configuration;
+                draft.formSteps.data[index].name = draft.formDefinitions[formDefinitionUrl].name;
+                draft.formSteps.data[index].slug = draft.formDefinitions[formDefinitionUrl].slug;
             }
             break;
         }
@@ -101,6 +105,11 @@ function reducer(draft, action) {
             const {index, configuration} = action.payload;
             // const currentConfiguration = original(draft.formSteps.data[index].configuration);
             draft.formSteps.data[index].configuration = configuration;
+            break;
+        }
+        case 'STEP_FIELD_CHANGED': {
+            const {index, name, value} = action.payload;
+            draft.formSteps.data[index][name] = value;
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -130,7 +139,7 @@ function reducer(draft, action) {
 /**
  * Functions to fetch data
  */
-const getFormStepsData = async (formUuid) => {
+const getFormStepsData = async (formUuid, dispatch) => {
     try {
         var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
         if (!response.ok) {
@@ -158,7 +167,7 @@ const getFormData = async (formUuid, dispatch) => {
             throw new Error('An error occurred while fetching the form.');
         } else {
             // Get the form definition data from the form steps
-            const formStepsData = await getFormStepsData(formUuid);
+            const formStepsData = await getFormStepsData(formUuid, dispatch);
             dispatch({
                 type: 'FORM_STEPS_LOADED',
                 payload: formStepsData,
@@ -189,7 +198,7 @@ const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
         );
     }
 
-    if (loading) {
+    if (loading && !loadingErrors) {
         return (
             <div>Loading form steps...</div>
         );
@@ -273,6 +282,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         })
     };
 
+    const onStepFieldChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'STEP_FIELD_CHANGED',
+            payload: {name, value, index},
+        });
+    };
+
     const onStepReorder = (index, direction) => {
         if (direction === 'up') {
             dispatch({
@@ -288,6 +305,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     };
 
     const onSubmit = async () => {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {}});
+
         // Update the form
         const formData = {
             name: state.formName,
@@ -314,27 +333,53 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             return;
         }
 
-        // Update the form steps
-        await Promise.all(state.formSteps.data.map(async (step, index) => {
-            const createOrUpdate = step.url ? put : post;
-            const endpoint = step.url ? step.url : `${FORM_ENDPOINT}/${state.formUuid}/steps`;
-
+        // Update/create form definitions and then form steps
+        for ( let index = 0; index < state.formSteps.data.length; index++) {
+            const step = state.formSteps.data[index];
             try {
-                var response = await createOrUpdate(
-                    endpoint,
+                // First update/create the form definitions
+                const isNewFormDefinition = !!step.formDefinition;
+                const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
+                const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
+
+                var definitionResponse = await definitionCreateOrUpdate(
+                    definitionEndpoint,
                     csrftoken,
-                    {...step, ...{index: index}}
+                    {
+                        name: step.name,
+                        slug: step.slug,
+                        configuration: step.configuration,
+                    }
+                )
+                if (!definitionResponse.ok) {
+                    throw new Error('An error occurred while updating the form definitions.');
+                }
+
+                const stepCreateOrUpdate = step.url ? put : post;
+                const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${state.formUuid}/steps`;
+
+                var stepResponse = await stepCreateOrUpdate(
+                    stepEndpoint,
+                    csrftoken,
+                    {
+                        name: step.name,
+                        slug: step.slug,
+                        index: index,
+                        formDefinition: definitionResponse.data.url
+                    }
                 );
-                if (!response.ok) {
-                    throw new Error('An error occurred while updating the form steps.');
+                if (!stepResponse.ok) {
+                    dispatch({type: 'SET_FETCH_ERRORS', payload: stepResponse.data});
+                    throw new Error('An error occurred while updating the form steps.', );
                 }
             } catch (e) {
-                dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+                window.scrollTo(0, 0);
+                return;
             }
-        }));
+        }
 
-        if (state.stepsToDelete) {
-            await Promise.all(state.stepsToDelete.map(async (step, index) => {
+        if (state.stepsToDelete.length) {
+            for (const step of state.stepsToDelete) {
                 // Steps that were added but are not saved in the backend yet don't have a URL.
                 if (!step) return;
 
@@ -344,15 +389,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                          throw new Error('An error occurred while deleting form steps.');
                     }
                 } catch (e) {
-                    dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+                    dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+                    window.scrollTo(0, 0);
+                    return;
                 }
 
-            }));
-        }
-
-        if (Object.keys(state.errors).length) {
-            window.scrollTo(0, 0);
-            return;
+            }
         }
 
         // redirect back to list/overview page
@@ -425,6 +467,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         loading={state.formSteps.loading}
                         loadingErrors={state.errors.loadingErrors}
                         onEdit={onStepEdit}
+                        onFieldChange={onStepFieldChange}
                         onDelete={onStepDelete}
                         onReorder={onStepReorder}
                         onReplace={onStepReplace}

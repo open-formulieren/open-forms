@@ -28,9 +28,24 @@
 }
 
 .form-definition {
-    display: flex;
-    align-items: center;
-    margin: 0.5em 2em;
+  margin: 0.5em 2em;
+
+  .danger {
+    @include color-danger;
   }
 
+  .warning {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+  }
+
+  .material-icons {
+    padding-right: 0.5em;
+  }
+
+  .form-definition__name {
+    padding-bottom: 1em;
+  }
+}
 
