@@ -85,7 +85,7 @@ const FormIOBuilder = ({ configuration, onChange, forceUpdate=false }) => {
         <FormBuilder
             form={formRef.current}
             options={BUILDER_OPTIONS}
-            onChange={formSchema => onChange(_.cloneDeep(formSchema))}
+            onChange={formSchema => onChange(cloneDeep(formSchema))}
         />
     );
 };
