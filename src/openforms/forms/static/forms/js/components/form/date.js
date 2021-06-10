@@ -10,7 +10,8 @@ class DateField extends DateTimeField {
             type: 'date',
             label: 'Date',
             key: 'date',
-            format: "dd-MM-yyyy",
+            format: 'dd-MM-yyyy',
+            placeholder: 'dd-mm-yyyy',
             enableTime: false,
         }, ...extend);
     }
@@ -18,11 +19,16 @@ class DateField extends DateTimeField {
     static get builderInfo() {
         return {
             title: 'Date Field',
-            icon: 'fa fa-calendar',
+            icon: 'calendar',
             group: 'basic',
             weight: 10,
             schema: DateField.schema(),
         };
+    }
+
+    constructor(component, options, data) {
+        super(component, options, data);
+        this.component.widget.type = null;
     }
 
     get defaultSchema() {
