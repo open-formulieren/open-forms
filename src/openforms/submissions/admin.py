@@ -35,15 +35,24 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def display_merged_data(self, obj):
         merged_data = obj.get_merged_data()
+
+        regular_values = []
+        image_values = []
+        for key, value in merged_data.items():
+            if 'data:image/png' not in str(value):
+                regular_values.append((key, value))
+            else:
+                image_values.append((key, value))
+
         ret = format_html_join(
             "\n",
             "<li>{}: {}</li>",
-            ((key, value) for key, value in merged_data.items() if 'data:image/png;base64' not in str(value)),
+            ((key, value) for key, value in regular_values),
         )
         ret += format_html_join(
             "\n",
-            "<li>{}: <br/><img src='{}'/></li>",
-            ((key, value) for key, value in merged_data.items() if 'data:image/png;base64' in str(value)),
+            "<li>{}: <img src='{}'/></li>",
+            ((key, value) for key, value in image_values),
         )
         return format_html("<ul>{}</ul>", ret)
 
