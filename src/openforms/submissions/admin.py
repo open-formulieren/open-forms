@@ -38,7 +38,12 @@ class SubmissionAdmin(admin.ModelAdmin):
         ret = format_html_join(
             "\n",
             "<li>{}: {}</li>",
-            ((key, value) for key, value in merged_data.items()),
+            ((key, value) for key, value in merged_data.items() if 'data:image/png;base64' not in str(value)),
+        )
+        ret += format_html_join(
+            "\n",
+            "<li>{}: <br/><img src='{}'/></li>",
+            ((key, value) for key, value in merged_data.items() if 'data:image/png;base64' in str(value)),
         )
         return format_html("<ul>{}</ul>", ret)
 
