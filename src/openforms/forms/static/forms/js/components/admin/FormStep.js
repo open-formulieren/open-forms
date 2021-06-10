@@ -8,7 +8,7 @@ import MaterialIcon from './MaterialIcon';
 const FormStepHeader = ({name, onDelete, onReorder, onReplace}) => {
     const confirmDelete = () => {
         if(window.confirm('Remove step from form?')){
-            onDelete(formStepData);
+            onDelete();
         }
     };
     return (
@@ -49,8 +49,8 @@ const FormStep = ({ name, data, onEdit, onDelete, onReorder, onReplace, errors={
                 content={collapsibleContent}
             />
             */}
-            <FormStepHeader name={name} onDelete={onDelete} onReorder={onReorder} onReplace={onReplace} />
-            <FormStepDefinition initialConfiguration={configuration} onChange={onEdit} />
+            <FormStepHeader name={name} onDelete={onDelete.bind(null, data)} onReorder={onReorder} onReplace={onReplace} />
+            <FormStepDefinition configuration={configuration} onChange={onEdit} />
         </>
     );
 };

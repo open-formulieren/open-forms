@@ -30,7 +30,6 @@ const initialFormState = {
         loading: true,
         data: [],
     },
-    newStepConfigurations: [],
     errors: {},
     formDefinitions: {},
     stepsToDelete: []
@@ -101,7 +100,7 @@ function reducer(draft, action) {
         case 'EDIT_STEP': {
             const {index, configuration} = action.payload;
             // const currentConfiguration = original(draft.formSteps.data[index].configuration);
-            draft.newStepConfigurations[index] = configuration;
+            draft.formSteps.data[index].configuration = configuration;
             break;
         }
         case 'MOVE_UP_STEP': {
