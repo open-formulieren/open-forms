@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import useDebounce from 'react-use/esm/useDebounce';
 
 import FormIOBuilder from '../formio_builder/builder';
-import FormStepDefinition from './FormStepDefinition';
+import FormStep from './FormStep';
 
 import { useImmerReducer } from 'use-immer';
 
@@ -119,6 +119,9 @@ const reducer = (draft, action) => {
 };
 
 
+const noop = console.log;
+
+
 const Debug = () => {
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -131,8 +134,17 @@ const Debug = () => {
             payload: formSchema,
         });
     };
+    const data = {configuration};
     return (
-        <FormStepDefinition initialConfiguration={configuration} onChange={onChange} />
+        <FormStep
+            name="Step 1"
+            data={data}
+            onEdit={onChange}
+            onDelete={noop}
+            onReorder={noop}
+            onReplace={noop}
+            errors={{}}
+        />
     );
 };
 
