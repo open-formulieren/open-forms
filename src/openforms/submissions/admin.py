@@ -39,7 +39,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         regular_values = []
         image_values = []
         for key, value in merged_data.items():
-            if 'data:image/png' not in str(value):
+            if "data:image/png" not in str(value):
                 regular_values.append((key, value))
             else:
                 image_values.append((key, value))
@@ -51,7 +51,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         )
         ret += format_html_join(
             "\n",
-            "<li>{}: <img src='{}'/></li>",
+            "<li>{}: <img src='{}'></li>",
             ((key, value) for key, value in image_values),
         )
         return format_html("<ul>{}</ul>", ret)

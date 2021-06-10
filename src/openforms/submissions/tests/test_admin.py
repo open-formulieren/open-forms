@@ -16,7 +16,7 @@ class TestSubmissionAdmin(WebTest):
         cls.user = UserFactory.create(is_superuser=True, is_staff=True)
         cls.submission_1 = SubmissionFactory.create(form=step.form)
         submission_2 = SubmissionFactory.create(form=step.form)
-        SubmissionStepFactory.create(
+        cls.submission_step_1 = SubmissionStepFactory.create(
             submission=cls.submission_1,
             form_step=step,
             data={"adres": "Voorburg", "voornaam": "shea", "familienaam": "meyers"},
@@ -41,6 +41,22 @@ class TestSubmissionAdmin(WebTest):
 
         self.assertInHTML(
             "<li>adres: Voorburg</li>\\n<li>voornaam: shea</li>\\n<li>familienaam: meyers</li>",
+            str(response.content),
+        )
+
+    def test_displaying_merged_data_displays_signature_in_img_tag(self):
+        self.submission_step_1.data['signature'] = 'data:image/png;base64,iVBOR'
+        self.submission_step_1.save()
+
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertInHTML(
+            "<li>signature: <img src=\\\'data:image/png;base64,iVBOR\\\'></li>",
             str(response.content),
         )
 
