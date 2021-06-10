@@ -22,10 +22,10 @@ const emptyConfiguration = {
  * TODO: check what happens when we *replace* the form definition
  *
  */
-const FormStepDefinition = ({ configuration=emptyConfiguration, onChange }) => {
+const FormStepDefinition = ({ configuration=emptyConfiguration, onChange, ...props }) => {
     return (
         <div className="form-definition">
-            {<FormIOBuilder configuration={configuration} onChange={onChange} />}
+            {<FormIOBuilder configuration={configuration} onChange={onChange} {...props} />}
         </div>
     );
 };

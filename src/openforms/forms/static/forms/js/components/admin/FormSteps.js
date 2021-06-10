@@ -12,7 +12,7 @@ const FormSteps = ({ steps=[], onEdit, onDelete, onReorder, onReplace, errors=[]
                     <FormStep
                         key={index}
                         name={`Stap ${index+1}`}
-                        data={{configuration: step.configuration}}
+                        data={step}
                         onEdit={onEdit.bind(null, index)}
                         onDelete={onDelete.bind(null, index)}
                         onReorder={onReorder.bind(null, index)}
@@ -28,6 +28,8 @@ const FormSteps = ({ steps=[], onEdit, onDelete, onReorder, onReplace, errors=[]
 FormSteps.propTypes = {
     steps: PropTypes.arrayOf(PropTypes.shape({
         configuration: PropTypes.object,
+        formDefinition: PropTypes.string,
+        index: PropTypes.number,
     })),
     onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,

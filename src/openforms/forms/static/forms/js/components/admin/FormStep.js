@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import usePrevious from 'react-use/esm/usePrevious';
 
 import { Collapsible } from "../formsets/Collapsible";
 import Select from "../formsets/Select";
@@ -45,6 +46,12 @@ const FormStep = ({ name, data, onEdit, onDelete, onReorder, onReplace, errors={
         }
     };
 
+    const previousFormDefinition = usePrevious(formDefinition);
+    let forceBuilderUpdate = false;
+    if (previousFormDefinition && previousFormDefinition != formDefinition) {
+        forceBuilderUpdate = true;
+    }
+
     return (
         <>
             { Object.keys(errors).length ? <div className='fetch-error'>The form step below is invalid.</div> : null }
@@ -61,7 +68,7 @@ const FormStep = ({ name, data, onEdit, onDelete, onReorder, onReplace, errors={
                 onReorder={onReorder}
                 onReplace={onReplace}
             />
-            <FormStepDefinition configuration={configuration} onChange={onEdit} />
+            <FormStepDefinition configuration={configuration} onChange={onEdit} forceUpdate={forceBuilderUpdate} />
         </>
     );
 };
@@ -71,6 +78,7 @@ FormStep.propTypes = {
     data: PropTypes.shape({
         configuration: PropTypes.object,
         formDefinition: PropTypes.string,
+        index: PropTypes.number,
     }).isRequired,
     onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
