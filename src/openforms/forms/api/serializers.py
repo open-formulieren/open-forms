@@ -131,6 +131,8 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
     )
+    name = serializers.CharField(source="form_definition.name", read_only=True)
+    slug = serializers.CharField(source="form_definition.slug", read_only=True)
     url = NestedHyperlinkedRelatedField(
         source="*",
         view_name="api:form-steps-detail",
@@ -147,9 +149,10 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         model = FormStep
         fields = (
             "index",
-            # "slug",
+            "slug",
             "configuration",
             "form_definition",
+            "name",
             "url"
         )
 

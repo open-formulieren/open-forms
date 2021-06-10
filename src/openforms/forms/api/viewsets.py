@@ -80,8 +80,12 @@ class FormStepViewSet(
         summary=_("Retrieve form step definition details"),
         tags=["forms"],
     ),
+    create=extend_schema(summary=_("Create a form form definition")),
+    update=extend_schema(summary=_("Update all details of a form definition")),
+    partial_update=extend_schema(summary=_("Update some details of a form definition")),
+    destroy=extend_schema(summary=_("Delete a form definition")),
 )
-class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
+class FormDefinitionViewSet(viewsets.ModelViewSet):
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
     pagination_class = PageNumberPagination
