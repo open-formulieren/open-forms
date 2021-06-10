@@ -1,9 +1,7 @@
-import _ from 'lodash';
-import {FormBuilder} from 'react-formio';
-
-//import {FormBuilder} from './patched-builder';
+import cloneDeep from 'lodash/cloneDeep';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import {FormBuilder} from 'react-formio';
 
 
 const BUILDER_OPTIONS = {
@@ -54,17 +52,27 @@ const BUILDER_OPTIONS = {
 };
 
 
-const FormIOBuilder = React.forwardRef(({ configuration, onChange }, ref) => {
-    console.log("Render builder");
+const FormIOBuilder = ({ configuration, onChange }) => {
+    // the deep clone is needed to create a mutable object, as the FormBuilder
+    // mutates this object when forms are edited.
+    const clone = cloneDeep(configuration);
+    // using a ref that is never updated allows us to create a mutable object _once_
+    // and hold that reference and pass it down to the builder. Because the reference
+    // never changes, the prop never changes, and re-renders of the form builder are
+    // avoided. This prevents an infinite loop, reported here: https://github.com/formio/react/issues/386
+    // The onChange events fires for every render. So, if the onChange event causes props
+    // to change (by reference, not by value!), you end up in an infite loop.
+    //
+    // This approach effectively pins the FormBuilder.form prop reference.
+    const formRef = useRef(clone);
     return (
         <FormBuilder
-            form={configuration}
+            form={formRef.current}
             options={BUILDER_OPTIONS}
             onChange={formSchema => onChange(_.cloneDeep(formSchema))}
-            ref={ref}
         />
     );
-});
+};
 
 FormIOBuilder.propTypes = {
     configuration: PropTypes.object,

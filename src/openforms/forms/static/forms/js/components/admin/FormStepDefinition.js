@@ -19,6 +19,8 @@ const emptyConfiguration = {
  * keep track of our own 'application' state to eventually persist the data. This goes
  * against React's best practices, but we're fighting the library at this point.
  *
+ * TODO: check what happens when we *replace* the form definition
+ *
  */
 const FormStepDefinition = ({ initialConfiguration=emptyConfiguration, onChange }) => {
     const prevConfiguration = usePrevious(initialConfiguration);
@@ -40,7 +42,9 @@ const FormStepDefinition = ({ initialConfiguration=emptyConfiguration, onChange 
     }
 
     return (
-        <FormIOBuilder configuration={initialConfiguration} onChange={onChange} />
+        <div className="form-definition">
+            {<FormIOBuilder configuration={initialConfiguration} onChange={onChange} />}
+        </div>
     );
 };
 

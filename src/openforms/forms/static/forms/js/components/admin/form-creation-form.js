@@ -4,16 +4,18 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import {original} from 'immer';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
+
 import Field from '../formsets/Field';
 import FormRow from '../formsets/FormRow';
 import Fieldset from '../formsets/Fieldset';
 import {TextInput} from '../formsets/Inputs';
 import useAsync from 'react-use/esm/useAsync';
 import {apiDelete, get, post, put} from '../utils/fetch';
-import {FormSteps} from './formsteps-formset';
 import SubmitRow from "../formsets/SubmitRow";
-import { v4 as uuidv4 } from 'uuid';
 import {getFormDefinitionChoices} from "../utils/form-definition-choices";
+
+import FormSteps from './FormSteps';
 
 const FORM_ENDPOINT = '/api/v1/forms';
 const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
@@ -57,7 +59,6 @@ function reducer(draft, action) {
             draft.formSteps = {
                 loading: false,
                 data: action.payload,
-                initialData: action.payload,
             };
             break;
         }
@@ -98,11 +99,9 @@ function reducer(draft, action) {
             break;
         }
         case 'EDIT_STEP': {
-            console.log('called');
             const {index, configuration} = action.payload;
             // const currentConfiguration = original(draft.formSteps.data[index].configuration);
-
-            // draft.newStepConfigurations[index] = _.cloneDeep(configuration);
+            draft.newStepConfigurations[index] = configuration;
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -129,23 +128,106 @@ function reducer(draft, action) {
 }
 
 
+/**
+ * Functions to fetch data
+ */
+const getFormStepsData = async (formUuid) => {
+    try {
+        var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
+        if (!response.ok) {
+            throw new Error('An error occurred while fetching the form steps.');
+        }
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+
+    return response.data;
+};
+
+const getFormData = async (formUuid, dispatch) => {
+    if (!formUuid) {
+        dispatch({
+            type: 'FORM_STEPS_LOADED',
+            payload: [],
+        });
+        return;
+    }
+
+    try {
+        const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
+        if (!response.ok) {
+            throw new Error('An error occurred while fetching the form.');
+        } else {
+            // Get the form definition data from the form steps
+            const formStepsData = await getFormStepsData(formUuid);
+            dispatch({
+                type: 'FORM_STEPS_LOADED',
+                payload: formStepsData,
+            });
+        }
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getFormDefinitions = async (dispatch) => {
+    try {
+        const response = await get(FORM_DEFINITIONS_ENDPOINT);
+        dispatch({
+            type: 'FORM_DEFINITIONS_LOADED',
+            payload: response.data.results,
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+
+const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
+    if (loadingErrors) {
+        return (
+            <div className="fetch-error">{loadingErrors}</div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div>Loading form steps...</div>
+        );
+    }
+
+    return (
+        // formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
+        <FormSteps steps={steps} {...props} />
+    );
+};
+
+StepsFieldSet.propTypes = {
+    loading: PropTypes.bool.isRequired,
+    loadingErrors: PropTypes.node,
+    steps: PropTypes.arrayOf(PropTypes.object),
+};
+
+
+/**
+ * Component to render the form edit page.
+ */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const initialState = {
         ...initialFormState,
-        ...{
-            formUuid: formUuid ? formUuid :  uuidv4(),
-            formName: formName,
-            formSlug: formSlug,
-            newForm: !formUuid,
-        }
+        formUuid: formUuid ? formUuid :  uuidv4(),
+        formName: formName,
+        formSlug: formSlug,
+        newForm: !formUuid,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
-    console.log(state.newStepConfigurations);
-
     useAsync(async () => {
-        await getFormData(formUuid, dispatch);
-        await getFormDefinitions(dispatch);
+        const promises = [
+            getFormData(formUuid, dispatch),
+            getFormDefinitions(dispatch),
+        ];
+        await Promise.all(promises);
     }, []);
 
     /**
@@ -160,7 +242,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     };
 
     const onStepDelete = (index, formStepData) => {
-        console.log(formStepData);
         dispatch({
             type: 'DELETE_STEP',
             payload: {index: index, step: formStepData}
@@ -300,86 +381,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         window.location = `${FORM_ENDPOINT}/${state.formUuid}/export_form`;
     };
 
-    /**
-     * Functions to fetch data
-     */
-    const getFormStepsData = async (formUuid) => {
-        try {
-            var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
-            if (!response.ok) {
-                throw new Error('An error occurred while fetching the form steps.');
-            }
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-        }
-
-        return response.data;
-    };
-
-    const getFormData = async (formUuid, dispatch) => {
-        if (!formUuid) {
-            dispatch({
-                type: 'FORM_STEPS_LOADED',
-                payload: [],
-            });
-            return;
-        }
-
-        try {
-            const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
-            if (!response.ok) {
-                throw new Error('An error occurred while fetching the form.');
-            } else {
-                // Get the form definition data from the form steps
-                const formStepsData = await getFormStepsData(formUuid);
-                dispatch({
-                    type: 'FORM_STEPS_LOADED',
-                    payload: formStepsData,
-                });
-            }
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-        }
-    };
-
-    const getFormDefinitions = async (dispatch) => {
-        try {
-            const response = await get(FORM_DEFINITIONS_ENDPOINT);
-            dispatch({
-                type: 'FORM_DEFINITIONS_LOADED',
-                payload: response.data.results,
-            });
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-        }
-    };
-
-    /**
-     * For rendering logic
-     */
-    const formstepsFieldset = () => {
-        if (state.errors.loadingErrors) {
-            return (<div className='fetch-error'>{state.errors.loadingErrors}</div>);
-        }
-
-        if (state.formSteps.loading) {
-            return (<div>Loading form steps...</div>);
-        } else {
-            return (
-                <FormSteps
-                    formSteps={state.formSteps.data}
-                    initialFormSteps={state.formSteps.initialData}
-                    formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
-                    onReplace={onStepReplace}
-                    onEdit={onStepEdit}
-                    onDelete={onStepDelete}
-                    onReorder={onStepReorder}
-                    errors={state.errors}
-                />
-            );
-        }
-    }
-
     return (
         <>
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
@@ -418,9 +419,20 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     </Field>
                 </FormRow>
             </Fieldset>
+
             <Fieldset title='Form steps'>
-                { formstepsFieldset() }
+                <StepsFieldSet
+                    steps={state.formSteps.data}
+                    loading={state.formSteps.loading}
+                    loadingErrors={state.errors.loadingErrors}
+                    onEdit={onStepEdit}
+                    onDelete={onStepDelete}
+                    onReorder={onStepReorder}
+                    onReplace={onStepReplace}
+                    errors={state.errors.formSteps}
+                />
             </Fieldset>
+
             <div style={{marginBottom: '20px'}}>
                 <a href="#" onClick={addStep} className="addlink">
                     Add step
