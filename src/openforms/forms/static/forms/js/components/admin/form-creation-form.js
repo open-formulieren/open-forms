@@ -13,8 +13,8 @@ import {TextInput} from '../formsets/Inputs';
 import useAsync from 'react-use/esm/useAsync';
 import {apiDelete, get, post, put} from '../utils/fetch';
 import SubmitRow from "../formsets/SubmitRow";
-import {getFormDefinitionChoices} from "../utils/form-definition-choices";
 
+import { FormDefinitionsContext } from './Context';
 import FormSteps from './FormSteps';
 
 const FORM_ENDPOINT = '/api/v1/forms';
@@ -196,7 +196,6 @@ const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
     }
 
     return (
-        // formDefinitionChoices={getFormDefinitionChoices(state.formDefinitions)}
         <FormSteps steps={steps} {...props} />
     );
 };
@@ -420,16 +419,18 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             </Fieldset>
 
             <Fieldset title='Form steps'>
-                <StepsFieldSet
-                    steps={state.formSteps.data}
-                    loading={state.formSteps.loading}
-                    loadingErrors={state.errors.loadingErrors}
-                    onEdit={onStepEdit}
-                    onDelete={onStepDelete}
-                    onReorder={onStepReorder}
-                    onReplace={onStepReplace}
-                    errors={state.errors.formSteps}
-                />
+                <FormDefinitionsContext.Provider value={state.formDefinitions}>
+                    <StepsFieldSet
+                        steps={state.formSteps.data}
+                        loading={state.formSteps.loading}
+                        loadingErrors={state.errors.loadingErrors}
+                        onEdit={onStepEdit}
+                        onDelete={onStepDelete}
+                        onReorder={onStepReorder}
+                        onReplace={onStepReplace}
+                        errors={state.errors.formSteps}
+                    />
+                </FormDefinitionsContext.Provider>
             </Fieldset>
 
             <div style={{marginBottom: '20px'}}>
