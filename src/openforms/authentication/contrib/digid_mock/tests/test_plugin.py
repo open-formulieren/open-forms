@@ -1,9 +1,12 @@
-from django.test import RequestFactory, TestCase
+from urllib.parse import quote
+
+from django.test import RequestFactory, TestCase, override_settings
 
 from openforms.authentication.registry import register
 from openforms.forms.tests.factories import FormStepFactory
 
 
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class LoginTests(TestCase):
     def test_login(self):
         step = FormStepFactory(
@@ -14,10 +17,12 @@ class LoginTests(TestCase):
         form = step.form
         plugin = register["digid-mock"]
 
+        # we need an arbitrary request
         factory = RequestFactory()
-        request = factory.get("/mypage")
+        request = factory.get("/foo")
 
         url = plugin.get_start_url(request, form)
+        next_url = quote("http://foo.bar")
 
         # bad without ?next=
         response = self.client.get(url)
@@ -25,7 +30,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # good
-        response = self.client.get(url + "?next=http%3A%2F%2Ffoo.bar")
+        response = self.client.get(f"{url}?next={next_url}")
         self.assertEqual(response.content, b"")
         self.assertEqual(response.status_code, 302)
         self.assertRegex(response["Location"], r"^http://testserver/digid/")
@@ -38,7 +43,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # bad without ?bsn=
-        response = self.client.get(url + "?next=http%3A%2F%2Ffoo.bar")
+        response = self.client.get(f"{url}?next={next_url}")
         self.assertEqual(response.content, b"missing 'bsn' parameter")
         self.assertEqual(response.status_code, 400)
 

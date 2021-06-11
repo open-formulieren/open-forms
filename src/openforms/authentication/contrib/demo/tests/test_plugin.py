@@ -1,9 +1,12 @@
-from django.test import RequestFactory, TestCase
+from urllib.parse import quote
+
+from django.test import RequestFactory, TestCase, override_settings
 
 from openforms.authentication.registry import register
 from openforms.forms.tests.factories import FormStepFactory
 
 
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class LoginTests(TestCase):
     def test_login(self):
         step = FormStepFactory(
@@ -14,10 +17,12 @@ class LoginTests(TestCase):
         form = step.form
         plugin = register["demo"]
 
+        # we need an arbitrary request
         factory = RequestFactory()
-        request = factory.get("/mypage")
+        request = factory.get("/foo")
 
         url = plugin.get_start_url(request, form)
+        next_url = quote("http://foo.bar")
 
         # bad without ?next=
         response = self.client.get(url)
@@ -25,7 +30,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # good
-        response = self.client.get(url + "?next=http%3A%2F%2Ffoo.bar")
+        response = self.client.get(f"{url}?next={next_url}")
         self.assertRegex(response["content-type"], r"^text/html")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<form")
@@ -48,9 +53,9 @@ class LoginTests(TestCase):
         response = self.client.get(url, data={"next": "http://foo.bar"})
         self.assertEqual(response.status_code, 405)
 
+        # good
         self.assertNotIn("bsn", self.client.session)
 
-        # good
         response = self.client.post(
             url, data={"next": "http://foo.bar", "bsn": "111222333"}
         )

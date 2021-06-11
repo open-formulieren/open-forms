@@ -1,4 +1,7 @@
-from django.test import TestCase
+from urllib.parse import quote
+
+from django.http import HttpResponse, HttpResponseRedirect
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
 from rest_framework.reverse import reverse
@@ -10,6 +13,12 @@ from ..registry import Registry, register as auth_register
 
 class Plugin(BasePlugin):
     verbose_name = "some human readable label"
+
+    def start_login(self, request, form, form_url):
+        return HttpResponse("start")
+
+    def handle_return(self, request, form):
+        return HttpResponseRedirect(request.GET.get("next"))
 
 
 class RegistryTests(TestCase):
@@ -44,10 +53,9 @@ class RegistryTests(TestCase):
 
     def test_get_options(self):
         register = Registry()
-
         register("plugin1")(Plugin)
-
         plugin = register["plugin1"]
+
         factory = RequestFactory()
         request = factory.get("/xyz")
         step = FormStepFactory(
@@ -67,7 +75,7 @@ class RegistryTests(TestCase):
         self.assertEqual(option.url, plugin.get_start_url(request, form))
 
     def test_urls(self):
-        register = auth_register  # Registry()
+        register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
@@ -82,6 +90,7 @@ class RegistryTests(TestCase):
         factory = RequestFactory()
         request = factory.get("/foo")
 
+        # check the start url
         url = plugin.get_start_url(request, form)
         self.assertRegex(url, r"^http://")
         self.assertEqual(
@@ -93,6 +102,7 @@ class RegistryTests(TestCase):
             ),
         )
 
+        # check the return url
         url = plugin.get_return_url(request, form)
         self.assertRegex(url, r"^http://")
         self.assertEqual(
@@ -103,3 +113,76 @@ class RegistryTests(TestCase):
                 kwargs={"slug": "myform", "plugin_id": "plugin1"},
             ),
         )
+
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
+    )
+    def test_views(self):
+        register = auth_register
+        register("plugin1")(Plugin)
+        plugin = register["plugin1"]
+
+        step = FormStepFactory(
+            form__slug="myform",
+            form__authentication_backends=["plugin1"],
+            form_definition__login_required=True,
+        )
+        form = step.form
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        request = factory.get("/foo")
+
+        next_url_enc = quote("http://foo.bar")
+        bad_url_enc = quote("http://buzz.bazz")
+
+        # check the start view
+        url = plugin.get_start_url(request, form)
+
+        with self.subTest("start ok"):
+            response = self.client.get(f"{url}?next={next_url_enc}")
+            self.assertEqual(response.content, b"start")
+            self.assertEqual(response.status_code, 200)
+
+        with self.subTest("start missing next"):
+            response = self.client.get(url)
+            self.assertEqual(response.content, b"missing 'next' parameter")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("start missing bad plugin"):
+            response = self.client.get(
+                f"{url}?next={next_url_enc}".replace("plugin1", "bad_plugin")
+            )
+            self.assertEqual(response.content, b"unknown plugin")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("start bad redirect"):
+            response = self.client.get(f"{url}?next={bad_url_enc}")
+            self.assertEqual(response.content, b"redirect not allowed")
+            self.assertEqual(response.status_code, 400)
+
+        # check the return view
+        url = plugin.get_return_url(request, form)
+
+        with self.subTest("return ok"):
+            response = self.client.get(f"{url}?next={next_url_enc}")
+            self.assertEqual(response.content, b"")
+            self.assertEqual(response.status_code, 302)
+
+        with self.subTest("return bad method"):
+            response = self.client.post(f"{url}?next={next_url_enc}")
+            self.assertEqual(response.content, b"")
+            self.assertEqual(response.status_code, 405)
+            self.assertEqual(response["Allow"], "GET")
+
+        with self.subTest("return missing bad plugin"):
+            response = self.client.get(
+                f"{url}?next={next_url_enc}".replace("plugin1", "bad_plugin")
+            )
+            self.assertEqual(response.content, b"unknown plugin")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("return bad redirect"):
+            response = self.client.get(f"{url}?next={bad_url_enc}")
+            self.assertEqual(response.content, b"redirect not allowed")
+            self.assertEqual(response.status_code, 400)

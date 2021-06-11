@@ -498,6 +498,7 @@ HIJACK_ALLOW_GET_REQUESTS = True
 # CORS requests are required if the SDK is used in another domain. When developing
 # on the SDK for example, set `CORS_ALLOWED_ORIGINS=http://localhost:3000` in your
 # Open Forms .env
+# NOTE these are also used by the authentication plugins to verify redirects
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=False)
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", split=True, default=[])
 CORS_ALLOWED_ORIGIN_REGEXES = config(
