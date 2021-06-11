@@ -64,6 +64,62 @@ class HaalCentraalPrefillTest(TestCase):
         }
         self.assertEqual(values, expected)
 
+    @requests_mock.Mocker()
+    def test_get_prefill_values_http_500(self, m):
+        m.get(
+            "https://personen/api/schema/openapi.yaml?v=3",
+            status_code=200,
+            content=load_binary_mock("personen.yaml"),
+        )
+        m.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=500,
+        )
+
+        config = HaalCentraalConfig.get_solo()
+        service = ServiceFactory(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+        config.service = service
+        config.save()
+
+        submission = SubmissionFactory(bsn="999990676")
+        values = HaalCentraalPrefill.get_prefill_values(
+            submission,
+            [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+        )
+        expected = {}
+        self.assertEqual(values, expected)
+
+    @requests_mock.Mocker()
+    def test_get_prefill_values_http_404(self, m):
+        m.get(
+            "https://personen/api/schema/openapi.yaml?v=3",
+            status_code=200,
+            content=load_binary_mock("personen.yaml"),
+        )
+        m.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=404,
+        )
+
+        config = HaalCentraalConfig.get_solo()
+        service = ServiceFactory(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+        config.service = service
+        config.save()
+
+        submission = SubmissionFactory(bsn="999990676")
+        values = HaalCentraalPrefill.get_prefill_values(
+            submission,
+            [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+        )
+        expected = {}
+        self.assertEqual(values, expected)
+
     def test_get_available_attributes(self):
         attrs = HaalCentraalPrefill.get_available_attributes()
         self.assertIsInstance(attrs, tuple)

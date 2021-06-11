@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import GlomError, glom
 from requests import RequestException
+from zds_client import ClientError
 
 from openforms.submissions.models import Submission
 
@@ -45,6 +46,9 @@ class HaalCentraalPrefill(BasePlugin):
                 request_kwargs=dict(headers={"Accept": "application/hal+json"}),
             )
         except RequestException as e:
+            logger.exception("exception while making request", exc_info=e)
+            return {}
+        except ClientError as e:
             logger.exception("exception while making request", exc_info=e)
             return {}
 
