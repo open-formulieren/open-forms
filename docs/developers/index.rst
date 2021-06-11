@@ -13,3 +13,4 @@ integrating with Open Forms.
    registration_plugins
    prefill_plugins
    manual_testing
+   sdk/index
