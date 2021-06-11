@@ -8,8 +8,12 @@ from rest_framework.reverse import reverse
 
 from ...forms.tests.factories import FormStepFactory
 from ..base import BasePlugin
-from ..registry import Registry, register as auth_register
-from ..views import allow_redirect_url
+from ..registry import Registry
+from ..views import (
+    AuthenticationReturnView,
+    AuthenticationStartView,
+    allow_redirect_url,
+)
 
 
 class Plugin(BasePlugin):
@@ -119,7 +123,20 @@ class RegistryTests(TestCase):
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
     def test_views(self):
-        register = auth_register
+        # override and restore the plugin registry used by the views
+        def restore_views(*args):
+            AuthenticationStartView.register, AuthenticationReturnView.register = args
+
+        self.addCleanup(
+            restore_views,
+            AuthenticationStartView.register,
+            AuthenticationReturnView.register,
+        )
+
+        register = Registry()
+        AuthenticationStartView.register = register
+        AuthenticationReturnView.register = register
+
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
