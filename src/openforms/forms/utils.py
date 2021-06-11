@@ -12,6 +12,7 @@ from rest_framework.test import APIRequestFactory
 from .api import serializers as api_serializers
 from .api.serializers import (
     FormDefinitionSerializer,
+    FormExportSerializer,
     FormSerializer,
     FormStepSerializer,
 )
@@ -41,7 +42,7 @@ def export_form(form_id, archive_name=None, response=None):
     factory = APIRequestFactory()
     request = factory.get("/")
 
-    forms = [FormSerializer(instance=form, context={"request": request}).data]
+    forms = [FormExportSerializer(instance=form, context={"request": request}).data]
     form_definitions = FormDefinitionSerializer(
         instance=form_definitions,
         many=True,

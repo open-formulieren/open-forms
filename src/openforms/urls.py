@@ -43,12 +43,11 @@ urlpatterns = [
     ),
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
+    path("auth/", include("openforms.authentication.urls", namespace="authentication")),
     path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
-    path("digid/login", DigidStartRedirectView.as_view(), name="digid-login-start"),
-    path("digid/return", DigidReturnRedirectView.as_view(), name="digid-login-return"),
     path("", include("openforms.forms.urls", namespace="core")),
 ]
 

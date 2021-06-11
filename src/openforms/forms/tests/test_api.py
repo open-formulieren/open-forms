@@ -78,6 +78,7 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
+            "authentication_backends": ["demo"],
         }
         response = self.client.post(url, data=data)
 

@@ -1,3 +1,5 @@
+from typing import List
+
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
@@ -62,3 +64,14 @@ class RSINValidator(Proef11ValidatorBase):
 
 validate_bsn = BSNValidator()
 validate_rsin = RSINValidator()
+
+
+@deconstructible
+class UniqueValuesValidator:
+    message = _("Values must be unique")
+    code = "invalid"
+
+    def __call__(self, value: List[str]):
+        uniq = set(value)
+        if len(uniq) != len(value):
+            raise ValidationError(self.message, code=self.code)

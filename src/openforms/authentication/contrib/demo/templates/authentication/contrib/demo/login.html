@@ -1,0 +1,13 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load static %}
+
+
+{% block card %}
+    <form action="{{ form_action }}" method="POST">
+        {% csrf_token %}
+        {{ form }}
+    <button>Login</button>
+    <button onclick="window.location = '{{ form_url }}';">Cancel</button>
+    </form>
+{% endblock %}
+

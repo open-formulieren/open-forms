@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 
+from openforms.authentication.fields import BackendMultiSelectField
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
@@ -42,6 +43,11 @@ class Form(models.Model):
     registration_backend = BackendChoiceField(_("registration backend"), blank=True)
     registration_backend_options = JSONField(
         _("registration backend options"), default=dict, blank=True, null=True
+    )
+
+    authentication_backends = BackendMultiSelectField(
+        _("authentication backend(s)"),
+        blank=True,
     )
 
     # life cycle management
