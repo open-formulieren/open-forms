@@ -4,14 +4,16 @@ import PropTypes from 'prop-types';
 
 const ErrorList = ({ children }) => {
     const errors = React.Children.map(children, (error, i) => {
-        <li key={i}>{error}</li>
+        return (<li key={i}>{error}</li>);
     })
     if (!errors) return null;
 
     return (
-        <ul className="errorlist">
-            {errors}
-        </ul>
+        <div className='errors'>
+            <ul className="errorlist">
+                {errors}
+            </ul>
+        </div>
     );
 };
 

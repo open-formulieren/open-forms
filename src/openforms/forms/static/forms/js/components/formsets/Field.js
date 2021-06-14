@@ -28,7 +28,7 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children }
     return (
         <>
             { hasErrors ? <ErrorList>{errors}</ErrorList> : null }
-            <div className={ hasErrors ? 'errors' : '' }>
+            <div className={ hasErrors ? 'has-errors' : '' }>
                 <label className={ required ? 'required': '' } htmlFor={htmlFor}>{label}</label>
                 {modifiedChildren}
                 { helpText ? <div className="help">{helpText}</div> : null }

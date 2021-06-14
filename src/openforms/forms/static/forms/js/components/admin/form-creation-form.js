@@ -16,6 +16,7 @@ import SubmitRow from "../formsets/SubmitRow";
 
 import { FormDefinitionsContext } from './Context';
 import FormSteps from './FormSteps';
+import {FormException} from "../../utils/exception";
 
 const FORM_ENDPOINT = '/api/v1/forms';
 const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
@@ -352,9 +353,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     }
                 )
                 if (!definitionResponse.ok) {
-                    throw new Error('An error occurred while updating the form definitions.');
+                    throw new FormException(
+                        'An error occurred while updating the form definitions',
+                        definitionResponse.data
+                    );
                 }
 
+                // Then update the form step
                 const stepCreateOrUpdate = step.url ? put : post;
                 const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${state.formUuid}/steps`;
 
@@ -369,10 +374,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     }
                 );
                 if (!stepResponse.ok) {
-                    dispatch({type: 'SET_FETCH_ERRORS', payload: stepResponse.data});
-                    throw new Error('An error occurred while updating the form steps.', );
+                    throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
                 }
             } catch (e) {
+                let formStepsErrors = new Array(state.formSteps.data.length);
+                formStepsErrors[index] = e.details;
+                dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
                 window.scrollTo(0, 0);
                 return;
             }
