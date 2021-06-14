@@ -160,11 +160,17 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     re-used among different forms.
     """
 
-    queryset = Form.objects.filter(active=True, _is_deleted=False)
+    queryset = Form.objects.filter(_is_deleted=False)
     lookup_url_kwarg = "uuid_or_slug"
     # lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(active=True)
+        return queryset
 
     def initialize_request(self, request, *args, **kwargs):
         """

@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-from ..models import FormDefinition
+from ..models import Form, FormDefinition
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
@@ -34,6 +34,17 @@ class FormTestCase(TestCase):
         self.assertEqual(form2.name, _("{name} (copy)").format(name=form1.name))
         self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(form3.name, _("{name} (copy)").format(name=form1.name))
+
+
+class FormQuerysetTestCase(TestCase):
+    def test_queryset_live(self):
+        form1 = FormFactory.create(active=True, deleted_=True)
+        form2 = FormFactory.create(active=True)
+        form3 = FormFactory.create(active=False, deleted_=True)
+        form4 = FormFactory.create(active=False)
+
+        active = list(Form.objects.live())
+        self.assertEqual(active, [form2])
 
 
 class FormDefinitionTestCase(TestCase):

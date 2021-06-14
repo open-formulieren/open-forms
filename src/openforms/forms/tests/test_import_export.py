@@ -1,11 +1,9 @@
 import json
 import os
 import zipfile
-from unittest import expectedFailure
 
 from django.core.management import CommandError, call_command
 from django.test import TestCase
-from django.utils.translation import ugettext_lazy as _
 
 from openforms.products.tests.factories import ProductFactory
 
@@ -21,7 +19,7 @@ class ImportExportTests(TestCase):
         self.addCleanup(lambda: os.remove(self.filepath))
 
     def test_export(self):
-        form, _ = FormFactory.create_batch(2)
+        form, _ = FormFactory.create_batch(2, authentication_backends=["demo"])
         form_definition, _ = FormDefinitionFactory.create_batch(2)
         form_step, _ = FormStepFactory.create_batch(2)
         form_step.form = form
@@ -40,6 +38,7 @@ class ImportExportTests(TestCase):
             self.assertEqual(forms[0]["uuid"], str(form.uuid))
             self.assertEqual(forms[0]["name"], form.name)
             self.assertEqual(forms[0]["slug"], form.slug)
+            self.assertEqual(forms[0]["authentication_backends"], ["demo"])
             self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
             self.assertIsNone(forms[0]["product"])
 
@@ -61,7 +60,7 @@ class ImportExportTests(TestCase):
 
     def test_import(self):
         product = ProductFactory.create()
-        form = FormFactory.create(product=product)
+        form = FormFactory.create(product=product, authentication_backends=["demo"])
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
 
@@ -92,6 +91,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(forms.last().name, form.name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
+        self.assertEqual(forms.last().authentication_backends, ["demo"])
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()

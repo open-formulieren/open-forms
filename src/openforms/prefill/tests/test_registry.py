@@ -9,7 +9,7 @@ class Plugin(BasePlugin):
 
 
 class RegistryTests(SimpleTestCase):
-    def tset_register_function(self):
+    def test_register_function(self):
         register = Registry()
 
         register("plugin1")(Plugin)

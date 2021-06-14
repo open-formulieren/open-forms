@@ -9,8 +9,18 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 
+from openforms.authentication.fields import BackendMultiSelectField
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
+
+
+class FormQuerySet(models.QuerySet):
+    def live(self):
+        return self.filter(active=True, _is_deleted=False)
+
+
+class FormManager(models.Manager.from_queryset(FormQuerySet)):
+    pass
 
 
 class Form(models.Model):
@@ -44,9 +54,16 @@ class Form(models.Model):
         _("registration backend options"), default=dict, blank=True, null=True
     )
 
+    authentication_backends = BackendMultiSelectField(
+        _("authentication backend(s)"),
+        blank=True,
+    )
+
     # life cycle management
     active = models.BooleanField(default=False)
     _is_deleted = models.BooleanField(default=False)
+
+    objects = FormManager()
 
     class Meta:
         verbose_name = _("form")

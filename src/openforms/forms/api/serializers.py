@@ -6,6 +6,8 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from openforms.prefill import apply_prefill
 from openforms.products.api.serializers import ProductSerializer
 
+from ...authentication.api.fields import LoginOptionsReadOnlyField
+from ...authentication.registry import register as auth_register
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
 
@@ -41,10 +43,27 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
 class FormSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
+    authentication_backends = serializers.ListField(
+        child=serializers.ChoiceField(choices=[]),
+        write_only=True,
+        required=False,
+        default=list,
+    )
+    login_options = LoginOptionsReadOnlyField()
 
     class Meta:
         model = Form
-        fields = ("uuid", "name", "login_required", "product", "slug", "url", "steps")
+        fields = (
+            "uuid",
+            "name",
+            "login_required",
+            "authentication_backends",
+            "login_options",
+            "product",
+            "slug",
+            "url",
+            "steps",
+        )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -55,6 +74,21 @@ class FormSerializer(serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+
+    def get_fields(self):
+        fields = super().get_fields()
+        # lazy set choices
+        fields["authentication_backends"].child.choices = auth_register.get_choices()
+        return fields
+
+
+class FormExportSerializer(FormSerializer):
+    def get_fields(self):
+        fields = super().get_fields()
+        # for export we want to use the list of plugin-id's instead of detailed info objects
+        del fields["login_options"]
+        fields["authentication_backends"].write_only = False
+        return fields
 
 
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
