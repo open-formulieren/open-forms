@@ -343,7 +343,7 @@ class FormAdminActionsTests(WebTest):
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "set_to_maintenance_mode"
-        html_form["_selected_action"] = [str(self.form.pk)]
+        html_form["_selected_action"] = [self.form.pk]
         html_form.submit()
 
         self.form.refresh_from_db()
@@ -359,7 +359,7 @@ class FormAdminActionsTests(WebTest):
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "remove_from_maintenance_mode"
-        html_form["_selected_action"] = [str(self.form.pk)]
+        html_form["_selected_action"] = [self.form.pk]
         html_form.submit()
 
         self.form.refresh_from_db()
