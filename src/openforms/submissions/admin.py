@@ -51,7 +51,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         )
         ret += format_html_join(
             "\n",
-            "<li>{}: <img class='signature' src='{}' alt='{}'></li>",
+            "<li>{}: <img class='signature-image' src='{}' alt='{}'></li>",
             ((key, value, key) for key, value in image_values),
         )
         return format_html("<ul>{}</ul>", ret)
