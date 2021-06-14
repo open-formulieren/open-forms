@@ -21,7 +21,7 @@ class LoginInfo:
     identifier: str
     label: str
     logo: LoginLogo = None
-    url: str = None
+    url: Optional[str] = None
 
 
 class BasePlugin:

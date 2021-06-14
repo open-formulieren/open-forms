@@ -16,7 +16,7 @@ from openforms.forms.models import Form
 
 
 class BSNForm(forms.Form):
-    bsn = forms.CharField(max_length=12, required=True, label=_("BSN"))
+    bsn = forms.CharField(max_length=9, required=True, label=_("BSN"))
     next = forms.URLField(required=True, widget=forms.HiddenInput)
 
 
