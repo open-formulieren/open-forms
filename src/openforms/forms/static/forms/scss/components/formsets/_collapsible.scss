@@ -5,6 +5,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1em;
+  border-bottom: 1px solid #c1c1c1;
 
   .collapsible-header-title {
     display: flex;
@@ -28,7 +29,9 @@
 }
 
 .form-definition {
-  margin: 0.5em 2em;
+  padding: 0.5em 2em;
+  background: #dbdcdc1f;
+  border-bottom: 1px solid #c1c1c1;
 
   .danger {
     @include color-danger;

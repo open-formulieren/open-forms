@@ -10,7 +10,7 @@ const Collapsible = ({header, content}) => {
 
     return (
         <>
-            <div className="collapsible-header">
+            <div className={`collapsible-header ${isOpen ? 'open' : ''}`}>
                 <div className='collapsible-header-title'>{header}</div>
                 <a href='#' onClick={toggleOpen}>{isOpen ? 'Collapse' : 'Expand'}</a>
             </div>
