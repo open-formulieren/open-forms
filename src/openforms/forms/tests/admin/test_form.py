@@ -352,7 +352,7 @@ class FormAdminActionsTests(WebTest):
     def test_remove_from_maintenance_mode_sets_form_maintenance_mode_field_to_False(
         self,
     ):
-        self.form.maintenance_mode = False
+        self.form.maintenance_mode = True
         self.form.save()
 
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
