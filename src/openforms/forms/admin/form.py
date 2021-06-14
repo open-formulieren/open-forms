@@ -48,6 +48,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
+    list_filter = ("active", "maintenance_mode")
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
