@@ -54,12 +54,6 @@ jobs:
           npm ci
           npm run build
 
-      - name: Build demo SPA
-        run: |
-          yarn install
-          yarn build
-        working-directory: ./src/spa
-
       - name: Run tests
         run: |
           python src/manage.py collectstatic --noinput --link

@@ -10,8 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
-from .views import SPADemoView
-
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
@@ -43,7 +41,6 @@ urlpatterns = [
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
-    path("demo-spa/", SPADemoView.as_view(), name="spa-demo"),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),

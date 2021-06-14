@@ -64,39 +64,27 @@ development machine.
        $ npm ci
        $ npm run build
 
-5. Install the front-end CLI tool `yarn`_ if you've never installed them
-   before and install and build the frontend libraries for the React SPA demo 
-   app in the `src/spa` subdirectory:
-
-   .. code-block:: bash
-
-       $ npm install -g yarn
-       $ cd src/spa
-       $ yarn install
-       $ yarn build
-       $ cd ../..
-
-6. Activate your virtual environment and create the statics and database:
+5. Activate your virtual environment and create the statics and database:
 
    .. code-block:: bash
 
        $ python src/manage.py collectstatic --link
        $ python src/manage.py migrate
 
-7. Create a superuser to access the management interface:
+6. Create a superuser to access the management interface:
 
    .. code-block:: bash
 
        $ python src/manage.py createsuperuser
 
-8. You can now run your installation and point your browser to the address
+7. You can now run your installation and point your browser to the address
    given by this command:
 
    .. code-block:: bash
 
        $ python src/manage.py runserver
 
-9. Create a .env file with database settings. See dotenv.example for an example.
+8. Create a .env file with database settings. See dotenv.example for an example.
 
         $ cp dotenv.example .env
 
@@ -132,10 +120,6 @@ When updating an existing installation:
        $ pip install -r requirements/dev.txt
        $ npm install
        $ npm run build
-       $ cd src/spa
-       $ yarn install
-       $ yarn build
-       $ cd ../..
 
 3. Update the statics and database:
 
