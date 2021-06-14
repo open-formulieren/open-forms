@@ -6,11 +6,13 @@ from openforms.authentication.registry import register as auth_register
 
 class LoginOptionsReadOnlyField(serializers.ListField):
     """
-    the read part of the authentication information shows detailed options instead of plugin-ids
+    the read-mode of the authentication information shows detailed options instead of plugin-ids
+
+    there is no write-mode support because this data is not writable
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs["child"] = LoginOptionSerializer()
+        kwargs.setdefault("child", LoginOptionSerializer())
         kwargs["read_only"] = True
         kwargs["source"] = "*"
         super().__init__(*args, **kwargs)
