@@ -833,6 +833,11 @@ components:
       required:
       - id
       - label
+    AuthenticationBackendsEnum:
+      enum:
+      - demo
+      - digid-mock
+      type: string
     CompletionValidation:
       type: object
       properties:
@@ -868,6 +873,16 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        authenticationBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthenticationBackendsEnum'
+          writeOnly: true
+        loginOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginOption'
+          readOnly: true
         product:
           allOf:
           - $ref: '#/components/schemas/Product'
@@ -886,6 +901,7 @@ components:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
       required:
+      - loginOptions
       - loginRequired
       - name
       - product
@@ -955,6 +971,53 @@ components:
           readOnly: true
       required:
       - formStep
+    LoginLogo:
+      type: object
+      properties:
+        title:
+          type: string
+          readOnly: true
+          description: Display title (for accessibility)
+        imageSrc:
+          type: string
+          format: uri
+          readOnly: true
+          description: URL to the logo image
+        href:
+          type: string
+          format: uri
+          readOnly: true
+          description: Information link to the authentication provider
+      required:
+      - href
+      - imageSrc
+      - title
+    LoginOption:
+      type: object
+      properties:
+        identifier:
+          type: string
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+          description: Button label
+        url:
+          type: string
+          format: uri
+          readOnly: true
+          description: URL to start login flow, expects 'next' GET-parameter with
+            return url
+        logo:
+          allOf:
+          - $ref: '#/components/schemas/LoginLogo'
+          readOnly: true
+          description: Optional logo
+      required:
+      - identifier
+      - label
+      - logo
+      - url
     MinimalFormStep:
       type: object
       properties:
@@ -962,6 +1025,9 @@ components:
           type: string
           format: uuid
           readOnly: true
+        slug:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
         formDefinition:
           type: string
           readOnly: true
@@ -973,6 +1039,7 @@ components:
       required:
       - formDefinition
       - index
+      - slug
       - url
       - uuid
     NestedSubmissionStep:
@@ -1068,6 +1135,16 @@ components:
           maxLength: 50
         loginRequired:
           type: boolean
+          readOnly: true
+        authenticationBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthenticationBackendsEnum'
+          writeOnly: true
+        loginOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginOption'
           readOnly: true
         product:
           allOf:
@@ -1175,6 +1252,10 @@ components:
           format: uuid
           readOnly: true
           nullable: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
         formStep:
           allOf:
           - $ref: '#/components/schemas/ContextAwareFormStep'
@@ -1186,6 +1267,7 @@ components:
       required:
       - formStep
       - id
+      - slug
     SubmissionSuspension:
       type: object
       properties:
