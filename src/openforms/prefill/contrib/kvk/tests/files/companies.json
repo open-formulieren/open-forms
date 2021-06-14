@@ -1,0 +1,88 @@
+{
+    "apiVersion": "2.0",
+    "meta": {},
+    "data": {
+        "itemsPerPage": 2,
+        "startPage": 1,
+        "totalItems": 3,
+        "nextLink": "https://api.kvk.nl/api/v2/testprofile/companies?kvkNumber=69599084&startPage=2",
+        "items": [
+            {
+                "kvkNumber": "69599084",
+                "branchNumber": "000038509504",
+                "tradeNames": {
+                    "businessName": "Test EMZ Dagobert",
+                    "shortBusinessName": "EMZ Dagobert",
+                    "currentTradeNames": [
+                        "Test EMZ Dagobert",
+                        "Tweede handelsnaam 1MZ",
+                        "Derde handelsnaam 1MZ",
+                        "Vierde handelsnaam 1MZ"
+                    ]
+                },
+                "legalForm": "Eenmanszaak",
+                "businessActivities": [
+                    {
+                        "sbiCode": "1011",
+                        "sbiCodeDescription": "Slachterijen (geen pluimvee-)",
+                        "isMainSbi": true
+                    },
+                    {
+                        "sbiCode": "1012",
+                        "sbiCodeDescription": "Pluimveeslachterijen",
+                        "isMainSbi": false
+                    },
+                    {
+                        "sbiCode": "1013",
+                        "sbiCodeDescription": "Vleesverwerking (niet tot maaltijden)",
+                        "isMainSbi": false
+                    }
+                ],
+                "hasEntryInBusinessRegister": true,
+                "hasCommercialActivities": true,
+                "hasNonMailingIndication": true,
+                "isLegalPerson": false,
+                "isBranch": true,
+                "isMainBranch": true,
+                "employees": 1,
+                "foundationDate": "20170108",
+                "registrationDate": "20170710",
+                "addresses": [
+                    {
+                        "type": "vestigingsadres",
+                        "bagId": "0363010000951555",
+                        "street": "Abebe Bikilalaan",
+                        "houseNumber": "17",
+                        "houseNumberAddition": "",
+                        "postalCode": "1034WL",
+                        "city": "Amsterdam",
+                        "country": "Nederland",
+                        "gpsLatitude": 52.403176952488096,
+                        "gpsLongitude": 4.917604057883805,
+                        "rijksdriehoekX": 123042.0,
+                        "rijksdriehoekY": 490697.0,
+                        "rijksdriehoekZ": 0.0
+                    },
+                    {
+                        "type": "correspondentieadres",
+                        "bagId": "0632010000010090",
+                        "street": "Watermolenlaan",
+                        "houseNumber": "1",
+                        "houseNumberAddition": "",
+                        "postalCode": "3447GT",
+                        "city": "Woerden",
+                        "country": "Nederland",
+                        "gpsLatitude": 52.08151653230184,
+                        "gpsLongitude": 4.890048011859921,
+                        "rijksdriehoekX": 120921.45,
+                        "rijksdriehoekY": 454921.47,
+                        "rijksdriehoekZ": 0.0
+                    }
+                ],
+                "__note__": "following added for testing",
+                "rsin": "111222333",
+                "deregistrationDate": "20000101"
+            }
+        ]
+    }
+}

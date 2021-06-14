@@ -103,6 +103,10 @@
                 "haalcentraalconfig"
             ],
             [
+                "prefill_kvk",
+                "kvkconfig"
+            ],
+            [
                 "stuf",
                 "soapservice"
             ],

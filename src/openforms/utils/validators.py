@@ -62,3 +62,24 @@ class RSINValidator(Proef11ValidatorBase):
 
 validate_bsn = BSNValidator()
 validate_rsin = RSINValidator()
+
+
+@deconstructible
+class KVKValidator:
+    value_size = 8
+    error_messages = {
+        "too_short": _("KvK number should have %(size)i characters."),
+    }
+
+    def __call__(self, value):
+        validate_digits(value)
+
+        if len(value) != self.value_size:
+            raise ValidationError(
+                self.error_messages["too_short"],
+                params={"size": self.value_size},
+                code="invalid",
+            )
+
+
+validate_kvk = KVKValidator()
