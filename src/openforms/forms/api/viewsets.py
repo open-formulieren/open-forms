@@ -1,11 +1,10 @@
 from uuid import UUID
 
+import reversion
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-
-import reversion
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
@@ -26,9 +25,6 @@ from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-
-from ..models import Form, FormDefinition, FormStep
-from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionSerializer,
@@ -36,6 +32,8 @@ from .serializers import (
     FormSerializer,
     FormStepSerializer,
 )
+from ..models import Form, FormDefinition, FormStep
+from ..utils import export_form, import_form
 
 
 @extend_schema(
@@ -160,11 +158,17 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     re-used among different forms.
     """
 
-    queryset = Form.objects.filter(active=True, _is_deleted=False)
+    queryset = Form.objects.filter(_is_deleted=False)
     lookup_url_kwarg = "uuid_or_slug"
     # lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(active=True)
+        return queryset
 
     def initialize_request(self, request, *args, **kwargs):
         """

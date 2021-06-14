@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
-from .forms.views.form import DigidReturnRedirectView, DigidStartRedirectView
 from .views import SPADemoView
 
 handler500 = "openforms.utils.views.server_error"

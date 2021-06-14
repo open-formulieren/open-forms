@@ -45,12 +45,28 @@ class FormsAPITests(APITestCase):
 
     def test_list(self):
         FormFactory.create_batch(2)
+        FormFactory.create(active=False)
+        FormFactory.create(deleted_=True)
 
         url = reverse("api:form-list")
         response = self.client.get(url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
+
+    def test_list_staff(self):
+        FormFactory.create_batch(2)
+        FormFactory.create(active=False)
+        FormFactory.create(deleted_=True)
+
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 3)
 
     def test_retrieve_form_by_uuid(self):
         form = FormFactory.create()
@@ -70,6 +86,33 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["slug"], form.slug)
+
+    def test_retrieve_inactive_staff(self):
+        form = FormFactory.create(active=False)
+
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_not_retrieve_inactive_anon(self):
+        form = FormFactory.create(active=False)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_not_retrieve_deleted(self):
+        form = FormFactory.create(deleted_=True)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_form_successful(self):
         self.user.is_staff = True
