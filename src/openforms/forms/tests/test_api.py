@@ -671,6 +671,37 @@ class FormDefinitionsAPITests(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data["count"], 2)
 
+    def test_update(self):
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "name": "Updated name",
+                "slug": "updated-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        definition.refresh_from_db()
+
+        self.assertEqual("Updated name", definition.name)
+        self.assertEqual("updated-slug", definition.slug)
+        self.assertIn({"label": "New field"}, definition.configuration["components"])
+
 
 class ImportExportAPITests(APITestCase):
     def setUp(self):
