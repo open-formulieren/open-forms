@@ -14,6 +14,15 @@ from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
 
+class FormQuerySet(models.QuerySet):
+    def live(self):
+        return self.filter(active=True, _is_deleted=False)
+
+
+class FormManager(models.Manager.from_queryset(FormQuerySet)):
+    pass
+
+
 class Form(models.Model):
     """
     Form model, containing a list of order form steps.
@@ -53,6 +62,8 @@ class Form(models.Model):
     # life cycle management
     active = models.BooleanField(default=False)
     _is_deleted = models.BooleanField(default=False)
+
+    objects = FormManager()
 
     class Meta:
         verbose_name = _("form")

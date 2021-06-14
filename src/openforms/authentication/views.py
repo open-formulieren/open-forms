@@ -31,7 +31,7 @@ def allow_redirect_url(url):
 
 
 class AuthenticationStartView(SingleObjectMixin, View):
-    queryset = Form.objects.filter(_is_deleted=False)
+    queryset = Form.objects.live()
     register = register
 
     def get(self, request, slug, plugin_id):
@@ -59,7 +59,7 @@ class AuthenticationStartView(SingleObjectMixin, View):
 
 
 class AuthenticationReturnView(SingleObjectMixin, View):
-    queryset = Form.objects.filter(_is_deleted=False)
+    queryset = Form.objects.live()
     register = register
 
     def dispatch(self, request, slug, plugin_id):

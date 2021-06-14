@@ -8,11 +8,15 @@ from ..models import Form, FormDefinition, FormStep
 class FormFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Form
+        rename = {"deleted_": "_is_deleted"}
 
     name = factory.Sequence(lambda n: "Form %03d" % n)
     slug = factory.Faker("word")
     active = True
     product = factory.SubFactory(ProductFactory)
+
+    # factory-boy ignores attributes starting with an underscore so we'll use Meta.rename
+    deleted_ = False
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):
