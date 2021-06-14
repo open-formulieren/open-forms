@@ -45,7 +45,7 @@ class TestSubmissionAdmin(WebTest):
         )
 
     def test_displaying_merged_data_displays_signature_as_image(self):
-        self.submission_step_1.data['signature'] = 'data:image/png;base64,iVBOR'
+        self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
         self.submission_step_1.save()
 
         response = self.app.get(
@@ -56,7 +56,7 @@ class TestSubmissionAdmin(WebTest):
         )
 
         self.assertInHTML(
-            "<li>signature: <img src=\\\'data:image/png;base64,iVBOR\\\'></li>",
+            "<li>signature: <img class=\\'signature-image\\' src=\\'data:image/png;base64,iVBOR\\' alt=\\'signature\\'></li>",
             str(response.content),
         )
 
