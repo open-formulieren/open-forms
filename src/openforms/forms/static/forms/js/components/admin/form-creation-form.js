@@ -1,10 +1,6 @@
-import _ from 'lodash';
-
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
-import {original} from 'immer';
 import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 
 import Field from '../formsets/Field';
 import FormRow from '../formsets/FormRow';
@@ -223,7 +219,7 @@ StepsFieldSet.propTypes = {
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const initialState = {
         ...initialFormState,
-        formUuid: formUuid ? formUuid :  uuidv4(),
+        formUuid: formUuid,
         formName: formName,
         formSlug: formSlug,
         newForm: !formUuid,
@@ -319,17 +315,19 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
 
 
         try {
-            var response = await createOrUpdate(
+            var formResponse = await createOrUpdate(
                 endPoint,
                 csrftoken,
                 formData,
             );
 
-            if (!response.ok) {
+            if (!formResponse.ok) {
                 throw new Error('An error occurred while saving the form.');
             }
+            var formUuid = formResponse.data.uuid;
+
         } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
+            dispatch({type: 'SET_FETCH_ERRORS', payload: formResponse.data});
             window.scrollTo(0, 0);
             return;
         }
@@ -361,7 +359,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
 
                 // Then update the form step
                 const stepCreateOrUpdate = step.url ? put : post;
-                const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${state.formUuid}/steps`;
+                const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${formUuid}/steps`;
 
                 var stepResponse = await stepCreateOrUpdate(
                     stepEndpoint,
