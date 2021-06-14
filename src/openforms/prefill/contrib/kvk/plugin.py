@@ -44,7 +44,7 @@ class KVKBasePrefill(BasePlugin):
 
         try:
             results = client.operation(
-                "Companies_GetCompaniesExtendedV2",
+                config.use_operation,
                 method="GET",
                 data=None,
                 request_kwargs=dict(
@@ -53,6 +53,7 @@ class KVKBasePrefill(BasePlugin):
                     },
                 ),
             )
+
         except RequestException as e:
             logger.exception("exception while making request", exc_info=e)
             return {}
