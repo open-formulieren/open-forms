@@ -45,4 +45,3 @@ class DemoAuthentication(BasePlugin):
         request.session["bsn"] = submited.cleaned_data["bsn"]
 
         return HttpResponseRedirect(submited.cleaned_data["next"])
-        0

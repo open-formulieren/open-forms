@@ -8,8 +8,6 @@ class Registry:
     A registry for the authentication module plugins.
     """
 
-    # TODO clarify why the prefill Registry this is copied from is much simpler then the one for registration backends
-
     def __init__(self):
         self._registry = {}
 
