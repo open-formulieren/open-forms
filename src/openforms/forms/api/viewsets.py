@@ -1,10 +1,11 @@
 from uuid import UUID
 
-import reversion
 from django.db import transaction
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+
+import reversion
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
@@ -25,6 +26,9 @@ from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
+
+from ..models import Form, FormDefinition, FormStep
+from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionSerializer,
@@ -32,8 +36,6 @@ from .serializers import (
     FormSerializer,
     FormStepSerializer,
 )
-from ..models import Form, FormDefinition, FormStep
-from ..utils import export_form, import_form
 
 
 @extend_schema(
