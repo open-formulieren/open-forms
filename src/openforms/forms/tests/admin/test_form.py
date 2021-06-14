@@ -337,3 +337,30 @@ class FormAdminActionsTests(WebTest):
             copied_form.name, _("{name} (copy)").format(name=self.form.name)
         )
         self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=self.form.slug))
+
+    def test_set_to_maintenance_mode_sets_form_maintenance_mode_field_to_True(self):
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "set_to_maintenance_mode"
+        html_form["_selected_action"] = [str(self.form.pk)]
+        html_form.submit()
+
+        self.form.refresh_from_db()
+        self.assertTrue(self.form.maintenance_mode)
+
+    def test_remove_from_maintenance_mode_sets_form_maintenance_mode_field_to_False(
+        self,
+    ):
+        self.form.maintenance_mode = False
+        self.form.save()
+
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "remove_from_maintenance_mode"
+        html_form["_selected_action"] = [str(self.form.pk)]
+        html_form.submit()
+
+        self.form.refresh_from_db()
+        self.assertFalse(self.form.maintenance_mode)

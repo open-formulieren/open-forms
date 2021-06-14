@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0018_auto_20210521_1352'),
+        ("forms", "0018_auto_20210521_1352"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='maintenance_mode',
+            model_name="form",
+            name="maintenance_mode",
             field=models.BooleanField(default=False),
         ),
     ]

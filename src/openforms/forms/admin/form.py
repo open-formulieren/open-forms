@@ -41,12 +41,13 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     list_display = (
         "name",
         "active",
+        "maintenance_mode",
         "registration_backend",
         "registration_backend_options",
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
-    actions = ["make_copies"]
+    actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
@@ -161,3 +162,17 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
             instance.copy()
 
     make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
+
+    def set_to_maintenance_mode(self, request, queryset):
+        queryset.update(maintenance_mode=True)
+
+    set_to_maintenance_mode.short_description = _(
+        "Set selected %(verbose_name_plural)s to maintenance mode"
+    )
+
+    def remove_from_maintenance_mode(self, request, queryset):
+        queryset.update(maintenance_mode=False)
+
+    remove_from_maintenance_mode.short_description = _(
+        "Remove %(verbose_name_plural)s from maintenance mode"
+    )
