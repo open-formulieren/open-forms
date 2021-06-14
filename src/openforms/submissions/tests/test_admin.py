@@ -44,7 +44,7 @@ class TestSubmissionAdmin(WebTest):
             str(response.content),
         )
 
-    def test_displaying_merged_data_displays_signature_in_img_tag(self):
+    def test_displaying_merged_data_displays_signature_as_image(self):
         self.submission_step_1.data['signature'] = 'data:image/png;base64,iVBOR'
         self.submission_step_1.save()
 
