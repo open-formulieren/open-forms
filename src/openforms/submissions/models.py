@@ -180,6 +180,32 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
 
+    def get_merged_data_with_component_type(self) -> dict:
+        merged_data = dict()
+
+        for step in self.submissionstep_set.exclude(data=None):
+            components = step.form_step.form_definition.configuration['components']
+            component_key_to_type = dict()
+            for component in components:
+                component_key_to_type[component['key']] = component['type']
+            for key, value in step.data.items():
+                if key in merged_data:
+                    logger.warning(
+                        "%s was previously in merged_data and will be overwritten by %s",
+                        key,
+                        value,
+                    )
+                if key in component_key_to_type:
+                    # If a form step is fill out and then the form definition changes then
+                    #  we don't have a way to know what component the associated data goes with
+                    # TODO What to do in that instance?  Right now we just won't display that data
+                    merged_data[key] = {
+                        'type': component_key_to_type[key],
+                        'value': value
+                    }
+
+        return merged_data
+
     def get_merged_data(self) -> dict:
         merged_data = dict()
 

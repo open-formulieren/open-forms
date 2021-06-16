@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.template.response import TemplateResponse
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
@@ -30,33 +31,19 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    readonly_fields = ["created_on", "display_merged_data"]
+    readonly_fields = ["created_on"]
     actions = ["export_csv", "export_xlsx"]
 
-    def display_merged_data(self, obj):
-        merged_data = obj.get_merged_data()
+    change_form_template = "admin/change_form_bleh.html"
 
-        regular_values = []
-        image_values = []
-        for key, value in merged_data.items():
-            if "data:image/png" in str(value):
-                image_values.append((key, value))
-            else:
-                regular_values.append((key, value))
-
-        ret = format_html_join(
-            "\n",
-            "<li>{}: {}</li>",
-            ((key, value) for key, value in regular_values),
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        submission = self.get_object(request, object_id)
+        extra_context = {
+            'data': submission.get_merged_data_with_component_type()
+        }
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
         )
-        ret += format_html_join(
-            "\n",
-            "<li>{}: <img class='signature-image' src='{}' alt='{}'></li>",
-            ((key, value, key) for key, value in image_values),
-        )
-        return format_html("<ul>{}</ul>", ret)
-
-    display_merged_data.short_description = _("Submitted data")
 
     def _export(self, request, queryset, file_type):
         if queryset.order_by().values("form").distinct().count() > 1:

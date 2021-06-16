@@ -1,0 +1,22 @@
+{% extends 'admin/change_form.html' %}
+
+{% block after_field_sets %}
+    <fieldset class="module aligned">
+        <div class="form-row field-merged_data">
+            <div>
+                <label>Merged Data:</label>
+                <div class="readonly">
+                    <ul>
+                        {% for key, value in data.items %}
+                            {% if value.type == 'signature' %}
+                                <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
+                            {% else %}
+                                <li>{{ key }}: {{ value.value }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+{% endblock %}
