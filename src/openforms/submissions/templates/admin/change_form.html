@@ -8,7 +8,9 @@
                 <div class="readonly">
                     <ul>
                         {% for key, value in data.items %}
-                            {% if value.type == 'signature' %}
+                            {% if value.type == 'unknown component' %}
+                                <li>Unknown Component: {{ value.value }}</li>
+                            {% elif value.type in image_components %}
                                 <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
                             {% else %}
                                 <li>{{ key }}: {{ value.value }}</li>

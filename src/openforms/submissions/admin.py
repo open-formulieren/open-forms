@@ -34,15 +34,19 @@ class SubmissionAdmin(admin.ModelAdmin):
     readonly_fields = ["created_on"]
     actions = ["export_csv", "export_xlsx"]
 
-    change_form_template = "admin/change_form_bleh.html"
+    change_form_template = "openforms/submissions/templates/admin/change_form.html"
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
         extra_context = {
-            'data': submission.get_merged_data_with_component_type()
+            "data": submission.data_with_component_type,
+            "image_components": ["signature"],
         }
         return super().change_view(
-            request, object_id, form_url, extra_context=extra_context,
+            request,
+            object_id,
+            form_url,
+            extra_context=extra_context,
         )
 
     def _export(self, request, queryset, file_type):
