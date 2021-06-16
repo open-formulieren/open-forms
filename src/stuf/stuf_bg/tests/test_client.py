@@ -37,7 +37,7 @@ class StufBGConfigTests(TestCase):
                 self.service.url,
                 content=bytes(
                     loader.render_to_string(
-                        "stuf/stuf_bg/tests/responses/StufBgResponse.xml",
+                        "stuf_bg/tests/responses/StufBgResponse.xml",
                         context={
                             "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
                             "tijdstip_bericht": timezone.now(),
