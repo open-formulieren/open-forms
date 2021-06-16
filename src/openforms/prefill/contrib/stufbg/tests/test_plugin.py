@@ -16,8 +16,11 @@ class StufBgPrefillTests(TestCase):
 
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
     def test_get_available_attributes_returns_correct_attributes(self, client_mock):
-        client_mock.return_value.get_client.return_value.get_values_for_attributes.return_value = loader.render_to_string(
-            "stuf/stuf_bg/tests/responses/StufBgResponse.xml"
+        get_values_for_attributes_mock = (
+            client_mock.return_value.get_client.return_value.get_values_for_attributes
+        )
+        get_values_for_attributes_mock.return_value = loader.render_to_string(
+            "stuf_bg/tests/responses/StufBgResponse.xml"
         )
         attributes = FieldChoices.attributes.keys()
 

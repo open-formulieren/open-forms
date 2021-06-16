@@ -39,5 +39,3 @@ local.py
 # Static files
 src/openforms/static/bundles/
 src/openforms/fonts/
-
-src/spa/.eslintcache

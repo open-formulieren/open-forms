@@ -58,9 +58,7 @@ class StufBGClient:
             context.update({attribute: attribute})
         context.update({"bsn": bsn})
 
-        template = "stuf/stuf_bg/templates/StufBgRequest.xml"
-
-        return loader.render_to_string(template, context)
+        return loader.render_to_string("stuf_bg/StufBgRequest.xml", context)
 
     def get_values_for_attributes(self, bsn, attributes):
 

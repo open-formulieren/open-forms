@@ -14,7 +14,3 @@ local.py
 /static/
 /media/
 /private_media/
-
-# demo SPA
-/src/spa/build
-/src/spa/node_modules

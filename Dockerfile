@@ -47,11 +47,6 @@ COPY ./src /app/src
 # build frontend
 RUN npm run build
 
-# build SPA demo
-RUN cd src/spa/ \
-    && yarn install \
-    && yarn build
-
 # Stage 3 - Build docker image suitable for production
 FROM python:3.8-slim-buster
 
@@ -85,7 +80,6 @@ COPY --from=backend-build /app/src/ /app/src/
 # copy frontend build statics
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 COPY --from=frontend-build /app/node_modules/formiojs/dist/fonts /app/node_modules/formiojs/dist/fonts
-COPY --from=frontend-build /app/src/spa/build /app/src/spa/build
 
 # copy source code
 COPY ./src /app/src
