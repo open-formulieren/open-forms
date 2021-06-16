@@ -6,3 +6,4 @@ import './np-family-members';
 import './number';
 import './currency';
 import './email';
+import './time24h';
