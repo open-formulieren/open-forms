@@ -56,7 +56,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "slug": self.step1.form_definition.slug,
                 "formStep": {
                     "index": 0,
-                    "configuration": {"components": [{"type": "test-component"}]},
+                    "configuration": {
+                        "components": [{"type": "test-component", "key": "test-key"}]
+                    },
                 },
                 "data": {
                     "some": "example data",
@@ -130,7 +132,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "slug": self.step2.form_definition.slug,
                 "formStep": {
                     "index": 1,
-                    "configuration": {"components": [{"type": "test-component"}]},
+                    "configuration": {
+                        "components": [{"type": "test-component", "key": "test-key"}]
+                    },
                 },
                 "data": {
                     "modified": "data",

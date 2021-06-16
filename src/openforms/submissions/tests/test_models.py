@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from openforms.forms.tests.factories import FormStepFactory, FormDefinitionFactory
+from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
 
 from .factories import SubmissionFactory, SubmissionStepFactory
 
