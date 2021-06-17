@@ -20,6 +20,7 @@ from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..utils import (
     add_submmission_to_session,
+    create_submission_report,
     remove_submission_from_session,
     send_confirmation_email,
 )
@@ -107,6 +108,7 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         transaction.on_commit(lambda: register_submission.delay(submission.id))
+        transaction.on_commit(lambda: create_submission_report(submission))
 
         if hasattr(submission.form, "confirmation_email_template"):
             transaction.on_commit(lambda: send_confirmation_email(submission))

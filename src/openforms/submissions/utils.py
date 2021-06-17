@@ -2,13 +2,17 @@ import logging
 from typing import Union
 
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from django.http import HttpRequest
+from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from rest_framework.request import Request
+from weasyprint import HTML
 
 from .constants import SUBMISSIONS_SESSION_KEY
-from .models import Submission
+from .models import Submission, SubmissionReport
 
 logger = logging.getLogger(__name__)
 
@@ -59,4 +63,32 @@ def send_confirmation_email(submission: Submission):
         to_emails,
         fail_silently=False,
         html_message=content,
+    )
+
+
+def create_submission_report(submission: Submission) -> SubmissionReport:
+    form = submission.form
+    submission_data = submission.get_merged_data()
+
+    # TODO make template configurable?
+    html_report = render(
+        request=None,
+        template_name="report/submission_report.html",
+        context={
+            "form": form,
+            "submission_data": submission_data,
+            "submission": submission,
+        },
+    ).content.decode("utf8")
+
+    html_object = HTML(string=html_report)
+    pdf_report = html_object.write_pdf()
+
+    return SubmissionReport.objects.create(
+        title=_("%(title)s: Submission report") % {"title": form.name},
+        content=ContentFile(
+            content=pdf_report,
+            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+        ),
+        submission=submission,
     )
