@@ -11,9 +11,11 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -26,11 +28,12 @@ from openforms.forms.tests.factories import (
 )
 
 from ..constants import SUBMISSIONS_SESSION_KEY
-from ..models import SubmissionStep
+from ..models import SubmissionReport, SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
+@temp_private_root()
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
@@ -337,3 +340,27 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
+
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.submissions.api.viewsets.send_confirmation_email")
+    def test_complete_submission_creates_submission_report(
+        self, m_confirmation_email, m_delay
+    ):
+        form = FormFactory.create(name="Test Form")
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True):
+            self.client.post(endpoint)
+
+        report = SubmissionReport.objects.get()
+
+        self.assertEqual(
+            _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
+        )
+        self.assertEqual(submission, report.submission)
+        self.assertEqual(
+            "Test_Form.pdf", report.content.name.split("/")[-1]
+        )  # report.content.name contains the path too
