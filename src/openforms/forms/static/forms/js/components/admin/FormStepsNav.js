@@ -2,14 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import FAIcon from './FAIcon';
 
-const FormStepNavItem = ({ name, active=false, onActivate }) => {
+
+const FormStepNavItem = ({ name, active=false, onActivate, onReorder }) => {
     const className = classNames(
         'list__item',
         {'list__item--active': active},
     );
     return (
         <li className={className}>
+            <div className="actions actions--vertical">
+                <FAIcon icon="arrow-up" title="Move up" onClick={ () => onReorder('up') } />
+                <FAIcon icon="arrow-down" title="Move down" onClick={ () => onReorder('down') } />
+            </div>
             <button type="button" onClick={onActivate} className="button button--plain">
                 {name}
             </button>
@@ -21,21 +27,24 @@ FormStepNavItem.propTypes = {
     name: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
     onActivate: PropTypes.func.isRequired,
+    onReorder: PropTypes.func.isRequired,
 };
 
 
-const FormStepsNav = ({ steps=[], active=null, onActivateStep }) => {
+const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder }) => {
 
     return (
         <nav>
             <ul className="list list--accordion list--no-margin">
                 {
-                    steps.map( step => (
+                    steps.map( (step, index) => (
                         <FormStepNavItem
                             key={step.slug}
                             name={step.name}
                             active={step === active}
-                            onActivate={ () => onActivateStep(step) } />
+                            onActivate={ () => onActivateStep(step) }
+                            onReorder={onReorder.bind(null, index)}
+                        />
                     ))
                 }
                 <li className="list__item">
@@ -66,6 +75,7 @@ FormStepsNav.propTypes = {
         url: PropTypes.string,
     }),
     onActivateStep: PropTypes.func.isRequired,
+    onReorder: PropTypes.func.isRequired,
 };
 
 

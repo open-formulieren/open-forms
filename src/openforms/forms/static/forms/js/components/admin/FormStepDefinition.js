@@ -5,7 +5,7 @@ import FormIOBuilder from '../formio_builder/builder';
 import {TextInput} from "../formsets/Inputs";
 import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
-import MaterialIcon from "./MaterialIcon";
+import FAIcon from "./FAIcon";
 
 const emptyConfiguration = {
     display: 'form',
@@ -30,7 +30,7 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
         <div className="form-definition">
             { url ?
                 <div className='warning'>
-                    <MaterialIcon icon="fa fa-exclamation-triangle" title="Warning!" extraClassname='danger'/>
+                    <FAIcon icon="fa fa-exclamation-triangle" title="Warning!" extraClassname='danger'/>
                     You are about to edit an existing form step. This could affect other forms.
                 </div> : null
             }

@@ -7,16 +7,16 @@ import Select from "../formsets/Select";
 import { getFormDefinitionChoices } from "../utils/form-definition-choices";
 import { FormDefinitionsContext } from './Context';
 import FormStepDefinition from './FormStepDefinition';
-import MaterialIcon from './MaterialIcon';
+import FAIcon from './FAIcon';
 
 const FormStepHeader = ({title, currentFormDefinition='', onDelete, onReorder, onReplace}) => {
     const formDefinitions = useContext(FormDefinitionsContext);
     const formDefinitionChoices = getFormDefinitionChoices(formDefinitions);
     return (
         <>
-            <MaterialIcon icon="fa fa-arrow-up" title="Move up" onClick={ () => onReorder('up') } />
-            <MaterialIcon icon="fa fa-arrow-down" title="Move down" onClick={ () => onReorder('down') } />
-            <MaterialIcon icon="fa fa-trash" extraClassname="danger" title="Delete" onClick={onDelete} />
+            <FAIcon icon="fa fa-arrow-up" title="Move up" onClick={ () => onReorder('up') } />
+            <FAIcon icon="fa fa-arrow-down" title="Move down" onClick={ () => onReorder('down') } />
+            <FAIcon icon="fa fa-trash" extraClassname="danger" title="Delete" onClick={onDelete} />
             <span className="step-name">{title}</span>
             <Select
                 name="Form definition"

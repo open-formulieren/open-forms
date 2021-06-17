@@ -15,6 +15,7 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onRep
                     steps={steps}
                     active={activeStep}
                     onActivateStep={setActiveStep}
+                    onReorder={onReorder}
                 />
             </div>
 

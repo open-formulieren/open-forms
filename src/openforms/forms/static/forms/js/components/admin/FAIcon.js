@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const MaterialIcon = ({ icon, title, extraClassname='', ...props }) => {
-    let className = `${icon} material-icons`;
+const FAIcon = ({ icon, title, extraClassname='', ...props }) => {
+    let className = `fa fa-${icon}`;
     if (extraClassname) {
         className += ` ${extraClassname}`;
     }
@@ -12,11 +12,11 @@ const MaterialIcon = ({ icon, title, extraClassname='', ...props }) => {
     );
 };
 
-MaterialIcon.propTypes = {
+FAIcon.propTypes = {
     icon: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     extraClassname: PropTypes.string,
 };
 
 
-export default MaterialIcon;
+export default FAIcon;
