@@ -80,7 +80,7 @@ class FormStepViewSet(
         summary=_("Retrieve form step definition details"),
         tags=["forms"],
     ),
-    create=extend_schema(summary=_("Create a form form definition")),
+    create=extend_schema(summary=_("Create a form definition")),
     update=extend_schema(summary=_("Update all details of a form definition")),
     partial_update=extend_schema(summary=_("Update some details of a form definition")),
     destroy=extend_schema(summary=_("Delete a form definition")),
@@ -92,7 +92,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsStaffOrReadOnly]
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
