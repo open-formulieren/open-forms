@@ -1,0 +1,23 @@
+.actions {
+  display: flex;
+
+  padding: 5px 8px;
+
+  &--vertical {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .actions__action + .actions__action {
+      margin-top: 4px;
+    }
+  }
+
+  &__action {
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.4);
+    }
+  }
+}

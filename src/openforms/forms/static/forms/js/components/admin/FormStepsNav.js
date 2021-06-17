@@ -8,13 +8,14 @@ import FAIcon from './FAIcon';
 const FormStepNavItem = ({ name, active=false, onActivate, onReorder }) => {
     const className = classNames(
         'list__item',
+        'list__item--with-actions',
         {'list__item--active': active},
     );
     return (
         <li className={className}>
             <div className="actions actions--vertical">
-                <FAIcon icon="arrow-up" title="Move up" onClick={ () => onReorder('up') } />
-                <FAIcon icon="arrow-down" title="Move down" onClick={ () => onReorder('down') } />
+                <FAIcon icon="angle-up" title="Move up" extraClassname="fa-lg actions__action" onClick={ () => onReorder('up') } />
+                <FAIcon icon="angle-down" title="Move down" extraClassname="fa-lg actions__action" onClick={ () => onReorder('down') } />
             </div>
             <button type="button" onClick={onActivate} className="button button--plain">
                 {name}
@@ -41,7 +42,7 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder }) => {
                         <FormStepNavItem
                             key={step.slug}
                             name={step.name}
-                            active={step === active}
+                            active={Boolean(active && step.slug === active.slug)}
                             onActivate={ () => onActivateStep(step) }
                             onReorder={onReorder.bind(null, index)}
                         />

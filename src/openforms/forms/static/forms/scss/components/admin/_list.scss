@@ -14,6 +14,10 @@
       padding: 0;
       color: $color-dark;
 
+      & + .list__item {
+        border-top: solid 1px #eee;
+      }
+
       &:hover {
         background: $color-primary;
         color: $color-lightest;
@@ -29,6 +33,12 @@
     &--active {
       background: $color-secondary;
       color: $color-primary;
+    }
+
+    &--with-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
     }
   }
 }
