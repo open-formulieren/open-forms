@@ -24,6 +24,7 @@ function watchBundles() {
         paths.jsSpec,
         paths.scssSrc,
         `${paths.sourcesRoot}forms/static/`,
+        `${paths.sourcesRoot}scss/admin/`,
     ],
     gulp.parallel(bundle, lint));
 }
