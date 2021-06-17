@@ -10,6 +10,7 @@ python-decouple  # processing of envvar configs
 tablib[xlsx]
 xmltodict
 self-certifi
+weasyprint
 
 # Framework libraries
 django < 3.0

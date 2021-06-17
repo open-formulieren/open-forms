@@ -20,6 +20,12 @@ boltons==21.0.0
     # via
     #   face
     #   glom
+cairocffi==1.2.0
+    # via
+    #   cairosvg
+    #   weasyprint
+cairosvg==2.5.2
+    # via weasyprint
 celery==4.4.7
     # via
     #   -r requirements/base.in
@@ -31,14 +37,22 @@ certifi==2020.6.20
     #   self-certifi
     #   sentry-sdk
 cffi==1.14.3
-    # via cryptography
+    # via
+    #   cairocffi
+    #   cryptography
+    #   weasyprint
 chardet==3.0.4
     # via requests
 cryptography==3.4.7
     # via pyopenssl
+cssselect2==0.4.1
+    # via
+    #   cairosvg
+    #   weasyprint
 defusedxml==0.6.0
     # via
     #   -r requirements/base.in
+    #   cairosvg
     #   digid-eherkenning
     #   python3-saml
 django-admin-index==1.4.0
@@ -135,6 +149,8 @@ gemma-zds-client==1.0.0
     # via zgw-consumers
 glom==20.11.0
     # via -r requirements/base.in
+html5lib==1.1
+    # via weasyprint
 humanize==3.5.0
     # via flower
 idna==2.10
@@ -156,7 +172,10 @@ lxml==4.6.3
 openpyxl==3.0.7
     # via tablib
 pillow==8.2.0
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   cairosvg
+    #   weasyprint
 prometheus-client==0.8.0
     # via flower
 psycopg2==2.8.6
@@ -167,6 +186,8 @@ pyjwt==1.7.1
     # via gemma-zds-client
 pyopenssl==19.1.0
     # via -r requirements/base.in
+pyphen==0.10.0
+    # via weasyprint
 pyrsistent==0.17.3
     # via jsonschema
 python-dateutil==2.8.1
@@ -207,6 +228,7 @@ six==1.15.0
     # via
     #   django-choices
     #   django-compat
+    #   html5lib
     #   isodate
     #   jsonschema
     #   pyopenssl
@@ -218,6 +240,11 @@ tablib[xlsx]==3.0.0
     # via -r requirements/base.in
 text-unidecode==1.3
     # via faker
+tinycss2==1.1.0
+    # via
+    #   cairosvg
+    #   cssselect2
+    #   weasyprint
 tornado==6.1
     # via flower
 uritemplate==3.0.1
@@ -234,6 +261,13 @@ vine==1.3.0
     #   amqp
     #   celery
     #   flower
+weasyprint==52.5
+    # via -r requirements/base.in
+webencodings==0.5.1
+    # via
+    #   cssselect2
+    #   html5lib
+    #   tinycss2
 xmlsec==1.3.10
     # via python3-saml
 xmltodict==0.12.0

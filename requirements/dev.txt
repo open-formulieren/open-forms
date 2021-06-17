@@ -61,6 +61,17 @@ boltons==21.0.0
     #   glom
 bump2version==1.0.0
     # via -r requirements/dev.in
+cairocffi==1.2.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cairosvg
+    #   weasyprint
+cairosvg==2.5.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   weasyprint
 celery==4.4.7
     # via
     #   -c requirements/ci.txt
@@ -78,7 +89,9 @@ cffi==1.14.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   cairocffi
     #   cryptography
+    #   weasyprint
 chardet==3.0.4
     # via
     #   -c requirements/ci.txt
@@ -104,6 +117,12 @@ cryptography==3.4.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pyopenssl
+cssselect2==0.4.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cairosvg
+    #   weasyprint
 cssselect==1.1.0
     # via
     #   -c requirements/ci.txt
@@ -115,6 +134,7 @@ defusedxml==0.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   cairosvg
     #   digid-eherkenning
     #   python3-saml
 django-admin-index==1.4.0
@@ -329,6 +349,11 @@ glom==20.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+html5lib==1.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   weasyprint
 humanize==3.5.0
     # via
     #   -c requirements/ci.txt
@@ -436,6 +461,8 @@ pillow==8.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   cairosvg
+    #   weasyprint
 pip-tools==6.0.1
     # via -r requirements/dev.in
 pluggy==0.13.1
@@ -494,6 +521,11 @@ pyparsing==2.4.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   packaging
+pyphen==0.10.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   weasyprint
 pyquery==1.4.1
     # via
     #   -c requirements/ci.txt
@@ -588,6 +620,7 @@ six==1.15.0
     #   django-compat
     #   django-rosetta
     #   freezegun
+    #   html5lib
     #   isodate
     #   jsonschema
     #   pyopenssl
@@ -674,6 +707,13 @@ text-unidecode==1.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   faker
+tinycss2==1.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cairosvg
+    #   cssselect2
+    #   weasyprint
 toml==0.10.2
     # via
     #   -c requirements/ci.txt
@@ -724,6 +764,17 @@ waitress==1.4.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   webtest
+weasyprint==52.5
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+webencodings==0.5.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cssselect2
+    #   html5lib
+    #   tinycss2
 webob==1.8.6
     # via
     #   -c requirements/ci.txt
