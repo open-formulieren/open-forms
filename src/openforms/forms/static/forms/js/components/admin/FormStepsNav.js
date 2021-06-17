@@ -1,14 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 
-const FormStepNavItem = ({ name, active=false, onActivate }) => (
-    <li className="list__item">
-        <button type="button" onClick={onActivate} className="button button--plain">
-            {name}
-        </button>
-    </li>
-);
+const FormStepNavItem = ({ name, active=false, onActivate }) => {
+    const className = classNames(
+        'button',
+        'button--plain',
+        {'button--active': active},
+    );
+    return (
+        <li className="list__item">
+            <button type="button" onClick={onActivate} className={className}>
+                {name}
+            </button>
+        </li>
+    );
+};
 
 FormStepNavItem.propTypes = {
     name: PropTypes.string.isRequired,
