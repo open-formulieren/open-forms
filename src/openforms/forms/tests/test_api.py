@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -144,7 +144,10 @@ class FormsAPITests(APITestCase):
         self.assertFalse(Form.objects.exists())
         self.assertEqual(
             response.json(),
-            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+            {
+                "name": [_("This field is required.")],
+                "slug": [_("This field is required.")],
+            },
         )
 
     def test_create_form_unsuccessful_without_authorization(self):
@@ -226,7 +229,7 @@ class FormsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {"slug": ["Dit veld is vereist."]})
+        self.assertEqual(response.json(), {"slug": [_("This field is required.")]})
 
     def test_complete_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
@@ -255,7 +258,10 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json(),
-            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+            {
+                "name": [_("This field is required.")],
+                "slug": [_("This field is required.")],
+            },
         )
 
     def test_complete_update_of_form_when_form_cannot_be_found(self):
@@ -333,8 +339,8 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertIn("formDefinition", errors)
         self.assertIn("index", errors)
-        self.assertEqual(errors["formDefinition"], ["Dit veld is vereist."])
-        self.assertEqual(errors["index"], ["Dit veld is vereist."])
+        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
+        self.assertEqual(errors["index"], [_("This field is required.")])
 
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
@@ -444,8 +450,8 @@ class FormsStepsAPITests(APITestCase):
         errors = response.json()
         self.assertIn("formDefinition", errors)
         self.assertIn("index", errors)
-        self.assertEqual(errors["formDefinition"], ["Dit veld is vereist."])
-        self.assertEqual(errors["index"], ["Dit veld is vereist."])
+        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
+        self.assertEqual(errors["index"], [_("This field is required.")])
 
     def test_complete_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
