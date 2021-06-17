@@ -2,15 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const MaterialIcon = ({ icon, title, extraClassname='', component: Component='span', ...props }) => {
-    let className = 'material-icons';
+const MaterialIcon = ({ icon, title, extraClassname='', ...props }) => {
+    let className = `${icon} material-icons`;
     if (extraClassname) {
         className += ` ${extraClassname}`;
     }
     return (
-        <Component className={className} title={title} {...props}>
-            {icon}
-        </Component>
+        <i className={className} title={title} {...props}></i>
     );
 };
 

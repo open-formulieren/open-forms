@@ -14,9 +14,9 @@ const FormStepHeader = ({title, currentFormDefinition='', onDelete, onReorder, o
     const formDefinitionChoices = getFormDefinitionChoices(formDefinitions);
     return (
         <>
-            <MaterialIcon icon="keyboard_arrow_up" title="Move up" onClick={ () => onReorder('up') } />
-            <MaterialIcon icon="keyboard_arrow_down" title="Move down" onClick={ () => onReorder('down') } />
-            <MaterialIcon icon="delete" extraClassname="danger" title="Delete" onClick={onDelete} />
+            <MaterialIcon icon="fa fa-arrow-up" title="Move up" onClick={ () => onReorder('up') } />
+            <MaterialIcon icon="fa fa-arrow-down" title="Move down" onClick={ () => onReorder('down') } />
+            <MaterialIcon icon="fa fa-trash" extraClassname="danger" title="Delete" onClick={onDelete} />
             <span className="step-name">{title}</span>
             <Select
                 name="Form definition"

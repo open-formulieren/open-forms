@@ -23,16 +23,14 @@ const emptyConfiguration = {
  * state to eventually persist the data. This goes * against React's best practices,
  * but we're fighting the library at this point.
  *
- * TODO: check what happens when we *replace* the form definition
- *
  */
 const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
 
     return (
-        <div className='form-definition'>
+        <div className="form-definition">
             { url ?
                 <div className='warning'>
-                    <MaterialIcon icon="warning" title="Warning!" extraClassname='danger'/>
+                    <MaterialIcon icon="fa fa-exclamation-triangle" title="Warning!" extraClassname='danger'/>
                     You are about to edit an existing form step. This could affect other forms.
                 </div> : null
             }

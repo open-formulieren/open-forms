@@ -9,7 +9,7 @@ const ErrorList = ({ children }) => {
     if (!errors) return null;
 
     return (
-        <div className='errors'>
+        <div className="errors">
             <ul className="errorlist">
                 {errors}
             </ul>
