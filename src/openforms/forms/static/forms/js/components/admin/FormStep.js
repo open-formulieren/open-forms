@@ -36,14 +36,8 @@ FormStepHeader.propTypes = {
     onReplace: PropTypes.func.isRequired,
 };
 
-const FormStep = ({ title, data, onEdit, onFieldChange, onDelete, onReplace, errors={} }) => {
+const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) => {
     const { configuration, formDefinition, name, slug } = data;
-
-    const confirmDelete = () => {
-        if(window.confirm('Remove step from form?')){
-            onDelete(data);
-        }
-    };
 
     const previousFormDefinition = usePrevious(formDefinition);
     let forceBuilderUpdate = false;
@@ -84,7 +78,6 @@ FormStep.propTypes = {
     }).isRequired,
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
     errors: PropTypes.object,
 };

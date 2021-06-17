@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import FAIcon from './FAIcon';
 
 
-const FormStepNavItem = ({ name, active=false, onActivate, onReorder }) => {
+const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }) => {
     const className = classNames(
         'list__item',
         'list__item--with-actions',
@@ -20,6 +20,9 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder }) => {
             <button type="button" onClick={onActivate} className="button button--plain">
                 {name}
             </button>
+            <div className="actions">
+                <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={onDelete} />
+            </div>
         </li>
     );
 };
@@ -29,10 +32,18 @@ FormStepNavItem.propTypes = {
     active: PropTypes.bool.isRequired,
     onActivate: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
 
-const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder }) => {
+const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDelete }) => {
+
+    const confirmDelete = (index) => {
+        const step = steps[index];
+        if(window.confirm(`Weet je zeker dat je de stap '${step.name}' wil verwijderen?`)){
+            onDelete(index);
+        }
+    };
 
     return (
         <nav>
@@ -45,6 +56,7 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder }) => {
                             active={Boolean(active && step.slug === active.slug)}
                             onActivate={ () => onActivateStep(step) }
                             onReorder={onReorder.bind(null, index)}
+                            onDelete={confirmDelete.bind(null, index)}
                         />
                     ))
                 }
@@ -77,6 +89,7 @@ FormStepsNav.propTypes = {
     }),
     onActivateStep: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
 

@@ -17,6 +17,7 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onRep
                     active={activeStep}
                     onActivateStep={(step) => setActiveStepIndex(steps.indexOf(step))}
                     onReorder={onReorder}
+                    onDelete={onDelete}
                 />
             </div>
 
@@ -28,7 +29,6 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onRep
                             data={activeStep}
                             onEdit={onEdit.bind(null, activeStepIndex)}
                             onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-                            onDelete={onDelete.bind(null, activeStepIndex)}
                             onReplace={onReplace.bind(null, activeStepIndex)}
                             errors={errors.length ? errors[activeStepIndex] : {}}
                         />

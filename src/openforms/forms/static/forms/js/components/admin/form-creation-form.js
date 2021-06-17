@@ -62,7 +62,7 @@ function reducer(draft, action) {
          * FormStep-level actions
          */
         case 'DELETE_STEP': {
-            const {index, step} = action.payload;
+            const {index} = action.payload;
             draft.stepsToDelete.push(draft.formSteps.data[index].url);
 
             const unchangedSteps = draft.formSteps.data.slice(0, index);
@@ -245,10 +245,10 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onStepDelete = (index, formStepData) => {
+    const onStepDelete = (index) => {
         dispatch({
             type: 'DELETE_STEP',
-            payload: {index: index, step: formStepData}
+            payload: {index: index}
         });
     };
 
