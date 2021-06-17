@@ -3,6 +3,7 @@ import IbanField from './components/form/iban';
 import DateField from './components/form/date';
 import TimeField from './components/form/time';
 import SignatureField from './components/form/signature';
+import PhoneNumberField from './components/form/phoneNumber';
 
 const FormIOModule = {
   components: {
@@ -11,6 +12,7 @@ const FormIOModule = {
     date: DateField,
     signature: SignatureField,
     time: TimeField,
+    phoneNumber: PhoneNumberField
   },
 };
 
