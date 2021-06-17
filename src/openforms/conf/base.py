@@ -622,4 +622,5 @@ ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/prefill/contrib/kvk/tests/files"),
 ]
