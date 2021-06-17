@@ -49,6 +49,7 @@ FormSteps.propTypes = {
         name: PropTypes.string,
         slug: PropTypes.string,
         url: PropTypes.string,
+        isNew: PropTypes.bool,
     })),
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
