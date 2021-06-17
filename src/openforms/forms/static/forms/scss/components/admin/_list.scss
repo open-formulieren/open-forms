@@ -1,0 +1,28 @@
+@import '../../../../../../scss/vars';
+
+.list {
+
+  &--no-margin {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  &--accordion {
+    border: solid 1px #eee;  // border color from submit-row
+
+
+    .list__item {
+      padding: 3px 5px;
+      color: $color-dark;
+
+      &:hover {
+        background: $color-primary;
+        color: $color-lightest;
+      }
+    }
+  }
+
+  &__item {
+
+  }
+}

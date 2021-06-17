@@ -1,0 +1,19 @@
+@import '../../../../../../scss/vars';
+
+.button {
+
+  &--plain {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: transparent;
+    }
+  }
+
+}

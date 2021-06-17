@@ -1,0 +1,17 @@
+.edit-panel {
+  display: flex;
+
+  h2 + & {
+    margin-top: 20px;
+  }
+
+  &__nav {
+    width: 25%;
+    margin-right: 10px;
+  }
+
+  &__edit-area {
+    width: 75%;
+    border: solid 1px red;
+  }
+}

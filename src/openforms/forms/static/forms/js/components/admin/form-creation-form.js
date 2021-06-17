@@ -465,7 +465,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 </FormRow>
             </Fieldset>
 
-            <Fieldset title='Form steps'>
+            <Fieldset title="Form design">
                 <FormDefinitionsContext.Provider value={state.formDefinitions}>
                     <StepsFieldSet
                         steps={state.formSteps.data}
