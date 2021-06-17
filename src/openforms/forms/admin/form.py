@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
@@ -161,11 +161,33 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     def make_copies(self, request, queryset):
         for instance in queryset:
             instance.copy()
+        messages.success(
+            request,
+            _("{number_instances} {verbose_name} copied").format(
+                number_instances=queryset.count(),
+                verbose_name=ngettext(
+                    queryset.model._meta.verbose_name,
+                    queryset.model._meta.verbose_name_plural,
+                    queryset.count(),
+                ),
+            ),
+        )
 
     make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
 
     def set_to_maintenance_mode(self, request, queryset):
         queryset.update(maintenance_mode=True)
+        messages.success(
+            request,
+            _("{number_instances} {verbose_name} set to maintenance mode").format(
+                number_instances=queryset.count(),
+                verbose_name=ngettext(
+                    queryset.model._meta.verbose_name,
+                    queryset.model._meta.verbose_name_plural,
+                    queryset.count(),
+                ),
+            ),
+        )
 
     set_to_maintenance_mode.short_description = _(
         "Set selected %(verbose_name_plural)s to maintenance mode"
@@ -173,6 +195,17 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
 
     def remove_from_maintenance_mode(self, request, queryset):
         queryset.update(maintenance_mode=False)
+        messages.success(
+            request,
+            _("{number_instances} {verbose_name} removed from maintenance mode").format(
+                number_instances=queryset.count(),
+                verbose_name=ngettext(
+                    queryset.model._meta.verbose_name,
+                    queryset.model._meta.verbose_name_plural,
+                    queryset.count(),
+                ),
+            ),
+        )
 
     remove_from_maintenance_mode.short_description = _(
         "Remove %(verbose_name_plural)s from maintenance mode"
