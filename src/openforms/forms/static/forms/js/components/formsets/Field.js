@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import { PrefixContext } from './Context';
 import ErrorList from './ErrorList';
@@ -7,7 +8,7 @@ import ErrorList from './ErrorList';
 /**
  * Wrap a single form field, providing the label with correct attributes
  */
-const Field = ({ name, label, helpText='', required=false, errors=[], children }) => {
+const Field = ({ name, label, helpText='', required=false, errors=[], children, fieldBox=false }) => {
     const originalName = name;
     const prefix = useContext(PrefixContext);
     name = prefix ? `${prefix}-${name}` : name;
@@ -24,11 +25,15 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children }
     }
 
     const hasErrors = Boolean(errors && errors.length);
+    const className = classNames(
+        {'fieldBox': fieldBox},
+        {'has-errors': hasErrors},
+    );
 
     return (
         <>
             { hasErrors ? <ErrorList>{errors}</ErrorList> : null }
-            <div className={ hasErrors ? 'has-errors' : '' }>
+            <div className={className}>
                 <label className={ required ? 'required': '' } htmlFor={htmlFor}>{label}</label>
                 {modifiedChildren}
                 { helpText ? <div className="help">{helpText}</div> : null }
@@ -47,6 +52,7 @@ Field.propTypes = {
         PropTypes.arrayOf(PropTypes.string),
         PropTypes.string,
     ]),
+    fieldBox: PropTypes.bool,
 };
 
 

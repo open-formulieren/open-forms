@@ -2,22 +2,22 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import usePrevious from 'react-use/esm/usePrevious';
 
-import { Collapsible } from "../formsets/Collapsible";
 import Select from "../formsets/Select";
 import { getFormDefinitionChoices } from "../utils/form-definition-choices";
 import { FormDefinitionsContext } from './Context';
 import FormStepDefinition from './FormStepDefinition';
 import FAIcon from './FAIcon';
 
-const FormStepHeader = ({title, currentFormDefinition='', onDelete, onReorder, onReplace}) => {
+const FormStepHeader = ({title, currentFormDefinition='', onDelete, onReplace}) => {
+
+
+
+
     const formDefinitions = useContext(FormDefinitionsContext);
     const formDefinitionChoices = getFormDefinitionChoices(formDefinitions);
     return (
         <>
-            <FAIcon icon="fa fa-arrow-up" title="Move up" onClick={ () => onReorder('up') } />
-            <FAIcon icon="fa fa-arrow-down" title="Move down" onClick={ () => onReorder('down') } />
-            <FAIcon icon="fa fa-trash" extraClassname="danger" title="Delete" onClick={onDelete} />
-            <span className="step-name">{title}</span>
+            <FAIcon icon="trash" extraClassname="danger" title="Delete" onClick={onDelete} />
             <Select
                 name="Form definition"
                 choices={formDefinitionChoices}
@@ -33,11 +33,10 @@ FormStepHeader.propTypes = {
     title: PropTypes.string.isRequired,
     currentFormDefinition: PropTypes.string,
     onDelete: PropTypes.func.isRequired,
-    onReorder: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
 };
 
-const FormStep = ({ title, data, onEdit, onFieldChange, onDelete, onReorder, onReplace, errors={} }) => {
+const FormStep = ({ title, data, onEdit, onFieldChange, onDelete, onReplace, errors={} }) => {
     const { configuration, formDefinition, name, slug } = data;
 
     const confirmDelete = () => {
@@ -52,34 +51,24 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onDelete, onReorder, onR
         forceBuilderUpdate = true;
     }
 
-    const collapsibleHeader = (
-        <FormStepHeader
-            title={title}
-            currentFormDefinition={formDefinition}
-            onDelete={confirmDelete}
-            onReorder={onReorder}
-            onReplace={onReplace}
-        />
-    );
-    const collapsibleContent = (
-        <FormStepDefinition
-            name={name}
-            slug={slug}
-            url={formDefinition}
-            configuration={configuration}
-            onFieldChange={onFieldChange}
-            onChange={onEdit}
-            forceUpdate={forceBuilderUpdate}
-            errors={errors}
-        />
-    );
-
     return (
         <>
             { Object.keys(errors).length ? <div className='fetch-error'>The form step below is invalid.</div> : null }
-            <Collapsible
-                header={collapsibleHeader}
-                content={collapsibleContent}
+            {/*<FormStepHeader
+                title={title}
+                currentFormDefinition={formDefinition}
+                onDelete={confirmDelete}
+                onReplace={onReplace}
+            />*/}
+            <FormStepDefinition
+                name={name}
+                slug={slug}
+                url={formDefinition}
+                configuration={configuration}
+                onFieldChange={onFieldChange}
+                onChange={onEdit}
+                forceUpdate={forceBuilderUpdate}
+                errors={errors}
             />
         </>
     );
@@ -96,7 +85,6 @@ FormStep.propTypes = {
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
-    onReorder: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
     errors: PropTypes.object,
 };

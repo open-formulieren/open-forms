@@ -1,3 +1,6 @@
+/*
+global URLify;
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -10,6 +13,13 @@ import FAIcon from "./FAIcon";
 const emptyConfiguration = {
     display: 'form',
 };
+
+
+// if (name === 'name' && !draft.formSteps.data[index].slug) {
+//     const slug = URLify(value, 100, false);
+//     draft.formSteps.data[index].slug = slug;
+// }
+
 
 
 /**
@@ -26,40 +36,60 @@ const emptyConfiguration = {
  */
 const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
 
-    return (
-        <div className="form-definition">
-            { url ?
-                <div className='warning'>
-                    <FAIcon icon="fa fa-exclamation-triangle" title="Warning!" extraClassname='danger'/>
-                    You are about to edit an existing form step. This could affect other forms.
-                </div> : null
+    const setSlug = () => {
+        // do nothing if there's already a slug set
+        if (slug) return;
+
+        // sort-of taken from Django's jquery prepopulate module
+        const newSlug = URLify(name, 100, false);
+        onFieldChange({
+            target: {
+                name: 'slug',
+                value: newSlug,
             }
-            <div className='form-definition__name'>
+        });
+    };
+
+    return (
+        <>
+            <fieldset className="module aligned">
+                <h2>Formulierdefinitie</h2>
+
+                {/*{ url ?
+                    <div className='warning'>
+                        <FAIcon icon="exclamation-triangle" title="Warning!" extraClassname='danger'/>
+                        You are about to edit an existing form step. This could affect other forms.
+                    </div> : null
+                }*/}
+
                 <FormRow>
                     <Field
                         name='name'
                         label='Step name'
                         helpText='Name of the form definition used in this form step'
                         errors={errors.name}
+                        fieldBox
                     >
-                        <TextInput value={name} onChange={onFieldChange}/>
+                        <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
                     </Field>
-                </FormRow>
-                <FormRow>
                     <Field
                         name='slug'
                         label='Step slug'
                         helpText='Slug of the form definition used in this form step'
                         errors={errors.slug}
+                        fieldBox
                     >
                         <TextInput value={slug} onChange={onFieldChange}/>
                     </Field>
                 </FormRow>
-            </div>
-            <div className='form-definition__config'>
+            </fieldset>
+
+            <h2>Velden</h2>
+
+            <div className="formio-builder-wrapper">
                 <FormIOBuilder configuration={configuration} onChange={onChange} {...props} />
             </div>
-        </div>
+        </>
     );
 };
 

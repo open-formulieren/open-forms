@@ -25,7 +25,8 @@ li.nav-item {
 
 // django wrapper
 .aligned {
-  .field-configuration {
+  .field-configuration,
+  .formio.builder {
     label {
       float: none;
     }
@@ -42,4 +43,8 @@ li.nav-item {
     // easiest way to enforce they're always visible.
     min-height: 550px;
   }
+}
+
+.formio-builder-wrapper {
+  padding-top: 10px;
 }

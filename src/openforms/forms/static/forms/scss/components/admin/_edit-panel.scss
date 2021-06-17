@@ -7,11 +7,11 @@
 
   &__nav {
     width: 25%;
+    max-width: 300px;;
     margin-right: 10px;
   }
 
   &__edit-area {
-    width: 75%;
-    border: solid 1px red;
+    width: 100%;
   }
 }
