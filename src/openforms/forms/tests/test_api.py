@@ -214,7 +214,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.name, "Test Put Form")
         self.assertEqual(form.slug, "test-put-form")
 
-    def test_maintenance_mode_returned_through_api(self):
+    def test_maintenance_mode_value_returned_through_api(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
