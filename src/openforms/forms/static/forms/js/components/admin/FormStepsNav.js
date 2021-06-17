@@ -5,13 +5,12 @@ import classNames from 'classnames';
 
 const FormStepNavItem = ({ name, active=false, onActivate }) => {
     const className = classNames(
-        'button',
-        'button--plain',
-        {'button--active': active},
+        'list__item',
+        {'list__item--active': active},
     );
     return (
-        <li className="list__item">
-            <button type="button" onClick={onActivate} className={className}>
+        <li className={className}>
+            <button type="button" onClick={onActivate} className="button button--plain">
                 {name}
             </button>
         </li>
@@ -25,7 +24,7 @@ FormStepNavItem.propTypes = {
 };
 
 
-const FormStepsNav = ({ steps=[] }) => {
+const FormStepsNav = ({ steps=[], active=null, onActivateStep }) => {
 
     return (
         <nav>
@@ -35,8 +34,8 @@ const FormStepsNav = ({ steps=[] }) => {
                         <FormStepNavItem
                             key={step.slug}
                             name={step.name}
-                            active={false}
-                            onActivate={console.log} />
+                            active={step === active}
+                            onActivate={ () => onActivateStep(step) } />
                     ))
                 }
                 <li className="list__item">
@@ -58,6 +57,15 @@ FormStepsNav.propTypes = {
         slug: PropTypes.string,
         url: PropTypes.string,
     })),
+    active: PropTypes.shape({
+        configuration: PropTypes.object,
+        formDefinition: PropTypes.string,
+        index: PropTypes.number,
+        name: PropTypes.string,
+        slug: PropTypes.string,
+        url: PropTypes.string,
+    }),
+    onActivateStep: PropTypes.func.isRequired,
 };
 
 

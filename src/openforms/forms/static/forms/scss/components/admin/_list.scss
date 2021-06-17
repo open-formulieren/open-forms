@@ -10,19 +10,38 @@
   &--accordion {
     border: solid 1px #eee;  // border color from submit-row
 
-
     .list__item {
-      padding: 3px 5px;
+      padding: 0;
       color: $color-dark;
 
       &:hover {
         background: $color-primary;
         color: $color-lightest;
       }
+
+      &--active {
+        padding-left: 10px;
+      }
     }
   }
 
   &__item {
-
+    &--active {
+      background: $color-secondary;
+      color: $color-primary;
+    }
   }
+}
+
+.list__item--active {
+  .button--plain {
+    color: $color-primary;
+  }
+
+  &:hover {
+    .button--plain {
+      color: $color-lightest;
+    }
+  }
+
 }

@@ -15,11 +15,14 @@
       background-color: transparent;
     }
 
-    &.button--active {
-      background: $color-primary;
-      color: $color-lightest;
+    &:focus {
+      outline: none;
+      font-weight: bold;
+    }
+
+    @at-root .list__item & {
+      padding: 5px 10px;
     }
   }
-
 
 }

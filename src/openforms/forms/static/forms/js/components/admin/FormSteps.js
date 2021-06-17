@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import FormStep from './FormStep';
@@ -6,14 +6,20 @@ import FormStepsNav from './FormStepsNav';
 
 
 const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, errors=[] }) => {
+    const [activeStep, setActiveStep] = useState(null);
+
     return (
         <section className="edit-panel">
             <div className="edit-panel__nav">
-                <FormStepsNav steps={steps} />
+                <FormStepsNav
+                    steps={steps}
+                    active={activeStep}
+                    onActivateStep={setActiveStep}
+                />
             </div>
 
             <div className="edit-panel__edit-area">
-            Dummy
+                { activeStep ? `Current step: ${activeStep.name}` : 'Select a step to view or modify.' }
             {/*
                 steps.map( (step, index) => (
                     <FormStep
