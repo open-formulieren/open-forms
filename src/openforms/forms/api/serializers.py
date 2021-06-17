@@ -69,9 +69,6 @@ class FormSerializer(serializers.ModelSerializer):
             "uuid": {
                 "read_only": True,
             },
-            "maintenance_mode": {
-                "read_only": True,
-            },
             "url": {
                 "view_name": "api:form-detail",
                 "lookup_field": "uuid",
