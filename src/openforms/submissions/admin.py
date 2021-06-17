@@ -1,8 +1,7 @@
 from django.contrib import admin, messages
-from django.template.response import TemplateResponse
-from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
+from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
 from .models import Submission, SubmissionStep
 
@@ -40,7 +39,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         submission = self.get_object(request, object_id)
         extra_context = {
             "data": submission.data_with_component_type,
-            "image_components": ["signature"],
+            "image_components": IMAGE_COMPONENTS,
         }
         return super().change_view(
             request,
