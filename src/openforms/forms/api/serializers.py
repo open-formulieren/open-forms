@@ -146,14 +146,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = (
-            "index",
-            "slug",
-            "configuration",
-            "form_definition",
-            "name",
-            "url"
-        )
+        fields = ("index", "slug", "configuration", "form_definition", "name", "url")
 
         extra_kwargs = {
             "form_definition": {
