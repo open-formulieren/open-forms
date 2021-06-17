@@ -380,3 +380,23 @@ div.help {
     width: calc(100% - 2 * 7px);  // instead of 100% - the padding is subtracted because of the box-sizing
   }
 }
+
+/**
+ * Bootstrap overrides
+ *
+ * Bootstrap is used by the formio builder and enforces some default colors that
+ * aren't great.
+ */
+.btn {
+  &.btn-primary {
+    background-color: transparent;
+    border-color: transparent;
+    color: inherit;
+
+    &:hover {
+      background-color: $color-primary;
+      border-color: $color-primary;
+      color: $color-lightest;
+    }
+  }
+}
