@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import Form, FormDefinition, FormStep
@@ -671,7 +671,66 @@ class FormDefinitionsAPITests(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data["count"], 2)
 
+    def test_non_staff_user_cant_update(self):
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "name": "Updated name",
+                "slug": "updated-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_non_staff_user_cant_create(self):
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_non_staff_user_cant_delete(self):
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.delete(url)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
     def test_update(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
         definition = FormDefinitionFactory.create(
             name="test form definition",
             slug="test-form-definition",
@@ -701,6 +760,53 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("Updated name", definition.name)
         self.assertEqual("updated-slug", definition.slug)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
+
+    def test_create(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        definition = FormDefinition.objects.get()
+
+        self.assertEqual("Name", definition.name)
+        self.assertEqual("a-slug", definition.slug)
+        self.assertEqual(
+            [{"label": "New field"}], definition.configuration["components"]
+        )
+
+    def test_delete(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.delete(url)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        self.assertEqual(0, FormDefinition.objects.all().count())
 
 
 class ImportExportAPITests(APITestCase):
