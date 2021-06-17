@@ -36,7 +36,7 @@ FormStepNavItem.propTypes = {
 };
 
 
-const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDelete }) => {
+const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDelete, onAdd }) => {
 
     const confirmDelete = (index) => {
         const step = steps[index];
@@ -45,23 +45,28 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDele
         }
     };
 
+    const onStepAdd = (event) => {
+        onAdd(event);
+        onActivateStep(steps.length);
+    };
+
     return (
         <nav>
             <ul className="list list--accordion list--no-margin">
                 {
                     steps.map( (step, index) => (
                         <FormStepNavItem
-                            key={step.slug}
+                            key={step.slug || index}
                             name={step.name}
-                            active={Boolean(active && step.slug === active.slug)}
-                            onActivate={ () => onActivateStep(step) }
+                            active={Boolean(active && step.index === steps.indexOf(active))}
+                            onActivate={ () => onActivateStep(index) }
                             onReorder={onReorder.bind(null, index)}
                             onDelete={confirmDelete.bind(null, index)}
                         />
                     ))
                 }
                 <li className="list__item">
-                    <button type="button" onClick={console.log} className="button button--plain">
+                    <button type="button" onClick={onStepAdd} className="button button--plain button--center">
                         <span className="addlink">Add step</span>
                     </button>
                 </li>
@@ -78,6 +83,7 @@ FormStepsNav.propTypes = {
         name: PropTypes.string,
         slug: PropTypes.string,
         url: PropTypes.string,
+        isNew: PropTypes.bool,
     })),
     active: PropTypes.shape({
         configuration: PropTypes.object,
@@ -90,6 +96,7 @@ FormStepsNav.propTypes = {
     onActivateStep: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
 };
 
 

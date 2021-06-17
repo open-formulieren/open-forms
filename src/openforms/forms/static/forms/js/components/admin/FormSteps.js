@@ -5,7 +5,7 @@ import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
 
 
-const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, errors=[] }) => {
+const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, onAdd, errors=[] }) => {
     const [activeStepIndex, setActiveStepIndex] = useState(steps.length ? 0 : null);
     const activeStep = steps.length ? steps[activeStepIndex] : null;
 
@@ -15,9 +15,10 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onRep
                 <FormStepsNav
                     steps={steps}
                     active={activeStep}
-                    onActivateStep={(step) => setActiveStepIndex(steps.indexOf(step))}
+                    onActivateStep={setActiveStepIndex}
                     onReorder={onReorder}
                     onDelete={onDelete}
+                    onAdd={onAdd}
                 />
             </div>
 
@@ -54,6 +55,7 @@ FormSteps.propTypes = {
     onDelete: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
     errors: PropTypes.array,
 };
 

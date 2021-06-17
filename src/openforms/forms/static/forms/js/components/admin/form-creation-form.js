@@ -32,6 +32,14 @@ const initialFormState = {
     stepsToDelete: []
 };
 
+const newStepData = {
+    configuration:  {display: 'form'},
+    formDefinition: '',
+    slug: '',
+    url: '',
+    isNew: true,
+};
+
 function reducer(draft, action) {
     switch (action.type) {
         /**
@@ -74,11 +82,11 @@ function reducer(draft, action) {
             break;
         }
         case 'ADD_STEP': {
+            const newIndex = draft.formSteps.data.length;
             const emptyStep = {
-                formDefinition: '',
-                configuration:  {display: 'form'},
-                // index: draft.formSteps.data.length,
-                url: ''
+                ...newStepData,
+                index: newIndex,
+                name: `Stap ${newIndex + 1}`,
             };
             draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
             break;
@@ -86,15 +94,22 @@ function reducer(draft, action) {
         case 'REPLACE_STEP': {
             const {index, formDefinitionUrl} = action.payload;
             if (!formDefinitionUrl) {
-                draft.formSteps.data[index].formDefinition = '';
-                draft.formSteps.data[index].configuration = {display: 'form'};
-                draft.formSteps.data[index].name = '';
-                draft.formSteps.data[index].slug = '';
+                draft.formSteps.data[index] = {
+                    ...draft.formSteps.data[index],
+                    ...newStepData,
+                };
             } else {
-                draft.formSteps.data[index].formDefinition = formDefinitionUrl;
-                draft.formSteps.data[index].configuration = draft.formDefinitions[formDefinitionUrl].configuration;
-                draft.formSteps.data[index].name = draft.formDefinitions[formDefinitionUrl].name;
-                draft.formSteps.data[index].slug = draft.formDefinitions[formDefinitionUrl].slug;
+                const { configuration, name, slug } = draft.formDefinitions[formDefinitionUrl];
+                const { url } = draft.formSteps.data[index];
+                draft.formSteps.data[index] = {
+                    configuration,
+                    formDefinition: formDefinitionUrl,
+                    index,
+                    name,
+                    slug,
+                    url,
+                    isNew: false,
+                };
             }
             break;
         }
@@ -252,7 +267,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const addStep = (event) => {
+    const onAddStep = (event) => {
         event.preventDefault();
         dispatch({
             type: 'ADD_STEP',
@@ -476,16 +491,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         onDelete={onStepDelete}
                         onReorder={onStepReorder}
                         onReplace={onStepReplace}
+                        onAdd={onAddStep}
                         errors={state.errors.formSteps}
                     />
                 </FormDefinitionsContext.Provider>
             </Fieldset>
 
-            <div style={{marginBottom: '20px'}}>
-                <a href="#" onClick={addStep} className="addlink">
-                    Add step
-                </a>
-            </div>
             <SubmitRow onSubmit={onSubmit} />
             { !state.newForm ?
                 <div className="submit-row">
