@@ -7,6 +7,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from privates.fields import PrivateMediaFileField
+
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
@@ -296,3 +298,31 @@ class SubmissionStep(models.Model):
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
         return bool(self.pk and self.data is not None)
+
+
+class SubmissionReport(models.Model):
+    title = models.CharField(
+        verbose_name=_("title"),
+        max_length=200,
+        help_text=_("Title of the submission report"),
+    )
+    content = PrivateMediaFileField(
+        verbose_name=_("content"),
+        upload_to="submission-reports/%Y/%m/%d",
+        help_text=_("Content of the submission report"),
+    )
+    submission = models.ForeignKey(
+        to="Submission",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name=_("submission"),
+        help_text=_("Submission related to the report"),
+    )
+
+    class Meta:
+        verbose_name = _("submission report")
+        verbose_name_plural = _("submission reports")
+
+    def __str__(self):
+        return self.title
