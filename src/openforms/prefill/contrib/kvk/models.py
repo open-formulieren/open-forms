@@ -31,9 +31,9 @@ class KVKConfig(SingletonModel):
     )
 
     use_operation = models.CharField(
-        _("OAS operation"),
+        _("KVK Environment"),
         max_length=255,
-        default=CompanyOperationChoice.production,
+        default=CompanyOperationChoice.development,
         choices=CompanyOperationChoice.choices,
         help_text=_("The development API uses different paths/operations"),
     )
