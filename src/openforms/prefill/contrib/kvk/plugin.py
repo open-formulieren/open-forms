@@ -7,19 +7,19 @@ from glom import GlomError, glom
 from requests import RequestException
 from zds_client import ClientError
 
+from openforms.contrib.kvk.client import KVKClient, KVKClientError
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
 from .constants import Attributes
-from .models import KVKConfig
 
 logger = logging.getLogger(__name__)
 
 
 class KVKBasePrefill(BasePlugin):
     """
-    base plugin for KVK companies prefill
+    base plugin for KVK companies prefill, need subclassing for specialisation
     """
 
     query_param = None
@@ -35,30 +35,13 @@ class KVKBasePrefill(BasePlugin):
         if not self.get_submission_attr(submission):
             return {}
 
-        config = KVKConfig.get_solo()
-        if not config.service:
-            logger.warning("no service defined for KvK prefill")
-            return {}
-
-        client = config.service.build_client()
+        client = KVKClient()
 
         try:
-            results = client.operation(
-                config.use_operation,
-                method="GET",
-                data=None,
-                request_kwargs=dict(
-                    params={
-                        self.get_query_param(): self.get_submission_attr(submission)
-                    },
-                ),
+            results = client.query(
+                **{self.get_query_param(): self.get_submission_attr(submission)}
             )
-
-        except RequestException as e:
-            logger.exception("exception while making request", exc_info=e)
-            return {}
-        except ClientError as e:
-            logger.exception("exception while making request", exc_info=e)
+        except (RequestException, ClientError, KVKClientError):
             return {}
 
         items = results["data"]["items"]

@@ -11,8 +11,9 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
-from openforms.utils.validators import validate_bsn, validate_kvk
+from openforms.utils.validators import validate_bsn
 
+from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
 
 logger = logging.getLogger(__name__)

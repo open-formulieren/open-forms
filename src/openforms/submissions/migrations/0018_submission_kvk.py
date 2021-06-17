@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+import openforms.contrib.kvk.validators
 import openforms.submissions.models
 import openforms.utils.validators
 
@@ -20,7 +21,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default=openforms.submissions.models.get_default_kvk,
                 max_length=9,
-                validators=[openforms.utils.validators.KVKValidator()],
+                validators=[openforms.contrib.kvk.validators.KVKValidator()],
                 verbose_name="KvK number",
             ),
         ),

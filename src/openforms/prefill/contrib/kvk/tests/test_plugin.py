@@ -1,40 +1,18 @@
-import json
-import os
-
 from django.test import TestCase
 
 import requests_mock
 from glom import PathAccessError, glom
 from zgw_consumers.test import mock_service_oas_get
 
+from openforms.contrib.kvk.tests.test_client import KVKTestMixin
 from openforms.prefill.contrib.kvk.constants import Attributes
-from openforms.prefill.contrib.kvk.models import KVKConfig
 from openforms.prefill.contrib.kvk.plugin import KVK_KVKNumberPrefill
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
-def load_json_mock(name):
-    path = os.path.join(os.path.dirname(__file__), "files", name)
-    with open(path, "r") as f:
-        return json.load(f)
-
-
-class KVKPrefillTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        config = KVKConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://companies/",
-            oas="https://companies/api/schema/openapi.yaml",
-        )
-        config.service = service
-        config.save()
-
+class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_defined_attributes_paths_resolve(self):
-        data = load_json_mock("companies.json")
+        data = self.load_json_mock("companies.json")
         data = data["data"]["items"][0]
         for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
             # TODO support array elements
@@ -52,7 +30,7 @@ class KVKPrefillTest(TestCase):
         m.get(
             "https://companies/api/v2/testprofile/companies?kvkNumber=69599084",
             status_code=200,
-            json=load_json_mock("companies.json"),
+            json=self.load_json_mock("companies.json"),
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
