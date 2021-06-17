@@ -35,6 +35,11 @@ class TestSubmission(TestCase):
                     {"key": "key", "type": "textfield"},
                     {"key": "key2", "type": "textarea"},
                     {"key": "key3", "type": "checkbox"},
+                    {
+                        "key": "key4",
+                        "type": "fieldset",
+                        "components": [{"key": "key5", "type": "textfield"}],
+                    },
                 ],
             }
         )
@@ -46,7 +51,11 @@ class TestSubmission(TestCase):
         )
         SubmissionStepFactory.create(
             submission=submission,
-            data={"key2": "this is other text in a text area", "key3": True},
+            data={
+                "key2": "this is other text in a text area",
+                "key3": True,
+                "key5": "this is some inner text",
+            },
             form_step=FormStepFactory.create(form_definition=form_definition),
         )
         SubmissionStepFactory.create(
@@ -62,5 +71,6 @@ class TestSubmission(TestCase):
                     "value": "this is other text in a text area",
                 },
                 "key3": {"type": "checkbox", "value": True},
+                "key5": {"type": "textfield", "value": "this is some inner text"},
             },
         )

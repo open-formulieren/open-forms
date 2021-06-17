@@ -15,6 +15,7 @@ from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
+from ..utils.helpers import get_flattened_components
 
 logger = logging.getLogger(__name__)
 
@@ -183,10 +184,13 @@ class Submission(models.Model):
     def get_merged_data_with_component_type(self) -> dict:
         merged_data = dict()
 
-        for step in self.submissionstep_set.exclude(data=None):
+        for step in self.submissionstep_set.exclude(data=None).select_related(
+            "form_step"
+        ):
             components = step.form_step.form_definition.configuration["components"]
+            flattened_components = get_flattened_components(components)
             component_key_to_type = dict()
-            for component in components:
+            for component in flattened_components:
                 component_key_to_type[component["key"]] = component["type"]
             for key, value in step.data.items():
                 if key in merged_data:
