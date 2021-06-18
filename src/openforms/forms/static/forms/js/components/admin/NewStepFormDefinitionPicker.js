@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
-import ReactModal from 'react-modal';
 
 import Field from '../formsets/Field';
 import FormRow from '../formsets/FormRow';
@@ -9,6 +8,7 @@ import SubmitRow from "../formsets/SubmitRow";
 import { getFormDefinitionChoices } from '../utils/form-definition-choices';
 import { FormDefinitionsContext } from './Context';
 import FAIcon from './FAIcon';
+import FormModal from './FormModal';
 
 
 const NewStepFormDefinitionPicker = ({ onReplace }) => {
@@ -51,37 +51,29 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                 <span>Maak een nieuwe formulierdefinitie</span>
             </button>
 
-            <ReactModal
+            <FormModal
                 isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                className="react-modal__content react-modal__content--with-form"
-                overlayClassName="react-modal__overlay"
+                closeModal={closeModal}
+                title="Gebruik bestaande formulierdefinitie"
             >
-                <header className="react-modal__header">
-                    <h2 className="react-modal__title">Gebruik bestaande formulierdefinitie</h2>
-                    <FAIcon icon="close" extraClassname="fa-lg react-modal__close" title="Sluiten" onClick={closeModal} />
-                </header>
+                <FormRow>
+                    <Field
+                        name="form-definition"
+                        label="Selecteer formulierdefinitie"
+                        errors={validationErrors}
+                        required
+                    >
+                        <Select
+                            name="Form definition"
+                            choices={formDefinitionChoices}
+                            value={selectedFormDefinition}
+                            onChange={onSelectChange}
+                        />
+                    </Field>
+                </FormRow>
 
-                <form className="aligned react-modal__form">
-                    <FormRow>
-                        <Field
-                            name="form-definition"
-                            label="Selecteer formulierdefinitie"
-                            errors={validationErrors}
-                            required
-                        >
-                            <Select
-                                name="Form definition"
-                                choices={formDefinitionChoices}
-                                value={selectedFormDefinition}
-                                onChange={onSelectChange}
-                            />
-                        </Field>
-                    </FormRow>
-
-                    <SubmitRow onSubmit={onFormDefinitionConfirmed} btnText="Bevestigen" preventDefault />
-                </form>
-            </ReactModal>
+                <SubmitRow onSubmit={onFormDefinitionConfirmed} btnText="Bevestigen" preventDefault />
+            </FormModal>
 
         </div>
     );
