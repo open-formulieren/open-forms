@@ -10,9 +10,11 @@ from ...forms.tests.factories import FormStepFactory
 from ..base import BasePlugin
 from ..registry import Registry
 from ..views import (
+    BACKEND_OUTAGE_RESPONSE_PARAMETER,
     AuthenticationReturnView,
     AuthenticationStartView,
     allow_redirect_url,
+    set_url_params,
 )
 
 
@@ -24,6 +26,16 @@ class Plugin(BasePlugin):
 
     def handle_return(self, request, form):
         return HttpResponseRedirect(request.GET.get("next"))
+
+
+class FailingPlugin(BasePlugin):
+    verbose_name = "some human readable label"
+
+    def start_login(self, request, form, form_url):
+        raise Exception("start")
+
+    def handle_return(self, request, form):
+        raise Exception("return")
 
 
 class RegistryTests(TestCase):
@@ -205,6 +217,46 @@ class RegistryTests(TestCase):
             self.assertEqual(response.content, b"redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_start_failure_redirects(self):
+        # override and restore the plugin registry used by the views
+        def restore_views(*args):
+            AuthenticationStartView.register, AuthenticationReturnView.register = args
+
+        self.addCleanup(
+            restore_views,
+            AuthenticationStartView.register,
+            AuthenticationReturnView.register,
+        )
+
+        register = Registry()
+        AuthenticationStartView.register = register
+        AuthenticationReturnView.register = register
+
+        register("plugin1")(FailingPlugin)
+        plugin = register["plugin1"]
+
+        step = FormStepFactory(
+            form__slug="myform",
+            form__authentication_backends=["plugin1"],
+            form_definition__login_required=True,
+        )
+        form = step.form
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        request = factory.get("/foo")
+
+        # actual test starts here
+        next_url_enc = quote("http://foo.bar?bazz=buzz")
+
+        url = plugin.get_start_url(request, form)
+        response = self.client.get(f"{url}?next={next_url_enc}")
+
+        param = BACKEND_OUTAGE_RESPONSE_PARAMETER
+        expected = f"http://foo.bar?bazz=buzz&{param}=plugin1"
+        self.assertEqual(response["Location"], expected)
+
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False,
         CORS_ALLOWED_ORIGINS=[],
@@ -239,3 +291,17 @@ class RegistryTests(TestCase):
             self.assertEqual(allow_redirect_url("http://foo.bar/bazz"), True)
             self.assertEqual(allow_redirect_url("https://foo.bar"), True)
             self.assertEqual(allow_redirect_url("http://bazz.buzz"), False)
+
+    def test_set_url_params(self):
+        url = set_url_params("https://foo.bar/buzz", bob=123, bab=321)
+        self.assertEqual(url, "https://foo.bar/buzz?bob=123&bab=321")
+
+        url = set_url_params("https://foo.bar/buzz/", bob=123)
+        self.assertEqual(url, "https://foo.bar/buzz/?bob=123")
+
+        url = set_url_params("https://foo.bar/buzz?bazz=bozz", bob=123)
+        self.assertEqual(url, "https://foo.bar/buzz?bazz=bozz&bob=123")
+
+        # overwrite exising
+        url = set_url_params("https://foo.bar/buzz?bazz=bozz", bazz=123)
+        self.assertEqual(url, "https://foo.bar/buzz?bazz=123")
