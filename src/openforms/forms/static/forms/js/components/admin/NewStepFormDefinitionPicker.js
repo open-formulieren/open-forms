@@ -46,7 +46,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
 
             <span className="tiles__separator">&bull;</span>
 
-            <button type="button" className="tiles__tile">
+            <button type="button" className="tiles__tile" onClick={() => {onReplace('')}}>
                 <FAIcon icon="pencil-square-o" extraClassname="fa-2x" title="Maak definitie" />
                 <span>Maak een nieuwe formulierdefinitie</span>
             </button>
@@ -72,7 +72,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                     </Field>
                 </FormRow>
 
-                <SubmitRow onSubmit={onFormDefinitionConfirmed} btnText="Bevestigen" preventDefault />
+                <SubmitRow onSubmit={onFormDefinitionConfirmed} btnText="Bevestigen" isDefault preventDefault />
             </FormModal>
 
         </div>

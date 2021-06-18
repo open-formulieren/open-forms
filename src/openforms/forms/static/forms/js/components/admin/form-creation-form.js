@@ -91,12 +91,15 @@ function reducer(draft, action) {
             draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
             break;
         }
-        case 'REPLACE_STEP': {
+        case 'FORM_DEFINITION_CHOSEN': {
             const {index, formDefinitionUrl} = action.payload;
             if (!formDefinitionUrl) {
                 draft.formSteps.data[index] = {
                     ...draft.formSteps.data[index],
                     ...newStepData,
+                    // if we're creating a new form definition, mark the step no longer as new since a decision
+                    // was made (re-use one or create a new one)
+                    isNew: false,
                 };
             } else {
                 const { configuration, name, slug } = draft.formDefinitions[formDefinitionUrl];
@@ -276,7 +279,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
 
     const onStepReplace = (index, formDefinitionUrl) => {
         dispatch({
-            type: 'REPLACE_STEP',
+            type: 'FORM_DEFINITION_CHOSEN',
             payload: {
                 index: index,
                 formDefinitionUrl,
@@ -421,26 +424,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         window.location = ADMIN_PAGE;
     };
 
-    const onCopy = async (event) => {
-        event.preventDefault();
-        const response = await post(
-            `${FORM_ENDPOINT}/${state.formUuid}/copy_form`,
-            csrftoken,
-        );
-
-        if (!response.ok) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: response.data});
-            window.scrollTo(0, 0);
-        }
-
-        window.location = `${ADMIN_PAGE}/${response.data.newPk}/change/`;
-    };
-
-    const onExport = async (event) => {
-        event.preventDefault();
-        window.location = `${FORM_ENDPOINT}/${state.formUuid}/export_form`;
-    };
-
     return (
         <>
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
@@ -497,26 +480,22 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                 </FormDefinitionsContext.Provider>
             </Fieldset>
 
-            <SubmitRow onSubmit={onSubmit} />
+            <SubmitRow onSubmit={onSubmit} isDefault />
             { !state.newForm ?
-                <div className="submit-row">
+                <SubmitRow extraClassName="submit-row-extended">
                     <input
                         type="submit"
-                        value="Copy"
-                        className="default"
+                        value="Kopiëren"
                         name="_copy"
                         title="Duplicate this form"
-                        onClick={onCopy}
                     />
                     <input
                         type="submit"
-                        value="Export"
-                        className="default"
+                        value="Exporteren"
                         name="_export"
                         title="Export this form"
-                        onClick={onExport}
                     />
-                </div> : null
+                </SubmitRow> : null
             }
         </>
     );
