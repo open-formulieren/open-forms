@@ -1,6 +1,7 @@
 import logging
 
 from django.db import transaction
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +19,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 
 from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
+from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
     create_submission_report,
@@ -108,14 +110,23 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         transaction.on_commit(lambda: register_submission.delay(submission.id))
-        transaction.on_commit(lambda: create_submission_report(submission))
 
         if hasattr(submission.form, "confirmation_email_template"):
             transaction.on_commit(lambda: send_confirmation_email(submission))
 
         submission.save()
         remove_submission_from_session(submission, self.request)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        submission_report = create_submission_report(submission)
+        token = token_generator.make_token(submission_report)
+        download_report_url = reverse(
+            "submission:download-submission",
+            kwargs={"report_id": submission_report.id, "token": token},
+        )
+
+        return Response(
+            status=status.HTTP_200_OK, data={"download_url": download_report_url}
+        )
 
     @extend_schema(
         summary=_("Suspend a submission"),
