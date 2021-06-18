@@ -9,18 +9,11 @@ import {TextInput} from "../formsets/Inputs";
 import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
 import FAIcon from "./FAIcon";
+import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 
 const emptyConfiguration = {
     display: 'form',
 };
-
-
-// if (name === 'name' && !draft.formSteps.data[index].slug) {
-//     const slug = URLify(value, 100, false);
-//     draft.formSteps.data[index].slug = slug;
-// }
-
-
 
 /**
  * Load the form builder for a given form definition.
@@ -50,8 +43,12 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
         });
     };
 
+    const { changed, affectedForms } = useDetectConfigurationChanged(url, configuration);
+
     return (
         <>
+            { changed ? <div>Formulierdefinitie is gewijzigd</div> : null }
+
             <fieldset className="module aligned">
                 <h2>Formulierdefinitie</h2>
 

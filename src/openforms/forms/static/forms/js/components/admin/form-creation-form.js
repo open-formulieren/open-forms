@@ -14,9 +14,7 @@ import { FormDefinitionsContext } from './Context';
 import FormSteps from './FormSteps';
 import {FormException} from "../../utils/exception";
 
-const FORM_ENDPOINT = '/api/v1/forms';
-const FORM_DEFINITIONS_ENDPOINT = '/api/v1/form-definitions';
-const ADMIN_PAGE = '/admin/forms/form';
+import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE } from './constants';
 
 const initialFormState = {
     formName: '',
