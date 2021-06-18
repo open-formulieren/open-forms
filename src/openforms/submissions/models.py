@@ -319,6 +319,12 @@ class SubmissionReport(models.Model):
         verbose_name=_("submission"),
         help_text=_("Submission related to the report"),
     )
+    last_accessed = models.DateTimeField(
+        verbose_name=_("last accessed"),
+        blank=True,
+        null=True,
+        help_text=_("When the submission report was last accessed"),
+    )
 
     class Meta:
         verbose_name = _("submission report")
