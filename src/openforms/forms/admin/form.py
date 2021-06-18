@@ -163,13 +163,14 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
             instance.copy()
         messages.success(
             request,
-            _("{number_instances} {verbose_name} copied").format(
-                number_instances=queryset.count(),
-                verbose_name=ngettext(
-                    queryset.model._meta.verbose_name,
-                    queryset.model._meta.verbose_name_plural,
-                    queryset.count(),
-                ),
+            opts = queryset.model._meta
+            ngettext(
+                "Copied {count} {verbose_name}",
+                "Copied {count} {verbose_name_plural}",
+                queryset.count()
+            ).format(
+                verbose_name=opts.verbose_name,
+                verbose_name_plural=opts.verbose_name_plural,
             ),
         )
 

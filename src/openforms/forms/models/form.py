@@ -65,7 +65,7 @@ class Form(models.Model):
         _("maintenance mode"),
         default=False,
         help_text=_(
-            "Users will not be able to fill in the form if it is in maintenance mode."
+            "Users will not be able to start the form if it is in maintenance mode."
         ),
     )
     _is_deleted = models.BooleanField(default=False)
