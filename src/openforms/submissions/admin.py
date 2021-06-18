@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
-from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
+from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
 from .models import Submission, SubmissionStep
 
@@ -30,19 +30,21 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    readonly_fields = ["created_on", "display_merged_data"]
+    readonly_fields = ["created_on"]
     actions = ["export_csv", "export_xlsx"]
 
-    def display_merged_data(self, obj):
-        merged_data = obj.get_merged_data()
-        ret = format_html_join(
-            "\n",
-            "<li>{}: {}</li>",
-            ((key, value) for key, value in merged_data.items()),
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        submission = self.get_object(request, object_id)
+        extra_context = {
+            "data": submission.data_with_component_type,
+            "image_components": IMAGE_COMPONENTS,
+        }
+        return super().change_view(
+            request,
+            object_id,
+            form_url=form_url,
+            extra_context=extra_context,
         )
-        return format_html("<ul>{}</ul>", ret)
-
-    display_merged_data.short_description = _("Submitted data")
 
     def _export(self, request, queryset, file_type):
         if queryset.order_by().values("form").distinct().count() > 1:

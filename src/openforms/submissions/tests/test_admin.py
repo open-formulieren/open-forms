@@ -3,7 +3,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -12,11 +12,22 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 class TestSubmissionAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):
-        step = FormStepFactory.create()
+        form_definition = FormDefinitionFactory(
+            configuration={
+                "components": [
+                    {"type": "textfield", "key": "adres"},
+                    {"type": "textfield", "key": "voornaam"},
+                    {"type": "textfield", "key": "familienaam"},
+                    {"type": "date", "key": "geboortedatum"},
+                    {"type": "signature", "key": "signature"},
+                ]
+            }
+        )
+        step = FormStepFactory.create(form_definition=form_definition)
         cls.user = UserFactory.create(is_superuser=True, is_staff=True)
         cls.submission_1 = SubmissionFactory.create(form=step.form)
         submission_2 = SubmissionFactory.create(form=step.form)
-        SubmissionStepFactory.create(
+        cls.submission_step_1 = SubmissionStepFactory.create(
             submission=cls.submission_1,
             form_step=step,
             data={"adres": "Voorburg", "voornaam": "shea", "familienaam": "meyers"},
@@ -39,9 +50,27 @@ class TestSubmissionAdmin(WebTest):
             user=self.user,
         )
 
-        self.assertInHTML(
-            "<li>adres: Voorburg</li>\\n<li>voornaam: shea</li>\\n<li>familienaam: meyers</li>",
-            str(response.content),
+        self.assertContains(
+            response,
+            "<ul><li>adres: Voorburg</li><li>voornaam: shea</li><li>familienaam: meyers</li></ul>",
+            html=True,
+        )
+
+    def test_displaying_merged_data_displays_signature_as_image(self):
+        self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
+        self.submission_step_1.save()
+
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertContains(
+            response,
+            "<li>signature: <img class='signature-image' src='data:image/png;base64,iVBOR' alt='signature'></li>",
+            html=True,
         )
 
     def test_export_csv_successfully_exports_csv_file(self):

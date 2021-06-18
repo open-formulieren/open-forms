@@ -26,7 +26,7 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
-    configuration = {"components": [{"type": "test-component"}]}
+    configuration = {"components": [{"type": "test-component", "key": "test-key"}]}
 
 
 class FormStepFactory(factory.django.DjangoModelFactory):

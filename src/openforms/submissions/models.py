@@ -14,6 +14,7 @@ from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
+from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
 
 logger = logging.getLogger(__name__)
@@ -180,6 +181,32 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
 
+    def get_merged_data_with_component_type(self) -> dict:
+        merged_data = dict()
+
+        for step in self.submissionstep_set.exclude(data=None).select_related(
+            "form_step"
+        ):
+            components = step.form_step.form_definition.configuration["components"]
+            flattened_components = get_flattened_components(components)
+            component_key_to_type = dict()
+            for component in flattened_components:
+                component_key_to_type[component["key"]] = component["type"]
+            for key, value in step.data.items():
+                if key in merged_data:
+                    logger.warning(
+                        "%s was previously in merged_data and will be overwritten by %s",
+                        key,
+                        value,
+                    )
+
+                merged_data[key] = {
+                    "type": component_key_to_type.get(key, "unknown component"),
+                    "value": value,
+                }
+
+        return merged_data
+
     def get_merged_data(self) -> dict:
         merged_data = dict()
 
@@ -196,6 +223,7 @@ class Submission(models.Model):
         return merged_data
 
     data = property(get_merged_data)
+    data_with_component_type = property(get_merged_data_with_component_type)
 
 
 class SubmissionStep(models.Model):

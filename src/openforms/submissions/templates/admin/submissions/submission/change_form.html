@@ -1,0 +1,25 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n %}
+
+{% block after_field_sets %}
+    <fieldset class="module aligned">
+        <div class="form-row field-merged_data">
+            <div>
+                <label>{% trans "Merged Data:" %}</label>
+                <div class="readonly">
+                    <ul>
+                        {% for key, value in data.items %}
+                            {% if value.type == 'unknown component' %}
+                                <li>{% trans "Unknown Component" %}</li>
+                            {% elif value.type in image_components %}
+                                <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
+                            {% else %}
+                                <li>{{ key }}: {{ value.value }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+{% endblock %}
