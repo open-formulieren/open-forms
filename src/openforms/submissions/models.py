@@ -13,6 +13,7 @@ from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
+from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
 
 logger = logging.getLogger(__name__)
@@ -57,6 +58,11 @@ def get_default_bsn() -> str:
     return config.default_test_bsn if config.default_test_bsn else ""
 
 
+def get_default_kvk() -> str:
+    config = GlobalConfiguration.get_solo()
+    return config.default_test_kvk if config.default_test_kvk else ""
+
+
 class Submission(models.Model):
     """
     Container for submission steps that hold the actual submitted data.
@@ -73,6 +79,13 @@ class Submission(models.Model):
         default=get_default_bsn,
         blank=True,
         validators=(validate_bsn,),
+    )
+    kvk = models.CharField(
+        _("KvK number"),
+        max_length=9,
+        default=get_default_kvk,
+        blank=True,
+        validators=(validate_kvk,),
     )
     current_step = models.PositiveIntegerField(_("current step"), default=0)
 

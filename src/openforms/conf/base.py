@@ -138,12 +138,14 @@ INSTALLED_APPS = [
     "openforms.utils",
     "openforms.submissions",
     "openforms.contrib.brp",
+    "openforms.contrib.kvk",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.email",
     "openforms.registrations.contrib.stuf_zds",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
+    "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
     "openforms.prefill.contrib.haalcentraal.apps.HaalCentraalApp",
     "openforms.authentication",
@@ -623,4 +625,5 @@ ZGW_CONSUMERS_CLIENT_CLASS = "zgw_consumers.client.ZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
 ]

@@ -19,7 +19,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Submissions"),
             {
-                "fields": ("default_test_bsn",),
+                "fields": ("default_test_bsn", "default_test_kvk"),
             },
         ),
         (
