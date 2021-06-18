@@ -56,8 +56,8 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDele
                 {
                     steps.map( (step, index) => (
                         <FormStepNavItem
-                            key={step.slug || index}
-                            name={step.name}
+                            key={index}
+                            name={ step.isNew ? `${step.name} [nieuw]` : step.name}
                             active={Boolean(active && step.index === steps.indexOf(active))}
                             onActivate={ () => onActivateStep(index) }
                             onReorder={onReorder.bind(null, index)}

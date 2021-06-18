@@ -1,0 +1,68 @@
+@import '../../../../../../scss/vars';
+
+.react-modal {
+
+  &__overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed;
+    z-index: 10000000;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background-color: rgba(255, 255, 255, 0.75);
+  }
+
+  &__content {
+    position: absolute;
+    width: 50vw;
+    height: 50vh;
+    background: white;
+    border: solid 1px #eee;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+    overflow: auto;
+
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%),
+                0 6px 20px 0 rgb(0 0 0 / 20%);
+
+    &--with-form {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__title {
+    // taken from div#content h1 admin CSS styles
+    font-weight: 300;
+    font-size: 20px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .submit-row {
+      width: 100%;
+      margin-top: auto;
+    }
+  }
+}

@@ -274,14 +274,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
-    const onStepReplace = (index, event) => {
+    const onStepReplace = (index, formDefinitionUrl) => {
         dispatch({
             type: 'REPLACE_STEP',
             payload: {
                 index: index,
-                formDefinitionUrl: event.target.value
+                formDefinitionUrl,
             }
-        })
+        });
     };
 
     const onStepEdit = (index, configuration) => {

@@ -68,6 +68,7 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
                         label='Step name'
                         helpText='Name of the form definition used in this form step'
                         errors={errors.name}
+                        required
                         fieldBox
                     >
                         <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
@@ -77,6 +78,7 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
                         label='Step slug'
                         helpText='Slug of the form definition used in this form step'
                         errors={errors.slug}
+                        required
                         fieldBox
                     >
                         <TextInput value={slug} onChange={onFieldChange}/>

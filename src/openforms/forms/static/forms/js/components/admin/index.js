@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import ReactModal from 'react-modal';
+
 import {FormCreationForm} from './form-creation-form';
 
 
@@ -9,6 +11,8 @@ const mountForm = () => {
 
     for (const formCreationFormNode of formCreationFormNodes) {
         const { formUuid, formName, formSlug, csrftoken } = formCreationFormNode.dataset;
+
+        ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
             <FormCreationForm

@@ -66,6 +66,7 @@
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "postcss-selector-lint": "^1.0.2",
+    "react-modal": "^3.14.3",
     "sass": "^1.32.12",
     "sass-loader": "^10.1.1",
     "simulant": "^0.2.2",

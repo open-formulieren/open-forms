@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const SubmitRow = ({ onSubmit, preventDefault=true }) => {
+const SubmitRow = ({ onSubmit, preventDefault=true, btnText='Opslaan' }) => {
 
     const onSubmitClick = (event) => {
         if (preventDefault) event.preventDefault();
@@ -13,7 +13,7 @@ const SubmitRow = ({ onSubmit, preventDefault=true }) => {
         <div className="submit-row">
             <input
                 type="submit"
-                value="Opslaan"
+                value={btnText}
                 className="default"
                 name="_save"
                 onClick={onSubmitClick}
@@ -25,6 +25,7 @@ const SubmitRow = ({ onSubmit, preventDefault=true }) => {
 SubmitRow.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     preventDefault: PropTypes.bool,
+    btnText: PropTypes.string,
 };
 
 
