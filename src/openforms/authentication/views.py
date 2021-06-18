@@ -7,11 +7,13 @@ from django.http import (
     HttpResponseRedirect,
     QueryDict,
 )
-from django.views import View
-from django.views.generic.detail import SingleObjectMixin
+from django.utils.translation import gettext_lazy as _
 
 from corsheaders.conf import conf as cors_conf
 from corsheaders.middleware import CorsMiddleware
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from rest_framework.generics import RetrieveAPIView
 
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
@@ -55,7 +57,41 @@ def set_url_params(url: str, **params) -> str:
     return urlunparse(parts)
 
 
-class AuthenticationStartView(SingleObjectMixin, View):
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="slug",
+            location=OpenApiParameter.PATH,
+            type=OpenApiTypes.STR,
+            description=_("Slug identifiying the form."),
+        ),
+        OpenApiParameter(
+            name="plugin_id",
+            location=OpenApiParameter.PATH,
+            type=OpenApiTypes.STR,
+            description=_("Identifier of the authentication plugin."),
+        ),
+        OpenApiParameter(
+            name="next",
+            location=OpenApiParameter.QUERY,
+            type=OpenApiTypes.URI,
+            description=_("URL of the form to redirect back to."),
+            required=True,
+        ),
+    ]
+)
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("Start external login flow"),
+        description=_(
+            "This endpoint is the internal redirect target to start external login flow."
+        ),
+        responses={200: None, 302: None, 404: None, 405: None},
+    )
+)
+class AuthenticationStartView(RetrieveAPIView):
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     queryset = Form.objects.live()
     register = register
 
@@ -98,7 +134,41 @@ class AuthenticationStartView(SingleObjectMixin, View):
         return response
 
 
-class AuthenticationReturnView(SingleObjectMixin, View):
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="slug",
+            location=OpenApiParameter.PATH,
+            type=OpenApiTypes.STR,
+            description=_("Slug identifiying the form."),
+        ),
+        OpenApiParameter(
+            name="plugin_id",
+            location=OpenApiParameter.PATH,
+            type=OpenApiTypes.STR,
+            description=_("Identifier of the authentication plugin."),
+        ),
+    ]
+)
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("Return from external login flow"),
+        description=_(
+            "This endpoint is the internal redirect target when returning from external login flow."
+        ),
+        responses={200: None, 302: None, 404: None, 405: None},
+    ),
+    post=extend_schema(
+        summary=_("Return from external login flow"),
+        description=_(
+            "This endpoint is the internal redirect target when returning from external login flow."
+        ),
+        responses={200: None, 302: None, 404: None, 405: None},
+    ),
+)
+class AuthenticationReturnView(RetrieveAPIView):
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     queryset = Form.objects.live()
     register = register
 
