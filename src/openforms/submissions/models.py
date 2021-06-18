@@ -14,8 +14,8 @@ from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
-from .constants import RegistrationStatuses
 from ..utils.helpers import get_flattened_components
+from .constants import RegistrationStatuses
 
 logger = logging.getLogger(__name__)
 
