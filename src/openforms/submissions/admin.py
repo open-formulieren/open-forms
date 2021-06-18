@@ -33,8 +33,6 @@ class SubmissionAdmin(admin.ModelAdmin):
     readonly_fields = ["created_on"]
     actions = ["export_csv", "export_xlsx"]
 
-    change_form_template = "submissions/change_form.html"
-
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
         extra_context = {
