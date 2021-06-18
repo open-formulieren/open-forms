@@ -13,6 +13,7 @@ __pycache__
 
 # Javascript libraries
 /node_modules/
+/src/spa/
 
 # Generated files
 /docs/_build

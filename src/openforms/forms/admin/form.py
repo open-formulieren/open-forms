@@ -161,32 +161,34 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     def make_copies(self, request, queryset):
         for instance in queryset:
             instance.copy()
+
         messages.success(
             request,
-            opts = queryset.model._meta
             ngettext(
                 "Copied {count} {verbose_name}",
                 "Copied {count} {verbose_name_plural}",
-                queryset.count()
+                len(queryset),
             ).format(
-                verbose_name=opts.verbose_name,
-                verbose_name_plural=opts.verbose_name_plural,
+                count=len(queryset),
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 
     make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
 
     def set_to_maintenance_mode(self, request, queryset):
-        queryset.update(maintenance_mode=True)
+        count = queryset.filter(maintenance_mode=False).update(maintenance_mode=True)
         messages.success(
             request,
-            _("{number_instances} {verbose_name} set to maintenance mode").format(
-                number_instances=queryset.count(),
-                verbose_name=ngettext(
-                    queryset.model._meta.verbose_name,
-                    queryset.model._meta.verbose_name_plural,
-                    queryset.count(),
-                ),
+            ngettext(
+                "Set {count} {verbose_name} to maintenance mode",
+                "Set {count} {verbose_name_plural} to maintenance mode",
+                count,
+            ).format(
+                count=count,
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 
@@ -195,16 +197,17 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     )
 
     def remove_from_maintenance_mode(self, request, queryset):
-        queryset.update(maintenance_mode=False)
+        count = queryset.filter(maintenance_mode=True).update(maintenance_mode=False)
         messages.success(
             request,
-            _("{number_instances} {verbose_name} removed from maintenance mode").format(
-                number_instances=queryset.count(),
-                verbose_name=ngettext(
-                    queryset.model._meta.verbose_name,
-                    queryset.model._meta.verbose_name_plural,
-                    queryset.count(),
-                ),
+            ngettext(
+                "Removed {count} {verbose_name} from maintenance mode",
+                "Removed {count} {verbose_name_plural} from maintenance mode",
+                count,
+            ).format(
+                count=count,
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 
