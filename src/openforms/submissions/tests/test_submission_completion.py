@@ -84,7 +84,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("download_url", response.data)
+
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
 
@@ -131,7 +133,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         with capture_on_commit_callbacks(execute=True):
             response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
 
@@ -171,7 +173,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         with capture_on_commit_callbacks(execute=True):
             response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -337,10 +339,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
-
 
     @patch("openforms.registrations.tasks.register_submission.delay")
     @patch("openforms.submissions.api.viewsets.send_confirmation_email")
@@ -352,8 +353,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        with capture_on_commit_callbacks(execute=True):
-            self.client.post(endpoint)
+        self.client.post(endpoint)
 
         report = SubmissionReport.objects.get()
 
