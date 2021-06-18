@@ -125,6 +125,38 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Form
+        fields = (
+            "url",
+            "uuid",
+            "name",
+            "active",
+        )
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:form-detail",
+                "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
+            },
+        }
+
+
+class FormDefinitionDetailSerializer(FormDefinitionSerializer):
+    used_in = UsedInFormSerializer(
+        many=True,
+        label=_("Used in forms"),
+        help_text=_(
+            "The collection of forms making use of this definition. This includes both "
+            "active and inactive forms."
+        ),
+    )
+
+    class Meta(FormDefinitionSerializer.Meta):
+        fields = FormDefinitionSerializer.Meta.fields + ("used_in",)
+
+
 class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     index = serializers.IntegerField(source="order")
     configuration = serializers.JSONField(
