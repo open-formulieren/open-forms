@@ -81,7 +81,9 @@ Installation
 4. Edit the playbook ``app.yml`` to match your setup. Take special note of all
    **TODO** settings and **read through all the comments and variables**.
 
-5. Run the playbook:
+5. Rename ``hosts.example`` to ``hosts`` and make sure it contains your host.
+
+6. Run the playbook:
 
    .. code:: shell
 
