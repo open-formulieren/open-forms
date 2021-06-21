@@ -37,16 +37,45 @@ paths:
           type: integer
       tags:
       - forms
+      - form-definitions
       security:
       - tokenAuth: []
       - cookieAuth: []
-      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedFormDefinitionList'
+          description: ''
+    post:
+      operationId: form_definitions_create
+      description: ''
+      summary: Create a form definition
+      tags:
+      - forms
+      - form-definitions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormDefinition'
           description: ''
   /api/v1/form-definitions/{uuid}:
     get:
@@ -62,10 +91,46 @@ paths:
         required: true
       tags:
       - forms
+      - form-definitions
       security:
       - tokenAuth: []
       - cookieAuth: []
-      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormDefinitionDetail'
+          description: ''
+    put:
+      operationId: form_definitions_update
+      description: ''
+      summary: Update all details of a form definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      - form-definitions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDefinition'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -73,6 +138,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormDefinition'
           description: ''
+    patch:
+      operationId: form_definitions_partial_update
+      description: ''
+      summary: Update some details of a form definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      - form-definitions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFormDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFormDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFormDefinition'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormDefinition'
+          description: ''
+    delete:
+      operationId: form_definitions_destroy
+      description: ''
+      summary: Delete a form definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      - form-definitions
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/form-definitions/{uuid}/configuration:
     get:
       operationId: form_definitions_configuration_retrieve
@@ -95,7 +215,6 @@ paths:
       security:
       - tokenAuth: []
       - cookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -935,6 +1054,39 @@ components:
       - name
       - slug
       - url
+    FormDefinitionDetail:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        configuration:
+          type: object
+          additionalProperties: {}
+          description: The form definition as Formio.js JSON schema
+        usedIn:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsedInForm'
+          description: The collection of forms making use of this definition. This
+            includes both active and inactive forms.
+      required:
+      - configuration
+      - name
+      - slug
+      - url
+      - usedIn
     FormImport:
       type: object
       properties:
@@ -950,6 +1102,8 @@ components:
       properties:
         index:
           type: integer
+        slug:
+          type: string
           readOnly: true
         configuration:
           type: object
@@ -958,10 +1112,20 @@ components:
         formDefinition:
           type: string
           format: uri
+        name:
+          type: string
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
       required:
       - configuration
       - formDefinition
       - index
+      - name
+      - slug
+      - url
     IncompleteStep:
       type: object
       properties:
@@ -1163,11 +1327,34 @@ components:
           items:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
+    PatchedFormDefinition:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        configuration:
+          type: object
+          additionalProperties: {}
+          description: The form definition as Formio.js JSON schema
     PatchedFormStep:
       type: object
       properties:
         index:
           type: integer
+        slug:
+          type: string
           readOnly: true
         configuration:
           type: object
@@ -1176,6 +1363,13 @@ components:
         formDefinition:
           type: string
           format: uri
+        name:
+          type: string
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
     Plugin:
       type: object
       properties:
@@ -1284,6 +1478,24 @@ components:
       required:
       - email
       - suspendedOn
+    UsedInForm:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 50
+        active:
+          type: boolean
+      required:
+      - name
+      - url
   securitySchemes:
     cookieAuth:
       type: apiKey
