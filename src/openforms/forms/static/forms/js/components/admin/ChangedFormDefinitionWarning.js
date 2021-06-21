@@ -1,16 +1,35 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+
+import Modal from './Modal';
 
 
 const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const onShowModal = (event) => {
+        event.preventDefault();
+        setModalOpen(true);
+    };
+
     if (!changed) return null;
     return (
-        <ul className="messagelist">
-            <li className="warning">
-                Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft
-                effect op <a href="#" onClick={console.log}>{affectedForms.length} formulier(en)</a>.
-            </li>
-        </ul>
+        <>
+            <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} title={`Formulieren (${affectedForms.length})`}>
+                <ul>
+                    {affectedForms.map(form => (
+                        <li key={form.uuid}>{form.name}</li>
+                    ))}
+                </ul>
+            </Modal>
+
+            <ul className="messagelist">
+                <li className="warning">
+                    Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft
+                    effect op <a href="#" onClick={onShowModal}>{affectedForms.length} formulier(en)</a>.
+                </li>
+            </ul>
+        </>
     );
 };
 

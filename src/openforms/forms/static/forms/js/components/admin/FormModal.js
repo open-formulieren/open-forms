@@ -1,26 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactModal from 'react-modal';
 
-import FAIcon from './FAIcon';
+import Modal from './Modal';
 
 
 const FormModal = ({ isOpen=false, title, closeModal, children }) => (
-    <ReactModal
+    <Modal
         isOpen={isOpen}
-        onRequestClose={closeModal}
-        className="react-modal__content react-modal__content--with-form"
-        overlayClassName="react-modal__overlay"
+        title={title}
+        closeModal={closeModal}
+        contentModifiers={['with-form']}
     >
-        <header className="react-modal__header">
-            <h2 className="react-modal__title">{title}</h2>
-            <FAIcon icon="close" extraClassname="fa-lg react-modal__close" title="Sluiten" onClick={closeModal} />
-        </header>
-
         <form className="aligned react-modal__form">
             {children}
         </form>
-    </ReactModal>
+    </Modal>
 );
 
 
