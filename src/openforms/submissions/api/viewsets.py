@@ -125,7 +125,8 @@ class SubmissionViewSet(
         )
 
         return Response(
-            status=status.HTTP_200_OK, data={"download_url": download_report_url}
+            status=status.HTTP_200_OK,
+            data={"download_url": request.build_absolute_uri(download_report_url)},
         )
 
     @extend_schema(
