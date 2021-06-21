@@ -1,16 +1,30 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
+import Loader from './Loader';
 
 
-const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, onAdd, errors=[] }) => {
+const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, onAdd, submitting=false, errors=[] }) => {
     const [activeStepIndex, setActiveStepIndex] = useState(steps.length ? 0 : null);
     const activeStep = steps.length ? steps[activeStepIndex] : null;
 
+    const className = classNames(
+        'edit-panel',
+        {'edit-panel--submitting': submitting},
+    );
+
     return (
-        <section className="edit-panel">
+        <section className={className}>
+            { submitting ? (
+                <div className="edit-panel__submit-layer">
+                    <Loader />
+                </div>
+            ) : null}
+
+
             <div className="edit-panel__nav">
                 <FormStepsNav
                     steps={steps}
@@ -57,6 +71,7 @@ FormSteps.propTypes = {
     onReorder: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
+    submitting: PropTypes.bool,
     errors: PropTypes.array,
 };
 

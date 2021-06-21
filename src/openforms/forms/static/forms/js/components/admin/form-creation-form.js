@@ -28,7 +28,8 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: {},
-    stepsToDelete: []
+    stepsToDelete: [],
+    submitting: false,
 };
 
 const newStepData = {
@@ -140,8 +141,14 @@ function reducer(draft, action) {
         /**
          * Misc
          */
+        case 'SUBMIT_STARTED': {
+            draft.submitting = true;
+            draft.errors = {};
+            break;
+        }
         case 'SET_FETCH_ERRORS': {
             draft.errors = action.payload;
+            draft.submitting = false;
             break;
         }
         default:
@@ -205,7 +212,7 @@ const getFormDefinitions = async (dispatch) => {
 };
 
 
-const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
+const StepsFieldSet = ({ loading=true, submitting=false, loadingErrors, steps=[], ...props }) => {
     if (loadingErrors) {
         return (
             <div className="fetch-error">{loadingErrors}</div>
@@ -217,7 +224,7 @@ const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
     }
 
     return (
-        <FormSteps steps={steps} {...props} />
+        <FormSteps steps={steps} submitting={submitting} {...props} />
     );
 };
 
@@ -225,6 +232,7 @@ StepsFieldSet.propTypes = {
     loading: PropTypes.bool.isRequired,
     loadingErrors: PropTypes.node,
     steps: PropTypes.arrayOf(PropTypes.object),
+    submitting: PropTypes.bool,
 };
 
 
@@ -317,7 +325,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     };
 
     const onSubmit = async () => {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {}});
+        dispatch({type: 'SUBMIT_STARTED'});
 
         // Update the form
         const formData = {
@@ -472,6 +480,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         onReorder={onStepReorder}
                         onReplace={onStepReplace}
                         onAdd={onAddStep}
+                        submitting={state.submitting}
                         errors={state.errors.formSteps}
                     />
                 </FormDefinitionsContext.Provider>
