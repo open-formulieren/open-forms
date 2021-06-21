@@ -8,12 +8,12 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import Form, FormDefinition, FormStep
@@ -144,7 +144,10 @@ class FormsAPITests(APITestCase):
         self.assertFalse(Form.objects.exists())
         self.assertEqual(
             response.json(),
-            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+            {
+                "name": [_("This field is required.")],
+                "slug": [_("This field is required.")],
+            },
         )
 
     def test_create_form_unsuccessful_without_authorization(self):
@@ -226,7 +229,7 @@ class FormsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {"slug": ["Dit veld is vereist."]})
+        self.assertEqual(response.json(), {"slug": [_("This field is required.")]})
 
     def test_complete_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
@@ -255,7 +258,10 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json(),
-            {"name": ["Dit veld is vereist."], "slug": ["Dit veld is vereist."]},
+            {
+                "name": [_("This field is required.")],
+                "slug": [_("This field is required.")],
+            },
         )
 
     def test_complete_update_of_form_when_form_cannot_be_found(self):
@@ -306,7 +312,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -328,7 +334,13 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
-        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
+
+        errors = response.json()
+
+        self.assertIn("formDefinition", errors)
+        self.assertIn("index", errors)
+        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
+        self.assertEqual(errors["index"], [_("This field is required.")])
 
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
@@ -367,7 +379,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": self.other_form_definition.uuid},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -408,7 +420,7 @@ class FormsStepsAPITests(APITestCase):
             "api:formdefinition-detail",
             kwargs={"uuid": uuid.uuid4()},
         )
-        data = {"formDefinition": f"http://testserver{form_detail_url}"}
+        data = {"formDefinition": f"http://testserver{form_detail_url}", "index": 0}
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -434,7 +446,12 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(FormStep.objects.count(), 1)
-        self.assertEqual(response.json(), {"formDefinition": ["Dit veld is vereist."]})
+
+        errors = response.json()
+        self.assertIn("formDefinition", errors)
+        self.assertIn("index", errors)
+        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
+        self.assertEqual(errors["index"], [_("This field is required.")])
 
     def test_complete_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
@@ -659,6 +676,143 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()
         self.assertEqual(response_data["count"], 2)
+
+    def test_non_staff_user_cant_update(self):
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "name": "Updated name",
+                "slug": "updated-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_non_staff_user_cant_create(self):
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_non_staff_user_cant_delete(self):
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.delete(url)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_update(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "name": "Updated name",
+                "slug": "updated-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        definition.refresh_from_db()
+
+        self.assertEqual("Updated name", definition.name)
+        self.assertEqual("updated-slug", definition.slug)
+        self.assertIn({"label": "New field"}, definition.configuration["components"])
+
+    def test_create(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        definition = FormDefinition.objects.get()
+
+        self.assertEqual("Name", definition.name)
+        self.assertEqual("a-slug", definition.slug)
+        self.assertEqual(
+            [{"label": "New field"}], definition.configuration["components"]
+        )
+
+    def test_delete(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"label": "Existing field"}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.delete(url)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        self.assertEqual(0, FormDefinition.objects.all().count())
 
 
 class ImportExportAPITests(APITestCase):

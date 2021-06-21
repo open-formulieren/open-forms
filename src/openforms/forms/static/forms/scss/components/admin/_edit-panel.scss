@@ -1,0 +1,48 @@
+@import '../../../../../../scss/vars';
+
+.edit-panel {
+  display: flex;
+  position: relative;
+
+  h2 + & {
+    margin-top: 20px;
+  }
+
+  &__submit-layer {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.75);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__nav {
+    width: 25%;
+    max-width: 300px;;
+    margin-right: 10px;
+  }
+
+  &__edit-area {
+    width: 100%;
+
+    // override default django styles
+    h2 {
+      background: $color-secondary-dark;
+      color: $color-dark;
+    }
+  }
+}
+
+// admin style overrides
+.edit-panel {
+  @at-root form .aligned & ul.messagelist {
+    margin-left: 0;
+    padding-left: 0;
+  }
+}

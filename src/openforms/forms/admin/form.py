@@ -10,6 +10,7 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 from rest_framework.exceptions import ValidationError
 from reversion.admin import VersionAdmin
 
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import BackendChoiceFieldMixin
 
 from ..backends import registry
@@ -52,10 +53,40 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         "admin/forms/form/change_list.html"  # override reversion template
     )
 
+    def use_react(self, request):
+        if not hasattr(request, "_use_react_form_crud"):
+            config = GlobalConfiguration.get_solo()
+            request._use_react_form_crud = config.enable_react_form
+        return request._use_react_form_crud
+
+    def render_change_form(
+        self, request, context, add=False, change=False, form_url="", obj=None
+    ):
+        if self.use_react(request):
+            self.change_form_template = "admin/forms/form/change_form_react.html"
+        return super().render_change_form(request, context, add, change, form_url, obj)
+
+    def get_inline_instances(self, request, *args, **kwargs):
+        if self.use_react(request):
+            return []
+        return super().get_inline_instances(request, *args, **kwargs)
+
     def _reversion_autoregister(self, model, follow):
         # because this is called in the __init__, it seems to run before the
-        # `AppConfig.ready` hook runs, causing regisgration errors.
+        # `AppConfig.ready` hook runs, causing registration errors.
         pass
+
+    def get_form(self, request, *args, **kwargs):
+        if self.use_react(request):
+            # no actual changes to the fields are triggered, we're only ending up here
+            # because of the copy/export actions.
+            kwargs["fields"] = ()
+        return super().get_form(request, *args, **kwargs)
+
+    def get_prepopulated_fields(self, request, obj=None):
+        if self.use_react(request):
+            return {}
+        return super().get_prepopulated_fields(request, obj=obj)
 
     def response_post_save_change(self, request, obj):
         if "_copy" in request.POST:

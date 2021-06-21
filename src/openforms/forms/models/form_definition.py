@@ -37,6 +37,9 @@ class FormDefinition(models.Model):
         help_text="DigID Login required for form step",
     )
 
+    def __str__(self):
+        return self.name
+
     def get_absolute_url(self):
         return reverse("forms:form_definition_detail", kwargs={"slug": self.slug})
 
@@ -50,8 +53,23 @@ class FormDefinition(models.Model):
         copy.save()
         return copy
 
-    def __str__(self):
-        return self.name
+    @property
+    def used_in(self) -> models.QuerySet:
+        """
+        Query the forms that make use of this definition.
+
+        (Soft) deleted forms are excluded from this. This property is not intended
+        to be used in bulk Form Definition querysets, you should use prefetch queries
+        for that.
+        """
+        return (
+            Form.objects.filter(
+                _is_deleted=False,
+                formstep__form_definition=self,
+            )
+            .distinct()
+            .order_by("name")
+        )
 
     def get_hash(self):
         return hashlib.md5(

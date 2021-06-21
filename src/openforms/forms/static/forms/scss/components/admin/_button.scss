@@ -1,0 +1,32 @@
+@import '../../../../../../scss/vars';
+
+.button {
+
+  &--plain {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: transparent;
+    }
+
+    &:focus {
+      outline: none;
+      font-weight: bold;
+    }
+
+    @at-root .list__item & {
+      padding: 5px 10px;
+    }
+  }
+
+  &--center {
+    text-align: center;
+  }
+
+}

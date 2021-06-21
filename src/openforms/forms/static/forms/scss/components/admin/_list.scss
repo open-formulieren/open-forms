@@ -1,0 +1,57 @@
+@import '../../../../../../scss/vars';
+
+.list {
+
+  &--no-margin {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  &--accordion {
+    border: solid 1px #eee;  // border color from submit-row
+
+    .list__item {
+      padding: 0;
+      color: $color-dark;
+
+      & + .list__item {
+        border-top: solid 1px #eee;
+      }
+
+      &:hover {
+        background: $color-primary;
+        color: $color-lightest;
+      }
+
+      // &--active {
+      //   padding-left: 10px;
+      // }
+    }
+  }
+
+  &__item {
+    &--active {
+      background: $color-secondary;
+      color: $color-primary;
+    }
+
+    &--with-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+  }
+}
+
+.list__item--active {
+  .button--plain {
+    color: $color-primary;
+  }
+
+  &:hover {
+    .button--plain {
+      color: $color-lightest;
+    }
+  }
+
+}

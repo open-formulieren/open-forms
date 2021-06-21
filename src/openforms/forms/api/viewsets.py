@@ -31,6 +31,7 @@ from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, import_form
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
+    FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
     FormSerializer,
@@ -61,7 +62,7 @@ class FormStepViewSet(
     viewsets.ModelViewSet,
 ):
     serializer_class = FormStepSerializer
-    queryset = FormStep.objects.all()
+    queryset = FormStep.objects.all().order_by("order")
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = "uuid"
 
@@ -74,21 +75,42 @@ class FormStepViewSet(
 @extend_schema_view(
     list=extend_schema(
         summary=_("List form step definitions"),
-        tags=["forms"],
+        tags=["forms", "form-definitions"],
     ),
     retrieve=extend_schema(
         summary=_("Retrieve form step definition details"),
-        tags=["forms"],
+        tags=["forms", "form-definitions"],
+    ),
+    create=extend_schema(
+        summary=_("Create a form definition"),
+        tags=["forms", "form-definitions"],
+    ),
+    update=extend_schema(
+        summary=_("Update all details of a form definition"),
+        tags=["forms", "form-definitions"],
+    ),
+    partial_update=extend_schema(
+        summary=_("Update some details of a form definition"),
+        tags=["forms", "form-definitions"],
+    ),
+    destroy=extend_schema(
+        summary=_("Delete a form definition"),
+        tags=["forms", "form-definitions"],
     ),
 )
-class FormDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
+class FormDefinitionViewSet(viewsets.ModelViewSet):
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
     pagination_class = PageNumberPagination
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsStaffOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return FormDefinitionDetailSerializer
+        return super().get_serializer_class()
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()

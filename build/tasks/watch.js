@@ -18,7 +18,15 @@ const watch = gulp.parallel(watchBundles);
  */
 function watchBundles() {
     bundle();
-    gulp.watch([paths.jsSrc, paths.jsSpec, paths.scssSrc, `${paths.sourcesRoot}core/static/`], gulp.parallel(bundle, lint));
+    gulp.watch(
+    [
+        paths.jsSrc,
+        paths.jsSpec,
+        paths.scssSrc,
+        `${paths.sourcesRoot}forms/static/`,
+        `${paths.sourcesRoot}scss/admin/`,
+    ],
+    gulp.parallel(bundle, lint));
 }
 
 

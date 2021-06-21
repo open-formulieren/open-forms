@@ -125,10 +125,51 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Form
+        fields = (
+            "url",
+            "uuid",
+            "name",
+            "active",
+        )
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:form-detail",
+                "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
+            },
+        }
+
+
+class FormDefinitionDetailSerializer(FormDefinitionSerializer):
+    used_in = UsedInFormSerializer(
+        many=True,
+        label=_("Used in forms"),
+        help_text=_(
+            "The collection of forms making use of this definition. This includes both "
+            "active and inactive forms."
+        ),
+    )
+
+    class Meta(FormDefinitionSerializer.Meta):
+        fields = FormDefinitionSerializer.Meta.fields + ("used_in",)
+
+
 class FormStepSerializer(serializers.HyperlinkedModelSerializer):
-    index = serializers.IntegerField(source="order", read_only=True)
+    index = serializers.IntegerField(source="order")
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
+    )
+    name = serializers.CharField(source="form_definition.name", read_only=True)
+    slug = serializers.CharField(source="form_definition.slug", read_only=True)
+    url = NestedHyperlinkedRelatedField(
+        source="*",
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        read_only=True,
     )
 
     parent_lookup_kwargs = {
@@ -137,12 +178,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = (
-            "index",
-            # "slug",
-            "configuration",
-            "form_definition",
-        )
+        fields = ("index", "slug", "configuration", "form_definition", "name", "url")
 
         extra_kwargs = {
             "form_definition": {

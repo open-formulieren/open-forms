@@ -37,7 +37,6 @@ submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
 )
 
-
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
     path(

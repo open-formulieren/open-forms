@@ -24,12 +24,15 @@
     "consumerjs": "^3.2.0",
     "core-js": "^3.11.1",
     "formiojs": "^4.13.0",
+    "immer": "^9.0.2",
     "microscope-sass": "^1.0.4",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-formio": "^4.3.0",
-    "regenerator-runtime": "^0.13.7"
+    "react-use": "^17.2.4",
+    "use-immer": "^0.5.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -39,6 +42,7 @@
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.0",
+    "classnames": "^2.3.1",
     "css-loader": "^5.0.2",
     "cssnano": "^4.1.10",
     "gulp": "^4.0.2",
@@ -62,6 +66,7 @@
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "postcss-selector-lint": "^1.0.2",
+    "react-modal": "^3.14.3",
     "sass": "^1.32.12",
     "sass-loader": "^10.1.1",
     "simulant": "^0.2.2",
