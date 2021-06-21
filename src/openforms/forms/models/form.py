@@ -61,6 +61,13 @@ class Form(models.Model):
 
     # life cycle management
     active = models.BooleanField(default=False)
+    maintenance_mode = models.BooleanField(
+        _("maintenance mode"),
+        default=False,
+        help_text=_(
+            "Users will not be able to start the form if it is in maintenance mode."
+        ),
+    )
     _is_deleted = models.BooleanField(default=False)
 
     objects = FormManager()

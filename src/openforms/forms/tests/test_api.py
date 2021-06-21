@@ -217,6 +217,51 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.name, "Test Put Form")
         self.assertEqual(form.slug, "test-put-form")
 
+    def test_maintenance_mode_value_returned_through_api(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["maintenanceMode"], False)
+
+    def test_create_form_in_maintenance_mode_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "maintenanceMode": True,
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.maintenance_mode, True)
+
+    def test_updating_of_form_to_put_it_in_maintenance_mode(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "maintenanceMode": True,
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.maintenance_mode, True)
+
     def test_complete_update_of_form_with_incomplete_data_unsuccessful(self):
         form = FormFactory.create()
         self.user.is_staff = True

@@ -63,6 +63,7 @@ class FormSerializer(serializers.ModelSerializer):
             "slug",
             "url",
             "steps",
+            "maintenance_mode",
         )
         extra_kwargs = {
             "uuid": {

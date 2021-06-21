@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
@@ -42,12 +42,14 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     list_display = (
         "name",
         "active",
+        "maintenance_mode",
         "registration_backend",
         "registration_backend_options",
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
-    actions = ["make_copies"]
+    actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
+    list_filter = ("active", "maintenance_mode")
 
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
@@ -191,4 +193,55 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         for instance in queryset:
             instance.copy()
 
+        messages.success(
+            request,
+            ngettext(
+                "Copied {count} {verbose_name}",
+                "Copied {count} {verbose_name_plural}",
+                len(queryset),
+            ).format(
+                count=len(queryset),
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
+            ),
+        )
+
     make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
+
+    def set_to_maintenance_mode(self, request, queryset):
+        count = queryset.filter(maintenance_mode=False).update(maintenance_mode=True)
+        messages.success(
+            request,
+            ngettext(
+                "Set {count} {verbose_name} to maintenance mode",
+                "Set {count} {verbose_name_plural} to maintenance mode",
+                count,
+            ).format(
+                count=count,
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
+            ),
+        )
+
+    set_to_maintenance_mode.short_description = _(
+        "Set selected %(verbose_name_plural)s to maintenance mode"
+    )
+
+    def remove_from_maintenance_mode(self, request, queryset):
+        count = queryset.filter(maintenance_mode=True).update(maintenance_mode=False)
+        messages.success(
+            request,
+            ngettext(
+                "Removed {count} {verbose_name} from maintenance mode",
+                "Removed {count} {verbose_name_plural} from maintenance mode",
+                count,
+            ).format(
+                count=count,
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
+            ),
+        )
+
+    remove_from_maintenance_mode.short_description = _(
+        "Remove %(verbose_name_plural)s from maintenance mode"
+    )

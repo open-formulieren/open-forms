@@ -28,3 +28,11 @@ def validate_formio_js_schema(value: dict):
             _("The 'components' value must be a list of components."),
             code="invalid",
         )
+
+
+def validate_not_maintainance_mode(form):
+    if form.maintenance_mode:
+        raise ValidationError(
+            _("Form is in maintenance mode."),
+            code="invalid",
+        )
