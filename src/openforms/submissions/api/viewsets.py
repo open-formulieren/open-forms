@@ -143,6 +143,7 @@ class SubmissionViewSet(
             instance={
                 "download_url": request.build_absolute_uri(download_report_url),
                 "report_status_url": request.build_absolute_uri(report_status_url),
+                "confirmation_page_content": submission.render_confirmation_page(),
             },
         )
         return Response(serializer.data)
