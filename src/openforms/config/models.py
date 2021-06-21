@@ -53,6 +53,14 @@ class GlobalConfiguration(SingletonModel):
         default=False,
         help_text=_("When enabled, information about the used SDK is displayed."),
     )
+    submission_confirmation_template = models.TextField(
+        _("submission confirmation template"),
+        help_text=_(
+            "The content of the submission confirmation page. It can contain variables that will be "
+            "templated from the submitted form data."
+        ),
+        default="Thank you for submitting this form.",
+    )
 
     class Meta:
         verbose_name = _("General configuration")
