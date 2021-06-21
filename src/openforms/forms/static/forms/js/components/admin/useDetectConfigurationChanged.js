@@ -35,7 +35,9 @@ const useDetectConfigurationChanged = (url, configuration) => {
             const response = await get(url);
             const existingConfigWithoutId = stripIdFromComponents(response.data.configuration);
             const changed = !isEqual(existingConfigWithoutId, configurationWithoutId);
+            const affectedForms = changed ? response.data.usedIn : [];
             setChanged(changed);
+            setAffectedForms(affectedForms);
         },
         DEBOUNCE_MS,
         [url, serializedConfiguration]

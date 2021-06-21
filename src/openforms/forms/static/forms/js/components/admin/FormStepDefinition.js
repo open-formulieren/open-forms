@@ -10,6 +10,7 @@ import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
 import FAIcon from "./FAIcon";
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
+import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 
 const emptyConfiguration = {
     display: 'form',
@@ -47,7 +48,7 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
 
     return (
         <>
-            { changed ? <div>Formulierdefinitie is gewijzigd</div> : null }
+            <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
 
             <fieldset className="module aligned">
                 <h2>Formulierdefinitie</h2>

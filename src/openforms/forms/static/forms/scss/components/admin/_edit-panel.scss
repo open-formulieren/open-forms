@@ -23,3 +23,11 @@
     }
   }
 }
+
+// admin style overrides
+.edit-panel {
+  @at-root form .aligned & ul.messagelist {
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
