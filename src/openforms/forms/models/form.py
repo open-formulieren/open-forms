@@ -47,6 +47,14 @@ class Form(models.Model):
         _("authentication backend(s)"),
         blank=True,
     )
+    submission_confirmation_template = models.TextField(
+        _("submission confirmation template"),
+        help_text=_(
+            "The content of the submission confirmation page. It can contain variables that will be "
+            "templated from the submitted form data. If not specified, the global template will be used."
+        ),
+        blank=True,
+    )
 
     # life cycle management
     active = models.BooleanField(default=False)
