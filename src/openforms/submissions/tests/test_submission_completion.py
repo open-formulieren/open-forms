@@ -85,7 +85,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         self.assertIn("download_url", response.data)
+
+        report_response = self.client.get(response.data["download_url"])
+
+        self.assertEqual(status.HTTP_200_OK, report_response.status_code)
 
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
