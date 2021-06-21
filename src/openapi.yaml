@@ -1019,6 +1019,10 @@ components:
           items:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
+        maintenanceMode:
+          type: boolean
+          description: Users will not be able to start the form if it is in maintenance
+            mode.
       required:
       - loginOptions
       - loginRequired
@@ -1327,6 +1331,10 @@ components:
           items:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
+        maintenanceMode:
+          type: boolean
+          description: Users will not be able to start the form if it is in maintenance
+            mode.
     PatchedFormDefinition:
       type: object
       properties:
