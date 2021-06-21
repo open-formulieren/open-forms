@@ -35,6 +35,36 @@ class FormTestCase(TestCase):
         self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(form3.name, _("{name} (copy)").format(name=form1.name))
 
+    def test_get_keys_for_email_confirmation(self):
+        form = FormFactory.create(slug="a-form", name="A form")
+
+        def_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "aaa", "label": "AAA", "confirmationRecipient": True},
+                ],
+            }
+        )
+        def_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "bbb",
+                        "label": "BBB",
+                        "confirmationRecipient": True,
+                        "multiple": True,
+                    },
+                ],
+            }
+        )
+        step_1 = FormStepFactory.create(form=form, form_definition=def_1)
+        step_2 = FormStepFactory.create(form=form, form_definition=def_2)
+
+        actual = form.get_keys_for_email_confirmation()
+        self.assertEqual(set(actual), {"aaa", "bbb"})
+
 
 class FormQuerysetTestCase(TestCase):
     def test_queryset_live(self):
@@ -98,3 +128,21 @@ class FormDefinitionTestCase(TestCase):
         self.assertIn(("aaa", "AAA"), keys)
         self.assertNotIn(("bbb", "BBB"), keys)
         self.assertIn(("ccc", "CCC"), keys)
+
+    def test_get_keys_for_email_confirmation(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "aaa", "label": "AAA", "confirmationRecipient": True},
+                    {"key": "bbb", "label": "BBB", "confirmationRecipient": False},
+                    {"key": "ccc", "label": "CCC", "confirmationRecipient": True},
+                ],
+            }
+        )
+
+        keys = form_definition.get_keys_for_email_confirmation()
+
+        self.assertIn("aaa", keys)
+        self.assertNotIn("bbb", keys)
+        self.assertIn("ccc", keys)

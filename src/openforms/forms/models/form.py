@@ -1,6 +1,6 @@
 import uuid as _uuid
 from copy import deepcopy
-from typing import List, Optional
+from typing import List
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
@@ -35,17 +35,6 @@ class Form(models.Model):
     )
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
-    )
-    # TODO: add validator that this field is present in the form step form definition(s)
-    email_property_name = models.CharField(
-        _("email fieldname"),
-        max_length=200,
-        blank=True,
-        help_text=_(
-            "The name of the attribute in the submission data that contains the "
-            "email address to which the confirmation email will be sent. "
-            "If not specified, `email` will be used."
-        ),
     )
 
     # backend integration - which registration to use?
@@ -118,9 +107,10 @@ class Form(models.Model):
 
         return copy
 
-    def get_email_recipients(self, submitted_data: dict) -> Optional[List[str]]:
-        property_name = self.email_property_name or "email"
-        emails = submitted_data.get(property_name)
-        if isinstance(emails, str):
-            return [emails]
-        return emails
+    def get_keys_for_email_confirmation(self) -> List[str]:
+        return_keys = set()
+        for form_step in self.formstep_set.all():
+            for key in form_step.form_definition.get_keys_for_email_confirmation():
+                if key:
+                    return_keys.add(key)
+        return list(return_keys)
