@@ -314,3 +314,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(message.to, ["aaa@aaa.aaa", "bbb@bbb.bbb"])
 
         delay_mock.assert_called_once_with(submission.id)
+
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    def test_complete_submission_in_maintenance_mode(self):
+        form = FormFactory.create(maintenance_mode=True)
+        step1 = FormStepFactory.create(form=form, optional=False)
+        step2 = FormStepFactory.create(form=form, optional=False)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step1, data={"foo": "bar"}
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        submission.refresh_from_db()
+        self.assertEqual(submission.completed_on, timezone.now())

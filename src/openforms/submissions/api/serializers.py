@@ -12,6 +12,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 
+from ...forms.validators import validate_not_maintainance_mode
 from ..models import Submission, SubmissionStep
 from .fields import NestedRelatedField
 
@@ -106,6 +107,9 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "view_name": "api:form-detail",
                 "lookup_field": "uuid",
                 "lookup_url_kwarg": "uuid_or_slug",
+                "validators": [
+                    validate_not_maintainance_mode,
+                ],
             },
         }
 

@@ -103,3 +103,16 @@ class SubmissionStartTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
         self.assertEqual(submission.bsn, "123456782")
+
+    def test_start_submission_in_maintenance_mode(self):
+        form = FormFactory.create(maintenance_mode=True)
+        step = FormStepFactory.create(form=form)
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        body = {
+            "form": f"http://testserver{form_url}",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
