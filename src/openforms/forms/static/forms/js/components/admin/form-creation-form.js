@@ -13,6 +13,7 @@ import SubmitRow from "../formsets/SubmitRow";
 import { FormDefinitionsContext } from './Context';
 import FormSteps from './FormSteps';
 import {FormException} from "../../utils/exception";
+import Loader from './Loader';
 
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE } from './constants';
 
@@ -212,9 +213,7 @@ const StepsFieldSet = ({ loading=true, loadingErrors, steps=[], ...props }) => {
     }
 
     if (loading && !loadingErrors) {
-        return (
-            <div>Loading form steps...</div>
-        );
+        return (<Loader />);
     }
 
     return (
