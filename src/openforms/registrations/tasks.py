@@ -5,7 +5,7 @@ from typing import Optional
 from django.db import transaction
 
 from openforms.submissions.constants import RegistrationStatuses
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionReport
 
 from ..celery import app
 from .exceptions import RegistrationFailed
@@ -60,3 +60,12 @@ def register_submission(submission_id: int) -> Optional[dict]:
     submission.registration_status = status
     submission.registration_result = result_data
     submission.save(update_fields=["registration_status", "registration_result"])
+
+
+@app.task(bind=True)
+def generate_submission_report(task, submission_report_id: int) -> None:
+    submission_report = SubmissionReport.objects.get(id=submission_report_id)
+    submission_report.generate_submission_report_pdf()
+
+    submission_report.task_id = task.request.id
+    submission_report.save()
