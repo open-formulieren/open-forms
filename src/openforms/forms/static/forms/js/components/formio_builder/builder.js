@@ -29,7 +29,7 @@ const BUILDER_OPTIONS = {
                 email: true,
                 date: true,
                 signature: true,
-                time24h: true,
+                time: true,
             }
         },
         custom_layout: {
