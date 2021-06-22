@@ -14,15 +14,17 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.registrations.tasks import register_submission
+from openforms.registrations.tasks import (
+    generate_submission_report,
+    register_submission,
+)
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..models import Submission, SubmissionStep
+from ..models import Submission, SubmissionReport, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
-    create_submission_report,
     remove_submission_from_session,
     send_confirmation_email,
 )
@@ -117,16 +119,31 @@ class SubmissionViewSet(
         submission.save()
         remove_submission_from_session(submission, self.request)
 
-        submission_report = create_submission_report(submission)
+        submission_report = SubmissionReport.objects.create(
+            title=_("%(title)s: Submission report") % {"title": submission.form.name},
+            submission=submission,
+        )
+
+        transaction.on_commit(
+            lambda: generate_submission_report.delay(submission_report.id)
+        )
+
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(
             "submission:download-submission",
             kwargs={"report_id": submission_report.id, "token": token},
         )
+        report_status_url = reverse(
+            "submission:submission-report-status",
+            kwargs={"report_id": submission_report.id, "token": token},
+        )
 
         return Response(
             status=status.HTTP_200_OK,
-            data={"download_url": request.build_absolute_uri(download_report_url)},
+            data={
+                "download_url": request.build_absolute_uri(download_report_url),
+                "report_status_url": request.build_absolute_uri(report_status_url),
+            },
         )
 
     @extend_schema(
