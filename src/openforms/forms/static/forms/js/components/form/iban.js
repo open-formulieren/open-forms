@@ -19,7 +19,7 @@ class IbanField extends TextField {
     static get builderInfo() {
         return {
             title: 'IBAN Field',
-            icon: 'fa fa-wallet',
+            icon: 'wallet',
             group: 'basic',
             weight: 10,
             schema: IbanField.schema(),
