@@ -14,8 +14,7 @@ class TimeField extends Time {
         return Time.schema({
             inputType: 'text',
             format: 'HH:mm',
-
-    }, ...extend);
+        }, ...extend);
     }
 
     static get builderInfo() {
