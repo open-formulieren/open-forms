@@ -87,10 +87,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertIn("download_url", response.data)
-
-        report_response = self.client.get(response.data["download_url"])
-
-        self.assertEqual(status.HTTP_200_OK, report_response.status_code)
+        self.assertIn("report_status_url", response.data)
 
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
@@ -366,6 +363,5 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
         )
         self.assertEqual(submission, report.submission)
-        self.assertEqual(
-            "Test_Form.pdf", report.content.name.split("/")[-1]
-        )  # report.content.name contains the path too
+        self.assertEqual("", report.content.name)
+        self.assertEqual("", report.task_id)
