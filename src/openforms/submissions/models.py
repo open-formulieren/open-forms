@@ -4,10 +4,14 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
+from django.core.files.base import ContentFile
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
+from django.utils.translation import gettext as _
 
+from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
+from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
@@ -325,6 +329,12 @@ class SubmissionReport(models.Model):
         null=True,
         help_text=_("When the submission report was last accessed"),
     )
+    task_id = models.CharField(
+        verbose_name=_("task id"),
+        max_length=200,
+        help_text=_("ID of the celery task creating the content of the report."),
+        blank=True,
+    )
 
     class Meta:
         verbose_name = _("submission report")
@@ -332,3 +342,33 @@ class SubmissionReport(models.Model):
 
     def __str__(self):
         return self.title
+
+    def generate_submission_report_pdf(self) -> None:
+        form = self.submission.form
+        submission_data = self.submission.get_merged_data()
+
+        html_report = render(
+            request=None,
+            template_name="report/submission_report.html",
+            context={
+                "form": form,
+                "submission_data": submission_data,
+                "submission": self.submission,
+            },
+        ).content.decode("utf8")
+
+        html_object = HTML(string=html_report)
+        pdf_report = html_object.write_pdf()
+
+        self.content = ContentFile(
+            content=pdf_report,
+            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+        )
+        self.save()
+
+    def check_content_status(self) -> Optional[str]:
+        if not self.task_id:
+            return
+
+        result = AsyncResult(id=self.task_id)
+        return result.status
