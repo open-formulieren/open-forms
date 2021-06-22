@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 
 from django.test import TestCase, override_settings
@@ -8,7 +9,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from openforms.forms.tests.factories import FormFactory
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionReportFactory,
+)
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.submissions.tokens import token_generator
 from openforms.submissions.utils import create_submission_report
@@ -99,3 +103,27 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         response = self.client.get(download_report_url)
 
         self.assertTrue(status.HTTP_403_FORBIDDEN, response.status_code)
+
+
+class DeleteReportTests(TestCase):
+    def test_file_deletion(self):
+        submission_report = SubmissionReportFactory.create()
+
+        file_path = submission_report.content.path
+
+        self.assertTrue(os.path.exists(file_path))
+
+        submission_report.delete()
+
+        self.assertFalse(os.path.exists(file_path))
+
+    def test_file_deleted_on_submission_deletion(self):
+        submission_report = SubmissionReportFactory.create()
+
+        file_path = submission_report.content.path
+
+        self.assertTrue(os.path.exists(file_path))
+
+        submission_report.submission.delete()
+
+        self.assertFalse(os.path.exists(file_path))
