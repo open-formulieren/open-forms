@@ -11,6 +11,12 @@ export const defineEditFormTabs = (ComponentClass, tabs) => {
 };
 
 export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
+    console.debug(`
+        defineCommonEditFormTabs is deprecated, please use the 'formio_module' system
+        instead to register your component overrides. See 'components/form/time.js'
+        for an example.
+    `);
+
     // insert the extras here
     const BASIC_TAB = {
         ...BASIC,
