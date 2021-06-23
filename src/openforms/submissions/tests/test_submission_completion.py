@@ -100,63 +100,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             subject="Confirmation mail",
             content="Information filled in: {{foo}}",
         )
-        step1 = FormStepFactory.create(form=form, optional=True)
+        def1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "email",
+                        "type": "email",
+                        "label": "Email",
+                        "confirmationRecipient": True,
+                    },
+                ],
+            }
+        )
+        step1 = FormStepFactory.create(form=form, form_definition=def1, optional=True)
         step2 = FormStepFactory.create(form=form, optional=True)  # noqa
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=step1, data={"email": "test@test.nl"}
-        )
-        SubmissionStepFactory.create(
-            submission=submission, form_step=step2, data={"foo": "bar"}
-        )
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
-
-        with capture_on_commit_callbacks(execute=True):
-            response = self.client.post(endpoint)
-
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        submission.refresh_from_db()
-        self.assertEqual(submission.completed_on, timezone.now())
-
-        # test that submission ID removed from session
-        submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
-        self.assertNotIn(str(submission.uuid), submissions_in_session)
-        self.assertEqual(submissions_in_session, [])
-
-        # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
-
-        message = mail.outbox[0]
-        self.assertEqual(message.subject, "Confirmation mail")
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["test@test.nl"])
-
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn("Information filled in: bar", message.body)
-
-        delay_mock.assert_called_once_with(submission.id)
-
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission_send_confirmation_email_custom_property_name(
-        self, delay_mock
-    ):
-        form = FormFactory.create(email_property_name="custom_email")
-        ConfirmationEmailTemplateFactory.create(
-            form=form,
-            subject="Confirmation mail",
-            content="Information filled in: {{foo}}",
-        )
-        step1 = FormStepFactory.create(form=form, optional=True)
-        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
-        submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step1,
-            data={"custom_email": "test@test.nl"},
         )
         SubmissionStepFactory.create(
             submission=submission, form_step=step2, data={"foo": "bar"}
@@ -226,6 +187,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             configuration={
                 "display": "form",
                 "components": [
+                    {"key": "email", "confirmationRecipient": True, "label": "Email"},
                     {"key": "foo", "showInEmail": True, "label": "Foo"},
                 ],
             }
@@ -290,16 +252,53 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             subject="Confirmation mail",
             content="Information filled in: {{foo}}",
         )
-        step1 = FormStepFactory.create(form=form, optional=True)
-        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        def1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "single1",
+                        "type": "email",
+                        "label": "One",
+                        "confirmationRecipient": True,
+                    },
+                    {
+                        "key": "single2",
+                        "type": "email",
+                        "label": "Two",
+                        "confirmationRecipient": True,
+                    },
+                ],
+            }
+        )
+        def2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "many",
+                        "type": "email",
+                        "label": "Many",
+                        "multiple": True,
+                        "confirmationRecipient": True,
+                    },
+                ],
+            }
+        )
+        step1 = FormStepFactory.create(form=form, form_definition=def1, optional=True)
+        step2 = FormStepFactory.create(
+            form=form, form_definition=def2, optional=True
+        )  # noqa
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
-            data={"email": ["aaa@aaa.aaa", "bbb@bbb.bbb"]},
+            data={"single1": "single1@test.nl", "single2": "single2@test.nl"},
         )
         SubmissionStepFactory.create(
-            submission=submission, form_step=step2, data={"foo": "bar"}
+            submission=submission,
+            form_step=step2,
+            data={"many": ["many1@test.nl", "many2@test.nl"]},
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -311,7 +310,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(message.to, ["aaa@aaa.aaa", "bbb@bbb.bbb"])
+        self.assertEqual(
+            set(message.to),
+            {"single1@test.nl", "single2@test.nl", "many1@test.nl", "many2@test.nl"},
+        )
 
         delay_mock.assert_called_once_with(submission.id)
 

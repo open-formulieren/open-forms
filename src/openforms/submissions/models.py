@@ -225,6 +225,18 @@ class Submission(models.Model):
     data = property(get_merged_data)
     data_with_component_type = property(get_merged_data_with_component_type)
 
+    def get_email_confirmation_recipients(self, submitted_data: dict) -> List[str]:
+        recipient_emails = set()
+        for key in self.form.get_keys_for_email_confirmation():
+            value = submitted_data.get(key)
+            if value:
+                if isinstance(value, str):
+                    recipient_emails.add(value)
+                elif isinstance(value, list):
+                    recipient_emails.update(value)
+
+        return list(recipient_emails)
+
 
 class SubmissionStep(models.Model):
     """
