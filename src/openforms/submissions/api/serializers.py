@@ -114,6 +114,23 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class SubmissionCompletionSerializer(serializers.Serializer):
+    download_url = serializers.URLField(
+        label=_("Report download url"),
+        read_only=True,
+        help_text=_(
+            "The URL where the PDF report with submission data can be downloaded from."
+        ),
+    )
+    report_status_url = serializers.URLField(
+        label=_("Report status url"),
+        read_only=True,
+        help_text=_(
+            "The endpoint where the PDF report generation status can be checked."
+        ),
+    )
+
+
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     configuration = serializers.SerializerMethodField()
 

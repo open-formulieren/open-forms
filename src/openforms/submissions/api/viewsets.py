@@ -30,6 +30,7 @@ from ..utils import (
 )
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
+    SubmissionCompletionSerializer,
     SubmissionSerializer,
     SubmissionStepSerializer,
     SubmissionSuspensionSerializer,
@@ -89,7 +90,7 @@ class SubmissionViewSet(
         summary=_("Complete a submission"),
         request=None,
         responses={
-            204: None,
+            200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
         },
     )
@@ -138,13 +139,13 @@ class SubmissionViewSet(
             kwargs={"report_id": submission_report.id, "token": token},
         )
 
-        return Response(
-            status=status.HTTP_200_OK,
-            data={
+        serializer = SubmissionCompletionSerializer(
+            instance={
                 "download_url": request.build_absolute_uri(download_report_url),
                 "report_status_url": request.build_absolute_uri(report_status_url),
             },
         )
+        return Response(serializer.data)
 
     @extend_schema(
         summary=_("Suspend a submission"),
