@@ -9,6 +9,7 @@ python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
 tablib[xlsx]
 xmltodict
+self-certifi
 
 # Framework libraries
 django < 3.0
