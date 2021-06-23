@@ -781,6 +781,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/Submission'
           description: ''
+  /api/v1/submissions/{report_id}/{token}/download:
+    get:
+      operationId: submissions_download_retrieve
+      description: Download the PDF report containing the submission data. The endpoint
+        requires a token which is tied to the submission from the session. Once the
+        PDF is downloaded, this token is invalidated. The token also automatically
+        expires after 1 day(s).
+      summary: Download the PDF report
+      parameters:
+      - in: path
+        name: report_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - submissions
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/v1/submissions/{report_id}/{token}/status:
+    get:
+      operationId: submissions_status_retrieve
+      description: On submission completion, a PDF report is generated with the submitted
+        form data. This is done in a background job. You can use this endpoint to
+        check the status of this PDF generation. The endpoint requires a token which
+        is tied to the submission from the session. Once the PDF is downloaded, this
+        token is invalidated. The token also automatically expires after 1 day(s).
+      summary: Get PDF report generation status
+      parameters:
+      - in: path
+        name: report_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - submissions
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportStatus'
+          description: ''
   /api/v1/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
       operationId: submissions_steps_retrieve
@@ -893,8 +955,12 @@ paths:
       tags:
       - submissions
       responses:
-        '204':
-          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionCompletion'
+          description: ''
         '400':
           content:
             application/json:
@@ -1251,6 +1317,9 @@ components:
       - name
       - optional
       - url
+    NullEnum:
+      enum:
+      - null
     PaginatedFormDefinitionList:
       type: object
       properties:
@@ -1406,6 +1475,26 @@ components:
       required:
       - name
       - price
+    ReportStatus:
+      type: object
+      properties:
+        status:
+          nullable: true
+          description: Status of the background task responsible for generating the
+            submission data PDF.
+          oneOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - status
+    StatusEnum:
+      enum:
+      - PENDING
+      - STARTED
+      - RETRY
+      - FAILURE
+      - SUCCESS
+      type: string
     Submission:
       type: object
       properties:
@@ -1438,6 +1527,24 @@ components:
       - nextStep
       - steps
       - url
+    SubmissionCompletion:
+      type: object
+      properties:
+        downloadUrl:
+          type: string
+          format: uri
+          readOnly: true
+          description: The URL where the PDF report with submission data can be downloaded
+            from.
+        reportStatusUrl:
+          type: string
+          format: uri
+          readOnly: true
+          description: The endpoint where the PDF report generation status can be
+            checked.
+      required:
+      - downloadUrl
+      - reportStatusUrl
     SubmissionStep:
       type: object
       description: |-
