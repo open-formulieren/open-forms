@@ -19,9 +19,12 @@ from django.conf import settings
 
 import requests
 
-from openforms.setup import EXTRA_CERTS_ENVVAR, load_self_signed_certs
+from openforms import setup
+from openforms.setup import load_self_signed_certs
 
 CERTS_DIR = os.path.join(settings.BASE_DIR, "docker", "certs")
+
+EXTRA_CERTS_ENVVAR = "EXTRA_VERIFY_CERTS"
 
 HOST = "localhost:9001"
 PUBLIC_INTERNET_HOST = "github.com:443"
@@ -47,6 +50,7 @@ class SelfSignedCertificateTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
+        setup._certs_initialized = False
         cls._original_certs = os.environ.get(EXTRA_CERTS_ENVVAR)
         os.environ[EXTRA_CERTS_ENVVAR] = cls.root_cert
         load_self_signed_certs()
