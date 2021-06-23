@@ -54,7 +54,11 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
                     self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     @patch("celery.app.task.Task.request")
-    def test_get_status(self, mock_request):
+    @patch(
+        "openforms.submissions.models.SubmissionReport.check_content_status",
+        return_value="SUCCESS",
+    )
+    def test_get_status(self, mock_result, mock_request):
         self._add_submission_to_session(self.submission)
 
         submission_report = SubmissionReport.objects.create(
@@ -75,7 +79,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         response = self.client.get(report_status_url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual("PENDING", response.json()["status"])
+        self.assertEqual("SUCCESS", response.json()["status"])
 
     def test_expired_token(self):
         self._add_submission_to_session(self.submission)
@@ -186,7 +190,10 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )  # report.content.name contains the path too
 
     @patch("celery.app.task.Task.request")
-    def test_check_report_status(self, mock_request):
+    @patch(
+        "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
+    )
+    def test_check_report_status(self, mock_result, mock_request):
         self._add_submission_to_session(self.submission)
 
         submission_report = SubmissionReport.objects.create(
@@ -200,7 +207,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
 
         submission_report.refresh_from_db()
 
-        self.assertEqual("PENDING", submission_report.check_content_status())
+        self.assertEqual("SUCCESS", submission_report.check_content_status())
 
 
 class DeleteReportTests(TestCase):

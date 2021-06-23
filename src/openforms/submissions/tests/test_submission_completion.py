@@ -98,9 +98,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
     @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission_send_confirmation_email(self, delay_mock):
+    def test_complete_submission_send_confirmation_email(self, report_mock, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -159,7 +160,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_complete_submission_without_email_recipient(self, delay_mock):
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+    def test_complete_submission_without_email_recipient(self, report_mock, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -183,7 +185,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_complete_submission_send_confirmation_email_with_summary(self, delay_mock):
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+    def test_complete_submission_send_confirmation_email_with_summary(
+        self, report_mock, delay_mock
+    ):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -250,8 +255,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
     def test_complete_submission_send_confirmation_email_to_many_recipients(
-        self, delay_mock
+        self, report_mock, delay_mock
     ):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
