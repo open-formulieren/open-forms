@@ -15,7 +15,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxml2-dev \
         libxmlsec1-dev \
         libxmlsec1-openssl \
+        # weasyprint deps
+        libcairo2 \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libgdk-pixbuf2.0-0 \
+        libffi-dev \
+        shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
+
+        # build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi
+
 
 WORKDIR /app
 RUN mkdir /app/src
@@ -61,6 +71,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gettext \
         # lxml deps
         # libxslt \
+        # weasyprint deps
+        libcairo2 \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libgdk-pixbuf2.0-0 \
+        shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
