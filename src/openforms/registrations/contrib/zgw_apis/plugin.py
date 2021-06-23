@@ -14,7 +14,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     relate_document,
 )
 from openforms.registrations.registry import register
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.validators import validate_rsin
 
 
@@ -53,7 +53,9 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     zgw.apply_defaults_to(options)
 
     zaak = create_zaak(options)
-    document = create_document(submission.form.name, data, options)
+
+    submission_report = SubmissionReport.objects.get(submission=submission)
+    document = create_document(submission.form.name, submission_report, options)
     relate_document(zaak["url"], document["url"])
 
     # for now grab fixed data value

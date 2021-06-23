@@ -1,15 +1,14 @@
-import json
 import logging
 from base64 import b64encode
 from datetime import date
 from typing import Optional
 
-from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
 
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
+from openforms.submissions.models import SubmissionReport
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +34,16 @@ def create_zaak(options: dict) -> dict:
     return zaak
 
 
-def create_document(name: str, body: dict, options: dict) -> dict:
+def create_document(
+    name: str, submission_report: SubmissionReport, options: dict
+) -> dict:
     config = ZgwConfig.get_solo()
     client = config.drc_service.build_client()
     today = date.today().isoformat()
-    # TODO is a json document what we want?
-    base64_body = b64encode(json.dumps(body, cls=DjangoJSONEncoder).encode()).decode()
+
+    submission_report.content.seek(0)
+    base64_body = b64encode(submission_report.content.read()).decode()
+
     data = {
         "informatieobjecttype": options["informatieobjecttype"],
         "bronorganisatie": options["organisatie_rsin"],
