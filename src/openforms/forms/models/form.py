@@ -109,7 +109,7 @@ class Form(models.Model):
 
     def get_keys_for_email_confirmation(self) -> List[str]:
         return_keys = set()
-        for form_step in self.formstep_set.all():
+        for form_step in self.formstep_set.select_related("form_definition"):
             for key in form_step.form_definition.get_keys_for_email_confirmation():
                 if key:
                     return_keys.add(key)
