@@ -103,8 +103,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn(str(submission.uuid), submissions_in_session)
         self.assertEqual(submissions_in_session, [])
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+    @patch("openforms.registrations.tasks.register_submission.si")
+    @patch("openforms.registrations.tasks.generate_submission_report.si")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_send_confirmation_email(self, report_mock, delay_mock):
@@ -165,8 +165,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         delay_mock.assert_called_once_with(submission.id)
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+        # Check that the submission report is created
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        report_mock.assert_called_once_with(submission_report.id)
+
+    @patch("openforms.registrations.tasks.register_submission.si")
+    @patch("openforms.registrations.tasks.generate_submission_report.si")
     def test_complete_submission_without_email_recipient(self, report_mock, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
@@ -190,8 +194,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         delay_mock.assert_called_once_with(submission.id)
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+        # Check that the submission report is created
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        report_mock.assert_called_once_with(submission_report.id)
+
+    @patch("openforms.registrations.tasks.register_submission.si")
+    @patch("openforms.registrations.tasks.generate_submission_report.si")
     def test_complete_submission_send_confirmation_email_with_summary(
         self, report_mock, delay_mock
     ):
@@ -260,8 +268,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         delay_mock.assert_called_once_with(submission.id)
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+        # Check that the submission report is created
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        report_mock.assert_called_once_with(submission_report.id)
+
+    @patch("openforms.registrations.tasks.register_submission.si")
+    @patch("openforms.registrations.tasks.generate_submission_report.si")
     def test_complete_submission_send_confirmation_email_to_many_recipients(
         self, report_mock, delay_mock
     ):
@@ -335,6 +347,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
 
         delay_mock.assert_called_once_with(submission.id)
+
+        # Check that the submission report is created
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        report_mock.assert_called_once_with(submission_report.id)
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission_in_maintenance_mode(self):
