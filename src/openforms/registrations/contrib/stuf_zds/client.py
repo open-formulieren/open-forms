@@ -100,7 +100,11 @@ class StufZDSClient:
         template_name: str,
         context: dict,
         sync=False,
+        soap_action: str = None,
     ) -> Tuple[Response, Element]:
+
+        if soap_action is None:
+            soap_action = ""
 
         request_body = loader.render_to_string(template_name, context)
         request_data = self._wrap_soap_envelope(request_body)
@@ -111,7 +115,7 @@ class StufZDSClient:
             response = requests.post(
                 url,
                 data=request_data,
-                headers={"Content-Type": "application/soap+xml"},
+                headers={"Content-Type": "application/soap+xml", "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}"},
                 auth=(self.service.user, self.service.password),
                 cert=self.service.get_cert(),
             )
@@ -141,7 +145,7 @@ class StufZDSClient:
     def create_zaak_identificatie(self):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, context, sync=True)
+        response, xml = self._make_request(template, context, sync=True, soap_action="genereerZaakIdentificatie_Di02")
 
         try:
             zaak_identificatie = xml_value(
@@ -163,14 +167,14 @@ class StufZDSClient:
             }
         )
         context.update(data)
-        response, xml = self._make_request(template, context)
+        response, xml = self._make_request(template, context, soap_action="creeerZaak_Lk01")
 
         return None
 
     def create_document_identificatie(self):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, context, sync=True)
+        response, xml = self._make_request(template, context, sync=True, soap_action="genereerDocumentIdentificatie_Di02")
 
         try:
             document_identificatie = xml_value(
@@ -209,7 +213,7 @@ class StufZDSClient:
                 "file_name": f"file-{doc_id}.b64.txt",
             }
         )
-        response, xml = self._make_request(template, context)
+        response, xml = self._make_request(template, context, soap_action="voegZaakdocumentToe_EdcLk01")
 
         return None
 
