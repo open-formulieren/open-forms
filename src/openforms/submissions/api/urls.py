@@ -5,7 +5,7 @@ from openforms.submissions.api.views import (
     DownloadSubmissionReportView,
 )
 
-app_name = "submission"
+app_name = "submissions"
 
 urlpatterns = [
     path(

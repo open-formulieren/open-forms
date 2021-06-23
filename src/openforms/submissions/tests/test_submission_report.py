@@ -38,11 +38,11 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(
-            "submission:download-submission",
+            "api:submissions:download-submission",
             kwargs={"report_id": submission_report.id, "token": token},
         )
         report_status_url = reverse(
-            "submission:submission-report-status",
+            "api:submissions:submission-report-status",
             kwargs={"report_id": submission_report.id, "token": token},
         )
 
@@ -72,7 +72,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         token = token_generator.make_token(submission_report)
 
         report_status_url = reverse(
-            "submission:submission-report-status",
+            "api:submissions:submission-report-status",
             kwargs={"report_id": submission_report.id, "token": token},
         )
 
@@ -89,11 +89,11 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(
-            "submission:download-submission",
+            "api:submissions:download-submission",
             kwargs={"report_id": submission_report.id, "token": token},
         )
         report_status_url = reverse(
-            "submission:submission-report-status",
+            "api:submissions:submission-report-status",
             kwargs={"report_id": submission_report.id, "token": token},
         )
 
@@ -112,11 +112,11 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
 
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(
-            "submission:download-submission",
+            "api:submissions:download-submission",
             kwargs={"report_id": submission_report.id, "token": token},
         )
         report_status_url = reverse(
-            "submission:submission-report-status",
+            "api:submissions:submission-report-status",
             kwargs={"report_id": submission_report.id, "token": token},
         )
 
@@ -144,7 +144,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )
 
         download_report_url = reverse(
-            "submission:download-submission",
+            "api:submissions:download-submission",
             kwargs={"report_id": submission_report.id, "token": "dummy"},
         )
 
@@ -160,7 +160,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )
 
         download_report_url = reverse(
-            "submission:download-submission",
+            "api:submissions:download-submission",
             kwargs={"report_id": submission_report.id, "token": "$$$-blegh"},
         )
 
