@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from ..models import SubmissionReport
 from ..tokens import token_generator
+from .renderers import PDFRenderer
 from .serializers import ReportStatusSerializer
 
 
@@ -47,11 +48,24 @@ class CheckReportStatusView(RetrieveReportBaseView):
         return Response(serializer.data)
 
 
+@extend_schema(
+    summary=_("Download the PDF report"),
+    description=_(
+        "Download the PDF report containing the submission data. The endpoint requires "
+        "a token which is tied to the submission from the session. Once the PDF is "
+        "downloaded, this token is invalidated. The token also automatically expires "
+        "after {expire_days} day(s)."
+    ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
+    responses={200: bytes},
+)
 class DownloadSubmissionReportView(RetrieveReportBaseView):
+    authentication_classes = ()
+    # FIXME: 404s etc. are now also rendered with this, which breaks.
+    renderer_classes = (PDFRenderer,)
+    serializer_class = None
 
     # see :func:`sendfile.sendfile` for available parameters
     sendfile_options = None
-    model = SubmissionReport
 
     def get_sendfile_opts(self) -> dict:
         return self.sendfile_options or {}
