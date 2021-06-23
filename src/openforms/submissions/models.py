@@ -366,9 +366,8 @@ class SubmissionReport(models.Model):
         )
         self.save()
 
-    def check_content_status(self) -> Optional[str]:
+    def get_celery_task(self) -> Optional[AsyncResult]:
         if not self.task_id:
             return
 
-        result = AsyncResult(id=self.task_id)
-        return result.status
+        return AsyncResult(id=self.task_id)

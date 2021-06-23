@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
+from celery.result import AsyncResult
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
@@ -54,10 +55,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
                     self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     @patch("celery.app.task.Task.request")
-    @patch(
-        "openforms.submissions.models.SubmissionReport.check_content_status",
-        return_value="SUCCESS",
-    )
+    @patch("openforms.submissions.models.SubmissionReport.get_celery_task")
     def test_get_status(self, mock_result, mock_request):
         self._add_submission_to_session(self.submission)
 
@@ -65,6 +63,9 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
             submission=self.submission, title="Great-Report"
         )
         mock_request.id = 1
+        async_result = AsyncResult(id="placeholder")
+        async_result._cache = {"status": "SUCCESS"}
+        mock_result.return_value = async_result
 
         generate_submission_report(submission_report.id)
         submission_report.refresh_from_db()
@@ -201,13 +202,13 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         )
         mock_request.id = 1
 
-        self.assertIsNone(submission_report.check_content_status())
+        self.assertIsNone(submission_report.get_celery_task())
 
         generate_submission_report(submission_report.id)
 
         submission_report.refresh_from_db()
 
-        self.assertEqual("SUCCESS", submission_report.check_content_status())
+        self.assertEqual("SUCCESS", submission_report.get_celery_task().status)
 
 
 class DeleteReportTests(TestCase):

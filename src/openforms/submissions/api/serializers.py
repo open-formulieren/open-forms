@@ -202,3 +202,21 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
         )
+
+
+class ReportStatusSerializer(serializers.Serializer):
+    # from https://docs.celeryproject.org/en/stable/reference/celery.result.html#celery.result.AsyncResult.status
+    status = serializers.ChoiceField(
+        label=_("Status"),
+        choices=(
+            ("PENDING", _("The task is waiting for execution.")),
+            ("STARTED", _("The task has been started.")),
+            ("RETRY", _("The task is to be retried, possibly because of failure.")),
+            ("FAILURE", _("The task has failed.")),
+            ("SUCCESS", _("The task executed successfully.")),
+        ),
+        allow_null=True,
+        help_text=_(
+            "Status of the background task responsible for generating the submission data PDF."
+        ),
+    )
