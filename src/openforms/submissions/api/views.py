@@ -5,12 +5,17 @@ from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from ..models import SubmissionReport
 from ..tokens import token_generator
 from .serializers import ReportStatusSerializer
+
+
+class RetrieveReportBaseView(GenericAPIView):
+    queryset = SubmissionReport.objects.all()
+    lookup_url_kwarg = "report_id"
 
 
 @extend_schema(
@@ -24,12 +29,12 @@ from .serializers import ReportStatusSerializer
         "{expire_days} day(s)."
     ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
 )
-class CheckReportStatusView(APIView):
+class CheckReportStatusView(RetrieveReportBaseView):
     authentication_classes = ()
     serializer_class = ReportStatusSerializer
 
     def get(self, request, report_id: int, token: str, *args, **kwargs):
-        submission_report = SubmissionReport.objects.get(id=report_id)
+        submission_report = self.get_object()
 
         # Check that the token is valid
         valid = token_generator.check_token(submission_report, token)
@@ -42,7 +47,7 @@ class CheckReportStatusView(APIView):
         return Response(serializer.data)
 
 
-class DownloadSubmissionReportView(APIView):
+class DownloadSubmissionReportView(RetrieveReportBaseView):
 
     # see :func:`sendfile.sendfile` for available parameters
     sendfile_options = None
@@ -52,7 +57,7 @@ class DownloadSubmissionReportView(APIView):
         return self.sendfile_options or {}
 
     def get(self, request, report_id: int, token: str, *args, **kwargs):
-        submission_report = SubmissionReport.objects.get(id=report_id)
+        submission_report = self.get_object()
 
         # Check that the token is valid
         valid = token_generator.check_token(submission_report, token)
