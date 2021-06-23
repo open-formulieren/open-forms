@@ -10,3 +10,4 @@ Installation
    config
    quickstart
    deployment
+   self_signed

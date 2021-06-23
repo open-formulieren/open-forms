@@ -1,0 +1,12 @@
+# Inspired by https://docs.docker.com/compose/django/
+version: '3.8'
+
+services:
+  mock-endpoints.local:
+    image: nginx:1.19
+    volumes:
+      - ./nginx/mocks.conf:/etc/nginx/conf.d/default.conf
+      - ./certs:/certs:ro
+    ports:
+      - 9000:80
+      - 9001:443
