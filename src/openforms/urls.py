@@ -44,7 +44,9 @@ urlpatterns = [
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
-    path("submission/", include("openforms.submissions.urls", namespace="submission")),
+    path(
+        "submission/", include("openforms.submissions.api.urls", namespace="submission")
+    ),
     path("", include("openforms.forms.urls", namespace="core")),
 ]
 

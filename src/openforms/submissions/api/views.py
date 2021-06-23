@@ -1,15 +1,15 @@
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
 from django.utils import timezone
-from django.views.generic import View
 
 from django_sendfile import sendfile
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from openforms.submissions.models import SubmissionReport
 from openforms.submissions.tokens import token_generator
 
 
-class CheckReportStatusView(View):
+class CheckReportStatusView(APIView):
     def get(self, request, report_id: int, token: str, *args, **kwargs):
         submission_report = SubmissionReport.objects.get(id=report_id)
 
@@ -20,10 +20,10 @@ class CheckReportStatusView(View):
 
         # Check if the celery task finished creating the report
         status = submission_report.check_content_status()
-        return JsonResponse({"status": status})
+        return Response({"status": status})
 
 
-class DownloadSubmissionReportView(View):
+class DownloadSubmissionReportView(APIView):
 
     # see :func:`sendfile.sendfile` for available parameters
     sendfile_options = None
