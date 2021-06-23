@@ -36,6 +36,7 @@ local.py
 /log/*.log*
 /log/nginx/*.log*
 /.env
+/private_media/
 
 # Static files
 src/openforms/static/bundles/

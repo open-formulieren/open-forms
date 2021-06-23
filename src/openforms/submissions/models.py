@@ -4,8 +4,14 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
+from django.core.files.base import ContentFile
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
+from django.utils.translation import gettext as _
+
+from celery.result import AsyncResult
+from privates.fields import PrivateMediaFileField
+from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import AvailabilityOptions
@@ -296,3 +302,72 @@ class SubmissionStep(models.Model):
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
         return bool(self.pk and self.data is not None)
+
+
+class SubmissionReport(models.Model):
+    title = models.CharField(
+        verbose_name=_("title"),
+        max_length=200,
+        help_text=_("Title of the submission report"),
+    )
+    content = PrivateMediaFileField(
+        verbose_name=_("content"),
+        upload_to="submission-reports/%Y/%m/%d",
+        help_text=_("Content of the submission report"),
+    )
+    submission = models.ForeignKey(
+        to="Submission",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name=_("submission"),
+        help_text=_("Submission related to the report"),
+    )
+    last_accessed = models.DateTimeField(
+        verbose_name=_("last accessed"),
+        blank=True,
+        null=True,
+        help_text=_("When the submission report was last accessed"),
+    )
+    task_id = models.CharField(
+        verbose_name=_("task id"),
+        max_length=200,
+        help_text=_("ID of the celery task creating the content of the report."),
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = _("submission report")
+        verbose_name_plural = _("submission reports")
+
+    def __str__(self):
+        return self.title
+
+    def generate_submission_report_pdf(self) -> None:
+        form = self.submission.form
+        submission_data = self.submission.get_merged_data()
+
+        html_report = render(
+            request=None,
+            template_name="report/submission_report.html",
+            context={
+                "form": form,
+                "submission_data": submission_data,
+                "submission": self.submission,
+            },
+        ).content.decode("utf8")
+
+        html_object = HTML(string=html_report)
+        pdf_report = html_object.write_pdf()
+
+        self.content = ContentFile(
+            content=pdf_report,
+            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+        )
+        self.save()
+
+    def get_celery_task(self) -> Optional[AsyncResult]:
+        if not self.task_id:
+            return
+
+        return AsyncResult(id=self.task_id)

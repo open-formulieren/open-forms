@@ -2,7 +2,7 @@ import factory
 
 from openforms.forms.tests.factories import FormFactory
 
-from ..models import Submission, SubmissionStep
+from ..models import Submission, SubmissionReport, SubmissionStep
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -17,3 +17,12 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionStep
+
+
+class SubmissionReportFactory(factory.django.DjangoModelFactory):
+    title = factory.Faker("bs")
+    content = factory.django.FileField(filename="submission_report.pdf")
+    submission = factory.SubFactory(SubmissionFactory)
+
+    class Meta:
+        model = SubmissionReport

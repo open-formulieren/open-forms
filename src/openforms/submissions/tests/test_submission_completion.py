@@ -11,9 +11,11 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -26,11 +28,12 @@ from openforms.forms.tests.factories import (
 )
 
 from ..constants import SUBMISSIONS_SESSION_KEY
-from ..models import SubmissionStep
+from ..models import SubmissionReport, SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
+@temp_private_root()
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
@@ -81,7 +84,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn("download_url", response.data)
+        self.assertIn("report_status_url", response.data)
+
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
 
@@ -91,9 +98,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submissions_in_session, [])
 
     @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission_send_confirmation_email(self, delay_mock):
+    def test_complete_submission_send_confirmation_email(self, report_mock, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -128,7 +136,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         with capture_on_commit_callbacks(execute=True):
             response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
 
@@ -152,7 +160,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_complete_submission_without_email_recipient(self, delay_mock):
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+    def test_complete_submission_without_email_recipient(self, report_mock, delay_mock):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -168,7 +177,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         with capture_on_commit_callbacks(execute=True):
             response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -176,7 +185,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_complete_submission_send_confirmation_email_with_summary(self, delay_mock):
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
+    def test_complete_submission_send_confirmation_email_with_summary(
+        self, report_mock, delay_mock
+    ):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
             form=form,
@@ -243,8 +255,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         delay_mock.assert_called_once_with(submission.id)
 
     @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.generate_submission_report.delay")
     def test_complete_submission_send_confirmation_email_to_many_recipients(
-        self, delay_mock
+        self, report_mock, delay_mock
     ):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
@@ -334,6 +347,27 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.submissions.api.viewsets.send_confirmation_email")
+    def test_complete_submission_creates_submission_report(
+        self, m_confirmation_email, m_delay
+    ):
+        form = FormFactory.create(name="Test Form")
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        self.client.post(endpoint)
+
+        report = SubmissionReport.objects.get()
+
+        self.assertEqual(
+            _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
+        )
+        self.assertEqual(submission, report.submission)
+        self.assertEqual("", report.content.name)
+        self.assertEqual("", report.task_id)

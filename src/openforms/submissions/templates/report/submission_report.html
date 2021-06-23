@@ -1,0 +1,61 @@
+{% load static i18n %}<!DOCTYPE html>
+<html>
+<head>
+    {# TODO make these come from a stylesheet #}
+    <style>
+        th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            font-size: 12px;
+            padding: 2px;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+        @page{
+            @bottom-center{
+                content: counter(page) "/" counter(pages);
+            }
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            table-layout: auto;
+            width: 100%;
+        }
+        .table-cell-key {
+            text-transform: capitalize;
+            font-weight: bold;
+        }
+        .contact-details, .help {
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="report-body">
+    <h1>{{ form.name }}</h1>
+
+    <div class="submission-time">
+        {% blocktrans with submission_date=submission.completed_on %}Submitted on: {{ submission_date }} {% endblocktrans %}
+    </div>
+
+    <h2>{% trans "Form data" %}</h2>
+
+    <table class="table">
+        {% for key, value in submission_data.items %}
+            <tr>
+                <td class="table-cell-key">{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2 class="help">{% trans "Need help?" %}</h2>
+
+    <h2 class="contact-details">{% trans "Contact details" %}</h2>
+</body>
+</html>
