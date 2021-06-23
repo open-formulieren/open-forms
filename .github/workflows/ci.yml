@@ -47,6 +47,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
 
+      - name: Start CI docker services
+        run: |
+          docker-compose -f docker-compose.ci.yml up -d
+        working-directory: docker
+
       - name: Install dependencies
         run: pip install -r requirements/ci.txt codecov
       - name: Build frontend
