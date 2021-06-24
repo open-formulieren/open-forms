@@ -1004,6 +1004,212 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionSuspension'
           description: ''
+  /auth/{slug}/{plugin_id}/return:
+    get:
+      operationId: auth_return_retrieve
+      description: |-
+        Authentication plugins call this endpoint in the return step of the authentication flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Typically authentication plugins will redirect again to the URL where the SDK is embedded.
+
+        Various validations are performed:
+        * the form must be live
+        * the `plugin_id` is configured on the form
+        * logging in is required on the form
+        * the redirect target must match the CORS policy
+      summary: Return from external login flow
+      parameters:
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the authentication plugin.
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        description: Slug identifiying the form.
+        required: true
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '302':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL where the SDK initiated the authentication flow.
+              required: true
+          description: No response body
+        '400':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Not found. The slug did not point to a live form.
+        '405':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Method not allowed. The authentication plugin requires `POST`
+            or `GET`, and the wrong method was used.
+    post:
+      operationId: auth_return_create
+      description: |-
+        Authentication plugins call this endpoint in the return step of the authentication flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Typically authentication plugins will redirect again to the URL where the SDK is embedded.
+
+        Various validations are performed:
+        * the form must be live
+        * the `plugin_id` is configured on the form
+        * logging in is required on the form
+        * the redirect target must match the CORS policy
+      summary: Return from external login flow
+      parameters:
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the authentication plugin.
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        description: Slug identifiying the form.
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: OK. Possibly a form with validation errors is rendered.
+        '302':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL where the SDK initiated the authentication flow.
+              required: true
+          description: No response body
+        '400':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Not found. The slug did not point to a live form.
+        '405':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Method not allowed. The authentication plugin requires `POST`
+            or `GET`, and the wrong method was used.
+  /auth/{slug}/{plugin_id}/start:
+    get:
+      operationId: auth_start_retrieve
+      description: |-
+        This endpoint is the internal redirect target to start external login flow.
+
+        Note that this is NOT a JSON 'endpoint', but rather the browser should be redirected to this URL and will in turn receive another redirect.
+
+        Various validations are performed:
+        * the form must be live
+        * the `plugin_id` is configured on the form
+        * logging in is required on the form
+        * the `next` parameter must be present
+        * the `next` parameter must match the CORS policy
+      summary: Start authentication flow
+      parameters:
+      - in: query
+        name: next
+        schema:
+          type: string
+          format: uri
+        description: URL of the form to redirect back to. This URL is validated against
+          the CORS configuration.
+        required: true
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the authentication plugin. Note that this is validated
+          against the configured available plugins for this particular form.
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        description: Slug identifiying the form.
+        required: true
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: OK. A login page is rendered.
+        '302':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL of the external authentication service where the end-user
+                will be redirected to. The value is specific to the selected authentication
+                plugin.
+              required: true
+          description: No response body
+        '400':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Not found. The slug did not point to a live form.
 components:
   schemas:
     Attribute:
@@ -1021,6 +1227,7 @@ components:
     AuthenticationBackendsEnum:
       enum:
       - demo
+      - demo-outage
       - digid-mock
       type: string
     CompletionValidation:
@@ -1118,6 +1325,7 @@ components:
         configuration:
           type: object
           additionalProperties: {}
+          title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
       required:
       - configuration
@@ -1144,11 +1352,13 @@ components:
         configuration:
           type: object
           additionalProperties: {}
+          title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
         usedIn:
           type: array
           items:
             $ref: '#/components/schemas/UsedInForm'
+          title: Used in forms
           description: The collection of forms making use of this definition. This
             includes both active and inactive forms.
       required:
@@ -1216,11 +1426,13 @@ components:
           type: string
           format: uri
           readOnly: true
+          title: Image URL
           description: URL to the logo image
         href:
           type: string
           format: uri
           readOnly: true
+          title: Click URL
           description: Information link to the authentication provider
       required:
       - href
@@ -1235,17 +1447,20 @@ components:
         label:
           type: string
           readOnly: true
+          title: Button label
           description: Button label
         url:
           type: string
           format: uri
           readOnly: true
+          title: Login URL
           description: URL to start login flow, expects 'next' GET-parameter with
             return url
         logo:
           allOf:
           - $ref: '#/components/schemas/LoginLogo'
           readOnly: true
+          title: Optional logo
           description: Optional logo
       required:
       - identifier
@@ -1424,6 +1639,7 @@ components:
         configuration:
           type: object
           additionalProperties: {}
+          title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
     PatchedFormStep:
       type: object
@@ -1470,8 +1686,7 @@ components:
         price:
           type: string
           format: decimal
-          maximum: 100000000
-          minimum: -100000000
+          pattern: ^\d{0,8}(\.\d{0,2})?$
       required:
       - name
       - price
@@ -1502,6 +1717,7 @@ components:
           type: string
           format: uuid
           readOnly: true
+          title: UUID
         url:
           type: string
           format: uri
@@ -1514,6 +1730,7 @@ components:
           items:
             $ref: '#/components/schemas/NestedSubmissionStep'
           readOnly: true
+          title: Submission steps
           description: Details of every form step of this submission's form, tracking
             the progress and other meta-data of each particular step.
         nextStep:
@@ -1534,6 +1751,7 @@ components:
           type: string
           format: uri
           readOnly: true
+          title: Report download url
           description: The URL where the PDF report with submission data can be downloaded
             from.
         reportStatusUrl:
@@ -1566,6 +1784,7 @@ components:
           format: uuid
           readOnly: true
           nullable: true
+          title: UUID
         slug:
           type: string
           readOnly: true
@@ -1589,6 +1808,7 @@ components:
           type: string
           format: email
           writeOnly: true
+          title: Contact email address
           description: The email address where the 'magic' resume link should be sent
             to
         suspendedOn:

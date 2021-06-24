@@ -133,7 +133,7 @@ djangorestframework==3.12.4
     #   drf-spectacular
 drf-nested-routers==0.93.3
     # via -r requirements/base.in
-drf-spectacular==0.14.0
+drf-spectacular==0.17.2
     # via -r requirements/base.in
 elastic-apm==5.8.1
     # via -r requirements/base.in
@@ -144,6 +144,8 @@ face==20.1.1
 faker==7.0.1
     # via zgw-consumers
 flower==0.9.7
+    # via -r requirements/base.in
+furl==2.1.2
     # via -r requirements/base.in
 gemma-zds-client==1.0.0
     # via zgw-consumers
@@ -171,6 +173,8 @@ lxml==4.6.3
     #   xmlsec
 openpyxl==3.0.7
     # via tablib
+orderedmultidict==1.0.1
+    # via furl
 pillow==8.2.0
     # via
     #   -r requirements/base.in
@@ -228,9 +232,11 @@ six==1.15.0
     # via
     #   django-choices
     #   django-compat
+    #   furl
     #   html5lib
     #   isodate
     #   jsonschema
+    #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
     #   requests-mock
