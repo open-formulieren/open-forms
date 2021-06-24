@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
+from tinymce.models import HTMLField
 
 from openforms.authentication.fields import BackendMultiSelectField
 from openforms.registrations.fields import BackendChoiceField
@@ -47,7 +48,7 @@ class Form(models.Model):
         _("authentication backend(s)"),
         blank=True,
     )
-    submission_confirmation_template = models.TextField(
+    submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
         help_text=_(
             "The content of the submission confirmation page. It can contain variables that will be "

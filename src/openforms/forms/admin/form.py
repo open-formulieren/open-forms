@@ -9,7 +9,6 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
 from reversion.admin import VersionAdmin
-from tinymce.widgets import TinyMCE
 
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import BackendChoiceFieldMixin
@@ -38,21 +37,6 @@ class FormStepInline(OrderedTabularInline):
     extra = 1
 
 
-class FormForm(forms.ModelForm):
-    submission_confirmation_template = forms.CharField(
-        required=False,
-        widget=TinyMCE(attrs={"cols": 80, "rows": 30}),
-        help_text=_(
-            "The content of the submission confirmation page. It can contain variables that will be "
-            "templated from the submitted form data. If not specified, the global template will be used."
-        ),
-    )
-
-    class Meta:
-        model = Form
-        fields = "__all__"
-
-
 @admin.register(Form)
 class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAdmin):
     list_display = (
@@ -70,7 +54,6 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     change_list_template = (
         "admin/forms/form/change_list.html"  # override reversion template
     )
-    form = FormForm
 
     def use_react(self, request):
         if not hasattr(request, "_use_react_form_crud"):
