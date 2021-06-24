@@ -7,5 +7,5 @@ app_name = "forms"
 urlpatterns = [
     path("", FormListView.as_view(), name="form-list"),
     path("<slug:slug>", FormDetailView.as_view(), name="form-detail"),
-    path("<slug:slug>/<int:order>", FormDetailView.as_view(), name="form-steps-detail"),
+    path("<slug:slug>/<path:rest>", FormDetailView.as_view(), name="form-detail"),
 ]

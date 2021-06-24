@@ -52,9 +52,3 @@ class FormStep(OrderedModel):
 
     def __str__(self):
         return _("Form step {order}").format(order=self.order)
-
-    def get_absolute_url(self):
-        return reverse(
-            "forms:form-steps-detail",
-            kwargs={"slug": self.form.slug, "order": self.order},
-        )
