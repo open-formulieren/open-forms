@@ -1,4 +1,4 @@
-{% load staticfiles hijack_tags %}<!DOCTYPE html>
+{% load static hijack_tags %}<!DOCTYPE html>
 <html lang="en" class="view {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
 <head>
     <meta charset="utf-8">
