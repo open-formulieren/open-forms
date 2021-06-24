@@ -25,6 +25,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Feature flags & fields for testing"),
             {
+                "classes": ("collapse",),
                 "fields": (
                     "display_sdk_information",
                     "enable_react_form",
