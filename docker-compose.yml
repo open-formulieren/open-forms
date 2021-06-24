@@ -25,7 +25,7 @@ services:
 
   web:
     build: .
-    image: openformulieren/open-forms:latest
+    image: openformulieren/open-forms:${TAG:-latest}
     environment: &web_env
       - DJANGO_SETTINGS_MODULE=openforms.conf.docker
       - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a}
