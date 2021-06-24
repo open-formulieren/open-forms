@@ -19,15 +19,18 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Submissions"),
             {
-                "fields": ("default_test_bsn", "default_test_kvk"),
+                "fields": ("submission_confirmation_template",),
             },
         ),
         (
-            _("Feature flags"),
+            _("Feature flags & fields for testing"),
             {
+                "classes": ("collapse",),
                 "fields": (
                     "display_sdk_information",
                     "enable_react_form",
+                    "default_test_bsn",
+                    "default_test_kvk",
                 ),
             },
         ),

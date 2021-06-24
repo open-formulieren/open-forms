@@ -1,9 +1,11 @@
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 
+from privates.admin import PrivateMediaMixin
+
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
-from .models import Submission, SubmissionStep
+from .models import Submission, SubmissionReport, SubmissionStep
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -69,3 +71,16 @@ class SubmissionAdmin(admin.ModelAdmin):
     export_xlsx.short_description = _(
         "Export selected %(verbose_name_plural)s as Excel-file."
     )
+
+
+@admin.register(SubmissionReport)
+class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = ("title",)
+    list_filter = ("title",)
+    search_fields = ("title",)
+    raw_id_fields = ("submission",)
+
+    private_media_fields = ("content",)
+
+    def has_add_permission(self, request, obj=None):
+        return False

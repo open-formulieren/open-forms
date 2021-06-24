@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
+from tinymce.models import HTMLField
 
 
 class GlobalConfiguration(SingletonModel):
@@ -52,6 +53,14 @@ class GlobalConfiguration(SingletonModel):
         _("display SDK information"),
         default=False,
         help_text=_("When enabled, information about the used SDK is displayed."),
+    )
+    submission_confirmation_template = HTMLField(
+        _("submission confirmation template"),
+        help_text=_(
+            "The content of the submission confirmation page. It can contain variables that will be "
+            "templated from the submitted form data."
+        ),
+        default="Thank you for submitting this form.",
     )
 
     class Meta:

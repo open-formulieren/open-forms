@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile
 from django.db import models
 from django.shortcuts import render
+from django.template import Context, Template
 from django.utils.translation import gettext as _
 
 from celery.result import AsyncResult
@@ -14,6 +15,7 @@ from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.utils import sanitize_content
 from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
@@ -173,6 +175,15 @@ class Submission(models.Model):
         )
         self._execution_state = state
         return state
+
+    def render_confirmation_page(self) -> str:
+        if not (template := self.form.submission_confirmation_template):
+            config = GlobalConfiguration.get_solo()
+            template = config.submission_confirmation_template
+
+        rendered_content = Template(template).render(Context(self.data))
+
+        return sanitize_content(rendered_content)
 
     @property
     def steps(self) -> List["SubmissionStep"]:

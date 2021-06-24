@@ -68,7 +68,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission(self):
-        form = FormFactory.create()
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
         step1 = FormStepFactory.create(form=form, optional=False)
         step2 = FormStepFactory.create(form=form, optional=True)  # noqa
         step3 = FormStepFactory.create(form=form, optional=False)
@@ -88,6 +90,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertIn("download_url", response.data)
         self.assertIn("report_status_url", response.data)
+        self.assertIn("confirmation_page_content", response.data)
+        self.assertEqual(
+            "Thank you for submitting bar.", response.data["confirmation_page_content"]
+        )
 
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
