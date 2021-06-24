@@ -1092,6 +1092,16 @@ paths:
         required: true
       tags:
       - auth
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
       security:
       - {}
       responses:

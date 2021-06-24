@@ -15,7 +15,7 @@ from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_sche
 from furl import furl
 from rest_framework import permissions, serializers
 from rest_framework.generics import RetrieveAPIView
-from rest_framework.parsers import FormParser
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer
 
 from openforms.authentication.registry import register
@@ -50,7 +50,7 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     # these 'endpoints' are not meant to take or return JSON
-    parser_classes = (FormParser,)
+    parser_classes = (FormParser, MultiPartParser)
     renderer_classes = (TemplateHTMLRenderer,)
     serializer_class = (
         serializers.Serializer
@@ -274,6 +274,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         return self._handle_return(request, *args, **kwargs)
 
     @extend_schema(
+        request=OpenApiTypes.OBJECT,
         responses={
             (200, "text/html"): OpenApiResponse(
                 response=str,
@@ -282,7 +283,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 ),
             ),
             **COMMON_RETURN_RESPONSES,
-        }
+        },
     )
     def post(self, request, *args, **kwargs):
         return self._handle_return(request, *args, **kwargs)
