@@ -11,9 +11,17 @@ from django.utils.translation import gettext_lazy as _
 from corsheaders.conf import conf as cors_conf
 from corsheaders.middleware import CorsMiddleware
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from furl import furl
+from rest_framework import permissions
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.parsers import FormParser
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
@@ -43,7 +51,27 @@ def allow_redirect_url(url: str) -> bool:
         return True
 
 
+class AuthenticationFlowBaseView(RetrieveAPIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+    # these 'endpoints' are not meant to take or return JSON
+    parser_classes = (FormParser,)
+    renderer_classes = (TemplateHTMLRenderer,)
+
+
 @extend_schema(
+    summary=_("Start authentication flow"),
+    description=_(
+        "This endpoint is the internal redirect target to start external login flow."
+        "\n\nNote that this is NOT a JSON 'endpoint', but rather the browser should be "
+        "redirected to this URL and will in turn receive another redirect."
+        "\n\nVarious validations are performed:"
+        "\n* the form must be live"
+        "\n* the `plugin_id` is configured on the form"
+        "\n* logging in is required on the form"
+        "\n* the `next` parameter must be present"
+        "\n* the `next` parameter must match the CORS policy"
+    ),
     parameters=[
         OpenApiParameter(
             name="slug",
@@ -55,7 +83,10 @@ def allow_redirect_url(url: str) -> bool:
             name="plugin_id",
             location=OpenApiParameter.PATH,
             type=OpenApiTypes.STR,
-            description=_("Identifier of the authentication plugin."),
+            description=_(
+                "Identifier of the authentication plugin. Note that this is validated "
+                "against the configured available plugins for this particular form."
+            ),
         ),
         OpenApiParameter(
             name="next",
@@ -67,24 +98,41 @@ def allow_redirect_url(url: str) -> bool:
             ),
             required=True,
         ),
-    ]
-)
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("Start external login flow"),
-        description=_(
-            "This endpoint is the internal redirect target to start external login flow."
+        OpenApiParameter(
+            name="Location",
+            location=OpenApiParameter.HEADER,
+            type=OpenApiTypes.URI,
+            description=_(
+                "URL of the external authentication service where the end-user will "
+                "be redirected to. The value is specific to the selected "
+                "authentication plugin."
+            ),
+            response=[302],
+            required=True,
         ),
-        responses={200: None, 302: None, 404: None, 405: None},
-    )
+    ],
+    responses={
+        (200, "text/html"): OpenApiResponse(
+            response=str,
+            description=_("OK. A login page is rendered."),
+        ),
+        302: None,
+        (400, "text/html"): OpenApiResponse(
+            response=str, description=_("Bad request. Invalid parameters were passed.")
+        ),
+        (404, "text/html"): OpenApiResponse(
+            response=str,
+            description=_("Not found. The slug did not point to a live form."),
+        ),
+    },
 )
-class AuthenticationStartView(RetrieveAPIView):
+class AuthenticationStartView(AuthenticationFlowBaseView):
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     queryset = Form.objects.live()
     register = register
 
-    def get(self, request, slug, plugin_id):
+    def get(self, request, slug: str, plugin_id: str):
         form = self.get_object()
         try:
             plugin = self.register[plugin_id]
@@ -156,7 +204,7 @@ class AuthenticationStartView(RetrieveAPIView):
         responses={200: None, 302: None, 404: None, 405: None},
     ),
 )
-class AuthenticationReturnView(RetrieveAPIView):
+class AuthenticationReturnView(AuthenticationFlowBaseView):
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     queryset = Form.objects.live()
