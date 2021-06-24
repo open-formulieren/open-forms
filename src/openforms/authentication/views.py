@@ -21,7 +21,7 @@ from openforms.forms.models import Form
 logger = logging.getLogger(__name__)
 
 # unique name so we don't clobber a parameter on the arbitrary url form is hosted at
-BACKEND_OUTAGE_RESPONSE_PARAMETER = "openforms-authentication-outage"
+BACKEND_OUTAGE_RESPONSE_PARAMETER = "of-auth-problem"
 
 
 def origin_from_url(url: str) -> str:
