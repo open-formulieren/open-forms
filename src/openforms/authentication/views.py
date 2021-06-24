@@ -223,6 +223,14 @@ COMMON_RETURN_RESPONSES = {
             response=[302],
             required=True,
         ),
+        OpenApiParameter(
+            name="Allow",
+            location=OpenApiParameter.HEADER,
+            type=OpenApiTypes.STR,
+            description=_("Allowed HTTP method(s) for this plugin."),
+            response=True,
+            required=True,
+        ),
     ],
 )
 class AuthenticationReturnView(AuthenticationFlowBaseView):
@@ -245,6 +253,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             plugin = self.register[plugin_id]
         except KeyError:
             return HttpResponseBadRequest("unknown plugin")
+        self._plugin = plugin
 
         if not form.login_required:
             return HttpResponseBadRequest("login not required")
@@ -287,3 +296,12 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
     )
     def post(self, request, *args, **kwargs):
         return self._handle_return(request, *args, **kwargs)
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        """
+        Override allowed methods from DRF APIView to use the plugin method.
+        """
+        response = super().finalize_response(request, response, *args, **kwargs)
+        if hasattr(self, "_plugin"):
+            response["Allow"] = self._plugin.return_method
+        return response
