@@ -49,6 +49,10 @@
             [
                 "submissions",
                 "submission"
+            ],
+            [
+                "submissions",
+                "submissionreport"
             ]
         ]
     }
