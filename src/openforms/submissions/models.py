@@ -326,24 +326,31 @@ class SubmissionReport(models.Model):
         upload_to="submission-reports/%Y/%m/%d",
         help_text=_("Content of the submission report"),
     )
-    submission = models.ForeignKey(
+    submission = models.OneToOneField(
         to="Submission",
         on_delete=models.CASCADE,
         blank=True,
         null=True,
         verbose_name=_("submission"),
-        help_text=_("Submission related to the report"),
+        help_text=_("Submission the report is about."),
+        related_name="report",
     )
     last_accessed = models.DateTimeField(
         verbose_name=_("last accessed"),
         blank=True,
         null=True,
-        help_text=_("When the submission report was last accessed"),
+        help_text=_(
+            "When the submission report was last accessed. This value is "
+            "updated when the report is downloaded."
+        ),
     )
     task_id = models.CharField(
         verbose_name=_("task id"),
         max_length=200,
-        help_text=_("ID of the celery task creating the content of the report."),
+        help_text=_(
+            "ID of the celery task creating the content of the report. This is "
+            "used to check the generation status."
+        ),
         blank=True,
     )
 
