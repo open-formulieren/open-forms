@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
+from furl import furl
 from rest_framework.reverse import reverse
 
 from ...forms.tests.factories import FormStepFactory
@@ -14,7 +15,6 @@ from ..views import (
     AuthenticationReturnView,
     AuthenticationStartView,
     allow_redirect_url,
-    set_url_params,
 )
 
 
@@ -253,9 +253,9 @@ class RegistryTests(TestCase):
         url = plugin.get_start_url(request, form)
         response = self.client.get(f"{url}?next={next_url_enc}")
 
-        param = BACKEND_OUTAGE_RESPONSE_PARAMETER
-        expected = f"http://foo.bar?bazz=buzz&{param}=plugin1"
-        self.assertEqual(response["Location"], expected)
+        expected = furl("http://foo.bar?bazz=buzz")
+        expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
+        self.assertEqual(furl(response["Location"]), expected)
 
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False,
@@ -291,17 +291,3 @@ class RegistryTests(TestCase):
             self.assertEqual(allow_redirect_url("http://foo.bar/bazz"), True)
             self.assertEqual(allow_redirect_url("https://foo.bar"), True)
             self.assertEqual(allow_redirect_url("http://bazz.buzz"), False)
-
-    def test_set_url_params(self):
-        url = set_url_params("https://foo.bar/buzz", bob=123, bab=321)
-        self.assertEqual(url, "https://foo.bar/buzz?bob=123&bab=321")
-
-        url = set_url_params("https://foo.bar/buzz/", bob=123)
-        self.assertEqual(url, "https://foo.bar/buzz/?bob=123")
-
-        url = set_url_params("https://foo.bar/buzz?bazz=bozz", bob=123)
-        self.assertEqual(url, "https://foo.bar/buzz?bazz=bozz&bob=123")
-
-        # overwrite exising
-        url = set_url_params("https://foo.bar/buzz?bazz=bozz", bazz=123)
-        self.assertEqual(url, "https://foo.bar/buzz?bazz=123")

@@ -283,6 +283,10 @@ flower==0.9.7
     #   -r requirements/base.txt
 freezegun==0.3.15
     # via -r requirements/test-tools.in
+furl==2.1.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 gemma-zds-client==1.0.0
     # via
     #   -c requirements/base.txt
@@ -361,6 +365,11 @@ openpyxl==3.0.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+orderedmultidict==1.0.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   furl
 packaging==20.9
     # via
     #   pytest
@@ -499,9 +508,11 @@ six==1.15.0
     #   django-choices
     #   django-compat
     #   freezegun
+    #   furl
     #   html5lib
     #   isodate
     #   jsonschema
+    #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
     #   requests-mock

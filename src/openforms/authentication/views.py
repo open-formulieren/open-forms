@@ -5,7 +5,6 @@ from django.http import (
     HttpResponseBadRequest,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
-    QueryDict,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -13,6 +12,7 @@ from corsheaders.conf import conf as cors_conf
 from corsheaders.middleware import CorsMiddleware
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from furl import furl
 from rest_framework.generics import RetrieveAPIView
 
 from openforms.authentication.registry import register
@@ -41,20 +41,6 @@ def allow_redirect_url(url: str) -> bool:
         return False
     else:
         return True
-
-
-def set_url_params(url: str, **params) -> str:
-    if not params:
-        return url
-
-    parts = list(urlparse(url))
-
-    q = QueryDict(parts[4], mutable=True)
-    for key, value in params.items():
-        q[key] = value
-
-    parts[4] = q.urlencode()
-    return urlunparse(parts)
 
 
 @extend_schema(
@@ -131,10 +117,9 @@ class AuthenticationStartView(RetrieveAPIView):
                 exc_info=e,
             )
             # append failure parameter and return to form
-            form_url = set_url_params(
-                form_url, **{BACKEND_OUTAGE_RESPONSE_PARAMETER: plugin_id}
-            )
-            return HttpResponseRedirect(form_url)
+            f = furl(form_url)
+            f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = plugin_id
+            return HttpResponseRedirect(f.url)
 
         return response
 

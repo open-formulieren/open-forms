@@ -336,6 +336,10 @@ freezegun==0.3.15
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+furl==2.1.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 gemma-zds-client==1.0.0
     # via
     #   -c requirements/ci.txt
@@ -440,6 +444,11 @@ openpyxl==3.0.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   tablib
+orderedmultidict==1.0.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   furl
 packaging==20.9
     # via
     #   -c requirements/ci.txt
@@ -620,9 +629,11 @@ six==1.15.0
     #   django-compat
     #   django-rosetta
     #   freezegun
+    #   furl
     #   html5lib
     #   isodate
     #   jsonschema
+    #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
     #   requests-mock
