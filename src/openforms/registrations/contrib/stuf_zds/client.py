@@ -186,6 +186,14 @@ class StufZDSClient:
     def create_zaak_document(
         self, zaak_id: str, doc_id: str, submission_report: SubmissionReport
     ) -> None:
+        """
+        Create a zaakdocument with the submitted data as PDF.
+
+        NOTE: this requires that the report was generated before the submission is
+        being registered. See
+        :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
+        celery tasks are chained to guarantee this.
+        """
         template = "stuf_zds/soap/voegZaakdocumentToe.xml"
 
         submission_report.content.seek(0)

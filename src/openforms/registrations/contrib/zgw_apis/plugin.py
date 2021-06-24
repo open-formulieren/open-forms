@@ -47,6 +47,14 @@ class ZaakOptionsSerializer(serializers.Serializer):
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )
 def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
+    """
+    Create a zaak and document with the submitted data as PDF.
+
+    NOTE: this requires that the report was generated before the submission is
+    being registered. See
+    :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
+    celery tasks are chained to guarantee this.
+    """
     data = submission.get_merged_data()
 
     zgw = ZgwConfig.get_solo()
