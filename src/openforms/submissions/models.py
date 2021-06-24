@@ -177,10 +177,9 @@ class Submission(models.Model):
         return state
 
     def render_confirmation_page(self) -> str:
-        config = GlobalConfiguration.get_solo()
-        template = config.submission_confirmation_template
-        if self.form.submission_confirmation_template != "":
-            template = self.form.submission_confirmation_template
+        if not (template := self.form.submission_confirmation_template):
+            config = GlobalConfiguration.get_solo()
+            template = config.submission_confirmation_template
 
         rendered_content = Template(template).render(Context(self.data))
 
