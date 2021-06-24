@@ -77,8 +77,8 @@ def set_url_params(url: str, **params) -> str:
             type=OpenApiTypes.URI,
             description=_(
                 "URL of the form to redirect back to. This URL is validated "
-                "against the CORS configuration.
-            "),
+                "against the CORS configuration."
+            ),
             required=True,
         ),
     ]
@@ -117,7 +117,8 @@ class AuthenticationStartView(RetrieveAPIView):
 
         if not allow_redirect_url(form_url):
             logger.warning(
-                f"blocked authentication start with non-allowed redirect to '{form_url}'"
+                "blocked authentication start with non-allowed redirect to '%(form_url)s'",
+                {"form_url": form_url},
             )
             return HttpResponseBadRequest("redirect not allowed")
 
@@ -198,7 +199,8 @@ class AuthenticationReturnView(RetrieveAPIView):
             location = response.get("Location", "")
             if location and not allow_redirect_url(location):
                 logger.warning(
-                    f"blocked authentication return with non-allowed redirect from plugin '{plugin_id}' to '{location}'"
+                    "blocked authentication return with non-allowed redirect from plugin '%(plugin_id)s' to '%(location)s'",
+                    {"plugin_id": plugin_id, "location": location},
                 )
                 return HttpResponseBadRequest("redirect not allowed")
 
