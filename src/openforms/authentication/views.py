@@ -11,14 +11,9 @@ from django.utils.translation import gettext_lazy as _
 from corsheaders.conf import conf as cors_conf
 from corsheaders.middleware import CorsMiddleware
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiResponse,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from furl import furl
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.parsers import FormParser
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -57,6 +52,9 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
     # these 'endpoints' are not meant to take or return JSON
     parser_classes = (FormParser,)
     renderer_classes = (TemplateHTMLRenderer,)
+    serializer_class = (
+        serializers.Serializer
+    )  # just to shut up some warnings in drf-spectacular
 
 
 @extend_schema(
@@ -172,7 +170,38 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
         return response
 
 
+COMMON_RETURN_RESPONSES = {
+    302: None,
+    (400, "text/html"): OpenApiResponse(
+        response=str, description=_("Bad request. Invalid parameters were passed.")
+    ),
+    (404, "text/html"): OpenApiResponse(
+        response=str,
+        description=_("Not found. The slug did not point to a live form."),
+    ),
+    (405, "text/html"): OpenApiResponse(
+        response=str,
+        description=_(
+            "Method not allowed. The authentication plugin requires `POST` or `GET`, "
+            "and the wrong method was used."
+        ),
+    ),
+}
+
+
 @extend_schema(
+    summary=_("Return from external login flow"),
+    description=_(
+        "Authentication plugins call this endpoint in the return step of the "
+        "authentication flow. Depending on the plugin, either `GET` or `POST` "
+        "is allowed as HTTP method.\n\nTypically authentication plugins will "
+        "redirect again to the URL where the SDK is embedded."
+        "\n\nVarious validations are performed:"
+        "\n* the form must be live"
+        "\n* the `plugin_id` is configured on the form"
+        "\n* logging in is required on the form"
+        "\n* the redirect target must match the CORS policy"
+    ),
     parameters=[
         OpenApiParameter(
             name="slug",
@@ -186,23 +215,15 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
             type=OpenApiTypes.STR,
             description=_("Identifier of the authentication plugin."),
         ),
-    ]
-)
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("Return from external login flow"),
-        description=_(
-            "This endpoint is the internal redirect target when returning from external login flow."
+        OpenApiParameter(
+            name="Location",
+            location=OpenApiParameter.HEADER,
+            type=OpenApiTypes.URI,
+            description=_("URL where the SDK initiated the authentication flow."),
+            response=[302],
+            required=True,
         ),
-        responses={200: None, 302: None, 404: None, 405: None},
-    ),
-    post=extend_schema(
-        summary=_("Return from external login flow"),
-        description=_(
-            "This endpoint is the internal redirect target when returning from external login flow."
-        ),
-        responses={200: None, 302: None, 404: None, 405: None},
-    ),
+    ],
 )
 class AuthenticationReturnView(AuthenticationFlowBaseView):
     lookup_field = "slug"
@@ -210,7 +231,15 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
     queryset = Form.objects.live()
     register = register
 
-    def dispatch(self, request, slug, plugin_id):
+    def _handle_return(self, request, slug, plugin_id):
+        """
+        Handle the return flow after the user provided authentication credentials.
+
+        This can be either directly to us, or via an authentication plugin. This
+        method essentially relays the django 'dispatch' to the relevant authentication
+        plugin. We must define ``get`` and ``post`` to have them properly show up and
+        be documented in the OAS.
+        """
         form = self.get_object()
         try:
             plugin = self.register[plugin_id]
@@ -232,9 +261,28 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             location = response.get("Location", "")
             if location and not allow_redirect_url(location):
                 logger.warning(
-                    "blocked authentication return with non-allowed redirect from plugin '%(plugin_id)s' to '%(location)s'",
+                    "blocked authentication return with non-allowed redirect from "
+                    "plugin '%(plugin_id)s' to '%(location)s'",
                     {"plugin_id": plugin_id, "location": location},
                 )
                 return HttpResponseBadRequest("redirect not allowed")
 
         return response
+
+    @extend_schema(responses=COMMON_RETURN_RESPONSES)
+    def get(self, request, *args, **kwargs):
+        return self._handle_return(request, *args, **kwargs)
+
+    @extend_schema(
+        responses={
+            (200, "text/html"): OpenApiResponse(
+                response=str,
+                description=_(
+                    "OK. Possibly a form with validation errors is rendered."
+                ),
+            ),
+            **COMMON_RETURN_RESPONSES,
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return self._handle_return(request, *args, **kwargs)
