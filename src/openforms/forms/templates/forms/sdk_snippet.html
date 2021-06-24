@@ -6,7 +6,8 @@
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
     const targetNode = document.getElementById('{{ div_id|escapejs }}');
-    const form = new OpenForms.OpenForm(targetNode, { baseUrl, formId });
+    const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
+    const form = new OpenForms.OpenForm(targetNode, { baseUrl, formId, basePath });
     form.init();
 </script>
 {% endwith %}
