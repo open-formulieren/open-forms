@@ -1044,20 +1044,43 @@ paths:
                 format: uri
               description: URL where the SDK initiated the authentication flow.
               required: true
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           description: No response body
         '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
                 type: string
           description: Bad request. Invalid parameters were passed.
         '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
                 type: string
           description: Not found. The slug did not point to a live form.
         '405':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
@@ -1106,6 +1129,12 @@ paths:
       - {}
       responses:
         '200':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
@@ -1119,20 +1148,43 @@ paths:
                 format: uri
               description: URL where the SDK initiated the authentication flow.
               required: true
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           description: No response body
         '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
                 type: string
           description: Bad request. Invalid parameters were passed.
         '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
                 type: string
           description: Not found. The slug did not point to a live form.
         '405':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
           content:
             text/html:
               schema:
