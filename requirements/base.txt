@@ -133,7 +133,7 @@ djangorestframework==3.12.4
     #   drf-spectacular
 drf-nested-routers==0.93.3
     # via -r requirements/base.in
-drf-spectacular==0.14.0
+drf-spectacular==0.17.2
     # via -r requirements/base.in
 elastic-apm==5.8.1
     # via -r requirements/base.in

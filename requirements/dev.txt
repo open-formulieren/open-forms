@@ -296,7 +296,7 @@ drf-nested-routers==0.93.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-drf-spectacular==0.14.0
+drf-spectacular==0.17.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
