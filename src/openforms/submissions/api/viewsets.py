@@ -112,11 +112,6 @@ class SubmissionViewSet(
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
 
-        transaction.on_commit(lambda: register_submission.delay(submission.id))
-
-        if hasattr(submission.form, "confirmation_email_template"):
-            transaction.on_commit(lambda: send_confirmation_email(submission))
-
         submission.save()
         remove_submission_from_session(submission, self.request)
 
@@ -125,9 +120,18 @@ class SubmissionViewSet(
             submission=submission,
         )
 
-        transaction.on_commit(
-            lambda: generate_submission_report.delay(submission_report.id)
-        )
+        def on_submission_commit():
+            # The submission report needs to already have been generated before it can be attached to the zaak
+            # that is created in the registration
+            chain = generate_submission_report.si(
+                submission_report.id
+            ) | register_submission.si(submission.id)
+            chain.delay()
+
+        transaction.on_commit(on_submission_commit)
+
+        if hasattr(submission.form, "confirmation_email_template"):
+            transaction.on_commit(lambda: send_confirmation_email(submission))
 
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(

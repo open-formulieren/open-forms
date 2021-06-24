@@ -14,7 +14,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     relate_document,
 )
 from openforms.registrations.registry import register
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.validators import validate_rsin
 
 
@@ -47,13 +47,23 @@ class ZaakOptionsSerializer(serializers.Serializer):
     # backend_feedback_serializer=BackendFeedbackSerializer,
 )
 def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
+    """
+    Create a zaak and document with the submitted data as PDF.
+
+    NOTE: this requires that the report was generated before the submission is
+    being registered. See
+    :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
+    celery tasks are chained to guarantee this.
+    """
     data = submission.get_merged_data()
 
     zgw = ZgwConfig.get_solo()
     zgw.apply_defaults_to(options)
 
     zaak = create_zaak(options)
-    document = create_document(submission.form.name, data, options)
+
+    submission_report = SubmissionReport.objects.get(submission=submission)
+    document = create_document(submission.form.name, submission_report, options)
     relate_document(zaak["url"], document["url"])
 
     # for now grab fixed data value

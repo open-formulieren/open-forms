@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.registry import register
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionReport
 
 
 class ZaakOptionsSerializer(serializers.Serializer):
@@ -46,7 +46,9 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     client.create_zaak(zaak_id, data)
 
     doc_id = client.create_document_identificatie()
-    client.create_zaak_document(zaak_id, doc_id, data)
+
+    submission_report = SubmissionReport.objects.get(submission=submission)
+    client.create_zaak_document(zaak_id, doc_id, submission_report)
 
     result = {
         "zaak": zaak_id,

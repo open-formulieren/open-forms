@@ -1,10 +1,12 @@
 import uuid
+from unittest.mock import patch
 
 from django.template import loader
 from django.test import TestCase
 
 import requests_mock
 from lxml import etree
+from privates.test import temp_private_root
 from requests import RequestException
 
 from openforms.forms.tests.factories import (
@@ -16,8 +18,10 @@ from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.contrib.stuf_zds.plugin import create_zaak_plugin
 from openforms.registrations.exceptions import RegistrationFailed
+from openforms.registrations.tasks import generate_submission_report
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 from stuf.tests.factories import SoapServiceFactory
@@ -87,6 +91,7 @@ class StufTestBase(TestCase):
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Body")
 
 
+@temp_private_root()
 @requests_mock.Mocker()
 class StufZDSClientTests(StufTestBase):
     """
@@ -214,8 +219,11 @@ class StufZDSClientTests(StufTestBase):
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
         )
+        submission_report = SubmissionReportFactory.create()
 
-        self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
+        self.client.create_zaak_document(
+            zaak_id="foo", doc_id="bar", submission_report=submission_report
+        )
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -238,6 +246,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_client_wraps_network_error(self, m):
         m.post(self.service.url, exc=RequestException)
+        submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
@@ -257,10 +266,13 @@ class StufZDSClientTests(StufTestBase):
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
+            self.client.create_zaak_document(
+                zaak_id="foo", doc_id="bar", submission_report=submission_report
+            )
 
     def test_client_wraps_xml_parse_error(self, m):
         m.post(self.service.url, text="> > broken xml < <")
+        submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
             self.client.create_zaak_identificatie()
@@ -272,7 +284,9 @@ class StufZDSClientTests(StufTestBase):
             self.client.create_document_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak_document(zaak_id="foo", doc_id="bar", body="bazz")
+            self.client.create_zaak_document(
+                zaak_id="foo", doc_id="bar", submission_report=submission_report
+            )
 
     def test_client_wraps_bad_structure_error(self, m):
         m.post(self.service.url, content=load_mock("dummy.xml"))
@@ -297,6 +311,7 @@ class StufZDSClientTests(StufTestBase):
             self.client.create_zaak_identificatie()
 
 
+@temp_private_root()
 @requests_mock.Mocker()
 class StufZDSPluginTests(StufTestBase):
     """
@@ -313,7 +328,8 @@ class StufZDSPluginTests(StufTestBase):
         self.fd = FormDefinitionFactory.create()
         self.fs = FormStepFactory.create(form=self.form, form_definition=self.fd)
 
-    def test_plugin(self, m):
+    @patch("celery.app.task.Task.request")
+    def test_plugin(self, m, mock_task):
         m.post(
             self.service.url,
             content=load_mock(
@@ -344,6 +360,7 @@ class StufZDSPluginTests(StufTestBase):
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
         )
+        mock_task.id = 1
 
         form_options = dict()
 
@@ -351,9 +368,11 @@ class StufZDSPluginTests(StufTestBase):
             "voornaam": "Foo",
         }
         submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
+        submission_report = SubmissionReportFactory.create(submission=submission)
+        generate_submission_report(submission_report.id)
 
         result = create_zaak_plugin(submission, form_options)
         self.assertEqual(

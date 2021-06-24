@@ -1,11 +1,9 @@
 import base64
-import json
 import logging
 import os
 from collections import OrderedDict
 from typing import Tuple
 
-from django.core.serializers.json import DjangoJSONEncoder
 from django.template import loader
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -17,6 +15,7 @@ from lxml.etree import Element
 from requests import RequestException, Response
 
 from openforms.registrations.exceptions import RegistrationFailed
+from openforms.submissions.models import SubmissionReport
 from stuf.models import SoapService
 
 logger = logging.getLogger(__name__)
@@ -184,12 +183,22 @@ class StufZDSClient:
 
         return document_identificatie
 
-    def create_zaak_document(self, zaak_id, doc_id, body):
+    def create_zaak_document(
+        self, zaak_id: str, doc_id: str, submission_report: SubmissionReport
+    ) -> None:
+        """
+        Create a zaakdocument with the submitted data as PDF.
+
+        NOTE: this requires that the report was generated before the submission is
+        being registered. See
+        :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
+        celery tasks are chained to guarantee this.
+        """
         template = "stuf_zds/soap/voegZaakdocumentToe.xml"
 
-        file_content = base64.b64encode(
-            json.dumps(body, cls=DjangoJSONEncoder).encode()
-        ).decode()
+        submission_report.content.seek(0)
+
+        file_content = base64.b64encode(submission_report.content.read()).decode()
 
         context = self._get_request_base_context()
         context.update(

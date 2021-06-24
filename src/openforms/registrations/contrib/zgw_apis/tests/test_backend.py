@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
-from zgw_consumers.constants import APITypes
+from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
@@ -13,12 +13,14 @@ from openforms.forms.tests.factories import (
 from openforms.registrations.contrib.zgw_apis.plugin import create_zaak_plugin
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 
-from .factories import ServiceFactory, ZgwConfigFactory
+from .factories import ZgwConfigFactory
 
 
+@temp_private_root()
 @requests_mock.Mocker()
 class ZGWBackendTests(TestCase):
     @classmethod
@@ -133,9 +135,10 @@ class ZGWBackendTests(TestCase):
         }
 
         submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
+        SubmissionReportFactory.create(submission=submission)
 
         result = create_zaak_plugin(submission, zgw_form_options)
         self.assertEqual(
