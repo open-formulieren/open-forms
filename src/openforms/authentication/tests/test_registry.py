@@ -135,20 +135,7 @@ class RegistryTests(TestCase):
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
     def test_views(self):
-        # override and restore the plugin registry used by the views
-        def restore_views(*args):
-            AuthenticationStartView.register, AuthenticationReturnView.register = args
-
-        self.addCleanup(
-            restore_views,
-            AuthenticationStartView.register,
-            AuthenticationReturnView.register,
-        )
-
         register = Registry()
-        AuthenticationStartView.register = register
-        AuthenticationReturnView.register = register
-
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
@@ -161,78 +148,73 @@ class RegistryTests(TestCase):
 
         # we need an arbitrary request
         factory = RequestFactory()
-        request = factory.get("/foo")
+        init_request = factory.get("/foo")
 
         next_url_enc = quote("http://foo.bar")
         bad_url_enc = quote("http://buzz.bazz")
 
         # check the start view
-        url = plugin.get_start_url(request, form)
+        url = plugin.get_start_url(init_request, form)
+
+        start_view = AuthenticationStartView.as_view(register=register)
 
         with self.subTest("start ok"):
-            response = self.client.get(f"{url}?next={next_url_enc}")
+            request = factory.get(f"{url}?next={next_url_enc}")
+            response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"start")
             self.assertEqual(response.status_code, 200)
 
         with self.subTest("start missing next"):
-            response = self.client.get(url)
+            request = factory.get(url)
+            response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"missing 'next' parameter")
             self.assertEqual(response.status_code, 400)
 
-        with self.subTest("start missing bad plugin"):
-            response = self.client.get(
-                f"{url}?next={next_url_enc}".replace("plugin1", "bad_plugin")
-            )
+        with self.subTest("start bad plugin"):
+            request = factory.get(f"{url}?next={next_url_enc}")
+            response = start_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad redirect"):
-            response = self.client.get(f"{url}?next={bad_url_enc}")
+            request = factory.get(f"{url}?next={bad_url_enc}")
+            response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
         # check the return view
         url = plugin.get_return_url(request, form)
 
+        return_view = AuthenticationReturnView.as_view(register=register)
+
         with self.subTest("return ok"):
-            response = self.client.get(f"{url}?next={next_url_enc}")
+            request = factory.get(f"{url}?next={next_url_enc}")
+            response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
         with self.subTest("return bad method"):
-            response = self.client.post(f"{url}?next={next_url_enc}")
+            request = factory.post(f"{url}?next={next_url_enc}")
+            response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
 
-        with self.subTest("return missing bad plugin"):
-            response = self.client.get(
-                f"{url}?next={next_url_enc}".replace("plugin1", "bad_plugin")
-            )
+        with self.subTest("return bad plugin"):
+            request = factory.get(f"{url}?next={next_url_enc}")
+            response = return_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("return bad redirect"):
-            response = self.client.get(f"{url}?next={bad_url_enc}")
+            request = factory.get(f"{url}?next={bad_url_enc}")
+            response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
     def test_plugin_start_failure_redirects(self):
-        # override and restore the plugin registry used by the views
-        def restore_views(*args):
-            AuthenticationStartView.register, AuthenticationReturnView.register = args
-
-        self.addCleanup(
-            restore_views,
-            AuthenticationStartView.register,
-            AuthenticationReturnView.register,
-        )
-
         register = Registry()
-        AuthenticationStartView.register = register
-        AuthenticationReturnView.register = register
-
         register("plugin1")(FailingPlugin)
         plugin = register["plugin1"]
 
@@ -245,13 +227,19 @@ class RegistryTests(TestCase):
 
         # we need an arbitrary request
         factory = RequestFactory()
-        request = factory.get("/foo")
+        init_request = factory.get("/foo")
 
         # actual test starts here
         next_url_enc = quote("http://foo.bar?bazz=buzz")
 
-        url = plugin.get_start_url(request, form)
-        response = self.client.get(f"{url}?next={next_url_enc}")
+        url = plugin.get_start_url(init_request, form)
+
+        start_view = AuthenticationStartView.as_view(register=register)
+        response = start_view(
+            factory.get(f"{url}?next={next_url_enc}"),
+            slug=form.slug,
+            plugin_id="plugin1",
+        )
 
         expected = furl("http://foo.bar?bazz=buzz")
         expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
