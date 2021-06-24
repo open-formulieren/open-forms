@@ -75,7 +75,10 @@ def set_url_params(url: str, **params) -> str:
             name="next",
             location=OpenApiParameter.QUERY,
             type=OpenApiTypes.URI,
-            description=_("URL of the form to redirect back to."),
+            description=_(
+                "URL of the form to redirect back to. This URL is validated "
+                "against the CORS configuration.
+            "),
             required=True,
         ),
     ]
@@ -122,7 +125,8 @@ class AuthenticationStartView(RetrieveAPIView):
             response = plugin.start_login(request, form, form_url)
         except Exception as e:
             logger.exception(
-                f"authentication exception during 'start_login()' of plugin '{plugin_id}'",
+                "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
+                {"plugin_id": plugin_id},
                 exc_info=e,
             )
             # append failure parameter and return to form
