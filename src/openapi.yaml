@@ -1542,7 +1542,12 @@ components:
           readOnly: true
           description: The endpoint where the PDF report generation status can be
             checked.
+        confirmationPageContent:
+          type: string
+          readOnly: true
+          description: Body text of the confirmation page. May contain HTML!
       required:
+      - confirmationPageContent
       - downloadUrl
       - reportStatusUrl
     SubmissionStep:
