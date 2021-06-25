@@ -6,9 +6,8 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.prefill.api.serializers import PluginSerializer
-from openforms.prefill.api.views import ListMixin
 from openforms.validations.api.serializers import (
+    PluginSerializer,
     ValidationInputSerializer,
     ValidationResultSerializer,
 )
@@ -21,7 +20,7 @@ from openforms.validations.registry import register
         summary=_("List available validation plugins"),
     ),
 )
-class ValidatorsListView(ListMixin, APIView):
+class ValidatorsListView(APIView):
     """
     List all prefill plugins that have been registered.
     """
@@ -34,6 +33,18 @@ class ValidatorsListView(ListMixin, APIView):
 
     def get_objects(self):
         return self.register
+
+    def get_serializer(self, **kwargs):
+        return self.serializer_class(
+            many=True,
+            context={"request": self.request, "view": self},
+            **kwargs,
+        )
+
+    def get(self, request, *args, **kwargs):
+        objects = self.get_objects()
+        serializer = self.get_serializer(instance=objects)
+        return Response(serializer.data)
 
 
 @extend_schema_view(

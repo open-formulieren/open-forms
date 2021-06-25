@@ -20,3 +20,16 @@ class ValidationResultSerializer(serializers.Serializer):
         ),
         help_text=_("List of validation error messages for display."),
     )
+
+
+class PluginSerializer(serializers.Serializer):
+    id = serializers.CharField(
+        source="identifier",
+        label=_("ID"),
+        help_text=_("The unique plugin identifier"),
+    )
+    label = serializers.CharField(
+        source="verbose_name",
+        label=_("Label"),
+        help_text=_("The human-readable name for a plugin."),
+    )
