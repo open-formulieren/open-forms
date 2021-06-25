@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils.translation import ugettext as _
 
 import requests_mock
-from django.utils.translation import ugettext as _
 from zgw_consumers.test import mock_service_oas_get
 
 from openforms.contrib.kvk.tests.base import KVKTestMixin
