@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 class ValidationInputSerializer(serializers.Serializer):
     value = serializers.CharField(
-        label=_("value"), max_length=255, help_text=_("Value to be validated")
+        label=_("value"), help_text=_("Value to be validated")
     )
 
 
@@ -16,7 +16,6 @@ class ValidationResultSerializer(serializers.Serializer):
     messages = serializers.ListField(
         serializers.CharField(
             label=_("error message"),
-            max_length=255,
             help_text=_("error message"),
         ),
         help_text=_("List of validation error messages for display."),
