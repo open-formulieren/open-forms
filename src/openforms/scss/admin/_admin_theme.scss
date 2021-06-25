@@ -8,6 +8,10 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 /* Overrides */
 body {
   overflow-y: scroll;
+
+  &.change-form {
+    line-height: 1.15;  // bootstrap reboot overrides this otherwise, which is pulled in by formio
+  }
 }
 
 a:link, a:visited {
@@ -367,6 +371,10 @@ div.help {
   // default there's some 50px of nothingness
   &:after {
     display: none;
+  }
+
+  &, & * {
+    box-sizing: content-box; // some pages load bootstrap CSS which force the border-box
   }
 
   #hijacked-warning {

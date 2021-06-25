@@ -29,6 +29,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 
 from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, import_form
+from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionDetailSerializer,
@@ -99,6 +100,7 @@ class FormStepViewSet(
     ),
 )
 class FormDefinitionViewSet(viewsets.ModelViewSet):
+    parser_classes = (IgnoreConfigurationFieldCamelCaseJSONParser,)
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
     pagination_class = PageNumberPagination

@@ -2,8 +2,10 @@ import hashlib
 import json
 import uuid
 from copy import deepcopy
+from functools import partial
 from typing import List, Tuple
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -12,8 +14,10 @@ from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
 
-from openforms.forms.models import Form
 from openforms.utils.fields import StringUUIDField
+
+from ..models import Form
+from ..tasks import detect_formiojs_configuration_snake_case
 
 
 class FormDefinition(models.Model):
@@ -40,8 +44,22 @@ class FormDefinition(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        self._check_configuration_integrity()
+
     def get_absolute_url(self):
         return reverse("forms:form_definition_detail", kwargs={"slug": self.slug})
+
+    def _check_configuration_integrity(self):
+        if settings.DEBUG:
+            callback = partial(
+                detect_formiojs_configuration_snake_case, self.id, raise_exception=True
+            )
+        else:
+            callback = partial(detect_formiojs_configuration_snake_case.delay, self.id)
+        transaction.on_commit(callback)
 
     @transaction.atomic
     def copy(self):

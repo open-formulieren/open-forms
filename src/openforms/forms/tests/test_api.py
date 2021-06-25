@@ -839,6 +839,27 @@ class FormDefinitionsAPITests(APITestCase):
             [{"label": "New field"}], definition.configuration["components"]
         )
 
+    def test_create_no_camelcase_snakecase_conversion(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "someCamelCase": "field",
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        config = FormDefinition.objects.get().configuration
+        self.assertIn("someCamelCase", config)
+        self.assertNotIn("some_amel_case", config)
+
     def test_delete(self):
         staff_user = UserFactory.create(is_staff=True)
         self.client.force_login(staff_user)
