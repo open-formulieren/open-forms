@@ -49,11 +49,11 @@ def create_document(
         "bronorganisatie": options["organisatie_rsin"],
         "creatiedatum": today,
         "titel": name,
-        "auteur": "openforms",
+        "auteur": "open-forms",
         "taal": "nld",
         "inhoud": base64_body,
         "status": "definitief",
-        "bestandsnaam": f"{today}-{name}.txt",
+        "bestandsnaam": f"open-forms-{name}.pdf",
         "beschrijving": "Ingezonden formulier",
     }
     if "vertrouwelijkheidaanduiding" in options:

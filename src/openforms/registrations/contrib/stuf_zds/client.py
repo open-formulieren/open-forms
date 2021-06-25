@@ -218,17 +218,30 @@ class StufZDSClient:
 
         submission_report.content.seek(0)
 
-        file_content = base64.b64encode(submission_report.content.read()).decode()
+        base64_body = base64.b64encode(submission_report.content.read()).decode()
 
         context = self._get_request_base_context()
         context.update(
             {
                 "zaak_identificatie": zaak_id,
                 "document_identificatie": doc_id,
-                "file_content": file_content,
-                "file_name": f"file-{doc_id}.b64.txt",
+                # TODO: Pass submission object, extract name.
+                # "titel": name,
+                "titel": "inzending",
+                "auteur": "open-forms",
+                "taal": "nld",
+                "inhoud": base64_body,
+                "status": "definitief",
+                "bestandsnaam": f"open-forms-inzending.pdf",
+                # TODO: Use name in filename
+                # "bestandsnaam": f"open-forms-{name}.pdf",
+                "formaat": "pdf",
+                "beschrijving": "Ingezonden formulier",
             }
         )
+
+        # TODO: vertrouwelijkAanduiding
+
         response, xml = self._make_request(
             template, context, soap_action="voegZaakdocumentToe_Lk01"
         )

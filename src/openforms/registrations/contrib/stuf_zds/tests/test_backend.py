@@ -229,7 +229,7 @@ class StufZDSClientTests(StufTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-        self.assertXPathExists(xml_doc, "//zds:edcLk01")
+        self.assertXPathExists(xml_doc, "//zkn:edcLk01")
         self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -238,7 +238,7 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
                 "//zkn:object/zkn:identificatie": "bar",
                 "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
-                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "file-bar.b64.txt",
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },
