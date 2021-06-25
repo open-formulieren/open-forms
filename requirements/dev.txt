@@ -713,6 +713,10 @@ tblib==1.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+testfixtures==6.17.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 text-unidecode==1.3
     # via
     #   -c requirements/ci.txt

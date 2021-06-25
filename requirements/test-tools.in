@@ -9,6 +9,7 @@ freezegun
 pyquery  # integrates with webtest
 requests-mock
 tblib
+testfixtures
 pep8
 pytest  # documentation tests
 django-capture-on-commit-callbacks
