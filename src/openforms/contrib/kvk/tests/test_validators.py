@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 import requests_mock
+from django.utils.translation import ugettext as _
 from zgw_consumers.test import mock_service_oas_get
 
 from openforms.contrib.kvk.tests.base import KVKTestMixin
@@ -61,18 +62,22 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
             "https://companies/api/v2/testprofile/companies?kvkNumber=68750110",
             status_code=500,
         )
+
         validator = KVKNumberRemoteValidator()
         validator("69599084")
-        with self.assertRaisesMessage(ValidationError, "KVK number does not exist."):
+
+        with self.assertRaisesMessage(ValidationError, _("KVK number does not exist.")):
             validator("90004760")
-        with self.assertRaisesMessage(ValidationError, "KVK number does not exist."):
+        with self.assertRaisesMessage(ValidationError, _("KVK number does not exist.")):
             validator("68750110")
 
         with self.assertRaisesMessage(
-            ValidationError, "KVK number should have 8 characters."
+            ValidationError, _("KVK number should have 8 characters.")
         ):
             validator("123")
-        with self.assertRaisesMessage(ValidationError, "Expected a numerical value."):
+        with self.assertRaisesMessage(
+            ValidationError, _("Expected a numerical value.")
+        ):
             validator("bork")
 
     @requests_mock.Mocker()
@@ -87,16 +92,20 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
             "https://companies/api/v2/testprofile/companies?rsin=063308836",
             status_code=404,
         )
+
         validator = KVKRSINRemoteValidator()
         validator("111222333")
-        with self.assertRaisesMessage(ValidationError, "RSIN does not exist."):
+
+        with self.assertRaisesMessage(ValidationError, _("RSIN does not exist.")):
             validator("063308836")
 
         with self.assertRaisesMessage(
-            ValidationError, "RSIN should have 9 characters."
+            ValidationError, _("RSIN should have 9 characters.")
         ):
             validator("123")
-        with self.assertRaisesMessage(ValidationError, "Expected a numerical value."):
+        with self.assertRaisesMessage(
+            ValidationError, _("Expected a numerical value.")
+        ):
             validator("bork")
 
     @requests_mock.Mocker()
@@ -111,14 +120,20 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
             "https://companies/api/v2/testprofile/companies?branchNumber=665544332211",
             status_code=404,
         )
+
         validator = KVKBranchNumberRemoteValidator()
         validator("112233445566")
-        with self.assertRaisesMessage(ValidationError, "Branch number does not exist."):
+
+        with self.assertRaisesMessage(
+            ValidationError, _("Branch number does not exist.")
+        ):
             validator("665544332211")
 
         with self.assertRaisesMessage(
-            ValidationError, "Branch number should have 12 characters."
+            ValidationError, _("Branch number should have 12 characters.")
         ):
             validator("123")
-        with self.assertRaisesMessage(ValidationError, "Expected a numerical value."):
+        with self.assertRaisesMessage(
+            ValidationError, _("Expected a numerical value.")
+        ):
             validator("bork")
