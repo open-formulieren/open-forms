@@ -1,0 +1,7 @@
+@import '~microscope-sass/lib/typography';
+
+// this violates a check by postcss-selector-lint, but it's the SDK snippet which has no
+// classnames to target.
+#openforms-container {
+  @include margin(-20px, $properties: (margin-left margin-right));
+}
