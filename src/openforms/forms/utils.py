@@ -1,10 +1,8 @@
-import io
 import json
 import zipfile
 from uuid import uuid4
 
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
@@ -13,7 +11,6 @@ from .api import serializers as api_serializers
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
-    FormSerializer,
     FormStepSerializer,
 )
 from .models import Form, FormDefinition, FormStep
