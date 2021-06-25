@@ -14,6 +14,7 @@ from lxml import etree
 from lxml.etree import Element
 from requests import RequestException, Response
 
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionReport
 from stuf.models import SoapService
@@ -69,6 +70,8 @@ class StufZDSClient:
         self.service = service
         self.options = options
 
+        self._global_config = GlobalConfiguration.get_solo()
+
     def _get_request_base_context(self):
         return {
             "zender_organisatie": self.service.zender_organisatie,
@@ -85,9 +88,13 @@ class StufZDSClient:
             "gemeentecode": self.options["gemeentecode"],
             "zds_zaaktype_code": self.options["zds_zaaktype_code"],
             "zds_zaaktype_omschrijving": self.options["zds_zaaktype_omschrijving"],
+            "zds_zaaktype_status_code": self.options["zds_zaaktype_status_code"],
             "zaak_omschrijving": self.options["omschrijving"],
-            "document_omschrijving": self.options["omschrijving"],
+            "zds_documenttype_omschrijving": self.options[
+                "zds_documenttype_omschrijving"
+            ],
             "referentienummer": self.options["referentienummer"],
+            "global_config": self._global_config,
         }
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
@@ -100,6 +107,7 @@ class StufZDSClient:
         template_name: str,
         context: dict,
         sync=False,
+        soap_action: str = "",
     ) -> Tuple[Response, Element]:
 
         request_body = loader.render_to_string(template_name, context)
@@ -111,7 +119,10 @@ class StufZDSClient:
             response = requests.post(
                 url,
                 data=request_data,
-                headers={"Content-Type": "application/soap+xml"},
+                headers={
+                    "Content-Type": "application/soap+xml",
+                    "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
+                },
                 auth=(self.service.user, self.service.password),
                 cert=self.service.get_cert(),
             )
@@ -141,7 +152,9 @@ class StufZDSClient:
     def create_zaak_identificatie(self):
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, context, sync=True)
+        response, xml = self._make_request(
+            template, context, sync=True, soap_action="genereerZaakIdentificatie_Di02"
+        )
 
         try:
             zaak_identificatie = xml_value(
@@ -163,14 +176,21 @@ class StufZDSClient:
             }
         )
         context.update(data)
-        response, xml = self._make_request(template, context)
+        response, xml = self._make_request(
+            template, context, soap_action="creeerZaak_Lk01"
+        )
 
         return None
 
     def create_document_identificatie(self):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(template, context, sync=True)
+        response, xml = self._make_request(
+            template,
+            context,
+            sync=True,
+            soap_action="genereerDocumentIdentificatie_Di02",
+        )
 
         try:
             document_identificatie = xml_value(
@@ -209,7 +229,9 @@ class StufZDSClient:
                 "file_name": f"file-{doc_id}.b64.txt",
             }
         )
-        response, xml = self._make_request(template, context)
+        response, xml = self._make_request(
+            template, context, soap_action="voegZaakdocumentToe_Lk01"
+        )
 
         return None
 

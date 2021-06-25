@@ -115,6 +115,8 @@ class StufZDSClientTests(StufTestBase):
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "zt-st-code",
+            "zds_documenttype_omschrijving": "dt-omschrijving",
             "referentienummer": str(uuid.uuid4()),
         }
         self.client = StufZDSClient(self.service, self.options)
@@ -217,7 +219,7 @@ class StufZDSClientTests(StufTestBase):
         m.post(
             self.service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
-            additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
+            additional_matcher=match_text("edcLk01"),
         )
         submission_report = SubmissionReportFactory.create()
 
@@ -227,7 +229,7 @@ class StufZDSClientTests(StufTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-        self.assertXPathExists(xml_doc, "//zds:voegZaakdocumentToe_EdcLk01")
+        self.assertXPathExists(xml_doc, "//zds:edcLk01")
         self.assertStuurgegevens(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -235,12 +237,10 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
                 "//zkn:object/zkn:identificatie": "bar",
-                "//zkn:object/zkn:dct.omschrijving": "my-form",
+                "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "file-bar.b64.txt",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
-                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
-                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
             },
         )
 
@@ -358,7 +358,7 @@ class StufZDSPluginTests(StufTestBase):
         m.post(
             self.service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
-            additional_matcher=match_text("voegZaakdocumentToe_EdcLk01"),
+            additional_matcher=match_text("edcLk01"),
         )
         mock_task.id = 1
 

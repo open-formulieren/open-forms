@@ -28,28 +28,45 @@
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
         </ZKN:isVan>
-        <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
-            <ZKN:gerelateerde>
-                {% if bsn %}
+        {% if bsn or nnp_id or vestigings_nummer %}
+            <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
+                <ZKN:gerelateerde>
+                    {% if bsn %}
+                        <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                            <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
+                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                        </ZKN:natuurlijkPersoon>
+                    {% elif nnp_id %}
+                        <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
+                            <BG:inn.nnpId>{{ nnp_id }}</BG:inn.nnpId>
+                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                        </ZKN:nietNatuurlijkPersoon>
+                    {% elif vestigings_nummer %}
+                        <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
+                            <BG:vestigingsNummer>{{ vestigings_nummer }}</BG:vestigingsNummer>
+                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                        </ZKN:vestiging>
+                    {% endif %}
+                </ZKN:gerelateerde>
+                <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+            </ZKN:heeftAlsInitiator>
+        {% elif not global_config.allow_empty_initiator %}
+            <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
+                <ZKN:gerelateerde>
                     <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                        <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
-                    </ZKN:natuurlijkPersoon>
-                {% elif nnp_id %}
-                    <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
-                        <BG:inn.nnpId>{{ nnp_id }}</BG:inn.nnpId>
+                        <BG:inp.bsn>111222333</BG:inp.bsn>
                         <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
-                    </ZKN:nietNatuurlijkPersoon>
-                {% elif vestigings_nummer %}
-                    <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
-                        <BG:vestigingsNummer>{{ vestigings_nummer }}</BG:vestigingsNummer>
-                    </ZKN:vestiging>
-                {% else %}
-                    <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                        <BG:anp.identificatie>{{ anp_id }}</BG:anp.identificatie>
                     </ZKN:natuurlijkPersoon>
-                {% endif %}
+                </ZKN:gerelateerde>
+                <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+            </ZKN:heeftAlsInitiator>
+        {% endif %}
+        <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde StUF:entiteittype="STT" StUF:verwerkingssoort="I">
+                <ZKN:zkt.code>{{ zds_zaaktype_status_code }}</ZKN:zkt.code>
             </ZKN:gerelateerde>
-            <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
-        </ZKN:heeftAlsInitiator>
+            <ZKN:toelichting>Status gezet door verzendende applicatie.</ZKN:toelichting>
+            <ZKN:datumStatusGezet>{{ datum_vandaag }}</ZKN:datumStatusGezet>
+        </ZKN:heeft>
     </ZKN:object>
 </ZKN:zakLk01>

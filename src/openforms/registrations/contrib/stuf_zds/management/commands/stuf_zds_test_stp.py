@@ -39,6 +39,8 @@ class Command(BaseCommand):
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "zt-st-code",
+            "zds_documenttype_omschrijving": "dt-omschrijving",
             "referentienummer": str(uuid.uuid4()),
         }
 

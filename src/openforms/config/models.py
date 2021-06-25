@@ -62,6 +62,15 @@ class GlobalConfiguration(SingletonModel):
         ),
         default="Thank you for submitting this form.",
     )
+    allow_empty_initiator = models.BooleanField(
+        _("allow empty initiator"),
+        default=False,
+        help_text=_(
+            "When enabled and the submitter is not authenticated, a case is "
+            "created without any initiator. Otherwise, a fake initiator is "
+            "added with BSN 111222333."
+        ),
+    )
 
     class Meta:
         verbose_name = _("General configuration")
