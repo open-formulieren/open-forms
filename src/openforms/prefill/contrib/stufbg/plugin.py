@@ -46,6 +46,7 @@ class StufBgPrefill(BasePlugin):
 
         config = StufBGConfig.get_solo()
         client = config.get_client()
+
         response_data = client.get_values_for_attributes(submission.bsn, attributes)
 
         dict_response = xmltodict.parse(
