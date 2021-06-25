@@ -3,7 +3,7 @@ import os
 import zipfile
 
 from django.core.management import CommandError, call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.products.tests.factories import ProductFactory
 
@@ -16,8 +16,16 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 class ImportExportTests(TestCase):
     def setUp(self):
         self.filepath = os.path.join(PATH, "export_test.zip")
-        self.addCleanup(lambda: os.remove(self.filepath))
 
+        def remove_file():
+            try:
+                os.remove(self.filepath)
+            except Exception:
+                pass
+
+        self.addCleanup(remove_file)
+
+    @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
         form, _ = FormFactory.create_batch(2, authentication_backends=["demo"])
         form_definition, _ = FormDefinitionFactory.create_batch(2)
