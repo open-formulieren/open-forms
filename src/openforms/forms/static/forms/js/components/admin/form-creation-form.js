@@ -1,3 +1,6 @@
+/*
+global URLify;
+ */
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -260,6 +263,20 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     /**
      * Functions for handling events
      */
+    const setFormSlug = (event) => {
+        // do nothing if there's already a slug set
+        if (formSlug) return;
+
+        // sort-of taken from Django's jquery prepopulate module
+        const newSlug = URLify(event.target.value, 100, false);
+        onFieldChange({
+            target: {
+                name: 'formSlug',
+                value: newSlug,
+            }
+        });
+    };
+
     const onFieldChange = (event) => {
         const { name, value } = event.target;
         dispatch({
@@ -452,7 +469,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         errors={state.errors.name}
                         required
                     >
-                        <TextInput value={state.formName} onChange={onFieldChange} />
+                        <TextInput value={state.formName} onChange={onFieldChange} onBlur={setFormSlug} />
                     </Field>
                 </FormRow>
                 <FormRow>
