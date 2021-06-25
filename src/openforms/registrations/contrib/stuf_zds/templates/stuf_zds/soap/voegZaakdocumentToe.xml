@@ -1,6 +1,5 @@
-<ZDS:edcLk01
+<ZKN:edcLk01
         xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-        xmlns:ZDS="http://www.stufstandaarden.nl/koppelvlak/zds0120"
         xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
@@ -20,15 +19,15 @@
         <ZKN:ontvangstdatum>{{ datum_vandaag }}</ZKN:ontvangstdatum>
 
         {# TODO: Fill these fields below #}
-        <ZKN:titel>titel</ZKN:titel>
-        <ZKN:beschrijving>beschrijving</ZKN:beschrijving>
-        <ZKN:formaat>formaat</ZKN:formaat>
-        <ZKN:taal>taal</ZKN:taal>
-        <ZKN:status>status</ZKN:status>
+        <ZKN:titel>{{ titel }}</ZKN:titel>
+        <ZKN:beschrijving>{{ beschrijving }}</ZKN:beschrijving>
+        <ZKN:formaat>{{ formaat }}</ZKN:formaat>
+        <ZKN:taal>{{ taal }}</ZKN:taal>
+        <ZKN:status>{{ status }}</ZKN:status>
         <ZKN:verzenddatum>{{ datum_vandaag }}</ZKN:verzenddatum>
         <ZKN:vertrouwelijkAanduiding>VERTROUWELIJK</ZKN:vertrouwelijkAanduiding>
-        <ZKN:auteur>auteur</ZKN:auteur>
-        <ZKN:inhoud StUF:bestandsnaam="{{ file_name }}">{{ file_content }}</ZKN:inhoud>
+        <ZKN:auteur>{{ auteur }}</ZKN:auteur>
+        <ZKN:inhoud StUF:bestandsnaam="{{ bestandsnaam }}">{{ inhoud }}</ZKN:inhoud>
         <StUF:tijdvakGeldigheid>
             <StUF:beginGeldigheid>{{ datum_vandaag }}</StUF:beginGeldigheid>
             <StUF:eindGeldigheid StUF:noValue="geenWaarde" xsi:nil="true"/>
@@ -42,4 +41,4 @@
             <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
         </ZKN:isRelevantVoor>
     </ZKN:object>
-</ZDS:edcLk01>
+</ZKN:edcLk01>

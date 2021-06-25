@@ -63,7 +63,7 @@
         {% endif %}
         <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde StUF:entiteittype="STT" StUF:verwerkingssoort="I">
-                <ZKN:zkt.code>{{ zds_zaaktype_status_code }}</ZKN:zkt.code>
+                <ZKN:code>{{ zds_zaaktype_status_code }}</ZKN:code>
             </ZKN:gerelateerde>
             <ZKN:toelichting>Status gezet door verzendende applicatie.</ZKN:toelichting>
             <ZKN:datumStatusGezet>{{ datum_vandaag }}</ZKN:datumStatusGezet>
