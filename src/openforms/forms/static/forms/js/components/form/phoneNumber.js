@@ -5,12 +5,25 @@ const PhoneNumber = Formio.Components.components.phoneNumber;
 
 
 class PhoneNumberField extends PhoneNumber {
+
+    handleInput(value) {
+        value = value.replace(/\D/g,'');
+        console.log(`In handleInput, returning ${value}`);
+        return value;
+    }
+
+    addFocusBlurEvents(element) {
+        super.addFocusBlurEvents(element);
+
+        this.addEventListener(element, 'keyup', () => {
+            console.log(`In element keyup, got value ${element.value}`);
+            element.value = this.handleInput(element.value);
+        });
+      }
+
     static schema(...extend) {
         return PhoneNumber.schema({
-            inputMask: null,
-            validate: {
-                custom: true,
-            }
+            inputMask: null
         }, ...extend);
     }
 
