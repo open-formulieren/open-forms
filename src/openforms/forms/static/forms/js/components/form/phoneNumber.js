@@ -7,7 +7,7 @@ const PhoneNumber = Formio.Components.components.phoneNumber;
 class PhoneNumberField extends PhoneNumber {
 
     handleInput(value) {
-        value = value.replace(/\D/g,'');
+        value = value.replace(/[^0-9 -+]/gi,'');
         console.log(`In handleInput, returning ${value}`);
         return value;
     }
