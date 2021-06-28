@@ -9,8 +9,11 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = "accounts.User"
 
 
-class SuperUserFactory(UserFactory):
+class StaffUserFactory(UserFactory):
     is_staff = True
+
+
+class SuperUserFactory(StaffUserFactory):
     is_superuser = True
 
 

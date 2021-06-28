@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
+from openforms.emails.admin import EmailTestAdminView
+
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
@@ -25,6 +27,11 @@ urlpatterns = [
         "admin/password_reset/done/",
         auth_views.PasswordResetDoneView.as_view(),
         name="password_reset_done",
+    ),
+    path(
+        "admin/email/test",
+        admin.site.admin_view(EmailTestAdminView.as_view()),
+        name="admin_email_test",
     ),
     path("admin/hijack/", include("hijack.urls")),
     path("admin/", admin.site.urls),

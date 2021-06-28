@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static hijack_tags %}
+
+
+{% block content %}
+    {% if form %}
+    <form action="{% url "admin_email_test" %}" method="post">
+        {% csrf_token %}
+        <p>{% trans "Use this form to send a test email to the supplied recipient and test the SMTP connection:" %}</p>
+
+        {{ form.non_field_errors }}
+        <p class="fieldWrapper">
+            {{ form.recipient.errors }}
+            <label for="{{ form.recipient.id_for_label }}">{{ form.recipient.label }}:</label>
+            {{ form.recipient }}
+            <input type="submit" value="{% trans 'Send test email' %}">
+        </p>
+    </form>
+    {% endif %}
+
+    {%  if result %}
+    <h2>{% trans "Result" %}</h2>
+        <table class="result-table" style="min-width: 400px;">
+
+            <tr><td width="100" >{% trans "Success" %}</td><td width="*" style="font-weight: bold; color: {{ result.success|yesno:"green,red" }};">{{ result.success|yesno }}</td></tr>
+            <tr><td>{% trans "Recipient" %}</td><td>{{ result.recipients_str }}</td></tr>
+            <tr><td>{% trans "Host" %}</td><td>{{ result.host }}</td></tr>
+            <tr><td>{% trans "Port" %}</td><td>{{ result.port }}</td></tr>
+            <tr><td>{% trans "With TLS" %}</td><td>{{ result.with_tls|yesno }}</td></tr>
+            <tr><td>{% trans "With SSL" %}</td><td>{{ result.with_ssl|yesno }}</td></tr>
+            <tr><td>{% trans "With credentials" %}</td><td>{{ result.with_credentials|yesno }}</td></tr>
+
+            {% if result.feedback or result.exception %}
+                <tr><td colspan="2">&nbsp;</td></tr>
+            {% endif %}
+            {% if result.feedback %}
+                {% for item in result.feedback %}
+                <tr><td colspan="2">{{ item }}</td></tr>
+                {% endfor %}
+            {% endif %}
+            {% if result.exception %}
+                <tr><td colspan="2"><code>{{ result.exception }}</code></td></tr>
+            {% endif %}
+        </table>
+    {% endif %}
+{% endblock %}
