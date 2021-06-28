@@ -4,19 +4,10 @@ import useDebounce from 'react-use/esm/useDebounce';
 
 import { get } from '../utils/fetch';
 import { FORM_DEFINITIONS_ENDPOINT } from './constants';
+import { stripIdFromComponents } from './utils';
 
 // debounce changes for 100ms
 const DEBOUNCE_MS = 100;
-
-
-const stripIdFromComponents = (obj) => {
-    const {id, ...objWithoutId} = obj;
-    if (objWithoutId.components) {
-        objWithoutId.components = objWithoutId.components.map(stripIdFromComponents);
-    }
-    return objWithoutId;
-};
-
 
 const useDetectConfigurationChanged = (url, configuration) => {
     const [changed, setChanged] = useState(false);

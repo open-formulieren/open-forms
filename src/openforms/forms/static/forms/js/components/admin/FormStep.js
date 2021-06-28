@@ -15,6 +15,11 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) 
     if (previousFormDefinition && previousFormDefinition != formDefinition) {
         forceBuilderUpdate = true;
     }
+    // FIXME: find a more robust way than just looking at the step name
+    const prevName = usePrevious(name);
+    if (!forceBuilderUpdate && prevName && prevName != name) {
+        forceBuilderUpdate = true;
+    }
 
     if (isNew) {
         return (
