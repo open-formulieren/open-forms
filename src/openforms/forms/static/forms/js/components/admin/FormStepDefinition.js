@@ -53,13 +53,6 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
             <fieldset className="module aligned">
                 <h2>Formulierdefinitie</h2>
 
-                {/*{ url ?
-                    <div className='warning'>
-                        <FAIcon icon="exclamation-triangle" title="Warning!" extraClassname='danger'/>
-                        You are about to edit an existing form step. This could affect other forms.
-                    </div> : null
-                }*/}
-
                 <FormRow>
                     <Field
                         name='name'
