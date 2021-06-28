@@ -92,6 +92,22 @@ const VALIDATION = {
             label: 'Required',
             tooltip: 'A required field must be filled in before the form can be submitted.',
             key: 'validate.required'
+        },
+        {
+            type: 'select',
+            key: 'validate.plugins',
+            label: 'Plugin',
+            description: 'Select the plugin(s) to use for the validation functionality.',
+            dataSrc: 'url',
+            multiple: true,
+            data: {
+                // if the url starts with '/', then formio will prefix it with the formio
+                // base URL, which is of course wrong. We there explicitly use the detected
+                // host.
+                url: getFullyQualifiedUrl('/api/v1/validation/plugins'),
+            },
+            valueProperty: 'id',
+            template: '<span>{{ item.label }}</span>',
         }
     ]
 };
