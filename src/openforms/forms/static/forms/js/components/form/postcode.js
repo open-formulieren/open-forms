@@ -10,7 +10,7 @@ class PostcodeField extends TextField {
             type: 'postcode',
             label: 'Postcode',
             key: 'postcode',
-            inputMask: '9999 aa',
+            inputMask: '9999 AA',
         }, ...extend);
     }
 
