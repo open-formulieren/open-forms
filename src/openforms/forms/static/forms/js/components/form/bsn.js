@@ -10,7 +10,6 @@ class BsnField extends TextField {
             type: 'bsn',
             label: 'BSN',
             key: 'bsn',
-            inputMask: '999999999',
         }, ...extend);
     }
 
