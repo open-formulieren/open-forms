@@ -1,15 +1,16 @@
 import {Formio} from "formiojs";
 import {defineCommonEditFormTabs} from "./abstract";
 
-const NumberField = Formio.Components.components.number;
+const TextField = Formio.Components.components.textfield;
 
 
-class BsnField extends NumberField {
+class BsnField extends TextField {
     static schema(...extend) {
-        return NumberField.schema({
+        return TextField.schema({
             type: 'bsn',
             label: 'BSN',
             key: 'bsn',
+            inputMask: '999999999',
         }, ...extend);
     }
 
