@@ -68,6 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         mime-support \
         postgresql-client \
         libxmlsec1 \
+        libxmlsec1-openssl \
         gettext \
         # lxml deps
         # libxslt \
