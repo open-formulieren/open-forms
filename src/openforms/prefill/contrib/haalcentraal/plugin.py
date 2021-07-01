@@ -7,6 +7,7 @@ from glom import GlomError, glom
 from requests import RequestException
 from zds_client import ClientError
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 @register("haalcentraal")
 class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal")
+    requires_auth = AuthAttribute.bsn
 
     @staticmethod
     def get_available_attributes():

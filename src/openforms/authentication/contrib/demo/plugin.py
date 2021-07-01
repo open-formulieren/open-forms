@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.base import BasePlugin
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
 
@@ -42,6 +43,6 @@ class DemoAuthentication(BasePlugin):
         if not submited.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session["bsn"] = submited.cleaned_data["bsn"]
+        request.session[AuthAttribute.bsn] = submited.cleaned_data["bsn"]
 
         return HttpResponseRedirect(submited.cleaned_data["next"])

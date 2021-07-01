@@ -7,6 +7,7 @@ from glom import GlomError, glom
 from requests import RequestException
 from zds_client import ClientError
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.kvk.client import KVKClient, KVKClientError
 from openforms.submissions.models import Submission
 
@@ -79,6 +80,7 @@ class KVK_KVKNumberPrefill(KVKBasePrefill):
 
     query_param = "kvkNumber"
     submission_attr = "kvk"
+    requires_auth = AuthAttribute.kvk
 
 
 # disabled for now
@@ -88,6 +90,7 @@ class KVK_RSINPrefill(KVKBasePrefill):
 
     query_param = "rsin"
     submission_attr = "rsin"
+    requires_auth = AuthAttribute.rsin
 
 
 # disabled for now
@@ -97,3 +100,4 @@ class KVK_BranchNumberPrefill(KVKBasePrefill):
 
     query_param = "branchNumber"
     submission_attr = "branchNumber"
+    requires_auth = AuthAttribute.branchNumber

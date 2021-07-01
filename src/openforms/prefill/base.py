@@ -7,6 +7,8 @@ from openforms.submissions.models import Submission
 
 class BasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
+    requires_auth = None
+
     """
     Specify the human-readable label for the plugin.
     """

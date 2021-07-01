@@ -16,6 +16,7 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
+from ...authentication.constants import AuthAttribute
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission
 
@@ -91,7 +92,7 @@ class SubmissionStartTests(APITestCase):
 
     def test_start_submission_bsn_in_session(self):
         session = self.client.session
-        session["bsn"] = "123456782"
+        session[AuthAttribute.bsn] = "123456782"
         session.save()
 
         body = {
