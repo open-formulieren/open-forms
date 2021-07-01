@@ -11,6 +11,10 @@ class PostcodeField extends TextField {
             label: 'Postcode',
             key: 'postcode',
             inputMask: '9999 AA',
+            validateOn: 'blur',
+            validate: {
+              customMessage: 'Invalid Postcode'
+            }
         }, ...extend);
     }
 
@@ -27,7 +31,6 @@ class PostcodeField extends TextField {
     get defaultSchema() {
         return PostcodeField.schema();
     }
-
 }
 
 defineCommonEditFormTabs(PostcodeField);
