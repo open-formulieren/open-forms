@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import {defineCommonEditFormTabs} from "./abstract";
+import DEFAULT_TABS from "./edit/tabs";
 
 const TextField = Formio.Components.components.textfield;
 
@@ -24,12 +24,14 @@ class BsnField extends TextField {
         };
     }
 
+    static editForm() {
+        return {components: [DEFAULT_TABS]};
+    }
+
     get defaultSchema() {
         return BsnField.schema();
     }
 
 }
-
-defineCommonEditFormTabs(BsnField);
 
 export default BsnField;
