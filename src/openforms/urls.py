@@ -50,6 +50,7 @@ urlpatterns = [
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     path("digid/", include("openforms.authentication.contrib.digid.urls")),
+    path("eherkenning/", include("digid_eherkenning.eherkenning_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
     path("", include("openforms.forms.urls", namespace="core")),
 ]

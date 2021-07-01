@@ -665,3 +665,75 @@ DIGID = {
     },
     "requested_attributes": ["bsn"],
 }
+
+#
+# E-HERKENNING
+#
+
+EHERKENNING_METADATA = config(
+    "EHERKENNING_METADATA",
+    "",
+)
+EHERKENNING_SERVICE_ENTITY_ID = config(
+    "EHERKENNING_SERVICE_ENTITY_ID",
+    "",
+)
+EHERKENNING_ENTITY_ID = config(
+    "EHERKENNING_ENTITY_ID",
+    "",
+)
+EHERKENNING_LOA = config(
+    "EHERKENNING_LOA",
+    "urn:etoegang:core:assurance-class:loa3",
+)
+EHERKENNING_OIN = config(
+    "EHERKENNING_OIN",
+    "",
+)
+EHERKENNING = {
+    "metadata_file": EHERKENNING_METADATA,
+    "key_file": SSL_KEY_PATH,
+    "cert_file": SSL_CERTIFICATE_PATH,
+    "base_url": BASE_URL,
+    "service_entity_id": EHERKENNING_SERVICE_ENTITY_ID,
+    "entity_id": EHERKENNING_ENTITY_ID,
+    "attribute_consuming_service_index": "1",
+    "service_loa": EHERKENNING_LOA,
+    "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
+    "service_name": {
+        "nl": "Maykin Media - Open Formulieren testomgeving",
+        "en": "Maykin Media - Open Forms test environment",
+    },
+    "service_description": {
+        "nl": "Maykin Media - Open Formulieren testomgeving",
+        "en": "Maykin Media - Open Forms test environment",
+    },
+    "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
+    "service_url": BASE_URL,
+    "oin": EHERKENNING_OIN,
+    "organisation_name": {
+        "nl": "Maykin Media",
+        "en": "Maykin Media",
+    },
+    # Either require and return RSIN and KVKNr (set 1) or require only KvKnr (set 2). The
+    # latter is needed for 'eenmanszaak'
+    "entity_concerned_types_allowed": [
+        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:RSIN"},
+        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+        {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+    ],
+    "requested_attributes": [
+        {
+            "name": "urn:etoegang:1.11:attribute-represented:KvKnr",
+            "required": True,
+            "purpose_statements": {
+                "nl": "Voor het uniek identificeren van het bedrijf",
+                "en": "To uniquely identify the company",
+            },
+        }
+    ],
+    "privacy_policy_url": {
+        "nl": f"{BASE_URL}/privacy_policy",
+    },
+    "herkenningsmakelaars_id": "00000003520354760000",
+}
