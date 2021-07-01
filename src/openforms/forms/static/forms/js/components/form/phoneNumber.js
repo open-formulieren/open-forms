@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import {defineCommonEditFormTabs} from "./abstract";
+import DEFAULT_TABS from "./edit/tabs";
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 
@@ -22,12 +22,14 @@ class PhoneNumberField extends PhoneNumber {
         };
     }
 
+    static editForm() {
+        return {components: [DEFAULT_TABS]};
+    }
+
     get defaultSchema() {
         return PhoneNumberField.schema();
     }
 
 }
-
-defineCommonEditFormTabs(PhoneNumberField);
 
 export default PhoneNumberField;
