@@ -3,7 +3,7 @@ import {Formio} from 'react-formio';
 import {ADVANCED, TEXT_BASIC, TEXT_VALIDATION} from './edit/tabs';
 
 
-const TextAreaBasicTab = {
+const textareaBasicTab = {
     key: 'basic',
     label: 'Basic',
     components: [
@@ -36,11 +36,11 @@ const TextAreaBasicTab = {
 };
 
 
-const TextAreaTabs = {
+const textareaTabs = {
     type: 'tabs',
     key: 'tabs',
     components: [
-        TextAreaBasicTab,
+        textareaBasicTab,
         ADVANCED,
         TEXT_VALIDATION,
     ]
@@ -50,7 +50,7 @@ const TextAreaTabs = {
 class TextArea extends Formio.Components.components.textarea {
 
     static editForm() {
-        return {components: [TextAreaTabs]};
+        return {components: [textareaTabs]};
     }
 
 }

@@ -141,7 +141,7 @@ const TEXT_VALIDATION = {
     key: 'validation',
     label: 'Validation',
     components: [
-        VALIDATION.components,
+        ...VALIDATION.components,
         {
             weight: 120,
             key: 'validate.maxLength',
