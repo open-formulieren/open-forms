@@ -1,13 +1,13 @@
 import {Formio} from 'react-formio';
 
-import {ADVANCED, BASIC, VALIDATION} from './edit/tabs';
+import {ADVANCED, TEXT_BASIC, TEXT_VALIDATION} from './edit/tabs';
 
 
 const TextAreaBasicTab = {
     key: 'basic',
     label: 'Basic',
     components: [
-        ...BASIC.components,
+        ...TEXT_BASIC.components,
         {
             type: 'checkbox',
             input: true,
@@ -42,7 +42,7 @@ const TextAreaTabs = {
     components: [
         TextAreaBasicTab,
         ADVANCED,
-        VALIDATION,
+        TEXT_VALIDATION,
     ]
 };
 
