@@ -1,4 +1,5 @@
-import TextField from './components/form/text';
+import TextArea from './components/form/textarea';
+import TextField from './components/form/textfield';
 import IbanField from './components/form/iban';
 import DateField from './components/form/date';
 import TimeField from './components/form/time';
@@ -9,6 +10,7 @@ import PostcodeField from "./components/form/postcode";
 
 const FormIOModule = {
   components: {
+    textarea: TextArea,
     textfield: TextField,
     iban: IbanField,
     date: DateField,
