@@ -22,6 +22,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": ("submission_confirmation_template",),
             },
         ),
+        (_("Privacy policy configuration"), {"fields": ("privacy_policy_content",)}),
         (
             _("Feature flags & fields for testing"),
             {

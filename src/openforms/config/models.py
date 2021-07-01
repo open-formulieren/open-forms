@@ -71,6 +71,13 @@ class GlobalConfiguration(SingletonModel):
             "added with BSN 111222333."
         ),
     )
+    privacy_policy_content = HTMLField(
+        _("privacy policy content"),
+        help_text=_(
+            "Content to display on the privacy policy page. This can be formatted using HTML."
+        ),
+        default="",
+    )
 
     class Meta:
         verbose_name = _("General configuration")
