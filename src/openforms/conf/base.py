@@ -651,6 +651,7 @@ DIGID_SERVICE_ENTITY_ID = config(
 DIGID = {
     "base_url": BASE_URL,
     "entity_id": BASE_URL,
+    # This is the metadata of the **Identity provider** NOT our own!
     "metadata_file": DIGID_METADATA,
     # SSL/TLS key
     "key_file": SSL_KEY_PATH,
