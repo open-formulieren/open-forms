@@ -4,6 +4,7 @@ from unittest import mock
 from urllib.parse import quote
 
 from django.conf import settings
+from django.core import mail
 from django.template.defaultfilters import yesno
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -12,7 +13,7 @@ from django.utils.translation import gettext as _
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.emails.connection_check import check_smtp_settings
+from openforms.emails.connection_check import LabelValue, check_email_backend
 from openforms.utils.tests.webtest_base import WebTestPyQueryMixin
 
 
@@ -23,7 +24,7 @@ def replace(mapping, **kwargs):
     return d
 
 
-default_settings = dict(
+smtp_settings = dict(
     EMAIL_HOST="localhost",
     EMAIL_PORT=252525,
     EMAIL_HOST_USER="foo",
@@ -33,145 +34,131 @@ default_settings = dict(
     EMAIL_TIMEOUT=10,
     EMAIL_SSL_KEYFILE=None,
     EMAIL_SSL_CERTFILE=None,
+    # NOTE we use the smtp backend for this test because we can make it fail with mock/patch
+    EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend",
     DEFAULT_FROM_EMAIL="sender@bar.bazz",
 )
 
 
-class CheckSMTPSettingsFunctionTests(TestCase):
-    @override_settings(**default_settings)
+class CheckEmailSettingsFunctionTests(TestCase):
     def test_ok(self):
-        with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
-            res = check_smtp_settings("receiver@bar.bazz")
-            mock_smtp.assert_called()
+        res = check_email_backend("receiver@bar.bazz")
 
-            self.assertEqual(res.success, True)
-            self.assertEqual(
-                res.feedback,
-                [
-                    _(
-                        "Successfully sent test message to %(recipients)s, please check the mailbox."
-                    )
-                    % {"recipients": "receiver@bar.bazz"}
-                ],
-            )
-            self.assertEqual(
-                res.email_message.subject, _("Open Forms SMTP connection test")
-            )
+        self.assertEqual(res.success, True)
+        self.assertEqual(
+            res.feedback,
+            [
+                _(
+                    "Successfully sent test message to %(recipients)s, please check the mailbox."
+                )
+                % {"recipients": "receiver@bar.bazz"}
+            ],
+        )
 
-            name, args, kwargs = mock_smtp.method_calls.pop(0)
-            self.assertEqual(name, "().login")
-            self.assertEqual(("foo", "bar"), args)
-
-            name, args, kwargs = mock_smtp.method_calls.pop(0)
-            self.assertEqual(name, "().sendmail")
-            self.assertEqual("sender@bar.bazz", args[0])
-            self.assertEqual(["receiver@bar.bazz"], args[1])
-            self.assertIn(b"Message-ID", args[2])
-            self.assertIn(_("Open Forms SMTP connection test").encode("utf8"), args[2])
-
-            name, args, kwargs = mock_smtp.method_calls.pop(0)
-            self.assertEqual(name, "().quit")
-
-    @override_settings(**default_settings)
-    def test_init_value_error(self):
-        with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
-            mock_smtp.side_effect = ValueError()
-            res = check_smtp_settings("receiver@bar.bazz")
-            mock_smtp.assert_called()
-
-            self.assertEqual(res.success, False)
-            self.assertEqual(
-                res.feedback,
-                [_("Cannot initialize email backend") % {"host": "localhost:252525"}],
-            )
-            self.assertIsInstance(res.exception, ValueError)
-
-    @override_settings(**replace(default_settings, EMAIL_HOST=""))
-    def test_init_bad_host_exception(self):
-        res = check_smtp_settings("receiver@bar.bazz")
-
-        self.assertEqual(res.success, False)
-        self.assertEqual(res.feedback, [_("Missing required setting EMAIL_HOST")])
-        self.assertIsNone(res.exception)
+        email_message = mail.outbox[0]
+        self.assertEqual(
+            email_message.subject, _("Open Forms email configuration test")
+        )
 
     @override_settings(
-        **replace(default_settings, EMAIL_USE_TLS=True, EMAIL_USE_SSL=True)
+        **replace(
+            smtp_settings,
+            MAILER_PAUSE_SEND=True,
+            MAILER_TEST_MODE=True,
+            MAILER_USE_BACKEND="django.core.mail.backends.smtp.EmailBackend",
+            EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend",
+        )
     )
+    def test_init_yubin(self):
+        res = check_email_backend("receiver@bar.bazz")
+
+        self.assertEqual(res.success, True)
+        self.assertEqual(
+            res.feedback,
+            [
+                _("Django-yubin detected:"),
+                LabelValue(
+                    label="MAILER_USE_BACKEND",
+                    value="django.core.mail.backends.smtp.EmailBackend",
+                ),
+                LabelValue(label="MAILER_PAUSE_SEND", value=True),
+                LabelValue(label="MAILER_TEST_MODE", value=True),
+                LabelValue(label="MAILER_TEST_EMAIL", value=""),
+                _(
+                    "Successfully sent test message to %(recipients)s, please check the mailbox."
+                )
+                % {"recipients": "receiver@bar.bazz"},
+                _(
+                    "If the message doesn't arrive check the Django-yubin queue and cronjob."
+                ),
+            ],
+        )
+        self.assertIsNone(res.exception)
+
+    @override_settings(**replace(smtp_settings, EMAIL_HOST=""))
     def test_init_bad_host_exception(self):
-        res = check_smtp_settings("receiver@bar.bazz")
+        res = check_email_backend("receiver@bar.bazz")
 
         self.assertEqual(res.success, False)
-        self.assertEqual(res.feedback, [_("Cannot initialize email backend")])
+        self.assertEqual(
+            res.feedback,
+            [
+                _("Exception while trying to send test message to %(recipients)s")
+                % {"recipients": res.recipients_str}
+            ],
+        )
+        self.assertIsInstance(res.exception, smtplib.SMTPServerDisconnected)
+
+    @override_settings(**replace(smtp_settings, EMAIL_USE_TLS=True, EMAIL_USE_SSL=True))
+    def test_init_bad_tls_ssl_exception(self):
+        res = check_email_backend("receiver@bar.bazz")
+
+        self.assertEqual(res.success, False)
+        self.assertEqual(
+            res.feedback,
+            [
+                _("Exception while trying to send test message to %(recipients)s")
+                % {"recipients": res.recipients_str}
+            ],
+        )
         self.assertIsInstance(res.exception, ValueError)
 
-    @override_settings(**default_settings)
+    @override_settings(**smtp_settings)
     def test_login_smtp_exception(self):
         with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
             mock_smtp.return_value.login.side_effect = smtplib.SMTPException()
-            res = check_smtp_settings("receiver@bar.bazz")
+            res = check_email_backend("receiver@bar.bazz")
             mock_smtp.assert_called()
 
             self.assertEqual(res.success, False)
             self.assertEqual(
                 res.feedback,
-                [_("Cannot connect to host %(host)s") % {"host": "localhost:252525"}],
+                [
+                    _("Exception while trying to send test message to %(recipients)s")
+                    % {"recipients": res.recipients_str}
+                ],
             )
             self.assertIsInstance(res.exception, smtplib.SMTPException)
 
-    @override_settings(**default_settings)
+    @override_settings(**smtp_settings)
     def test_login_socket_error(self):
         with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
             mock_smtp.return_value.login.side_effect = socket.error()
-            res = check_smtp_settings("receiver@bar.bazz")
+            res = check_email_backend("receiver@bar.bazz")
             mock_smtp.assert_called()
 
             self.assertEqual(res.success, False)
             self.assertEqual(
                 res.feedback,
-                [_("Cannot connect to host %(host)s") % {"host": "localhost:252525"}],
+                [
+                    _("Exception while trying to send test message to %(recipients)s")
+                    % {"recipients": res.recipients_str}
+                ],
             )
             self.assertIsInstance(res.exception, socket.error)
 
-    @override_settings(**default_settings)
-    def test_sendmail_smtp_exception(self):
-        with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
-            mock_smtp.return_value.sendmail.side_effect = smtplib.SMTPException()
-            res = check_smtp_settings("receiver@bar.bazz")
-            mock_smtp.assert_called()
 
-            self.assertEqual(res.success, False)
-            self.assertEqual(
-                res.feedback,
-                [
-                    _("Cannot send test message to %(email)s")
-                    % {"email": "receiver@bar.bazz"}
-                ],
-            )
-            self.assertIsInstance(res.exception, smtplib.SMTPException)
-
-    @override_settings(**default_settings)
-    def test_quit_smtp_exception(self):
-        with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
-            mock_smtp.return_value.quit.side_effect = smtplib.SMTPException()
-            res = check_smtp_settings("receiver@bar.bazz")
-            mock_smtp.assert_called()
-
-            self.assertEqual(res.success, False)
-            self.assertEqual(
-                res.feedback,
-                [
-                    _(
-                        "Successfully sent test message to %(recipients)s, please check the mailbox."
-                    )
-                    % {"recipients": "receiver@bar.bazz"},
-                    _("Cannot close connection to host %(host)s")
-                    % {"host": "localhost:252525"},
-                ],
-            )
-            self.assertIsInstance(res.exception, smtplib.SMTPException)
-
-
-class CheckSMTPSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
+class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
     def test_requires_staff(self):
         url = reverse("admin_email_test")
         redirect_url = f"{settings.LOGIN_URL}?next={quote(url)}"
@@ -191,8 +178,39 @@ class CheckSMTPSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
             self.app.set_user(user)
             response = self.app.get(url, status=200)
 
-    @override_settings(**default_settings)
-    def test_run_check(self):
+    def test_run_check_pass(self):
+        url = reverse("admin_email_test")
+        user = StaffUserFactory()
+        self.app.set_user(user)
+        response = self.app.get(url, status=200)
+
+        self.assertPyQueryExists(response, f"form[action='{url}']")
+        self.assertPyQueryExists(response, f"input[name='recipient']")
+
+        # send the form
+        form = [f for f in response.forms.values() if f.action == url][0]
+        form["recipient"] = "receiver@bar.bazz"
+        response = form.submit()
+        self.assertEqual(response.status_code, 200)
+
+        email_message = mail.outbox[0]
+        self.assertEqual(
+            email_message.subject, _("Open Forms email configuration test")
+        )
+
+        # grab translations, use the yesno template filter because its weird
+        yes = yesno(True)
+        success = _("Success")
+
+        self.assertPyQueryExists(response, f"form[action='{url}']")
+        self.assertPyQueryExists(response, "table[class='result-table']")
+        self.assertPyQueryExists(
+            response,
+            f"table[class='result-table'] tr td:contains('{success}') + td:contains('{yes}')",
+        )
+
+    @override_settings(**smtp_settings)
+    def test_run_check_fail(self):
         with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
             mock_smtp.return_value.login.side_effect = smtplib.SMTPException(
                 "Foo Exception"

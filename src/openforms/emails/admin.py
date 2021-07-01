@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
-from .connection_check import check_smtp_settings
+from .connection_check import check_email_backend
 from .forms import ConfirmationEmailTemplateForm, EmailTestForm
 from .models import ConfirmationEmailTemplate
 
@@ -25,6 +25,6 @@ class EmailTestAdminView(FormView):
 
     def form_valid(self, form):
         recipient = form.cleaned_data["recipient"]
-        result = check_smtp_settings([recipient])
+        result = check_email_backend([recipient])
         context = self.get_context_data(form=form, result=result)
         return self.render_to_response(context)

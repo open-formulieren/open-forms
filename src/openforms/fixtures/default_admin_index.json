@@ -166,5 +166,16 @@
             ]
         ]
     }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 0,
+        "app_group": [
+            "configuratie"
+        ],
+        "name": "Test email backend",
+        "link": "/admin/email/test"
+    }
 }
 ]
