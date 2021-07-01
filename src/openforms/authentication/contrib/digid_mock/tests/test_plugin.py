@@ -2,6 +2,7 @@ from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 from openforms.forms.tests.factories import FormStepFactory
 
@@ -53,5 +54,5 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "http://foo.bar")
 
-        self.assertIn("bsn", self.client.session)
-        self.assertIn(self.client.session["bsn"], "111222333")
+        self.assertIn(AuthAttribute.bsn, self.client.session)
+        self.assertIn(self.client.session[AuthAttribute.bsn], "111222333")

@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 import xmltodict
 from glom import T as Target, glom
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
@@ -33,6 +34,7 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
 @register("stufbg")
 class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
+    requires_auth = AuthAttribute.bsn
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         return FieldChoices.choices

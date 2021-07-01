@@ -2,6 +2,17 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.plugins.api.serializers import PluginBaseSerializer
+
+
+class PluginSerializer(PluginBaseSerializer):
+    provides_auth = serializers.ListField(
+        child=serializers.CharField(label=_("Authentication attribute")),
+        source="get_provides_auth",
+        label=_("Provides authentication attributes"),
+        help_text=_("The authentication attribute provided by this plugin."),
+    )
+
 
 class LoginLogoSerializer(serializers.Serializer):
     title = serializers.CharField(
