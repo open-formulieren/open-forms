@@ -4,9 +4,9 @@
 #
 #    ./bin/compile_dependencies.sh
 #
--e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@a43e36136fe4a80217508343d60a1e0cc0e6522a#egg=digid_eherkenning
+-e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
     # via -r requirements/base.in
--e git+https://github.com/maykinmedia/python3-saml.git@984fa09a7861f3b9eaf31b27a7f1eafc14dd9031#egg=python3_saml
+-e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via -r requirements/base.in
 amqp==2.6.1
     # via kombu
@@ -222,6 +222,7 @@ requests-mock==1.8.0
 requests==2.24.0
     # via
     #   gemma-zds-client
+    #   python3-saml
     #   requests-mock
     #   zgw-consumers
 self-certifi==1.0.0
