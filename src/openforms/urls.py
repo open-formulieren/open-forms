@@ -52,6 +52,10 @@ urlpatterns = [
     # path("digid/", include("digid_eherkenning.mock.digid_urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
     path("", include("openforms.forms.urls", namespace="core")),
+    path(
+        "privacy-policy",
+        include("openforms.privacy_policy.urls", namespace="privacy-policy"),
+    ),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
