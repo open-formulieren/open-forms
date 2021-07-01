@@ -42,6 +42,15 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
 
     client = config.get_client(options)
 
+    """
+    NOTE: for POC we pass the whole merged data to the templates,
+        this is not what we want for production as the actual field names might not match
+
+        we should pass the BSN/nnp_id etc explicitly and keep the form data in the PDF or dump as extra-elements (or use some mapping solution)
+
+    (see also the zgw_apis registration plugin for more notes)
+    """
+
     zaak_id = client.create_zaak_identificatie()
     client.create_zaak(zaak_id, data)
 

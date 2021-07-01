@@ -69,13 +69,22 @@ def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
     # for now grab fixed data value
     initiator = {
         "betrokkeneIdentificatie": {
+            """
+            NOTE for the demo we pulled from some predefined fields,
+                this would break with custom forms so if we want to set fields in the API we need some mapping solution
+
+            additionally we need to define where to pull the inpBsn/anpIdentificatie/inpA_nummer
+                the BSN is an authentication field but the others?
+
+            (see also the stuf_zds registration plugin for more notes)
+            """
             # simple for demo
-            "voornamen": data.get("voornaam", ""),
-            "geslachtsnaam": data.get("achternaam", ""),
-            "voorvoegselGeslachtsnaam": data.get("tussenvoegsel", ""),
-            "inpBsn": data.get("bsn", ""),
+            # "voornamen": data.get("voornaam", ""),
+            # "geslachtsnaam": data.get("achternaam", ""),
+            # "voorvoegselGeslachtsnaam": data.get("tussenvoegsel", ""),
+            # "inpBsn": data.get("bsn", ""),
             # actual
-            # "inpBsn": data.get("inpBsn", ""),
+            "inpBsn": submission.bsn,
             # "anpIdentificatie": data.get("anpIdentificatie", ""),
             # "inpA_nummer": data.get("inpA_nummer", ""),
             # "geslachtsnaam": data.get("geslachtsnaam", ""),
