@@ -31,6 +31,12 @@ const BASIC = {
             label: 'Show in email',
             tooltip: 'Whether to show this value in the confirmation email'
         },
+        {
+            type: 'checkbox',
+            key: 'hidden',
+            label: 'Hidden',
+            tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
+        },
     ]
 };
 
