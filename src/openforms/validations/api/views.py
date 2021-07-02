@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,12 +14,6 @@ from openforms.validations.api.serializers import (
 from openforms.validations.registry import register
 
 
-@extend_schema_view(
-    get=extend_schema(
-        operation_id="validation_plugin_list",
-        summary=_("List available validation plugins"),
-    ),
-)
 class ValidatorsListView(APIView):
     """
     List all prefill plugins that have been registered.
@@ -41,14 +35,24 @@ class ValidatorsListView(APIView):
             **kwargs,
         )
 
+    @extend_schema(
+        operation_id="validation_plugin_list",
+        summary=_("List available validation plugins"),
+    )
     def get(self, request, *args, **kwargs):
         objects = self.get_objects()
         serializer = self.get_serializer(instance=objects)
         return Response(serializer.data)
 
 
-@extend_schema_view(
-    post=extend_schema(
+class ValidationView(APIView):
+    """
+    Validate a value using given validator
+    """
+
+    register = register
+
+    @extend_schema(
         operation_id="validation_run",
         summary=_("Validate value using validation plugin"),
         request=ValidationInputSerializer,
@@ -58,20 +62,14 @@ class ValidatorsListView(APIView):
                 "validator",
                 OpenApiTypes.STR,
                 OpenApiParameter.PATH,
+                enum=[validator.identifier for validator in register],
                 description=_(
-                    "ID of the validation plugin, see 'validation_plugin_list'"
+                    "ID of the validation plugin, see the [`validation_plugin_list`]"
+                    "(./#operation/validation_plugin_list) operation"
                 ),
             ),
         ],
-    ),
-)
-class ValidationView(APIView):
-    """
-    Validate a value using given validator
-    """
-
-    register = register
-
+    )
     def post(self, request, *args, **kwargs):
         serializer = ValidationInputSerializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
