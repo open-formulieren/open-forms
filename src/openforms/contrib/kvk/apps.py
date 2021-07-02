@@ -6,3 +6,7 @@ class KVKApp(AppConfig):
     name = "openforms.contrib.kvk"
     label = "kvk"
     verbose_name = _("KvK code & configuration")
+
+    def ready(self):
+        # register the plugin
+        from . import validators  # noqa

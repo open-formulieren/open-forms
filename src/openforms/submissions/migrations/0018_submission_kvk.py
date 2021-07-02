@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default=openforms.submissions.models.get_default_kvk,
                 max_length=9,
-                validators=[openforms.contrib.kvk.validators.KVKValidator()],
+                validators=[openforms.contrib.kvk.validators.KVKNumberValidator()],
                 verbose_name="KvK number",
             ),
         ),

@@ -4,7 +4,7 @@ import requests_mock
 from glom import PathAccessError, glom
 from zgw_consumers.test import mock_service_oas_get
 
-from openforms.contrib.kvk.tests.test_client import KVKTestMixin
+from openforms.contrib.kvk.tests.base import KVKTestMixin
 from openforms.prefill.contrib.kvk.constants import Attributes
 from openforms.prefill.contrib.kvk.plugin import KVK_KVKNumberPrefill
 from openforms.submissions.tests.factories import SubmissionFactory
