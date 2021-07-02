@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-from ..models import Form, FormDefinition
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+from ..models import Form, FormDefinition
 
 
 class FormTestCase(TestCase):
@@ -64,6 +64,83 @@ class FormTestCase(TestCase):
 
         actual = form.get_keys_for_email_confirmation()
         self.assertEqual(set(actual), {"aaa", "bbb"})
+
+    def test_iter_components(self):
+        form = FormFactory.create(slug="a-form", name="A form")
+
+        def_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "aaa", "label": "AAA"},
+                ],
+            }
+        )
+        def_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "bbb",
+                        "label": "BBB",
+                        "multiple": True,
+                        "components": [
+                            {
+                                "key": "ccc",
+                                "label": "CCC",
+                                "multiple": True,
+                            },
+                        ]
+                    },
+                ],
+            }
+        )
+        step_1 = FormStepFactory.create(form=form, form_definition=def_1)
+        step_2 = FormStepFactory.create(form=form, form_definition=def_2)
+
+        with self.subTest("recursive"):
+            actual = list(form.iter_components(recursive=True))
+            expected = [
+                {"key": "aaa", "label": "AAA"},
+                {
+                    "key": "bbb",
+                    "label": "BBB",
+                    "multiple": True,
+                    "components": [
+                        {
+                            "key": "ccc",
+                            "label": "CCC",
+                            "multiple": True,
+                        },
+                    ]
+                }, {
+                    "key": "ccc",
+                    "label": "CCC",
+                    "multiple": True,
+                }
+            ]
+
+            self.assertEqual(actual, expected)
+
+        with self.subTest("non-recursive"):
+            actual = list(form.iter_components(recursive=False))
+            expected = [
+                {"key": "aaa", "label": "AAA"},
+                {
+                    "key": "bbb",
+                    "label": "BBB",
+                    "multiple": True,
+                    "components": [
+                        {
+                            "key": "ccc",
+                            "label": "CCC",
+                            "multiple": True,
+                        },
+                    ]
+                },
+            ]
+
+            self.assertEqual(actual, expected)
 
 
 class FormQuerysetTestCase(TestCase):

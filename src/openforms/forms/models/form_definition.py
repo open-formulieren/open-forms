@@ -104,41 +104,38 @@ class FormDefinition(models.Model):
 
         return super().delete(using=using, keep_parents=keep_parents)
 
-    def _extract_email_summary_keys_from_configuration(self, configuration: dict):
-        keys_for_email_summary = []
-        components = configuration.get("components", [])
+    def iter_components(self, configuration=None, recursive=True):
+        if configuration is None:
+            configuration = self.configuration
 
-        for component in components:
+        components = configuration.get("components")
+        if components:
+            for component in components:
+                yield component
+                if recursive:
+                    yield from self.iter_components(
+                        configuration=component, recursive=recursive
+                    )
+
+    def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
+        """Return the key and the label of fields to include in the email summary"""
+        keys_for_email_summary = []
+
+        for component in self.iter_components(recursive=True):
             if component.get("showInEmail"):
                 keys_for_email_summary.append((component["key"], component["label"]))
-            keys_for_email_summary += (
-                self._extract_email_summary_keys_from_configuration(component)
-            )
 
         return keys_for_email_summary
 
-    def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
-        """Return the key and the label of fields to include in the confirmation email"""
-        return self._extract_email_summary_keys_from_configuration(self.configuration)
-
-    def _extract_email_conformation_keys_from_configuration(self, configuration: dict):
-        keys_for_email_confirmation = []
-        components = configuration.get("components", [])
-
-        for component in components:
-            if component.get("confirmationRecipient"):
-                keys_for_email_confirmation.append(component["key"])
-            keys_for_email_confirmation += (
-                self._extract_email_conformation_keys_from_configuration(component)
-            )
-
-        return keys_for_email_confirmation
-
     def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
         """Return the key and the label of fields to include in the confirmation email"""
-        return self._extract_email_conformation_keys_from_configuration(
-            self.configuration
-        )
+        keys_for_email_confirmation = []
+
+        for component in self.iter_components(recursive=True):
+            if component.get("confirmationRecipient"):
+                keys_for_email_confirmation.append(component["key"])
+
+        return keys_for_email_confirmation
 
     class Meta:
         verbose_name = _("Form definition")

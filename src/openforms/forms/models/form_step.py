@@ -52,3 +52,6 @@ class FormStep(OrderedModel):
 
     def __str__(self):
         return _("Form step {order}").format(order=self.order)
+
+    def iter_components(self, recursive=True):
+        yield from self.form_definition.iter_components(recursive=recursive)
