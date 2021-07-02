@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..registry import register
-from .serializers import AttributeSerializer, ChoiceWrapper, PluginSerializer
+from .serializers import AttributeSerializer, ChoiceWrapper, PrefillPluginSerializer
 
 
 class ListMixin:
@@ -34,7 +34,7 @@ class PluginListView(ListMixin, APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PluginSerializer
+    serializer_class = PrefillPluginSerializer
 
     def get_objects(self):
         return list(register)

@@ -22,7 +22,7 @@ class ValidationResultSerializer(serializers.Serializer):
     )
 
 
-class PluginSerializer(serializers.Serializer):
+class ValidationPluginSerializer(serializers.Serializer):
     id = serializers.CharField(
         source="identifier",
         label=_("ID"),

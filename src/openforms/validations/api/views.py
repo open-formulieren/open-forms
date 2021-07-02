@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.validations.api.serializers import (
-    PluginSerializer,
     ValidationInputSerializer,
+    ValidationPluginSerializer,
     ValidationResultSerializer,
 )
 from openforms.validations.registry import register
@@ -29,7 +29,7 @@ class ValidatorsListView(APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PluginSerializer
+    serializer_class = ValidationPluginSerializer
 
     def get_objects(self):
         return self.register
