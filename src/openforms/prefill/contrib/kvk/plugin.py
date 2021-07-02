@@ -18,13 +18,14 @@ from .constants import Attributes
 logger = logging.getLogger(__name__)
 
 
-class KVKBasePrefill(BasePlugin):
-    """
-    base plugin for KVK companies prefill, need subclassing for specialisation
-    """
+@register("kvk-kvknumber")
+class KVK_KVKNumberPrefill(BasePlugin):
+    verbose_name = _("KvK Company by KvK number")
 
-    query_param = None
-    submission_attr = None
+    # the KVK api also supports lookup by RSIN and branchNumber but we only support kvkNumber
+    query_param = "kvkNumber"
+    submission_attr = "kvk"
+    requires_auth = AuthAttribute.kvk
 
     def get_available_attributes(self):
         return Attributes.choices
@@ -72,32 +73,3 @@ class KVKBasePrefill(BasePlugin):
     def get_query_param(self):
         assert self.query_param
         return self.query_param
-
-
-@register("kvk-kvknumber")
-class KVK_KVKNumberPrefill(KVKBasePrefill):
-    verbose_name = _("KvK Company by KvK number")
-
-    query_param = "kvkNumber"
-    submission_attr = "kvk"
-    requires_auth = AuthAttribute.kvk
-
-
-# disabled for now
-# @register("kvk-rsin")
-class KVK_RSINPrefill(KVKBasePrefill):
-    verbose_name = _("KvK Company by RSIN")
-
-    query_param = "rsin"
-    submission_attr = "rsin"
-    requires_auth = AuthAttribute.rsin
-
-
-# disabled for now
-# @register("kvk-branchnumber")
-class KVK_BranchNumberPrefill(KVKBasePrefill):
-    verbose_name = _("KvK Company by Branch number")
-
-    query_param = "branchNumber"
-    submission_attr = "branchNumber"
-    requires_auth = AuthAttribute.branchNumber

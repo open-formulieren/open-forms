@@ -4,12 +4,9 @@ from djchoices import ChoiceItem, DjangoChoices
 
 
 class AuthAttribute(DjangoChoices):
+    """
+    core identifying attributes retrieved from the authentication plugins
+    """
+
     bsn = ChoiceItem("bsn", _("citizen service number"))
     kvk = ChoiceItem("kvk", _("chamber of commerce number"))
-
-    # TODO implement these fields on Submission model
-    # nnpid = ChoiceItem("nnpid", _("non-natural person number"))
-    rsin = ChoiceItem("rsin", _("RSIN"))
-    branchNumber = ChoiceItem(
-        "branchNumber", _("chamber of commerce number branch number")
-    )
