@@ -35,9 +35,11 @@ def register_submission(submission_id: int) -> Optional[dict]:
     )
     options_serializer.is_valid(raise_exception=True)
 
-    logger.debug("Invoking the '%r' plugin callback", plugin.callback)
+    logger.debug("Invoking the '%r' plugin callback", plugin)
     try:
-        result = plugin.callback(submission, options_serializer.validated_data)
+        result = plugin.register_submission(
+            submission, options_serializer.validated_data
+        )
     except RegistrationFailed:
         formatted_tb = traceback.format_exc()
         status = RegistrationStatuses.failed

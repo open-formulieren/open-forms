@@ -10,7 +10,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
-from openforms.registrations.contrib.zgw_apis.plugin import create_zaak_plugin
+from openforms.registrations.contrib.zgw_apis.plugin import ZGWRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionReportFactory,
@@ -140,7 +140,8 @@ class ZGWBackendTests(TestCase):
         )
         SubmissionReportFactory.create(submission=submission)
 
-        result = create_zaak_plugin(submission, zgw_form_options)
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",

@@ -16,7 +16,7 @@ from openforms.forms.tests.factories import (
 )
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
-from openforms.registrations.contrib.stuf_zds.plugin import create_zaak_plugin
+from openforms.registrations.contrib.stuf_zds.plugin import StufZDSRegistration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.registrations.tasks import generate_submission_report
 from openforms.submissions.tests.factories import (
@@ -374,7 +374,8 @@ class StufZDSPluginTests(StufTestBase):
         submission_report = SubmissionReportFactory.create(submission=submission)
         generate_submission_report(submission_report.id)
 
-        result = create_zaak_plugin(submission, form_options)
+        plugin = StufZDSRegistration("stuf")
+        result = plugin.register_submission(submission, form_options)
         self.assertEqual(
             result,
             {

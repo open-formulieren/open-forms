@@ -31,4 +31,4 @@ class BackendChoiceField(CharField):
         return field
 
     def _get_plugin_choices(self):
-        return [(plugin.unique_identifier, plugin.name) for plugin in self.registry]
+        return [(plugin.identifier, plugin.verbose_name) for plugin in self.registry]

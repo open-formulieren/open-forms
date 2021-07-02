@@ -1,10 +1,10 @@
-from pprint import pprint
 from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.registrations.base import BasePlugin
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.registry import register
 from openforms.submissions.models import Submission, SubmissionReport
@@ -21,37 +21,39 @@ class ZaakOptionsSerializer(serializers.Serializer):
     )
 
 
-@register(
-    "stuf-zds-create-zaak",
-    _("StUF-ZDS"),
-    configuration_options=ZaakOptionsSerializer,
-)
-def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
-    data = submission.get_merged_data()
+@register("stuf-zds-create-zaak")
+class StufZDSRegistration(BasePlugin):
+    verbose_name = _("StUF-ZDS")
+    configuration_options = ZaakOptionsSerializer
 
-    config = StufZDSConfig.get_solo()
-    config.apply_defaults_to(options)
+    def register_submission(
+        self, submission: Submission, options: dict
+    ) -> Optional[dict]:
+        data = submission.get_merged_data()
 
-    options["omschrijving"] = submission.form.name
-    options["referentienummer"] = str(submission.uuid)
+        config = StufZDSConfig.get_solo()
+        config.apply_defaults_to(options)
 
-    # "bsn"
-    # "nnp_id"
-    # "vestigings_nummer"
-    # "anp_id"
+        options["omschrijving"] = submission.form.name
+        options["referentienummer"] = str(submission.uuid)
 
-    client = config.get_client(options)
+        # "bsn"
+        # "nnp_id"
+        # "vestigings_nummer"
+        # "anp_id"
 
-    zaak_id = client.create_zaak_identificatie()
-    client.create_zaak(zaak_id, data)
+        client = config.get_client(options)
 
-    doc_id = client.create_document_identificatie()
+        zaak_id = client.create_zaak_identificatie()
+        client.create_zaak(zaak_id, data)
 
-    submission_report = SubmissionReport.objects.get(submission=submission)
-    client.create_zaak_document(zaak_id, doc_id, submission_report)
+        doc_id = client.create_document_identificatie()
 
-    result = {
-        "zaak": zaak_id,
-        "document": doc_id,
-    }
-    return result
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        client.create_zaak_document(zaak_id, doc_id, submission_report)
+
+        result = {
+            "zaak": zaak_id,
+            "document": doc_id,
+        }
+        return result
