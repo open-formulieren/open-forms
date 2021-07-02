@@ -66,13 +66,19 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
         validator = KVKNumberRemoteValidator()
         validator("69599084")
 
-        with self.assertRaisesMessage(ValidationError, _("KVK number does not exist.")):
+        with self.assertRaisesMessage(
+            ValidationError, _("%(type)s does not exist.") % {"type": _("KVK number")}
+        ):
             validator("90004760")
-        with self.assertRaisesMessage(ValidationError, _("KVK number does not exist.")):
+        with self.assertRaisesMessage(
+            ValidationError, _("%(type)s does not exist.") % {"type": _("KVK number")}
+        ):
             validator("68750110")
 
         with self.assertRaisesMessage(
-            ValidationError, _("KVK number should have 8 characters.")
+            ValidationError,
+            _("%(type)s should have %(size)i characters.")
+            % {"type": _("KVK number"), "size": 8},
         ):
             validator("123")
         with self.assertRaisesMessage(
@@ -96,11 +102,15 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
         validator = KVKRSINRemoteValidator()
         validator("111222333")
 
-        with self.assertRaisesMessage(ValidationError, _("RSIN does not exist.")):
+        with self.assertRaisesMessage(
+            ValidationError, _("%(type)s does not exist.") % {"type": _("RSIN")}
+        ):
             validator("063308836")
 
         with self.assertRaisesMessage(
-            ValidationError, _("RSIN should have 9 characters.")
+            ValidationError,
+            _("%(type)s should have %(size)i characters.")
+            % {"type": _("RSIN"), "size": 9},
         ):
             validator("123")
         with self.assertRaisesMessage(
@@ -125,12 +135,15 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
         validator("112233445566")
 
         with self.assertRaisesMessage(
-            ValidationError, _("Branch number does not exist.")
+            ValidationError,
+            _("%(type)s does not exist.") % {"type": _("Branch number")},
         ):
             validator("665544332211")
 
         with self.assertRaisesMessage(
-            ValidationError, _("Branch number should have 12 characters.")
+            ValidationError,
+            _("%(type)s should have %(size)i characters.")
+            % {"type": _("Branch number"), "size": 12},
         ):
             validator("123")
         with self.assertRaisesMessage(
