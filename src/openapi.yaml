@@ -688,7 +688,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Plugin'
+                  $ref: '#/components/schemas/PrefillPlugin'
           description: ''
   /api/v1/prefill/plugins/{plugin}/attributes:
     get:
@@ -985,6 +985,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionSuspension'
+          description: ''
+  /api/v1/validation/plugins:
+    get:
+      operationId: validation_plugin_list
+      description: List all prefill plugins that have been registered.
+      summary: List available validation plugins
+      tags:
+      - validation
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationPlugin'
+          description: ''
+  /api/v1/validation/plugins/{validator}:
+    post:
+      operationId: validation_run
+      description: Validate a value using given validator
+      summary: Validate value using validation plugin
+      parameters:
+      - in: path
+        name: validator
+        schema:
+          type: string
+          enum:
+          - kvk-branchNumber
+          - kvk-kvkNumber
+          - kvk-rsin
+        description: ID of the validation plugin, see the [`validation_plugin_list`](./#operation/validation_plugin_list)
+          operation
+        required: true
+      tags:
+      - validation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ValidationInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ValidationInput'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
           description: ''
   /auth/{slug}/{plugin_id}/return:
     get:
@@ -1697,7 +1757,7 @@ components:
           type: string
           format: uri
           readOnly: true
-    Plugin:
+    PrefillPlugin:
       type: object
       properties:
         id:
@@ -1870,6 +1930,40 @@ components:
       required:
       - name
       - url
+    ValidationInput:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Value to be validated
+      required:
+      - value
+    ValidationPlugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+      required:
+      - id
+      - label
+    ValidationResult:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+          description: Boolean indicating value passed validation.
+        messages:
+          type: array
+          items: {}
+          readOnly: true
+          description: List of validation error messages for display.
+      required:
+      - isValid
+      - messages
   securitySchemes:
     cookieAuth:
       type: apiKey
