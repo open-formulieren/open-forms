@@ -111,13 +111,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormDefinition
-        fields = (
-            "url",
-            "uuid",
-            "name",
-            "slug",
-            "configuration",
-        )
+        fields = ("url", "uuid", "name", "slug", "configuration", "login_required")
         extra_kwargs = {
             "url": {
                 "view_name": "api:formdefinition-detail",
@@ -163,6 +157,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
     )
+    login_required = serializers.BooleanField(
+        source="form_definition.login_required", read_only=True
+    )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     url = NestedHyperlinkedRelatedField(
@@ -179,7 +176,15 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormStep
-        fields = ("index", "slug", "configuration", "form_definition", "name", "url")
+        fields = (
+            "index",
+            "slug",
+            "configuration",
+            "form_definition",
+            "name",
+            "url",
+            "login_required",
+        )
 
         extra_kwargs = {
             "form_definition": {
