@@ -176,6 +176,15 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
+    previous_text = serializers.CharField(
+        source="form_definition.previous_text", read_only=True
+    )
+    save_text = serializers.CharField(
+        source="form_definition.save_text", read_only=True
+    )
+    next_text = serializers.CharField(
+        source="form_definition.next_text", read_only=True
+    )
     url = NestedHyperlinkedRelatedField(
         source="*",
         view_name="api:form-steps-detail",
@@ -198,6 +207,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "login_required",
+            "previous_text",
+            "save_text",
+            "next_text",
         )
 
         extra_kwargs = {
