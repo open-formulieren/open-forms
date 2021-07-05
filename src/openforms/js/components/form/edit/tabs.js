@@ -106,6 +106,29 @@ const ADVANCED = {
 };
 
 
+const REGISTRATION = {
+    key: 'registration',
+    label: 'Registration',
+    components: [
+        {
+            type: 'select',
+            key: 'registration.attribute',
+            label: 'Registration attribute',
+            description: 'Save the value as this attribute in the registration backend system.',
+            dataSrc: 'url',
+            data: {
+                // if the url starts with '/', then formio will prefix it with the formio
+                // base URL, which is of course wrong. We there explicitly use the detected
+                // host.
+                url: getFullyQualifiedUrl('/api/v1/registration/attributes'),
+            },
+            valueProperty: 'id',
+            template: '<span>{{ item.label }}</span>',
+        }
+    ]
+};
+
+
 const VALIDATION = {
     key: 'validation',
     label: 'Validation',
@@ -221,5 +244,5 @@ const DEFAULT_TEXT_TABS = {
 };
 
 
-export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL };
+export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
 export default DEFAULT_TABS;

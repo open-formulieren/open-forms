@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 from ..models import Form, FormDefinition
+from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 class FormTestCase(TestCase):
@@ -90,7 +90,7 @@ class FormTestCase(TestCase):
                                 "label": "CCC",
                                 "multiple": True,
                             },
-                        ]
+                        ],
                     },
                 ],
             }
@@ -112,12 +112,13 @@ class FormTestCase(TestCase):
                             "label": "CCC",
                             "multiple": True,
                         },
-                    ]
-                }, {
+                    ],
+                },
+                {
                     "key": "ccc",
                     "label": "CCC",
                     "multiple": True,
-                }
+                },
             ]
 
             self.assertEqual(actual, expected)
@@ -136,7 +137,7 @@ class FormTestCase(TestCase):
                             "label": "CCC",
                             "multiple": True,
                         },
-                    ]
+                    ],
                 },
             ]
 

@@ -68,6 +68,7 @@ urlpatterns = [
                 path("prefill/", include("openforms.prefill.api.urls")),
                 path("validation/", include("openforms.validations.api.urls")),
                 path("authentication/", include("openforms.authentication.api.urls")),
+                path("registration/", include("openforms.registrations.api.urls")),
             ]
         ),
     ),
