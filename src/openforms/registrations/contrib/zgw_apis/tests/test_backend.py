@@ -5,17 +5,9 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.zgw_apis.plugin import ZGWRegistration
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionReportFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionFactory
 
 from .factories import ZgwConfigFactory
 
@@ -25,10 +17,6 @@ from .factories import ZgwConfigFactory
 class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create()
-        cls.fd = FormDefinitionFactory.create()
-        cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
-
         ZgwConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -36,6 +24,21 @@ class ZGWBackendTests(TestCase):
         )
 
     def test_submission_with_zgw_backend(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                }
+            ],
+            submission_kwargs={"bsn": "111222333"},
+            submitted_data={
+                "voornaam": "Foo",
+            },
+        )
+
         zgw_form_options = dict(
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
@@ -129,16 +132,6 @@ class ZGWBackendTests(TestCase):
                 "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
             ),
         )
-
-        data = {
-            "voornaam": "Foo",
-        }
-
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        SubmissionReportFactory.create(submission=submission)
 
         plugin = ZGWRegistration("zgw")
         result = plugin.register_submission(submission, zgw_form_options)
