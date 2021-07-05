@@ -444,6 +444,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name: step.name,
                         slug: step.slug,
                         configuration: step.configuration,
+                        loginRequired: step.loginRequired,
                     }
                 )
                 if (!definitionResponse.ok) {
