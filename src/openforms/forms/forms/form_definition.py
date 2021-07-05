@@ -17,5 +17,8 @@ class FormDefinitionForm(forms.ModelForm):
             "name",
             "slug",
             "login_required",
+            "previous_text",
+            "save_text",
+            "next_text",
             "configuration",
         )
