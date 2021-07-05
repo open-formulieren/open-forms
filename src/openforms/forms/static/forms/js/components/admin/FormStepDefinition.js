@@ -1,19 +1,37 @@
 /*
 global URLify;
  */
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
 import FormIOBuilder from '../formio_builder/builder';
 import {Checkbox, TextInput} from "../formsets/Inputs";
 import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
-import FAIcon from "./FAIcon";
+import { AuthenticationPluginsContext } from './Context';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 
 const emptyConfiguration = {
     display: 'form',
+};
+
+const LoginWarning = (loginRequired) => {
+     const selectedAuthPlugins = useContext(AuthenticationPluginsContext);
+     if ( loginRequired && selectedAuthPlugins.length === 0 ) {
+         return (
+            <ul className="messagelist">
+                <li className="warning">
+                    This form step requires a login, but no authentication backend has been specified.
+                </li>
+            </ul>
+         );
+     }
+     return null;
+};
+
+LoginWarning.PropTypes = {
+    loginRequired: PropTypes.bool.isRequired,
 };
 
 /**
@@ -49,6 +67,7 @@ const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, con
     return (
         <>
             <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
+            <LoginWarning loginRequired={loginRequired}/>
 
             <fieldset className="module aligned">
                 <h2>Formulierdefinitie</h2>
