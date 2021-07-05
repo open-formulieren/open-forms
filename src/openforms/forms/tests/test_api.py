@@ -239,6 +239,7 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["beginText"], _("Begin page"))
         self.assertEqual(response.json()["previousText"], _("Previous page"))
         self.assertEqual(response.json()["changeText"], _("Change"))
         self.assertEqual(response.json()["confirmText"], _("Confirm"))
@@ -268,6 +269,7 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
+            "beginText": "Different Begin Text",
             "previousText": "Different Previous Text",
             "changeText": "Different Change Text",
             "confirmText": "Different Confirm Text",
@@ -279,6 +281,7 @@ class FormsAPITests(APITestCase):
         form = Form.objects.get()
         self.assertEqual(form.name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.begin_text, "Different Begin Text")
         self.assertEqual(form.previous_text, "Different Previous Text")
         self.assertEqual(form.change_text, "Different Change Text")
         self.assertEqual(form.confirm_text, "Different Confirm Text")
@@ -305,6 +308,7 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
+            "beginText": "Different Begin Text",
             "previousText": "Different Previous Text",
             "changeText": "Different Change Text",
             "confirmText": "Different Confirm Text",
@@ -313,6 +317,7 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
+        self.assertEqual(form.begin_text, "Different Begin Text")
         self.assertEqual(form.previous_text, "Different Previous Text")
         self.assertEqual(form.change_text, "Different Change Text")
         self.assertEqual(form.confirm_text, "Different Confirm Text")
