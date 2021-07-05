@@ -16,7 +16,7 @@ class BsnField extends TextField {
     static get builderInfo() {
         return {
             title: 'BSN Field',
-            icon: 'hashtag',
+            icon: 'id-card-o',
             group: 'basic',
             weight: 10,
             schema: BsnField.schema(),
