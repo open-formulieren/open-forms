@@ -5,6 +5,7 @@ import TimeField from './components/form/time';
 import SignatureField from './components/form/signature';
 import PhoneNumberField from './components/form/phoneNumber';
 import BsnField from './components/form/bsn';
+import PostcodeField from "./components/form/postcode";
 
 const FormIOModule = {
   components: {
@@ -15,6 +16,7 @@ const FormIOModule = {
     time: TimeField,
     phoneNumber: PhoneNumberField,
     bsn: BsnField,
+    postcode: PostcodeField,
   },
 };
 

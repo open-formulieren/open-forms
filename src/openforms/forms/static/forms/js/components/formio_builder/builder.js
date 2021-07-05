@@ -32,6 +32,7 @@ const BUILDER_OPTIONS = {
                 time: true,
                 phoneNumber: true,
                 bsn: true,
+                postcode: true,
             }
         },
         custom_layout: {
