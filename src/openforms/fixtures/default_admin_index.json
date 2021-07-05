@@ -175,7 +175,7 @@
             "configuratie"
         ],
         "name": "Test email backend",
-        "link": "/admin/email/test"
+        "link": "/admin/email/test/"
     }
 }
 ]

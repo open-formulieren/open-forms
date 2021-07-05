@@ -29,7 +29,7 @@ urlpatterns = [
         name="password_reset_done",
     ),
     path(
-        "admin/email/test",
+        "admin/email/test/",
         admin.site.admin_view(EmailTestAdminView.as_view()),
         name="admin_email_test",
     ),
