@@ -20,7 +20,10 @@ class TestAttribute(DjangoChoices):
 
 
 class MappingTests(TestCase):
-    def test_mapping_function(self):
+    def test_kitchensink(self):
+        """
+        all-in-one testcase for demonstration purposes
+        """
         mapping = {
             # nested structure with basic values in the form & submission
             "initiator.naam.voornaam": TestAttribute.initiator_voornamen,
@@ -38,6 +41,19 @@ class MappingTests(TestCase):
             # form and submission fields
             "bsn": FieldConf(submission_field="bsn"),
             "form.name": FieldConf(form_field="name"),
+        }
+
+        expected = {
+            "initiator": {
+                "naam": {
+                    "voornaam": "Foo",
+                    "achternaam": "Bar",
+                    "tussenvoegsel": "",
+                },
+                "geslacht": "V",
+            },
+            "bsn": "111222333",
+            "form": {"name": "Foo Form"},
         }
 
         submission = SubmissionFactory.from_components(
@@ -76,17 +92,127 @@ class MappingTests(TestCase):
         actual = apply_data_mapping(
             submission, mapping, component_attribute="registration.attribute"
         )
+        self.assertEqual(actual, expected)
 
+    def test_simple(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+            "persoon.achternaam": "xyz_achternaam",
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+                {"key": "achternaam", "mapping_attr": "xyz_achternaam"},
+            ],
+            submitted_data={"voornaam": "Foo", "achternaam": "Bar"},
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
+        expected = {
+            "persoon": {
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_skip_missing(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+            "persoon.achternaam": "xyz_achternaam",
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+                {"key": "achternaam", "mapping_attr": "xyz_achternaam"},
+            ],
+            # we only submit part of the data
+            submitted_data={"voornaam": "Foo"},
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
+        expected = {
+            "persoon": {
+                "voornaam": "Foo",
+                # missing data is skipped
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_use_conf(self):
+        mapping = {
+            "persoon.voornaam": FieldConf("xyz_voornaam"),
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+            ],
+            submitted_data={"voornaam": "Foo"},
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
+        expected = {
+            "persoon": {
+                "voornaam": "Foo",
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_use_conf_default(self):
+        mapping = {
+            "persoon.voornaam": FieldConf("xyz_voornaam", default="Bar"),
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+            ],
+            submitted_data=None,
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
+        expected = {
+            "persoon": {
+                "voornaam": "Bar",
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_use_conf_transform(self):
+        mapping = {
+            "persoon.voornaam": FieldConf(
+                "xyz_voornaam", transform=lambda v: v.upper()
+            ),
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+            ],
+            submitted_data={"voornaam": "Foo"},
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
+        expected = {
+            "persoon": {
+                "voornaam": "FOO",
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_use_model_kwargs(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+            "form": FieldConf(form_field="name"),
+            "bsn": FieldConf(submission_field="bsn"),
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+            ],
+            form_kwargs={"name": "BarForm"},
+            submission_kwargs={"bsn": "111222333"},
+            submitted_data={"voornaam": "Foo"},
+        )
+        actual = apply_data_mapping(submission, mapping, "mapping_attr")
         expected = {
             "bsn": "111222333",
-            "form": {"name": "Foo Form"},
-            "initiator": {
-                "geslacht": "V",
-                "naam": {
-                    "voornaam": "Foo",
-                    "achternaam": "Bar",
-                    "tussenvoegsel": "",
-                },
+            "form": "BarForm",
+            "persoon": {
+                "voornaam": "Foo",
             },
         }
         self.assertEqual(actual, expected)

@@ -39,7 +39,44 @@ def apply_data_mapping(
     component_attribute: str,
 ) -> dict:
     """
-    apply mapping to data and build new data structure
+    apply mapping to data and build new data structure based on mapped attributes on the formio component configuration
+
+    example:
+        # a component annotated with a meta-attribute.
+        component = {
+            "key": "firstname,
+            "my_plugin_system.some_attribute": XYZ.persoon_voornaam,
+        }
+
+        # submitted data
+        data = {
+            "firstname": "Foo",
+        }
+
+        # Submission instance from a Form with a FormDefinition using the given component,
+        #    and SubmissionStep(s) holding the given data
+        submission = ...
+
+        # the actual mapping sets a path into a nested dictionary and the meta-attribute
+        mapping = {
+            # map path into structure witha meta-attribute
+            "person.name.first": XYZ.persoon_voornaam,
+
+            # or for options use wrap it in FieldConf
+            "person.name.first": FieldConf(XYZ.persoon_voornaam, ...=..),
+        }
+
+        # calling the mapping function with the submission, the mapping and the name of the component field
+        result = apply_data_mapping(submission, mapping, "my_plugin_system.some_attribute")
+
+        # output is the structure described by the keys in the mapping and values from the annotated components
+        result == {
+            "person": {
+                "name": {
+                    "first": "Foo",
+                }
+            }
+        }
 
     """
     target_dict = dict()
