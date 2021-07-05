@@ -30,6 +30,7 @@ const BUILDER_OPTIONS = {
                 date: true,
                 signature: true,
                 time: true,
+                phoneNumber: true,
             }
         },
         custom_layout: {
