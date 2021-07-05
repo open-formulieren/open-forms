@@ -65,6 +65,9 @@ class FormSerializer(serializers.ModelSerializer):
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
+            "previous_text",
+            "change_text",
+            "confirm_text",
         )
         extra_kwargs = {
             "uuid": {
@@ -112,7 +115,17 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormDefinition
-        fields = ("url", "uuid", "name", "slug", "configuration", "login_required")
+        fields = (
+            "url",
+            "uuid",
+            "name",
+            "slug",
+            "configuration",
+            "login_required",
+            "previous_text",
+            "save_text",
+            "next_text",
+        )
         extra_kwargs = {
             "url": {
                 "view_name": "api:formdefinition-detail",
