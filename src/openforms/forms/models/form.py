@@ -88,6 +88,14 @@ class Form(models.Model):
             "The text that will be displayed in the overview page to confirm the data is correct"
         ),
     )
+    begin_text = models.CharField(
+        _("Begin Text"),
+        max_length=50,
+        default=_("Begin form"),
+        help_text=_(
+            "The text that will be displayed at the start of the form to indicate the user can begin"
+        ),
+    )
 
     # life cycle management
     active = models.BooleanField(default=False)

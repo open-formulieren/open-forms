@@ -16,6 +16,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
+    previous_text = serializers.CharField(source="form_definition.previous_text")
+    save_text = serializers.CharField(source="form_definition.save_text")
+    next_text = serializers.CharField(source="form_definition.next_text")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -32,6 +35,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
             "form_definition",
             "index",
             "url",
+            "previous_text",
+            "save_text",
+            "next_text",
         )
         extra_kwargs = {
             "uuid": {
@@ -68,6 +74,7 @@ class FormSerializer(serializers.ModelSerializer):
             "previous_text",
             "change_text",
             "confirm_text",
+            "begin_text",
         )
         extra_kwargs = {
             "uuid": {
@@ -176,6 +183,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
+    # TODO Remove newly added code?
     previous_text = serializers.CharField(
         source="form_definition.previous_text", read_only=True
     )
