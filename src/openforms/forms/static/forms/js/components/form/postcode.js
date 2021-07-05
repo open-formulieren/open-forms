@@ -1,7 +1,7 @@
 import {Formio} from "formiojs";
 
 import DEFAULT_TABS from "./edit/tabs";
-import TextField from './text';
+import TextField from './textfield';
 
 
 class PostcodeField extends TextField {
