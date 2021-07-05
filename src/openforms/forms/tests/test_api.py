@@ -345,7 +345,18 @@ class FormsStepsAPITests(APITestCase):
         response = self.client.get(url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 1)
+
+        retrieved_steps = response.json()
+
+        self.assertEqual(len(retrieved_steps), 1)
+
+        self.assertIn("url", retrieved_steps[0])
+        self.assertIn("index", retrieved_steps[0])
+        self.assertIn("name", retrieved_steps[0])
+        self.assertIn("slug", retrieved_steps[0])
+        self.assertIn("configuration", retrieved_steps[0])
+        self.assertIn("loginRequired", retrieved_steps[0])
+        self.assertIn("formDefinition", retrieved_steps[0])
 
     def test_create_form_step_successful(self):
         self.user.is_staff = True
@@ -785,6 +796,7 @@ class FormDefinitionsAPITests(APITestCase):
         definition = FormDefinitionFactory.create(
             name="test form definition",
             slug="test-form-definition",
+            login_required=False,
             configuration={
                 "display": "form",
                 "components": [{"label": "Existing field"}],
@@ -801,6 +813,7 @@ class FormDefinitionsAPITests(APITestCase):
                     "display": "form",
                     "components": [{"label": "Existing field"}, {"label": "New field"}],
                 },
+                "login_required": True,
             },
         )
 
@@ -810,6 +823,7 @@ class FormDefinitionsAPITests(APITestCase):
 
         self.assertEqual("Updated name", definition.name)
         self.assertEqual("updated-slug", definition.slug)
+        self.assertEqual(True, definition.login_required)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
 
     def test_create(self):
