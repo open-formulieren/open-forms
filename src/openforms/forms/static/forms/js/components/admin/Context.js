@@ -4,7 +4,7 @@ import React from 'react';
 const FormDefinitionsContext = React.createContext([]);
 FormDefinitionsContext.displayName = 'FormDefinitionsContext';
 
-const AuthenticationPluginsContext = React.createContext([]);
-AuthenticationPluginsContext.displayName = 'AuthenticationPluginsContext';
+const PluginsContext = React.createContext({availablePlugins: {}, selectedPlugins: []});
+PluginsContext.displayName = 'PluginsContext';
 
-export { FormDefinitionsContext, AuthenticationPluginsContext };
+export { FormDefinitionsContext, PluginsContext };

@@ -13,12 +13,12 @@ import useAsync from 'react-use/esm/useAsync';
 import {apiDelete, get, post, put} from '../utils/fetch';
 import SubmitRow from "../formsets/SubmitRow";
 
-import { FormDefinitionsContext, AuthenticationPluginsContext } from './Context';
+import { FormDefinitionsContext, PluginsContext } from './Context';
 import FormSteps from './FormSteps';
 import {FormException} from "../../utils/exception";
 import Loader from './Loader';
 
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT } from './constants';
+import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import {AuthPluginField} from "./AuthPluginField";
 
 const initialFormState = {
@@ -35,6 +35,10 @@ const initialFormState = {
     availableAuthPlugins: {
         loading: true,
         data: []
+    },
+    availablePrefillPlugins: {
+        loading: true,
+        data: {}
     },
     selectedAuthPlugins: [],
     stepsToDelete: [],
@@ -89,6 +93,17 @@ function reducer(draft, action) {
             draft.availableAuthPlugins = {
                 loading: false,
                 data: formattedAuthPlugins,
+            };
+            break;
+        }
+        case 'PREFILL_PLUGINS_LOADED': {
+            var formattedPrefillPlugins = {};
+            for (const plugin of action.payload) {
+                formattedPrefillPlugins[plugin.id] = plugin;
+            }
+            draft.availablePrefillPlugins = {
+                loading: false,
+                data: formattedPrefillPlugins,
             };
             break;
         }
@@ -265,6 +280,18 @@ const getAuthPlugins = async (dispatch) => {
     }
 };
 
+const getPrefillPlugins = async (dispatch) => {
+    try {
+        const response = await get(PREFILL_PLUGINS_ENDPOINT);
+        dispatch({
+            type: 'PREFILL_PLUGINS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
 
 const StepsFieldSet = ({ loading=true, submitting=false, loadingErrors, steps=[], ...props }) => {
     if (loadingErrors) {
@@ -304,6 +331,10 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
+        // The available prefill plugins should be loaded before the form definitions, because the requiresAuth field
+        // is used to check if a form step needs an additional auth plugin (and to generate related warnings)
+        await getPrefillPlugins(dispatch);
+
         const promises = [
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
@@ -561,7 +592,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
 
             <Fieldset title="Form design">
                 <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                    <AuthenticationPluginsContext.Provider value={state.selectedAuthPlugins}>
+                    <PluginsContext.Provider value={{
+                        availableAuthPlugins: state.availableAuthPlugins,
+                        selectedAuthPlugins: state.selectedAuthPlugins,
+                        availablePrefillPlugins: state.availablePrefillPlugins
+                    }}>
                         <StepsFieldSet
                             steps={state.formSteps.data}
                             loading={state.formSteps.loading}
@@ -575,7 +610,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                             submitting={state.submitting}
                             errors={state.errors.formSteps}
                         />
-                    </AuthenticationPluginsContext.Provider>
+                    </PluginsContext.Provider>
                 </FormDefinitionsContext.Provider>
             </Fieldset>
 
