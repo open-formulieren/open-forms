@@ -40,6 +40,30 @@ class FormDefinition(models.Model):
         default=False,
         help_text="DigID Login required for form step",
     )
+    previous_text = models.CharField(
+        _("Previous Text"),
+        max_length=50,
+        default=_("Previous page"),
+        help_text=_(
+            "The text that will be displayed in the form step to go to the previous step"
+        ),
+    )
+    save_text = models.CharField(
+        _("Save Text"),
+        max_length=50,
+        default=_("Save current information"),
+        help_text=_(
+            "The text that will be displayed in the form step to save the current information"
+        ),
+    )
+    next_text = models.CharField(
+        _("Next Text"),
+        max_length=50,
+        default=_("Next"),
+        help_text=_(
+            "The text that will be displayed in the form step to go to the next step"
+        ),
+    )
 
     def __str__(self):
         return self.name

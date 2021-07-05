@@ -62,6 +62,30 @@ class Form(models.Model):
         default=True,
         help_text=_(
             "Whether the step progression should be displayed in the UI or not."
+        )
+    )
+    previous_text = models.CharField(
+        _("Previous Text"),
+        max_length=50,
+        default=_("Previous page"),
+        help_text=_(
+            "The text that will be displayed in the overview page to go to the previous step"
+        ),
+    )
+    change_text = models.CharField(
+        _("Change Text"),
+        max_length=50,
+        default=_("Change"),
+        help_text=_(
+            "The text that will be displayed in the overview page to change a certain step"
+        ),
+    )
+    confirm_text = models.CharField(
+        _("Confirm Text"),
+        max_length=50,
+        default=_("Confirm"),
+        help_text=_(
+            "The text that will be displayed in the overview page to confirm the data is correct"
         ),
     )
 
