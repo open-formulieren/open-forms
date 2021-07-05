@@ -13,7 +13,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {apiDelete, get, post, put} from '../utils/fetch';
 import SubmitRow from "../formsets/SubmitRow";
 
-import { FormDefinitionsContext } from './Context';
+import { FormDefinitionsContext, AuthenticationPluginsContext } from './Context';
 import FormSteps from './FormSteps';
 import {FormException} from "../../utils/exception";
 import Loader from './Loader';
@@ -561,19 +561,21 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
 
             <Fieldset title="Form design">
                 <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                    <StepsFieldSet
-                        steps={state.formSteps.data}
-                        loading={state.formSteps.loading}
-                        loadingErrors={state.errors.loadingErrors}
-                        onEdit={onStepEdit}
-                        onFieldChange={onStepFieldChange}
-                        onDelete={onStepDelete}
-                        onReorder={onStepReorder}
-                        onReplace={onStepReplace}
-                        onAdd={onAddStep}
-                        submitting={state.submitting}
-                        errors={state.errors.formSteps}
-                    />
+                    <AuthenticationPluginsContext.Provider value={state.selectedAuthPlugins}>
+                        <StepsFieldSet
+                            steps={state.formSteps.data}
+                            loading={state.formSteps.loading}
+                            loadingErrors={state.errors.loadingErrors}
+                            onEdit={onStepEdit}
+                            onFieldChange={onStepFieldChange}
+                            onDelete={onStepDelete}
+                            onReorder={onStepReorder}
+                            onReplace={onStepReplace}
+                            onAdd={onAddStep}
+                            submitting={state.submitting}
+                            errors={state.errors.formSteps}
+                        />
+                    </AuthenticationPluginsContext.Provider>
                 </FormDefinitionsContext.Provider>
             </Fieldset>
 
