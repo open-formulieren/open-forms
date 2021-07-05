@@ -5,7 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import FormIOBuilder from '../formio_builder/builder';
-import {TextInput} from "../formsets/Inputs";
+import {Checkbox, TextInput} from "../formsets/Inputs";
 import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
 import FAIcon from "./FAIcon";
@@ -28,7 +28,7 @@ const emptyConfiguration = {
  * but we're fighting the library at this point.
  *
  */
-const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
+const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
 
     const setSlug = () => {
         // do nothing if there's already a slug set
@@ -75,6 +75,14 @@ const FormStepDefinition = ({ url='', name='', slug='', configuration=emptyConfi
                         <TextInput value={slug} onChange={onFieldChange}/>
                     </Field>
                 </FormRow>
+                <FormRow>
+                    <Checkbox
+                        label="Login required?"
+                        name="loginRequired"
+                        checked={loginRequired}
+                        onChange={(e) => onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})}
+                    />
+                </FormRow>
             </fieldset>
 
             <h2>Velden</h2>
@@ -91,6 +99,7 @@ FormStepDefinition.propTypes = {
     name: PropTypes.string,
     url: PropTypes.string,
     slug: PropTypes.string,
+    loginRequired: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     errors: PropTypes.object
