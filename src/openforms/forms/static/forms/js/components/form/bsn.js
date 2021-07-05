@@ -1,12 +1,13 @@
 import {Formio} from "formiojs";
 
-import DEFAULT_TABS from "./edit/tabs";
+import {DEFAULT_TABS, PREFILL} from './edit/tabs';
 import TextField from './textfield';
 
 
 class BsnField extends TextField {
     static schema(...extend) {
         return TextField.schema({
+            type: 'bsn',
             label: 'BSN',
             key: 'bsn',
             inputMask: '999999999',
@@ -24,7 +25,14 @@ class BsnField extends TextField {
     }
 
     static editForm() {
-        return {components: [DEFAULT_TABS]};
+        const tabs = {
+            ...DEFAULT_TABS,
+            components: [
+                ...DEFAULT_TABS.components,
+                PREFILL,
+            ],
+        };
+        return {components: [tabs]};
     }
 
     get defaultSchema() {
