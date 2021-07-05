@@ -36,7 +36,7 @@ class FieldConf:
 def apply_data_mapping(
     submission: Submission,
     mapping_config: Mapping[str, Union[str, FieldConf]],
-    component_attribute: str = "registration.attribute",
+    component_attribute: str,
 ) -> dict:
     """
     apply mapping to data and build new data structure

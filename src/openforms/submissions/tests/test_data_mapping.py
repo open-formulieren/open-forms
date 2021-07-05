@@ -1,16 +1,9 @@
 from django.test import TestCase
+
 from djchoices import ChoiceItem, DjangoChoices
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class TestAttribute(DjangoChoices):
@@ -47,55 +40,37 @@ class MappingTests(TestCase):
             "form.name": FieldConf(form_field="name"),
         }
 
-        form = FormFactory.create(name="Foo Form")
-        def1 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "voornamen",
-                        "type": "text",
-                        "label": "voornamen",
-                        "registration": {
-                            "attribute": TestAttribute.initiator_voornamen,
-                        },
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornamen",
+                    "type": "text",
+                    "registration": {
+                        "attribute": TestAttribute.initiator_voornamen,
                     },
-                    {
-                        "key": "geslachtsnaam",
-                        "type": "text",
-                        "label": "geslachtsnaam",
-                        "registration": {
-                            "attribute": TestAttribute.initiator_geslachtsnaam,
-                        },
+                },
+                {
+                    "key": "geslachtsnaam",
+                    "type": "text",
+                    "registration": {
+                        "attribute": TestAttribute.initiator_geslachtsnaam,
                     },
-                ],
-            }
-        )
-        def2 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "geslacht",
-                        "type": "text",
-                        "label": "geslacht",
-                        "registration": {
-                            "attribute": "test.geslacht",
-                        },
+                },
+                {
+                    "key": "geslacht",
+                    "type": "text",
+                    "registration": {
+                        "attribute": "test.geslacht",
                     },
-                ],
-            }
-        )
-        step1 = FormStepFactory.create(form=form, form_definition=def1)
-        step2 = FormStepFactory.create(form=form, form_definition=def2, optional=True)
-        submission = SubmissionFactory.create(form=form, bsn="111222333")
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step1,
-            data={"voornamen": "Foo", "geslachtsnaam": "Bar"},
-        )
-        SubmissionStepFactory.create(
-            submission=submission, form_step=step2, data={"geslacht": "v"}
+                },
+            ],
+            form_kwargs=dict(name="Foo Form"),
+            submission_kwargs=dict(bsn="111222333"),
+            submitted_data={
+                "voornamen": "Foo",
+                "geslachtsnaam": "Bar",
+                "geslacht": "v",
+            },
         )
 
         actual = apply_data_mapping(
