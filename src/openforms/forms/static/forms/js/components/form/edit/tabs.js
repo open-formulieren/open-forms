@@ -41,6 +41,23 @@ const BASIC = {
 };
 
 
+const TEXT_BASIC = {
+    key: 'basic',
+    label: 'Basic',
+    components: [
+        ...BASIC.components,
+        {
+            weight: 1201,
+            type: 'checkbox',
+            label: 'Show Character Counter',
+            tooltip: 'Show a live count of the number of characters.',
+            key: 'showCharCount',
+            input: true
+        },
+    ]
+};
+
+
 const ADVANCED = {
     key: 'advanced',
     label: 'Advanced',
@@ -88,6 +105,7 @@ const ADVANCED = {
     ]
 };
 
+
 const VALIDATION = {
     key: 'validation',
     label: 'Validation',
@@ -115,6 +133,24 @@ const VALIDATION = {
             valueProperty: 'id',
             template: '<span>{{ item.label }}</span>',
         }
+    ]
+};
+
+
+const TEXT_VALIDATION = {
+    key: 'validation',
+    label: 'Validation',
+    components: [
+        ...VALIDATION.components,
+        {
+            weight: 120,
+            key: 'validate.maxLength',
+            label: 'Maximum Length',
+            placeholder: 'Maximum Length',
+            type: 'number',
+            tooltip: 'The maximum length requirement this field must meet.',
+            input: true
+        },
     ]
 };
 
@@ -165,5 +201,16 @@ const DEFAULT_TABS = {
 };
 
 
-export { DEFAULT_TABS, BASIC, ADVANCED, VALIDATION, PREFILL };
+const DEFAULT_TEXT_TABS = {
+    type: 'tabs',
+    key: 'tabs',
+    components: [
+        TEXT_BASIC,
+        ADVANCED,
+        TEXT_VALIDATION,
+    ]
+};
+
+
+export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL };
 export default DEFAULT_TABS;
