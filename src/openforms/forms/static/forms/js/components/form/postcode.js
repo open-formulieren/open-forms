@@ -1,13 +1,12 @@
 import {Formio} from "formiojs";
-import DEFAULT_TABS from "./edit/tabs";
 
-const TextField = Formio.Components.components.textfield;
+import DEFAULT_TABS from "./edit/tabs";
+import TextField from './text';
 
 
 class PostcodeField extends TextField {
     static schema(...extend) {
         return TextField.schema({
-            type: 'postcode',
             label: 'Postcode',
             key: 'postcode',
             inputMask: '9999 AA',
