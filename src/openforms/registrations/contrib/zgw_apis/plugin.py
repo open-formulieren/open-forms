@@ -6,7 +6,10 @@ from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.registrations.base import BasePlugin
-from openforms.registrations.constants import RegistrationAttribute
+from openforms.registrations.constants import (
+    REGISTRATION_ATTRIBUTE,
+    RegistrationAttribute,
+)
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.service import (
     create_document,
@@ -79,7 +82,7 @@ class ZGWRegistration(BasePlugin):
         relate_document(zaak["url"], document["url"])
 
         rol_data = apply_data_mapping(
-            submission, self.rol_mapping, "registration.attribute"
+            submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
         )
         rol = create_rol(zaak, rol_data, options)
 

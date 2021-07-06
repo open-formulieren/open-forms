@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from djchoices import ChoiceItem, DjangoChoices
 
+from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -90,7 +91,7 @@ class MappingTests(TestCase):
         )
 
         actual = apply_data_mapping(
-            submission, mapping, component_attribute="registration.attribute"
+            submission, mapping, component_attribute=REGISTRATION_ATTRIBUTE
         )
         self.assertEqual(actual, expected)
 

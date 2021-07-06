@@ -4,6 +4,9 @@ from djchoices import ChoiceItem, DjangoChoices
 
 UNIQUE_ID_MAX_LENGTH = 100
 
+# field name in the component configuration JSON schema
+REGISTRATION_ATTRIBUTE = "registration.attribute"
+
 
 class RegistrationAttribute(DjangoChoices):
     initiator_voornamen = ChoiceItem("initiator_voornamen", _("Initiator > Voornamen"))

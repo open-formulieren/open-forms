@@ -31,11 +31,32 @@ class ZGWBackendTests(TestCase):
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_voornamen,
                     },
-                }
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
             ],
             submission_kwargs={"bsn": "111222333"},
             submitted_data={
                 "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
             },
         )
 
@@ -205,8 +226,14 @@ class ZGWBackendTests(TestCase):
             "https://catalogus.nl/api/v1/roltypen/1",
         )
         self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"]["voornamen"],
-            "Foo",
+            create_rol_body["betrokkeneIdentificatie"],
+            {
+                "voornamen": "Foo",
+                "geboortedatum": "2000-12-31",
+                "inpBsn": "111222333",
+                "voorvoegselGeslachtsnaam": "de",
+                "geslachtsnaam": "Bar",
+            },
         )
 
         create_status = m.request_history[9]

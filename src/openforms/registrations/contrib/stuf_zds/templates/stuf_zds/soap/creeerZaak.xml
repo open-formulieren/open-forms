@@ -28,22 +28,23 @@
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
         </ZKN:isVan>
-        {% if bsn or nnp_id or vestigings_nummer %}
+        {% if initiator.bsn or initiator.vestigings_nummer %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
-                    {% if bsn %}
+                    {% if initiator.bsn %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                            <BG:inp.bsn>{{ bsn }}</BG:inp.bsn>
+                            <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
                             <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                            {% if initiator.geslachtsnaam %}<BG:geslachtsnaam>{{ initiator.geslachtsnaam }}</BG:geslachtsnaam>{% endif %}
+                            {% if initiator.voorvoegselGeslachtsnaam %}<BG:voorvoegselGeslachtsnaam>{{ initiator.voorvoegselGeslachtsnaam }}</BG:voorvoegselGeslachtsnaam>{% endif %}
+{#                            <BG:voorletters>?</BG:voorletters>#}
+                            {% if initiator.voornamen %}<BG:voornamen>{{ initiator.voornamen }}</BG:voornamen>{% endif %}
+{#                            <BG:geslachtsaanduiding>?</BG:geslachtsaanduiding>#}
+                            {% if initiator.geboortedatum %}<BG:geboortedatum>{{ initiator.geboortedatum }}</BG:geboortedatum>{% endif %}
                         </ZKN:natuurlijkPersoon>
-                    {% elif nnp_id %}
-                        <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
-                            <BG:inn.nnpId>{{ nnp_id }}</BG:inn.nnpId>
-                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
-                        </ZKN:nietNatuurlijkPersoon>
-                    {% elif vestigings_nummer %}
+                    {% elif initiator.kvk %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
-                            <BG:vestigingsNummer>{{ vestigings_nummer }}</BG:vestigingsNummer>
+                            <BG:vestigingsNummer>{{ initiator.kvk }}</BG:vestigingsNummer>
                             <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
                         </ZKN:vestiging>
                     {% endif %}

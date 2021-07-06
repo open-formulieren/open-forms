@@ -6,23 +6,18 @@ from django.test import TestCase
 
 import requests_mock
 from lxml import etree
+from lxml.etree import ElementTree
 from privates.test import temp_private_root
 from requests import RequestException
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
 from openforms.registrations.contrib.stuf_zds.plugin import StufZDSRegistration
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.registrations.tasks import generate_submission_report
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionReportFactory,
-    SubmissionStepFactory,
 )
 from stuf.tests.factories import SoapServiceFactory
 
@@ -41,7 +36,7 @@ def match_text(text):
     return _matcher
 
 
-def xml_from_request_history(m, index):
+def xml_from_request_history(m, index) -> ElementTree:
     request = m.request_history[index]
     xml = etree.fromstring(bytes(request.text, encoding="utf8"))
     return xml
@@ -324,12 +319,45 @@ class StufZDSPluginTests(StufTestBase):
         config.service = self.service
         config.save()
 
-        self.form = FormFactory.create()
-        self.fd = FormDefinitionFactory.create()
-        self.fs = FormStepFactory.create(form=self.form, form_definition=self.fd)
-
     @patch("celery.app.task.Task.request")
     def test_plugin(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            form_kwargs={"name": "my-form"},
+            submission_kwargs={"bsn": "111222333"},
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
+        )
+
         m.post(
             self.service.url,
             content=load_mock(
@@ -362,17 +390,10 @@ class StufZDSPluginTests(StufTestBase):
         )
         mock_task.id = 1
 
-        form_options = dict()
-
-        data = {
-            "voornaam": "Foo",
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
         }
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        submission_report = SubmissionReportFactory.create(submission=submission)
-        generate_submission_report(submission_report.id)
 
         plugin = StufZDSRegistration("stuf")
         result = plugin.register_submission(submission, form_options)
@@ -389,6 +410,22 @@ class StufZDSPluginTests(StufTestBase):
 
         xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+            },
+        )
 
         xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
