@@ -1321,6 +1321,7 @@ components:
     AuthenticationBackendsEnum:
       enum:
       - demo
+      - demo-kvk
       - demo-outage
       - digid-mock
       type: string
