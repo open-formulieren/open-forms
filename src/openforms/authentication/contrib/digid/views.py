@@ -16,21 +16,25 @@ class BSNNotPresentError(Exception):
     pass
 
 
-class DigiDAssertionConsumerServiceView(
-    BaseSaml2Backend, _DigiDAssertionConsumerServiceView
-):
-    """Process step 5, 6 and 7 of the authentication
-
-    This class overwrites the digid_eherkenning class, because we don't need to use the authentication backend.
-    We just need to receive the BSN number.
-    """
-
+class GeneralAssertionConsumerServiceMixin:
     def get_form_slug(self) -> str:
         form_url = self.get_success_url()
         form_path = urlparse(form_url).path
         match = resolve(form_path)
 
         return match.kwargs["slug"]
+
+
+class DigiDAssertionConsumerServiceView(
+    GeneralAssertionConsumerServiceMixin,
+    BaseSaml2Backend,
+    _DigiDAssertionConsumerServiceView,
+):
+    """Process step 5, 6 and 7 of the authentication
+
+    This class overwrites the digid_eherkenning class, because we don't need to use the authentication backend.
+    We just need to receive the BSN number.
+    """
 
     def get(self, request):
         saml_art = request.GET.get("SAMLart")
