@@ -154,6 +154,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.outage.apps.DemoOutageApp",
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.authentication.contrib.digid.apps.DigidApp",
+    "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
 ]
 
 MIDDLEWARE = [
@@ -707,6 +708,14 @@ EHERKENNING_OIN = config(
     "EHERKENNING_OIN",
     "",
 )
+EHERKENNING_MAKELAAR_ID = config(
+    "EHERKENNING_MAKELAAR_ID",
+    "00000003520354760000",
+)
+EHERKENNING_PRIVACY_POLICY = config(
+    "EHERKENNING_PRIVACY_POLICY",
+    "",
+)
 EHERKENNING = {
     "metadata_file": EHERKENNING_METADATA,
     "key_file": SSL_KEY_PATH,
@@ -740,17 +749,10 @@ EHERKENNING = {
         {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
     ],
     "requested_attributes": [
-        {
-            "name": "urn:etoegang:1.11:attribute-represented:KvKnr",
-            "required": True,
-            "purpose_statements": {
-                "nl": "Voor het uniek identificeren van het bedrijf",
-                "en": "To uniquely identify the company",
-            },
-        }
+        "urn:etoegang:1.11:attribute-represented:KvKnr",
     ],
     "privacy_policy_url": {
-        "nl": f"{BASE_URL}/privacy_policy",
+        "nl": EHERKENNING_PRIVACY_POLICY,
     },
-    "herkenningsmakelaars_id": "00000003520354760000",
+    "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
 }
