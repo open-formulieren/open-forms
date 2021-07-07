@@ -24,7 +24,6 @@ class TestSubmissionAdmin(WebTest):
             }
         )
         step = FormStepFactory.create(form_definition=form_definition)
-        cls.user = UserFactory.create(is_superuser=True, is_staff=True)
         cls.submission_1 = SubmissionFactory.create(form=step.form)
         submission_2 = SubmissionFactory.create(form=step.form)
         cls.submission_step_1 = SubmissionStepFactory.create(
@@ -41,6 +40,10 @@ class TestSubmissionAdmin(WebTest):
                 "geboortedatum": "01-01-1991",
             },
         )
+
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_displaying_merged_data(self):
         response = self.app.get(

@@ -29,11 +29,9 @@ class Plugin(BasePlugin):
 
 
 class FormAdminTests(WebTest):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.superuser = SuperUserFactory.create()
+    def setUp(self):
+        super().setUp()
+        self.superuser = SuperUserFactory.create(app=self.app)
 
     def test_valid_plugins_listed(self):
         url = reverse("admin:forms_form_add")
@@ -69,7 +67,7 @@ class FormAdminTests(WebTest):
         self.assertEqual(form.registration_backend, "plugin")
 
     def test_submit_invalid_value(self):
-        self.client.force_login(self.superuser)
+        self.app.set_user(self.superuser)
         url = reverse("admin:forms_form_add")
         add_page = self.app.get(url, user=self.superuser)
 
@@ -81,7 +79,7 @@ class FormAdminTests(WebTest):
             "registration_backend": "invalid-backend",
         }
 
-        response = self.client.post(url, body)
+        response = self.app.post(url, body)
 
         self.assertEqual(response.status_code, 200)
         self.assertFormError(

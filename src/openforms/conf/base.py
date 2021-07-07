@@ -103,6 +103,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    # Admin auth
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "two_factor",
     # Optional applications.
     "ordered_model",
     "django_admin_index",
@@ -123,6 +128,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "digid_eherkenning",
+    "sniplates",
     "solo",
     "tinymce",
     "privates",
@@ -171,6 +177,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "django_otp.middleware.OTPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -374,7 +381,7 @@ AUTHENTICATION_BACKENDS = [
 SESSION_COOKIE_NAME = "openforms_sessionid"
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
-LOGIN_URL = reverse_lazy("admin:login")
+LOGIN_URL = reverse_lazy("two_factor:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 
 #

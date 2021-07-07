@@ -34,6 +34,9 @@ django-yubin
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
 pyopenssl
+django-sniplates
+maykin-django-two-factor-auth
+phonenumbers
 
 # API libraries
 djangorestframework~=3.12.0
