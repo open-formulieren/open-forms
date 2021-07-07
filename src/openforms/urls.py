@@ -9,6 +9,7 @@ from django.urls import include, path
 from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
+from two_factor.urls import urlpatterns as tfa_urls
 
 from openforms.emails.admin import EmailTestAdminView
 from openforms.utils.views import ErrorDetailView
@@ -35,6 +36,7 @@ urlpatterns = [
         name="admin_email_test",
     ),
     path("admin/hijack/", include("hijack.urls")),
+    path("admin/", include(tfa_urls)),
     path("admin/", admin.site.urls),
     path(
         "reset/<uidb64>/<token>/",

@@ -1,3 +1,5 @@
+from django.conf import settings
+
 import factory
 
 
@@ -7,6 +9,25 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "accounts.User"
+
+    @classmethod
+    def mock_two_factor_flow(cls, user, app):
+        # Mock the user having gone through the two factor authentication flow
+        app.set_cookie(settings.SESSION_COOKIE_NAME, "initial")
+        session = app.session
+        session["otp_device_id"] = user.staticdevice_set.create().persistent_id
+        session.save()
+        app.set_cookie(settings.SESSION_COOKIE_NAME, session.session_key)
+
+    @classmethod
+    def create(cls, **kwargs):
+        app = kwargs.pop("app", None)
+        user = super().create(**kwargs)
+
+        if app:
+            cls.mock_two_factor_flow(user, app)
+
+        return user
 
 
 class StaffUserFactory(UserFactory):

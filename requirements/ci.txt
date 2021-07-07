@@ -163,6 +163,11 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+django-formtools==2.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   maykin-django-two-factor-auth
 django-hijack-admin==2.1.10
     # via
     #   -c requirements/base.txt
@@ -184,6 +189,16 @@ django-ordered-model==3.4.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-admin-index
+django-otp==1.0.6
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   maykin-django-two-factor-auth
+django-phonenumber-field==5.2.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   maykin-django-two-factor-auth
 django-privates==1.2.1
     # via
     #   -c requirements/base.txt
@@ -202,6 +217,10 @@ django-sendfile2==0.6.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-privates
+django-sniplates==0.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-solo==1.1.3
     # via
     #   -c requirements/base.txt
@@ -230,15 +249,20 @@ django==2.2.24
     #   django-cookie-consent
     #   django-cors-headers
     #   django-decorator-include
+    #   django-formtools
     #   django-jenkins
+    #   django-otp
+    #   django-phonenumber-field
     #   django-privates
     #   django-redis
     #   django-relativedelta
     #   django-sendfile2
+    #   django-sniplates
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
     #   drf-spectacular
+    #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -380,6 +404,10 @@ markupsafe==1.1.1
     # via
     #   jinja2
     #   sphinx
+maykin-django-two-factor-auth==2.0.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 mccabe==0.6.1
     # via flake8
 mozilla-django-oidc-db==0.4.0
@@ -411,6 +439,11 @@ pathspec==0.8.1
     # via black
 pep8==1.7.1
     # via -r requirements/test-tools.in
+phonenumbers==8.12.26
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   maykin-django-two-factor-auth
 pillow==8.2.0
     # via
     #   -c requirements/base.txt
@@ -505,6 +538,11 @@ pyzmail36==1.0.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-yubin
+qrcode==6.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   maykin-django-two-factor-auth
 recommonmark==0.7.1
     # via -r requirements/docs.in
 redis==3.5.3
@@ -559,6 +597,7 @@ six==1.15.0
     #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
+    #   qrcode
     #   requests-mock
     #   webtest
 snowballstemmer==2.1.0

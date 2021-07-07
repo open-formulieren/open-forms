@@ -1,0 +1,102 @@
+{% extends 'sniplates/django.html' %}
+{% load sniplates staticfiles i18n %}
+
+
+{% block _label %}
+{% if label %}
+    <label class="label{% if help_text %} label--tooltip{% endif %}{% if label_classes %} {{ label_classes }}{% endif %}" for="{{ id_for_label }}">
+        {{ label }}
+    </label>
+{% endif %}
+{% endblock %}
+
+
+{% block _errors %}
+{% if errors %}
+    {% for error in errors %}
+        <span class="notification notification--error notification--complete {{ error_position }}" title="{{ error }}">{{ error }}</span>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+
+{% block input %}
+{% with input_type=input_type|default:"text" %}
+<input type="{{ input_type }}"
+    name="{{ html_name }}"
+    id="{{ id }}"
+    value="{{ raw_value|default:'' }}"
+    class="input {{ css_classes }} {{ errors|yesno:'input--error,' }}"
+    {{ widget.attrs|flatattrs }}
+    {{ required|yesno:"required," }}
+    {% if autofocus %}autofocus{% endif %}
+    {% if accept %}accept="{{ accept }}"{% endif %}
+    {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+>
+{% endwith %}
+{% endblock %}
+
+
+{% block TextInput %}
+{% reuse "_label" %}
+{% reuse "input" %}
+
+{% if not no_error %}
+    {% reuse "_errors" %}
+{% endif %}
+{% endblock %}
+
+
+{% block EmailInput %}
+{% reuse "_label" %}
+{% reuse "input" input_type="email" %}
+{% reuse "_errors" %}
+{% endblock %}
+
+
+{% block NumberInput %}
+{% reuse "_label" %}
+{% reuse "input" input_type="number" raw_value=value %}
+{% reuse "_errors" %}
+{% endblock %}
+
+
+{% block URLInput %}
+{% reuse "_label" %}
+{% reuse "input" input_type="url" %}
+{% reuse "_errors" %}
+{% endblock %}
+
+
+{% block PasswordInput %}
+{% reuse "_label" %}
+{% reuse "input" input_type="password" value="" %}
+{% reuse "_errors" %}
+{% endblock %}
+
+
+{% block Textarea %}
+{% reuse "_label" %}
+<textarea name="{{ html_name }}" id="{{ id }}"
+    class="input {{ css_classes }} {{ errors|yesno:'input--error,' }}"
+    {{ required|yesno:"required," }}
+    {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+    {{ widget.attrs|flatattrs }}
+>{{ raw_value|default:'' }}</textarea>
+{% reuse "_errors" %}
+{% endblock %}
+
+
+{% block RadioButton %}
+<div id="{{ id }}" class="radio-buttons">
+    {% for val, display in choices %}
+        <div class="radio-buttons__container">
+            <input name="{{ html_name }}" class="radio-buttons__input" type="radio" id="{{ id}}_{{ forloop.counter0 }}" value="{{ val }}" {% if val == value|default:"" %}checked{% endif %}>
+            <label class="radio-buttons__label" for="{{ id }}_{{ forloop.counter0 }}">
+                {{ display }}
+            </label>
+        </div>
+    {% endfor %}
+</div>
+{% reuse "_errors" %}
+{% endblock %}

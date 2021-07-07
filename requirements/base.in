@@ -37,6 +37,8 @@ mozilla-django-oidc-db
 # once transferred from isprojects to maykinmedia, we'll publish this to PyPI
 git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
+django-sniplates
+maykin-django-two-factor-auth[phonenumbers]
 
 # API libraries
 djangorestframework~=3.12.0

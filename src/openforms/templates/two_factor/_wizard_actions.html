@@ -1,0 +1,8 @@
+{% load i18n %}
+
+<div class="button-row">
+  {% if cancel_url %}
+    <a href="{{ cancel_url }}" class="pull-right btn btn-link">{% trans "Cancel" %}</a>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
+</div>
