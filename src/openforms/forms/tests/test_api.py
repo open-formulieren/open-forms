@@ -239,7 +239,7 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["beginText"], _("Begin page"))
+        self.assertEqual(response.json()["beginText"], _("Begin form"))
         self.assertEqual(response.json()["previousText"], _("Previous page"))
         self.assertEqual(response.json()["changeText"], _("Change"))
         self.assertEqual(response.json()["confirmText"], _("Confirm"))
@@ -427,16 +427,9 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()
-        self.assertEqual(response_data["index"], 0)
-        self.assertEqual(response_data["slug"], "fd-0")
-        self.assertEqual(response_data["name"], "FormDefinition 000")
         self.assertEqual(response_data["previousText"], "Previous page")
         self.assertEqual(response_data["saveText"], "Save current information")
         self.assertEqual(response_data["nextText"], "Next")
-        self.assertEqual(
-            response_data["configuration"],
-            {"components": [{"key": "test-key", "type": "test-component"}]},
-        )
 
     def test_create_form_step_successful(self):
         self.user.is_staff = True
