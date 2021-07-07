@@ -69,7 +69,8 @@ class Form(models.Model):
         max_length=50,
         default=_("Previous page"),
         help_text=_(
-            "The text that will be displayed in the overview page to go to the previous step"
+            "The text that will be displayed in the overview page to "
+            "go to the previous step"
         ),
     )
     change_text = models.CharField(
@@ -77,7 +78,8 @@ class Form(models.Model):
         max_length=50,
         default=_("Change"),
         help_text=_(
-            "The text that will be displayed in the overview page to change a certain step"
+            "The text that will be displayed in the overview page to "
+            "change a certain step"
         ),
     )
     confirm_text = models.CharField(
@@ -85,7 +87,8 @@ class Form(models.Model):
         max_length=50,
         default=_("Confirm"),
         help_text=_(
-            "The text that will be displayed in the overview page to confirm the data is correct"
+            "The text that will be displayed in the overview page to "
+            "confirm the form is filled in correctly"
         ),
     )
     begin_text = models.CharField(
@@ -93,7 +96,8 @@ class Form(models.Model):
         max_length=50,
         default=_("Begin form"),
         help_text=_(
-            "The text that will be displayed at the start of the form to indicate the user can begin"
+            "The text that will be displayed at the start of the form to "
+            "indicate the user can begin to fill in the form"
         ),
     )
 
