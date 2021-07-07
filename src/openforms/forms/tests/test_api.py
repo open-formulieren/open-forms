@@ -244,6 +244,22 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.json()["changeText"], _("Change"))
         self.assertEqual(response.json()["confirmText"], _("Confirm"))
 
+    def test_steps_text_field_values_returned_through_api(self):
+        form = FormFactory.create()
+        FormStepFactory.create(form=form)
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        step_data = response.json()["steps"][0]
+        self.assertEqual(step_data["previousText"], _("Previous page"))
+        self.assertEqual(step_data["saveText"], _("Save current information"))
+        self.assertEqual(step_data["nextText"], _("Next"))
+
     def test_create_form_in_maintenance_mode_successful(self):
         self.user.is_staff = True
         self.user.save()
