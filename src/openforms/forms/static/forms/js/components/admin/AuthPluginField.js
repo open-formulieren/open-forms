@@ -7,12 +7,15 @@ import PropTypes from "prop-types";
 const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
     const authCheckboxes = Object.keys(availableAuthPlugins).map((pluginId, index) => {
         const plugin = availableAuthPlugins[pluginId];
+        const providedAttributes = `(provides ${plugin.providesAuth.join(', ')})`;
+        const label = `${plugin.label} ${plugin.providesAuth.length > 0 ? providedAttributes : ''}`;
+
         return (
             <li key={index}>
                 <Checkbox
                     name={plugin.label}
                     value={plugin.id}
-                    label={plugin.label}
+                    label={label}
                     onChange={onChange}
                     checked={selectedAuthPlugins.includes(plugin.id)}
                 />
