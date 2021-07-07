@@ -1,15 +1,14 @@
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.shortcuts import resolve_url
 from django.urls import resolve, reverse
-from django.views.generic.base import View
 
 from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.choices import SectorType
 from digid_eherkenning.saml2.digid import DigiDClient
-from digid_eherkenning.views.base import get_redirect_url
+from digid_eherkenning.views import (
+    DigiDAssertionConsumerServiceView as _DigiDAssertionConsumerServiceView,
+)
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 
@@ -17,33 +16,14 @@ class BSNNotPresentError(Exception):
     pass
 
 
-class DigiDAssertionConsumerServiceView(BaseSaml2Backend, View):
+class DigiDAssertionConsumerServiceView(
+    BaseSaml2Backend, _DigiDAssertionConsumerServiceView
+):
     """Process step 5, 6 and 7 of the authentication
 
     This class overwrites the digid_eherkenning class, because we don't need to use the authentication backend.
     We just need to receive the BSN number.
     """
-
-    login_url = None
-
-    def get_login_url(self):
-        url = self.get_redirect_url()
-        if url:
-            return url
-
-        digid_login_url = settings.DIGID.get("login_url")
-        if digid_login_url:
-            return resolve_url(digid_login_url)
-
-        return resolve_url(settings.LOGIN_URL)
-
-    def get_success_url(self):
-        url = self.get_redirect_url()
-        return url or resolve_url(settings.LOGIN_REDIRECT_URL)
-
-    def get_redirect_url(self):
-        redirect_to = self.request.GET.get("RelayState")
-        return get_redirect_url(self.request, redirect_to)
 
     def get_form_slug(self) -> str:
         form_url = self.get_success_url()
