@@ -13,12 +13,13 @@ import useAsync from 'react-use/esm/useAsync';
 import {apiDelete, get, post, put} from '../utils/fetch';
 import SubmitRow from "../formsets/SubmitRow";
 
-import { FormDefinitionsContext } from './Context';
+import { FormDefinitionsContext, PluginsContext } from './Context';
 import FormSteps from './FormSteps';
 import {FormException} from "../../utils/exception";
 import Loader from './Loader';
 
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE } from './constants';
+import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+import AuthPluginField from "./AuthPluginField";
 
 const initialFormState = {
     formName: '',
@@ -31,6 +32,15 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: {},
+    availableAuthPlugins: {
+        loading: true,
+        data: {}
+    },
+    availablePrefillPlugins: {
+        loading: true,
+        data: {}
+    },
+    selectedAuthPlugins: [],
     stepsToDelete: [],
     submitting: false,
 };
@@ -48,6 +58,12 @@ function reducer(draft, action) {
         /**
          * Form-level actions
          */
+        case 'FORM_LOADED': {
+            return {
+                ...draft,
+                ...action.payload,
+            };
+        }
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             draft[name] = value;
@@ -67,6 +83,37 @@ function reducer(draft, action) {
                 loading: false,
                 data: action.payload,
             };
+            break;
+        }
+        case 'AUTH_PLUGINS_LOADED': {
+            var formattedAuthPlugins = {};
+            for (const plugin of action.payload) {
+                formattedAuthPlugins[plugin.id] = plugin;
+            }
+            draft.availableAuthPlugins = {
+                loading: false,
+                data: formattedAuthPlugins,
+            };
+            break;
+        }
+        case 'PREFILL_PLUGINS_LOADED': {
+            var formattedPrefillPlugins = {};
+            for (const plugin of action.payload) {
+                formattedPrefillPlugins[plugin.id] = plugin;
+            }
+            draft.availablePrefillPlugins = {
+                loading: false,
+                data: formattedPrefillPlugins,
+            };
+            break;
+        }
+        case 'TOGGLE_AUTH_PLUGIN': {
+            const pluginId = action.payload;
+            if (draft.selectedAuthPlugins.includes(pluginId)) {
+                draft.selectedAuthPlugins = draft.selectedAuthPlugins.filter(id => id !== pluginId);
+            } else {
+                draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
+            }
             break;
         }
         /**
@@ -190,6 +237,13 @@ const getFormData = async (formUuid, dispatch) => {
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         } else {
+            // Update the selected authentication plugins
+            dispatch({
+                type: 'FORM_LOADED',
+                payload: {
+                    selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
+                },
+            });
             // Get the form definition data from the form steps
             const formStepsData = await getFormStepsData(formUuid, dispatch);
             dispatch({
@@ -208,6 +262,30 @@ const getFormDefinitions = async (dispatch) => {
         dispatch({
             type: 'FORM_DEFINITIONS_LOADED',
             payload: response.data.results,
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getAuthPlugins = async (dispatch) => {
+    try {
+        const response = await get(AUTH_PLUGINS_ENDPOINT);
+        dispatch({
+            type: 'AUTH_PLUGINS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getPrefillPlugins = async (dispatch) => {
+    try {
+        const response = await get(PREFILL_PLUGINS_ENDPOINT);
+        dispatch({
+            type: 'PREFILL_PLUGINS_LOADED',
+            payload: response.data
         });
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
@@ -253,11 +331,19 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
+        // The available prefill plugins should be loaded before the form definitions, because the requiresAuth field
+        // is used to check if a form step needs an additional auth plugin (and to generate related warnings)
+        await getPrefillPlugins(dispatch);
+
         const promises = [
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
+
         ];
         await Promise.all(promises);
+        // We want the data of all available plugins to be loaded after the form data has been loaded,
+        // so that once the checkboxes are rendered they are directly checked/unchecked
+        await getAuthPlugins(dispatch);
     }, []);
 
     /**
@@ -348,6 +434,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         const formData = {
             name: state.formName,
             slug: state.formSlug,
+            authenticationBackends: state.selectedAuthPlugins,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -388,6 +475,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name: step.name,
                         slug: step.slug,
                         configuration: step.configuration,
+                        loginRequired: step.loginRequired,
                     }
                 )
                 if (!definitionResponse.ok) {
@@ -446,6 +534,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         window.location = ADMIN_PAGE;
     };
 
+    const onAuthPluginChange = (event) => {
+        const pluginId = event.target.value;
+        dispatch({
+            type: 'TOGGLE_AUTH_PLUGIN',
+            payload: pluginId,
+        })
+    };
+
     return (
         <>
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
@@ -483,23 +579,38 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         <TextInput value={state.formSlug} onChange={onFieldChange} />
                     </Field>
                 </FormRow>
+                <FormRow>
+                    <AuthPluginField
+                        loading={state.availableAuthPlugins.loading}
+                        availableAuthPlugins={state.availableAuthPlugins.data}
+                        selectedAuthPlugins={state.selectedAuthPlugins}
+                        onChange={onAuthPluginChange}
+                        errors={state.errors.authPlugins}
+                    />
+                </FormRow>
             </Fieldset>
 
             <Fieldset title="Form design">
                 <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                    <StepsFieldSet
-                        steps={state.formSteps.data}
-                        loading={state.formSteps.loading}
-                        loadingErrors={state.errors.loadingErrors}
-                        onEdit={onStepEdit}
-                        onFieldChange={onStepFieldChange}
-                        onDelete={onStepDelete}
-                        onReorder={onStepReorder}
-                        onReplace={onStepReplace}
-                        onAdd={onAddStep}
-                        submitting={state.submitting}
-                        errors={state.errors.formSteps}
-                    />
+                    <PluginsContext.Provider value={{
+                        availableAuthPlugins: state.availableAuthPlugins,
+                        selectedAuthPlugins: state.selectedAuthPlugins,
+                        availablePrefillPlugins: state.availablePrefillPlugins
+                    }}>
+                        <StepsFieldSet
+                            steps={state.formSteps.data}
+                            loading={state.formSteps.loading}
+                            loadingErrors={state.errors.loadingErrors}
+                            onEdit={onStepEdit}
+                            onFieldChange={onStepFieldChange}
+                            onDelete={onStepDelete}
+                            onReorder={onStepReorder}
+                            onReplace={onStepReplace}
+                            onAdd={onAddStep}
+                            submitting={state.submitting}
+                            errors={state.errors.formSteps}
+                        />
+                    </PluginsContext.Provider>
                 </FormDefinitionsContext.Provider>
             </Fieldset>
 
