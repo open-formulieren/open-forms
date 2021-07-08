@@ -235,6 +235,15 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         validated_data["form"] = self.context["form"]
         return super().create(validated_data)
 
+    def to_representation(self, instance):
+        representation = super(FormStepSerializer, self).to_representation(
+            instance
+        )
+        representation["previous_text"] = instance.get_previous_text()
+        representation["save_text"] = instance.get_save_text()
+        representation["next_text"] = instance.get_next_text()
+        return representation
+
 
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(

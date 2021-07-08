@@ -453,6 +453,35 @@ class FormsStepsAPITests(APITestCase):
             1,
         )
 
+    def test_create_form_step_successful_with_custom_button_text(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "previous_text": "Different Previous Text",
+            "save_text": "Different Save Text",
+            "next_text": "Different Next Text",
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
+
     def test_create_form_step_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
@@ -519,6 +548,36 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).count(),
             1,
         )
+
+    def test_complete_form_step_update_with_custom_texts_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "previous_text": "Different Previous Text",
+            "save_text": "Different Save Text",
+            "next_text": "Different Next Text",
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
 
     def test_complete_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
@@ -620,6 +679,35 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).count(),
             1,
         )
+
+    def test_partial_form_step_update_with_texts_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "previous_text": "Different Previous Text",
+            "save_text": "Different Save Text",
+            "next_text": "Different Next Text",
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
 
     def test_partial_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
