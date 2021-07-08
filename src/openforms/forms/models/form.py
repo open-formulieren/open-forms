@@ -4,7 +4,7 @@ from typing import List
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
-from django.utils.translation import gettext_lazy as _, gettext
+from django.utils.translation import gettext, gettext_lazy as _
 
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
@@ -174,13 +174,21 @@ class Form(models.Model):
         return list(return_keys)
 
     def get_begin_text(self):
-        return self.begin_text or str(_(GlobalConfiguration.get_solo().form_begin_text))
+        return self.begin_text or gettext(
+            GlobalConfiguration.get_solo().form_begin_text
+        )
 
     def get_previous_text(self):
-        return self.previous_text or gettext(GlobalConfiguration.get_solo().form_previous_text)
+        return self.previous_text or gettext(
+            GlobalConfiguration.get_solo().form_previous_text
+        )
 
     def get_change_text(self):
-        return self.change_text or gettext(GlobalConfiguration.get_solo().form_change_text)
+        return self.change_text or gettext(
+            GlobalConfiguration.get_solo().form_change_text
+        )
 
     def get_confirm_text(self):
-        return self.confirm_text or gettext(GlobalConfiguration.get_solo().form_confirm_text)
+        return self.confirm_text or gettext(
+            GlobalConfiguration.get_solo().form_confirm_text
+        )

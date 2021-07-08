@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _, gettext
+from django.utils.translation import gettext, gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 from rest_framework.reverse import reverse
@@ -83,10 +83,16 @@ class FormStep(OrderedModel):
         return _("Form step {order}").format(order=self.order)
 
     def get_previous_text(self):
-        return self.previous_text or gettext(GlobalConfiguration.get_solo().form_step_previous_text)
+        return self.previous_text or gettext(
+            GlobalConfiguration.get_solo().form_step_previous_text
+        )
 
     def get_save_text(self):
-        return self.save_text or gettext(GlobalConfiguration.get_solo().form_step_save_text)
+        return self.save_text or gettext(
+            GlobalConfiguration.get_solo().form_step_save_text
+        )
 
     def get_next_text(self):
-        return self.next_text or gettext(GlobalConfiguration.get_solo().form_step_next_text)
+        return self.next_text or gettext(
+            GlobalConfiguration.get_solo().form_step_next_text
+        )
