@@ -70,7 +70,8 @@ class Form(models.Model):
         blank=True,
         help_text=_(
             "The text that will be displayed in the overview page to "
-            "go to the previous step"
+            "go to the previous step."
+            "Leave blank to get value from global configuration."
         ),
     )
     change_text = models.CharField(
@@ -79,7 +80,8 @@ class Form(models.Model):
         blank=True,
         help_text=_(
             "The text that will be displayed in the overview page to "
-            "change a certain step"
+            "change a certain step."
+            "Leave blank to get value from global configuration."
         ),
     )
     confirm_text = models.CharField(
@@ -88,7 +90,8 @@ class Form(models.Model):
         blank=True,
         help_text=_(
             "The text that will be displayed in the overview page to "
-            "confirm the form is filled in correctly"
+            "confirm the form is filled in correctly."
+            "Leave blank to get value from global configuration."
         ),
     )
     begin_text = models.CharField(
@@ -97,7 +100,8 @@ class Form(models.Model):
         blank=True,
         help_text=_(
             "The text that will be displayed at the start of the form to "
-            "indicate the user can begin to fill in the form"
+            "indicate the user can begin to fill in the form."
+            "Leave blank to get value from global configuration."
         ),
     )
 

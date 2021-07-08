@@ -49,7 +49,8 @@ class FormStep(OrderedModel):
         max_length=50,
         blank=True,
         help_text=_(
-            "The text that will be displayed in the form step to go to the previous step"
+            "The text that will be displayed in the form step to go to the previous step."
+            "Leave blank to get value from global configuration."
         ),
     )
     save_text = models.CharField(
@@ -57,7 +58,8 @@ class FormStep(OrderedModel):
         max_length=50,
         blank=True,
         help_text=_(
-            "The text that will be displayed in the form step to save the current information"
+            "The text that will be displayed in the form step to save the current information."
+            "Leave blank to get value from global configuration."
         ),
     )
     next_text = models.CharField(
@@ -65,7 +67,8 @@ class FormStep(OrderedModel):
         max_length=50,
         blank=True,
         help_text=_(
-            "The text that will be displayed in the form step to go to the next step"
+            "The text that will be displayed in the form step to go to the next step."
+            "Leave blank to get value from global configuration."
         ),
     )
 
