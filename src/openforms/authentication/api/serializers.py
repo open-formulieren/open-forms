@@ -5,7 +5,7 @@ from rest_framework import serializers
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
-class PluginSerializer(PluginBaseSerializer):
+class AuthPluginSerializer(PluginBaseSerializer):
     provides_auth = serializers.ListField(
         child=serializers.CharField(label=_("Authentication attribute")),
         source="get_provides_auth",

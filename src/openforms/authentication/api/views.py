@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ...utils.api.views import ListMixin
 from ..registry import register
-from .serializers import PluginSerializer
+from .serializers import AuthPluginSerializer
 
 
 @extend_schema_view(
@@ -19,7 +19,7 @@ class PluginListView(ListMixin, APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PluginSerializer
+    serializer_class = AuthPluginSerializer
 
     def get_objects(self):
         return list(register)

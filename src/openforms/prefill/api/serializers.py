@@ -7,7 +7,7 @@ from rest_framework import serializers
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
-class PluginSerializer(PluginBaseSerializer):
+class PrefillPluginSerializer(PluginBaseSerializer):
     requires_auth = serializers.CharField(
         label=_("Required authentication attribute"),
         help_text=_(
