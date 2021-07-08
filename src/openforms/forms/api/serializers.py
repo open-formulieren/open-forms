@@ -143,9 +143,6 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "slug",
             "configuration",
             "login_required",
-            "previous_text",
-            "save_text",
-            "next_text",
         )
         extra_kwargs = {
             "url": {
@@ -236,9 +233,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         return super().create(validated_data)
 
     def to_representation(self, instance):
-        representation = super(FormStepSerializer, self).to_representation(
-            instance
-        )
+        representation = super(FormStepSerializer, self).to_representation(instance)
         representation["previous_text"] = instance.get_previous_text()
         representation["save_text"] = instance.get_save_text()
         representation["next_text"] = instance.get_next_text()
