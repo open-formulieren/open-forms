@@ -29,7 +29,7 @@ class eHerkenningAssertionConsumerServiceView(
             "eherkenning_no_kvk": _(
                 "Login failed due to no KVK being returned by eHerkenning."
             )
-        }
+        },
     )
 
     def get(self, request):
@@ -69,9 +69,10 @@ class eHerkenningAssertionConsumerServiceView(
         request.session["kvk"] = kvk
 
         # This is the URL of the form for which we are authenticating
+        form_url = self.get_success_url()
         auth_plugin_url = reverse(
             "authentication:return",
             kwargs={"slug": self.get_form_slug(), "plugin_id": "eherkenning"},
         )
 
-        return HttpResponseRedirect(auth_plugin_url)
+        return HttpResponseRedirect(f"{auth_plugin_url}?next={form_url}")
