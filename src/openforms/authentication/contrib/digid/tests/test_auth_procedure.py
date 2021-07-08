@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.http import urlencode
 
 from freezegun import freeze_time
+from furl import furl
 from lxml import etree
 from requests_mock import Mocker
 from rest_framework import status
@@ -77,8 +78,13 @@ class AuthenticationStep2Tests(TestCase):
         response = self.client.get(f"{login_url}?next={form_url}")
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        expected_next_path = reverse(
+            "authentication:return", kwargs={"slug": form.slug, "plugin_id": "digid"}
+        )
+        expected_next = furl(expected_next_path).set({"next": form_url}).url
         self.assertEqual(
-            f"http://testserver/digid/login/?{urlencode({'next': form_url})}",
+            furl("http://testserver/digid/login/").set({"next": expected_next}).url,
             response.url,
         )
 
@@ -100,7 +106,10 @@ class AuthenticationStep2Tests(TestCase):
 
         response = self.client.get(f"{login_url}?next={form_url}", follow=True)
 
-        self.assertEqual(form_url, response.context["form"].initial["RelayState"])
+        next_parameter = furl(response.context["form"].initial["RelayState"]).args[
+            "next"
+        ]
+        self.assertEqual(form_url, next_parameter)
 
         saml_request = b64decode(
             response.context["form"].initial["SAMLRequest"].encode("utf-8")
@@ -218,9 +227,7 @@ class AuthenticationStep5Tests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-        self.assertEqual(
-            f"/auth/{form.slug}/digid/return?next={form_url}", response.url
-        )
+        self.assertEqual(form_url, response.url)
 
         response = self.client.get(url, follow=True)
 

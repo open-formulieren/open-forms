@@ -20,9 +20,18 @@ class DigidAuthentication(BasePlugin):
 
         https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiD/Koppelvlakspecificatie-SAML-DigiD.pdf
         """
-        url = reverse("digid:login", request=request)
+        login_url = reverse("digid:login", request=request)
+
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "digid"},
+        )
         params = {"next": form_url}
-        url = f"{url}?{urlencode(params)}"
+        return_url = f"{auth_return_url}?{urlencode(params)}"
+
+        auth_return_params = {"next": return_url}
+        url = f"{login_url}?{urlencode(auth_return_params)}"
+
         return HttpResponseRedirect(url)
 
     def handle_return(self, request, form):
