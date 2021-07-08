@@ -1,7 +1,7 @@
 from typing import Optional
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
@@ -22,14 +22,11 @@ class EHerkenningAuthentication(BasePlugin):
         url = f"{url}?{urlencode(params)}"
         return HttpResponseRedirect(url)
 
-    # This could maybe be removed completely and let .views.DigiDAssertionConsumerServiceView
-    # return directly to the form URL
     def handle_return(self, request, form):
-        """Redirect to form URL.
-
-        This is called after step 7 of the authentication is finished
-        """
-        form_url = reverse("core:form-detail", kwargs={"slug": form.slug})
+        """Redirect to form URL."""
+        form_url = request.GET.get("next")
+        if not form_url:
+            return HttpResponseBadRequest("missing 'next' parameter")
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
