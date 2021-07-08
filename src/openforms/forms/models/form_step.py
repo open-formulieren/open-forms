@@ -8,8 +8,8 @@ from rest_framework.reverse import reverse
 
 from openforms.utils.fields import StringUUIDField
 
-from ..constants import AvailabilityOptions
 from ...config.models import GlobalConfiguration
+from ..constants import AvailabilityOptions
 
 
 class FormStep(OrderedModel):
@@ -83,10 +83,16 @@ class FormStep(OrderedModel):
         return _("Form step {order}").format(order=self.order)
 
     def get_previous_text(self):
-        return self.previous_text or _(GlobalConfiguration.get_solo().form_step_previous_text)
+        return self.previous_text or str(
+            _(GlobalConfiguration.get_solo().form_step_previous_text)
+        )
 
     def get_save_text(self):
-        return self.save_text or _(GlobalConfiguration.get_solo().form_step_save_text)
+        return self.save_text or str(
+            _(GlobalConfiguration.get_solo().form_step_save_text)
+        )
 
     def get_next_text(self):
-        return self.next_text or _(GlobalConfiguration.get_solo().form_step_next_text)
+        return self.next_text or str(
+            _(GlobalConfiguration.get_solo().form_step_next_text)
+        )

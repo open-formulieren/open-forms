@@ -65,6 +65,16 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         )
     )
+    begin_text = models.CharField(
+        _("Begin Text"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The text that will be displayed at the start of the form to "
+            "indicate the user can begin to fill in the form. "
+            "Leave blank to get value from global configuration."
+        ),
+    )
     previous_text = models.CharField(
         _("Previous Text"),
         max_length=50,
@@ -92,16 +102,6 @@ class Form(models.Model):
         help_text=_(
             "The text that will be displayed in the overview page to "
             "confirm the form is filled in correctly. "
-            "Leave blank to get value from global configuration."
-        ),
-    )
-    begin_text = models.CharField(
-        _("Begin Text"),
-        max_length=50,
-        blank=True,
-        help_text=_(
-            "The text that will be displayed at the start of the form to "
-            "indicate the user can begin to fill in the form. "
             "Leave blank to get value from global configuration."
         ),
     )
@@ -174,13 +174,19 @@ class Form(models.Model):
         return list(return_keys)
 
     def get_begin_text(self):
-        return self.begin_text or _(GlobalConfiguration.get_solo().form_begin_text)
+        return self.begin_text or str(_(GlobalConfiguration.get_solo().form_begin_text))
 
     def get_previous_text(self):
-        return self.previous_text or _(GlobalConfiguration.get_solo().form_previous_text)
+        return self.previous_text or str(
+            _(GlobalConfiguration.get_solo().form_previous_text)
+        )
 
     def get_change_text(self):
-        return self.change_text or _(GlobalConfiguration.get_solo().form_change_text)
+        return self.change_text or str(
+            _(GlobalConfiguration.get_solo().form_change_text)
+        )
 
     def get_confirm_text(self):
-        return self.confirm_text or _(GlobalConfiguration.get_solo().form_confirm_text)
+        return self.confirm_text or str(
+            _(GlobalConfiguration.get_solo().form_confirm_text)
+        )

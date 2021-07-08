@@ -16,9 +16,6 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
-    # previous_text = serializers.CharField(source="get_previous_text")
-    # save_text = serializers.CharField(source="get_save_text")
-    # next_text = serializers.CharField(source="get_next_text")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -45,14 +42,19 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
             }
         }
 
+    def to_representation(self, instance):
+        representation = super(MinimalFormStepSerializer, self).to_representation(
+            instance
+        )
+        representation["previous_text"] = instance.get_previous_text()
+        representation["save_text"] = instance.get_save_text()
+        representation["next_text"] = instance.get_next_text()
+        return representation
+
 
 class FormSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
-    previous_text = serializers.CharField(source="get_previous_text")
-    change_text = serializers.CharField(source="get_change_text")
-    confirm_text = serializers.CharField(source="get_confirm_text")
-    begin_text = serializers.CharField(source="get_begin_text")
     authentication_backends = serializers.ListField(
         child=serializers.ChoiceField(choices=[]),
         write_only=True,
@@ -96,6 +98,14 @@ class FormSerializer(serializers.ModelSerializer):
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         return fields
+
+    def to_representation(self, instance):
+        representation = super(FormSerializer, self).to_representation(instance)
+        representation["begin_text"] = instance.get_begin_text()
+        representation["previous_text"] = instance.get_previous_text()
+        representation["change_text"] = instance.get_change_text()
+        representation["confirm_text"] = instance.get_confirm_text()
+        return representation
 
 
 class FormExportSerializer(FormSerializer):
