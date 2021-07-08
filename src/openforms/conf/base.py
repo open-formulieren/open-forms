@@ -658,7 +658,6 @@ DIGID = {
     # SSL/TLS key
     "key_file": SSL_KEY_PATH,
     "cert_file": SSL_CERTIFICATE_PATH,
-    "authn_requests_signed": False,
     "service_entity_id": DIGID_SERVICE_ENTITY_ID,
     "attribute_consuming_service_index": "1",
     "service_name": {
