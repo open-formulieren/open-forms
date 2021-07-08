@@ -347,6 +347,9 @@ class StufZDSPluginTests(StufTestBase):
                         "attribute": RegistrationAttribute.initiator_geboortedatum,
                     },
                 },
+                {
+                    "key": "extra",
+                },
             ],
             form_kwargs={"name": "my-form"},
             submission_kwargs={"bsn": "111222333"},
@@ -355,6 +358,7 @@ class StufZDSPluginTests(StufTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
+                "extra": "BuzzBazz",
             },
         )
 
@@ -424,6 +428,17 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+            },
+        )
+        # extraElementen
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']": "Foo",
+                "//stuf:extraElementen/stuf:extraElement[@naam='achternaam']": "Bar",
+                "//stuf:extraElementen/stuf:extraElement[@naam='tussenvoegsel']": "de",
+                "//stuf:extraElementen/stuf:extraElement[@naam='geboortedatum']": "2000-12-31",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extra']": "BuzzBazz",
             },
         )
 

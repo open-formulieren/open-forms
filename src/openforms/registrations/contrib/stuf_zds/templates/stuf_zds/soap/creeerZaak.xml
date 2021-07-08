@@ -21,6 +21,7 @@
         <ZKN:zaakniveau>1</ZKN:zaakniveau>
         <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+        {% include "stuf_zds/soap/includes/extraElementen.xml" %}
         <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">
                 <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>
@@ -28,7 +29,7 @@
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
         </ZKN:isVan>
-        {% if initiator.bsn or initiator.vestigings_nummer %}
+        {% if initiator.bsn or initiator.kvk %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
                     {% if initiator.bsn %}

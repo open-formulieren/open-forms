@@ -68,7 +68,8 @@ class StufZDSRegistration(BasePlugin):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
-        client.create_zaak(zaak_id, zaak_data)
+        data = submission.get_merged_data()
+        client.create_zaak(zaak_id, zaak_data, data)
 
         doc_id = client.create_document_identificatie()
 
