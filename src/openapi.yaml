@@ -23,6 +23,30 @@ info:
   license:
     name: UNLICENSED
 paths:
+  /api/v1/authentication/plugins:
+    get:
+      operationId: authentication_plugins_list
+      description: |-
+        List all authentication plugins that have been registered.
+
+        Each authentication plugin is tied to a particular (third-party) authentication
+        provider. An authentication plugin usually provides a particular authentication
+        attribute, such as the ``BSN`` or Chamber of Commerce number. A plugin may provide
+        zero, one or multiple authentication attributes.
+      summary: List available authentication plugins
+      tags:
+      - authentication
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthPlugin'
+          description: ''
   /api/v1/form-definitions:
     get:
       operationId: form_definitions_list
@@ -1318,11 +1342,33 @@ components:
       required:
       - id
       - label
+    AuthPlugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+        providesAuth:
+          type: array
+          items:
+            type: string
+            title: Authentication attribute
+          title: Provides authentication attributes
+          description: The authentication attribute provided by this plugin.
+      required:
+      - id
+      - label
+      - providesAuth
     AuthenticationBackendsEnum:
       enum:
       - demo
       - demo-kvk
       - demo-outage
+      - bsn-outage
+      - kvk-outage
       - digid-mock
       type: string
     CompletionValidation:
@@ -1767,9 +1813,16 @@ components:
         label:
           type: string
           description: The human-readable name for a plugin.
+        requiresAuth:
+          type: string
+          nullable: true
+          title: Required authentication attribute
+          description: The authentication attribute required for this plugin to lookup
+            remote data.
       required:
       - id
       - label
+      - requiresAuth
     Product:
       type: object
       properties:
