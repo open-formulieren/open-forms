@@ -4,8 +4,8 @@
 Environment configuration reference
 ===================================
 
-Open Forms can be ran both as a Docker container or directly on a VPS or 
-dedicated server. It depends on other services, such as database and cache 
+Open Forms can be ran both as a Docker container or directly on a VPS or
+dedicated server. It depends on other services, such as database and cache
 backends, which can be configured through environment variables.
 
 Available environment variables
@@ -43,10 +43,10 @@ Common settings
 
 * ``DB_PORT``: Port number of the database. Defaults to ``5432``.
 
-* ``CELERY_BROKER_URL``: URL for the Redis task broker for Celery. Defaults 
+* ``CELERY_BROKER_URL``: URL for the Redis task broker for Celery. Defaults
   to ``redis://127.0.0.1:6379/1``.
 
-* ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery. 
+* ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery.
   Defaults to ``redis://127.0.0.1:6379/1``.
 
 * ``SDK_BASE_URL``: URL for the retrieving Open Forms SDK files.
@@ -63,10 +63,10 @@ Email settings
 
 * ``EMAIL_HOST_PASSWORD``: Email server password. Defaults to ``""``.
 
-* ``EMAIL_USE_TLS``: Indicates whether the email server uses TLS. Defaults to 
+* ``EMAIL_USE_TLS``: Indicates whether the email server uses TLS. Defaults to
   ``False``.
 
-* ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults 
+* ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
   to ``openforms@example.com``.
 
 Cross-Origin Resource Sharing (CORS) settings
@@ -74,18 +74,18 @@ Cross-Origin Resource Sharing (CORS) settings
 
 See: https://github.com/adamchainz/django-cors-headers
 
-* ``CORS_ALLOW_ALL_ORIGINS``: If ``True``, all origins will be allowed. Other 
+* ``CORS_ALLOW_ALL_ORIGINS``: If ``True``, all origins will be allowed. Other
   settings restricting allowed origins will be ignored.Defaults to ``False``.
 
-* ``CORS_ALLOWED_ORIGINS``: A list of origins that are authorized to make 
+* ``CORS_ALLOWED_ORIGINS``: A list of origins that are authorized to make
   cross-site HTTP requests. Defaults to ``[]``.
 
-* ``CORS_ALLOWED_ORIGIN_REGEXES``: A list of strings representing regexes that 
-  match Origins that are authorized to make cross-site HTTP requests. Defaults 
+* ``CORS_ALLOWED_ORIGIN_REGEXES``: A list of strings representing regexes that
+  match Origins that are authorized to make cross-site HTTP requests. Defaults
   to ``[]``.
 
-* ``CORS_EXTRA_ALLOW_HEADERS``: The list of non-standard HTTP headers that can 
-  be used when making the actual request. These headers are added to the 
+* ``CORS_EXTRA_ALLOW_HEADERS``: The list of non-standard HTTP headers that can
+  be used when making the actual request. These headers are added to the
   internal setting ``CORS_ALLOW_HEADERS``. Defaults to ``[]``.
 
 Log settings
@@ -94,10 +94,10 @@ Log settings
 * ``SENTRY_DSN``: URL of the sentry project to send error reports to. Defaults
   to an empty string (ie. no monitoring). See `Sentry settings`_.
 
-* ``ELASTIC_APM_SERVER_URL``: Server URL of Elastic APM. Defaults to 
-  ``None``. If not set, Elastic APM will be disabled by setting internal 
-  setting ``ELASTIC_APM["ENABLED"]`` to ``False`` and 
-  ``ELASTIC_APM["SERVER_URL"]`` to ``http://localhost:8200``. See 
+* ``ELASTIC_APM_SERVER_URL``: Server URL of Elastic APM. Defaults to
+  ``None``. If not set, Elastic APM will be disabled by setting internal
+  setting ``ELASTIC_APM["ENABLED"]`` to ``False`` and
+  ``ELASTIC_APM["SERVER_URL"]`` to ``http://localhost:8200``. See
   `Elastic settings`_.
 
 * ``ELASTIC_APM_SECRET_TOKEN``: Token for Elastic APM. Defaults to ``default``.
@@ -105,9 +105,21 @@ Log settings
 
 * ``LOG_STD_OUT``: Write all log entries to ``stdout`` instead of log files.
   Defaults to ``True`` when using Docker and otherwise ``False``.
-  
+
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
+
+DigiD/EHerkenning settings
+--------------------------
+
+* ``DIGID_METADATA``: This is the path to the metadata file provided by the Identity Provider.
+* ``SSL_CERTIFICATE_PATH``: Path to the TLS/SSL certificate on the server.
+* ``SSL_KEY_PATH``: Path to the TLS/SSL key on the server.
+* ``BASE_URL``: Base url on which open-forms is deployed.
+* ``DIGID_SERVICE_ENTITY_ID``: The URL where the Identity Provider serves its metadata.
+* ``DIGID_SERVICE_NAME_NL``: The name (in Dutch) of the Service Provider.
+* ``DIGID_SERVICE_NAME_EN``: The name (in English) of the Service Provider.
+
 
 Other settings
 --------------
@@ -119,24 +131,24 @@ Other settings
 * ``IS_HTTPS``: Used to construct absolute URLs and controls a variety of
   security settings. Defaults to the inverse of ``DEBUG``.
 
-* ``DB_ENGINE``: Backend to use as database system. See 
+* ``DB_ENGINE``: Backend to use as database system. See
   `Django DATABASE settings`_ for a full list of backends. Only the default is
   supported but others might work. Defaults to ``django.db.backends.postgresql``
 
-* ``CACHE_DEFAULT``: The default Redis cache location. Defaults to 
+* ``CACHE_DEFAULT``: The default Redis cache location. Defaults to
   ``localhost:6379/0``.
 
-* ``CACHE_AXES``: The Redis cache location for Axes (used to prevent brute 
+* ``CACHE_AXES``: The Redis cache location for Axes (used to prevent brute
   force attacks). Defaults to ``localhost:6379/0``.
 
-* ``ENVIRONMENT``: Short string to indicate the environment (test, production, 
+* ``ENVIRONMENT``: Short string to indicate the environment (test, production,
   etc.) Defaults to ``""``.
 
 * ``GIT_SHA``: The Git commit hash belonging to the code running the instance.
   Defaults to the automatically determined commit hash, if the application is
   run from a checked out Git repository.
 
-* ``VERSION_TAG``: The version of the application. If not provided, the 
+* ``VERSION_TAG``: The version of the application. If not provided, the
   ``GIT_SHA`` is used.
 
 * ``EXTRA_VERIFY_CERTS``: a comma-separated list of paths to certificates to trust, empty
