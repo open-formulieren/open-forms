@@ -72,6 +72,68 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    form_previous_text = models.CharField(
+        _("Form Previous Text"),
+        max_length=50,
+        default=_("Previous page"),
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "go to the previous step"
+        ),
+    )
+    form_change_text = models.CharField(
+        _("Form Change Text"),
+        max_length=50,
+        default=_("Change"),
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "change a certain step"
+        ),
+    )
+    form_confirm_text = models.CharField(
+        _("Form Confirm Text"),
+        max_length=50,
+        default=_("Confirm"),
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "confirm the form is filled in correctly"
+        ),
+    )
+    form_begin_text = models.CharField(
+        _("Form Begin Text"),
+        max_length=50,
+        default=_("Begin form"),
+        help_text=_(
+            "The text that will be displayed at the start of the form to "
+            "indicate the user can begin to fill in the form"
+        ),
+    )
+
+    form_step_previous_text = models.CharField(
+        _("Form Step Previous Text"),
+        max_length=50,
+        default=_("Previous page"),
+        help_text=_(
+            "The text that will be displayed in the form step to go to the previous step"
+        ),
+    )
+    form_step_save_text = models.CharField(
+        _("Form Step Save Text"),
+        max_length=50,
+        default=_("Save current information"),
+        help_text=_(
+            "The text that will be displayed in the form step to save the current information"
+        ),
+    )
+    form_step_next_text = models.CharField(
+        _("Form Step Next Text"),
+        max_length=50,
+        default=_("Next"),
+        help_text=_(
+            "The text that will be displayed in the form step to go to the next step"
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
