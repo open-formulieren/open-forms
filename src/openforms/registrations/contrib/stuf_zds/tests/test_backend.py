@@ -166,7 +166,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.create_zaak("foo", {"bsn": "111222333"})
+        self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -251,7 +251,7 @@ class StufZDSClientTests(StufTestBase):
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak("foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
@@ -273,7 +273,7 @@ class StufZDSClientTests(StufTestBase):
             self.client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak("foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
             self.client.create_document_identificatie()
