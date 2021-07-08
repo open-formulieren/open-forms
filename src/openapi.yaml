@@ -1468,6 +1468,9 @@ components:
           additionalProperties: {}
           title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
+        loginRequired:
+          type: boolean
+          description: DigID Login required for form step
       required:
       - configuration
       - name
@@ -1495,6 +1498,9 @@ components:
           additionalProperties: {}
           title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
+        loginRequired:
+          type: boolean
+          description: DigID Login required for form step
         usedIn:
           type: array
           items:
@@ -1540,10 +1546,14 @@ components:
           type: string
           format: uri
           readOnly: true
+        loginRequired:
+          type: boolean
+          readOnly: true
       required:
       - configuration
       - formDefinition
       - index
+      - loginRequired
       - name
       - slug
       - url
@@ -1782,6 +1792,9 @@ components:
           additionalProperties: {}
           title: Formio.js configuration
           description: The form definition as Formio.js JSON schema
+        loginRequired:
+          type: boolean
+          description: DigID Login required for form step
     PatchedFormStep:
       type: object
       properties:
@@ -1803,6 +1816,9 @@ components:
         url:
           type: string
           format: uri
+          readOnly: true
+        loginRequired:
+          type: boolean
           readOnly: true
     PrefillPlugin:
       type: object
