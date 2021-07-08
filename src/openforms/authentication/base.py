@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext_lazy as _
@@ -29,6 +29,7 @@ class BasePlugin:
     """
     Specify the human-readable label for the plugin.
     """
+    provides_auth = None
     return_method = "GET"
 
     def __init__(self, identifier: str):
@@ -70,6 +71,14 @@ class BasePlugin:
             logo=self.get_logo(request),
         )
         return info
+
+    def get_provides_auth(self) -> List[str]:
+        if not self.provides_auth:
+            return []
+        elif isinstance(self.provides_auth, str):
+            return [self.provides_auth]
+        else:
+            return list(self.provides_auth)
 
     # cosmetics
 

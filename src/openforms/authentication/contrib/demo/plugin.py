@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.base import BasePlugin
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
@@ -39,8 +40,7 @@ class DemoBaseAuthentication(BasePlugin):
     verbose_name = _("Demo")
     return_method = "POST"
     form_class: type = NotImplemented
-    session_key: str = NotImplemented
-    form_field: str = NotImplemented
+    auth_attribute: str = NotImplemented
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str
@@ -59,7 +59,7 @@ class DemoBaseAuthentication(BasePlugin):
         if not submited.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session[self.session_key] = submited.cleaned_data[self.form_field]
+        request.session[self.auth_attribute] = submited.cleaned_data[self.form_field]
 
         return HttpResponseRedirect(submited.cleaned_data["next"])
 
@@ -68,8 +68,7 @@ class DemoBaseAuthentication(BasePlugin):
 class DemoBSNAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo BSN")
     form_class = BSNForm
-    # TODO swap 'session_key' value for AuthAttribute.xxx from the prefill/authentication dependency check branch
-    session_key = "bsn"
+    auth_attribute = AuthAttribute.bsn
     form_field = "bsn"
 
 
@@ -77,6 +76,5 @@ class DemoBSNAuthentication(DemoBaseAuthentication):
 class DemoKVKAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo KvK number")
     form_class = KVKForm
-    # TODO swap 'session_key' value for AuthAttribute.xxx from the prefill/authentication dependency check branch
-    session_key = "kvk"
+    auth_attribute = AuthAttribute.kvk
     form_field = "kvk"

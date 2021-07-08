@@ -1,41 +1,46 @@
 from unittest.mock import patch
 
-from django.utils.translation import gettext_lazy as _
-
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.authentication.constants import AuthAttribute
 
 from ...base import BasePlugin
+from ...constants import AuthAttribute
 from ...registry import Registry
 
 
-class TestPrefill(BasePlugin):
-    requires_auth = AuthAttribute.bsn
-    verbose_name = "Test"
+class NoAuthPlugin(BasePlugin):
+    provides_auth = None
+    verbose_name = "NoAuthPlugin"
 
-    def get_available_attributes(self):
-        return [("foo", "Foo"), ("bar", "Bar")]
+
+class SingleAuthPlugin(BasePlugin):
+    provides_auth = AuthAttribute.bsn
+    verbose_name = "SingleAuthPlugin"
+
+
+class MultiAuthPlugin(BasePlugin):
+    provides_auth = [AuthAttribute.bsn, AuthAttribute.kvk]
+    verbose_name = "MultiAuthPlugin"
 
 
 register = Registry()
-
-register("test")(TestPrefill)
+register("plugin1")(NoAuthPlugin)
+register("plugin2")(SingleAuthPlugin)
+register("plugin3")(MultiAuthPlugin)
 
 
 class AuthTests(APITestCase):
     endpoints = [
-        reverse_lazy("api:prefill-plugin-list"),
-        reverse_lazy("api:prefill-attribute-list", kwargs={"plugin": "test"}),
+        reverse_lazy("api:authentication-plugin-list"),
     ]
 
     def setUp(self):
         super().setUp()
 
-        patcher = patch("openforms.prefill.api.views.register", new=register)
+        patcher = patch("openforms.authentication.api.views.register", new=register)
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -80,53 +85,32 @@ class ResponseTests(APITestCase):
 
         self.client.force_authenticate(user=self.user)
 
-        patcher = patch("openforms.prefill.api.views.register", new=register)
+        patcher = patch("openforms.authentication.api.views.register", new=register)
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_prefill_list(self):
-        endpoint = reverse("api:prefill-plugin-list")
+    def test_plugin_list(self):
+        endpoint = reverse("api:authentication-plugin-list")
 
         response = self.client.get(endpoint)
 
         expected = [
             {
-                "id": "test",
-                "label": "Test",
-                "requiresAuth": AuthAttribute.bsn,
-            }
-        ]
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), expected)
-
-    def test_attributes_list(self):
-        endpoint = reverse("api:prefill-attribute-list", kwargs={"plugin": "test"})
-
-        response = self.client.get(endpoint)
-
-        expected = [
-            {
-                "id": "foo",
-                "label": "Foo",
+                "id": "plugin1",
+                "label": "NoAuthPlugin",
+                "providesAuth": [],
             },
             {
-                "id": "bar",
-                "label": "Bar",
+                "id": "plugin2",
+                "label": "SingleAuthPlugin",
+                "providesAuth": ["bsn"],
+            },
+            {
+                "id": "plugin3",
+                "label": "MultiAuthPlugin",
+                "providesAuth": ["bsn", "kvk"],
             },
         ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
-
-    def test_attributes_invalid_plugin_ids(self):
-        invalid = ["demo", 1234, "None"]
-        for plugin in invalid:
-            with self.subTest(plugin_id=plugin):
-                endpoint = reverse(
-                    "api:prefill-attribute-list", kwargs={"plugin": plugin}
-                )
-
-                response = self.client.get(endpoint)
-
-                self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

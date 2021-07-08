@@ -4,17 +4,16 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.plugins.api.serializers import PluginBaseSerializer
 
-class PrefillPluginSerializer(serializers.Serializer):
-    id = serializers.CharField(
-        source="identifier",
-        label=_("ID"),
-        help_text=_("The unique plugin identifier"),
-    )
-    label = serializers.CharField(
-        source="verbose_name",
-        label=_("Label"),
-        help_text=_("The human-readable name for a plugin."),
+
+class PrefillPluginSerializer(PluginBaseSerializer):
+    requires_auth = serializers.CharField(
+        label=_("Required authentication attribute"),
+        help_text=_(
+            "The authentication attribute required for this plugin to lookup remote data."
+        ),
+        allow_null=True,
     )
 
 
