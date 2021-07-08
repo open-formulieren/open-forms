@@ -28,6 +28,9 @@ class FormStepInline(OrderedTabularInline):
         "form_definition",
         "optional",
         "availability_strategy",
+        "previous_text",
+        "save_text",
+        "next_text",
     )
     readonly_fields = (
         "order",

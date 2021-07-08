@@ -35,4 +35,19 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 ),
             },
         ),
+        (
+            _("Button Texts"),
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "form_begin_text",
+                    "form_previous_text",
+                    "form_change_text",
+                    "form_confirm_text",
+                    "form_step_previous_text",
+                    "form_step_save_text",
+                    "form_step_next_text",
+                ),
+            },
+        ),
     )
