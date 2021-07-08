@@ -710,6 +710,13 @@ EHERKENNING_PRIVACY_POLICY = config(
     "EHERKENNING_PRIVACY_POLICY",
     "",
 )
+EHERKENNING_SERVICE_NAME_NL = config("EHERKENNING_SERVICE_NAME_NL", "")
+EHERKENNING_SERVICE_NAME_EN = config("EHERKENNING_SERVICE_NAME_EN", "")
+EHERKENNING_SERVICE_DESCRIPTION_NL = config("EHERKENNING_SERVICE_DESCRIPTION_NL", "")
+EHERKENNING_SERVICE_DESCRIPTION_EN = config("EHERKENNING_SERVICE_DESCRIPTION_EN", "")
+EHERKENNING_ORGANISATION_NAME_NL = config("EHERKENNING_ORGANISATION_NAME_NL", "")
+EHERKENNING_ORGANISATION_NAME_EN = config("EHERKENNING_ORGANISATION_NAME_EN", "")
+
 EHERKENNING = {
     "metadata_file": EHERKENNING_METADATA,
     "key_file": SSL_KEY_PATH,
@@ -721,19 +728,19 @@ EHERKENNING = {
     "service_loa": EHERKENNING_LOA,
     "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
     "service_name": {
-        "nl": "Maykin Media - Open Formulieren testomgeving",
-        "en": "Maykin Media - Open Forms test environment",
+        "nl": EHERKENNING_SERVICE_NAME_NL,
+        "en": EHERKENNING_SERVICE_NAME_EN,
     },
     "service_description": {
-        "nl": "Maykin Media - Open Formulieren testomgeving",
-        "en": "Maykin Media - Open Forms test environment",
+        "nl": EHERKENNING_SERVICE_DESCRIPTION_NL,
+        "en": EHERKENNING_SERVICE_DESCRIPTION_EN,
     },
     "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
     "service_url": BASE_URL,
     "oin": EHERKENNING_OIN,
     "organisation_name": {
-        "nl": "Maykin Media",
-        "en": "Maykin Media",
+        "nl": EHERKENNING_ORGANISATION_NAME_NL,
+        "en": EHERKENNING_ORGANISATION_NAME_EN,
     },
     # Either require and return RSIN and KVKNr (set 1) or require only KvKnr (set 2). The
     # latter is needed for 'eenmanszaak'
