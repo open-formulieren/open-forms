@@ -11,6 +11,8 @@ from digid_eherkenning.views import (
 )
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
+from openforms.authentication.constants import AuthAttribute
+
 
 class BSNNotPresentError(Exception):
     pass
@@ -55,7 +57,7 @@ class DigiDAssertionConsumerServiceView(
             raise BSNNotPresentError
 
         bsn = sectoral_number
-        request.session["bsn"] = bsn
+        request.session[AuthAttribute.bsn] = bsn
 
         # This is the URL of the form for which we are authenticating
         form_url = self.get_success_url()
