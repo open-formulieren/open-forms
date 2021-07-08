@@ -240,7 +240,9 @@ class AuthenticationStep5Tests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-        self.assertEqual(f"/auth/{form.slug}/eherkenning/return", response.url)
+        self.assertEqual(
+            f"/auth/{form.slug}/eherkenning/return?next={form_url}", response.url
+        )
 
         response = self.client.get(url, follow=True)
 
