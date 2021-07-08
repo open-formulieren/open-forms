@@ -647,6 +647,8 @@ BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 DIGID_SERVICE_ENTITY_ID = config(
     "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
 )
+DIGID_SERVICE_NAME_NL = config("DIGID_SERVICE_NAME_NL", "")
+DIGID_SERVICE_NAME_EN = config("DIGID_SERVICE_NAME_EN", "")
 
 DIGID = {
     "base_url": BASE_URL,
@@ -660,8 +662,8 @@ DIGID = {
     "service_entity_id": DIGID_SERVICE_ENTITY_ID,
     "attribute_consuming_service_index": "1",
     "service_name": {
-        "nl": "Maykin Media - Open Formulieren testomgeving",
-        "en": "Maykin Media - Open Forms test environment",
+        "nl": DIGID_SERVICE_NAME_NL,
+        "en": DIGID_SERVICE_NAME_EN,
     },
     "requested_attributes": ["bsn"],
 }
