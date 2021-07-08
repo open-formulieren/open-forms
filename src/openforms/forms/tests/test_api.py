@@ -990,6 +990,33 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(True, definition.login_required)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
 
+    def test_create(self):
+        staff_user = UserFactory.create(is_staff=True)
+        self.client.force_login(staff_user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [{"label": "New field"}],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        definition = FormDefinition.objects.get()
+
+        self.assertEqual("Name", definition.name)
+        self.assertEqual("a-slug", definition.slug)
+        self.assertEqual(
+            [{"label": "New field"}], definition.configuration["components"]
+        )
+
     def test_create_no_camelcase_snakecase_conversion(self):
         staff_user = UserFactory.create(is_staff=True)
         self.client.force_login(staff_user)
