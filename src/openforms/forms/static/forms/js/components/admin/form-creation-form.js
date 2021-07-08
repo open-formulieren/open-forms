@@ -19,7 +19,7 @@ import {FormException} from "../../utils/exception";
 import Loader from './Loader';
 
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
-import {AuthPluginField} from "./AuthPluginField";
+import AuthPluginField from "./AuthPluginField";
 
 const initialFormState = {
     formName: '',
@@ -34,7 +34,7 @@ const initialFormState = {
     formDefinitions: {},
     availableAuthPlugins: {
         loading: true,
-        data: []
+        data: {}
     },
     availablePrefillPlugins: {
         loading: true,
@@ -59,10 +59,10 @@ function reducer(draft, action) {
          * Form-level actions
          */
         case 'FORM_LOADED': {
-            Object.keys(action.payload).map((property, index) => {
-               draft[property] = action.payload[property];
-            });
-            break;
+            return {
+                ...draft,
+                ...action.payload,
+            };
         }
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;

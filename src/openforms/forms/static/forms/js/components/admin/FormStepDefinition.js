@@ -10,7 +10,7 @@ import Field from "../formsets/Field";
 import FormRow from "../formsets/FormRow";
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
-import {PluginWarning} from "./PluginWarning";
+import PluginWarning from "./PluginWarning";
 
 const emptyConfiguration = {
     display: 'form',

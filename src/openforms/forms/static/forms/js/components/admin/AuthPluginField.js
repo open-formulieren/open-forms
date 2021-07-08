@@ -1,17 +1,17 @@
-import Field from "../formsets/Field";
-import {Checkbox} from "../formsets/Inputs";
 import React from "react";
-import Loader from "./Loader";
 import PropTypes from "prop-types";
 
+import Field from "../formsets/Field";
+import {Checkbox} from "../formsets/Inputs";
+import Loader from "./Loader";
+
 const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
-    const authCheckboxes = Object.keys(availableAuthPlugins).map((pluginId, index) => {
-        const plugin = availableAuthPlugins[pluginId];
+    const authCheckboxes = Object.entries(availableAuthPlugins).map(([pluginId, plugin]) => {
         const providedAttributes = `(provides ${plugin.providesAuth.join(', ')})`;
         const label = `${plugin.label} ${plugin.providesAuth.length > 0 ? providedAttributes : ''}`;
 
         return (
-            <li key={index}>
+            <li key={pluginId}>
                 <Checkbox
                     name={plugin.label}
                     value={plugin.id}
@@ -52,4 +52,4 @@ AuthPluginField.propTypes = {
     ]),
 };
 
-export {AuthPluginField};
+export default AuthPluginField;

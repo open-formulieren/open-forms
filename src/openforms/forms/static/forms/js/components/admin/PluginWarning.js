@@ -74,4 +74,4 @@ PluginWarning.propTypes = {
     configuration: PropTypes.object.isRequired,
 };
 
-export {PluginWarning};
+export default PluginWarning;
