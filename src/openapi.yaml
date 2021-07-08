@@ -1370,6 +1370,7 @@ components:
       - bsn-outage
       - kvk-outage
       - digid-mock
+      - digid
       type: string
     CompletionValidation:
       type: object
