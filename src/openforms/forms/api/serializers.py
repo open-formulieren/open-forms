@@ -16,9 +16,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
-    previous_text = serializers.CharField(source="form_definition.previous_text")
-    save_text = serializers.CharField(source="form_definition.save_text")
-    next_text = serializers.CharField(source="form_definition.next_text")
+    # previous_text = serializers.CharField(source="get_previous_text")
+    # save_text = serializers.CharField(source="get_save_text")
+    # next_text = serializers.CharField(source="get_next_text")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -49,6 +49,10 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
 class FormSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
+    previous_text = serializers.CharField(source="get_previous_text")
+    change_text = serializers.CharField(source="get_change_text")
+    confirm_text = serializers.CharField(source="get_confirm_text")
+    begin_text = serializers.CharField(source="get_begin_text")
     authentication_backends = serializers.ListField(
         child=serializers.ChoiceField(choices=[]),
         write_only=True,

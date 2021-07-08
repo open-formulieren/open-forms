@@ -11,6 +11,7 @@ from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from openforms.authentication.fields import BackendMultiSelectField
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
@@ -171,3 +172,15 @@ class Form(models.Model):
                 if key:
                     return_keys.add(key)
         return list(return_keys)
+
+    def get_begin_text(self):
+        return self.begin_text or _(GlobalConfiguration.get_solo().form_begin_text)
+
+    def get_previous_text(self):
+        return self.previous_text or _(GlobalConfiguration.get_solo().form_previous_text)
+
+    def get_change_text(self):
+        return self.change_text or _(GlobalConfiguration.get_solo().form_change_text)
+
+    def get_confirm_text(self):
+        return self.confirm_text or _(GlobalConfiguration.get_solo().form_confirm_text)

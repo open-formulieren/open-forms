@@ -809,24 +809,6 @@ class FormDefinitionsAPITests(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data["count"], 2)
 
-    def test_retrieve_returns_form_definition_texts(self):
-        definition = FormDefinitionFactory.create(
-            name="test form definition",
-            slug="test-form-definition",
-            configuration={
-                "display": "form",
-                "components": [{"label": "Existing field"}],
-            },
-        )
-
-        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(_("Previous page"), response.json()["previousText"])
-        self.assertEqual(_("Save current information"), response.json()["saveText"])
-        self.assertEqual(_("Next"), response.json()["nextText"])
-
     def test_non_staff_user_cant_update(self):
         definition = FormDefinitionFactory.create(
             name="test form definition",
@@ -919,97 +901,6 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
-
-    def test_update_form_definition_texts(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
-
-        definition = FormDefinitionFactory.create(
-            name="test form definition",
-            slug="test-form-definition",
-            configuration={
-                "display": "form",
-                "components": [{"label": "Existing field"}],
-            },
-        )
-
-        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
-        response = self.client.patch(
-            url,
-            data={
-                "previousText": "Different Previous Text",
-                "saveText": "Different Save Text",
-                "nextText": "Different Next Text",
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        definition.refresh_from_db()
-
-        self.assertEqual("Different Previous Text", definition.previous_text)
-        self.assertEqual("Different Save Text", definition.save_text)
-        self.assertEqual("Different Next Text", definition.next_text)
-
-    def test_create(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
-
-        url = reverse("api:formdefinition-list")
-        response = self.client.post(
-            url,
-            data={
-                "name": "Name",
-                "slug": "a-slug",
-                "configuration": {
-                    "display": "form",
-                    "components": [{"label": "New field"}],
-                },
-            },
-        )
-
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-        definition = FormDefinition.objects.get()
-
-        self.assertEqual("Name", definition.name)
-        self.assertEqual("a-slug", definition.slug)
-        self.assertEqual(
-            [{"label": "New field"}], definition.configuration["components"]
-        )
-
-    def test_create_form_definition_with_custom_texts(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
-
-        url = reverse("api:formdefinition-list")
-        response = self.client.post(
-            url,
-            data={
-                "name": "Name",
-                "slug": "a-slug",
-                "previousText": "Different Previous Text",
-                "saveText": "Different Save Text",
-                "nextText": "Different Next Text",
-                "configuration": {
-                    "display": "form",
-                    "components": [{"label": "New field"}],
-                },
-            },
-        )
-
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-        definition = FormDefinition.objects.get()
-
-        self.assertEqual("Name", definition.name)
-        self.assertEqual("a-slug", definition.slug)
-        self.assertEqual("Different Previous Text", definition.previous_text)
-        self.assertEqual("Different Save Text", definition.save_text)
-        self.assertEqual("Different Next Text", definition.next_text)
-        self.assertEqual(
-            [{"label": "New field"}], definition.configuration["components"]
-        )
 
     def test_create_no_camelcase_snakecase_conversion(self):
         staff_user = UserFactory.create(is_staff=True)
