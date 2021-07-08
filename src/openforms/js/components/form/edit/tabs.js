@@ -229,6 +229,7 @@ const DEFAULT_TABS = {
         BASIC,
         ADVANCED,
         VALIDATION,
+        REGISTRATION,
     ]
 };
 
@@ -240,6 +241,7 @@ const DEFAULT_TEXT_TABS = {
         TEXT_BASIC,
         ADVANCED,
         TEXT_VALIDATION,
+        REGISTRATION,
     ]
 };
 
