@@ -152,6 +152,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.demo.apps.DemoApp",
     "openforms.authentication.contrib.outage.apps.DemoOutageApp",
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
+    "openforms.authentication.contrib.digid.apps.DigidApp",
 ]
 
 MIDDLEWARE = [
@@ -633,3 +634,35 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
 ]
+
+
+#
+# DIGID
+#
+
+DIGID_METADATA = config("DIGID_METADATA", "")
+SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
+SSL_KEY_PATH = config("SSL_KEY_PATH", "")
+BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
+DIGID_SERVICE_ENTITY_ID = config(
+    "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
+)
+DIGID_SERVICE_NAME_NL = config("DIGID_SERVICE_NAME_NL", "")
+DIGID_SERVICE_NAME_EN = config("DIGID_SERVICE_NAME_EN", "")
+
+DIGID = {
+    "base_url": BASE_URL,
+    "entity_id": BASE_URL,
+    # This is the metadata of the **Identity provider** NOT our own!
+    "metadata_file": DIGID_METADATA,
+    # SSL/TLS key
+    "key_file": SSL_KEY_PATH,
+    "cert_file": SSL_CERTIFICATE_PATH,
+    "service_entity_id": DIGID_SERVICE_ENTITY_ID,
+    "attribute_consuming_service_index": "1",
+    "service_name": {
+        "nl": DIGID_SERVICE_NAME_NL,
+        "en": DIGID_SERVICE_NAME_EN,
+    },
+    "requested_attributes": ["bsn"],
+}
