@@ -14,7 +14,12 @@ from .serializers import AuthPluginSerializer
 )
 class PluginListView(ListMixin, APIView):
     """
-    List all prefill plugins that have been registered.
+    List all authentication plugins that have been registered.
+
+    Each authentication plugin is tied to a particular (third-party) authentication
+    provider. An authentication plugin usually provides a particular authentication
+    attribute, such as the ``BSN`` or Chamber of Commerce number. A plugin may provide
+    zero, one or multiple authentication attributes.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
