@@ -1,13 +1,19 @@
 import logging
 import traceback
-from typing import Optional
+from datetime import timedelta
+from typing import NoReturn, Optional
 
+from django.conf import settings
 from django.db import transaction
 
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission, SubmissionReport
 
 from ..celery import app
+from ..submissions.attachments import (
+    cleanup_submission_temporary_uploaded_files,
+    cleanup_unclaimed_temporary_uploaded_files,
+)
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
@@ -71,3 +77,15 @@ def generate_submission_report(task, submission_report_id: int) -> None:
 
     submission_report.task_id = task.request.id
     submission_report.save()
+
+
+@app.task()
+def cleanup_temporary_files_for(submission_id: int) -> NoReturn:
+    submission = Submission.objects.get(id=submission_id)
+    cleanup_submission_temporary_uploaded_files(submission)
+
+
+@app.task()
+def cleanup_unclaimed_temporary_files() -> NoReturn:
+    days = settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS
+    cleanup_unclaimed_temporary_uploaded_files(timedelta(days=days))

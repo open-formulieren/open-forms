@@ -1,20 +1,26 @@
 import os
 import uuid
+from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory
 from django.urls import reverse
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.submissions.api.utils import (
+from openforms.submissions.attachments import (
+    cleanup_unclaimed_temporary_uploaded_files,
     temporary_upload_from_url,
     temporary_upload_uuid_from_url,
 )
-from openforms.submissions.models import TemporaryFileUpload
-from openforms.submissions.tests.factories import TemporaryFileUploadFactory
+from openforms.submissions.models import SubmissionFileAttachment, TemporaryFileUpload
+from openforms.submissions.tests.factories import (
+    SubmissionFileAttachmentFactory,
+    TemporaryFileUploadFactory,
+)
 
 
 class TemporaryFileUploadTest(APITestCase):
@@ -131,3 +137,23 @@ class TemporaryFileUploadTest(APITestCase):
 
         for path in paths:
             self.assertFalse(os.path.exists(path))
+
+    def test_cleanup_unclaimed_temporary_uploaded_files(self):
+        with freeze_time("2020-06-01 10:00"):
+            remove_1 = TemporaryFileUploadFactory.create()
+
+        with freeze_time("2020-06-02 10:00"):
+            remove_2 = TemporaryFileUploadFactory.create()
+            keep_1 = TemporaryFileUploadFactory.create()
+            SubmissionFileAttachmentFactory.create(temporary_file=keep_1)
+
+        with freeze_time("2020-06-03 10:00"):
+            keep_2 = TemporaryFileUploadFactory.create()
+
+        with freeze_time("2020-06-04 10:00"):
+            keep_3 = TemporaryFileUploadFactory.create()
+            cleanup_unclaimed_temporary_uploaded_files(timedelta(days=1))
+
+        actual = list(TemporaryFileUpload.objects.all())
+        # expect the unclaimed & older uploads to be deleted
+        self.assertEqual(actual, [keep_1, keep_2, keep_3])

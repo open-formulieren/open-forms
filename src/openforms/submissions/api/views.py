@@ -13,7 +13,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import SubmissionReport, TemporaryFileUpload
+from ..models import SubmissionFileAttachment, SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
 from .renderers import PDFRenderer
 from .serializers import ReportStatusSerializer, TemporaryFileUploadSerializer
@@ -142,3 +142,24 @@ class TemporaryFileView(GenericAPIView):
         upload = self.get_object()
         upload.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# TODO api docs
+class SubmissionFileAttachmentView(GenericAPIView):
+    authentication_classes = []
+    # TODO enable throttle (same as elsewhere?)
+    throttle_classes = []
+
+    queryset = SubmissionFileAttachment.objects.all()
+    lookup_field = "uuid"
+
+    def get(self, request, *args, **kwargs):
+        # TODO access control? uuid enough?
+        attachment = self.get_object()
+        return sendfile(
+            request,
+            attachment.content.path,
+            attachment=True,
+            attachment_filename=attachment.orginal_name,
+            mimetype=attachment.content_type,
+        )

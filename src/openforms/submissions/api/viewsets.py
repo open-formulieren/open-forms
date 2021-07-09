@@ -15,11 +15,13 @@ from rest_framework.response import Response
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.registrations.tasks import (
+    cleanup_temporary_files_for,
     generate_submission_report,
     register_submission,
 )
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ..attachments import attach_uploads_to_submission_step
 from ..models import Submission, SubmissionReport, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..tokens import token_generator
@@ -127,6 +129,9 @@ class SubmissionViewSet(
                 submission_report.id
             ) | register_submission.si(submission.id)
             chain.delay()
+
+            # this can run any time
+            cleanup_temporary_files_for.delay(submission.id)
 
         transaction.on_commit(on_submission_commit)
 
@@ -264,6 +269,8 @@ class SubmissionStepViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        attach_uploads_to_submission_step(instance)
 
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to

@@ -5,6 +5,8 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
+from django.test import TestCase
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -15,7 +17,17 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from .factories import SubmissionFactory, SubmissionStepFactory
+from ..attachments import (
+    attach_uploads_to_submission_step,
+    cleanup_submission_temporary_uploaded_files,
+    resolve_uploads_from_data,
+)
+from ..models import SubmissionFileAttachment
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    TemporaryFileUploadFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -178,3 +190,101 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # Check that the data has not been converted to snake case
         self.assertIn("countryOfResidence", saved_data)
         self.assertNotIn("country_of_residence", saved_data)
+
+
+class SubmissionAttachmentTest(TestCase):
+    def test_resolve_uploads_from_formio_data(self):
+        upload = TemporaryFileUploadFactory.create()
+        data = {
+            "my_normal_key": "foo",
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ],
+        }
+        components = [
+            {"key": "my_normal_key", "type": "text"},
+            {"key": "my_file", "type": "file"},
+        ]
+        actual = resolve_uploads_from_data(components, data)
+        self.assertEqual(actual, {"my_file": (components[1], [upload])})
+
+        # cleanup tested elsewhere
+        upload.delete()
+
+    def test_attach_uploads_to_submission_step(self):
+        upload = TemporaryFileUploadFactory.create(file_name="my-image.jpg")
+        data = {
+            "my_normal_key": "foo",
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ],
+        }
+        components = [
+            {"key": "my_normal_key", "type": "text"},
+            {"key": "my_file", "type": "file"},
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0][1], True)  # created new
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
+
+        attachment = submission_step.attachments.get()
+        self.assertEqual(attachment.form_key, "my_file")
+        self.assertEqual(attachment.original_name, "my-image.jpg")
+        self.assertEqual(attachment.content.read(), b"content")
+        self.assertEqual(attachment.content_type, upload.content_type)
+        self.assertEqual(attachment.temporary_file, upload)
+
+        # test attaching again is idempotent
+        result = attach_uploads_to_submission_step(submission_step)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0][1], False)  # not created
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
+
+        # test cleanup
+        cleanup_submission_temporary_uploaded_files(submission_step.submission)
+        attachment.refresh_from_db()
+        self.assertEqual(attachment.temporary_file, None)
+        # verify the new FileField has its own content
+        self.assertEqual(attachment.content.read(), b"content")
+
+        attachment.delete()
