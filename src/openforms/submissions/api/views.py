@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
@@ -5,13 +7,16 @@ from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from ..models import SubmissionReport
+from ..models import SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
 from .renderers import PDFRenderer
-from .serializers import ReportStatusSerializer
+from .serializers import ReportStatusSerializer, TemporaryFileUploadSerializer
 
 
 class RetrieveReportBaseView(GenericAPIView):
@@ -84,3 +89,56 @@ class DownloadSubmissionReportView(RetrieveReportBaseView):
         filename = submission_report.content.path
         sendfile_options = self.get_sendfile_opts()
         return sendfile(request, filename, **sendfile_options)
+
+
+# TODO api docs
+class TemporaryFileUploadView(APIView):
+    parser_classes = [MultiPartParser]
+    serializer_class = TemporaryFileUploadSerializer
+    authentication_classes = []
+    # TODO enable throttle (same as elsewhere?)
+    throttle_classes = []
+
+    def post(self, request, *args, **kwargs):
+        # TODO check require_valid_submission (??) and see if we are a human and active
+        file = self.request.data["file"]
+
+        # trim name part if necessary but keep the extension
+        name, ext = os.path.splitext(file.name)
+        name = name[: 255 - len(ext)] + ext
+
+        upload = TemporaryFileUpload.objects.create(
+            content=file,
+            file_name=name,
+            content_type=file.content_type,
+        )
+        return Response(
+            self.serializer_class(instance=upload, context={"request": request}).data
+        )
+
+
+# TODO api docs
+class TemporaryFileView(GenericAPIView):
+    authentication_classes = []
+    # TODO enable throttle (same as elsewhere?)
+    throttle_classes = []
+
+    queryset = TemporaryFileUpload.objects.all()
+    lookup_field = "uuid"
+
+    def get(self, request, *args, **kwargs):
+        # TODO access control? uuid enough?
+        upload = self.get_object()
+        return sendfile(
+            request,
+            upload.content.path,
+            attachment=True,
+            attachment_filename=upload.file_name,
+            mimetype=upload.content_type,
+        )
+
+    def delete(self, request, *args, **kwargs):
+        # TODO access control? uuid enough?
+        upload = self.get_object()
+        upload.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

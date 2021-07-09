@@ -5,7 +5,7 @@ from privates.admin import PrivateMediaMixin
 
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
-from .models import Submission, SubmissionReport, SubmissionStep
+from .models import Submission, SubmissionReport, SubmissionStep, TemporaryFileUpload
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -83,4 +83,22 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
     private_media_fields = ("content",)
 
     def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(TemporaryFileUpload)
+class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = ("uuid", "file_name", "content_type", "created_on")
+    search_fields = (
+        "uuid",
+        "file_name",
+    )
+    date_hierarchy = "created_on"
+
+    private_media_fields = ("content",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
         return False

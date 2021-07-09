@@ -7,13 +7,14 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 
 from ...forms.validators import validate_not_maintainance_mode
-from ..models import Submission, SubmissionStep
+from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from .fields import NestedRelatedField
 
 logger = logging.getLogger(__name__)
@@ -243,3 +244,41 @@ class ReportStatusSerializer(serializers.Serializer):
             "Status of the background task responsible for generating the submission data PDF."
         ),
     )
+
+
+class TemporaryFileUploadSerializer(serializers.Serializer):
+    """
+    https://help.form.io/integrations/filestorage/#url
+
+    {
+        url: 'http://link.to/file',
+        name: 'The_Name_Of_The_File.doc',
+        size: 1000
+    }
+    """
+
+    url = serializers.SerializerMethodField(
+        label=_("Url"), source="get_url", read_only=True
+    )
+    name = serializers.URLField(
+        label=_("File name"), source="file_name", read_only=True
+    )
+    size = serializers.IntegerField(
+        label=_("File size"), source="content.size", read_only=True
+    )
+
+    class Meta:
+        model = TemporaryFileUpload
+        fields = (
+            "url",
+            "name",
+            "size",
+        )
+
+    def get_url(self, instance):
+        request = self.context["request"]
+        return reverse(
+            "api:submissions:temporary-file",
+            kwargs={"uuid": instance.uuid},
+            request=request,
+        )

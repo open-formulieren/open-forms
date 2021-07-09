@@ -1,6 +1,8 @@
 import logging
+import os.path
 import uuid
 from dataclasses import dataclass
+from datetime import date
 from typing import List, Optional
 
 from django.contrib.postgres.fields import JSONField
@@ -389,3 +391,54 @@ class SubmissionReport(models.Model):
             return
 
         return AsyncResult(id=self.task_id)
+
+
+def fmt_upload_to(prefix, instance, filename):
+    name, ext = os.path.splitext(filename)
+    return "{p}/{d}/{u}{e}".format(
+        p=prefix, d=date.today().strftime("%Y/%m/%d"), u=instance.uuid, e=ext
+    )
+
+
+def temporary_file_upload_to(instance, filename):
+    return fmt_upload_to("temporary-uploads", instance, filename)
+
+
+def submission_file_upload_to(instance, filename):
+    return fmt_upload_to("submission-uploads", instance, filename)
+
+
+class TemporaryFileUploadQuerySet(models.QuerySet):
+    # def select_prune(self, age: timedelta):
+    #     return self.filter(created_on__lt=timezone.now() - age)
+    #
+    # def prune(self, age: timedelta):
+    #     for tmp in self.select_prune(age):
+    #         tmp.delete()
+
+    def delete(self):
+        # overwrite the method so the admin etc delete properly
+        for tmp in self:
+            tmp.delete()
+
+
+class TemporaryFileUpload(models.Model):
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    content = PrivateMediaFileField(
+        verbose_name=_("content"),
+        upload_to=temporary_file_upload_to,
+        help_text=_("content of the file attachment."),
+    )
+    file_name = models.CharField(_("original name"), max_length=255)
+    content_type = models.CharField(_("content type"), max_length=255)
+    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
+
+    objects = TemporaryFileUploadQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _("temporary file upload")
+        verbose_name_plural = _("temporary file upload")
+
+    def delete(self, using=None, keep_parents=False):
+        self.content.delete(save=False)
+        super().delete(using=using, keep_parents=keep_parents)
