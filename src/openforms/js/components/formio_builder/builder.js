@@ -33,6 +33,7 @@ const BUILDER_OPTIONS = {
                 phoneNumber: true,
                 bsn: true,
                 postcode: true,
+                file: true,
             }
         },
         custom_layout: {

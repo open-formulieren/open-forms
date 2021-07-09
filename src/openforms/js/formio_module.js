@@ -7,6 +7,7 @@ import SignatureField from './components/form/signature';
 import PhoneNumberField from './components/form/phoneNumber';
 import BsnField from './components/form/bsn';
 import PostcodeField from "./components/form/postcode";
+import FileField from "./components/form/file";
 
 const FormIOModule = {
   components: {
@@ -19,6 +20,7 @@ const FormIOModule = {
     phoneNumber: PhoneNumberField,
     bsn: BsnField,
     postcode: PostcodeField,
+    file: FileField,
   },
 };
 
