@@ -15,17 +15,7 @@ class BSNNotPresentError(Exception):
     pass
 
 
-class GeneralAssertionConsumerServiceMixin:
-    def get_form_slug(self) -> str:
-        form_url = self.get_success_url()
-        form_path = urlparse(form_url).path
-        match = resolve(form_path)
-
-        return match.kwargs["slug"]
-
-
 class DigiDAssertionConsumerServiceView(
-    GeneralAssertionConsumerServiceMixin,
     BaseSaml2Backend,
     _DigiDAssertionConsumerServiceView,
 ):

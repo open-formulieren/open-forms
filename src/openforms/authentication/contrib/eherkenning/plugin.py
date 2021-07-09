@@ -17,9 +17,16 @@ class EHerkenningAuthentication(BasePlugin):
 
     def start_login(self, request, form, form_url):
         """Redirect to the /eherkenning/login endpoint to start the authentication"""
-        url = reverse("eherkenning:login", request=request)
-        params = {"next": form_url}
-        url = f"{url}?{urlencode(params)}"
+        login_url = reverse("eherkenning:login", request=request)
+
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        return_url = f"{auth_return_url}?next={form_url}"
+
+        auth_return_params = {"next": return_url}
+        url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
 
     def handle_return(self, request, form):
