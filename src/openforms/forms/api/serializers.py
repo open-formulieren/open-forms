@@ -16,6 +16,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
+    previous_text = serializers.CharField(source="get_previous_text")
+    save_text = serializers.CharField(source="get_save_text")
+    next_text = serializers.CharField(source="get_next_text")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -41,15 +44,6 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
                 "read_only": True,
             }
         }
-
-    def to_representation(self, instance):
-        representation = super(MinimalFormStepSerializer, self).to_representation(
-            instance
-        )
-        representation["previous_text"] = instance.get_previous_text()
-        representation["save_text"] = instance.get_save_text()
-        representation["next_text"] = instance.get_next_text()
-        return representation
 
 
 class FormSerializer(serializers.ModelSerializer):

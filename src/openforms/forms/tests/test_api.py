@@ -229,7 +229,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["maintenanceMode"], False)
 
-    def test_text_field_values_returned_through_api(self):
+    def test_global_config_text_field_values_returned_through_api(self):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
@@ -244,7 +244,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.json()["changeText"], _("Change"))
         self.assertEqual(response.json()["confirmText"], _("Confirm"))
 
-    def test_steps_text_field_values_returned_through_api(self):
+    def test_global_config_steps_text_field_values_returned_through_api(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
         self.user.is_staff = True
@@ -259,6 +259,47 @@ class FormsAPITests(APITestCase):
         self.assertEqual(step_data["previousText"], _("Previous page"))
         self.assertEqual(step_data["saveText"], _("Save current information"))
         self.assertEqual(step_data["nextText"], _("Next"))
+
+    def test_overridden_text_field_values_returned_through_api(self):
+        form = FormFactory.create(
+            begin_text="Overridden Begin Text",
+            previous_text="Overridden Previous Text",
+            change_text="Overridden Change Text",
+            confirm_text="Overridden Confirm Text",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["beginText"], _("Overridden Begin Text"))
+        self.assertEqual(response.json()["previousText"], _("Overridden Previous Text"))
+        self.assertEqual(response.json()["changeText"], _("Overridden Change Text"))
+        self.assertEqual(response.json()["confirmText"], _("Overridden Confirm Text"))
+
+    def test_overridden_steps_text_field_values_returned_through_api(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            previous_text="Overridden Previous Text",
+            save_text="Overridden Save Text",
+            next_text="Overridden Next Text",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        step_data = response.json()["steps"][0]
+        self.assertEqual(step_data["previousText"], _("Overridden Previous Text"))
+        self.assertEqual(step_data["saveText"], _("Overridden Save Text"))
+        self.assertEqual(step_data["nextText"], _("Overridden Next Text"))
 
     def test_create_form_in_maintenance_mode_successful(self):
         self.user.is_staff = True
