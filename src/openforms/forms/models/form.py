@@ -66,7 +66,7 @@ class Form(models.Model):
         )
     )
     begin_text = models.CharField(
-        _("Begin Text"),
+        _("begin text"),
         max_length=50,
         blank=True,
         help_text=_(
@@ -76,7 +76,7 @@ class Form(models.Model):
         ),
     )
     previous_text = models.CharField(
-        _("Previous Text"),
+        _("previous text"),
         max_length=50,
         blank=True,
         help_text=_(
@@ -86,7 +86,7 @@ class Form(models.Model):
         ),
     )
     change_text = models.CharField(
-        _("Change Text"),
+        _("change text"),
         max_length=50,
         blank=True,
         help_text=_(
@@ -96,7 +96,7 @@ class Form(models.Model):
         ),
     )
     confirm_text = models.CharField(
-        _("Confirm Text"),
+        _("confirm text"),
         max_length=50,
         blank=True,
         help_text=_(

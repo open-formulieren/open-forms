@@ -73,7 +73,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_previous_text = models.CharField(
-        _("Form Previous Text"),
+        _("form previous text"),
         max_length=50,
         default=_("Previous page"),
         help_text=_(
@@ -82,7 +82,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_change_text = models.CharField(
-        _("Form Change Text"),
+        _("form change text"),
         max_length=50,
         default=_("Change"),
         help_text=_(
@@ -91,7 +91,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_confirm_text = models.CharField(
-        _("Form Confirm Text"),
+        _("form confirm text"),
         max_length=50,
         default=_("Confirm"),
         help_text=_(
@@ -100,7 +100,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_begin_text = models.CharField(
-        _("Form Begin Text"),
+        _("form begin text"),
         max_length=50,
         default=_("Begin form"),
         help_text=_(
@@ -110,7 +110,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_step_previous_text = models.CharField(
-        _("Form Step Previous Text"),
+        _("form step previous text"),
         max_length=50,
         default=_("Previous page"),
         help_text=_(
@@ -118,7 +118,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_step_save_text = models.CharField(
-        _("Form Step Save Text"),
+        _("form step save text"),
         max_length=50,
         default=_("Save current information"),
         help_text=_(
@@ -126,7 +126,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_step_next_text = models.CharField(
-        _("Form Step Next Text"),
+        _("form step next text"),
         max_length=50,
         default=_("Next"),
         help_text=_(
