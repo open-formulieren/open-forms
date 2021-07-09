@@ -4,8 +4,6 @@ import os
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-from celery.schedules import schedule
-
 import sentry_sdk
 from corsheaders.defaults import default_headers as default_cors_headers
 
@@ -480,15 +478,6 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:63
 
 # Add a 30 minutes timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 30 * 60
-
-
-CELERY_BEAT_SCHEDULE = {
-    "clear-session-store": {
-        "task": "openforms.utils.tasks.clear_session_store",
-        "schedule": schedule(run_every=305),  # 5 minutes and 5 seconds
-    },
-}
-
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
 # the drawback that tasks should be idempotent (if they execute partially, the mutations
