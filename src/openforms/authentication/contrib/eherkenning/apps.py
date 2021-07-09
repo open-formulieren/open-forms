@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class EHerkenningApp(AppConfig):
     name = "openforms.authentication.contrib.eherkenning"
-    label = "prefill.eherkenning"
+    label = "prefill_eherkenning"
     verbose_name = _("eHerkenning authentication plugin")
 
     def ready(self):

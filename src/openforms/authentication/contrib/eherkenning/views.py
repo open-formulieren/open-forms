@@ -9,17 +9,12 @@ from digid_eherkenning.views import (
 )
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from openforms.authentication.contrib.digid.views import (
-    GeneralAssertionConsumerServiceMixin,
-)
-
 
 class KVKNotPresentError(Exception):
     pass
 
 
 class eHerkenningAssertionConsumerServiceView(
-    GeneralAssertionConsumerServiceMixin,
     BaseSaml2Backend,
     _eHerkenningAssertionConsumerServiceView,
 ):
@@ -68,11 +63,4 @@ class eHerkenningAssertionConsumerServiceView(
 
         request.session["kvk"] = kvk
 
-        # This is the URL of the form for which we are authenticating
-        form_url = self.get_success_url()
-        auth_plugin_url = reverse(
-            "authentication:return",
-            kwargs={"slug": self.get_form_slug(), "plugin_id": "eherkenning"},
-        )
-
-        return HttpResponseRedirect(f"{auth_plugin_url}?next={form_url}")
+        return HttpResponseRedirect(self.get_success_url())
