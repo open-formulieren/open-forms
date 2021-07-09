@@ -4,7 +4,7 @@ import os
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-from celery.schedules import crontab, schedule
+from celery.schedules import crontab
 
 import sentry_sdk
 from corsheaders.defaults import default_headers as default_cors_headers
@@ -485,8 +485,9 @@ CELERY_TASK_SOFT_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     "clear-session-store": {
         "task": "openforms.utils.tasks.clear_session_store",
-        "schedule": schedule(run_every=305),  # 5 minutes and 5 seconds
-        # "schedule": crontab(minute=0, hour=0), # Run daily at midnight
+        # https://docs.celeryproject.org/en/v4.4.7/userguide/periodic-tasks.html#crontab-schedules
+        # Run daily at midnight
+        "schedule": crontab(minute=0, hour=0),
     },
 }
 
