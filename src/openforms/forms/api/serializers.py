@@ -14,7 +14,7 @@ from ..models import Form, FormDefinition, FormStep
 
 class ButtonTextSerializer(serializers.Serializer):
     resolved = serializers.SerializerMethodField()
-    value = serializers.CharField()
+    value = serializers.CharField(allow_blank=True)
 
     def __init__(self, resolved_getter=None, raw_field=None, *args, **kwargs):
         kwargs.setdefault("source", "*")
@@ -40,9 +40,9 @@ class ButtonTextSerializer(serializers.Serializer):
 
 
 class FormStepLiteralsSerializer(serializers.Serializer):
-    previous_text = ButtonTextSerializer(raw_field="previous_text")
-    save_text = ButtonTextSerializer(raw_field="save_text")
-    next_text = ButtonTextSerializer(raw_field="next_text")
+    previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
+    save_text = ButtonTextSerializer(raw_field="save_text", required=False)
+    next_text = ButtonTextSerializer(raw_field="next_text", required=False)
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
@@ -76,10 +76,10 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
 
 
 class FormLiteralsSerializer(serializers.Serializer):
-    previous_text = ButtonTextSerializer(raw_field="previous_text")
-    begin_text = ButtonTextSerializer(raw_field="begin_text")
-    change_text = ButtonTextSerializer(raw_field="change_text")
-    confirm_text = ButtonTextSerializer(raw_field="confirm_text")
+    previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
+    begin_text = ButtonTextSerializer(raw_field="begin_text", required=False)
+    change_text = ButtonTextSerializer(raw_field="change_text", required=False)
+    confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
 class FormSerializer(serializers.ModelSerializer):
