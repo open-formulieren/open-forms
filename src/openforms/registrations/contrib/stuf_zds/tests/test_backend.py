@@ -351,8 +351,8 @@ class StufZDSPluginTests(StufTestBase):
                     "key": "extra",
                 },
             ],
-            form_kwargs={"name": "my-form"},
-            submission_kwargs={"bsn": "111222333"},
+            form__name="my-form",
+            bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",

@@ -44,7 +44,7 @@ def apply_data_mapping(
     example:
         # a component annotated with a meta-attribute.
         component = {
-            "key": "firstname,
+            "key": "firstname",
             "my_plugin_system.some_attribute": XYZ.persoon_voornaam,
         }
 

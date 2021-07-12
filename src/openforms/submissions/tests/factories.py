@@ -18,12 +18,12 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Submission
 
-    @staticmethod
+    @classmethod
     def from_components(
+        cls,
         components_list: List[dict],
         submitted_data: dict = None,
-        form_kwargs: dict = None,
-        submission_kwargs: dict = None,
+        **kwargs,
     ) -> Submission:
         """
         generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep tree from a list of formio components
@@ -36,8 +36,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         if submission_kwargs is None:
             submission_kwargs = dict()
 
-        form = FormFactory.create(**form_kwargs)
-        submission = SubmissionFactory.create(form=form, **submission_kwargs)
+        submission = cls.create(**kwargs)
+        form = submission.form
 
         components = list()
 

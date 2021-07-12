@@ -10,8 +10,8 @@ from openforms.registrations.constants import (
     REGISTRATION_ATTRIBUTE,
     RegistrationAttribute,
 )
-from openforms.registrations.contrib.stuf_zds.client import fmt_soap_date
-from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
+from .client import fmt_soap_date
+from .models import StufZDSConfig
 from openforms.registrations.registry import register
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport

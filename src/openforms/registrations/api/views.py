@@ -15,11 +15,14 @@ from .serializers import (
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available prefill plugins")),
+    get=extend_schema(summary=_("List available registration plugins")),
 )
 class PluginListView(ListMixin, APIView):
     """
-    List all registration plugins that have been registered.
+    List all available registration plugins.
+    
+    Registration plugins are responsible for the implementation details to register the form submission
+    with various backends, such as "API's voor zaakgericht werken", StUF-ZDS and others.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
