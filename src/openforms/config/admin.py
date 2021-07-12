@@ -23,6 +23,20 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Button Texts"),
+            {
+                "fields": (
+                    "form_begin_text",
+                    "form_previous_text",
+                    "form_change_text",
+                    "form_confirm_text",
+                    "form_step_previous_text",
+                    "form_step_save_text",
+                    "form_step_next_text",
+                ),
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),
@@ -32,21 +46,6 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "default_test_bsn",
                     "default_test_kvk",
                     "allow_empty_initiator",
-                ),
-            },
-        ),
-        (
-            _("Button Texts"),
-            {
-                "classes": ("collapse",),
-                "fields": (
-                    "form_begin_text",
-                    "form_previous_text",
-                    "form_change_text",
-                    "form_confirm_text",
-                    "form_step_previous_text",
-                    "form_step_save_text",
-                    "form_step_next_text",
                 ),
             },
         ),
