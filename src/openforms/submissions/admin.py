@@ -5,7 +5,13 @@ from privates.admin import PrivateMediaMixin
 
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
-from .models import Submission, SubmissionReport, SubmissionStep, TemporaryFileUpload
+from .models import (
+    Submission,
+    SubmissionReport,
+    SubmissionStep,
+    TemporaryFileUpload,
+    SubmissionFileAttachment,
+)
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -39,6 +45,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         submission = self.get_object(request, object_id)
         extra_context = {
             "data": submission.data_with_component_type,
+            "attachments": submission.get_merged_attachments(),
             "image_components": IMAGE_COMPONENTS,
         }
         return super().change_view(
@@ -101,4 +108,27 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(SubmissionFileAttachment)
+class SubmissionFileAttachmentInlineAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    fields = (
+        "uuid",
+        "form_key",
+        "file_name",
+        "original_name",
+        "content",
+    )
+    date_hierarchy = "created_on"
+
+    private_media_fields = ("content",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         return False
