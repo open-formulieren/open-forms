@@ -375,7 +375,20 @@ class SubmissionReport(models.Model):
 
     def generate_submission_report_pdf(self) -> None:
         form = self.submission.form
-        submission_data = self.submission.get_merged_data()
+
+        submission_data = dict()
+        attachment_data = self.submission.get_merged_attachments()
+
+        for key, info in self.submission.get_merged_data_with_component_type().items():
+            if info["type"] == "file":
+                files = attachment_data.get(key)
+                if files:
+                    submission_data[key] = _("attachment: %s") % (", ".join(file.get_display_name() for file in files))
+                else:
+                    submission_data[key] = _("attachment")
+            else:
+                # more here? like getComponentValue() in the SDK?
+                submission_data[key] = info["value"]
 
         html_report = render(
             request=None,
@@ -537,3 +550,6 @@ class SubmissionFileAttachment(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.content.delete(save=False)
         super().delete(using=using, keep_parents=keep_parents)
+
+    def get_display_name(self):
+        return self.file_name or self.original_name
