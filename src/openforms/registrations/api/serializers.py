@@ -4,19 +4,11 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.plugins.api.serializers import PluginBaseSerializer
 
-class PluginSerializer(serializers.Serializer):
-    # TODO use shared base class from plugins app in other PR
-    id = serializers.CharField(
-        source="identifier",
-        label=_("ID"),
-        help_text=_("The unique plugin identifier"),
-    )
-    label = serializers.CharField(
-        source="verbose_name",
-        label=_("Label"),
-        help_text=_("The human-readable name for a plugin."),
-    )
+
+class RegistrationPluginSerializer(PluginBaseSerializer):
+    pass
 
 
 @dataclass
@@ -28,7 +20,7 @@ class ChoiceWrapper:
         self.label = self.choice[1]
 
 
-class AttributeSerializer(serializers.Serializer):
+class RegistrationAttributeSerializer(serializers.Serializer):
     id = serializers.CharField(
         source="value",
         label=_("ID"),

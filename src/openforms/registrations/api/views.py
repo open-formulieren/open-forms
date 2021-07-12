@@ -7,7 +7,11 @@ from rest_framework.views import APIView
 
 from ..constants import RegistrationAttribute
 from ..registry import register
-from .serializers import AttributeSerializer, ChoiceWrapper, PluginSerializer
+from .serializers import (
+    ChoiceWrapper,
+    RegistrationAttributeSerializer,
+    RegistrationPluginSerializer,
+)
 
 
 # TODO use shared mixin from utils app in other PR
@@ -35,7 +39,7 @@ class PluginListView(ListMixin, APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PluginSerializer
+    serializer_class = RegistrationPluginSerializer
 
     def get_objects(self):
         return list(register)
@@ -51,7 +55,7 @@ class AllAttributesListView(ListMixin, APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = AttributeSerializer
+    serializer_class = RegistrationAttributeSerializer
 
     def get_objects(self):
         choices = RegistrationAttribute.choices

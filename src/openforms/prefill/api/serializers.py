@@ -26,7 +26,7 @@ class ChoiceWrapper:
         self.label = self.choice[1]
 
 
-class AttributeSerializer(serializers.Serializer):
+class PrefillAttributeSerializer(serializers.Serializer):
     id = serializers.CharField(
         source="value",
         label=_("ID"),
