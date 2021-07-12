@@ -28,13 +28,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         """
         generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep tree from a list of formio components
 
-        optionally: supply a dictionary with data (keys must match the component keys)
-        optionally: supply kwargs for the Form and Submission factories (name, bsn etc)
+        remember to generate from privates.test import temp_private_root
         """
-        if form_kwargs is None:
-            form_kwargs = dict()
-        if submission_kwargs is None:
-            submission_kwargs = dict()
 
         submission = cls.create(**kwargs)
         form = submission.form
@@ -67,7 +62,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         return submission
 
     @staticmethod
-    def from_data(data_dict, form_kwargs: dict = None, submission_kwargs: dict = None):
+    def from_data(data_dict, **kwargs: dict):
         components = [
             {
                 "key": key,
@@ -77,8 +72,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         return SubmissionFactory.from_components(
             components,
             data_dict,
-            form_kwargs=form_kwargs,
-            submission_kwargs=submission_kwargs,
+            **kwargs,
         )
 
 

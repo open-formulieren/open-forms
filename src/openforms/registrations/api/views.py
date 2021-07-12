@@ -20,7 +20,7 @@ from .serializers import (
 class PluginListView(ListMixin, APIView):
     """
     List all available registration plugins.
-    
+
     Registration plugins are responsible for the implementation details to register the form submission
     with various backends, such as "API's voor zaakgericht werken", StUF-ZDS and others.
     """

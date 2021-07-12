@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from djchoices import ChoiceItem, DjangoChoices
+from privates.test import temp_private_root
 
 from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
@@ -20,6 +21,7 @@ class TestAttribute(DjangoChoices):
     )
 
 
+@temp_private_root()
 class MappingTests(TestCase):
     def test_kitchensink(self):
         """
@@ -81,13 +83,13 @@ class MappingTests(TestCase):
                     },
                 },
             ],
-            form_kwargs=dict(name="Foo Form"),
-            submission_kwargs=dict(bsn="111222333"),
             submitted_data={
                 "voornamen": "Foo",
                 "geslachtsnaam": "Bar",
                 "geslacht": "v",
             },
+            form__name="Foo Form",
+            bsn="111222333",
         )
 
         actual = apply_data_mapping(
@@ -204,9 +206,9 @@ class MappingTests(TestCase):
             [
                 {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
             ],
-            form_kwargs={"name": "BarForm"},
-            submission_kwargs={"bsn": "111222333"},
             submitted_data={"voornaam": "Foo"},
+            form__name="BarForm",
+            bsn="111222333",
         )
         actual = apply_data_mapping(submission, mapping, "mapping_attr")
         expected = {

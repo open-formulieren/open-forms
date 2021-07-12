@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import NoReturn, Optional
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -15,9 +15,7 @@ class DemoRegistration(BasePlugin):
     verbose_name = _("Demo - print to console")
     configuration_options = DemoOptionsSerializer
 
-    def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         print(submission)
         print(options["extra_line"])
 
@@ -27,7 +25,5 @@ class DemoFailRegistration(BasePlugin):
     verbose_name = _("Demo - fail registration")
     configuration_options = DemoOptionsSerializer
 
-    def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")

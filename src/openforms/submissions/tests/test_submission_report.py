@@ -211,6 +211,7 @@ class DownloadSubmissionReportTests(SubmissionsMixin, TestCase):
         self.assertEqual("SUCCESS", submission_report.get_celery_task().status)
 
 
+@temp_private_root()
 class DeleteReportTests(TestCase):
     def test_file_deletion(self):
         submission_report = SubmissionReportFactory.create()

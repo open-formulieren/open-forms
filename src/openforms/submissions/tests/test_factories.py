@@ -1,8 +1,11 @@
 from django.test import TestCase
 
+from privates.test import temp_private_root
+
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
+@temp_private_root()
 class SubmissionFactoryTests(TestCase):
     def test_from_components__simple(self):
         submission = SubmissionFactory.from_components(
@@ -77,12 +80,8 @@ class SubmissionFactoryTests(TestCase):
                     "key": "bar",
                 },
             ],
-            form_kwargs={
-                "name": "MyForm",
-            },
-            submission_kwargs={
-                "bsn": "111222333",
-            },
+            form__name="MyForm",
+            bsn="111222333",
         )
 
         self.assertEqual(submission.bsn, "111222333")
@@ -109,12 +108,8 @@ class SubmissionFactoryTests(TestCase):
                 "foo": 1,
                 "bar": 2,
             },
-            form_kwargs={
-                "name": "MyForm",
-            },
-            submission_kwargs={
-                "bsn": "111222333",
-            },
+            form__name="MyForm",
+            bsn="111222333",
         )
 
         actual = submission.get_merged_data()

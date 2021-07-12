@@ -51,13 +51,13 @@ class ZGWBackendTests(TestCase):
                     },
                 },
             ],
-            submission_kwargs={"bsn": "111222333"},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
+            bsn="111222333",
         )
 
         zgw_form_options = dict(
