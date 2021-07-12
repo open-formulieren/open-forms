@@ -239,10 +239,15 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["beginText"], _("Begin form"))
-        self.assertEqual(response.json()["previousText"], _("Previous page"))
-        self.assertEqual(response.json()["changeText"], _("Change"))
-        self.assertEqual(response.json()["confirmText"], _("Confirm"))
+        literals_data = response.json()["literals"]
+        self.assertEqual(literals_data["beginText"]["resolved"], _("Begin form"))
+        self.assertEqual(literals_data["beginText"]["value"], "")
+        self.assertEqual(literals_data["previousText"]["resolved"], _("Previous page"))
+        self.assertEqual(literals_data["previousText"]["value"], "")
+        self.assertEqual(literals_data["changeText"]["resolved"], _("Change"))
+        self.assertEqual(literals_data["changeText"]["value"], "")
+        self.assertEqual(literals_data["confirmText"]["resolved"], _("Confirm"))
+        self.assertEqual(literals_data["confirmText"]["value"], "")
 
     def test_global_config_steps_text_field_values_returned_through_api(self):
         form = FormFactory.create()
@@ -255,10 +260,13 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        step_data = response.json()["steps"][0]
-        self.assertEqual(step_data["previousText"], _("Previous page"))
-        self.assertEqual(step_data["saveText"], _("Save current information"))
-        self.assertEqual(step_data["nextText"], _("Next"))
+        step_literals_data = response.json()["steps"][0]['literals']
+        self.assertEqual(step_literals_data["previousText"]["resolved"], _("Previous page"))
+        self.assertEqual(step_literals_data["previousText"]["value"], "")
+        self.assertEqual(step_literals_data["saveText"]["resolved"], _("Save current information"))
+        self.assertEqual(step_literals_data["saveText"]["value"], "")
+        self.assertEqual(step_literals_data["nextText"]["resolved"], _("Next"))
+        self.assertEqual(step_literals_data["nextText"]["value"], "")
 
     def test_overridden_text_field_values_returned_through_api(self):
         form = FormFactory.create(
@@ -275,10 +283,15 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["beginText"], _("Overridden Begin Text"))
-        self.assertEqual(response.json()["previousText"], _("Overridden Previous Text"))
-        self.assertEqual(response.json()["changeText"], _("Overridden Change Text"))
-        self.assertEqual(response.json()["confirmText"], _("Overridden Confirm Text"))
+        literals_data = response.json()["literals"]
+        self.assertEqual(literals_data["beginText"]["resolved"], _("Overridden Begin Text"))
+        self.assertEqual(literals_data["beginText"]["value"], _("Overridden Begin Text"))
+        self.assertEqual(literals_data["previousText"]["resolved"], _("Overridden Previous Text"))
+        self.assertEqual(literals_data["previousText"]["value"], _("Overridden Previous Text"))
+        self.assertEqual(literals_data["changeText"]["resolved"], _("Overridden Change Text"))
+        self.assertEqual(literals_data["changeText"]["value"], _("Overridden Change Text"))
+        self.assertEqual(literals_data["confirmText"]["resolved"], _("Overridden Confirm Text"))
+        self.assertEqual(literals_data["confirmText"]["value"], _("Overridden Confirm Text"))
 
     def test_overridden_steps_text_field_values_returned_through_api(self):
         form = FormFactory.create()
@@ -296,10 +309,13 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        step_data = response.json()["steps"][0]
-        self.assertEqual(step_data["previousText"], _("Overridden Previous Text"))
-        self.assertEqual(step_data["saveText"], _("Overridden Save Text"))
-        self.assertEqual(step_data["nextText"], _("Overridden Next Text"))
+        step_literals_data = response.json()["steps"][0]['literals']
+        self.assertEqual(step_literals_data["previousText"]["resolved"], _("Overridden Previous Text"))
+        self.assertEqual(step_literals_data["previousText"]["value"], _("Overridden Previous Text"))
+        self.assertEqual(step_literals_data["saveText"]["resolved"], _("Overridden Save Text"))
+        self.assertEqual(step_literals_data["saveText"]["value"], _("Overridden Save Text"))
+        self.assertEqual(step_literals_data["nextText"]["resolved"], _("Overridden Next Text"))
+        self.assertEqual(step_literals_data["nextText"]["value"], _("Overridden Next Text"))
 
     def test_create_form_in_maintenance_mode_successful(self):
         self.user.is_staff = True
@@ -326,10 +342,20 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
-            "beginText": "Different Begin Text",
-            "previousText": "Different Previous Text",
-            "changeText": "Different Change Text",
-            "confirmText": "Different Confirm Text",
+            "literals": {
+                "beginText": {
+                    "value": "Different Begin Text"
+                },
+                "previousText": {
+                    "value": "Different Previous Text"
+                },
+                "changeText": {
+                    "value": "Different Change Text"
+                },
+                "confirmText": {
+                    "value": "Different Confirm Text"
+                },
+            }
         }
         response = self.client.post(url, data=data)
 
@@ -365,10 +391,20 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "beginText": "Different Begin Text",
-            "previousText": "Different Previous Text",
-            "changeText": "Different Change Text",
-            "confirmText": "Different Confirm Text",
+            "literals": {
+                "beginText": {
+                    "value": "Different Begin Text"
+                },
+                "previousText": {
+                    "value": "Different Previous Text"
+                },
+                "changeText": {
+                    "value": "Different Change Text"
+                },
+                "confirmText": {
+                    "value": "Different Confirm Text"
+                },
+            }
         }
         response = self.client.patch(url, data=data)
 
@@ -507,9 +543,17 @@ class FormsStepsAPITests(APITestCase):
         data = {
             "formDefinition": f"http://testserver{form_detail_url}",
             "index": 0,
-            "previous_text": "Different Previous Text",
-            "save_text": "Different Save Text",
-            "next_text": "Different Next Text",
+            "literals": {
+                "previousText": {
+                    "value": "Different Previous Text"
+                },
+                "saveText": {
+                    "value": "Different Save Text"
+                },
+                "nextText": {
+                    "value": "Different Next Text"
+                },
+            }
         }
         response = self.client.post(url, data=data)
 
@@ -604,9 +648,17 @@ class FormsStepsAPITests(APITestCase):
         data = {
             "formDefinition": f"http://testserver{form_detail_url}",
             "index": 0,
-            "previous_text": "Different Previous Text",
-            "save_text": "Different Save Text",
-            "next_text": "Different Next Text",
+            "literals": {
+                "previousText": {
+                    "value": "Different Previous Text"
+                },
+                "saveText": {
+                    "value": "Different Save Text"
+                },
+                "nextText": {
+                    "value": "Different Next Text"
+                },
+            }
         }
         response = self.client.put(url, data=data)
 
@@ -734,9 +786,17 @@ class FormsStepsAPITests(APITestCase):
         )
         data = {
             "formDefinition": f"http://testserver{form_detail_url}",
-            "previous_text": "Different Previous Text",
-            "save_text": "Different Save Text",
-            "next_text": "Different Next Text",
+            "literals": {
+                "previousText": {
+                    "value": "Different Previous Text"
+                },
+                "saveText": {
+                    "value": "Different Save Text"
+                },
+                "nextText": {
+                    "value": "Different Next Text"
+                },
+            }
         }
         response = self.client.patch(url, data=data)
 

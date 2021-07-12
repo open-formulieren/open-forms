@@ -49,7 +49,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
-    literals = FormStepLiteralsSerializer(source="*")
+    literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -92,7 +92,7 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
-    literals = FormLiteralsSerializer(source="*")
+    literals = FormLiteralsSerializer(source="*", required=False)
 
     class Meta:
         model = Form
@@ -214,7 +214,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
-    literals = FormStepLiteralsSerializer(source="*")
+    literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         source="*",
         view_name="api:form-steps-detail",
@@ -250,13 +250,6 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         validated_data["form"] = self.context["form"]
         return super().create(validated_data)
-
-    def to_representation(self, instance):
-        representation = super(FormStepSerializer, self).to_representation(instance)
-        representation["previous_text"] = instance.get_previous_text()
-        representation["save_text"] = instance.get_save_text()
-        representation["next_text"] = instance.get_next_text()
-        return representation
 
 
 class FormImportSerializer(serializers.Serializer):
