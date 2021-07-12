@@ -2,9 +2,9 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ...utils.api.views import ListMixin
 from ..constants import RegistrationAttribute
 from ..registry import register
 from .serializers import (
@@ -12,21 +12,6 @@ from .serializers import (
     RegistrationAttributeSerializer,
     RegistrationPluginSerializer,
 )
-
-
-# TODO use shared mixin from utils app in other PR
-class ListMixin:
-    def get_serializer(self, **kwargs):
-        return self.serializer_class(
-            many=True,
-            context={"request": self.request, "view": self},
-            **kwargs,
-        )
-
-    def get(self, request, *args, **kwargs):
-        objects = self.get_objects()
-        serializer = self.get_serializer(instance=objects)
-        return Response(serializer.data)
 
 
 @extend_schema_view(
