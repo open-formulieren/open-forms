@@ -55,10 +55,10 @@ module.exports = {
     jsDir: staticRoot + 'bundles/',
 
     // Path to js spec (test) files
-    jsSpec: sourcesRoot + '*/static/*/jstests/**/*.spec.js',
+    jsSpec: sourcesRoot + '**/jstests/**/*.spec.js',
 
     // Path to js spec (test) entry file
-    jsSpecEntry: sourcesRoot + '*/static/*/jstests/index.js',
+    jsSpecEntry: sourcesRoot + '**/jstests/index.js',
 
     // Path to js code coverage directory
     coverageDir: 'reports/jstests/',
