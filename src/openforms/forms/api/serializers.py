@@ -12,13 +12,44 @@ from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
 
 
+class ButtonTextSerializer(serializers.Serializer):
+    resolved = serializers.SerializerMethodField()
+    value = serializers.CharField()
+
+    def __init__(self, resolved_getter=None, raw_field=None, *args, **kwargs):
+        kwargs.setdefault("source", "*")
+        self.resolved_getter = resolved_getter
+        self.raw_field = raw_field
+        super().__init__(*args, **kwargs)
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+
+        if self.resolved_getter is None:
+            self.resolved_getter = f"get_{field_name}"
+
+        if self.raw_field is None:
+            self.raw_field = field_name
+
+        value_field = self.fields["value"]
+        value_field.source = self.raw_field
+        value_field.bind(value_field.field_name, self)
+
+    def get_resolved(self, obj):
+        return getattr(obj, self.resolved_getter)()
+
+
+class FormStepLiteralsSerializer(serializers.Serializer):
+    previous_text = ButtonTextSerializer(raw_field="previous_text")
+    save_text = ButtonTextSerializer(raw_field="save_text")
+    next_text = ButtonTextSerializer(raw_field="next_text")
+
+
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
-    previous_text = serializers.CharField(source="get_previous_text")
-    save_text = serializers.CharField(source="get_save_text")
-    next_text = serializers.CharField(source="get_next_text")
+    literals = FormStepLiteralsSerializer(source="*")
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -34,16 +65,21 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
             "slug",
             "form_definition",
             "index",
+            "literals",
             "url",
-            "previous_text",
-            "save_text",
-            "next_text",
         )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
             }
         }
+
+
+class FormLiteralsSerializer(serializers.Serializer):
+    previous_text = ButtonTextSerializer(raw_field="previous_text")
+    begin_text = ButtonTextSerializer(raw_field="begin_text")
+    change_text = ButtonTextSerializer(raw_field="change_text")
+    confirm_text = ButtonTextSerializer(raw_field="confirm_text")
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -56,6 +92,7 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
+    literals = FormLiteralsSerializer(source="*")
 
     class Meta:
         model = Form
@@ -65,16 +102,13 @@ class FormSerializer(serializers.ModelSerializer):
             "login_required",
             "authentication_backends",
             "login_options",
+            "literals",
             "product",
             "slug",
             "url",
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
-            "previous_text",
-            "change_text",
-            "confirm_text",
-            "begin_text",
         )
         extra_kwargs = {
             "uuid": {
@@ -92,14 +126,6 @@ class FormSerializer(serializers.ModelSerializer):
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         return fields
-
-    def to_representation(self, instance):
-        representation = super(FormSerializer, self).to_representation(instance)
-        representation["begin_text"] = instance.get_begin_text()
-        representation["previous_text"] = instance.get_previous_text()
-        representation["change_text"] = instance.get_change_text()
-        representation["confirm_text"] = instance.get_confirm_text()
-        return representation
 
 
 class FormExportSerializer(FormSerializer):
@@ -188,6 +214,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
+    literals = FormStepLiteralsSerializer(source="*")
     url = NestedHyperlinkedRelatedField(
         source="*",
         view_name="api:form-steps-detail",
@@ -210,9 +237,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "login_required",
-            "previous_text",
-            "save_text",
-            "next_text",
+            "literals",
         )
 
         extra_kwargs = {
