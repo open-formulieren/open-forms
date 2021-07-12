@@ -4,20 +4,18 @@ global URLify;
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
-
-import Field from '../formsets/Field';
-import FormRow from '../formsets/FormRow';
-import Fieldset from '../formsets/Fieldset';
-import {TextInput} from '../formsets/Inputs';
 import useAsync from 'react-use/esm/useAsync';
-import {apiDelete, get, post, put} from '../utils/fetch';
-import SubmitRow from "../formsets/SubmitRow";
 
+import {FormException} from "../../../utils/exception";
+import {apiDelete, get, post, put} from '../../../utils/fetch';
+import Field from '../forms/Field';
+import FormRow from '../forms/FormRow';
+import Fieldset from '../forms/Fieldset';
+import {TextInput} from '../forms/Inputs';
+import SubmitRow from "../forms/SubmitRow";
+import Loader from '../Loader';
 import { FormDefinitionsContext, PluginsContext } from './Context';
 import FormSteps from './FormSteps';
-import {FormException} from "../../utils/exception";
-import Loader from './Loader';
-
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import AuthPluginField from "./AuthPluginField";
 

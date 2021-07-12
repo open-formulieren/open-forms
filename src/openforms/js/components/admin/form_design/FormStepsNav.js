@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import FAIcon from './FAIcon';
+import FAIcon from '../FAIcon';
 
 
 const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }) => {

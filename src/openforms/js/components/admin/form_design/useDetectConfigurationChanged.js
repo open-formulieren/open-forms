@@ -2,7 +2,7 @@ import isEqual from 'lodash/isEqual';
 import { useState, useEffect } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 
-import { get } from '../utils/fetch';
+import { get } from '../../../utils/fetch';
 import { FORM_DEFINITIONS_ENDPOINT } from './constants';
 import { stripIdFromComponents } from './utils';
 

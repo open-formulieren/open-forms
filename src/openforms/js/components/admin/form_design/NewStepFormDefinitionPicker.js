@@ -1,14 +1,14 @@
 import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 
-import Field from '../formsets/Field';
-import FormRow from '../formsets/FormRow';
-import Select from '../formsets/Select';
-import SubmitRow from "../formsets/SubmitRow";
-import { getFormDefinitionChoices } from '../utils/form-definition-choices';
+import FAIcon from '../FAIcon';
+import FormModal from '../FormModal';
+import Field from '../forms/Field';
+import FormRow from '../forms/FormRow';
+import Select from '../forms/Select';
+import SubmitRow from "../forms/SubmitRow";
 import { FormDefinitionsContext } from './Context';
-import FAIcon from './FAIcon';
-import FormModal from './FormModal';
+import { getFormDefinitionChoices } from './utils';
 
 
 const NewStepFormDefinitionPicker = ({ onReplace }) => {

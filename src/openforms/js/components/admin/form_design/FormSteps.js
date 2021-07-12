@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
-import Loader from './Loader';
+import Loader from '../Loader';
 
 
 const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, onAdd, submitting=false, errors=[] }) => {

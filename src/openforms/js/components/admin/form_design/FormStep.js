@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import usePrevious from 'react-use/esm/usePrevious';
 
 import FormStepDefinition from './FormStepDefinition';
-import FAIcon from './FAIcon';
+import FAIcon from '../FAIcon';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 

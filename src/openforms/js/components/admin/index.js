@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ReactModal from 'react-modal';
 
-import {FormCreationForm} from './form-creation-form';
+import {FormCreationForm} from './form_design/form-creation-form';
 
 
 const mountForm = () => {

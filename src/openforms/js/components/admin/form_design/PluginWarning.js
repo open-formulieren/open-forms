@@ -1,6 +1,7 @@
 import React, {useContext} from "react";
-import {PluginsContext} from "./Context";
 import PropTypes from "prop-types";
+
+import {PluginsContext} from "./Context";
 
 
 const PluginWarning = ({loginRequired, configuration}) => {

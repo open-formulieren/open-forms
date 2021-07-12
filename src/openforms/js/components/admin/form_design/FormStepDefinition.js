@@ -4,10 +4,10 @@ global URLify;
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import FormIOBuilder from '../formio_builder/builder';
-import {Checkbox, TextInput} from "../formsets/Inputs";
-import Field from "../formsets/Field";
-import FormRow from "../formsets/FormRow";
+import FormIOBuilder from '../../formio_builder/builder';
+import {Checkbox, TextInput} from "../forms/Inputs";
+import Field from "../forms/Field";
+import FormRow from "../forms/FormRow";
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import PluginWarning from "./PluginWarning";

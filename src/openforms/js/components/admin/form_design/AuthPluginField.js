@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import Field from "../formsets/Field";
-import {Checkbox} from "../formsets/Inputs";
-import Loader from "./Loader";
+import Field from "../forms/Field";
+import {Checkbox} from "../forms/Inputs";
+import Loader from "../Loader";
 
 const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
     const authCheckboxes = Object.entries(availableAuthPlugins).map(([pluginId, plugin]) => {
