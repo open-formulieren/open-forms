@@ -49,6 +49,17 @@ const newStepData = {
     formDefinition: '',
     slug: '',
     url: '',
+    literals: {
+        previousText: {
+            value: ''
+        },
+        saveText: {
+            value: ''
+        },
+        nextText: {
+            value: ''
+        },
+    },
     isNew: true,
 };
 
@@ -160,6 +171,17 @@ function reducer(draft, action) {
                     name,
                     slug,
                     url,
+                    literals: {
+                        previousText: {
+                            value: ''
+                        },
+                        saveText: {
+                            value: ''
+                        },
+                        nextText: {
+                            value: ''
+                        },
+                    },
                     isNew: false,
                 };
             }
@@ -178,6 +200,7 @@ function reducer(draft, action) {
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
+
             draft.formSteps.data[index]['literals'][name]['value'] = value;
             break;
         }
@@ -326,6 +349,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
+    // Update this
     const initialState = {
         ...initialFormState,
         formUuid: formUuid,
@@ -333,6 +357,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         formSlug: formSlug,
         newForm: !formUuid,
     };
+
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
@@ -512,13 +537,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         formDefinition: definitionResponse.data.url,
                         literals: {
                             nextText: {
-                                value: step.literals.nextText.value
+                                value: step.literals ? step.literals.nextText.value : ''
                             },
                             saveText: {
-                                value: step.literals.saveText.value
+                                value: step.literals ? step.literals.saveText.value : ''
                             },
                             previousText: {
-                                value: step.literals.previousText.value
+                                value: step.literals ? step.literals.previousText.value : ''
                             },
                         }
                     }
