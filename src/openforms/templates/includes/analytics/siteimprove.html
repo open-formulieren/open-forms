@@ -1,0 +1,18 @@
+{% load solo_tags %}
+{% get_solo 'config.GlobalConfiguration' as config %}
+
+{% comment %}
+    Documentation: https://support.siteimprove.com/hc/en-gb/articles/206343703-Adding-Siteimprove-Analytics-JavaScript-to-your-website
+{% endcomment %}
+
+{% if config.siteimprove_enabled %}
+<script type="text/javascript">
+/*<![CDATA[*/
+(function() {
+var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;
+sz.src = '//siteimproveanalytics.com/js/siteanalyze_{{ config.siteimprove_id|escapejs }}.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(sz, s);
+})();
+/*]]>*/
+</script>
+{% endif %}

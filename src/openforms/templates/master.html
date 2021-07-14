@@ -9,6 +9,8 @@
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'hijack/hijack-styles.css' %}" rel="stylesheet" type="text/css"/>
     {% block extra_css %}{% endblock %}
+    {# Load the various supported analytics provider snippets #}
+    {% include "includes/analytics/all_head.html" %}
 </head>
 
 <body class="view__body">
@@ -21,5 +23,7 @@
 
 <script src="{% static 'bundles/openforms-js.js' %}"></script>
 {% block extra_js %}{% endblock %}
+{# Load the various supported analytics provider snippets #}
+{% include "includes/analytics/all_bottom.html" %}
 </body>
 </html>

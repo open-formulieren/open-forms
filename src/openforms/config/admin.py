@@ -37,6 +37,30 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Analytics: Google"),
+            {
+                "fields": ("gtm_code", "ga_code"),
+            },
+        ),
+        (
+            _("Analytics: Matomo"),
+            {
+                "fields": ("matomo_url", "matomo_site_id"),
+            },
+        ),
+        (
+            _("Analytics: SiteImprove"),
+            {
+                "fields": ("siteimprove_id",),
+            },
+        ),
+        (
+            _("Analytics: Piwik"),
+            {
+                "fields": ("piwik_url", "piwik_site_id"),
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),
