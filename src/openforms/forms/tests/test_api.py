@@ -16,6 +16,7 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...config.models import GlobalConfiguration
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -289,28 +290,24 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         literals_data = response.json()["literals"]
         self.assertEqual(
-            literals_data["beginText"]["resolved"], _("Overridden Begin Text")
+            literals_data["beginText"]["resolved"], "Overridden Begin Text"
+        )
+        self.assertEqual(literals_data["beginText"]["value"], "Overridden Begin Text")
+        self.assertEqual(
+            literals_data["previousText"]["resolved"], "Overridden Previous Text"
         )
         self.assertEqual(
-            literals_data["beginText"]["value"], _("Overridden Begin Text")
+            literals_data["previousText"]["value"], "Overridden Previous Text"
         )
         self.assertEqual(
-            literals_data["previousText"]["resolved"], _("Overridden Previous Text")
+            literals_data["changeText"]["resolved"], "Overridden Change Text"
+        )
+        self.assertEqual(literals_data["changeText"]["value"], "Overridden Change Text")
+        self.assertEqual(
+            literals_data["confirmText"]["resolved"], "Overridden Confirm Text"
         )
         self.assertEqual(
-            literals_data["previousText"]["value"], _("Overridden Previous Text")
-        )
-        self.assertEqual(
-            literals_data["changeText"]["resolved"], _("Overridden Change Text")
-        )
-        self.assertEqual(
-            literals_data["changeText"]["value"], _("Overridden Change Text")
-        )
-        self.assertEqual(
-            literals_data["confirmText"]["resolved"], _("Overridden Confirm Text")
-        )
-        self.assertEqual(
-            literals_data["confirmText"]["value"], _("Overridden Confirm Text")
+            literals_data["confirmText"]["value"], "Overridden Confirm Text"
         )
 
     def test_overridden_steps_text_field_values_returned_through_api(self):
@@ -332,22 +329,22 @@ class FormsAPITests(APITestCase):
         step_literals_data = response.json()["steps"][0]["literals"]
         self.assertEqual(
             step_literals_data["previousText"]["resolved"],
-            _("Overridden Previous Text"),
+            "Overridden Previous Text",
         )
         self.assertEqual(
-            step_literals_data["previousText"]["value"], _("Overridden Previous Text")
+            step_literals_data["previousText"]["value"], "Overridden Previous Text"
         )
         self.assertEqual(
-            step_literals_data["saveText"]["resolved"], _("Overridden Save Text")
+            step_literals_data["saveText"]["resolved"], "Overridden Save Text"
         )
         self.assertEqual(
-            step_literals_data["saveText"]["value"], _("Overridden Save Text")
+            step_literals_data["saveText"]["value"], "Overridden Save Text"
         )
         self.assertEqual(
-            step_literals_data["nextText"]["resolved"], _("Overridden Next Text")
+            step_literals_data["nextText"]["resolved"], "Overridden Next Text"
         )
         self.assertEqual(
-            step_literals_data["nextText"]["value"], _("Overridden Next Text")
+            step_literals_data["nextText"]["value"], "Overridden Next Text"
         )
 
     def test_create_form_in_maintenance_mode_successful(self):
