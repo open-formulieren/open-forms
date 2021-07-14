@@ -200,7 +200,6 @@ function reducer(draft, action) {
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-
             draft.formSteps.data[index]['literals'][name]['value'] = value;
             break;
         }
@@ -349,7 +348,6 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
-    // Update this
     const initialState = {
         ...initialFormState,
         formUuid: formUuid,
@@ -357,7 +355,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         formSlug: formSlug,
         newForm: !formUuid,
     };
-
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
     useAsync(async () => {
