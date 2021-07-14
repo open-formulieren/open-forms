@@ -30,8 +30,8 @@ const emptyConfiguration = {
  *
  */
 const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
-                                loginRequired=false, configuration=emptyConfiguration, onChange, onFieldChange, errors,
-                                ...props }) => {
+                                loginRequired=false, configuration=emptyConfiguration, onChange,
+                                onFieldChange, onLiteralFieldChange, errors, ...props }) => {
 
     const setSlug = () => {
         // do nothing if there's already a slug set
@@ -86,7 +86,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         errors={errors.previousText}
                         fieldBox
                     >
-                        <TextInput value={previousText} onChange={onFieldChange}/>
+                        <TextInput value={previousText} onChange={onLiteralFieldChange}/>
                     </Field>
                     <Field
                         name='saveText'
@@ -96,7 +96,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         errors={errors.saveText}
                         fieldBox
                     >
-                        <TextInput value={saveText} onChange={onFieldChange}/>
+                        <TextInput value={saveText} onChange={onLiteralFieldChange}/>
                     </Field>
                     <Field
                         name='nextText'
@@ -106,7 +106,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         errors={errors.nextText}
                         fieldBox
                     >
-                        <TextInput value={nextText} onChange={onFieldChange}/>
+                        <TextInput value={nextText} onChange={onLiteralFieldChange}/>
                     </Field>
                 </FormRow>
                 <FormRow>

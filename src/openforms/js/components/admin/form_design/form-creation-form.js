@@ -173,11 +173,12 @@ function reducer(draft, action) {
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            if (draft.formSteps.data[index][name]) {
-                draft.formSteps.data[index][name] = value;
-            } else {
-                draft.formSteps.data[index]['literals'][name]['value'] = value;
-            }
+            draft.formSteps.data[index][name] = value;
+            break;
+        }
+        case 'STEP_LITERAL_FIELD_CHANGED': {
+            const {index, name, value} = action.payload;
+            draft.formSteps.data[index]['literals'][name]['value'] = value;
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -417,6 +418,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
+    const onStepLiteralFieldChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'STEP_LITERAL_FIELD_CHANGED',
+            payload: {name, value, index},
+        });
+    };
+
     const onStepReorder = (index, direction) => {
         if (direction === 'up') {
             dispatch({
@@ -629,6 +638,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                             loadingErrors={state.errors.loadingErrors}
                             onEdit={onStepEdit}
                             onFieldChange={onStepFieldChange}
+                            onLiteralFieldChange={onStepLiteralFieldChange}
                             onDelete={onStepDelete}
                             onReorder={onStepReorder}
                             onReplace={onStepReplace}
