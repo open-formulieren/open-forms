@@ -173,7 +173,11 @@ function reducer(draft, action) {
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps.data[index][name] = value;
+            if (draft.formSteps.data[index][name]) {
+                draft.formSteps.data[index][name] = value;
+            } else {
+                draft.formSteps.data[index]['literals'][name]['value'] = value;
+            }
             break;
         }
         case 'MOVE_UP_STEP': {
