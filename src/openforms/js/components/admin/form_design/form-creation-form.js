@@ -537,13 +537,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         formDefinition: definitionResponse.data.url,
                         literals: {
                             nextText: {
-                                value: step.literals ? step.literals.nextText.value : ''
+                                value: step.literals.nextText.value
                             },
                             saveText: {
-                                value: step.literals ? step.literals.saveText.value : ''
+                                value: step.literals.saveText.value
                             },
                             previousText: {
-                                value: step.literals ? step.literals.previousText.value : ''
+                                value: step.literals.previousText.value
                             },
                         }
                     }
