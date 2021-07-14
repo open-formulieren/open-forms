@@ -29,7 +29,9 @@ const emptyConfiguration = {
  * but we're fighting the library at this point.
  *
  */
-const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
+const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
+                                loginRequired=false, configuration=emptyConfiguration, onChange, onFieldChange, errors,
+                                ...props }) => {
 
     const setSlug = () => {
         // do nothing if there's already a slug set
@@ -76,6 +78,36 @@ const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, con
                     >
                         <TextInput value={slug} onChange={onFieldChange}/>
                     </Field>
+                    <Field
+                        name='previousText'
+                        label='Previous text'
+                        helpText='The text that will be displayed in the form step to go to the previous step.
+                                    Leave blank to get value from global configuration.'
+                        errors={errors.previousText}
+                        fieldBox
+                    >
+                        <TextInput value={previousText} onChange={onFieldChange}/>
+                    </Field>
+                    <Field
+                        name='saveText'
+                        label='Save text'
+                        helpText='The text that will be displayed in the form step to save the current information.
+                                    Leave blank to get value from global configuration.'
+                        errors={errors.saveText}
+                        fieldBox
+                    >
+                        <TextInput value={saveText} onChange={onFieldChange}/>
+                    </Field>
+                    <Field
+                        name='nextText'
+                        label='Next text'
+                        helpText='The text that will be displayed in the form step to go to the next step.
+                                    Leave blank to get value from global configuration.'
+                        errors={errors.nextText}
+                        fieldBox
+                    >
+                        <TextInput value={nextText} onChange={onFieldChange}/>
+                    </Field>
                 </FormRow>
                 <FormRow>
                     <Checkbox
@@ -101,6 +133,9 @@ FormStepDefinition.propTypes = {
     name: PropTypes.string,
     url: PropTypes.string,
     slug: PropTypes.string,
+    previousText: PropTypes.string,
+    saveText: PropTypes.string,
+    nextText: PropTypes.string,
     loginRequired: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,

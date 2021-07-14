@@ -8,7 +8,7 @@ import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
 const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) => {
-    const { configuration, formDefinition, name, slug, loginRequired, isNew } = data;
+    const { configuration, formDefinition, name, slug, literals, loginRequired, isNew } = data;
 
     const previousFormDefinition = usePrevious(formDefinition);
     let forceBuilderUpdate = false;
@@ -34,6 +34,9 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) 
                 name={name}
                 slug={slug}
                 url={formDefinition}
+                previousText={literals.previousText.value}
+                saveText={literals.saveText.value}
+                nextText={literals.nextText.value}
                 configuration={configuration}
                 loginRequired={loginRequired}
                 onFieldChange={onFieldChange}
