@@ -445,7 +445,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         const createOrUpdate = state.newForm ? post : put;
         const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.formUuid}`;
 
-
         try {
             var formResponse = await createOrUpdate(
                 endPoint,
@@ -501,7 +500,18 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name: step.name,
                         slug: step.slug,
                         index: index,
-                        formDefinition: definitionResponse.data.url
+                        formDefinition: definitionResponse.data.url,
+                        literals: {
+                            nextText: {
+                                value: step.literals.nextText.value
+                            },
+                            saveText: {
+                                value: step.literals.saveText.value
+                            },
+                            previousText: {
+                                value: step.literals.previousText.value
+                            },
+                        }
                     }
                 );
                 if (!stepResponse.ok) {
