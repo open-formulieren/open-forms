@@ -9,6 +9,7 @@ from openforms.utils.fields import StringUUIDField
 
 from ...config.models import GlobalConfiguration
 from ..constants import AvailabilityOptions
+from .utils import literal_getter
 
 
 class FormStep(OrderedModel):
@@ -74,24 +75,13 @@ class FormStep(OrderedModel):
 
     order_with_respect_to = "form"
 
+    get_previous_text = literal_getter("previous_text", "form_step_previous_text")
+    get_save_text = literal_getter("save_text", "form_step_save_text")
+    get_next_text = literal_getter("next_text", "form_step_next_text")
+
     class Meta:
         verbose_name = _("form step")
         verbose_name_plural = _("form steps")
 
     def __str__(self):
         return _("Form step {order}").format(order=self.order)
-
-    def get_previous_text(self):
-        return self.previous_text or gettext(
-            GlobalConfiguration.get_solo().form_step_previous_text
-        )
-
-    def get_save_text(self):
-        return self.save_text or gettext(
-            GlobalConfiguration.get_solo().form_step_save_text
-        )
-
-    def get_next_text(self):
-        return self.next_text or gettext(
-            GlobalConfiguration.get_solo().form_step_next_text
-        )

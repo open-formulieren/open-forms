@@ -15,6 +15,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
@@ -232,6 +233,14 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.json()["maintenanceMode"], False)
 
     def test_global_config_text_field_values_returned_through_api(self):
+        # set the defaults to compare
+        config = GlobalConfiguration.get_solo()
+        config.form_begin_text = "Begin form"
+        config.form_previous_text = "Previous page"
+        config.form_change_text = "Change"
+        config.form_confirm_text = "Confirm"
+        config.save()
+
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
@@ -242,16 +251,23 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         literals_data = response.json()["literals"]
-        self.assertEqual(literals_data["beginText"]["resolved"], _("Begin form"))
+        self.assertEqual(literals_data["beginText"]["resolved"], "Begin form")
         self.assertEqual(literals_data["beginText"]["value"], "")
-        self.assertEqual(literals_data["previousText"]["resolved"], _("Previous page"))
+        self.assertEqual(literals_data["previousText"]["resolved"], "Previous page")
         self.assertEqual(literals_data["previousText"]["value"], "")
-        self.assertEqual(literals_data["changeText"]["resolved"], _("Change"))
+        self.assertEqual(literals_data["changeText"]["resolved"], "Change")
         self.assertEqual(literals_data["changeText"]["value"], "")
-        self.assertEqual(literals_data["confirmText"]["resolved"], _("Confirm"))
+        self.assertEqual(literals_data["confirmText"]["resolved"], "Confirm")
         self.assertEqual(literals_data["confirmText"]["value"], "")
 
     def test_global_config_steps_text_field_values_returned_through_api(self):
+        # set the defaults to compare
+        config = GlobalConfiguration.get_solo()
+        config.form_step_previous_text = "Previous page"
+        config.form_step_save_text = "Save current information"
+        config.form_step_next_text = "Next"
+        config.save()
+
         form = FormFactory.create()
         FormStepFactory.create(form=form)
         self.user.is_staff = True
@@ -264,14 +280,14 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         step_literals_data = response.json()["steps"][0]["literals"]
         self.assertEqual(
-            step_literals_data["previousText"]["resolved"], _("Previous page")
+            step_literals_data["previousText"]["resolved"], "Previous page"
         )
         self.assertEqual(step_literals_data["previousText"]["value"], "")
         self.assertEqual(
-            step_literals_data["saveText"]["resolved"], _("Save current information")
+            step_literals_data["saveText"]["resolved"], "Save current information"
         )
         self.assertEqual(step_literals_data["saveText"]["value"], "")
-        self.assertEqual(step_literals_data["nextText"]["resolved"], _("Next"))
+        self.assertEqual(step_literals_data["nextText"]["resolved"], "Next")
         self.assertEqual(step_literals_data["nextText"]["value"], "")
 
     def test_overridden_text_field_values_returned_through_api(self):

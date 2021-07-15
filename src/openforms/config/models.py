@@ -1,10 +1,12 @@
 from django.db import models
 from django.utils.encoding import force_str
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
+
+from openforms.utils.translations import runtime_gettext
 
 
 class GlobalConfiguration(SingletonModel):
@@ -75,7 +77,7 @@ class GlobalConfiguration(SingletonModel):
     form_previous_text = models.CharField(
         _("form previous text"),
         max_length=50,
-        default=_("Previous page"),
+        default=runtime_gettext(_("Previous page")),
         help_text=_(
             "The text that will be displayed in the overview page to "
             "go to the previous step"
@@ -84,7 +86,7 @@ class GlobalConfiguration(SingletonModel):
     form_change_text = models.CharField(
         _("form change text"),
         max_length=50,
-        default=_("Change"),
+        default=runtime_gettext(_("Change")),
         help_text=_(
             "The text that will be displayed in the overview page to "
             "change a certain step"
@@ -93,7 +95,7 @@ class GlobalConfiguration(SingletonModel):
     form_confirm_text = models.CharField(
         _("form confirm text"),
         max_length=50,
-        default=_("Confirm"),
+        default=runtime_gettext(_("Confirm")),
         help_text=_(
             "The text that will be displayed in the overview page to "
             "confirm the form is filled in correctly"
@@ -102,7 +104,7 @@ class GlobalConfiguration(SingletonModel):
     form_begin_text = models.CharField(
         _("form begin text"),
         max_length=50,
-        default=_("Begin form"),
+        default=runtime_gettext(_("Begin form")),
         help_text=_(
             "The text that will be displayed at the start of the form to "
             "indicate the user can begin to fill in the form"
@@ -112,7 +114,7 @@ class GlobalConfiguration(SingletonModel):
     form_step_previous_text = models.CharField(
         _("form step previous text"),
         max_length=50,
-        default=_("Previous page"),
+        default=runtime_gettext(_("Previous page")),
         help_text=_(
             "The text that will be displayed in the form step to go to the previous step"
         ),
@@ -120,7 +122,7 @@ class GlobalConfiguration(SingletonModel):
     form_step_save_text = models.CharField(
         _("form step save text"),
         max_length=50,
-        default=_("Save current information"),
+        default=runtime_gettext(_("Save current information")),
         help_text=_(
             "The text that will be displayed in the form step to save the current information"
         ),
@@ -128,7 +130,7 @@ class GlobalConfiguration(SingletonModel):
     form_step_next_text = models.CharField(
         _("form step next text"),
         max_length=50,
-        default=_("Next"),
+        default=runtime_gettext(_("Next")),
         help_text=_(
             "The text that will be displayed in the form step to go to the next step"
         ),

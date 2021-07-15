@@ -15,6 +15,8 @@ from openforms.config.models import GlobalConfiguration
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
+from .utils import literal_getter
+
 
 class FormQuerySet(models.QuerySet):
     def live(self):
@@ -119,6 +121,11 @@ class Form(models.Model):
 
     objects = FormManager()
 
+    get_begin_text = literal_getter("begin_text", "form_begin_text")
+    get_previous_text = literal_getter("previous_text", "form_previous_text")
+    get_change_text = literal_getter("change_text", "form_change_text")
+    get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
+
     class Meta:
         verbose_name = _("form")
         verbose_name_plural = _("forms")
@@ -172,23 +179,3 @@ class Form(models.Model):
                 if key:
                     return_keys.add(key)
         return list(return_keys)
-
-    def get_begin_text(self):
-        return self.begin_text or gettext(
-            GlobalConfiguration.get_solo().form_begin_text
-        )
-
-    def get_previous_text(self):
-        return self.previous_text or gettext(
-            GlobalConfiguration.get_solo().form_previous_text
-        )
-
-    def get_change_text(self):
-        return self.change_text or gettext(
-            GlobalConfiguration.get_solo().form_change_text
-        )
-
-    def get_confirm_text(self):
-        return self.confirm_text or gettext(
-            GlobalConfiguration.get_solo().form_confirm_text
-        )
