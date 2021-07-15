@@ -5,6 +5,11 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
+from openforms.registrations.base import BasePlugin
+from openforms.registrations.constants import (
+    REGISTRATION_ATTRIBUTE,
+    RegistrationAttribute,
+)
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.service import (
     create_document,
@@ -14,6 +19,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     relate_document,
 )
 from openforms.registrations.registry import register
+from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.validators import validate_rsin
 
@@ -40,62 +46,53 @@ class ZaakOptionsSerializer(serializers.Serializer):
     )
 
 
-@register(
-    "zgw-create-zaak",
-    _("ZGW API's"),
-    configuration_options=ZaakOptionsSerializer,
-    # backend_feedback_serializer=BackendFeedbackSerializer,
-)
-def create_zaak_plugin(submission: Submission, options: dict) -> Optional[dict]:
-    """
-    Create a zaak and document with the submitted data as PDF.
+@register("zgw-create-zaak")
+class ZGWRegistration(BasePlugin):
+    verbose_name = _("ZGW API's")
+    configuration_options = ZaakOptionsSerializer
 
-    NOTE: this requires that the report was generated before the submission is
-    being registered. See
-    :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
-    celery tasks are chained to guarantee this.
-    """
-    data = submission.get_merged_data()
-
-    zgw = ZgwConfig.get_solo()
-    zgw.apply_defaults_to(options)
-
-    zaak = create_zaak(options)
-
-    submission_report = SubmissionReport.objects.get(submission=submission)
-    document = create_document(submission.form.name, submission_report, options)
-    relate_document(zaak["url"], document["url"])
-
-    # for now grab fixed data value
-    initiator = {
-        "betrokkeneIdentificatie": {
-            # simple for demo
-            "voornamen": data.get("voornaam", ""),
-            "geslachtsnaam": data.get("achternaam", ""),
-            "voorvoegselGeslachtsnaam": data.get("tussenvoegsel", ""),
-            "inpBsn": data.get("bsn", ""),
-            # actual
-            # "inpBsn": data.get("inpBsn", ""),
-            # "anpIdentificatie": data.get("anpIdentificatie", ""),
-            # "inpA_nummer": data.get("inpA_nummer", ""),
-            # "geslachtsnaam": data.get("geslachtsnaam", ""),
-            # "voorvoegselGeslachtsnaam": data.get("voorvoegselGeslachtsnaam", ""),
-            # "voorletters": data.get("voorletters", ""),
-            # "voornamen": data.get("voornamen", ""),
-            # "geslachtsaanduiding": data.get("geslachtsaanduiding", "o"),
-            # "geboortedatum": data.get("geboortedatum", ""),
-        },
-        "roltoelichting": "inzender formulier",
+    rol_mapping = {
+        "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
+        "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
+        "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
+        "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
+        # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
+        "betrokkeneIdentificatie.inpBsn": FieldConf(submission_field="bsn"),
     }
-    rol = create_rol(zaak, initiator, options)
 
-    # for now create generic status
-    status = create_status(zaak)
+    def register_submission(
+        self, submission: Submission, options: dict
+    ) -> Optional[dict]:
+        """
+        Create a zaak and document with the submitted data as PDF.
 
-    result = {
-        "zaak": zaak,
-        "document": document,
-        "status": status,
-        "rol": rol,
-    }
-    return result
+        NOTE: this requires that the report was generated before the submission is
+        being registered. See
+        :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
+        celery tasks are chained to guarantee this.
+        """
+
+        zgw = ZgwConfig.get_solo()
+        zgw.apply_defaults_to(options)
+
+        zaak = create_zaak(options)
+
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        document = create_document(submission.form.name, submission_report, options)
+        relate_document(zaak["url"], document["url"])
+
+        rol_data = apply_data_mapping(
+            submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
+        )
+        rol = create_rol(zaak, rol_data, options)
+
+        # for now create generic status
+        status = create_status(zaak)
+
+        result = {
+            "zaak": zaak,
+            "document": document,
+            "status": status,
+            "rol": rol,
+        }
+        return result

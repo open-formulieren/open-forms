@@ -13,6 +13,7 @@ from openforms.forms.models import Form
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
 from ..tasks import register_submission
@@ -47,22 +48,24 @@ class RegistrationHookTests(TestCase):
             },
         )
 
-    def test_assertion_callback_with_deserialized_options(self):
+    def test_assertion_plugin_with_deserialized_options(self):
         register = Registry()
 
         # register the callback, including the assertions
-        @register(
-            "callback",
-            "Assertion callback",
-            configuration_options=OptionsSerializer,
-        )
-        def callback(submission, options):
-            self.assertEqual(submission, self.submission)
-            self.assertIsInstance(options, dict)
-            self.assertEqual(options["string"], "some-option")
-            self.assertEqual(options["service"], self.service)
+        test_closure = self
 
-            return {"result": "ok"}
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                test_closure.assertEqual(submission, test_closure.submission)
+                test_closure.assertIsInstance(options, dict)
+                test_closure.assertEqual(options["string"], "some-option")
+                test_closure.assertEqual(options["service"], test_closure.service)
+
+                return {"result": "ok"}
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -78,20 +81,20 @@ class RegistrationHookTests(TestCase):
             {"result": "ok"},
         )
 
-    def test_callback_with_custom_result_serializer(self):
+    def test_plugin_with_custom_result_serializer(self):
         register = Registry()
 
         result_uuid = uuid.uuid4()
 
         # register the callback, including the assertions
-        @register(
-            "callback",
-            "Assertion callback",
-            configuration_options=OptionsSerializer,
-            backend_feedback_serializer=ResultSerializer,
-        )
-        def callback(submission, options):
-            return {"external_id": result_uuid}
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+            backend_feedback_serializer = ResultSerializer
+
+            def register_submission(self, submission, options):
+                return {"external_id": result_uuid}
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -111,14 +114,14 @@ class RegistrationHookTests(TestCase):
         register = Registry()
 
         # register the callback, including the assertions
-        @register(
-            "callback",
-            "Assertion callback",
-            configuration_options=OptionsSerializer,
-        )
-        def callback(submission, options):
-            err = ZeroDivisionError("Can't divide by zero")
-            raise RegistrationFailed("zerodiv") from err
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                err = ZeroDivisionError("Can't divide by zero")
+                raise RegistrationFailed("zerodiv") from err
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")

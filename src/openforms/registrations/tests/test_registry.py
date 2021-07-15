@@ -1,9 +1,8 @@
-from functools import partial
-
 from django.test import SimpleTestCase
 
 from rest_framework import serializers
 
+from ..base import BasePlugin
 from ..registry import Registry
 
 
@@ -11,78 +10,43 @@ class OptionsSerializer(serializers.Serializer):
     pass
 
 
-def dummy_callback(submission, opts):
-    pass
+class Plugin(BasePlugin):
+    verbose_name = "some human readable label"
+    configuration_options = OptionsSerializer
+
+
+class NoConfigPlugin(BasePlugin):
+    verbose_name = "some human readable label"
+    configuration_options = None
 
 
 class RegistryTests(SimpleTestCase):
     def test_register_function(self):
         register = Registry()
 
-        register(
-            unique_identifier="cb1",
-            name="Test callback",
-            configuration_options=OptionsSerializer,
-        )(dummy_callback)
+        register("plugin1")(Plugin)
 
-        plugin = register["cb1"]
+        plugin = register["plugin1"]
 
-        self.assertEqual(plugin.unique_identifier, "cb1")
-        self.assertEqual(plugin.callback, dummy_callback)
-        self.assertEqual(plugin.name, "Test callback")
+        self.assertIsInstance(plugin, Plugin)
+        self.assertEqual(plugin.identifier, "plugin1")
+        self.assertEqual(plugin.verbose_name, "some human readable label")
 
     def test_duplicate_identifier(self):
         register = Registry()
-        _register = partial(
-            register, name="Test callback", configuration_options=OptionsSerializer
-        )
-        _register(unique_identifier="cb1")(dummy_callback)
-
-        def other_callback(submission, opts):
-            pass
+        register("plugin")(Plugin)
 
         with self.assertRaisesMessage(
-            ValueError, "The unique identifier 'cb1' is already present in the registry"
+            ValueError,
+            "The unique identifier 'plugin' is already present in the registry",
         ):
-            _register(unique_identifier="cb1")(other_callback)
+            register("plugin")(Plugin)
 
-    def test_bad_typehint(self):
+    def test_missing_configuration_options(self):
         register = Registry()
-
-        def callback(sub: int, opts):
-            pass
 
         with self.assertRaisesMessage(
-            TypeError, "The 'sub' typehint does not appear to be a Submission."
+            ValueError,
+            "Please specify 'configuration_options' attribute for plugin class.",
         ):
-            register(
-                unique_identifier="cb1",
-                name="Test callback",
-                configuration_options=OptionsSerializer,
-            )(callback)
-
-    def test_bad_signature(self):
-
-        register = Registry()
-
-        def bad_1():
-            pass
-
-        def bad_2(arg1):
-            pass
-
-        def bad_3(arg1, arg2, arg3):
-            pass
-
-        for cb in (bad_1, bad_2):
-            with self.subTest(callback=cb):
-                with self.assertRaisesMessage(
-                    TypeError,
-                    "A callback must take exactly two arguments - an instance of 'submissions.Submission' and "
-                    "the options object.",
-                ):
-                    register(
-                        cb.__name__,
-                        name="bad callback",
-                        configuration_options=OptionsSerializer,
-                    )(cb)
+            register("plugin")(NoConfigPlugin)

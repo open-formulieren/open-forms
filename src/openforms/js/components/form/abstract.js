@@ -1,6 +1,6 @@
 import {BuilderUtils, Utils} from 'formiojs';
 
-import DEFAULT_TABS, { BASIC, ADVANCED, VALIDATION } from './edit/tabs';
+import DEFAULT_TABS, {BASIC, ADVANCED, VALIDATION, REGISTRATION} from './edit/tabs';
 
 export const defineEditFormTabs = (ComponentClass, tabs) => {
     ComponentClass.editForm = function () {
@@ -31,6 +31,7 @@ export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
             BASIC_TAB,
             ADVANCED,
             VALIDATION,
+            REGISTRATION,
         ]
     };
     defineEditFormTabs(ComponentClass, [TABS]);

@@ -1,6 +1,13 @@
+import copy
+from typing import List
+
 import factory
 
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 
 from ..models import Submission, SubmissionReport, SubmissionStep
 
@@ -10,6 +17,63 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Submission
+
+    @classmethod
+    def from_components(
+        cls,
+        components_list: List[dict],
+        submitted_data: dict = None,
+        **kwargs,
+    ) -> Submission:
+        """
+        generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep tree from a list of formio components
+
+        remember to generate from privates.test import temp_private_root
+        """
+
+        submission = cls.create(**kwargs)
+        form = submission.form
+
+        components = list()
+
+        for _comp in components_list:
+            component = copy.deepcopy(_comp)
+            key = component["key"]
+            # convenience
+            if not component.get("label"):
+                component["label"] = key.title()
+            if not component.get("type"):
+                component["type"] = "text"
+
+            components.append(component)
+
+        configuration = {"components": components}
+
+        form_definition = FormDefinitionFactory.create(
+            name=f"definition-{key}", configuration=configuration
+        )
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data=submitted_data
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        return submission
+
+    @staticmethod
+    def from_data(data_dict, **kwargs: dict):
+        components = [
+            {
+                "key": key,
+            }
+            for key in data_dict
+        ]
+        return SubmissionFactory.from_components(
+            components,
+            data_dict,
+            **kwargs,
+        )
 
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):

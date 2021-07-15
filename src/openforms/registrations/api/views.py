@@ -2,53 +2,50 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
-from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 
 from ...utils.api.views import ListMixin
+from ..constants import RegistrationAttribute
 from ..registry import register
 from .serializers import (
     ChoiceWrapper,
-    PrefillAttributeSerializer,
-    PrefillPluginSerializer,
+    RegistrationAttributeSerializer,
+    RegistrationPluginSerializer,
 )
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available prefill plugins")),
+    get=extend_schema(summary=_("List available registration plugins")),
 )
 class PluginListView(ListMixin, APIView):
     """
-    List all prefill plugins that have been registered.
+    List all available registration plugins.
+
+    Registration plugins are responsible for the implementation details to register the form submission
+    with various backends, such as "API's voor zaakgericht werken", StUF-ZDS and others.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PrefillPluginSerializer
+    serializer_class = RegistrationPluginSerializer
 
     def get_objects(self):
         return list(register)
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available attributes")),
+    get=extend_schema(summary=_("List available registration attributes")),
 )
-class PluginAttributesListView(ListMixin, APIView):
+class AllAttributesListView(ListMixin, APIView):
     """
-    List the available prefill attributes for a given plugin.
+    List the available registration attributes.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = PrefillAttributeSerializer
+    serializer_class = RegistrationAttributeSerializer
 
     def get_objects(self):
-        try:
-            plugin = register[self.kwargs["plugin"]]
-        except KeyError:
-            raise NotFound(
-                detail=_("No plugin with ID '{plugin}' found").format(**self.kwargs)
-            )
-        choices = plugin.get_available_attributes()
+        choices = RegistrationAttribute.choices
 
         return [ChoiceWrapper(choice) for choice in choices]

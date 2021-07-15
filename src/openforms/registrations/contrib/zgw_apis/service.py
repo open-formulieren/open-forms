@@ -79,8 +79,8 @@ def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
         "omschrijvingGeneriek": initiator.get("omschrijvingGeneriek", "initiator"),
     }
     rol_typen = ztc_client.list("roltype", query_params)
-    if not rol_typen:
-        logger.info(
+    if not rol_typen or not rol_typen.get("results"):
+        logger.warning(
             "Roltype specified, but no matching roltype found in the zaaktype.",
             extra={"query_params": query_params},
         )
@@ -92,7 +92,7 @@ def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
         # "betrokkene": initiator.get("betrokkene", ""),
         "betrokkeneType": initiator.get("betrokkeneType", "natuurlijk_persoon"),
         "roltype": rol_typen["results"][0]["url"],
-        "roltoelichting": initiator.get("roltoelichting", ""),
+        "roltoelichting": initiator.get("roltoelichting", "inzender formulier"),
         "indicatieMachtiging": initiator.get("indicatieMachtiging", ""),
         "betrokkeneIdentificatie": initiator.get("betrokkeneIdentificatie", {}),
     }

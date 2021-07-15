@@ -13,7 +13,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
-from openforms.registrations.contrib.email.plugin import email_submission
+from openforms.registrations.contrib.email.plugin import EmailRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -43,7 +43,8 @@ class EmailBackendTests(TestCase):
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        email_submission(submission, email_form_options)
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -86,7 +87,8 @@ class EmailBackendTests(TestCase):
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        email_submission(submission, email_form_options)
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -132,7 +134,8 @@ class EmailBackendTests(TestCase):
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        email_submission(submission, email_form_options)
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)

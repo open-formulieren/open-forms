@@ -5,17 +5,9 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
-from openforms.registrations.contrib.zgw_apis.plugin import create_zaak_plugin
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionReportFactory,
-    SubmissionStepFactory,
-)
+from openforms.registrations.constants import RegistrationAttribute
+from openforms.registrations.contrib.zgw_apis.plugin import ZGWRegistration
+from openforms.submissions.tests.factories import SubmissionFactory
 
 from .factories import ZgwConfigFactory
 
@@ -25,10 +17,6 @@ from .factories import ZgwConfigFactory
 class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create()
-        cls.fd = FormDefinitionFactory.create()
-        cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
-
         ZgwConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -36,6 +24,42 @@ class ZGWBackendTests(TestCase):
         )
 
     def test_submission_with_zgw_backend(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
+            bsn="111222333",
+        )
+
         zgw_form_options = dict(
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
@@ -130,17 +154,8 @@ class ZGWBackendTests(TestCase):
             ),
         )
 
-        data = {
-            "voornaam": "Foo",
-        }
-
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        SubmissionReportFactory.create(submission=submission)
-
-        result = create_zaak_plugin(submission, zgw_form_options)
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
@@ -211,8 +226,14 @@ class ZGWBackendTests(TestCase):
             "https://catalogus.nl/api/v1/roltypen/1",
         )
         self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"]["voornamen"],
-            "Foo",
+            create_rol_body["betrokkeneIdentificatie"],
+            {
+                "voornamen": "Foo",
+                "geboortedatum": "2000-12-31",
+                "inpBsn": "111222333",
+                "voorvoegselGeslachtsnaam": "de",
+                "geslachtsnaam": "Bar",
+            },
         )
 
         create_status = m.request_history[9]

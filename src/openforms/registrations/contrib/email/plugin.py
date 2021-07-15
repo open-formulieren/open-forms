@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template import Context, Template
@@ -8,48 +10,52 @@ from django.utils.translation import ugettext_lazy as _
 from openforms.emails.utils import sanitize_content
 from openforms.submissions.models import Submission
 
+from ...base import BasePlugin
 from ...exceptions import RegistrationFailed
 from ...registry import register
 from .config import EmailOptionsSerializer
 
 
-@register(
-    unique_identifier="email",
-    name=_("Email registration"),
-    configuration_options=EmailOptionsSerializer,
-)
-def email_submission(submission: Submission, options: dict) -> None:
-    submitted_data = submission.get_merged_data()
+@register("email")
+class EmailRegistration(BasePlugin):
+    verbose_name = _("Email registration")
+    configuration_options = EmailOptionsSerializer
 
-    if not submission.completed_on:
-        raise RegistrationFailed("Submission should be completed first")
+    def register_submission(
+        self, submission: Submission, options: dict
+    ) -> Optional[dict]:
+        submitted_data = submission.get_merged_data()
 
-    template = _("Submission details for {} (submitted on {})").format(
-        submission.form.name, submission.completed_on.strftime("%H:%M:%S %d-%m-%Y")
-    )
+        # TODO move check to shared code
+        if not submission.completed_on:
+            raise RegistrationFailed("Submission should be completed first")
 
-    template += """
-        {% for field, value in submitted_data.items %}
-            {{field}}: {% display_value value %}
-        {% endfor %}
-    """
+        template = _("Submission details for {} (submitted on {})").format(
+            submission.form.name, submission.completed_on.strftime("%H:%M:%S %d-%m-%Y")
+        )
 
-    # render the e-mail body - the template from this model.
-    rendered_content = Template(template).render(
-        Context({"submitted_data": submitted_data})
-    )
-    sanitized = sanitize_content(rendered_content)
+        template += """
+            {% for field, value in submitted_data.items %}
+                {{field}}: {% display_value value %}
+            {% endfor %}
+        """
 
-    default_template = get_template("confirmation_mail.html")
-    content = default_template.render({"body": mark_safe(sanitized)})
+        # render the e-mail body - the template from this model.
+        rendered_content = Template(template).render(
+            Context({"submitted_data": submitted_data})
+        )
+        sanitized = sanitize_content(rendered_content)
 
-    send_mail(
-        _("[Open Forms] {} - submission {}").format(
-            submission.form.name, submission.uuid
-        ),
-        content,
-        settings.DEFAULT_FROM_EMAIL,
-        options["to_emails"],
-        fail_silently=False,
-        html_message=content,
-    )
+        default_template = get_template("confirmation_mail.html")
+        content = default_template.render({"body": mark_safe(sanitized)})
+
+        send_mail(
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.name, submission.uuid
+            ),
+            content,
+            settings.DEFAULT_FROM_EMAIL,
+            options["to_emails"],
+            fail_silently=False,
+            html_message=content,
+        )

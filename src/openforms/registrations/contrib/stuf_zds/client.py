@@ -167,15 +167,16 @@ class StufZDSClient:
 
         return zaak_identificatie
 
-    def create_zaak(self, zaak_identificatie, data):
+    def create_zaak(self, zaak_identificatie, zaak_data, extra_data):
         template = "stuf_zds/soap/creeerZaak.xml"
         context = self._get_request_base_context()
         context.update(
             {
                 "zaak_identificatie": zaak_identificatie,
+                "extra": extra_data,
             }
         )
-        context.update(data)
+        context.update(zaak_data)
         response, xml = self._make_request(
             template, context, soap_action="creeerZaak_Lk01"
         )

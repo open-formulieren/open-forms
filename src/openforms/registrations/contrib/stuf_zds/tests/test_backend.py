@@ -6,23 +6,18 @@ from django.test import TestCase
 
 import requests_mock
 from lxml import etree
+from lxml.etree import ElementTree
 from privates.test import temp_private_root
 from requests import RequestException
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
-from openforms.registrations.contrib.stuf_zds.plugin import create_zaak_plugin
+from openforms.registrations.contrib.stuf_zds.plugin import StufZDSRegistration
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.registrations.tasks import generate_submission_report
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionReportFactory,
-    SubmissionStepFactory,
 )
 from stuf.tests.factories import SoapServiceFactory
 
@@ -41,7 +36,7 @@ def match_text(text):
     return _matcher
 
 
-def xml_from_request_history(m, index):
+def xml_from_request_history(m, index) -> ElementTree:
     request = m.request_history[index]
     xml = etree.fromstring(bytes(request.text, encoding="utf8"))
     return xml
@@ -54,6 +49,13 @@ class StufTestBase(TestCase):
         elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
         if len(elements) == 0:
             self.fail(f"cannot find XML element(s) with xpath {xpath}")
+
+    def assertXPathNotExists(self, xml_doc, xpath):
+        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
+        if len(elements) != 0:
+            self.fail(
+                f"found {len(elements)} unexpected XML element(s) with xpath {xpath}"
+            )
 
     def assertXPathCount(self, xml_doc, xpath, count):
         elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
@@ -171,7 +173,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.create_zaak("foo", {"bsn": "111222333"})
+        self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -256,7 +258,7 @@ class StufZDSClientTests(StufTestBase):
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak("foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
@@ -278,7 +280,7 @@ class StufZDSClientTests(StufTestBase):
             self.client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak("foo", {"bsn": "111222333"})
+            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
             self.client.create_document_identificatie()
@@ -324,12 +326,49 @@ class StufZDSPluginTests(StufTestBase):
         config.service = self.service
         config.save()
 
-        self.form = FormFactory.create()
-        self.fd = FormDefinitionFactory.create()
-        self.fs = FormStepFactory.create(form=self.form, form_definition=self.fd)
-
     @patch("celery.app.task.Task.request")
     def test_plugin(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "extra",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+                "extra": "BuzzBazz",
+            },
+        )
+
         m.post(
             self.service.url,
             content=load_mock(
@@ -362,19 +401,13 @@ class StufZDSPluginTests(StufTestBase):
         )
         mock_task.id = 1
 
-        form_options = dict()
-
-        data = {
-            "voornaam": "Foo",
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
         }
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        submission_report = SubmissionReportFactory.create(submission=submission)
-        generate_submission_report(submission_report.id)
 
-        result = create_zaak_plugin(submission, form_options)
+        plugin = StufZDSRegistration("stuf")
+        result = plugin.register_submission(submission, form_options)
         self.assertEqual(
             result,
             {
@@ -388,6 +421,33 @@ class StufZDSPluginTests(StufTestBase):
 
         xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+            },
+        )
+        # extraElementen
+        self.assertXPathEquals(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
+            "BuzzBazz",
+        )
+
+        # don't expect registered data in extraElementen
+        self.assertXPathNotExists(
+            xml_doc, "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']"
+        )
 
         xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)

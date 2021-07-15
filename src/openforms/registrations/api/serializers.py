@@ -7,14 +7,8 @@ from rest_framework import serializers
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
-class PrefillPluginSerializer(PluginBaseSerializer):
-    requires_auth = serializers.CharField(
-        label=_("Required authentication attribute"),
-        help_text=_(
-            "The authentication attribute required for this plugin to lookup remote data."
-        ),
-        allow_null=True,
-    )
+class RegistrationPluginSerializer(PluginBaseSerializer):
+    pass
 
 
 @dataclass
@@ -26,7 +20,7 @@ class ChoiceWrapper:
         self.label = self.choice[1]
 
 
-class PrefillAttributeSerializer(serializers.Serializer):
+class RegistrationAttributeSerializer(serializers.Serializer):
     id = serializers.CharField(
         source="value",
         label=_("ID"),

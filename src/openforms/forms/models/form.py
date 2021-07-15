@@ -179,3 +179,7 @@ class Form(models.Model):
                 if key:
                     return_keys.add(key)
         return list(return_keys)
+
+    def iter_components(self, recursive=True):
+        for form_step in self.formstep_set.select_related("form_definition"):
+            yield from form_step.iter_components(recursive=recursive)

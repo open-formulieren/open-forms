@@ -1,0 +1,6 @@
+{% if extra %}<StUF:extraElementen>
+{% for item in extra.items %}
+<StUF:extraElement naam="{{ item.0 }}">{{ item.1 }}</StUF:extraElement>
+{% endfor %}
+</StUF:extraElementen>
+{% endif %}

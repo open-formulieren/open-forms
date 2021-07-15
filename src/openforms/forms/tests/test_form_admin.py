@@ -1,11 +1,13 @@
 from django.urls import reverse
 
 from django_webtest import WebTest
+from rest_framework.serializers import Serializer
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 
+from ...registrations.base import BasePlugin
 from ..models import Form
 
 model_field = Form._meta.get_field("registration_backend")
@@ -13,9 +15,17 @@ model_field = Form._meta.get_field("registration_backend")
 register = Registry()
 
 
-@register("callback", "A demo callback")
-def callback(submission, options):
+class OptionsSerializer(Serializer):
     pass
+
+
+@register("plugin")
+class Plugin(BasePlugin):
+    verbose_name = "A demo plugin"
+    configuration_options = OptionsSerializer
+
+    def register_submission(self, submission, options):
+        pass
 
 
 class FormAdminTests(WebTest):
@@ -25,7 +35,7 @@ class FormAdminTests(WebTest):
 
         cls.superuser = SuperUserFactory.create()
 
-    def test_valid_callbacks_listed(self):
+    def test_valid_plugins_listed(self):
         url = reverse("admin:forms_form_add")
 
         with patch_registry(model_field, register):
@@ -37,11 +47,11 @@ class FormAdminTests(WebTest):
             choices,
             [
                 ("", "---------"),
-                ("callback", "A demo callback"),
+                ("plugin", "A demo plugin"),
             ],
         )
 
-    def test_create_form_valid_callback(self):
+    def test_create_form_valid_plugin(self):
         url = reverse("admin:forms_form_add")
 
         with patch_registry(model_field, register):
@@ -49,14 +59,14 @@ class FormAdminTests(WebTest):
 
             add_page.form["name"] = "test form"
             add_page.form["slug"] = "test-form"
-            add_page.form["registration_backend"].select("callback")
+            add_page.form["registration_backend"].select("plugin")
 
             resp = add_page.form.submit()
 
             self.assertEqual(resp.status_code, 302)
 
         form = Form.objects.get()
-        self.assertEqual(form.registration_backend, "callback")
+        self.assertEqual(form.registration_backend, "plugin")
 
     def test_submit_invalid_value(self):
         self.client.force_login(self.superuser)
