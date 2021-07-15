@@ -76,7 +76,7 @@ cffi==1.14.3
     #   cairocffi
     #   cryptography
     #   weasyprint
-chardet==3.0.4
+charset-normalizer==2.0.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -208,7 +208,7 @@ django-yubin==1.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django==2.2.20
+django==2.2.24
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -485,7 +485,7 @@ requests-mock==1.8.0
     #   -r requirements/base.txt
     #   -r requirements/test-tools.in
     #   zgw-consumers
-requests==2.24.0
+requests==2.26.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -589,7 +589,7 @@ uritemplate==3.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==1.25.10
+urllib3==1.26.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -41,7 +41,7 @@ cffi==1.14.3
     #   cairocffi
     #   cryptography
     #   weasyprint
-chardet==3.0.4
+charset-normalizer==2.0.2
     # via requests
 cryptography==3.4.7
     # via pyopenssl
@@ -106,7 +106,7 @@ django-tinymce==3.3.0
     # via -r requirements/base.in
 django-yubin==1.6.0
     # via -r requirements/base.in
-django==2.2.20
+django==2.2.24
     # via
     #   -r requirements/base.in
     #   digid-eherkenning
@@ -219,7 +219,7 @@ redis==3.5.3
     # via django-redis
 requests-mock==1.8.0
     # via zgw-consumers
-requests==2.24.0
+requests==2.26.0
     # via
     #   gemma-zds-client
     #   python3-saml
@@ -256,7 +256,7 @@ tornado==6.1
     # via flower
 uritemplate==3.0.1
     # via drf-spectacular
-urllib3==1.25.10
+urllib3==1.26.6
     # via
     #   elastic-apm
     #   requests
