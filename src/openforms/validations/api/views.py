@@ -12,7 +12,6 @@ from openforms.validations.api.serializers import (
     ValidationResultSerializer,
 )
 from openforms.validations.registry import register
-from django.views.decorators.csrf import csrf_exempt
 
 
 class ValidatorsListView(APIView):
