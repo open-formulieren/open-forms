@@ -39,6 +39,7 @@ const initialFormState = {
         },
     },
     formIsActive: true,
+    formIsDeleted: false,
     newForm: true,
     formSteps: {
         loading: true,
@@ -290,6 +291,7 @@ const getFormData = async (formUuid, dispatch) => {
                     selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
                     formShowProgressIndicator: response.data.showProgressIndicator,
                     formIsActive: response.data.active,
+                    formIsDeleted: response.data.isDeleted,
                 },
             });
             // Get the form definition data from the form steps
@@ -530,6 +532,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             authenticationBackends: state.selectedAuthPlugins,
             showProgressIndicator: state.formShowProgressIndicator,
             active: state.formIsActive,
+            isDeleted: state.formIsDeleted,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -770,6 +773,16 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         checked={state.formIsActive}
                         errors={state.errors.active}
                         onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formIsActive}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="formIsDeleted"
+                        label="Is deleted"
+                        helpText="Whether the form is (soft) deleted"
+                        checked={state.formIsDeleted}
+                        errors={state.errors.isDeleted}
+                        onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formIsDeleted}}) }
                     />
                 </FormRow>
             </Fieldset>
