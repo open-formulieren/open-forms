@@ -1434,6 +1434,10 @@ components:
           items:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
+        showProgressIndicator:
+          type: boolean
+          description: Whether the step progression should be displayed in the UI
+            or not.
         maintenanceMode:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
@@ -1767,6 +1771,10 @@ components:
           items:
             $ref: '#/components/schemas/MinimalFormStep'
           readOnly: true
+        showProgressIndicator:
+          type: boolean
+          description: Whether the step progression should be displayed in the UI
+            or not.
         maintenanceMode:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
