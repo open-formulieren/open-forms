@@ -35,7 +35,7 @@ class ButtonTextSerializer(serializers.Serializer):
         value_field.source = self.raw_field
         value_field.bind(value_field.field_name, self)
 
-    def get_resolved(self, obj):
+    def get_resolved(self, obj) -> str:
         return getattr(obj, self.resolved_getter)()
 
 
