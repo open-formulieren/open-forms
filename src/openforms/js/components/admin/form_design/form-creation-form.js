@@ -40,6 +40,7 @@ const initialFormState = {
     },
     formIsActive: true,
     formIsDeleted: false,
+    formInMaintenanceMode: false,
     newForm: true,
     formSteps: {
         loading: true,
@@ -292,6 +293,7 @@ const getFormData = async (formUuid, dispatch) => {
                     formShowProgressIndicator: response.data.showProgressIndicator,
                     formIsActive: response.data.active,
                     formIsDeleted: response.data.isDeleted,
+                    formInMaintenanceMode: response.data.maintenanceMode,
                 },
             });
             // Get the form definition data from the form steps
@@ -533,6 +535,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             showProgressIndicator: state.formShowProgressIndicator,
             active: state.formIsActive,
             isDeleted: state.formIsDeleted,
+            maintenanceMode: state.formInMaintenanceMode,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -783,6 +786,16 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         checked={state.formIsDeleted}
                         errors={state.errors.isDeleted}
                         onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formIsDeleted}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="formInMaintenanceMode"
+                        label="Maintenance mode"
+                        helpText="Users will not be able to start the form if it is in maintenance mode."
+                        checked={state.formInMaintenanceMode}
+                        errors={state.errors.maintenanceMode}
+                        onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formInMaintenanceMode}}) }
                     />
                 </FormRow>
             </Fieldset>
