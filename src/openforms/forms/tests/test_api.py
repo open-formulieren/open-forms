@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -15,8 +16,8 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.tests.utils import NOOP_CACHES
 
-from ...config.models import GlobalConfiguration
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -1453,6 +1454,7 @@ class CopyFormAPITests(APITestCase):
         )
         self.token = TokenFactory(user=self.user)
 
+    @override_settings(CACHES=NOOP_CACHES)
     def test_form_copy(self):
         self.user.is_staff = True
         self.user.save()

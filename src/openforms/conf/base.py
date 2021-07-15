@@ -676,3 +676,9 @@ DIGID = {
     },
     "requested_attributes": ["bsn"],
 }
+
+#
+# Django Solo
+#
+SOLO_CACHE = "default"
+SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes

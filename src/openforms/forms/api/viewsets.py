@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from django.db import transaction
+from django.db.models import Prefetch
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -184,7 +185,14 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     re-used among different forms.
     """
 
-    queryset = Form.objects.filter(_is_deleted=False)
+    queryset = Form.objects.filter(_is_deleted=False).prefetch_related(
+        Prefetch(
+            "formstep_set",
+            queryset=FormStep.objects.select_related("form_definition").order_by(
+                "order"
+            ),
+        )
+    )
     lookup_url_kwarg = "uuid_or_slug"
     # lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
@@ -245,6 +253,7 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
         """
         instance = self.get_object()
         copied_form = instance.copy()
+        copied_form.refresh_from_db()  # this clears any prefetch caches
         serializer = self.get_serializer(instance=copied_form)
         headers = self.get_success_headers(serializer.data)
         return Response(

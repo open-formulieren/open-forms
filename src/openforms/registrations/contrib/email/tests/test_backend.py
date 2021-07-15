@@ -115,6 +115,7 @@ class EmailBackendTests(TestCase):
     def test_submission_with_email_backend_keep_allowed_urls(self, m):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["https://allowed.com"]
+        config.save()
 
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
