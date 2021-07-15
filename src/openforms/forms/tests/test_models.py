@@ -98,8 +98,12 @@ class FormTestCase(TestCase):
         step_1 = FormStepFactory.create(form=form, form_definition=def_1)
         step_2 = FormStepFactory.create(form=form, form_definition=def_2)
 
+        def take_key(item):
+            print(item["key"])
+            return item["key"]
+
         with self.subTest("recursive"):
-            actual = list(form.iter_components(recursive=True))
+            actual = sorted(list(form.iter_components(recursive=True)), key=take_key)
             expected = [
                 {"key": "aaa", "label": "AAA"},
                 {
@@ -124,7 +128,7 @@ class FormTestCase(TestCase):
             self.assertEqual(actual, expected)
 
         with self.subTest("non-recursive"):
-            actual = list(form.iter_components(recursive=False))
+            actual = sorted(list(form.iter_components(recursive=False)), key=take_key)
             expected = [
                 {"key": "aaa", "label": "AAA"},
                 {
