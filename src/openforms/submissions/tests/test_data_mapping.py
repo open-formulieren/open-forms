@@ -4,7 +4,11 @@ from djchoices import ChoiceItem, DjangoChoices
 from privates.test import temp_private_root
 
 from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
-from openforms.submissions.mapping import FieldConf, apply_data_mapping
+from openforms.submissions.mapping import (
+    FieldConf,
+    apply_data_mapping,
+    get_unmapped_data,
+)
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -217,5 +221,22 @@ class MappingTests(TestCase):
             "persoon": {
                 "voornaam": "Foo",
             },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_get_unmapped_data(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+                {"key": "bijnaam"},
+            ],
+            submitted_data={"voornaam": "Foo", "bijnaam": "Bar"},
+        )
+        actual = get_unmapped_data(submission, mapping, "mapping_attr")
+        expected = {
+            "bijnaam": "Bar",
         }
         self.assertEqual(actual, expected)

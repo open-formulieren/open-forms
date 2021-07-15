@@ -11,7 +11,11 @@ from openforms.registrations.constants import (
     RegistrationAttribute,
 )
 from openforms.registrations.registry import register
-from openforms.submissions.mapping import FieldConf, apply_data_mapping
+from openforms.submissions.mapping import (
+    FieldConf,
+    apply_data_mapping,
+    get_unmapped_data,
+)
 from openforms.submissions.models import Submission, SubmissionReport
 
 from .client import fmt_soap_date
@@ -69,8 +73,11 @@ class StufZDSRegistration(BasePlugin):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
-        data = submission.get_merged_data()
-        client.create_zaak(zaak_id, zaak_data, data)
+        extra_data = get_unmapped_data(
+            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
+        )
+
+        client.create_zaak(zaak_id, zaak_data, extra_data)
 
         doc_id = client.create_document_identificatie()
 

@@ -120,3 +120,33 @@ def apply_data_mapping(
         glom(target_dict, Assign(target_path, value, missing=dict))
 
     return target_dict
+
+
+def get_unmapped_data(
+    submission,
+    mapping_config: Mapping[str, Union[str, FieldConf]],
+    component_attribute: str,
+):
+    """
+    companion to apply_data_mapping() returns data not mapped to RegistrationAttributes
+    """
+    data = submission.get_merged_data()
+
+    attr_key_lookup = dict()
+
+    for component in submission.form.iter_components(recursive=True):
+        key = component.get("key")
+        attribute = glom(component, component_attribute, default=None)
+        if key and attribute:
+            # NOTE we could delete from data here, BUT
+            #  it would also remove fields that have the attribute but
+            #  aren't setup in the actual mapping structure
+            attr_key_lookup[attribute] = key
+
+    for target_path, conf in mapping_config.items():
+        if isinstance(conf, str):
+            conf = FieldConf(conf)
+        if data_key := attr_key_lookup.get(conf.attribute):
+            data.pop(data_key, None)
+
+    return data

@@ -50,6 +50,13 @@ class StufTestBase(TestCase):
         if len(elements) == 0:
             self.fail(f"cannot find XML element(s) with xpath {xpath}")
 
+    def assertXPathNotExists(self, xml_doc, xpath):
+        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
+        if len(elements) != 0:
+            self.fail(
+                f"found {len(elements)} unexpected XML element(s) with xpath {xpath}"
+            )
+
     def assertXPathCount(self, xml_doc, xpath, count):
         elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
         self.assertEqual(
@@ -431,15 +438,15 @@ class StufZDSPluginTests(StufTestBase):
             },
         )
         # extraElementen
-        self.assertXPathEqualDict(
+        self.assertXPathEquals(
             xml_doc,
-            {
-                "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']": "Foo",
-                "//stuf:extraElementen/stuf:extraElement[@naam='achternaam']": "Bar",
-                "//stuf:extraElementen/stuf:extraElement[@naam='tussenvoegsel']": "de",
-                "//stuf:extraElementen/stuf:extraElement[@naam='geboortedatum']": "2000-12-31",
-                "//stuf:extraElementen/stuf:extraElement[@naam='extra']": "BuzzBazz",
-            },
+            "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
+            "BuzzBazz",
+        )
+
+        # don't expect registered data in extraElementen
+        self.assertXPathNotExists(
+            xml_doc, "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']"
         )
 
         xml_doc = xml_from_request_history(m, 2)
