@@ -15,7 +15,6 @@ const mountForm = () => {
 
         ReactModal.setAppElement(formCreationFormNode);
 
-        // Update this
         ReactDOM.render(
             <FormCreationForm
                 csrftoken={csrftoken}

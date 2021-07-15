@@ -692,7 +692,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         <TextInput
                             value={state.literals.beginText.value}
                             onChange={onLiteralFieldChange}
-                            maxlength="50"
+                            maxLength="50"
                         />
                     </Field>
                 </FormRow>
@@ -706,7 +706,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         <TextInput
                             value={state.literals.previousText.value}
                             onChange={onLiteralFieldChange}
-                            maxlength="50"
+                            maxLength="50"
                         />
                     </Field>
                 </FormRow>
@@ -720,7 +720,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         <TextInput
                             value={state.literals.changeText.value}
                             onChange={onLiteralFieldChange}
-                            maxlength="50"
+                            maxLength="50"
                         />
                     </Field>
                 </FormRow>
@@ -735,7 +735,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         <TextInput
                             value={state.literals.confirmText.value}
                             onChange={onLiteralFieldChange}
-                            maxlength="50"
+                            maxLength="50"
                         />
                     </Field>
                 </FormRow>
@@ -813,6 +813,10 @@ FormCreationForm.propTypes = {
     formUuid: PropTypes.string.isRequired,
     formName: PropTypes.string.isRequired,
     formSlug: PropTypes.string.isRequired,
+    formBeginText: PropTypes.string.isRequired,
+    formPreviousText: PropTypes.string.isRequired,
+    formChangeText: PropTypes.string.isRequired,
+    formConfirmText: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

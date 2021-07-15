@@ -89,7 +89,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={previousText} onChange={onLiteralFieldChange} maxlength="50"/>
+                        <TextInput value={previousText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -100,7 +100,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={saveText} onChange={onLiteralFieldChange} maxlength="50"/>
+                        <TextInput value={saveText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -111,7 +111,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={nextText} onChange={onLiteralFieldChange} maxlength="50"/>
+                        <TextInput value={nextText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -144,6 +144,7 @@ FormStepDefinition.propTypes = {
     loginRequired: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
+    onLiteralFieldChange: PropTypes.func.isRequired,
     errors: PropTypes.object
 };
 
