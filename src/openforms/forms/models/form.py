@@ -63,7 +63,7 @@ class Form(models.Model):
         default=True,
         help_text=_(
             "Whether the step progression should be displayed in the UI or not."
-        )
+        ),
     )
     begin_text = models.CharField(
         _("begin text"),
