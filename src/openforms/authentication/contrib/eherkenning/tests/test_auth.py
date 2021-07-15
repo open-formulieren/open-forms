@@ -103,9 +103,15 @@ class AuthenticationStep2Tests(TestCase):
 
         response = self.client.get(f"{login_url}?next={form_url}")
 
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        return_url_with_param = f"{return_url}?next={form_url}"
+
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
         self.assertEqual(
-            f"http://testserver/eherkenning/login/?{urlencode({'next': form_url})}",
+            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param})}",
             response.url,
         )
 
@@ -128,7 +134,15 @@ class AuthenticationStep2Tests(TestCase):
 
         response = self.client.get(f"{login_url}?next={form_url}", follow=True)
 
-        self.assertEqual(form_url, response.context["form"].initial["RelayState"])
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+
+        self.assertEqual(
+            f"{return_url}?next={form_url}",
+            response.context["form"].initial["RelayState"],
+        )
 
         saml_request = b64decode(
             response.context["form"].initial["SAMLRequest"].encode("utf-8")
@@ -217,6 +231,12 @@ class AuthenticationStep5Tests(TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}"
 
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        return_url_with_param = f"{return_url}?next={form_url}"
+
         def create_test_artifact(service_entity_id):
             type_code = b"\x00\x04"
             endpoint_index = b"\x00\x00"
@@ -232,7 +252,7 @@ class AuthenticationStep5Tests(TestCase):
             + urlencode(
                 {
                     "SAMLart": create_test_artifact(EHERKENNING["service_entity_id"]),
-                    "RelayState": form_url,
+                    "RelayState": return_url_with_param,
                 }
             )
         )
