@@ -17,6 +17,10 @@
         data-form-uuid="{{ original.uuid|default:'' }}"
         data-form-name="{{ original.name|default:'' }}"
         data-form-slug="{{ original.slug|default:'' }}"
+        data-form-begin-text="{{ original.begin_text | default:'' }}"
+        data-form-previous-text="{{ original.previous_text | default:'' }}"
+        data-form-change-text="{{ original.change_text | default:'' }}"
+        data-form-confirm-text="{{ original.begin_text | default:'' }}"
         data-csrftoken="{{ csrf_token }}"
     > {# Managed by React #} </div>
 {% else %}

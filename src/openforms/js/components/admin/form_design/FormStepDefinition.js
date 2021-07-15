@@ -87,7 +87,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         label='Previous text'
                         helpText='The text that will be displayed in the form step to go to the previous step.
                                     Leave blank to get value from global configuration.'
-                        errors={errors.previousText}
                         fieldBox
                     >
                         <TextInput value={previousText} onChange={onLiteralFieldChange}/>
@@ -99,7 +98,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         label='Save text'
                         helpText='The text that will be displayed in the form step to save the current information.
                                     Leave blank to get value from global configuration.'
-                        errors={errors.saveText}
                         fieldBox
                     >
                         <TextInput value={saveText} onChange={onLiteralFieldChange}/>
@@ -111,7 +109,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         label='Next text'
                         helpText='The text that will be displayed in the form step to go to the next step.
                                     Leave blank to get value from global configuration.'
-                        errors={errors.nextText}
                         fieldBox
                     >
                         <TextInput value={nextText} onChange={onLiteralFieldChange}/>
