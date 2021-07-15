@@ -89,7 +89,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={previousText} onChange={onLiteralFieldChange}/>
+                        <TextInput value={previousText} onChange={onLiteralFieldChange} maxlength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -100,7 +100,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={saveText} onChange={onLiteralFieldChange}/>
+                        <TextInput value={saveText} onChange={onLiteralFieldChange} maxlength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -111,7 +111,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                                     Leave blank to get value from global configuration.'
                         fieldBox
                     >
-                        <TextInput value={nextText} onChange={onLiteralFieldChange}/>
+                        <TextInput value={nextText} onChange={onLiteralFieldChange} maxlength="50"/>
                     </Field>
                 </FormRow>
                 <FormRow>

@@ -689,7 +689,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                                     the user can begin to fill in the form.
                                     Leave blank to get value from global configuration.'
                     >
-                        <TextInput value={state.literals.beginText.value} onChange={onLiteralFieldChange} />
+                        <TextInput
+                            value={state.literals.beginText.value}
+                            onChange={onLiteralFieldChange}
+                            maxlength="50"
+                        />
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -699,7 +703,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         helpText='The text that will be displayed in the overview page to go to the previous step.
                                     Leave blank to get value from global configuration.'
                     >
-                        <TextInput value={state.literals.previousText.value} onChange={onLiteralFieldChange} />
+                        <TextInput
+                            value={state.literals.previousText.value}
+                            onChange={onLiteralFieldChange}
+                            maxlength="50"
+                        />
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -709,7 +717,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         helpText='The text that will be displayed in the overview page to change a certain step.
                                     Leave blank to get value from global configuration.'
                     >
-                        <TextInput value={state.literals.changeText.value} onChange={onLiteralFieldChange} />
+                        <TextInput
+                            value={state.literals.changeText.value}
+                            onChange={onLiteralFieldChange}
+                            maxlength="50"
+                        />
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -720,7 +732,11 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                                     the form is filled in correctly.
                                     Leave blank to get value from global configuration.'
                     >
-                        <TextInput value={state.literals.confirmText.value} onChange={onLiteralFieldChange} />
+                        <TextInput
+                            value={state.literals.confirmText.value}
+                            onChange={onLiteralFieldChange}
+                            maxlength="50"
+                        />
                     </Field>
                 </FormRow>
                 <FormRow>
