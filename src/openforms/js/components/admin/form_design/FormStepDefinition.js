@@ -68,8 +68,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                     >
                         <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
                     </Field>
-                </FormRow>
-                <FormRow>
                     <Field
                         name='slug'
                         label='Step slug'
@@ -91,8 +89,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                     >
                         <TextInput value={previousText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
-                </FormRow>
-                <FormRow>
                     <Field
                         name='saveText'
                         label='Save text'
@@ -102,8 +98,6 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                     >
                         <TextInput value={saveText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
-                </FormRow>
-                <FormRow>
                     <Field
                         name='nextText'
                         label='Next text'
