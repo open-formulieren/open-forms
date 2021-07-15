@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import {defineCommonEditFormTabs} from "./abstract";
+import {DEFAULT_FILE_TABS} from "./edit/tabs";
 
 const BaseFileField = Formio.Components.components.file;
 
@@ -11,26 +11,10 @@ class FileField extends BaseFileField {
             label: 'File Upload',
             key: 'file',
             storage: "url",
+            // TODO this needs to be passed in
             url: "http://localhost:8000/api/v1/submissions/files/upload",
             webcam: false,
             input: true,
-            fileTypes: [
-                {
-                    "label": "",
-                    "value": ""
-                }
-                // {
-                //     "label": "PDF",
-                //     "value": ".pdf"
-                // },
-                // {
-                //     "label": "PNG",
-                //     "value": ".png"
-                // }
-            ],
-            // TODO read backend size limits to from this configuration
-            "fileMinSize": "10KB",
-            "fileMaxSize": "2GB",
         }, ...extend);
     }
 
@@ -48,8 +32,10 @@ class FileField extends BaseFileField {
         return FileField.schema();
     }
 
+    static editForm() {
+        return {components: [DEFAULT_FILE_TABS]};
+    }
 }
 
-defineCommonEditFormTabs(FileField);
 
 export default FileField;

@@ -1,6 +1,7 @@
-import {BuilderUtils, Utils} from 'formiojs';
+import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
+import {as_choices, KNOWN_TYPES} from "./file-mime-types";
 
 /**
  * Define the tabs available when editing components in the form builder.
@@ -221,6 +222,152 @@ const PREFILL = {
     ],
 };
 
+const FILE = {
+    key: 'file',
+    label: 'File',
+    components: [
+        // copied from https://raw.githubusercontent.com/formio/formio.js/master/src/components/file/editForm/File.edit.file.js
+        {
+            type: 'textfield',
+            input: true,
+            key: 'fileNameTemplate',
+            label: 'File Name Template',
+            placeholder: '(optional) {name}-{guid}',
+            tooltip: 'Specify template for name of uploaded file(s). Regular template variables are available (`data`, `component`, `user`, `value`, `moment` etc.), also `fileName`, `guid` variables are available. `guid` part must be present, if not found in template, will be added at the end.',
+            weight: 25
+        },
+
+        {
+            "type": "select",
+            "key": "file.type",
+            "input": true,
+            "label": "Select",
+            "widget": "choicesjs",
+            "tableView": true,
+            "multiple": true,
+            "data": {
+                "values": as_choices(KNOWN_TYPES),
+            },
+            "defaultValue": [
+                "*"
+            ],
+            weight: 30
+        },
+        {
+            type: 'checkbox',
+            input: true,
+            key: 'image.resize.apply',
+            label: 'Resize image',
+            tooltip: 'When this is checked, the image will be resized.',
+            weight: 33,
+            customConditional: "show = data.file.type.some(function(v) { return (v.indexOf(\"image/\") > -1) || (v == \"*\"); });",
+        },
+        {
+            "key": "image.resize.columns",
+            "type": "columns",
+            "input": false,
+            "tableView": false,
+            "label": "Columns",
+            "columns": [
+                {
+                    "components": [
+                        {
+                            "key": "image.resize.width",
+                            "type": "number",
+                            "label": "Maximum width",
+                            "mask": false,
+                            "tableView": false,
+                            "delimiter": false,
+                            "requireDecimal": false,
+                            "inputFormat": "plain",
+                            "truncateMultipleSpaces": false,
+                            "input": true,
+                            "defaultValue": 2000
+                        }
+                    ],
+                    "width": 6,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md",
+                    "currentWidth": 6
+                },
+                {
+                    "components": [
+                        {
+                            "key": "image.resize.height",
+                            "type": "number",
+                            "label": "Maximum height",
+                            "mask": false,
+                            "tableView": false,
+                            "delimiter": false,
+                            "requireDecimal": false,
+                            "inputFormat": "plain",
+                            "truncateMultipleSpaces": false,
+                            "input": true ,
+                            "defaultValue": 2000
+                        }
+                    ],
+                    "width": 6,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md",
+                    "currentWidth": 6
+                }
+            ],
+            conditional: {
+                json: {'==': [{var: 'data.image.resize.apply'}, true]}
+            }
+        },
+        {
+            type: 'textfield',
+            input: false,
+            key: 'filePattern',
+            label: 'File Pattern',
+            //placeholder: IMAGE_TYPES.join(","),
+            logic: [
+                {
+                    "name": "filePatternTrigger",
+                    "trigger": {
+                        "type": "javascript",
+                        "javascript": "result = true;"
+                    },
+                    "actions": [
+                        {
+                            "name": "filePatternAction",
+                            "type": "customAction",
+                            "customAction": "value = data.file.type.join(\",\")"
+                        }
+                    ]
+                }
+            ],
+            tooltip: 'See <a href=\'https://github.com/danialfarid/ng-file-upload#full-reference\' target=\'_blank\'>https://github.com/danialfarid/ng-file-upload#full-reference</a> for how to specify file patterns.',
+            weight: 50
+        },
+
+        {
+            type: 'textfield',
+            input: true,
+            key: 'fileMaxSize',
+            label: 'File Maximum Size',
+            placeholder: '10MB',
+            tooltip: 'See <a href=\'https://github.com/danialfarid/ng-file-upload#full-reference\' target=\'_blank\'>https://github.com/danialfarid/ng-file-upload#full-reference</a> for how to specify file sizes.',
+            weight: 70
+        },
+        // {
+        //     type: 'checkbox',
+        //     input: true,
+        //     key: 'webcam',
+        //     label: 'Enable web camera',
+        //     tooltip: 'This will allow using an attached camera to directly take a picture instead of uploading an existing file.',
+        //     weight: 32,
+        //     conditional: {
+        //         json: {'==': [{var: 'data.file.type'}, 'image']}
+        //     }
+        // },
+    ],
+};
 
 const DEFAULT_TABS = {
     type: 'tabs',
@@ -245,6 +392,15 @@ const DEFAULT_TEXT_TABS = {
     ]
 };
 
+const DEFAULT_FILE_TABS = {
+    type: 'tabs',
+    key: 'file',
+    components: [
+        BASIC,
+        ADVANCED,
+        FILE,
+    ]
+};
 
-export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
+export { DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_FILE_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
 export default DEFAULT_TABS;
