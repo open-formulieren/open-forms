@@ -736,7 +736,47 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Attribute'
+                  $ref: '#/components/schemas/PrefillAttribute'
+          description: ''
+  /api/v1/registration/attributes:
+    get:
+      operationId: registration_attributes_list
+      description: List the available registration attributes.
+      summary: List available registration attributes
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistrationAttribute'
+          description: ''
+  /api/v1/registration/plugins:
+    get:
+      operationId: registration_plugins_list
+      description: |-
+        List all available registration plugins.
+
+        Registration plugins are responsible for the implementation details to register the form submission
+        with various backends, such as "API's voor zaakgericht werken", StUF-ZDS and others.
+      summary: List available registration plugins
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistrationPlugin'
           description: ''
   /api/v1/submissions:
     get:
@@ -1330,18 +1370,6 @@ paths:
           description: Not found. The slug did not point to a live form.
 components:
   schemas:
-    Attribute:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique attribute identifier
-        label:
-          type: string
-          description: The human-readable name for an attribute.
-      required:
-      - id
-      - label
     AuthPlugin:
       type: object
       properties:
@@ -1372,6 +1400,17 @@ components:
       - digid-mock
       - digid
       type: string
+    ButtonText:
+      type: object
+      properties:
+        resolved:
+          type: string
+          readOnly: true
+        value:
+          type: string
+      required:
+      - resolved
+      - value
     CompletionValidation:
       type: object
       properties:
@@ -1417,6 +1456,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        literals:
+          $ref: '#/components/schemas/FormLiterals'
         product:
           allOf:
           - $ref: '#/components/schemas/Product'
@@ -1529,6 +1570,17 @@ components:
             steps.
       required:
       - file
+    FormLiterals:
+      type: object
+      properties:
+        previousText:
+          $ref: '#/components/schemas/ButtonText'
+        beginText:
+          $ref: '#/components/schemas/ButtonText'
+        changeText:
+          $ref: '#/components/schemas/ButtonText'
+        confirmText:
+          $ref: '#/components/schemas/ButtonText'
     FormStep:
       type: object
       properties:
@@ -1554,6 +1606,8 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        literals:
+          $ref: '#/components/schemas/FormStepLiterals'
       required:
       - configuration
       - formDefinition
@@ -1562,6 +1616,15 @@ components:
       - name
       - slug
       - url
+    FormStepLiterals:
+      type: object
+      properties:
+        previousText:
+          $ref: '#/components/schemas/ButtonText'
+        saveText:
+          $ref: '#/components/schemas/ButtonText'
+        nextText:
+          $ref: '#/components/schemas/ButtonText'
     IncompleteStep:
       type: object
       properties:
@@ -1638,6 +1701,8 @@ components:
           readOnly: true
         index:
           type: integer
+        literals:
+          $ref: '#/components/schemas/FormStepLiterals'
         url:
           type: string
           format: uri
@@ -1754,6 +1819,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        literals:
+          $ref: '#/components/schemas/FormLiterals'
         product:
           allOf:
           - $ref: '#/components/schemas/Product'
@@ -1829,6 +1896,20 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        literals:
+          $ref: '#/components/schemas/FormStepLiterals'
+    PrefillAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique attribute identifier
+        label:
+          type: string
+          description: The human-readable name for an attribute.
+      required:
+      - id
+      - label
     PrefillPlugin:
       type: object
       properties:
@@ -1863,6 +1944,30 @@ components:
       required:
       - name
       - price
+    RegistrationAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique attribute identifier
+        label:
+          type: string
+          description: The human-readable name for an attribute.
+      required:
+      - id
+      - label
+    RegistrationPlugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+      required:
+      - id
+      - label
     ReportStatus:
       type: object
       properties:
