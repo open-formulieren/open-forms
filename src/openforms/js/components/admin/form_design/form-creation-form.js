@@ -18,6 +18,7 @@ import { FormDefinitionsContext, PluginsContext } from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import AuthPluginField from "./AuthPluginField";
+import TinyMCEEditor from "./Editor";
 
 const initialFormState = {
     formName: '',
@@ -41,6 +42,7 @@ const initialFormState = {
     formIsActive: true,
     formIsDeleted: false,
     formInMaintenanceMode: false,
+    formSubmissionPageTemplate: '',
     newForm: true,
     formSteps: {
         loading: true,
@@ -294,6 +296,7 @@ const getFormData = async (formUuid, dispatch) => {
                     formIsActive: response.data.active,
                     formIsDeleted: response.data.isDeleted,
                     formInMaintenanceMode: response.data.maintenanceMode,
+                    formSubmissionPageTemplate: response.data.submissionConfirmationTemplate,
                 },
             });
             // Get the form definition data from the form steps
@@ -536,6 +539,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             active: state.formIsActive,
             isDeleted: state.formIsDeleted,
             maintenanceMode: state.formInMaintenanceMode,
+            submissionConfirmationTemplate: state.formSubmissionPageTemplate,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -823,6 +827,24 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         />
                     </PluginsContext.Provider>
                 </FormDefinitionsContext.Provider>
+            </Fieldset>
+
+            <Fieldset title="Submission confirmation template">
+                <FormRow>
+                    <Field
+                        name="formSubmissionPageTemplate"
+                        label="Submission page content"
+                        helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                        errors={state.errors.submissionConfirmationTemplate}
+                    >
+                        <TinyMCEEditor
+                            content={state.formSubmissionPageTemplate}
+                            onEditorChange={(newValue, editor) => onFieldChange(
+                                {target: {name: 'formSubmissionPageTemplate', value: newValue}}
+                            )}
+                        />
+                    </Field>
+                </FormRow>
             </Fieldset>
 
             <SubmitRow onSubmit={onSubmit} isDefault />

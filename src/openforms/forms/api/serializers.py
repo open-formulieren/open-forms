@@ -112,6 +112,7 @@ class FormSerializer(serializers.ModelSerializer):
             "maintenance_mode",
             "active",
             "is_deleted",
+            "submission_confirmation_template",
         )
         extra_kwargs = {
             "uuid": {
