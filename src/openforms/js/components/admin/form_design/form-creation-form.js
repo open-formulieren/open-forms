@@ -38,6 +38,7 @@ const initialFormState = {
             value: ''
         },
     },
+    formIsActive: true,
     newForm: true,
     formSteps: {
         loading: true,
@@ -288,6 +289,7 @@ const getFormData = async (formUuid, dispatch) => {
                 payload: {
                     selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
                     formShowProgressIndicator: response.data.showProgressIndicator,
+                    formIsActive: response.data.active,
                 },
             });
             // Get the form definition data from the form steps
@@ -527,6 +529,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             },
             authenticationBackends: state.selectedAuthPlugins,
             showProgressIndicator: state.formShowProgressIndicator,
+            active: state.formIsActive,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -757,6 +760,16 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         checked={state.formShowProgressIndicator}
                         errors={state.errors.showProgressIndicator}
                         onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formShowProgressIndicator}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="formIsActive"
+                        label="Active"
+                        helpText="Whether the form is active or not"
+                        checked={state.formIsActive}
+                        errors={state.errors.active}
+                        onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formIsActive}}) }
                     />
                 </FormRow>
             </Fieldset>

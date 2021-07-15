@@ -109,6 +109,7 @@ class FormSerializer(serializers.ModelSerializer):
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
+            "active",
         )
         extra_kwargs = {
             "uuid": {
