@@ -1,16 +1,17 @@
-import React, {useRef} from "react";
+import React, {useContext, useRef} from "react";
 import {Editor} from "@tinymce/tinymce-react";
+import {TinyMceContext} from "./Context";
 
-import {TINYMCE_URL} from "./constants";
 
 
 const TinyMCEEditor = ({content, onEditorChange}) => {
     const editorRef = useRef(null);
+    const tinyMceUrl = useContext(TinyMceContext);
 
     return (
         <>
             <Editor
-                tinymceScriptSrc={TINYMCE_URL}
+                tinymceScriptSrc={tinyMceUrl}
                 onInit={(evt, editor) => editorRef.current = editor}
                 value={content}
                 init={{

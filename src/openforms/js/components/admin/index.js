@@ -10,7 +10,7 @@ const mountForm = () => {
     if (!formCreationFormNodes.length) return;
 
     for (const formCreationFormNode of formCreationFormNodes) {
-        const { formUuid, formName, formSlug, csrftoken,
+        const { formUuid, formName, formSlug, csrftoken, tinymceUrl,
                 formBeginText, formPreviousText, formChangeText, formConfirmText } = formCreationFormNode.dataset;
 
         ReactModal.setAppElement(formCreationFormNode);
@@ -25,6 +25,7 @@ const mountForm = () => {
                 formPreviousText={formPreviousText}
                 formChangeText={formChangeText}
                 formConfirmText={formConfirmText}
+                tinyMceUrl={tinymceUrl}
             />,
             formCreationFormNode
         );

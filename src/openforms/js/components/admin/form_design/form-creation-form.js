@@ -14,7 +14,7 @@ import Fieldset from '../forms/Fieldset';
 import {TextInput, Checkbox} from '../forms/Inputs';
 import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
-import { FormDefinitionsContext, PluginsContext } from './Context';
+import {FormDefinitionsContext, PluginsContext, TinyMceContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import AuthPluginField from "./AuthPluginField";
@@ -376,7 +376,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText }) => {
+                              formBeginText, formPreviousText, formChangeText, formConfirmText, tinyMceUrl }) => {
     const initialState = {
         ...initialFormState,
         formUuid: formUuid,
@@ -837,12 +837,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
                         errors={state.errors.submissionConfirmationTemplate}
                     >
-                        <TinyMCEEditor
-                            content={state.formSubmissionPageTemplate}
-                            onEditorChange={(newValue, editor) => onFieldChange(
-                                {target: {name: 'formSubmissionPageTemplate', value: newValue}}
-                            )}
-                        />
+                        <TinyMceContext.Provider value={tinyMceUrl}>
+                            <TinyMCEEditor
+                                content={state.formSubmissionPageTemplate}
+                                onEditorChange={(newValue, editor) => onFieldChange(
+                                    {target: {name: 'formSubmissionPageTemplate', value: newValue}}
+                                )}
+                            />
+                        </TinyMceContext.Provider>
                     </Field>
                 </FormRow>
             </Fieldset>
@@ -878,6 +880,7 @@ FormCreationForm.propTypes = {
     formPreviousText: PropTypes.string.isRequired,
     formChangeText: PropTypes.string.isRequired,
     formConfirmText: PropTypes.string.isRequired,
+    tinyMceUrl: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };
