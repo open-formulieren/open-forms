@@ -109,7 +109,7 @@ class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
 class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
     submission_step = factory.SubFactory(SubmissionStepFactory)
     temporary_file = factory.SubFactory(TemporaryFileUploadFactory)
-    content = factory.django.FileField(filename="attachment.pdf")
+    content = factory.django.FileField(filename="attachment.pdf", data=b"content")
     form_key = factory.Faker("bs")
     file_name = factory.Faker("file_name")
     original_name = factory.Faker("file_name")

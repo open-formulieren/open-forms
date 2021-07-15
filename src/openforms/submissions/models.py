@@ -475,6 +475,9 @@ class SubmissionFileAttachmentQuerySet(models.QuerySet):
             files[file.form_key].append(file)
         return dict(files)
 
+    def as_mail_tuples(self) -> List[Tuple[str, Any, str]]:
+        return [(f.get_display_name(), f.content.read(), f.content_type) for f in self]
+
 
 class SubmissionFileAttachmentManager(models.Manager):
     def create_from_upload(

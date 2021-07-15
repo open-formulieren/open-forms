@@ -16,6 +16,7 @@ from openforms.forms.tests.factories import (
 from openforms.registrations.contrib.email.plugin import EmailRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
 
@@ -37,11 +38,22 @@ class EmailBackendTests(TestCase):
         data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
         submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create(
             submission=submission, form_step=self.fs, data=data
         )
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-foo.bin",
+            content_type="application/foo",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-bar.txt",
+            content_type="text/bar",
+        )
 
         email_submission = EmailRegistration("email")
         email_submission.register_submission(submission, email_form_options)
@@ -69,6 +81,15 @@ class EmailBackendTests(TestCase):
         )
         self.assertIn("foo: bar", message.body)
         self.assertIn("some_list: value1, value2", message.body)
+
+        self.assertEqual(len(message.attachments), 2)
+        self.assertEqual(message.attachments[0][0], "my-foo.bin")
+        self.assertEqual(message.attachments[0][1], b"content")  # still bytes
+        self.assertEqual(message.attachments[0][2], "application/foo")
+
+        self.assertEqual(message.attachments[1][0], "my-bar.txt")
+        self.assertEqual(message.attachments[1][1], "content")  # this is text now
+        self.assertEqual(message.attachments[1][2], "text/bar")
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_strip_out_urls(self, m):
