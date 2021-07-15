@@ -29,7 +29,9 @@ const emptyConfiguration = {
  * but we're fighting the library at this point.
  *
  */
-const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, configuration=emptyConfiguration, onChange, onFieldChange, errors, ...props }) => {
+const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
+                                loginRequired=false, configuration=emptyConfiguration, onChange,
+                                onFieldChange, onLiteralFieldChange, errors, ...props }) => {
 
     const setSlug = () => {
         // do nothing if there's already a slug set
@@ -78,6 +80,35 @@ const FormStepDefinition = ({ url='', name='', slug='', loginRequired=false, con
                     </Field>
                 </FormRow>
                 <FormRow>
+                    <Field
+                        name='previousText'
+                        label='Previous text'
+                        helpText='The text that will be displayed in the form step to go to the previous step.
+                                    Leave blank to get value from global configuration.'
+                        fieldBox
+                    >
+                        <TextInput value={previousText} onChange={onLiteralFieldChange} maxLength="50"/>
+                    </Field>
+                    <Field
+                        name='saveText'
+                        label='Save text'
+                        helpText='The text that will be displayed in the form step to save the current information.
+                                    Leave blank to get value from global configuration.'
+                        fieldBox
+                    >
+                        <TextInput value={saveText} onChange={onLiteralFieldChange} maxLength="50"/>
+                    </Field>
+                    <Field
+                        name='nextText'
+                        label='Next text'
+                        helpText='The text that will be displayed in the form step to go to the next step.
+                                    Leave blank to get value from global configuration.'
+                        fieldBox
+                    >
+                        <TextInput value={nextText} onChange={onLiteralFieldChange} maxLength="50"/>
+                    </Field>
+                </FormRow>
+                <FormRow>
                     <Checkbox
                         label="Login required?"
                         name="loginRequired"
@@ -101,9 +132,13 @@ FormStepDefinition.propTypes = {
     name: PropTypes.string,
     url: PropTypes.string,
     slug: PropTypes.string,
+    previousText: PropTypes.string,
+    saveText: PropTypes.string,
+    nextText: PropTypes.string,
     loginRequired: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
+    onLiteralFieldChange: PropTypes.func.isRequired,
     errors: PropTypes.object
 };
 

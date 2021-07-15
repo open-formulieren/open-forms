@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -14,7 +15,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.tests.utils import NOOP_CACHES
 
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -229,6 +232,138 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["maintenanceMode"], False)
 
+    def test_global_config_text_field_values_returned_through_api(self):
+        # set the defaults to compare
+        config = GlobalConfiguration.get_solo()
+        config.form_begin_text = "Begin form"
+        config.form_previous_text = "Previous page"
+        config.form_change_text = "Change"
+        config.form_confirm_text = "Confirm"
+        config.save()
+
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        literals_data = response.json()["literals"]
+        self.assertEqual(literals_data["beginText"]["resolved"], "Begin form")
+        self.assertEqual(literals_data["beginText"]["value"], "")
+        self.assertEqual(literals_data["previousText"]["resolved"], "Previous page")
+        self.assertEqual(literals_data["previousText"]["value"], "")
+        self.assertEqual(literals_data["changeText"]["resolved"], "Change")
+        self.assertEqual(literals_data["changeText"]["value"], "")
+        self.assertEqual(literals_data["confirmText"]["resolved"], "Confirm")
+        self.assertEqual(literals_data["confirmText"]["value"], "")
+
+    def test_global_config_steps_text_field_values_returned_through_api(self):
+        # set the defaults to compare
+        config = GlobalConfiguration.get_solo()
+        config.form_step_previous_text = "Previous page"
+        config.form_step_save_text = "Save current information"
+        config.form_step_next_text = "Next"
+        config.save()
+
+        form = FormFactory.create()
+        FormStepFactory.create(form=form)
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        step_literals_data = response.json()["steps"][0]["literals"]
+        self.assertEqual(
+            step_literals_data["previousText"]["resolved"], "Previous page"
+        )
+        self.assertEqual(step_literals_data["previousText"]["value"], "")
+        self.assertEqual(
+            step_literals_data["saveText"]["resolved"], "Save current information"
+        )
+        self.assertEqual(step_literals_data["saveText"]["value"], "")
+        self.assertEqual(step_literals_data["nextText"]["resolved"], "Next")
+        self.assertEqual(step_literals_data["nextText"]["value"], "")
+
+    def test_overridden_text_field_values_returned_through_api(self):
+        form = FormFactory.create(
+            begin_text="Overridden Begin Text",
+            previous_text="Overridden Previous Text",
+            change_text="Overridden Change Text",
+            confirm_text="Overridden Confirm Text",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        literals_data = response.json()["literals"]
+        self.assertEqual(
+            literals_data["beginText"]["resolved"], "Overridden Begin Text"
+        )
+        self.assertEqual(literals_data["beginText"]["value"], "Overridden Begin Text")
+        self.assertEqual(
+            literals_data["previousText"]["resolved"], "Overridden Previous Text"
+        )
+        self.assertEqual(
+            literals_data["previousText"]["value"], "Overridden Previous Text"
+        )
+        self.assertEqual(
+            literals_data["changeText"]["resolved"], "Overridden Change Text"
+        )
+        self.assertEqual(literals_data["changeText"]["value"], "Overridden Change Text")
+        self.assertEqual(
+            literals_data["confirmText"]["resolved"], "Overridden Confirm Text"
+        )
+        self.assertEqual(
+            literals_data["confirmText"]["value"], "Overridden Confirm Text"
+        )
+
+    def test_overridden_steps_text_field_values_returned_through_api(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            previous_text="Overridden Previous Text",
+            save_text="Overridden Save Text",
+            next_text="Overridden Next Text",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        step_literals_data = response.json()["steps"][0]["literals"]
+        self.assertEqual(
+            step_literals_data["previousText"]["resolved"],
+            "Overridden Previous Text",
+        )
+        self.assertEqual(
+            step_literals_data["previousText"]["value"], "Overridden Previous Text"
+        )
+        self.assertEqual(
+            step_literals_data["saveText"]["resolved"], "Overridden Save Text"
+        )
+        self.assertEqual(
+            step_literals_data["saveText"]["value"], "Overridden Save Text"
+        )
+        self.assertEqual(
+            step_literals_data["nextText"]["resolved"], "Overridden Next Text"
+        )
+        self.assertEqual(
+            step_literals_data["nextText"]["value"], "Overridden Next Text"
+        )
+
     def test_create_form_in_maintenance_mode_successful(self):
         self.user.is_staff = True
         self.user.save()
@@ -247,6 +382,32 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.slug, "test-post-form")
         self.assertEqual(form.maintenance_mode, True)
 
+    def test_create_form_with_custom_texts_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "literals": {
+                "beginText": {"value": "Different Begin Text"},
+                "previousText": {"value": "Different Previous Text"},
+                "changeText": {"value": "Different Change Text"},
+                "confirmText": {"value": "Different Confirm Text"},
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.begin_text, "Different Begin Text")
+        self.assertEqual(form.previous_text, "Different Previous Text")
+        self.assertEqual(form.change_text, "Different Change Text")
+        self.assertEqual(form.confirm_text, "Different Confirm Text")
+
     def test_updating_of_form_to_put_it_in_maintenance_mode(self):
         form = FormFactory.create()
         self.user.is_staff = True
@@ -261,6 +422,46 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertEqual(form.maintenance_mode, True)
+
+    def test_updating_of_form_texts_successful(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "literals": {
+                "beginText": {"value": "Different Begin Text"},
+                "previousText": {"value": "Different Previous Text"},
+                "changeText": {"value": "Different Change Text"},
+                "confirmText": {"value": "Different Confirm Text"},
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.begin_text, "Different Begin Text")
+        self.assertEqual(form.previous_text, "Different Previous Text")
+        self.assertEqual(form.change_text, "Different Change Text")
+        self.assertEqual(form.confirm_text, "Different Confirm Text")
+
+    def test_updating_of_single_form_text_successful(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "literals": {
+                "beginText": {"value": "Different Begin Text"},
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.begin_text, "Different Begin Text")
 
     def test_complete_update_of_form_with_incomplete_data_unsuccessful(self):
         form = FormFactory.create()
@@ -377,6 +578,37 @@ class FormsStepsAPITests(APITestCase):
             1,
         )
 
+    def test_create_form_step_successful_with_custom_button_text(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+                "saveText": {"value": "Different Save Text"},
+                "nextText": {"value": "Different Next Text"},
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
+
     def test_create_form_step_unsuccessful_with_bad_data(self):
         self.user.is_staff = True
         self.user.save()
@@ -443,6 +675,38 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).count(),
             1,
         )
+
+    def test_complete_form_step_update_with_custom_texts_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+                "saveText": {"value": "Different Save Text"},
+                "nextText": {"value": "Different Next Text"},
+            },
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
 
     def test_complete_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
@@ -544,6 +808,64 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).count(),
             1,
         )
+
+    def test_partial_form_step_update_with_texts_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+                "saveText": {"value": "Different Save Text"},
+                "nextText": {"value": "Different Next Text"},
+            },
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
+        self.assertEqual(form_step.save_text, "Different Save Text")
+        self.assertEqual(form_step.next_text, "Different Next Text")
+
+    def test_partial_form_step_update_with_of_single_text_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.step.form.uuid, "uuid": self.step.uuid},
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.other_form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+            },
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.other_form_definition).count(),
+            1,
+        )
+        form_step = FormStep.objects.get(form_definition=self.other_form_definition)
+        self.assertEqual(form_step.previous_text, "Different Previous Text")
 
     def test_partial_form_step_update_unsuccessful_when_form_step_not_found(self):
         self.user.is_staff = True
@@ -1148,6 +1470,7 @@ class CopyFormAPITests(APITestCase):
         )
         self.token = TokenFactory(user=self.user)
 
+    @override_settings(CACHES=NOOP_CACHES)
     def test_form_copy(self):
         self.user.is_staff = True
         self.user.save()

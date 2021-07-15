@@ -12,10 +12,44 @@ from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep
 
 
+class ButtonTextSerializer(serializers.Serializer):
+    resolved = serializers.SerializerMethodField()
+    value = serializers.CharField(allow_blank=True)
+
+    def __init__(self, resolved_getter=None, raw_field=None, *args, **kwargs):
+        kwargs.setdefault("source", "*")
+        self.resolved_getter = resolved_getter
+        self.raw_field = raw_field
+        super().__init__(*args, **kwargs)
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+
+        if self.resolved_getter is None:
+            self.resolved_getter = f"get_{field_name}"
+
+        if self.raw_field is None:
+            self.raw_field = field_name
+
+        value_field = self.fields["value"]
+        value_field.source = self.raw_field
+        value_field.bind(value_field.field_name, self)
+
+    def get_resolved(self, obj):
+        return getattr(obj, self.resolved_getter)()
+
+
+class FormStepLiteralsSerializer(serializers.Serializer):
+    previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
+    save_text = ButtonTextSerializer(raw_field="save_text", required=False)
+    next_text = ButtonTextSerializer(raw_field="next_text", required=False)
+
+
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
+    literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
         source="*",
@@ -31,6 +65,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
             "slug",
             "form_definition",
             "index",
+            "literals",
             "url",
         )
         extra_kwargs = {
@@ -38,6 +73,13 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
                 "read_only": True,
             }
         }
+
+
+class FormLiteralsSerializer(serializers.Serializer):
+    previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
+    begin_text = ButtonTextSerializer(raw_field="begin_text", required=False)
+    change_text = ButtonTextSerializer(raw_field="change_text", required=False)
+    confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -50,6 +92,7 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
+    literals = FormLiteralsSerializer(source="*", required=False)
 
     class Meta:
         model = Form
@@ -59,6 +102,7 @@ class FormSerializer(serializers.ModelSerializer):
             "login_required",
             "authentication_backends",
             "login_options",
+            "literals",
             "product",
             "slug",
             "url",
@@ -112,7 +156,14 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = FormDefinition
-        fields = ("url", "uuid", "name", "slug", "configuration", "login_required")
+        fields = (
+            "url",
+            "uuid",
+            "name",
+            "slug",
+            "configuration",
+            "login_required",
+        )
         extra_kwargs = {
             "url": {
                 "view_name": "api:formdefinition-detail",
@@ -163,6 +214,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
+    literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         source="*",
         view_name="api:form-steps-detail",
@@ -185,6 +237,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "login_required",
+            "literals",
         )
 
         extra_kwargs = {

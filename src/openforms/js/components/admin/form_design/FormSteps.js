@@ -7,7 +7,7 @@ import FormStepsNav from './FormStepsNav';
 import Loader from '../Loader';
 
 
-const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onReplace, onAdd, submitting=false, errors=[] }) => {
+const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDelete, onReorder, onReplace, onAdd, submitting=false, errors=[] }) => {
     const [activeStepIndex, setActiveStepIndex] = useState(steps.length ? 0 : null);
     const activeStep = steps.length ? steps[activeStepIndex] : null;
 
@@ -44,6 +44,7 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onDelete, onReorder, onRep
                             data={activeStep}
                             onEdit={onEdit.bind(null, activeStepIndex)}
                             onFieldChange={onFieldChange.bind(null, activeStepIndex)}
+                            onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
                             onReplace={onReplace.bind(null, activeStepIndex)}
                             errors={errors.length ? errors[activeStepIndex] : {}}
                         />
@@ -67,6 +68,7 @@ FormSteps.propTypes = {
     })),
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
+    onLiteralFieldChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,

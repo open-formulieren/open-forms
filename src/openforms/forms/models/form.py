@@ -4,15 +4,18 @@ from typing import List
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from openforms.authentication.fields import BackendMultiSelectField
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
+
+from .utils import literal_getter
 
 
 class FormQuerySet(models.QuerySet):
@@ -64,6 +67,46 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         ),
     )
+    begin_text = models.CharField(
+        _("begin text"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The text that will be displayed at the start of the form to "
+            "indicate the user can begin to fill in the form. "
+            "Leave blank to get value from global configuration."
+        ),
+    )
+    previous_text = models.CharField(
+        _("previous text"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "go to the previous step. "
+            "Leave blank to get value from global configuration."
+        ),
+    )
+    change_text = models.CharField(
+        _("change text"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "change a certain step. "
+            "Leave blank to get value from global configuration."
+        ),
+    )
+    confirm_text = models.CharField(
+        _("confirm text"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The text that will be displayed in the overview page to "
+            "confirm the form is filled in correctly. "
+            "Leave blank to get value from global configuration."
+        ),
+    )
 
     # life cycle management
     active = models.BooleanField(default=False)
@@ -77,6 +120,11 @@ class Form(models.Model):
     _is_deleted = models.BooleanField(default=False)
 
     objects = FormManager()
+
+    get_begin_text = literal_getter("begin_text", "form_begin_text")
+    get_previous_text = literal_getter("previous_text", "form_previous_text")
+    get_change_text = literal_getter("change_text", "form_change_text")
+    get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
 
     class Meta:
         verbose_name = _("form")

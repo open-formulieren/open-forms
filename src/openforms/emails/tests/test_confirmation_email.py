@@ -1,20 +1,16 @@
 from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.tests.utils import NOOP_CACHES
 
 from ..models import ConfirmationEmailTemplate
-from .factories import ConfirmationEmailTemplateFactory
 
 NESTED_COMPONENT_CONF = {
     "display": "form",
@@ -52,6 +48,7 @@ NESTED_COMPONENT_CONF = {
 }
 
 
+@override_settings(CACHES=NOOP_CACHES)
 class ConfirmationEmailTests(TestCase):
     def test_validate_content_can_be_parsed(self):
         email = ConfirmationEmailTemplate(content="{{{}}}")

@@ -24,6 +24,20 @@ const initialFormState = {
     formUuid: '',
     formSlug: '',
     formShowProgressIndicator: true,
+    literals: {
+        beginText: {
+            value: ''
+        },
+        previousText: {
+            value: ''
+        },
+        changeText: {
+            value: ''
+        },
+        confirmText: {
+            value: ''
+        },
+    },
     newForm: true,
     formSteps: {
         loading: true,
@@ -49,6 +63,17 @@ const newStepData = {
     formDefinition: '',
     slug: '',
     url: '',
+    literals: {
+        previousText: {
+            value: ''
+        },
+        saveText: {
+            value: ''
+        },
+        nextText: {
+            value: ''
+        },
+    },
     isNew: true,
 };
 
@@ -66,6 +91,11 @@ function reducer(draft, action) {
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             draft[name] = value;
+            break;
+        }
+        case 'LITERAL_FIELD_CHANGED': {
+            const { name, value } = action.payload;
+            draft['literals'][name]['value'] = value;
             break;
         }
         case 'FORM_DEFINITIONS_LOADED': {
@@ -160,6 +190,17 @@ function reducer(draft, action) {
                     name,
                     slug,
                     url,
+                    literals: {
+                        previousText: {
+                            value: ''
+                        },
+                        saveText: {
+                            value: ''
+                        },
+                        nextText: {
+                            value: ''
+                        },
+                    },
                     isNew: false,
                 };
             }
@@ -174,6 +215,11 @@ function reducer(draft, action) {
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
             draft.formSteps.data[index][name] = value;
+            break;
+        }
+        case 'STEP_LITERAL_FIELD_CHANGED': {
+            const {index, name, value} = action.payload;
+            draft.formSteps.data[index]['literals'][name]['value'] = value;
             break;
         }
         case 'MOVE_UP_STEP': {
@@ -320,12 +366,27 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
+const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
+                              formBeginText, formPreviousText, formChangeText, formConfirmText }) => {
     const initialState = {
         ...initialFormState,
         formUuid: formUuid,
         formName: formName,
         formSlug: formSlug,
+        literals: {
+            beginText: {
+                value: formBeginText
+            },
+            previousText: {
+                value: formPreviousText
+            },
+            changeText: {
+                value: formChangeText
+            },
+            confirmText: {
+                value: formConfirmText
+            },
+        },
         newForm: !formUuid,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
@@ -367,6 +428,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         const { name, value } = event.target;
         dispatch({
             type: 'FIELD_CHANGED',
+            payload: {name, value},
+        });
+    };
+
+    const onLiteralFieldChange = (event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'LITERAL_FIELD_CHANGED',
             payload: {name, value},
         });
     };
@@ -413,6 +482,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         });
     };
 
+    const onStepLiteralFieldChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'STEP_LITERAL_FIELD_CHANGED',
+            payload: {name, value, index},
+        });
+    };
+
     const onStepReorder = (index, direction) => {
         if (direction === 'up') {
             dispatch({
@@ -434,13 +511,26 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
         const formData = {
             name: state.formName,
             slug: state.formSlug,
+            literals: {
+                beginText: {
+                    value: state.literals.beginText.value
+                },
+                previousText: {
+                    value: state.literals.previousText.value
+                },
+                changeText: {
+                    value: state.literals.changeText.value
+                },
+                confirmText: {
+                    value: state.literals.confirmText.value
+                }
+            },
             authenticationBackends: state.selectedAuthPlugins,
             showProgressIndicator: state.formShowProgressIndicator,
         };
 
         const createOrUpdate = state.newForm ? post : put;
         const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.formUuid}`;
-
 
         try {
             var formResponse = await createOrUpdate(
@@ -497,7 +587,18 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         name: step.name,
                         slug: step.slug,
                         index: index,
-                        formDefinition: definitionResponse.data.url
+                        formDefinition: definitionResponse.data.url,
+                        literals: {
+                            nextText: {
+                                value: step.literals.nextText.value
+                            },
+                            saveText: {
+                                value: step.literals.saveText.value
+                            },
+                            previousText: {
+                                value: step.literals.previousText.value
+                            },
+                        }
                     }
                 );
                 if (!stepResponse.ok) {
@@ -581,6 +682,64 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                     </Field>
                 </FormRow>
                 <FormRow>
+                    <Field
+                        name='beginText'
+                        label='Begin text'
+                        helpText='The text that will be displayed at the start of the form to indicate
+                                    the user can begin to fill in the form.
+                                    Leave blank to get value from global configuration.'
+                    >
+                        <TextInput
+                            value={state.literals.beginText.value}
+                            onChange={onLiteralFieldChange}
+                            maxLength="50"
+                        />
+                    </Field>
+                </FormRow>
+                <FormRow>
+                    <Field
+                        name='previousText'
+                        label='Previous text'
+                        helpText='The text that will be displayed in the overview page to go to the previous step.
+                                    Leave blank to get value from global configuration.'
+                    >
+                        <TextInput
+                            value={state.literals.previousText.value}
+                            onChange={onLiteralFieldChange}
+                            maxLength="50"
+                        />
+                    </Field>
+                </FormRow>
+                <FormRow>
+                    <Field
+                        name='changeText'
+                        label='Change text'
+                        helpText='The text that will be displayed in the overview page to change a certain step.
+                                    Leave blank to get value from global configuration.'
+                    >
+                        <TextInput
+                            value={state.literals.changeText.value}
+                            onChange={onLiteralFieldChange}
+                            maxLength="50"
+                        />
+                    </Field>
+                </FormRow>
+                <FormRow>
+                    <Field
+                        name='confirmText'
+                        label='Confirm text'
+                        helpText='The text that will be displayed in the overview page to confirm
+                                    the form is filled in correctly.
+                                    Leave blank to get value from global configuration.'
+                    >
+                        <TextInput
+                            value={state.literals.confirmText.value}
+                            onChange={onLiteralFieldChange}
+                            maxLength="50"
+                        />
+                    </Field>
+                </FormRow>
+                <FormRow>
                     <AuthPluginField
                         loading={state.availableAuthPlugins.loading}
                         availableAuthPlugins={state.availableAuthPlugins.data}
@@ -615,6 +774,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                             loadingErrors={state.errors.loadingErrors}
                             onEdit={onStepEdit}
                             onFieldChange={onStepFieldChange}
+                            onLiteralFieldChange={onStepLiteralFieldChange}
                             onDelete={onStepDelete}
                             onReorder={onStepReorder}
                             onReplace={onStepReplace}
@@ -653,6 +813,10 @@ FormCreationForm.propTypes = {
     formUuid: PropTypes.string.isRequired,
     formName: PropTypes.string.isRequired,
     formSlug: PropTypes.string.isRequired,
+    formBeginText: PropTypes.string.isRequired,
+    formPreviousText: PropTypes.string.isRequired,
+    formChangeText: PropTypes.string.isRequired,
+    formConfirmText: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

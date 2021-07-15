@@ -7,8 +7,8 @@ import FAIcon from '../FAIcon';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
-const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) => {
-    const { configuration, formDefinition, name, slug, loginRequired, isNew } = data;
+const FormStep = ({ title, data, onEdit, onFieldChange, onLiteralFieldChange, onReplace, errors={} }) => {
+    const { configuration, formDefinition, name, slug, literals, loginRequired, isNew } = data;
 
     const previousFormDefinition = usePrevious(formDefinition);
     let forceBuilderUpdate = false;
@@ -34,9 +34,13 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onReplace, errors={} }) 
                 name={name}
                 slug={slug}
                 url={formDefinition}
+                previousText={literals.previousText.value}
+                saveText={literals.saveText.value}
+                nextText={literals.nextText.value}
                 configuration={configuration}
                 loginRequired={loginRequired}
                 onFieldChange={onFieldChange}
+                onLiteralFieldChange={onLiteralFieldChange}
                 onChange={onEdit}
                 forceUpdate={forceBuilderUpdate}
                 errors={errors}
@@ -60,6 +64,7 @@ FormStep.propTypes = {
     }).isRequired,
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
+    onLiteralFieldChange: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
     errors: PropTypes.object,
 };
