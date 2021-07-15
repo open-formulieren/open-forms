@@ -63,6 +63,7 @@ class FormSerializer(serializers.ModelSerializer):
             "slug",
             "url",
             "steps",
+            "show_progress_indicator",
             "maintenance_mode",
         )
         extra_kwargs = {

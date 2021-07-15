@@ -20,7 +20,7 @@ const TextInput = (props) => (<Input type="text" {...props} />);
 
 const NumberInput = (props) => (<Input type="number" {...props} />);
 
-const Checkbox = ({ name, label, ...extraProps }) => {
+const Checkbox = ({ name, label, helpText, ...extraProps }) => {
     const prefix = useContext(PrefixContext);
     name = prefix ? `${prefix}-${name}` : name;
     const idFor = `id_${name}`;
@@ -33,6 +33,7 @@ const Checkbox = ({ name, label, ...extraProps }) => {
                 {...extraProps}
             />
             <label className="vCheckboxLabel inline" htmlFor={idFor}>{label}</label>
+            { helpText ? <div className="help">{helpText}</div> : null }
         </div>
     );
 };
@@ -40,6 +41,7 @@ const Checkbox = ({ name, label, ...extraProps }) => {
 Checkbox.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    helpText: PropTypes.string,
 };
 
 export { Input, TextInput, NumberInput, Checkbox };

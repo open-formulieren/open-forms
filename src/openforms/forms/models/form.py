@@ -57,6 +57,14 @@ class Form(models.Model):
         blank=True,
     )
 
+    show_progress_indicator = models.BooleanField(
+        _("show progress indicator"),
+        default=True,
+        help_text=_(
+            "Whether the step progression should be displayed in the UI or not."
+        ),
+    )
+
     # life cycle management
     active = models.BooleanField(default=False)
     maintenance_mode = models.BooleanField(

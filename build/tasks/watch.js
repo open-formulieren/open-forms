@@ -23,6 +23,7 @@ function watchBundles() {
         paths.jsSrc,
         paths.jsSpec,
         paths.scssSrc,
+        `${paths.sourcesRoot}js/`,
         `${paths.sourcesRoot}forms/static/`,
         `${paths.sourcesRoot}scss/admin/`,
     ],

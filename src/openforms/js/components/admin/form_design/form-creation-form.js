@@ -11,7 +11,7 @@ import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import {TextInput} from '../forms/Inputs';
+import {TextInput, Checkbox} from '../forms/Inputs';
 import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
 import { FormDefinitionsContext, PluginsContext } from './Context';
@@ -23,6 +23,7 @@ const initialFormState = {
     formName: '',
     formUuid: '',
     formSlug: '',
+    formShowProgressIndicator: true,
     newForm: true,
     formSteps: {
         loading: true,
@@ -240,6 +241,7 @@ const getFormData = async (formUuid, dispatch) => {
                 type: 'FORM_LOADED',
                 payload: {
                     selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
+                    formShowProgressIndicator: response.data.showProgressIndicator,
                 },
             });
             // Get the form definition data from the form steps
@@ -433,6 +435,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
             name: state.formName,
             slug: state.formSlug,
             authenticationBackends: state.selectedAuthPlugins,
+            showProgressIndicator: state.formShowProgressIndicator,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -584,6 +587,17 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug}) => {
                         selectedAuthPlugins={state.selectedAuthPlugins}
                         onChange={onAuthPluginChange}
                         errors={state.errors.authPlugins}
+                    />
+                </FormRow>
+
+                <FormRow>
+                    <Checkbox
+                        name="formShowProgressIndicator"
+                        label="Show progress indicator"
+                        helpText="Whether the step progression should be displayed in the UI or not."
+                        checked={state.formShowProgressIndicator}
+                        errors={state.errors.showProgressIndicator}
+                        onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formShowProgressIndicator}}) }
                     />
                 </FormRow>
             </Fieldset>
