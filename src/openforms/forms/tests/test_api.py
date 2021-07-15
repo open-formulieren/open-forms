@@ -69,7 +69,16 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 3)
+        self.assertEqual(len(response.json()), 4)
+
+    def test_non_staff_cant_access_deleted_form(self):
+        form = FormFactory.create(deleted_=True)
+
+        response = self.client.get(
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_retrieve_form_by_uuid(self):
         form = FormFactory.create()
@@ -978,7 +987,8 @@ class FormsStepsAPITests(APITestCase):
             reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        # The form is still visible for staff users (Needed for the CRUD admin page)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Submission still exists
         submission.refresh_from_db()
