@@ -4,7 +4,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import List, Mapping, Optional, Tuple
+from typing import Any, List, Mapping, Optional, Tuple
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
@@ -383,7 +383,9 @@ class SubmissionReport(models.Model):
             if info["type"] == "file":
                 files = attachment_data.get(key)
                 if files:
-                    submission_data[key] = _("attachment: %s") % (", ".join(file.get_display_name() for file in files))
+                    submission_data[key] = _("attachment: %s") % (
+                        ", ".join(file.get_display_name() for file in files)
+                    )
                 else:
                     submission_data[key] = _("attachment")
             else:

@@ -7,10 +7,10 @@ from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
 from .models import (
     Submission,
+    SubmissionFileAttachment,
     SubmissionReport,
     SubmissionStep,
     TemporaryFileUpload,
-    SubmissionFileAttachment,
 )
 
 
