@@ -1,6 +1,3 @@
-/*
-global URLify;
- */
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -17,8 +14,8 @@ import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
-import AuthPluginField from "./AuthPluginField";
 import TinyMCEEditor from "./Editor";
+import FormMetaFields from './FormMetaFields';
 
 const initialFormState = {
     form: {
@@ -97,12 +94,22 @@ function reducer(draft, action) {
         }
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
-            draft[name] = value;
-            break;
-        }
-        case 'LITERAL_FIELD_CHANGED': {
-            const { name, value } = action.payload;
-            draft['literals'][name]['value'] = value;
+            // names are prefixed like `form.foo` and `literals.bar`
+            const [prefix, fieldName] = name.split('.');
+
+            switch (prefix) {
+                case 'form': {
+                    draft.form[fieldName] = value;
+                    break;
+                }
+                case 'literals': {
+                    draft.literals[fieldName].value = value;
+                    break;
+                }
+                default: {
+                    throw new Error(`Unknown prefix: ${prefix}`);
+                }
+            }
             break;
         }
         case 'FORM_DEFINITIONS_LOADED': {
@@ -420,20 +427,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
     /**
      * Functions for handling events
      */
-    const setFormSlug = (event) => {
-        // do nothing if there's already a slug set
-        if (formSlug) return;
-
-        // sort-of taken from Django's jquery prepopulate module
-        const newSlug = URLify(event.target.value, 100, false);
-        onFieldChange({
-            target: {
-                name: 'formSlug',
-                value: newSlug,
-            }
-        });
-    };
-
     const onFieldChange = (event) => {
         const { name, value } = event.target;
         dispatch({
@@ -441,26 +434,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             payload: {name, value},
         });
     };
-
-    const onFormFieldChange = (event) => {
-        const { name, value } = event.target;
-        let fieldsChanged = {};
-        fieldsChanged[name] = value;
-
-        dispatch({
-            type: 'FIELD_CHANGED',
-            payload: {name: 'form', value: {...state.form, ...fieldsChanged}}
-        });
-    }
-
-    const onLiteralFieldChange = (event) => {
-        const { name, value } = event.target;
-        dispatch({
-            type: 'LITERAL_FIELD_CHANGED',
-            payload: {name, value},
-        });
-    };
-
     const onStepDelete = (index) => {
         dispatch({
             type: 'DELETE_STEP',
@@ -666,149 +639,15 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
     return (
         <>
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
-            <Fieldset>
-                <FormRow>
-                    <Field
-                        name='uuid'
-                        label='Form UUID'
-                        helpText='Unique identifier for the form'
-                        errors={state.errors.uuid}
-                        required
-                    >
-                        <TextInput value={state.form.uuid} onChange={onFormFieldChange} disabled={true}/>
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='name'
-                        label='Form name'
-                        helpText='Name of the form'
-                        errors={state.errors.name}
-                        required
-                    >
-                        <TextInput value={state.form.name} onChange={onFormFieldChange} onBlur={setFormSlug} />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='slug'
-                        label='Form slug'
-                        helpText='Slug of the form'
-                        errors={state.errors.slug}
-                        required
-                    >
-                        <TextInput value={state.form.slug} onChange={onFormFieldChange} />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='beginText'
-                        label='Begin text'
-                        helpText='The text that will be displayed at the start of the form to indicate
-                                    the user can begin to fill in the form.
-                                    Leave blank to get value from global configuration.'
-                    >
-                        <TextInput
-                            value={state.literals.beginText.value}
-                            onChange={onLiteralFieldChange}
-                            maxLength="50"
-                        />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='previousText'
-                        label='Previous text'
-                        helpText='The text that will be displayed in the overview page to go to the previous step.
-                                    Leave blank to get value from global configuration.'
-                    >
-                        <TextInput
-                            value={state.literals.previousText.value}
-                            onChange={onLiteralFieldChange}
-                            maxLength="50"
-                        />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='changeText'
-                        label='Change text'
-                        helpText='The text that will be displayed in the overview page to change a certain step.
-                                    Leave blank to get value from global configuration.'
-                    >
-                        <TextInput
-                            value={state.literals.changeText.value}
-                            onChange={onLiteralFieldChange}
-                            maxLength="50"
-                        />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <Field
-                        name='confirmText'
-                        label='Confirm text'
-                        helpText='The text that will be displayed in the overview page to confirm
-                                    the form is filled in correctly.
-                                    Leave blank to get value from global configuration.'
-                    >
-                        <TextInput
-                            value={state.literals.confirmText.value}
-                            onChange={onLiteralFieldChange}
-                            maxLength="50"
-                        />
-                    </Field>
-                </FormRow>
-                <FormRow>
-                    <AuthPluginField
-                        loading={state.availableAuthPlugins.loading}
-                        availableAuthPlugins={state.availableAuthPlugins.data}
-                        selectedAuthPlugins={state.selectedAuthPlugins}
-                        onChange={onAuthPluginChange}
-                        errors={state.errors.authPlugins}
-                    />
-                </FormRow>
-
-                <FormRow>
-                    <Checkbox
-                        name="showProgressIndicator"
-                        label="Show progress indicator"
-                        helpText="Whether the step progression should be displayed in the UI or not."
-                        checked={state.form.showProgressIndicator}
-                        errors={state.errors.showProgressIndicator}
-                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.showProgressIndicator}}) }
-                    />
-                </FormRow>
-                <FormRow>
-                    <Checkbox
-                        name="active"
-                        label="Active"
-                        helpText="Whether the form is active or not"
-                        checked={state.form.active}
-                        errors={state.errors.active}
-                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.active}}) }
-                    />
-                </FormRow>
-                <FormRow>
-                    <Checkbox
-                        name="isDeleted"
-                        label="Is deleted"
-                        helpText="Whether the form is (soft) deleted"
-                        checked={state.form.isDeleted}
-                        errors={state.errors.isDeleted}
-                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.isDeleted}}) }
-                    />
-                </FormRow>
-                <FormRow>
-                    <Checkbox
-                        name="maintenanceMode"
-                        label="Maintenance mode"
-                        helpText="Users will not be able to start the form if it is in maintenance mode."
-                        checked={state.form.maintenanceMode}
-                        errors={state.errors.maintenanceMode}
-                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.maintenanceMode}}) }
-                    />
-                </FormRow>
-            </Fieldset>
+            <FormMetaFields
+                form={state.form}
+                literals={state.literals}
+                onChange={onFieldChange}
+                errors={state.error}
+                availableAuthPlugins={state.availableAuthPlugins}
+                selectedAuthPlugins={state.selectedAuthPlugins}
+                onAuthPluginChange={onAuthPluginChange}
+            />
 
             <Fieldset title="Form design">
                 <FormDefinitionsContext.Provider value={state.formDefinitions}>
@@ -845,8 +684,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                     >
                         <TinyMCEEditor
                             content={state.form.submissionConfirmationTemplate}
-                            onEditorChange={(newValue, editor) => onFormFieldChange(
-                                {target: {name: 'submissionConfirmationTemplate', value: newValue}}
+                            onEditorChange={(newValue, editor) => onFieldChange(
+                                {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
                             )}
                         />
                     </Field>
