@@ -99,7 +99,6 @@ class FormTestCase(TestCase):
         step_2 = FormStepFactory.create(form=form, form_definition=def_2)
 
         def take_key(item):
-            print(item["key"])
             return item["key"]
 
         with self.subTest("recursive"):
