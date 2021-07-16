@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import ReactModal from 'react-modal';
 
 import {FormCreationForm} from './form_design/form-creation-form';
+import {TinyMceContext} from './form_design/Context';
 
 
 const mountForm = () => {
@@ -16,17 +17,18 @@ const mountForm = () => {
         ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
-            <FormCreationForm
-                csrftoken={csrftoken}
-                formUuid={formUuid}
-                formName={formName}
-                formSlug={formSlug}
-                formBeginText={formBeginText}
-                formPreviousText={formPreviousText}
-                formChangeText={formChangeText}
-                formConfirmText={formConfirmText}
-                tinyMceUrl={tinymceUrl}
-            />,
+            <TinyMceContext.Provider value={tinymceUrl}>
+                <FormCreationForm
+                    csrftoken={csrftoken}
+                    formUuid={formUuid}
+                    formName={formName}
+                    formSlug={formSlug}
+                    formBeginText={formBeginText}
+                    formPreviousText={formPreviousText}
+                    formChangeText={formChangeText}
+                    formConfirmText={formConfirmText}
+                />
+            </TinyMceContext.Provider>,
             formCreationFormNode
         );
     }
