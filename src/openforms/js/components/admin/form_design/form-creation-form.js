@@ -14,16 +14,23 @@ import Fieldset from '../forms/Fieldset';
 import {TextInput, Checkbox} from '../forms/Inputs';
 import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
-import { FormDefinitionsContext, PluginsContext } from './Context';
+import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import AuthPluginField from "./AuthPluginField";
+import TinyMCEEditor from "./Editor";
 
 const initialFormState = {
-    formName: '',
-    formUuid: '',
-    formSlug: '',
-    formShowProgressIndicator: true,
+    form: {
+        name: '',
+        uuid: '',
+        slug: '',
+        showProgressIndicator: true,
+        active: true,
+        isDeleted: false,
+        maintenanceMode: false,
+        submissionConfirmationTemplate: '',
+    },
     literals: {
         beginText: {
             value: ''
@@ -287,7 +294,7 @@ const getFormData = async (formUuid, dispatch) => {
                 type: 'FORM_LOADED',
                 payload: {
                     selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
-                    formShowProgressIndicator: response.data.showProgressIndicator,
+                    form: response.data,
                 },
             });
             // Get the form definition data from the form steps
@@ -370,9 +377,12 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                               formBeginText, formPreviousText, formChangeText, formConfirmText }) => {
     const initialState = {
         ...initialFormState,
-        formUuid: formUuid,
-        formName: formName,
-        formSlug: formSlug,
+        form: {
+            ...initialFormState.form,
+            uuid: formUuid,
+            name: formName,
+            slug: formSlug,
+        },
         literals: {
             beginText: {
                 value: formBeginText
@@ -431,6 +441,17 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             payload: {name, value},
         });
     };
+
+    const onFormFieldChange = (event) => {
+        const { name, value } = event.target;
+        let fieldsChanged = {};
+        fieldsChanged[name] = value;
+
+        dispatch({
+            type: 'FIELD_CHANGED',
+            payload: {name: 'form', value: {...state.form, ...fieldsChanged}}
+        });
+    }
 
     const onLiteralFieldChange = (event) => {
         const { name, value } = event.target;
@@ -509,8 +530,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
         // Update the form
         const formData = {
-            name: state.formName,
-            slug: state.formSlug,
+            ...state.form,
             literals: {
                 beginText: {
                     value: state.literals.beginText.value
@@ -526,11 +546,10 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 }
             },
             authenticationBackends: state.selectedAuthPlugins,
-            showProgressIndicator: state.formShowProgressIndicator,
         };
 
         const createOrUpdate = state.newForm ? post : put;
-        const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.formUuid}`;
+        const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
 
         try {
             var formResponse = await createOrUpdate(
@@ -650,35 +669,35 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             <Fieldset>
                 <FormRow>
                     <Field
-                        name='formUuid'
+                        name='uuid'
                         label='Form UUID'
                         helpText='Unique identifier for the form'
                         errors={state.errors.uuid}
                         required
                     >
-                        <TextInput value={state.formUuid} onChange={onFieldChange} disabled={true}/>
+                        <TextInput value={state.form.uuid} onChange={onFormFieldChange} disabled={true}/>
                     </Field>
                 </FormRow>
                 <FormRow>
                     <Field
-                        name='formName'
+                        name='name'
                         label='Form name'
                         helpText='Name of the form'
                         errors={state.errors.name}
                         required
                     >
-                        <TextInput value={state.formName} onChange={onFieldChange} onBlur={setFormSlug} />
+                        <TextInput value={state.form.name} onChange={onFormFieldChange} onBlur={setFormSlug} />
                     </Field>
                 </FormRow>
                 <FormRow>
                     <Field
-                        name='formSlug'
+                        name='slug'
                         label='Form slug'
                         helpText='Slug of the form'
                         errors={state.errors.slug}
                         required
                     >
-                        <TextInput value={state.formSlug} onChange={onFieldChange} />
+                        <TextInput value={state.form.slug} onChange={onFormFieldChange} />
                     </Field>
                 </FormRow>
                 <FormRow>
@@ -751,12 +770,42 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
                 <FormRow>
                     <Checkbox
-                        name="formShowProgressIndicator"
+                        name="showProgressIndicator"
                         label="Show progress indicator"
                         helpText="Whether the step progression should be displayed in the UI or not."
-                        checked={state.formShowProgressIndicator}
+                        checked={state.form.showProgressIndicator}
                         errors={state.errors.showProgressIndicator}
-                        onChange={ (event) => onFieldChange({target: {name: event.target.name, value: !state.formShowProgressIndicator}}) }
+                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.showProgressIndicator}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="active"
+                        label="Active"
+                        helpText="Whether the form is active or not"
+                        checked={state.form.active}
+                        errors={state.errors.active}
+                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.active}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="isDeleted"
+                        label="Is deleted"
+                        helpText="Whether the form is (soft) deleted"
+                        checked={state.form.isDeleted}
+                        errors={state.errors.isDeleted}
+                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.isDeleted}}) }
+                    />
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="maintenanceMode"
+                        label="Maintenance mode"
+                        helpText="Users will not be able to start the form if it is in maintenance mode."
+                        checked={state.form.maintenanceMode}
+                        errors={state.errors.maintenanceMode}
+                        onChange={ (event) => onFormFieldChange({target: {name: event.target.name, value: !state.form.maintenanceMode}}) }
                     />
                 </FormRow>
             </Fieldset>
@@ -784,6 +833,24 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                         />
                     </PluginsContext.Provider>
                 </FormDefinitionsContext.Provider>
+            </Fieldset>
+
+            <Fieldset title="Submission confirmation template">
+                <FormRow>
+                    <Field
+                        name="SubmissionConfirmationTemplate"
+                        label="Submission page content"
+                        helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                        errors={state.errors.submissionConfirmationTemplate}
+                    >
+                        <TinyMCEEditor
+                            content={state.form.submissionConfirmationTemplate}
+                            onEditorChange={(newValue, editor) => onFormFieldChange(
+                                {target: {name: 'submissionConfirmationTemplate', value: newValue}}
+                            )}
+                        />
+                    </Field>
+                </FormRow>
             </Fieldset>
 
             <SubmitRow onSubmit={onSubmit} isDefault />

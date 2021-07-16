@@ -93,6 +93,7 @@ class FormSerializer(serializers.ModelSerializer):
     )
     login_options = LoginOptionsReadOnlyField()
     literals = FormLiteralsSerializer(source="*", required=False)
+    is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
         model = Form
@@ -109,6 +110,9 @@ class FormSerializer(serializers.ModelSerializer):
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
+            "active",
+            "is_deleted",
+            "submission_confirmation_template",
         )
         extra_kwargs = {
             "uuid": {
