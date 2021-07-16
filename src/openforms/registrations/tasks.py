@@ -1,18 +1,23 @@
 import logging
 import traceback
 from datetime import timedelta
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Tuple
 
 from django.conf import settings
 from django.db import transaction
 
 from openforms.submissions.constants import RegistrationStatuses
-from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionReport,
+)
 
 from ..celery import app
 from ..submissions.attachments import (
     cleanup_submission_temporary_uploaded_files,
     cleanup_unclaimed_temporary_uploaded_files,
+    resize_attachment,
 )
 from .exceptions import RegistrationFailed
 
@@ -89,3 +94,9 @@ def cleanup_temporary_files_for(submission_id: int) -> NoReturn:
 def cleanup_unclaimed_temporary_files() -> NoReturn:
     days = settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS
     cleanup_unclaimed_temporary_uploaded_files(timedelta(days=days))
+
+
+@app.task()
+def resize_submission_attachment(attachment_id: int, size: Tuple[int, int]) -> NoReturn:
+    attachment = SubmissionFileAttachment.objects.get(id=attachment_id)
+    resize_attachment(attachment, size)

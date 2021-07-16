@@ -1,8 +1,13 @@
 from datetime import timedelta
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 from urllib.parse import urlparse
 
+from django.core.files.temp import NamedTemporaryFile
 from django.urls import Resolver404, resolve
+
+import PIL
+from glom import glom
+from PIL import Image
 
 from openforms.submissions.models import (
     Submission,
@@ -10,6 +15,8 @@ from openforms.submissions.models import (
     SubmissionStep,
     TemporaryFileUpload,
 )
+
+DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
 
 
 def temporary_upload_uuid_from_url(url: str) -> Optional[str]:
@@ -35,33 +42,31 @@ def temporary_upload_from_url(url: str) -> Optional[TemporaryFileUpload]:
 
 
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> dict:
-    # TODO replace this add-hoc iterator with form_step.iter_components(recursive=True) once it merges
-
-    # components = list(submission_step.form_step.iter_components(recursive=True))
-
-    def _iter_components(components):
-        for c in components:
-            yield c
-            if c.get("components"):
-                yield from _iter_components(c["components"])
-
-    components = submission_step.form_step.form_definition.configuration["components"]
-    components = list(_iter_components(components))
-
-    #  TODO end
+    components = list(submission_step.form_step.iter_components(recursive=True))
 
     uploads = resolve_uploads_from_data(components, submission_step.data)
 
     result = list()
     for key, (component, uploads) in uploads.items():
+        # grab resize settings
+        resize_apply = glom(component, "image.resize.apply", default=False)
+        resize_size = (
+            glom(component, "image.resize.width", default=DEFAULT_IMAGE_MAX_SIZE[0]),
+            glom(component, "image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]),
+        )
+
+        # formio sends a list of uploads even with multiple=False
         for upload in uploads:
             # TODO reformat the name (or grab from formio)
             # TODO validate data from component settings
-            # TODO do we need to de-duplicate?
             attachment, created = SubmissionFileAttachment.objects.create_from_upload(
                 submission_step, key, upload
             )
             result.append((attachment, created))
+
+            if created and resize_apply and resize_size:
+                # TODO swap for celery
+                resize_attachment.delay(attachment.id, resize_size)
 
     return result
 
@@ -129,6 +134,7 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
             upload = temporary_upload_from_url(info["url"])
             if not upload:
                 continue
+
             # TODO we might also need to pickup formio's formatted name
             uploads.append(upload)
 
@@ -136,3 +142,40 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
             result[key] = (component, uploads)
 
     return result
+
+
+def resize_attachment(
+    attachment: SubmissionFileAttachment, size: Tuple[int, int]
+) -> bool:
+    """
+    'safe' resize an attached image that might not be an image or not need resize at all
+    """
+    try:
+        # this might not actually be an image file; let's open it and see
+        image = Image.open(
+            attachment.content,
+            formats=(
+                "png",
+                "jpeg",
+            ),
+        )
+    except PIL.UnidentifiedImageError:
+        # oops
+        return False
+    except OSError:
+        # more specific
+        return False
+    except ValueError:
+        # more specific
+        return False
+    else:
+        # check if we have work
+        if image.width <= size[0] and image.height <= size[1]:
+            return False
+
+        # TODO SpooledTemporaryFile but what limit?
+        with NamedTemporaryFile() as tmp:
+            image.thumbnail(size)
+            image.save(tmp, image.format)
+            attachment.content.save(attachment.content.name, tmp, save=True)
+            return True

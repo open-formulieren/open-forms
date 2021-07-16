@@ -5,8 +5,11 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
+import os
+
 from django.test import TestCase
 
+from PIL import Image, UnidentifiedImageError
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -20,11 +23,13 @@ from openforms.forms.tests.factories import (
 from ..attachments import (
     attach_uploads_to_submission_step,
     cleanup_submission_temporary_uploaded_files,
+    resize_attachment,
     resolve_uploads_from_data,
 )
 from ..models import SubmissionFileAttachment
 from .factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
     TemporaryFileUploadFactory,
 )
@@ -193,6 +198,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
 
 class SubmissionAttachmentTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_image_path = os.path.join(
+            os.path.dirname(__file__), "files", "image-256x256.png"
+        )
+
+    # TODO private storage
     def test_resolve_uploads_from_formio_data(self):
         upload = TemporaryFileUploadFactory.create()
         data = {
@@ -288,3 +300,55 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.content.read(), b"content")
 
         attachment.delete()
+
+    def assertImageSize(self, file, width, height, format):
+        image = Image.open(file, formats=(format,))
+        self.assertEqual(image.width, width)
+        self.assertEqual(image.height, height)
+
+    def test_assertImageSize(self):
+        self.assertImageSize(self.test_image_path, 256, 256, "png")
+
+        with self.assertRaises(AssertionError):
+            self.assertImageSize(self.test_image_path, 1000, 256, "png")
+        with self.assertRaises(AssertionError):
+            self.assertImageSize(self.test_image_path, 256, 1000, "png")
+        with self.assertRaises(UnidentifiedImageError):
+            self.assertImageSize(self.test_image_path, 256, 256, "jpeg")
+
+    def test_resize_attachment(self):
+        with open(self.test_image_path, "rb") as f:
+            data = f.read()
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            content__name="my-image.png", content__data=data
+        )
+        # too small to resize
+        res = resize_attachment(attachment, (1024, 1024))
+        self.assertEqual(res, False)
+
+        # same size as required
+        res = resize_attachment(attachment, (256, 256))
+        self.assertEqual(res, False)
+
+        # good, actually resize
+        res = resize_attachment(attachment, (200, 200))
+        self.assertEqual(res, True)
+        self.assertImageSize(attachment.content, 200, 200, "png")
+
+        # but not resize again to same size
+        res = resize_attachment(attachment, (200, 200))
+        self.assertEqual(res, False)
+
+        # don't crash on corrupt image
+        attachment_bad = SubmissionFileAttachmentFactory.create(
+            content__name="my-image.png", content__data=b"broken"
+        )
+        res = resize_attachment(attachment_bad, (1024, 1024))
+        self.assertEqual(res, False)
+
+        # don't crash on missing file
+        attachment_bad = SubmissionFileAttachmentFactory.create()
+        attachment_bad.content.delete()
+        res = resize_attachment(attachment_bad, (1024, 1024))
+        self.assertEqual(res, False)
