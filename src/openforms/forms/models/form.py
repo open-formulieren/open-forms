@@ -4,14 +4,13 @@ from typing import List
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from openforms.authentication.fields import BackendMultiSelectField
-from openforms.config.models import GlobalConfiguration
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
