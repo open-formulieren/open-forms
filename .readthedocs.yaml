@@ -1,0 +1,19 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+version: 2
+
+sphinx:
+   configuration: docs/conf.py
+
+build:
+  apt_packages:
+    - libxml2-dev
+    - libxmlsec1-dev
+    - libxmlsec1-openssl
+
+python:
+   version: 3.8
+   install:
+   - requirements: requirements/ci.txt

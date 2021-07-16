@@ -10,6 +10,7 @@ The participants in this tender are the main stakeholders of the Open Forms
 project. They are:
 
 1. Dimpact:
+
    a. Gemeente Bodegraven-Reeuwijk,
    b. Gemeente Haarlemmermeer,
    c. Gemeente Horst aan de Maas,
@@ -18,11 +19,11 @@ project. They are:
    f. Gemeente Venray,
    g. Gemeente Vught,
    h. RID De Liemers (samenwerkingsverband voor gemeenten Duiven, Westervoort, Zevenaar en RSD De Liemers);
+
 2. SED organisatie (samenwerkingsverband voor gemeenten Stede Broec, Enkhuizen en Drechterland);
 3. Gemeente Utrecht;
 4. Gemeente Den Haag
 
-.. _`Common Ground`: https://commonground.nl/
 .. _`Dimpact`: https://www.dimpact.nl/
 .. _`Maykin Media`: https://www.maykinmedia.nl/
 .. _`Open Gemeente Initiatief`: https://opengem.nl/

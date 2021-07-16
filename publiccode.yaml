@@ -1,0 +1,116 @@
+# This repository adheres to the publiccode.yml standard by including this
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+
+name: Open Forms Builder and API
+url: 'http://github.com/open-formulieren/open-forms.git'
+softwareType: standalone/backend
+softwareVersion: 0.1.0
+releaseDate: 't.b.d.'
+logo: 'https://github.com/open-formulieren/open-forms/blob/master/docs/logo.svg'
+platforms:
+  - web
+  - linux
+  - windows
+  - mac
+
+developmentStatus: beta
+
+description:
+  nl:
+    shortDescription: Formulieren bouwen en ontsluiten
+    documentation: 'https://open-forms.readthedocs.io/'
+    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml'
+    features:
+      - Bouw slimme formulieren
+      - Ontsluit formulieren via een API
+    genericName: Formulieren component
+    longDescription: >
+      Met Open Formulieren kunnen beheerders snel slimme formulieren realiseren die 
+      ontsloten worden middels een API. Met de Open Formulieren JavaScript `SDK`_ 
+      kunnen gepersonaliseerde formulieren opgehaald en getoond worden aan de 
+      gebruiker, in de stijl van de gemeente. Hierbij zijn velden vooringevuld indien 
+      mogelijk en zijn er keuzes beschikbaar afhankelijk van de gebruiker, mits deze 
+      is geauthenticeerd.
+
+      Door gebruik te maken van een plugin-architectuur kan Open Formulieren flexibel
+      worden ingericht met submission backends (bijv. Open Zaak), authenticatie 
+      middelen, betaalproviders, kalender applicaties en pre-fill services.
+
+      Open Formulieren is ontwikkeld volgens de Common Ground principes, specifiek 
+      voor gemeenten en met focus op gebruiksgemak voor zowel burger als beheerder.
+
+  en:
+    shortDescription: Build end expose forms
+    documentation: 'https://open-forms.readthedocs.io/'
+    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml'
+    features:
+      - Build smart forms
+      - Expose forms via an API
+    genericName: Form component
+    longDescription: >
+      Using Open Forms, administrators can quickly create powerful and smart forms
+      that are exposed via an API. With the Open Forms JavaScript SDK, personalized
+      forms can be retrieved and shown to the user. The form blends in with an 
+      existing website using various styling options. Form fields are pre-filled
+      whenever possible and personalized choices are shown depending on the user, if
+      authenticated.
+
+      Using a plugin-based architecture, Open Forms allows for flexible submission 
+      backends (ie. Open Zaak), authentication schemes, payment providers, calendar
+      apps and pre-fill services.
+
+      Open Forms is developed in line with the Common Ground principles,
+      specificly for municipalities and with a strong focus on usability for both
+      the civilian users and the administrator.
+
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Dimpact
+  repoOwner: Maykin Media
+
+dependsOn:
+  open:
+    - name: PostgreSQL
+      optional: false
+      versionMin: '11.0'
+    - name: Redis
+      optional: false
+      versionMin: '5.0'
+    - name: Kubernetes
+      optional: true
+      versionMin: '1.12'
+    - name: Docker
+      optional: true
+      versionMin: '18.0'
+
+inputTypes:
+  - application/json
+
+outputTypes:
+  - application/json
+  - text/html
+
+intendedAudience:
+  countries:
+    - nl
+  scope:
+    - government
+
+localisation:
+  availableLanguages:
+    - nl
+    - en
+  localisationReady: false
+
+maintenance:
+  type: contract
+  contractors:
+  - name: Maykin Media
+    email: info@maykinmedia.nl
+    website: https://www.maykinmedia.nl/
+  contacts:
+  - name: Joeri Bekker
+    affiliation: Maykin Media
