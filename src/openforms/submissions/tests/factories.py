@@ -5,8 +5,10 @@ import factory
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
 )
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+
 from ..models import (
     Submission,
     SubmissionFileAttachment,

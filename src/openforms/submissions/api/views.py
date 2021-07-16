@@ -13,6 +13,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ..attachments import clean_mime_type
 from ..models import SubmissionFileAttachment, SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
 from .renderers import PDFRenderer
@@ -110,7 +111,7 @@ class TemporaryFileUploadView(APIView):
         upload = TemporaryFileUpload.objects.create(
             content=file,
             file_name=name,
-            content_type=file.content_type,
+            content_type=clean_mime_type(file.content_type),
         )
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data

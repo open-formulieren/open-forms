@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 from typing import Iterable, Optional, Tuple
 from urllib.parse import urlparse
@@ -41,7 +42,19 @@ def temporary_upload_from_url(url: str) -> Optional[TemporaryFileUpload]:
         return None
 
 
-def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> dict:
+def clean_mime_type(mimetype: str) -> str:
+    # cleanup a user supplied mime-type against injection attacks
+    m = re.match(r"^[a-z0-9\.+-]+\/[a-z0-9\.+-]+", mimetype)
+    if not m:
+        return "application/octet-stream"
+    else:
+        return m.group()
+
+
+def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
+    # circular import
+    from openforms.registrations.tasks import resize_submission_attachment
+
     components = list(submission_step.form_step.iter_components(recursive=True))
 
     uploads = resolve_uploads_from_data(components, submission_step.data)
@@ -66,7 +79,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> dict:
 
             if created and resize_apply and resize_size:
                 # TODO swap for celery
-                resize_attachment.delay(attachment.id, resize_size)
+                resize_submission_attachment.delay(attachment.id, resize_size)
 
     return result
 

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
@@ -133,3 +135,53 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("<th>Jane</th>", rendered_content)
         self.assertIn("<th>Last name</th>", rendered_content)
         self.assertIn("<th>Doe</th>", rendered_content)
+
+    def test_attachment(self):
+        conf = deepcopy(NESTED_COMPONENT_CONF)
+        conf["components"].append(
+            {
+                "id": "erttrr",
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "showInEmail": True,
+            }
+        )
+        form_step = FormStepFactory.create(form_definition__configuration=conf)
+        submission_step = SubmissionStepFactory.create(
+            data={
+                "name": "Jane",
+                "lastName": "Doe",
+                "email": "test@example.com",
+                "file": [
+                    {
+                        "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                        "data": {
+                            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                            "form": "",
+                            "name": "my-image.jpg",
+                            "size": 46114,
+                            "baseUrl": "http://server/form",
+                            "project": "",
+                        },
+                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "my-image.jpg",
+                    }
+                ],
+            },
+            form_step=form_step,
+            submission__form=form_step.form,
+        )
+        submission = submission_step.submission
+        email = ConfirmationEmailTemplate(content="{% summary %}")
+        rendered_content = email.render(submission)
+
+        self.assertIn("<th>Name</th>", rendered_content)
+        self.assertIn("<th>Jane</th>", rendered_content)
+        self.assertIn("<th>Last name</th>", rendered_content)
+        self.assertIn("<th>Doe</th>", rendered_content)
+        self.assertIn("<th>File</th>", rendered_content)
+        self.assertIn("<th>my-image.jpg</th>", rendered_content)
