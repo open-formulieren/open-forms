@@ -81,6 +81,4 @@ linkcheck_ignore = [
     r"https?://.*\.gemeente.nl",
     r"http://localhost:\d+/",
     r"https://.*sentry.*",
-    # FIXME: Disabled private repo checks for now. Remove when public.
-    r"https://github.com/open-formulieren/.*",
 ]
