@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     "openforms.submissions",
     "openforms.contrib.brp",
     "openforms.contrib.kvk",
+    "openforms.contrib.bag.apps.BAGConfig",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.email",
