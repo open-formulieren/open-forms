@@ -99,16 +99,24 @@
                 "globalconfiguration"
             ],
             [
+                "cookie_consent",
+                "cookie"
+            ],
+            [
+                "cookie_consent",
+                "cookiegroup"
+            ],
+            [
                 "django_yubin",
                 "blacklist"
             ],
             [
-                "prefill_haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
                 "kvk",
                 "kvkconfig"
+            ],
+            [
+                "prefill_haalcentraal",
+                "haalcentraalconfig"
             ],
             [
                 "stuf",
@@ -151,6 +159,10 @@
             [
                 "axes",
                 "accesslog"
+            ],
+            [
+                "cookie_consent",
+                "logitem"
             ],
             [
                 "django_yubin",
