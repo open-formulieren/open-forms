@@ -9,14 +9,20 @@ they are available for Django settings initialization.
     do NOT import anything Django related here, as this file needs to be loaded
     before Django is initialized.
 """
+import logging
 import os
 import tempfile
+
+from django.urls import reverse
+from django.utils.http import is_safe_url
 
 import defusedxml
 from dotenv import load_dotenv
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
 _certs_initialized = False
+
+logger = logging.getLogger(__name__)
 
 
 def setup_env():
@@ -42,3 +48,24 @@ def load_self_signed_certs() -> None:
     target_dir = tempfile.mkdtemp()
     _load_self_signed_certs(target_dir)
     _certs_initialized = True
+
+
+def monkeypatch_cookie_consent():
+    from cookie_consent.views import CookieGroupBaseProcessView
+
+    def get_success_url(self):
+        from django.conf import settings
+
+        original = super().get_success_url()
+        safe_redirect = is_safe_url(
+            original, settings.ALLOWED_HOSTS, self.request.is_secure()
+        )
+        if safe_redirect:
+            return original
+
+        # not a safe redirect
+        logger.warning("Unsafe redirect detected: %s", original)
+        default = reverse("cookie_consent_cookie_group_list")
+        return self.request.headers.get("referer") or default
+
+    CookieGroupBaseProcessView.get_success_url = get_success_url
