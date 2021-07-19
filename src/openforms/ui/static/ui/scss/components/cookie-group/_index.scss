@@ -8,8 +8,9 @@
   &__form {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 
-    form {
+    > * {
       @include margin(auto, $properties: margin-right);
     }
   }

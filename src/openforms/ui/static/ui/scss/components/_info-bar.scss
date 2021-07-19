@@ -1,3 +1,4 @@
+@import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/grid';
 
@@ -7,6 +8,7 @@
   @include margin;
   @include container('flex');
   @include container-padding;
+  @include hide-on-mobile(block);
   justify-content: space-between;
 
   background-size: 50px 50px;
