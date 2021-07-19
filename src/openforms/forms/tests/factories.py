@@ -2,7 +2,8 @@ import factory
 
 from openforms.products.tests.factories import ProductFactory
 
-from ..models import Form, FormDefinition, FormStep
+from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..utils import form_to_json
 
 
 class FormFactory(factory.django.DjangoModelFactory):
@@ -35,3 +36,16 @@ class FormStepFactory(factory.django.DjangoModelFactory):
 
     form = factory.SubFactory(FormFactory)
     form_definition = factory.SubFactory(FormDefinitionFactory)
+
+
+class FormVersionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = FormVersion
+
+    form = factory.SubFactory(FormFactory)
+
+    @factory.post_generation
+    def post(obj, create, extracted, **kwargs):
+        json_form = form_to_json(obj.form.id)
+        obj.export_blob = json_form
+        obj.save()

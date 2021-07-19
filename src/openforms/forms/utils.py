@@ -33,7 +33,7 @@ def _get_mock_request():
     return request
 
 
-def export_form(form_id, archive_name=None, response=None):
+def form_to_json(form_id: int) -> dict:
     form = Form.objects.get(pk=form_id)
 
     # Ignore products in the export
@@ -64,6 +64,12 @@ def export_form(form_id, archive_name=None, response=None):
         "formSteps": json.dumps(form_steps),
         "formDefinitions": json.dumps(form_definitions),
     }
+
+    return resources
+
+
+def export_form(form_id, archive_name=None, response=None):
+    resources = form_to_json(form_id)
 
     outfile = response or archive_name
     with zipfile.ZipFile(outfile, "w") as zip_file:
