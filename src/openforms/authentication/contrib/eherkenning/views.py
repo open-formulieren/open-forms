@@ -29,8 +29,6 @@ class eHerkenningAssertionConsumerServiceView(
 
     def get(self, request):
         saml_art = request.GET.get("SAMLart")
-        if not saml_art:
-            return
 
         client = eHerkenningClient()
         try:
