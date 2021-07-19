@@ -21,7 +21,7 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
         )
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&huisnummer=117"
+            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&house_number=117"
         )
 
         self.assertEqual(response.status_code, 200)
@@ -32,7 +32,7 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
     def test_getting_street_name_and_city_without_post_code(self):
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?huisnummer=117"
+            f"{reverse('api:get-street-name-and-city-list')}?house_number=117"
         )
 
         self.assertEqual(response.status_code, 400)
@@ -45,7 +45,7 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {"huisnummer": ["Dit veld is vereist."]})
+        self.assertEqual(response.json(), {"houseNumber": ["Dit veld is vereist."]})
 
     @requests_mock.Mocker()
     def test_getting_street_name_and_city_with_extra_query_params(self, m):
@@ -61,7 +61,7 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
         )
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&huisnummer=117&random=param"
+            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&house_number=117&random=param"
         )
 
         self.assertEqual(response.status_code, 200)

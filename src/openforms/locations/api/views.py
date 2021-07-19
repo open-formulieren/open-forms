@@ -40,20 +40,23 @@ class GetStreetNameAndCityView(APIView):
         serializer.is_valid(raise_exception=True)
 
         # Make API request to BAG here
+        # TODO Move this out of this function
+        #  Think of how different backends were implements in Open Personen
         config = BAGConfig.get_solo()
         client = config.bag_service.build_client()
+        data = serializer.validated_data
+        data["huisnummer"] = data.pop("house_number")
         response = client.operation(
             "bevraagAdressen",
             {},
             method="GET",
             request_kwargs=dict(
-                params=serializer.validated_data,
+                params=data,
                 headers={"Accept": "application/hal+json"},
             ),
         )
+        address_data = response["_embedded"]["adressen"][0]
+        address_data["street_name"] = address_data.pop("korteNaam")
+        address_data["city"] = address_data.pop("woonplaatsNaam")
 
-        return Response(
-            GetStreetNameAndCityViewResultSerializer(
-                response["_embedded"]["adressen"][0]
-            ).data
-        )
+        return Response(GetStreetNameAndCityViewResultSerializer(address_data).data)
