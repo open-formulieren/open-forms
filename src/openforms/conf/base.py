@@ -166,6 +166,7 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.email",
     "openforms.registrations.contrib.stuf_zds",
+    "openforms.registrations.contrib.objects_api",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",
