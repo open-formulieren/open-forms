@@ -312,7 +312,7 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(res, False)
 
     def test_append_file_num_postfix_helper(self):
-        actual = append_file_num_postfix("orginal.txt", "new.bin",  1, 1)
+        actual = append_file_num_postfix("orginal.txt", "new.bin", 1, 1)
         self.assertEqual("new.txt", actual)
 
         actual = append_file_num_postfix("orginal.txt", "new.bin", 1, 5)
