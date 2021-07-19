@@ -7,9 +7,11 @@ by using HTTP PUT.
 """
 import os
 
-from django.test import TestCase
+from django.core.files import File
+from django.test import TestCase, override_settings
 
 from PIL import Image, UnidentifiedImageError
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -36,6 +38,7 @@ from .factories import (
 from .mixins import SubmissionsMixin
 
 
+@temp_private_root()
 class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):

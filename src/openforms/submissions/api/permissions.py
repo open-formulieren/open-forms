@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from ..constants import SUBMISSIONS_SESSION_KEY
 
 
-class ActiveSubmissionPermission(permissions.BasePermission):
+class AnyActiveSubmissionPermission(permissions.BasePermission):
     """
     Verify that there is at least one active submission for the user session.
     """
@@ -19,6 +19,12 @@ class ActiveSubmissionPermission(permissions.BasePermission):
             return False
 
         return True
+
+
+class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
+    """
+    Verify that there is at least one active submission for the user session.
+    """
 
     def has_object_permission(self, request: Request, view: APIView, obj) -> bool:
         active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)

@@ -78,7 +78,6 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             result.append((attachment, created))
 
             if created and resize_apply and resize_size:
-                # TODO swap for celery
                 resize_submission_attachment.delay(attachment.id, resize_size)
 
     return result

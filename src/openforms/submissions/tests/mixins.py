@@ -9,3 +9,8 @@ class SubmissionsMixin:
         ids += [str(submission.uuid)]
         session[SUBMISSIONS_SESSION_KEY] = ids
         session.save()
+
+    def _clear_session(self):
+        session = self.client.session
+        session[SUBMISSIONS_SESSION_KEY] = []
+        session.save()

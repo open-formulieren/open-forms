@@ -7,6 +7,7 @@ from django.test import RequestFactory
 from django.urls import reverse
 
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -16,14 +17,24 @@ from openforms.submissions.attachments import (
     temporary_upload_from_url,
     temporary_upload_uuid_from_url,
 )
-from openforms.submissions.models import SubmissionFileAttachment, TemporaryFileUpload
+from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.tests.factories import (
+    SubmissionFactory,
     SubmissionFileAttachmentFactory,
     TemporaryFileUploadFactory,
 )
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 
-class TemporaryFileUploadTest(APITestCase):
+@temp_private_root()
+class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.create()
+
+    def tearDown(self):
+        self._clear_session()
+
     def test_temporary_upload_uuid_from_url(self):
         request = RequestFactory().get("/")
         identifier = str(uuid.uuid4())
@@ -58,7 +69,16 @@ class TemporaryFileUploadTest(APITestCase):
         self.assertIsNone(temporary_upload_from_url("http://xxx/yyy"))
         self.assertIsNone(temporary_upload_from_url("/yyy"))
 
+    def test_upload_view_requires_active_submission(self):
+        url = reverse("api:submissions:temporary-file-upload")
+        file = SimpleUploadedFile("my-file.txt", b"my content", content_type="text/bar")
+
+        response = self.client.post(url, {"file": file}, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_upload_view(self):
+        self._add_submission_to_session(self.submission)
+
         url = reverse("api:submissions:temporary-file-upload")
         file = SimpleUploadedFile("my-file.txt", b"my content", content_type="text/bar")
 
@@ -83,10 +103,15 @@ class TemporaryFileUploadTest(APITestCase):
         self.assertEqual(upload.content_type, "text/bar")
         self.assertEqual(upload.content.read(), b"my content")
 
-        # cleanup tested elsewhere
-        upload.delete()
+    def test_delete_view_requires_active_submission(self):
+        upload = TemporaryFileUploadFactory.create()
+        url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_view(self):
+        self._add_submission_to_session(self.submission)
+
         upload = TemporaryFileUploadFactory.create()
         path = upload.content.path
         self.assertTrue(os.path.exists(path))
