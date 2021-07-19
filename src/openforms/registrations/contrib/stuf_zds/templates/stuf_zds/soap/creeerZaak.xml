@@ -41,7 +41,7 @@
 {#                            <BG:voorletters>?</BG:voorletters>#}
                             {% if initiator.voornamen %}<BG:voornamen>{{ initiator.voornamen }}</BG:voornamen>{% endif %}
 {#                            <BG:geslachtsaanduiding>?</BG:geslachtsaanduiding>#}
-                            {% if initiator.geboortedatum %}<BG:geboortedatum>{{ initiator.geboortedatum }}</BG:geboortedatum>{% endif %}
+                            {% if initiator.geboortedatum %}<BG:geboortedatum StUF:indOnvolledigeDatum="{{ initiator.geboortedatum.indicator }}">{{ initiator.geboortedatum.value }}</BG:geboortedatum>{% endif %}
                         </ZKN:natuurlijkPersoon>
                     {% elif initiator.kvk %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">

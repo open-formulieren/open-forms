@@ -1,3 +1,4 @@
+import dataclasses
 import uuid
 from unittest.mock import patch
 
@@ -13,7 +14,10 @@ from requests import RequestException
 from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
 from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
-from openforms.registrations.contrib.stuf_zds.plugin import StufZDSRegistration
+from openforms.registrations.contrib.stuf_zds.plugin import (
+    PartialDate,
+    StufZDSRegistration,
+)
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -91,6 +95,49 @@ class StufTestBase(TestCase):
         self.assertIsNotNone(xml_doc)
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Header")
         self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Body")
+
+
+class StufZDSHelperTests(StufTestBase):
+    def test_partial_date(self):
+        # good
+        actual = PartialDate.parse("2020-01-01")
+        self.assertEqual(dict(year=2020, month=1, day=1), dataclasses.asdict(actual))
+        self.assertEqual("20200101", actual.value)
+        self.assertEqual("V", actual.indicator)
+
+        actual = PartialDate.parse("2020-01")
+        self.assertEqual(dict(year=2020, month=1, day=None), dataclasses.asdict(actual))
+        self.assertEqual("202001", actual.value)
+        self.assertEqual("D", actual.indicator)
+
+        actual = PartialDate.parse("2020")
+        self.assertEqual(
+            dict(year=2020, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("2020", actual.value)
+        self.assertEqual("M", actual.indicator)
+
+        actual = PartialDate.parse("")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        # bad
+        actual = PartialDate.parse(None)
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        actual = PartialDate.parse("20202-01-01")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
 
 
 @temp_private_root()
@@ -435,6 +482,7 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
             },
         )
         # extraElementen
