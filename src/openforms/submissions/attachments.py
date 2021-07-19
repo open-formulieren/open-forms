@@ -52,17 +52,18 @@ def clean_mime_type(mimetype: str) -> str:
         return m.group()
 
 
-def append_file_num_postfix(name: str, num: int, max: int) -> str:
-    if not name:
+def append_file_num_postfix(original_name: str, new_name:str, num: int, max: int) -> str:
+    if not new_name:
         return ""
 
-    name, ext = os.path.splitext(name)
+    _, ext = os.path.splitext(original_name)
+    new_name, _ = os.path.splitext(new_name)
     if max <= 1:
         postfix = ""
     else:
         digits = len(str(max))
         postfix = f"-{num:0{digits}}"
-    return f"{name}{postfix}{ext}"
+    return f"{new_name}{postfix}{ext}"
 
 
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
@@ -86,7 +87,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
 
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(uploads, start=1):
-            file_name = append_file_num_postfix(base_name, i, len(uploads))
+            file_name = append_file_num_postfix(upload.file_name, base_name, i, len(uploads))
 
             attachment, created = SubmissionFileAttachment.objects.create_from_upload(
                 submission_step, key, upload, file_name=file_name

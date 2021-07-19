@@ -312,20 +312,20 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(res, False)
 
     def test_append_file_num_postfix_helper(self):
-        actual = append_file_num_postfix("base.txt", 1, 1)
-        self.assertEqual("base.txt", actual)
+        actual = append_file_num_postfix("orginal.txt", "new.bin",  1, 1)
+        self.assertEqual("new.txt", actual)
 
-        actual = append_file_num_postfix("base.txt", 1, 5)
-        self.assertEqual("base-1.txt", actual)
+        actual = append_file_num_postfix("orginal.txt", "new.bin", 1, 5)
+        self.assertEqual("new-1.txt", actual)
 
-        actual = append_file_num_postfix("base.txt", 2, 5)
-        self.assertEqual("base-2.txt", actual)
+        actual = append_file_num_postfix("orginal.txt", "new.bin", 2, 5)
+        self.assertEqual("new-2.txt", actual)
 
-        actual = append_file_num_postfix("base.txt", 1, 20)
-        self.assertEqual("base-01.txt", actual)
+        actual = append_file_num_postfix("orginal.txt", "new.bin", 1, 20)
+        self.assertEqual("new-01.txt", actual)
 
-        actual = append_file_num_postfix("base.txt", 11, 20)
-        self.assertEqual("base-11.txt", actual)
+        actual = append_file_num_postfix("orginal.txt", "new.bin", 11, 20)
+        self.assertEqual("new-11.txt", actual)
 
     def test_clean_mime_type_helper(self):
         actual = clean_mime_type("text/plain")
