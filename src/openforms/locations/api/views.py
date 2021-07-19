@@ -5,11 +5,11 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.contrib.bag.api.serializers import (
+from openforms.contrib.bag.models import BAGConfig
+from openforms.locations.api.serializers import (
     GetStreetNameAndCityViewInputSerializer,
     GetStreetNameAndCityViewResultSerializer,
 )
-from openforms.contrib.bag.models import BAGConfig
 
 
 class GetStreetNameAndCityView(APIView):

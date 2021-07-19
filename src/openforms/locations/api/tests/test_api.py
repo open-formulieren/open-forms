@@ -2,15 +2,13 @@ from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
-from zgw_consumers.test import mock_service_oas_get
 
-from openforms.contrib.bag.api.tests.base import BagTestMixin
+from openforms.locations.api.tests.base import BagTestMixin
 
 
 class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_getting_street_name_and_city(self, m):
-        mock_service_oas_get(m, "https://bag/", service="bagapiprofileoas3")
         m.get(
             "https://bag/api/schema/openapi.yaml?v=3",
             status_code=200,
@@ -38,7 +36,7 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'postcode': ['Dit veld is vereist.']})
+        self.assertEqual(response.json(), {"postcode": ["Dit veld is vereist."]})
 
     def test_getting_street_name_and_city_without_house_number(self):
 
@@ -47,11 +45,10 @@ class GetStreetNameAndCityViewAPITests(BagTestMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'huisnummer': ['Dit veld is vereist.']})
+        self.assertEqual(response.json(), {"huisnummer": ["Dit veld is vereist."]})
 
     @requests_mock.Mocker()
     def test_getting_street_name_and_city_with_extra_query_params(self, m):
-        mock_service_oas_get(m, "https://bag/", service="bagapiprofileoas3")
         m.get(
             "https://bag/api/schema/openapi.yaml?v=3",
             status_code=200,
