@@ -45,6 +45,7 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
+    path("cookies/", include("cookie_consent.urls")),
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),

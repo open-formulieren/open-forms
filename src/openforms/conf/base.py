@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
+    "cookie_consent",
     "corsheaders",
     "django_better_admin_arrayfield",
     "django_yubin",
