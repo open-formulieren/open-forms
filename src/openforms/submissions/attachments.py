@@ -53,6 +53,9 @@ def clean_mime_type(mimetype: str) -> str:
 
 
 def append_file_num_postfix(name: str, num: int, max: int) -> str:
+    if not name:
+        return ""
+
     name, ext = os.path.splitext(name)
     if max <= 1:
         postfix = ""

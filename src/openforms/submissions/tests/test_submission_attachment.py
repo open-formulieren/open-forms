@@ -124,6 +124,88 @@ class SubmissionAttachmentTest(TestCase):
         # verify the new FileField has its own content
         self.assertEqual(attachment.content.read(), b"content")
 
+    def test_attach_multiple_uploads_to_submission_step(self):
+        upload_1 = TemporaryFileUploadFactory.create(file_name="my-image-1.jpg")
+        upload_2 = TemporaryFileUploadFactory.create(file_name="my-image-2.jpg")
+        data = {
+            "my_normal_key": "foo",
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload_1.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload_1.uuid}",
+                        "form": "",
+                        "name": "my-image-1.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image-1.jpg",
+                },
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload_2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload_2.uuid}",
+                        "form": "",
+                        "name": "my-image-2.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-22305610-2da4-4694-a341-ccb919c3d544.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image-2.jpg",
+                },
+            ],
+        }
+        components = [
+            {"key": "my_normal_key", "type": "text"},
+            {
+                "key": "my_file",
+                "type": "file",
+                "multiple": True,
+                "file": {"name": "my-filename.txt"},
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0][1], True)  # created new
+        self.assertEqual(result[1][1], True)  # created new
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
+
+        attachments = list(submission_step.attachments.all())
+
+        # expect the names to have postfixes
+        attachment_1 = attachments[0]
+        self.assertEqual(attachment_1.file_name, "my-filename-1.txt")
+        self.assertEqual(attachment_1.original_name, "my-image-1.jpg")
+
+        attachment_2 = attachments[1]
+        self.assertEqual(attachment_2.file_name, "my-filename-2.txt")
+        self.assertEqual(attachment_2.original_name, "my-image-2.jpg")
+
+        # test attaching again is idempotent
+        result = attach_uploads_to_submission_step(submission_step)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0][1], False)  # not created
+        self.assertEqual(result[1][1], False)  # not created
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
+
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_attach_uploads_to_submission_step_resizes_image(self):
         upload = TemporaryFileUploadFactory.create(
@@ -176,8 +258,6 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.form_key, "my_file")
         self.assertEqual(attachment.original_name, "my-image.png")
         self.assertImageSize(attachment.content, 100, 100, "png")
-
-        attachment.delete()
 
     def assertImageSize(self, file, width, height, format):
         image = Image.open(file, formats=(format,))
