@@ -26,8 +26,8 @@ from rest_framework.settings import api_settings
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..models import Form, FormDefinition, FormStep
-from ..utils import export_form, import_form
+from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..utils import export_form, form_to_json, import_form
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
@@ -288,6 +288,25 @@ class FormViewSet(viewsets.ModelViewSet):
 
         response["Content-Length"] = len(response.content)
         return response
+
+    @extend_schema(
+        summary=_("Save form version"),
+        tags=["forms"],
+        parameters=[UUID_OR_SLUG_PARAMETER],
+        request=None,
+        responses={status.HTTP_201_CREATED: ""},
+    )
+    @action(detail=True, methods=["post"])
+    def save_version(self, request, *args, **kwargs):
+        """Save the current version of the form so that it can later be retrieved"""
+
+        form = self.get_object()
+
+        form_json = form_to_json(form.id)
+
+        FormVersion.objects.create(form=form, export_blob=form_json)
+
+        return Response(status=status.HTTP_201_CREATED)
 
     def perform_destroy(self, instance):
         instance._is_deleted = True
