@@ -1,6 +1,10 @@
-{% load i18n %}
+{% load i18n cookie_consent_tags %}
 
+{% not_accepted_or_declined_cookie_groups request as cookie_groups %}
+
+{% if cookie_groups %}
 <div class="cookie-notice">
+
     <span class="cookie-notice__text">
         {% url 'cookie_consent_cookie_group_list' as manage_url %}
         {% blocktrans trimmed %}
@@ -22,3 +26,4 @@
         </form>
     </div>
 </div>
+{% endif %}
