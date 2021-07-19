@@ -1,0 +1,16 @@
+@import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+.cookie-group {
+  @include body;
+
+  &__form {
+    display: flex;
+    justify-content: flex-end;
+
+    form {
+      @include margin(auto, $properties: margin-right);
+    }
+  }
+}
