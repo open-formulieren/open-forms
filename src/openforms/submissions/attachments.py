@@ -1,3 +1,4 @@
+import os.path
 import re
 from datetime import timedelta
 from typing import Iterable, Optional, Tuple
@@ -51,6 +52,16 @@ def clean_mime_type(mimetype: str) -> str:
         return m.group()
 
 
+def append_file_num_postfix(name: str, num: int, max: int) -> str:
+    name, ext = os.path.splitext(name)
+    if max <= 1:
+        postfix = ""
+    else:
+        digits = len(str(max))
+        postfix = f"-{num:0{digits}}"
+    return f"{name}{postfix}{ext}"
+
+
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     # circular import
     from openforms.registrations.tasks import resize_submission_attachment
@@ -68,12 +79,14 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             glom(component, "image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]),
         )
 
+        base_name = glom(component, "file.name", default="")
+
         # formio sends a list of uploads even with multiple=False
-        for upload in uploads:
-            # TODO reformat the name (or grab from formio)
-            # TODO validate data from component settings
+        for i, upload in enumerate(uploads, start=1):
+            file_name = append_file_num_postfix(base_name, i, len(uploads))
+
             attachment, created = SubmissionFileAttachment.objects.create_from_upload(
-                submission_step, key, upload
+                submission_step, key, upload, file_name=file_name
             )
             result.append((attachment, created))
 
@@ -144,11 +157,8 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
                 continue
 
             upload = temporary_upload_from_url(info["url"])
-            if not upload:
-                continue
-
-            # TODO we might also need to pickup formio's formatted name
-            uploads.append(upload)
+            if upload:
+                uploads.append(upload)
 
         if uploads:
             result[key] = (component, uploads)

@@ -485,6 +485,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         submission_step: SubmissionStep,
         form_key: str,
         upload: TemporaryFileUpload,
+        file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
         try:
             return (
@@ -505,6 +506,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     content=File(upload.content, name=upload.file_name),
                     content_type=upload.content_type,
                     original_name=upload.file_name,
+                    file_name=file_name,
                 ),
                 True,
             )

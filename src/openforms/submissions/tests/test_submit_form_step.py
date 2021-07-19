@@ -23,7 +23,9 @@ from openforms.forms.tests.factories import (
 )
 
 from ..attachments import (
+    append_file_num_postfix,
     attach_uploads_to_submission_step,
+    clean_mime_type,
     cleanup_submission_temporary_uploaded_files,
     resize_attachment,
     resolve_uploads_from_data,
@@ -200,6 +202,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         self.assertNotIn("country_of_residence", saved_data)
 
 
+@temp_private_root()
 class SubmissionAttachmentTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -238,9 +241,6 @@ class SubmissionAttachmentTest(TestCase):
         actual = resolve_uploads_from_data(components, data)
         self.assertEqual(actual, {"my_file": (components[1], [upload])})
 
-        # cleanup tested elsewhere
-        upload.delete()
-
     def test_attach_uploads_to_submission_step(self):
         upload = TemporaryFileUploadFactory.create(file_name="my-image.jpg")
         data = {
@@ -266,7 +266,7 @@ class SubmissionAttachmentTest(TestCase):
         }
         components = [
             {"key": "my_normal_key", "type": "text"},
-            {"key": "my_file", "type": "file"},
+            {"key": "my_file", "type": "file", "file": {"name": "my-filename.txt"}},
         ]
         form_step = FormStepFactory.create(
             form_definition__configuration={"components": components}
@@ -284,6 +284,7 @@ class SubmissionAttachmentTest(TestCase):
 
         attachment = submission_step.attachments.get()
         self.assertEqual(attachment.form_key, "my_file")
+        self.assertEqual(attachment.file_name, "my-filename.txt")
         self.assertEqual(attachment.original_name, "my-image.jpg")
         self.assertEqual(attachment.content.read(), b"content")
         self.assertEqual(attachment.content_type, upload.content_type)
@@ -301,8 +302,6 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.temporary_file, None)
         # verify the new FileField has its own content
         self.assertEqual(attachment.content.read(), b"content")
-
-        attachment.delete()
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_attach_uploads_to_submission_step_resizes_image(self):
@@ -410,3 +409,38 @@ class SubmissionAttachmentTest(TestCase):
         attachment_bad.content.delete()
         res = resize_attachment(attachment_bad, (1024, 1024))
         self.assertEqual(res, False)
+
+    def test_append_file_num_postfix_helper(self):
+        actual = append_file_num_postfix("base.txt", 1, 1)
+        self.assertEqual("base.txt", actual)
+
+        actual = append_file_num_postfix("base.txt", 1, 5)
+        self.assertEqual("base-1.txt", actual)
+
+        actual = append_file_num_postfix("base.txt", 2, 5)
+        self.assertEqual("base-2.txt", actual)
+
+        actual = append_file_num_postfix("base.txt", 1, 20)
+        self.assertEqual("base-01.txt", actual)
+
+        actual = append_file_num_postfix("base.txt", 11, 20)
+        self.assertEqual("base-11.txt", actual)
+
+    def test_clean_mime_type_helper(self):
+        actual = clean_mime_type("text/plain")
+        self.assertEqual("text/plain", actual)
+
+        actual = clean_mime_type("text/plain/xxx")
+        self.assertEqual("text/plain", actual)
+
+        actual = clean_mime_type("text/plain-xxx")
+        self.assertEqual("text/plain-xxx", actual)
+
+        actual = clean_mime_type("text/plain-x.x.x")
+        self.assertEqual("text/plain-x.x.x", actual)
+
+        actual = clean_mime_type("xxxx")
+        self.assertEqual("application/octet-stream", actual)
+
+        actual = clean_mime_type("")
+        self.assertEqual("application/octet-stream", actual)
