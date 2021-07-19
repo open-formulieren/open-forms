@@ -1,0 +1,196 @@
+{
+    "_links": {
+        "self": {
+            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen?postcode=1015CJ&huisnummer=117"
+        }
+    },
+    "_embedded": {
+        "adressen": [
+            {
+                "openbareRuimteNaam": "Keizersgracht",
+                "korteNaam": "Keizersgracht",
+                "huisnummer": 117,
+                "huisletter": "A",
+                "postcode": "1015CJ",
+                "woonplaatsNaam": "Amsterdam",
+                "nummeraanduidingIdentificatie": "0363200000502030",
+                "openbareRuimteIdentificatie": "0363300000003984",
+                "woonplaatsIdentificatie": "3594",
+                "adresseerbaarObjectIdentificatie": "0363010001020097",
+                "pandIdentificaties": [
+                    "0363100012167700"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/0363200000502030"
+                    },
+                    "openbareRuimte": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openbareruimten/0363300000003984"
+                    },
+                    "nummeraanduiding": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/nummeraanduidingen/0363200000502030"
+                    },
+                    "woonplaats": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/woonplaatsen/3594"
+                    },
+                    "adresseerbaarObject": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/verblijfsobjecten/0363010001020097"
+                    },
+                    "panden": [
+                        {
+                            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/panden/0363100012167700"
+                        }
+                    ]
+                }
+            },
+            {
+                "openbareRuimteNaam": "Keizersgracht",
+                "korteNaam": "Keizersgracht",
+                "huisnummer": 117,
+                "huisletter": "B",
+                "postcode": "1015CJ",
+                "woonplaatsNaam": "Amsterdam",
+                "nummeraanduidingIdentificatie": "0363200000502031",
+                "openbareRuimteIdentificatie": "0363300000003984",
+                "woonplaatsIdentificatie": "3594",
+                "adresseerbaarObjectIdentificatie": "0363010001020101",
+                "pandIdentificaties": [
+                    "0363100012167700"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/0363200000502031"
+                    },
+                    "openbareRuimte": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openbareruimten/0363300000003984"
+                    },
+                    "nummeraanduiding": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/nummeraanduidingen/0363200000502031"
+                    },
+                    "woonplaats": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/woonplaatsen/3594"
+                    },
+                    "adresseerbaarObject": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/verblijfsobjecten/0363010001020101"
+                    },
+                    "panden": [
+                        {
+                            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/panden/0363100012167700"
+                        }
+                    ]
+                }
+            },
+            {
+                "openbareRuimteNaam": "Keizersgracht",
+                "korteNaam": "Keizersgracht",
+                "huisnummer": 117,
+                "huisletter": "C",
+                "postcode": "1015CJ",
+                "woonplaatsNaam": "Amsterdam",
+                "nummeraanduidingIdentificatie": "0363200000502032",
+                "openbareRuimteIdentificatie": "0363300000003984",
+                "woonplaatsIdentificatie": "3594",
+                "adresseerbaarObjectIdentificatie": "0363010001020102",
+                "pandIdentificaties": [
+                    "0363100012167700"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/0363200000502032"
+                    },
+                    "openbareRuimte": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openbareruimten/0363300000003984"
+                    },
+                    "nummeraanduiding": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/nummeraanduidingen/0363200000502032"
+                    },
+                    "woonplaats": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/woonplaatsen/3594"
+                    },
+                    "adresseerbaarObject": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/verblijfsobjecten/0363010001020102"
+                    },
+                    "panden": [
+                        {
+                            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/panden/0363100012167700"
+                        }
+                    ]
+                }
+            },
+            {
+                "openbareRuimteNaam": "Keizersgracht",
+                "korteNaam": "Keizersgracht",
+                "huisnummer": 117,
+                "huisletter": "D",
+                "postcode": "1015CJ",
+                "woonplaatsNaam": "Amsterdam",
+                "nummeraanduidingIdentificatie": "0363200000502028",
+                "openbareRuimteIdentificatie": "0363300000003984",
+                "woonplaatsIdentificatie": "3594",
+                "adresseerbaarObjectIdentificatie": "0363010001020095",
+                "pandIdentificaties": [
+                    "0363100012167700"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/0363200000502028"
+                    },
+                    "openbareRuimte": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openbareruimten/0363300000003984"
+                    },
+                    "nummeraanduiding": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/nummeraanduidingen/0363200000502028"
+                    },
+                    "woonplaats": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/woonplaatsen/3594"
+                    },
+                    "adresseerbaarObject": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/verblijfsobjecten/0363010001020095"
+                    },
+                    "panden": [
+                        {
+                            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/panden/0363100012167700"
+                        }
+                    ]
+                }
+            },
+            {
+                "openbareRuimteNaam": "Keizersgracht",
+                "korteNaam": "Keizersgracht",
+                "huisnummer": 117,
+                "huisletter": "E",
+                "postcode": "1015CJ",
+                "woonplaatsNaam": "Amsterdam",
+                "nummeraanduidingIdentificatie": "0363200000502029",
+                "openbareRuimteIdentificatie": "0363300000003984",
+                "woonplaatsIdentificatie": "3594",
+                "adresseerbaarObjectIdentificatie": "0363010001020096",
+                "pandIdentificaties": [
+                    "0363100012167700"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/0363200000502029"
+                    },
+                    "openbareRuimte": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openbareruimten/0363300000003984"
+                    },
+                    "nummeraanduiding": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/nummeraanduidingen/0363200000502029"
+                    },
+                    "woonplaats": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/woonplaatsen/3594"
+                    },
+                    "adresseerbaarObject": {
+                        "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/verblijfsobjecten/0363010001020096"
+                    },
+                    "panden": [
+                        {
+                            "href": "https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/panden/0363100012167700"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
