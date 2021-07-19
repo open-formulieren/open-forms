@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="cookie-notice">
-    <span>
+    <span class="cookie-notice__text">
         {% url 'cookie_consent_cookie_group_list' as manage_url %}
         {% blocktrans trimmed %}
         We use cookies to optimize and improve our website and services.
@@ -9,21 +9,16 @@
         {% endblocktrans %}
     </span>
 
-    <form action="{% url 'cookie_consent_accept' varname='' %}" method="post" class="cookie-notice__accept">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-        <button type="submit">{% trans "Accept all" %}</button>
-    </form>
-    <form action="{% url 'cookie_consent_decline' varname='' %}" method="post" class="cookie-notice__decline">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-        <button type="submit">{% trans "Decline all" %}</button>
-    </form>
-    <form action="{% url 'cookie_consent_decline' varname='' %}" method="post" class="cookie-notice__close">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-        <button type="submit">
-            <span class="fa fa-icon fa-times"></span>
-        </button>
-    </form>
+    <div class="cookie-notice__buttons">
+        <form action="{% url 'cookie_consent_accept' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--accept">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+            <button type="submit" class="button">{% trans "Accept all" %}</button>
+        </form>
+        <form action="{% url 'cookie_consent_decline' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--decline">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+            <button type="submit" class="button">{% trans "Decline all" %}</button>
+        </form>
+    </div>
 </div>

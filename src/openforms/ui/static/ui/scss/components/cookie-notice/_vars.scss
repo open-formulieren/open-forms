@@ -1,0 +1,7 @@
+$cookie-notice-background: var(--of-cookie-notice-bg, $color-white);
+$cookie-notice-shadow: var(--of-cookie-notice-shadow, 0px 0px 3px 0px rgba($color-black, 0.4));
+
+// TODO: make the mixin work with design tokens
+$cookie-notice-color-primary: /*var(--of-cookie-notice-color-primary,*/ scale_color($color-primary, $lightness: 10%, $saturation: 0%)/*)*/;
+$cookie-notice-color-btn: /*var(--of-cookie-notice-color-btn,*/ $color-white/*)*/;
+$cookie-notice-border-color-btn: /*var(--of-cookie-notice-border-color-btn,*/ $color-primary/*)*/;

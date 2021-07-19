@@ -13,6 +13,7 @@ import logging
 import os
 import tempfile
 
+from django.conf import settings
 from django.urls import reverse
 from django.utils.http import is_safe_url
 
@@ -53,10 +54,11 @@ def load_self_signed_certs() -> None:
 def monkeypatch_cookie_consent():
     from cookie_consent.views import CookieGroupBaseProcessView
 
-    def get_success_url(self):
-        from django.conf import settings
+    _original = CookieGroupBaseProcessView.get_success_url
 
-        original = super().get_success_url()
+    def get_success_url(self):
+        original = _original(self)
+
         safe_redirect = is_safe_url(
             original, settings.ALLOWED_HOSTS, self.request.is_secure()
         )

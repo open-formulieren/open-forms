@@ -1,0 +1,42 @@
+@import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+@import '../../../../../../forms/static/forms/scss/components/form/button';
+@import './vars';
+
+.cookie-notice {
+  @include margin(true, $properties: padding);
+  @include body;
+
+  width: 100%;
+  @include responsive(max-width, 95vw, 95vw, 75vw, 75vw);
+
+  // center at bottom of page
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+
+  background: $cookie-notice-background;
+  box-shadow: $cookie-notice-shadow;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & &__buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  & &__form {
+    @include margin($properties: margin-right);
+
+    .button {
+      @include button-theme('', $cookie-notice-color-btn, $cookie-notice-color-primary, $cookie-notice-border-color-btn);
+    }
+  }
+}
