@@ -6,7 +6,6 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
-import reversion
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
@@ -23,7 +22,6 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -175,7 +173,7 @@ UUID_OR_SLUG_PARAMETER = OpenApiParameter(
         parameters=[UUID_OR_SLUG_PARAMETER],
     ),
 )
-class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
+class FormViewSet(viewsets.ModelViewSet):
     """
     Manage forms.
 
@@ -294,7 +292,6 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance._is_deleted = True
         instance.save()
-        reversion.set_comment(_("Form deleted via the API."))
 
 
 class FormsImportAPIView(views.APIView):

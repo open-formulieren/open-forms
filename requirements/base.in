@@ -29,7 +29,6 @@ django-hijack-admin
 django-privates
 django-redis
 django-solo
-django-reversion
 django-tinymce
 django-yubin
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
