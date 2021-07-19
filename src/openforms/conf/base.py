@@ -777,3 +777,9 @@ EHERKENNING = {
     },
     "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
 }
+
+
+#
+# Location Client
+#
+OPENFORMS_LOCATION_CLIENT = "openforms.contrib.bag.client.BAGClient"
