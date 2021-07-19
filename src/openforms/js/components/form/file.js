@@ -200,6 +200,7 @@ class FileField extends BaseFileField {
             key: 'file',
             storage: 'url',
             url: getFullyQualifiedUrl('/api/v1/submissions/files/upload'),
+            options: "{\"withCredentials\": true}",
             webcam: false,
             input: true,
         }, ...extend);
