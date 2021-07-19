@@ -1,5 +1,6 @@
 import json
 import uuid
+from datetime import datetime
 from io import BytesIO
 from unittest import expectedFailure
 from zipfile import ZipFile
@@ -11,6 +12,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -19,7 +21,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
-from ..models import Form, FormDefinition, FormStep
+from ..models import Form, FormDefinition, FormStep, FormVersion
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
@@ -1613,3 +1615,58 @@ class CopyFormAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class FormVersionSaveAPITests(APITestCase):
+    def test_auth_required(self):
+        form = FormFactory.create()
+        url = reverse("api:form-save-version", args=(form.uuid,))
+
+        response = self.client.post(url)
+
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
+
+    def test_must_be_staff_user(self):
+        user = UserFactory.create(username="test", password="test", is_staff=False)
+        form = FormFactory.create()
+
+        versions = FormVersion.objects.filter(form=form)
+
+        self.assertEqual(0, versions.count())
+
+        self.client.login(
+            request=HttpRequest(), username=user.username, password="test"
+        )
+        url = reverse("api:form-save-version", args=(form.uuid,))
+        response = self.client.post(url)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    def test_save_version(self):
+        user = UserFactory.create(username="test", password="test", is_staff=True)
+        form = FormFactory.create()
+
+        versions = FormVersion.objects.filter(form=form)
+
+        self.assertEqual(0, versions.count())
+
+        self.client.login(
+            request=HttpRequest(), username=user.username, password="test"
+        )
+        url = reverse("api:form-save-version", args=(form.uuid,))
+        response = self.client.post(url)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        versions = FormVersion.objects.filter(form=form)
+
+        self.assertEqual(1, versions.count())
+
+        version = versions.first()
+
+        self.assertEqual(form, version.form)
+        self.assertEqual(
+            datetime.strptime("2020-12-11T10:53:19+01:00", "%Y-%m-%dT%H:%M:%S%z"),
+            version.date_creation,
+        )
