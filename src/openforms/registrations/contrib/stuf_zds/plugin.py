@@ -78,11 +78,15 @@ class PartialDate:
 
         def _safe_int(num):
             try:
-                return int(num)
+                num = int(num)
+                if num == 0:
+                    return None
+                else:
+                    return num
             except TypeError:
                 return None
 
-        m = re.match(r"^(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$", json_partial_date)
+        m = re.match(r"^(0|\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$", json_partial_date)
         if not m:
             return cls()
         else:

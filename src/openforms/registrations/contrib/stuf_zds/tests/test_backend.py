@@ -124,6 +124,62 @@ class StufZDSHelperTests(StufTestBase):
         self.assertEqual("", actual.value)
         self.assertEqual("J", actual.indicator)
 
+        # partial zeros
+        actual = PartialDate.parse("2020-01-00")
+        self.assertEqual(dict(year=2020, month=1, day=None), dataclasses.asdict(actual))
+        self.assertEqual("202001", actual.value)
+        self.assertEqual("D", actual.indicator)
+
+        actual = PartialDate.parse("2020-00-00")
+        self.assertEqual(
+            dict(year=2020, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("2020", actual.value)
+        self.assertEqual("M", actual.indicator)
+
+        actual = PartialDate.parse("2020-00")
+        self.assertEqual(
+            dict(year=2020, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("2020", actual.value)
+        self.assertEqual("M", actual.indicator)
+
+        # full zeros
+        actual = PartialDate.parse("0000")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        actual = PartialDate.parse("0000-00-00")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        actual = PartialDate.parse("0-0-0")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        actual = PartialDate.parse("0-0")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
+        actual = PartialDate.parse("0")
+        self.assertEqual(
+            dict(year=None, month=None, day=None), dataclasses.asdict(actual)
+        )
+        self.assertEqual("", actual.value)
+        self.assertEqual("J", actual.indicator)
+
         # bad
         actual = PartialDate.parse(None)
         self.assertEqual(
