@@ -304,6 +304,61 @@ class SubmissionAttachmentTest(TestCase):
 
         attachment.delete()
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_attach_uploads_to_submission_step_resizes_image(self):
+        upload = TemporaryFileUploadFactory.create(
+            file_name="my-image.png", content=File(open(self.test_image_path, "rb"))
+        )
+        data = {
+            "my_normal_key": "foo",
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-image.png",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 46114,
+                    "type": "image/png",
+                    "storage": "url",
+                    "originalName": "my-image.png",
+                }
+            ],
+        }
+        components = [
+            {"key": "my_normal_key", "type": "text"},
+            {
+                "key": "my_file",
+                "type": "file",
+                "image": {"resize": {"apply": True, "width": 100, "height": 100}},
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0][1], True)  # created new
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
+
+        attachment = submission_step.attachments.get()
+        self.assertEqual(attachment.form_key, "my_file")
+        self.assertEqual(attachment.original_name, "my-image.png")
+        self.assertImageSize(attachment.content, 100, 100, "png")
+
+        attachment.delete()
+
     def assertImageSize(self, file, width, height, format):
         image = Image.open(file, formats=(format,))
         self.assertEqual(image.width, width)
@@ -319,7 +374,7 @@ class SubmissionAttachmentTest(TestCase):
         with self.assertRaises(UnidentifiedImageError):
             self.assertImageSize(self.test_image_path, 256, 256, "jpeg")
 
-    def test_resize_attachment(self):
+    def test_resize_attachment_helper(self):
         with open(self.test_image_path, "rb") as f:
             data = f.read()
 
