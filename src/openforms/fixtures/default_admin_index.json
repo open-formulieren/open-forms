@@ -147,6 +147,10 @@
                 "haalcentraalconfig"
             ],
             [
+                "registrations_objects_api",
+                "objectsapiconfig"
+            ],
+            [
                 "stuf",
                 "soapservice"
             ],
