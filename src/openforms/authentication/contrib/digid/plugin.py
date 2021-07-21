@@ -8,12 +8,14 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.reverse import reverse
 
 from openforms.authentication.base import BasePlugin, LoginLogo
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 
 
 @register("digid")
 class DigidAuthentication(BasePlugin):
     verbose_name = _("Digid")
+    provides_auth = AuthAttribute.bsn
 
     def start_login(self, request, form, form_url):
         """Redirect to the /digid/login endpoint to start step 2 of the authentication
