@@ -1,6 +1,7 @@
+import re
+from dataclasses import dataclass
 from typing import Optional
 
-from django.utils.dateparse import parse_date
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -18,7 +19,6 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 
-from .client import fmt_soap_date
 from .models import StufZDSConfig
 
 
@@ -33,11 +33,66 @@ class ZaakOptionsSerializer(serializers.Serializer):
     )
 
 
-def json2soap_date(json_date):
-    if not json_date:
-        return None
-    value = parse_date(json_date)
-    return fmt_soap_date(value)
+@dataclass
+class PartialDate:
+    year: Optional[int] = None
+    month: Optional[int] = None
+    day: Optional[int] = None
+
+    @property
+    def indicator(self):
+        if self.year and self.month and self.day:
+            return "V"
+        elif self.year and self.month:
+            return "D"
+        elif self.year:
+            return "M"
+        else:
+            return "J"
+
+    @property
+    def value(self):
+        if self.year and self.month and self.day:
+            return f"{self.year:04}{self.month:02}{self.day:02}"
+        elif self.year and self.month:
+            return f"{self.year:04}{self.month:02}"
+        elif self.year:
+            return f"{self.year:04}"
+        else:
+            return ""
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def parse(cls, json_partial_date):
+        if not json_partial_date:
+            return cls()
+        """
+        2000-01-01
+        2000-1-1
+        2000-01
+        2000-1
+        2000
+        """
+
+        def _safe_int(num):
+            try:
+                num = int(num)
+                if num == 0:
+                    return None
+                else:
+                    return num
+            except TypeError:
+                return None
+
+        m = re.match(r"^(0|\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$", json_partial_date)
+        if not m:
+            return cls()
+        else:
+            return cls(
+                _safe_int(m.group(1)), _safe_int(m.group(2)), _safe_int(m.group(3))
+            )
 
 
 @register("stuf-zds-create-zaak")
@@ -50,7 +105,7 @@ class StufZDSRegistration(BasePlugin):
         "initiator.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
         "initiator.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
         "initiator.geboortedatum": FieldConf(
-            RegistrationAttribute.initiator_geboortedatum, transform=json2soap_date
+            RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
         ),
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         "initiator.bsn": FieldConf(submission_field="bsn"),
