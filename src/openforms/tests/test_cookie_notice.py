@@ -2,6 +2,8 @@ from django.core.management import call_command
 from django.test import override_settings
 from django.urls import reverse
 
+from cookie_consent.cache import delete_cache
+from cookie_consent.models import CookieGroup
 from django_webtest import WebTest
 
 from openforms.config.models import GlobalConfiguration
@@ -9,6 +11,7 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.tests.utils import NOOP_CACHES
 
 
+@override_settings(CACHES=NOOP_CACHES)
 class CookieNoticeTests(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -19,6 +22,25 @@ class CookieNoticeTests(WebTest):
 
         # load some default cookie groups and cookies
         call_command("loaddata", "cookie_consent")
+
+        config = GlobalConfiguration.get_solo()
+
+        # configure analytics so that the JS snippets are not empty
+        config.gtm_code = "GTM-XXXX"
+        config.ga_code = "UA-XXXXX-Y"
+        config.matomo_url = "https://example.com"
+        config.matomo_site_id = "1234"
+        config.piwik_url = "https://example.com"
+        config.piwik_site_id = "1234"
+        config.siteimprove_id = "1234"
+        config.analytics_cookie_consent_group = CookieGroup.objects.get(
+            varname="analytical"
+        )
+        config.save()
+
+        # workaround for https://github.com/bmihelac/django-cookie-consent/issues/41
+        # the cache instance is resolved at import time rather than at runtime.
+        delete_cache()
 
     def test_anon_user_notice_rendered(self):
         form_page = self.app.get(self.url)
@@ -57,25 +79,12 @@ class CookieNoticeTests(WebTest):
             self.assertEqual(refreshed_form_page.request.path, self.url)
             self.assertFalse(refreshed_form_page.pyquery(".cookie-notice"))
 
-    @override_settings(CACHES=NOOP_CACHES)
     def test_analytics_snippets_not_rendered(self):
         """
         Assert that the analytics snippets are opt-in.
 
         Analytics snippets are only loaded after the user accepts the cookies.
         """
-        config = GlobalConfiguration.get_solo()
-
-        # configure analytics so that the JS snippets are not empty
-        config.gtm_code = "GTM-XXXX"
-        config.ga_code = "UA-XXXXX-Y"
-        config.matomo_url = "https://example.com"
-        config.matomo_site_id = "1234"
-        config.piwik_url = "https://example.com"
-        config.piwik_site_id = "1234"
-        config.siteimprove_id = "1234"
-        config.save()
-
         with self.subTest(case="no cookies accepted or declined"):
             form_page = self.app.get(self.url)
 

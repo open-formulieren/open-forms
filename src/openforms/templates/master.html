@@ -1,5 +1,9 @@
-{% load static hijack_tags cookie_consent_tags %}<!DOCTYPE html>
-{% with request|cookie_group_accepted:"analytics" as enable_analytics %}
+{% load static hijack_tags cookie_consent_tags solo_tags %}<!DOCTYPE html>
+
+{% get_solo 'config.GlobalConfiguration' as config %}
+{% firstof config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
+{% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
+
 <html lang="en" class="view {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
 <head>
     <meta charset="utf-8">

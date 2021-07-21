@@ -188,6 +188,17 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    analytics_cookie_consent_group = models.ForeignKey(
+        "cookie_consent.CookieGroup",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The cookie group used for analytical cookies. The analytics scripts are "
+            "loaded only if this cookie group is accepted by the end-user."
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
