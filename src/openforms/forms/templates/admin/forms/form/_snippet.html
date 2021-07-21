@@ -1,0 +1,12 @@
+{% load i18n %}<div class="sdk-snippet">
+    <label for="{{ html_id }}">{{ label }}</label>
+    {% spaceless %}
+    <div class="sdk-snippet__snippet">
+        <pre>{% filter force_escape %}{% include snippet_template %}{% endfilter %}</pre>
+    </div>
+    {% endspaceless %}
+    <div class="sdk-snippet__copy">
+        <span class="fa fa-clone" title="{% trans 'Copy snippet' %}"></span>
+    </div>
+    <div class="help">{{ help }}</div>
+</div>

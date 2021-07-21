@@ -1,0 +1,33 @@
+.sdk-snippet {
+
+  & &__snippet {
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #efefef;
+
+    pre {
+      font-size: 100%;
+      margin-bottom: 0;
+    }
+  }
+
+  & &__copy {
+    display: inline-block;
+    padding: 5px;
+    cursor: pointer;
+    vertical-align: top;
+    font-size: 120%;
+  }
+
+  div.help {
+    vertical-align: top;
+
+    @at-root .form-row & {
+      padding: 5px 0;
+      height: 26px;
+      background-position-y: 4px;
+    }
+  }
+
+}

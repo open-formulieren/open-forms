@@ -42,41 +42,21 @@
     <h2>{% trans "Snippets" %}</h2>
 
     <div class="form-row">
-        <div>
-            {# TODO: add copy button #}
-            <label for="_snippet-sdk-js">{% trans "SDK Javascript" %}</label>
-            {% spaceless %}
-            <textarea id="_snippet-sdk-js" cols="100" rows="10" readonly>{% filter trim %}
-                {% if original %}
-                    {% include "forms/sdk_snippet.html" with form=original %}
-                {% else %}
-                    {% trans "You must save the form before the snippet can be generated." %}
-                {% endif %}
-            {% endfilter %}</textarea>
-            {% endspaceless %}
-            <div class="help">{% blocktrans trimmed %}
-                Embed this snippet where you want to display the form in your (CMS) page.
-                This snippet will load and render the form.
-            {% endblocktrans %}</div>
-        </div>
+        {% blocktrans asvar help trimmed %}
+            Embed this snippet where you want to display the form in your (CMS) page.
+            This snippet will load and render the form.
+        {% endblocktrans %}
+        {% include "admin/forms/form/_snippet.html" with label=_('SDK Javascript') snippet_template='forms/sdk_snippet.html' form=original html_id='_snippet-sdk-js' %}
     </div>
 
     <div class="form-row">
-        <div>
-            {# TODO: add copy button #}
-            <label for="_snippet-sdk-css">{% trans "SDK default styles" %}</label>
-            {% spaceless %}
-            <textarea id="_snippet-sdk-css" cols="100" rows="1" readonly>
-                {% include "forms/sdk_css_snippet.html" %}
-            </textarea>
-            {% endspaceless %}
-            <div class="help">{% blocktrans trimmed %}
-                Include this snippet close to where other styles (CSS) are loaded.
-                This snippet provides the default form styling. If you have own styles
-                overriding the default styles, ensure this snippet is included BEFORE
-                your custom styles.
-            {% endblocktrans %}</div>
-        </div>
+        {% blocktrans asvar help trimmed %}
+            Include this snippet close to where other styles (CSS) are loaded.
+            This snippet provides the default form styling. If you have own styles
+            overriding the default styles, ensure this snippet is included BEFORE
+            your custom styles.
+        {% endblocktrans %}
+        {% include "admin/forms/form/_snippet.html" with label=_('SDK default styles') snippet_template='forms/sdk_css_snippet.html' html_id='_snippet-sdk-css' %}
     </div>
 
 </fieldset>
