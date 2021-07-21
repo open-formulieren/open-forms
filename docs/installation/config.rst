@@ -175,6 +175,9 @@ Other settings
   Open Forms to any other service will be disabled, so this variable should be used with
   care to prevent unwanted side-effects.
 
+* ``BEAT_SEND_EMAIL_INTERVAL``: the interval (in seconds) of sending queued e-mails,
+  defaults to ``20``.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables
