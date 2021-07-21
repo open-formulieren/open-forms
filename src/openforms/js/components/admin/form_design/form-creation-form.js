@@ -15,6 +15,7 @@ import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import TinyMCEEditor from "./Editor";
 import FormMetaFields from './FormMetaFields';
+import FormObjectTools from "./FormObjectTools";
 
 const initialFormState = {
     form: {
@@ -255,6 +256,7 @@ function reducer(draft, action) {
             break;
         }
         case 'SET_FETCH_ERRORS': {
+            console.log(action.payload);
             draft.errors = action.payload;
             draft.submitting = false;
             break;
@@ -275,7 +277,7 @@ const getFormStepsData = async (formUuid, dispatch) => {
             throw new Error('An error occurred while fetching the form steps.');
         }
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormStepsData: ${e.message}`}});
     }
 
     return response.data;
@@ -311,7 +313,7 @@ const getFormData = async (formUuid, dispatch) => {
             });
         }
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormData: ${e.message}`}});
     }
 };
 
@@ -323,7 +325,7 @@ const getFormDefinitions = async (dispatch) => {
             payload: response.data.results,
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormDefinitionData: ${e.message}`}});
     }
 };
 
@@ -335,7 +337,7 @@ const getAuthPlugins = async (dispatch) => {
             payload: response.data
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getAuthPlugins: ${e.message}`}});
     }
 };
 
@@ -347,7 +349,7 @@ const getPrefillPlugins = async (dispatch) => {
             payload: response.data
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getPrefillPlugins: ${e.message}`}});
     }
 };
 
@@ -380,7 +382,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText }) => {
+                              formBeginText, formPreviousText, formChangeText, formConfirmText, formHistoryUrl }) => {
     const initialState = {
         ...initialFormState,
         form: {
@@ -658,6 +660,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
     return (
         <>
+            <FormObjectTools
+                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading || state.availablePrefillPlugins.loading}
+                historyUrl={formHistoryUrl}
+            />
+
+            <h1>Form wijzigen</h1>
+
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
             <FormMetaFields
                 form={state.form}
@@ -743,6 +752,7 @@ FormCreationForm.propTypes = {
     formPreviousText: PropTypes.string.isRequired,
     formChangeText: PropTypes.string.isRequired,
     formConfirmText: PropTypes.string.isRequired,
+    formHistoryUrl: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

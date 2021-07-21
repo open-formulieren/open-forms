@@ -1,5 +1,5 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n static openforms %}
+{% load i18n static openforms admin_urls%}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -9,9 +9,12 @@
     {% endif %}
 {% endblock %}
 
+{% block content_title %}{% endblock %}
+{% block object-tools-items %}{% endblock %}
 
 {% block field_sets %}
 {% if use_react %}
+    {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
     <div
         class="react-form-create"
         data-form-uuid="{{ original.uuid|default:'' }}"
@@ -21,6 +24,7 @@
         data-form-previous-text="{{ original.previous_text|default:'' }}"
         data-form-change-text="{{ original.change_text|default:'' }}"
         data-form-confirm-text="{{ original.begin_text|default:'' }}"
+        data-form-history-url="{{ history_url }}"
         data-csrftoken="{{ csrf_token }}"
         data-tinymce-url="{% static 'tinymce/tinymce.min.js' %}"
     > {# Managed by React #} </div>
