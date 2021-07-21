@@ -55,7 +55,7 @@ class eHerkenningAssertionConsumerServiceView(
             ):
                 kvk = name_id["value"]
 
-        if not kvk or kvk == "":
+        if not kvk:
             self.log_error(request, self.error_messages["eherkenning_no_kvk"])
             raise KVKNotPresentError
 
