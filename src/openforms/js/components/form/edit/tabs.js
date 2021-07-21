@@ -53,52 +53,6 @@ const TEXT_BASIC = {
             tooltip: 'Show a live count of the number of characters.',
             key: 'showCharCount',
             input: true
-        },
-        {
-            type: 'panel',
-            title: 'Derive Street Name or City',
-            key: 'derive-street-name-or-city',
-            theme: 'default',
-            components: [
-                {
-                    type: 'checkbox',
-                    key: 'deriveStreetName',
-                    label: 'Derive street name',
-                    tooltip: 'If the postcode and house number are entered this field will autofill with the street name'
-                },
-                {
-                    type: 'checkbox',
-                    key: 'deriveCity',
-                    label: 'Derive city',
-                    tooltip: 'If the postcode and house number are entered this field will autofill with the city'
-                },
-                {
-                    type: 'select',
-                    input: true,
-                    label: 'Postcode component',
-                    key: 'derivePostcode',
-                    dataSrc: 'custom',
-                    valueProperty: 'value',
-                    data: {
-                        custom(context) {
-                            return Utils.getContextComponents(context);
-                        }
-                    }
-                },
-                {
-                    type: 'select',
-                    input: true,
-                    label: 'House number component:',
-                    key: 'deriveHouseNumber',
-                    dataSrc: 'custom',
-                    valueProperty: 'value',
-                    data: {
-                        custom(context) {
-                            return Utils.getContextComponents(context);
-                        }
-                    }
-                }
-            ]
         }
     ]
 };
