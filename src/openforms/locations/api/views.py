@@ -46,4 +46,8 @@ class GetStreetNameAndCityView(APIView):
             data["postcode"], data["house_number"]
         )
 
+        if not address_data:
+            # If address is not found just return an empty response
+            return Response({})
+
         return Response(GetStreetNameAndCityViewResultSerializer(address_data).data)
