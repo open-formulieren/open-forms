@@ -16,7 +16,8 @@ class BSNNotPresentError(Exception):
 
 
 class DigiDAssertionConsumerServiceView(
-    BaseSaml2Backend, _DigiDAssertionConsumerServiceView
+    BaseSaml2Backend,
+    _DigiDAssertionConsumerServiceView,
 ):
     """Process step 5, 6 and 7 of the authentication
 

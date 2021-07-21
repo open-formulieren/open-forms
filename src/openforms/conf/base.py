@@ -154,6 +154,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.outage.apps.DemoOutageApp",
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.authentication.contrib.digid.apps.DigidApp",
+    "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
 ]
 
 MIDDLEWARE = [
@@ -682,3 +683,83 @@ DIGID = {
 #
 SOLO_CACHE = "default"
 SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
+
+#
+# E-HERKENNING
+#
+
+EHERKENNING_METADATA = config(
+    "EHERKENNING_METADATA",
+    "",
+)
+EHERKENNING_SERVICE_ENTITY_ID = config(
+    "EHERKENNING_SERVICE_ENTITY_ID",
+    "",
+)
+EHERKENNING_ENTITY_ID = config(
+    "EHERKENNING_ENTITY_ID",
+    "",
+)
+EHERKENNING_LOA = config(
+    "EHERKENNING_LOA",
+    "urn:etoegang:core:assurance-class:loa3",
+)
+EHERKENNING_OIN = config(
+    "EHERKENNING_OIN",
+    "",
+)
+EHERKENNING_MAKELAAR_ID = config(
+    "EHERKENNING_MAKELAAR_ID",
+    "00000003520354760000",
+)
+EHERKENNING_PRIVACY_POLICY = config(
+    "EHERKENNING_PRIVACY_POLICY",
+    "",
+)
+EHERKENNING_SERVICE_NAME_NL = config("EHERKENNING_SERVICE_NAME_NL", "")
+EHERKENNING_SERVICE_NAME_EN = config("EHERKENNING_SERVICE_NAME_EN", "")
+EHERKENNING_SERVICE_DESCRIPTION_NL = config("EHERKENNING_SERVICE_DESCRIPTION_NL", "")
+EHERKENNING_SERVICE_DESCRIPTION_EN = config("EHERKENNING_SERVICE_DESCRIPTION_EN", "")
+EHERKENNING_ORGANISATION_NAME_NL = config("EHERKENNING_ORGANISATION_NAME_NL", "")
+EHERKENNING_ORGANISATION_NAME_EN = config("EHERKENNING_ORGANISATION_NAME_EN", "")
+
+EHERKENNING = {
+    "metadata_file": EHERKENNING_METADATA,
+    "key_file": SSL_KEY_PATH,
+    "cert_file": SSL_CERTIFICATE_PATH,
+    "base_url": BASE_URL,
+    "service_entity_id": EHERKENNING_SERVICE_ENTITY_ID,
+    "entity_id": EHERKENNING_ENTITY_ID,
+    "attribute_consuming_service_index": "1",
+    "service_loa": EHERKENNING_LOA,
+    "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
+    "service_name": {
+        "nl": EHERKENNING_SERVICE_NAME_NL,
+        "en": EHERKENNING_SERVICE_NAME_EN,
+    },
+    "service_description": {
+        "nl": EHERKENNING_SERVICE_DESCRIPTION_NL,
+        "en": EHERKENNING_SERVICE_DESCRIPTION_EN,
+    },
+    "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
+    "service_url": BASE_URL,
+    "oin": EHERKENNING_OIN,
+    "organisation_name": {
+        "nl": EHERKENNING_ORGANISATION_NAME_NL,
+        "en": EHERKENNING_ORGANISATION_NAME_EN,
+    },
+    # Either require and return RSIN and KVKNr (set 1) or require only KvKnr (set 2). The
+    # latter is needed for 'eenmanszaak'
+    "entity_concerned_types_allowed": [
+        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:RSIN"},
+        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+        {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+    ],
+    "requested_attributes": [
+        "urn:etoegang:1.11:attribute-represented:KvKnr",
+    ],
+    "privacy_policy_url": {
+        "nl": EHERKENNING_PRIVACY_POLICY,
+    },
+    "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
+}

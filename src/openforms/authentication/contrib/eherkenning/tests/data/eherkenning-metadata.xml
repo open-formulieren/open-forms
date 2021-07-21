@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ns0="urn:etoegang:1.13:metadata-extension" ID="ONELOGIN_123456" entityID="urn:etoegang:DV:00000001111111111000:entities:9000" ns0:version="1.13"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+<ds:Reference URI="#_60dad314-6aaf-4567-9434-2f66e5e79aa1">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>mTSuC+50WptA9sO0wg/eFIyQtWofMlkbEYm5Zoj/GHo=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue> </ds:SignatureValue>
+<ds:KeyInfo>
+<ds:X509Data>
+<ds:X509Certificate> </ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+</ds:Signature>
+  <md:Extensions>
+    <mdrpi:PublicationInfo xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" creationInstant="2020-09-23T13:48:27Z" publisher="https://eh01.connectis.nl/metadata/iwelcome/prod/urn_etoegang_HM_00000003520354760000_entities_1135_1.13.xml"/>
+    <attr:EntityAttributes xmlns:attr="urn:oasis:names:tc:SAML:metadata:attribute">
+      <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>urn:etoegang:core:assurance-class:loa4</saml:AttributeValue>
+      </saml:Attribute>
+    </attr:EntityAttributes>
+  </md:Extensions>
+  <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Test key 0</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate> </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Test key 1</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate> </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://test-iwelcome.nl/broker/ars/1.13" index="0"/>
+    <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://test-iwelcome.nl/broker/ars/1.13" index="1"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://ehm01.iwelcome.nl/broker/slo/1.13"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://ehm01.iwelcome.nl/broker/slo/1.13"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://ehm01.iwelcome.nl/broker/slo/1.13"/>
+    <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:KvKnr</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.9:IntermediateEntityID:KvKnr</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:Pseudo</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:RSIN</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.9:IntermediateEntityID:RSIN</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.11:EntityConcernedID:eIDASLegalIdentifier</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.12:EntityConcernedID:BSN</md:NameIDFormat>
+    <md:NameIDFormat>urn:etoegang:1.12:EntityConcernedID:PseudoID</md:NameIDFormat>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://test-iwelcome.nl/broker/sso/1.13"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test-iwelcome.nl/broker/sso/1.13"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://test-iwelcome.nl/broker/sso/1.13"/>
+  </md:IDPSSODescriptor>
+  <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Test key 2</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate> </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Test key 3</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate> </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://test-iwelcome.nl/broker/ars/1.13" index="0"/>
+    <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://test-iwelcome.nl/broker/ars/1.13" index="1"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://test-iwelcome.nl/broker/acs/1.13" index="1" isDefault="true"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://test-iwelcome.nl/broker/acs/1.13" index="2" isDefault="false"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test-iwelcome.nl/broker/acs/1.13" index="3" isDefault="false"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://test-iwelcome.nl/broker/acs/1.13" index="4" isDefault="false"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://test-iwelcome.nl/broker/acs/1.13" index="5" isDefault="false"/>
+  </md:SPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="en">Test-iWelcome</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="en">Test-iWelcome</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="en">www.test-iwelcome.nl</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson contactType="administrative">
+    <md:EmailAddress>support@test-iwelcome.nl</md:EmailAddress>
+    <md:TelephoneNumber>000 222 111</md:TelephoneNumber>
+  </md:ContactPerson>
+</md:EntityDescriptor>
