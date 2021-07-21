@@ -105,7 +105,7 @@ class SubmissionAttachmentTest(TestCase):
 
         attachment = submission_step.attachments.get()
         self.assertEqual(attachment.form_key, "my_file")
-        self.assertEqual(attachment.file_name, "my-filename.txt")
+        self.assertEqual(attachment.file_name, "my-filename.jpg")
         self.assertEqual(attachment.original_name, "my-image.jpg")
         self.assertEqual(attachment.content.read(), b"content")
         self.assertEqual(attachment.content_type, upload.content_type)
@@ -192,11 +192,11 @@ class SubmissionAttachmentTest(TestCase):
 
         # expect the names to have postfixes
         attachment_1 = attachments[0]
-        self.assertEqual(attachment_1.file_name, "my-filename-1.txt")
+        self.assertEqual(attachment_1.file_name, "my-filename-1.jpg")
         self.assertEqual(attachment_1.original_name, "my-image-1.jpg")
 
         attachment_2 = attachments[1]
-        self.assertEqual(attachment_2.file_name, "my-filename-2.txt")
+        self.assertEqual(attachment_2.file_name, "my-filename-2.jpg")
         self.assertEqual(attachment_2.original_name, "my-image-2.jpg")
 
         # test attaching again is idempotent
