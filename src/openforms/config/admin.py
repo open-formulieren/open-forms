@@ -9,6 +9,7 @@ from .models import GlobalConfiguration
 
 @admin.register(GlobalConfiguration)
 class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
+    autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (
             _("Confirmation email configuration"),
@@ -58,6 +59,12 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             _("Analytics: Piwik"),
             {
                 "fields": ("piwik_url", "piwik_site_id"),
+            },
+        ),
+        (
+            _("Privacy & cookies"),
+            {
+                "fields": ("analytics_cookie_consent_group",),
             },
         ),
         (
