@@ -1,7 +1,11 @@
 from django.contrib import admin, messages
+from django.template.defaultfilters import filesizeformat
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from privates.admin import PrivateMediaMixin
+from rest_framework.permissions import IsAdminUser
 
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
@@ -94,15 +98,29 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
 
 @admin.register(TemporaryFileUpload)
-class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
+class TemporaryFileUploadAdmin(admin.ModelAdmin):
     list_display = ("uuid", "file_name", "content_type", "created_on")
-    search_fields = (
-        "uuid",
-        "file_name",
+    fields = ("uuid", "created_on", "filename_url", "content_type", "file_size")
+
+    search_fields = ("uuid",)
+    readonly_fields = (
+        "filename_url",
+        "file_size",
     )
     date_hierarchy = "created_on"
 
-    private_media_fields = ("content",)
+    def filename_url(self, obj):
+        url = reverse("admin_upload_retrieve", kwargs={"uuid": obj.uuid})
+        return format_html('<a href="{u}">{n}</a>', u=url, n=obj.file_name)
+
+    filename_url.allow_tags = True
+    filename_url.short_description = _("File name")
+
+    def file_size(self, obj):
+        return filesizeformat(obj.content.size)
+
+    file_size.allow_tags = True
+    file_size.short_description = _("File size")
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -112,17 +130,35 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
 
 @admin.register(SubmissionFileAttachment)
-class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
+class SubmissionFileAttachmentAdmin(admin.ModelAdmin):
     fields = (
         "uuid",
+        "submission_step",
         "form_key",
-        "file_name",
+        "created_on",
+        "filename_url",
         "original_name",
-        "content",
+        "content_type",
+        "file_size",
+    )
+    readonly_fields = (
+        "filename_url",
+        "file_size",
     )
     date_hierarchy = "created_on"
 
-    private_media_fields = ("content",)
+    def filename_url(self, obj):
+        url = reverse("admin_attachment_retrieve", kwargs={"uuid": obj.uuid})
+        return format_html('<a href="{u}">{n}</a>', u=url, n=obj.get_display_name())
+
+    filename_url.allow_tags = True
+    filename_url.short_description = _("File name")
+
+    def file_size(self, obj):
+        return filesizeformat(obj.content.size)
+
+    file_size.allow_tags = True
+    file_size.short_description = _("File size")
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -2,10 +2,12 @@ import os
 
 from django.core.files import File
 from django.test import TestCase, override_settings
+from django.urls import reverse
 
 from PIL import Image, UnidentifiedImageError
 from privates.test import temp_private_root
 
+from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.attachments import (
     append_file_num_postfix,
@@ -257,6 +259,18 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.form_key, "my_file")
         self.assertEqual(attachment.original_name, "my-image.png")
         self.assertImageSize(attachment.content, 100, 100, "png")
+
+    def test_attachment_retrieve_view_requires_staff_permission(self):
+        attachment = SubmissionFileAttachmentFactory.create()
+        url = reverse("admin_attachment_retrieve", kwargs={"uuid": attachment.uuid})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        user = StaffUserFactory()
+        self.client.force_login(user)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def assertImageSize(self, file, width, height, format):
         image = Image.open(file, formats=(format,))

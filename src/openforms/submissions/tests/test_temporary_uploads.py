@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.submissions.attachments import (
     cleanup_unclaimed_temporary_uploaded_files,
     temporary_upload_from_url,
@@ -182,3 +183,15 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         actual = list(TemporaryFileUpload.objects.all())
         # expect the unclaimed & older uploads to be deleted
         self.assertEqual(actual, [keep_1, keep_2, keep_3])
+
+    def test_upload_retrieve_view_requires_staff_permission(self):
+        upload = TemporaryFileUploadFactory.create()
+        url = reverse("admin_upload_retrieve", kwargs={"uuid": upload.uuid})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        user = StaffUserFactory()
+        self.client.force_login(user)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
