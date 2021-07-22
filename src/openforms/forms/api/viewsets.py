@@ -291,66 +291,99 @@ class FormViewSet(viewsets.ModelViewSet):
         response["Content-Length"] = len(response.content)
         return response
 
-    @extend_schema(
+    def perform_destroy(self, instance):
+        instance._is_deleted = True
+        instance.save()
+
+
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="form_uuid_or_slug",
+            location=OpenApiParameter.PATH,
+            type=str,
+            description=_("Either a UUID4 or a slug identifying the form."),
+        )
+    ]
+)
+@extend_schema_view(
+    create=extend_schema(
         summary=_("Save form version"),
         tags=["forms"],
-        parameters=[UUID_OR_SLUG_PARAMETER],
         request=None,
+        responses={status.HTTP_201_CREATED: FormVersionSerializer},
+    ),
+    restore=extend_schema(
+        summary=_("Restore form version"),
+        tags=["forms"],
+        parameters=[
+            OpenApiParameter(
+                name="form_uuid_or_slug",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("Either a UUID4 or a slug identifying the form."),
+            ),
+            OpenApiParameter(
+                name="uuid",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("The uuid of the form version"),
+            ),
+        ],
+        request={},
         responses={status.HTTP_201_CREATED: ""},
-    )
-    @action(detail=True, methods=["post"])
-    def save_version(self, request, *args, **kwargs):
+    ),
+    list=extend_schema(
+        summary=_("List form versions"),
+        tags=["forms"],
+        parameters=[
+            OpenApiParameter(
+                name="form_uuid_or_slug",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("Either a UUID4 or a slug identifying the form."),
+            )
+        ],
+        request=FormVersionSerializer,
+        responses={status.HTTP_200_OK: FormVersionSerializer(many=True)},
+    ),
+)
+class FormVersionViewSet(NestedViewSetMixin, viewsets.ViewSet):
+    serializer_class = FormVersionSerializer
+    queryset = FormVersion.objects.all()
+    permission_classes = [IsStaffOrReadOnly]
+    lookup_field = "uuid"
+    parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
+
+    def create(self, request, *args, **kwargs):
         """Save the current version of the form so that it can later be retrieved"""
 
-        form = self.get_object()
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
 
         form_json = form_to_json(form.id)
+        form_version = FormVersion.objects.create(form=form, export_blob=form_json)
 
-        FormVersion.objects.create(form=form, export_blob=form_json)
+        serializer = self.serializer_class(instance=form_version)
+        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def restore(self, request, *args, **kwargs):
+        """Restore a previously saved version of a form."""
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+        form_version = get_object_or_404(FormVersion, uuid=self.kwargs["uuid"])
+
+        form.restore_old_version(form_version.uuid)
 
         return Response(status=status.HTTP_201_CREATED)
 
-    @extend_schema(
-        summary=_("Restore form version"),
-        tags=["forms"],
-        parameters=[UUID_OR_SLUG_PARAMETER],
-        request=FormVersionRestoreSerializer,
-        responses={status.HTTP_201_CREATED: FormSerializer},
-    )
-    @action(detail=True, methods=["post"])
-    def restore_version(self, request, *args, **kwargs):
-        """Restore a previously saved version of a form."""
-
-        serializer = FormVersionRestoreSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        form = self.get_object()
-        form.restore_old_version(serializer.validated_data["uuid"])
-        form.refresh_from_db()
-
-        form_serializer = self.serializer_class(
-            instance=form, context={"request": request}
-        )
-        return Response(status=status.HTTP_201_CREATED, data=form_serializer.data)
-
-    @extend_schema(
-        summary=_("List form versions"),
-        tags=["forms"],
-        parameters=[UUID_OR_SLUG_PARAMETER],
-        request=FormVersionSerializer,
-    )
-    @action(detail=True, methods=["get"])
-    def retrieve_versions(self, request, *args, **kwargs):
-        form = self.get_object()
+    def list(self, request, *args, **kwargs):
+        """List all the versions of a form"""
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
 
         form_version_serializer = FormVersionSerializer(
             instance=FormVersion.objects.filter(form=form), many=True
         )
         return Response(status=status.HTTP_200_OK, data=form_version_serializer.data)
-
-    def perform_destroy(self, instance):
-        instance._is_deleted = True
-        instance.save()
 
 
 class FormsImportAPIView(views.APIView):
