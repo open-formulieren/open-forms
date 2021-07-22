@@ -1,3 +1,4 @@
+import json
 import uuid as _uuid
 from copy import deepcopy
 from typing import List
@@ -7,6 +8,7 @@ from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
+from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
@@ -182,3 +184,72 @@ class Form(models.Model):
     def iter_components(self, recursive=True):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
+
+    def all_versions(self):
+        from .form_version import FormVersion
+
+        return FormVersion.objects.filter(form=self)
+
+    # TODO Refactor to avoid code duplication in src/openforms/forms/utils.py
+    @transaction.atomic
+    def restore_old_version(self, form_version_uuid: str) -> None:
+        from ..api import serializers as api_serializers
+        from .form_definition import FormDefinition
+        from .form_step import FormStep
+        from .form_version import FormVersion
+
+        form_version = FormVersion.objects.get(uuid=form_version_uuid)
+
+        old_version_data = form_version.export_blob
+
+        # Create a form definition with the old version data
+        created_form_definitions = []
+        for form_definition_data in json.loads(old_version_data["formDefinitions"]):
+            form_definition_serializer = api_serializers.FormDefinitionSerializer(
+                data=form_definition_data
+            )
+
+            try:
+                form_definition_serializer.is_valid(raise_exception=True)
+                new_fd = form_definition_serializer.save()
+                created_form_definitions.append(new_fd)
+            except ValidationError as e:
+                if "slug" in e.detail and e.detail["slug"][0].code == "unique":
+                    existing_fd = FormDefinition.objects.get(
+                        slug=form_definition_data["slug"]
+                    )
+                    existing_fd_hash = existing_fd.get_hash()
+                    imported_fd_hash = FormDefinition(
+                        configuration=form_definition_data["configuration"]
+                    ).get_hash()
+
+                    if existing_fd_hash == imported_fd_hash:
+                        # The form definition that is being imported
+                        # is identical to the existing form definition
+                        # with the same slug, use existing instead
+                        # of creating new definition
+                        created_form_definitions.append(existing_fd)
+                    else:
+                        # The imported form definition configuration
+                        # is different, create a new form definition
+                        form_definition_data.pop("url")
+                        form_definition_data.pop("uuid")
+                        # This takes care of creating a unique slug
+                        new_fd = FormDefinition(**form_definition_data)
+                        new_fd.save()
+                        created_form_definitions.append(new_fd)
+                else:
+                    raise e
+
+        # Update the form with the old data
+        form_data = json.loads(old_version_data["forms"])[0]
+        form_serializer = api_serializers.FormSerializer(data=form_data, instance=self)
+        form_serializer.is_valid(raise_exception=True)
+        form_serializer.save()
+
+        # Replace form steps to link the form to the new form definitions
+        FormStep.objects.filter(form=self).delete()
+        form_steps = []
+        for form_definition in created_form_definitions:
+            form_steps.append(FormStep(form=self, form_definition=form_definition))
+        FormStep.objects.bulk_create(form_steps)

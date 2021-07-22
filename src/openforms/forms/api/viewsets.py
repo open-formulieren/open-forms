@@ -36,6 +36,8 @@ from .serializers import (
     FormImportSerializer,
     FormSerializer,
     FormStepSerializer,
+    FormVersionRestoreSerializer,
+    FormVersionSerializer,
 )
 
 
@@ -307,6 +309,44 @@ class FormViewSet(viewsets.ModelViewSet):
         FormVersion.objects.create(form=form, export_blob=form_json)
 
         return Response(status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary=_("Restore form version"),
+        tags=["forms"],
+        parameters=[UUID_OR_SLUG_PARAMETER],
+        request=FormVersionRestoreSerializer,
+        responses={status.HTTP_201_CREATED: FormSerializer},
+    )
+    @action(detail=True, methods=["post"])
+    def restore_version(self, request, *args, **kwargs):
+        """Restore a previously saved version of a form."""
+
+        serializer = FormVersionRestoreSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        form = self.get_object()
+        form.restore_old_version(serializer.validated_data["uuid"])
+        form.refresh_from_db()
+
+        form_serializer = self.serializer_class(
+            instance=form, context={"request": request}
+        )
+        return Response(status=status.HTTP_201_CREATED, data=form_serializer.data)
+
+    @extend_schema(
+        summary=_("List form versions"),
+        tags=["forms"],
+        parameters=[UUID_OR_SLUG_PARAMETER],
+        request=FormVersionSerializer,
+    )
+    @action(detail=True, methods=["get"])
+    def retrieve_versions(self, request, *args, **kwargs):
+        form = self.get_object()
+
+        form_version_serializer = FormVersionSerializer(
+            instance=FormVersion.objects.filter(form=form), many=True
+        )
+        return Response(status=status.HTTP_200_OK, data=form_version_serializer.data)
 
     def perform_destroy(self, instance):
         instance._is_deleted = True
