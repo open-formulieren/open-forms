@@ -1,11 +1,15 @@
+import uuid as _uuid
+
 from django.contrib.postgres.fields.jsonb import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.forms.models import Form
+from openforms.utils.fields import StringUUIDField
 
 
 class FormVersion(models.Model):
+    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+
     date_creation = models.DateTimeField(
         verbose_name=_("date of creation"),
         help_text=_("Date and time of creation of the form version."),
@@ -13,7 +17,7 @@ class FormVersion(models.Model):
     )
     form = models.ForeignKey(
         verbose_name=_("form"),
-        to=Form,
+        to="forms.Form",
         on_delete=models.CASCADE,
     )
     export_blob = JSONField(
