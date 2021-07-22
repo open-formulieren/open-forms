@@ -28,7 +28,7 @@ class GetStreetNameAndCityView(APIView):
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
             OpenApiParameter(
-                "Postcode",
+                "postcode",
                 OpenApiTypes.STR,
                 OpenApiParameter.QUERY,
                 description=_(
@@ -37,7 +37,7 @@ class GetStreetNameAndCityView(APIView):
                 required=True,
             ),
             OpenApiParameter(
-                "House number",
+                "house_number",
                 OpenApiTypes.NUMBER,
                 OpenApiParameter.QUERY,
                 description=_(
