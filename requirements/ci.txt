@@ -121,6 +121,7 @@ django-appconf==1.0.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-axes
+    #   django-cookie-consent
 django-autoslug==1.9.8
     # via
     #   -c requirements/base.txt
@@ -147,6 +148,10 @@ django-compat==1.0.15
     #   -r requirements/base.txt
     #   django-hijack
     #   django-hijack-admin
+django-cookie-consent==0.2.6
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-cors-headers==3.7.0
     # via
     #   -c requirements/base.txt
@@ -222,6 +227,7 @@ django==2.2.24
     #   django-axes
     #   django-capture-on-commit-callbacks
     #   django-choices
+    #   django-cookie-consent
     #   django-cors-headers
     #   django-decorator-include
     #   django-jenkins

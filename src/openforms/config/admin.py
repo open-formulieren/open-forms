@@ -9,6 +9,7 @@ from .models import GlobalConfiguration
 
 @admin.register(GlobalConfiguration)
 class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
+    autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (
             _("Confirmation email configuration"),
@@ -34,6 +35,36 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "form_step_save_text",
                     "form_step_next_text",
                 ),
+            },
+        ),
+        (
+            _("Analytics: Google"),
+            {
+                "fields": ("gtm_code", "ga_code"),
+            },
+        ),
+        (
+            _("Analytics: Matomo"),
+            {
+                "fields": ("matomo_url", "matomo_site_id"),
+            },
+        ),
+        (
+            _("Analytics: SiteImprove"),
+            {
+                "fields": ("siteimprove_id",),
+            },
+        ),
+        (
+            _("Analytics: Piwik"),
+            {
+                "fields": ("piwik_url", "piwik_site_id"),
+            },
+        ),
+        (
+            _("Privacy & cookies"),
+            {
+                "fields": ("analytics_cookie_consent_group",),
             },
         ),
         (

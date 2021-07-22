@@ -1,4 +1,9 @@
-{% load static hijack_tags %}<!DOCTYPE html>
+{% load static hijack_tags cookie_consent_tags solo_tags %}<!DOCTYPE html>
+
+{% get_solo 'config.GlobalConfiguration' as config %}
+{% firstof config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
+{% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
+
 <html lang="en" class="view {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
 <head>
     <meta charset="utf-8">
@@ -9,17 +14,28 @@
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'hijack/hijack-styles.css' %}" rel="stylesheet" type="text/css"/>
     {% block extra_css %}{% endblock %}
+    {% if enable_analytics %}
+        {# Load the various supported analytics provider snippets #}
+        {% include "includes/analytics/all_head.html" %}
+    {% endif %}
 </head>
 
 <body class="view__body">
-{% hijack_notification %}
+    {% hijack_notification %}
 
-{% block content %}
-    Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
-    to get some actual content.
-{% endblock %}
+    {% block content %}
+        Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
+        to get some actual content.
+    {% endblock %}
 
-<script src="{% static 'bundles/openforms-js.js' %}"></script>
-{% block extra_js %}{% endblock %}
+    {% include "includes/cookie-notice.html" %}
+
+    <script src="{% static 'bundles/openforms-js.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    {% if enable_analytics %}
+        {# Load the various supported analytics provider snippets #}
+        {% include "includes/analytics/all_bottom.html" %}
+    {% endif %}
 </body>
 </html>
+{% endwith %}

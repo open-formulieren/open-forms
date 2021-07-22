@@ -1,0 +1,31 @@
+{% extends 'ui/views/abstract/list.html' %}
+{% load i18n %}
+
+
+{% block card %}
+    {% firstof request.GET.referer request.headers.referer as referer %}
+    <header class="card__header">
+        <h1 class="title">{% trans "Cookies" %}</h1>
+    </header>
+
+    <div class="card__body">
+        {% block card_body %}
+            <p>
+              {% trans "This is a list of the categories of cookies used in our website and why we use them." %}
+            </p>
+            <ul class="list">
+                {% for cookie_group in object_list  %}
+                    <li class="list__item">
+                        {% include "cookie_consent/_cookie_group.html" %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endblock %}
+
+        {% if referer %}
+            <a href="{{ referer }}" class="button button--primary">
+                {% trans "Close" %}
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}

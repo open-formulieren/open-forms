@@ -1,0 +1,21 @@
+{% load solo_tags %}
+{% get_solo 'config.GlobalConfiguration' as config %}
+{% comment %}
+    Piwik is rebranded into Matomo and I can only find old snippet examples, from
+    django-piwik-analytics for example.
+{% endcomment %}
+
+{% if config.piwik_enabled %}
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = "//{{ config.piwik_url|escapejs }}";
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", {{ config.piwik_site_id|escapejs }});
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://{{ analytics_url }}/piwik.php?idsite={{ config.piwik_site_id }}" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+{% endif %}

@@ -1,0 +1,30 @@
+{% load i18n cookie_consent_tags %}
+
+{% not_accepted_or_declined_cookie_groups request as cookie_groups %}
+
+{% url 'cookie_consent_cookie_group_list' as manage_url %}
+
+{% if cookie_groups and request.path != manage_url %}
+<div class="cookie-notice">
+
+    <span class="cookie-notice__text">
+        {% blocktrans trimmed %}
+        We use cookies to optimize and improve our website and services.
+        You can <a href="{{ manage_url }}">manage your preferences</a>.
+        {% endblocktrans %}
+    </span>
+
+    <div class="cookie-notice__buttons">
+        <form action="{% url 'cookie_consent_accept' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--accept">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+            <button type="submit" class="button">{% trans "Accept all" %}</button>
+        </form>
+        <form action="{% url 'cookie_consent_decline' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--decline">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+            <button type="submit" class="button">{% trans "Decline all" %}</button>
+        </form>
+    </div>
+</div>
+{% endif %}

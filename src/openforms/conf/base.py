@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
+    "cookie_consent",
     "corsheaders",
     "django_better_admin_arrayfield",
     "django_yubin",
@@ -650,6 +651,16 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
 ]
 
+#
+# Django Solo
+#
+SOLO_CACHE = "default"
+SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
+
+#
+# Django Cookie-Consent
+#
+COOKIE_CONSENT_NAME = "cookie_consent"
 
 #
 # DIGID
@@ -681,12 +692,6 @@ DIGID = {
     },
     "requested_attributes": ["bsn"],
 }
-
-#
-# Django Solo
-#
-SOLO_CACHE = "default"
-SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
 
 #
 # E-HERKENNING

@@ -136,8 +136,83 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    # analytics/tracking
+    gtm_code = models.CharField(
+        _("Google Tag Manager code"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "Typically looks like 'GTM-XXXX'. Supplying this installs Google Tag Manager."
+        ),
+    )
+    ga_code = models.CharField(
+        _("Google Analytics code"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "Typically looks like 'UA-XXXXX-Y'. Supplying this installs Google Analytics."
+        ),
+    )
+    matomo_url = models.CharField(
+        _("Matomo server URL"),
+        max_length=255,
+        blank=True,
+        help_text=_("The base URL of your Matomo server, e.g. 'matomo.example.com'."),
+    )
+    matomo_site_id = models.PositiveIntegerField(
+        _("Matomo site ID"),
+        blank=True,
+        null=True,
+        help_text=_("The 'idsite' of the website you're tracking in Matomo."),
+    )
+    piwik_url = models.CharField(
+        _("piwik server URL"),
+        max_length=255,
+        blank=True,
+        help_text=_("The base URL of your Piwik server, e.g. 'piwik.example.com'."),
+    )
+    piwik_site_id = models.PositiveIntegerField(
+        _("Piwik site ID"),
+        blank=True,
+        null=True,
+        help_text=_("The 'idsite' of the website you're tracking in Piwik."),
+    )
+    siteimprove_id = models.CharField(
+        _("SiteImprove ID"),
+        max_length=10,
+        blank=True,
+        help_text=_(
+            "Your SiteImprove ID - you can find this from the embed snippet example, "
+            "which should contain a URL like '//siteimproveanalytics.com/js/siteanalyze_XXXXX.js'. "
+            "The XXXXX is your ID."
+        ),
+    )
+
+    analytics_cookie_consent_group = models.ForeignKey(
+        "cookie_consent.CookieGroup",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The cookie group used for analytical cookies. The analytics scripts are "
+            "loaded only if this cookie group is accepted by the end-user."
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
     def __str__(self):
         return force_str(self._meta.verbose_name)
+
+    @property
+    def matomo_enabled(self) -> bool:
+        return self.matomo_url and self.matomo_site_id
+
+    @property
+    def piwik_enabled(self) -> bool:
+        return self.piwik_url and self.piwik_site_id
+
+    @property
+    def siteimprove_enabled(self) -> bool:
+        return bool(self.siteimprove_id)

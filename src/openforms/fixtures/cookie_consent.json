@@ -1,0 +1,88 @@
+[
+{
+    "model": "cookie_consent.cookiegroup",
+    "pk": 1,
+    "fields": {
+        "varname": "required",
+        "name": "Functionele cookies",
+        "description": "Functionele cookies zijn essentieel om formulieren te kunnen invullen. Deze kunnen niet uitgeschakeld worden.",
+        "is_required": true,
+        "is_deletable": false,
+        "ordering": 0,
+        "created": "2021-07-19T12:07:22.605Z"
+    }
+},
+{
+    "model": "cookie_consent.cookiegroup",
+    "pk": 2,
+    "fields": {
+        "varname": "analytical",
+        "name": "Analytische cookies",
+        "description": "We gebruiken analytische cookies om (geanonimiseerd) inzicht te krijgen in het gedrag van de gebruikers, met als doel het verbeteren van de dienstverlening.",
+        "is_required": false,
+        "is_deletable": true,
+        "ordering": 1,
+        "created": "2021-07-19T12:09:04.801Z"
+    }
+},
+{
+    "model": "cookie_consent.cookie",
+    "pk": 1,
+    "fields": {
+        "cookiegroup": 1,
+        "name": "openforms_sessionid",
+        "description": "",
+        "path": "/",
+        "domain": "",
+        "created": "2021-07-19T12:10:50.156Z"
+    }
+},
+{
+    "model": "cookie_consent.cookie",
+    "pk": 2,
+    "fields": {
+        "cookiegroup": 2,
+        "name": "_utma",
+        "description": "",
+        "path": "/",
+        "domain": "",
+        "created": "2021-07-19T12:11:15.200Z"
+    }
+},
+{
+    "model": "cookie_consent.cookie",
+    "pk": 3,
+    "fields": {
+        "cookiegroup": 2,
+        "name": "_utmb",
+        "description": "",
+        "path": "/",
+        "domain": "",
+        "created": "2021-07-19T12:11:22.291Z"
+    }
+},
+{
+    "model": "cookie_consent.cookie",
+    "pk": 4,
+    "fields": {
+        "cookiegroup": 2,
+        "name": "_utmc",
+        "description": "",
+        "path": "/",
+        "domain": "",
+        "created": "2021-07-19T12:11:29.119Z"
+    }
+},
+{
+    "model": "cookie_consent.cookie",
+    "pk": 5,
+    "fields": {
+        "cookiegroup": 2,
+        "name": "_utmz",
+        "description": "",
+        "path": "/",
+        "domain": "",
+        "created": "2021-07-19T12:11:35.633Z"
+    }
+}
+]
