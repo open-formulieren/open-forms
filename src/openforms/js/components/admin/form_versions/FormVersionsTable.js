@@ -43,17 +43,20 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
     });
 
     return (
-        <table id="change-history">
-            <thead>
-            <tr>
-                <th scope="col">Datum/Tijd</th>
-                <th scope="col">Actie</th>
-            </tr>
-            </thead>
-            <tbody>
-            {rows}
-            </tbody>
-        </table>
+        <>
+            {rows.length > 0 ?
+                <table id="change-history">
+                    <thead>
+                    <tr>
+                        <th scope="col">Datum/Tijd</th>
+                        <th scope="col">Actie</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {rows}
+                    </tbody>
+                </table> : <p>Dit formulier heeft geen versies.</p>}
+        </>
     );
 
 };
