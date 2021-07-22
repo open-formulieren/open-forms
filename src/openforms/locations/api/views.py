@@ -15,7 +15,7 @@ from openforms.locations.api.serializers import (
 
 class GetStreetNameAndCityView(APIView):
     """
-    Validate a value using given validator
+    Get the street name and city when given a postcode and house number
     """
 
     authentication_classes = ()

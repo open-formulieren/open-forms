@@ -21,9 +21,8 @@ class BagTestMixin:
         super().setUpTestData()
 
         config = BAGConfig.get_solo()
-        service = ServiceFactory(
+        config.bag_service = ServiceFactory(
             api_root="https://bag/api/",
             oas="https://bag/api/schema/openapi.yaml",
         )
-        config.bag_service = service
         config.save()
