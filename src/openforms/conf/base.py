@@ -170,6 +170,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "openforms.middleware.SessionTimeoutMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -370,7 +371,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
 SESSION_COOKIE_NAME = "openforms_sessionid"
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
