@@ -21,7 +21,7 @@ class GetStreetNameAndCityView(APIView):
     authentication_classes = ()
 
     @extend_schema(
-        operation_id="street_name_and_city_list",
+        operation_id="get_street_name_and_city_list",
         summary=_("Get a street name and city"),
         description=_(
             "Get the street name and city for a given postcode and house number"
