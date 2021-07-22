@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
+from zds_client import ClientError
 
 from ..client import BAGClient
 from .base import BagTestMixin
@@ -39,5 +40,20 @@ class BAGClientTests(BagTestMixin, TestCase):
         )
 
         address_data = BAGClient.get_address("1015CJ", 1)
+
+        self.assertEqual(address_data, {})
+
+    @requests_mock.Mocker()
+    def test_client_returns_empty_value_when_client_exception_is_thrown(self, m):
+        m.get(
+            "https://bag/api/schema/openapi.yaml?v=3",
+            status_code=200,
+            content=self.load_binary_mock("bagapiprofileoas3.yaml"),
+        )
+        m.get(
+            "https://bag/api/adressen?postcode=1015CJ&huisnummer=115", exc=ClientError
+        )
+
+        address_data = BAGClient.get_address("1015CJ", 115)
 
         self.assertEqual(address_data, {})

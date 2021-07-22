@@ -1,3 +1,5 @@
+from zds_client import ClientError
+
 from .models import BAGConfig
 
 
@@ -6,16 +8,21 @@ class BAGClient:
     def get_address(postcode, house_number):
         config = BAGConfig.get_solo()
         client = config.bag_service.build_client()
-        data = {"huisnummer": house_number, "postcode": postcode.replace(' ', '')}
-        response = client.operation(
-            "bevraagAdressen",
-            {},
-            method="GET",
-            request_kwargs=dict(
-                params=data,
-                headers={"Accept": "application/hal+json"},
-            ),
-        )
+        data = {"huisnummer": house_number, "postcode": postcode.replace(" ", "")}
+
+        try:
+            response = client.operation(
+                "bevraagAdressen",
+                {},
+                method="GET",
+                request_kwargs=dict(
+                    params=data,
+                    headers={"Accept": "application/hal+json"},
+                ),
+            )
+        except ClientError:
+            return {}
+
         if "_embedded" not in response:
             # No addresses were found
             return {}

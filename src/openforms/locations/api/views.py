@@ -23,7 +23,9 @@ class GetStreetNameAndCityView(APIView):
     @extend_schema(
         operation_id="street_name_and_city_list",
         summary=_("Get a street name and city"),
-        description=_("Get the street name and city for a given postcode and house number"),
+        description=_(
+            "Get the street name and city for a given postcode and house number"
+        ),
         request=GetStreetNameAndCityViewInputSerializer,
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
@@ -31,18 +33,14 @@ class GetStreetNameAndCityView(APIView):
                 "postcode",
                 OpenApiTypes.STR,
                 OpenApiParameter.QUERY,
-                description=_(
-                    "Postcode of the address"
-                ),
+                description=_("Postcode of the address"),
                 required=True,
             ),
             OpenApiParameter(
                 "house_number",
                 OpenApiTypes.NUMBER,
                 OpenApiParameter.QUERY,
-                description=_(
-                    "House number of the address"
-                ),
+                description=_("House number of the address"),
                 required=True,
             ),
         ],

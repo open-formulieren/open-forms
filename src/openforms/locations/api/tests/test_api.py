@@ -58,9 +58,7 @@ class GetStreetNameAndCityViewAPITests(TestCase):
         self.assertEqual(response.json()["city"], "Amsterdam")
 
     @patch("openforms.locations.api.views.import_string")
-    def test_address_not_found(
-        self, import_string_mock
-    ):
+    def test_address_not_found(self, import_string_mock):
         import_string_mock.return_value.get_address.return_value = {}
 
         response = self.client.get(
