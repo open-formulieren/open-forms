@@ -31,7 +31,6 @@ class SubmissionAttachmentTest(TestCase):
             os.path.dirname(__file__), "files", "image-256x256.png"
         )
 
-    # TODO private storage
     def test_resolve_uploads_from_formio_data(self):
         upload = TemporaryFileUploadFactory.create()
         data = {
