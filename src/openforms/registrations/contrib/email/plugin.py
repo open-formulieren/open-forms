@@ -1,7 +1,6 @@
 from typing import Optional
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
@@ -9,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import sanitize_content
 from openforms.submissions.models import Submission
+from openforms.utils.email import send_mail_plus
 
 from ...base import BasePlugin
 from ...exceptions import RegistrationFailed
@@ -49,7 +49,9 @@ class EmailRegistration(BasePlugin):
         default_template = get_template("confirmation_mail.html")
         content = default_template.render({"body": mark_safe(sanitized)})
 
-        send_mail(
+        attachments = submission.attachments.as_mail_tuples()
+
+        send_mail_plus(
             _("[Open Forms] {} - submission {}").format(
                 submission.form.name, submission.uuid
             ),
@@ -58,4 +60,5 @@ class EmailRegistration(BasePlugin):
             options["to_emails"],
             fail_silently=False,
             html_message=content,
+            attachments=attachments,
         )

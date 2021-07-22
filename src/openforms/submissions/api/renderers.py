@@ -12,3 +12,12 @@ class PDFRenderer(renderers.BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         return data
+
+
+class FileRenderer(renderers.BaseRenderer):
+    media_type = "application/octet-stream"
+    charset = None
+    render_style = "binary"
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return data

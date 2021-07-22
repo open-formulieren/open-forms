@@ -1,4 +1,4 @@
-import {BuilderUtils, Utils} from 'formiojs';
+import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 
@@ -244,7 +244,6 @@ const DEFAULT_TEXT_TABS = {
         REGISTRATION,
     ]
 };
-
 
 export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
 export default DEFAULT_TABS;

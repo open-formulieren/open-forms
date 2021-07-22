@@ -24,3 +24,6 @@ ENVIRONMENT = "CI"
 # Django-axes
 #
 AXES_BEHIND_REVERSE_PROXY = False
+
+# Django privates
+SENDFILE_BACKEND = "django_sendfile.backends.development"

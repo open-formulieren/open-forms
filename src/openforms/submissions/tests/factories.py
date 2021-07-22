@@ -9,7 +9,13 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ..models import Submission, SubmissionReport, SubmissionStep
+from ..models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionReport,
+    SubmissionStep,
+    TemporaryFileUpload,
+)
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -78,6 +84,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
+    form_step = factory.SubFactory(FormStepFactory)
 
     class Meta:
         model = SubmissionStep
@@ -90,3 +97,25 @@ class SubmissionReportFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionReport
+
+
+class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
+    file_name = factory.Faker("file_name")
+    content_type = factory.Faker("mime_type")
+    content = factory.django.FileField(filename="file.dat", data=b"content")
+
+    class Meta:
+        model = TemporaryFileUpload
+
+
+class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
+    submission_step = factory.SubFactory(SubmissionStepFactory)
+    temporary_file = factory.SubFactory(TemporaryFileUploadFactory)
+    content = factory.django.FileField(filename="attachment.pdf", data=b"content")
+    form_key = factory.Faker("bs")
+    file_name = factory.Faker("file_name")
+    original_name = factory.Faker("file_name")
+    content_type = factory.Faker("mime_type")
+
+    class Meta:
+        model = SubmissionFileAttachment

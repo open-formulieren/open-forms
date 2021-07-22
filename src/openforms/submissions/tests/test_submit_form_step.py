@@ -5,6 +5,8 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
+
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -19,6 +21,7 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
+@temp_private_root()
 class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):

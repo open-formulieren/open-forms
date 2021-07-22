@@ -52,6 +52,10 @@
             ],
             [
                 "submissions",
+                "submissionfileattachment"
+            ],
+            [
+                "submissions",
                 "submissionreport"
             ]
         ]
@@ -175,6 +179,10 @@
             [
                 "django_yubin",
                 "queuedmessage"
+            ],
+            [
+                "submissions",
+                "temporaryfileupload"
             ]
         ]
     }

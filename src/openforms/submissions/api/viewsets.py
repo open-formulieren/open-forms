@@ -15,17 +15,20 @@ from rest_framework.response import Response
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.registrations.tasks import (
+    cleanup_temporary_files_for,
     generate_submission_report,
     register_submission,
 )
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ..attachments import attach_uploads_to_submission_step
 from ..models import Submission, SubmissionReport, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
+    remove_submission_uploads_from_session,
     send_confirmation_email,
 )
 from .permissions import ActiveSubmissionPermission
@@ -84,7 +87,7 @@ class SubmissionViewSet(
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
         # note: possible race condition with concurrent requests
-        add_submmission_to_session(serializer.instance, self.request)
+        add_submmission_to_session(serializer.instance, self.request.session)
 
     @extend_schema(
         summary=_("Complete a submission"),
@@ -113,7 +116,8 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         submission.save()
-        remove_submission_from_session(submission, self.request)
+        remove_submission_from_session(submission, self.request.session)
+        remove_submission_uploads_from_session(submission, self.request.session)
 
         submission_report = SubmissionReport.objects.create(
             title=_("%(title)s: Submission report") % {"title": submission.form.name},
@@ -127,6 +131,9 @@ class SubmissionViewSet(
                 submission_report.id
             ) | register_submission.si(submission.id)
             chain.delay()
+
+            # this can run any time because they have been claimed earlier
+            cleanup_temporary_files_for.delay(submission.id)
 
         transaction.on_commit(on_submission_commit)
 
@@ -264,6 +271,8 @@ class SubmissionStepViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        attach_uploads_to_submission_step(instance)
 
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to

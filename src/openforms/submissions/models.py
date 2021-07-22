@@ -1,13 +1,17 @@
 import logging
+import os.path
 import uuid
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import List, Optional
+from datetime import date, timedelta
+from typing import Any, List, Mapping, Optional, Tuple
 
 from django.contrib.postgres.fields import JSONField
-from django.core.files.base import ContentFile
+from django.core.files.base import ContentFile, File
 from django.db import models
 from django.shortcuts import render
 from django.template import Context, Template
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from celery.result import AsyncResult
@@ -242,6 +246,14 @@ class Submission(models.Model):
     data = property(get_merged_data)
     data_with_component_type = property(get_merged_data_with_component_type)
 
+    def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
+        return SubmissionFileAttachment.objects.for_submission(self)
+
+    attachments = property(get_attachments)
+
+    def get_merged_attachments(self) -> Mapping[str, "SubmissionFileAttachment"]:
+        return self.get_attachments().as_form_dict()
+
     def get_email_confirmation_recipients(self, submitted_data: dict) -> List[str]:
         recipient_emails = set()
         for key in self.form.get_keys_for_email_confirmation():
@@ -363,7 +375,22 @@ class SubmissionReport(models.Model):
 
     def generate_submission_report_pdf(self) -> None:
         form = self.submission.form
-        submission_data = self.submission.get_merged_data()
+
+        submission_data = dict()
+        attachment_data = self.submission.get_merged_attachments()
+
+        for key, info in self.submission.get_merged_data_with_component_type().items():
+            if info["type"] == "file":
+                files = attachment_data.get(key)
+                if files:
+                    submission_data[key] = _("attachment: %s") % (
+                        ", ".join(file.get_display_name() for file in files)
+                    )
+                else:
+                    submission_data[key] = _("attachment")
+            else:
+                # more here? like getComponentValue() in the SDK?
+                submission_data[key] = info["value"]
 
         html_report = render(
             request=None,
@@ -389,3 +416,147 @@ class SubmissionReport(models.Model):
             return
 
         return AsyncResult(id=self.task_id)
+
+
+def fmt_upload_to(prefix, instance, filename):
+    name, ext = os.path.splitext(filename)
+    return "{p}/{d}/{u}{e}".format(
+        p=prefix, d=date.today().strftime("%Y/%m/%d"), u=instance.uuid, e=ext
+    )
+
+
+def temporary_file_upload_to(instance, filename):
+    return fmt_upload_to("temporary-uploads", instance, filename)
+
+
+def submission_file_upload_to(instance, filename):
+    return fmt_upload_to("submission-uploads", instance, filename)
+
+
+class TemporaryFileUploadQuerySet(models.QuerySet):
+    def select_prune(self, age: timedelta):
+        return self.filter(created_on__lt=timezone.now() - age)
+
+    def delete(self):
+        # overwrite the method so the admin etc delete properly
+        for tmp in self:
+            tmp.delete()
+
+
+class TemporaryFileUpload(models.Model):
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    content = PrivateMediaFileField(
+        verbose_name=_("content"),
+        upload_to=temporary_file_upload_to,
+        help_text=_("content of the file attachment."),
+    )
+    file_name = models.CharField(_("original name"), max_length=255)
+    content_type = models.CharField(_("content type"), max_length=255)
+    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
+
+    objects = TemporaryFileUploadQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _("temporary file upload")
+        verbose_name_plural = _("temporary file upload")
+
+    def delete(self, using=None, keep_parents=False):
+        self.content.delete(save=False)
+        super().delete(using=using, keep_parents=keep_parents)
+
+
+class SubmissionFileAttachmentQuerySet(models.QuerySet):
+    def for_submission(self, submission: Submission):
+        return self.filter(submission_step__submission=submission)
+
+    def as_form_dict(self) -> Mapping[str, "SubmissionFileAttachment"]:
+        files = defaultdict(list)
+        for file in self:
+            files[file.form_key].append(file)
+        return dict(files)
+
+    def as_mail_tuples(self) -> List[Tuple[str, Any, str]]:
+        return [(f.get_display_name(), f.content.read(), f.content_type) for f in self]
+
+
+class SubmissionFileAttachmentManager(models.Manager):
+    def create_from_upload(
+        self,
+        submission_step: SubmissionStep,
+        form_key: str,
+        upload: TemporaryFileUpload,
+        file_name: Optional[str] = None,
+    ) -> Tuple["SubmissionFileAttachment", bool]:
+        try:
+            return (
+                self.get(
+                    submission_step=submission_step,
+                    temporary_file=upload,
+                    form_key=form_key,
+                ),
+                False,
+            )
+        except self.model.DoesNotExist:
+            return (
+                self.create(
+                    submission_step=submission_step,
+                    temporary_file=upload,
+                    form_key=form_key,
+                    # wrap in File() so it will be physically copied
+                    content=File(upload.content, name=upload.file_name),
+                    content_type=upload.content_type,
+                    original_name=upload.file_name,
+                    file_name=file_name,
+                ),
+                True,
+            )
+
+
+class SubmissionFileAttachment(models.Model):
+    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    submission_step = models.ForeignKey(
+        to="SubmissionStep",
+        on_delete=models.CASCADE,
+        verbose_name=_("submission"),
+        help_text=_("SubmissionStep the file is attached to."),
+        related_name="attachments",
+    )
+    # TODO OneToOne?
+    temporary_file = models.ForeignKey(
+        to="TemporaryFileUpload",
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_("temporary file"),
+        help_text=_("Temporary upload this file is sourced to."),
+        related_name="attachments",
+    )
+    form_key = models.CharField(_("form component key"), max_length=255)
+
+    content = PrivateMediaFileField(
+        verbose_name=_("content"),
+        upload_to=submission_file_upload_to,
+        help_text=_("Content of the submission file attachment."),
+    )
+    file_name = models.CharField(
+        _("file name"), max_length=255, help_text=_("reformatted file name"), blank=True
+    )
+    original_name = models.CharField(
+        _("original name"), max_length=255, help_text=_("original uploaded file name")
+    )
+    content_type = models.CharField(_("content type"), max_length=255)
+    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
+
+    objects = SubmissionFileAttachmentManager.from_queryset(
+        SubmissionFileAttachmentQuerySet
+    )()
+
+    class Meta:
+        verbose_name = _("submission file attachment")
+        verbose_name_plural = _("submission file attachment")
+
+    def delete(self, using=None, keep_parents=False):
+        self.content.delete(save=False)
+        super().delete(using=using, keep_parents=keep_parents)
+
+    def get_display_name(self):
+        return self.file_name or self.original_name

@@ -163,13 +163,13 @@ Other settings
 * ``VERSION_TAG``: The version of the application. If not provided, the
   ``GIT_SHA`` is used.
 
-* ``EXTRA_VERIFY_CERTS``: a comma-separated list of paths to certificates to trust, empty
+* ``EXTRA_VERIFY_CERTS``: A comma-separated list of paths to certificates to trust, empty
   by default. If you're using self-signed certificates for the services that Open Forms
   communicates with, specify the path to those (root) certificates here, rather than
   disabling SSL certificate verification. Example:
   ``EXTRA_VERIFY_CERTS=/etc/ssl/root1.crt,/etc/ssl/root2.crt``.
 
-* ``CURL_CA_BUNDLE``: if this variable is set to an empty string, it disables SSL/TLS
+* ``CURL_CA_BUNDLE``: If this variable is set to an empty string, it disables SSL/TLS
   certificate verification. More information about why can be found on this
   `stackoverflow post <https://stackoverflow.com/a/48391751/7146757>`_. Even calls from
   Open Forms to any other service will be disabled, so this variable should be used with
@@ -177,6 +177,10 @@ Other settings
 
 * ``BEAT_SEND_EMAIL_INTERVAL``: the interval (in seconds) of sending queued e-mails,
   defaults to ``20``.
+
+* ``SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS``: Configure how many days the URL to the submission report is usable.
+
+* ``TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS``: Configure how many days before unclaimed temporary uploads are removed.
 
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 

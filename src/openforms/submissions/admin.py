@@ -1,11 +1,19 @@
 from django.contrib import admin, messages
+from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 
 from privates.admin import PrivateMediaMixin
+from privates.views import PrivateMediaView
 
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
-from .models import Submission, SubmissionReport, SubmissionStep
+from .models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionReport,
+    SubmissionStep,
+    TemporaryFileUpload,
+)
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -39,6 +47,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         submission = self.get_object(request, object_id)
         extra_context = {
             "data": submission.data_with_component_type,
+            "attachments": submission.get_merged_attachments(),
             "image_components": IMAGE_COMPONENTS,
         }
         return super().change_view(
@@ -81,6 +90,103 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
     raw_id_fields = ("submission",)
 
     private_media_fields = ("content",)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+class TemporaryFileUploadMediaView(PrivateMediaView):
+    def get_sendfile_opts(self):
+        object = self.get_object()
+        return {
+            "attachment": True,
+            "attachment_filename": object.file_name,
+            "mimetype": object.content_type,
+        }
+
+
+@admin.register(TemporaryFileUpload)
+class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = (
+        "uuid",
+        "file_name",
+        "content_type",
+        "created_on",
+        "file_size",
+    )
+    fields = (
+        "uuid",
+        "created_on",
+        "file_name",
+        "content_type",
+        "file_size",
+        "content",
+    )
+
+    search_fields = ("uuid",)
+    readonly_fields = (
+        "uuid",
+        "created_on",
+        "file_size",
+    )
+    date_hierarchy = "created_on"
+
+    private_media_fields = ("content",)
+    private_media_view_class = TemporaryFileUploadMediaView
+
+    def file_size(self, obj):
+        return filesizeformat(obj.content.size)
+
+    file_size.short_description = _("File size")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+class SubmissionFileAttachmentMediaView(PrivateMediaView):
+    def get_sendfile_opts(self):
+        object = self.get_object()
+        return {
+            "attachment": True,
+            "attachment_filename": object.get_display_name(),
+            "mimetype": object.content_type,
+        }
+
+
+@admin.register(SubmissionFileAttachment)
+class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = (
+        "uuid",
+        "file_name",
+        "content_type",
+        "created_on",
+        "file_size",
+    )
+    fields = (
+        "uuid",
+        "submission_step",
+        "form_key",
+        "created_on",
+        "original_name",
+        "content_type",
+        "file_size",
+        "content",
+    )
+    raw_id_fields = ("submission_step",)
+    readonly_fields = (
+        "uuid",
+        "created_on",
+        "file_size",
+    )
+    date_hierarchy = "created_on"
+
+    private_media_fields = ("content",)
+    private_media_view_class = SubmissionFileAttachmentMediaView
+
+    def file_size(self, obj):
+        return filesizeformat(obj.content.size)
+
+    file_size.short_description = _("File size")
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -425,6 +425,10 @@ SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl
 SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
     "SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS", default=1
 )
+TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
+    "TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS", default=2
+)
+
 
 ##############################
 #                            #

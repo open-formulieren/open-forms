@@ -35,6 +35,9 @@ def filter_data_to_show_in_email(context: dict) -> dict:
 
 @register.simple_tag()
 def display_value(value: Any):
+    if isinstance(value, dict) and value.get("originalName"):
+        # uploads
+        return value["originalName"]
     if isinstance(value, (list, tuple)):
-        return ", ".join(value)
+        return ", ".join(map(display_value, value))
     return value

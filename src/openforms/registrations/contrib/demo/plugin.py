@@ -1,4 +1,4 @@
-from typing import NoReturn, Optional
+from typing import NoReturn
 
 from django.utils.translation import ugettext_lazy as _
 
