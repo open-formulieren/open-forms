@@ -27,13 +27,11 @@ class SessionTimeoutMiddleware:
     Allows us to set the expiry time of the session based on what
     is configured in our GlobalConfiguration
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         config = GlobalConfiguration.get_solo()
-
-        # TODO Get this value from the global configuration
-        request.session.set_expiry(30)
-
+        request.session.set_expiry(config.admin_session_timeout)
         return self.get_response(request)
