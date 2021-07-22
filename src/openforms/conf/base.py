@@ -782,4 +782,4 @@ EHERKENNING = {
 #
 # Location Client
 #
-OPENFORMS_LOCATION_CLIENT = "openforms.contrib.bag.client.BAGClient"
+OPENFORMS_LOCATION_CLIENT = config("OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient")
