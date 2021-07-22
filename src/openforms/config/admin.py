@@ -68,6 +68,12 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Sessions"),
+            {
+                "fields": ("admin_session_timeout", "form_session_timeout",),
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),
