@@ -262,7 +262,7 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
     url = serializers.SerializerMethodField(
         label=_("Url"), source="get_url", read_only=True
     )
-    name = serializers.URLField(
+    name = serializers.CharField(
         label=_("File name"), source="file_name", read_only=True
     )
     size = serializers.IntegerField(
@@ -277,7 +277,7 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             "size",
         )
 
-    def get_url(self, instance):
+    def get_url(self, instance) -> str:
         request = self.context["request"]
         return reverse(
             "api:submissions:temporary-file",

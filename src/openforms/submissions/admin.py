@@ -112,7 +112,7 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
 
 @admin.register(SubmissionFileAttachment)
-class SubmissionFileAttachmentInlineAdmin(PrivateMediaMixin, admin.ModelAdmin):
+class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
     fields = (
         "uuid",
         "form_key",
