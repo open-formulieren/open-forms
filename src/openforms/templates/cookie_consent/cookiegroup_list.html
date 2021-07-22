@@ -3,6 +3,7 @@
 
 
 {% block card %}
+    {% firstof request.GET.referer request.headers.referer as referer %}
     <header class="card__header">
         <h1 class="title">{% trans "Cookies" %}</h1>
     </header>
@@ -20,5 +21,11 @@
                 {% endfor %}
             </ul>
         {% endblock %}
+
+        {% if referer %}
+            <a href="{{ referer }}" class="button button--primary">
+                {% trans "Close" %}
+            </a>
+        {% endif %}
     </div>
 {% endblock %}
