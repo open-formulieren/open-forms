@@ -49,9 +49,11 @@ class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
             _("Connection"),
             {
                 "fields": [
+                    "soap_version",
                     "url",
-                    "endpoint_sync",
-                    "endpoint_async",
+                    "endpoint_beantwoord_vraag",
+                    "endpoint_vrije_berichten",
+                    "endpoint_ontvang_asynchroon",
                 ]
             },
         ),
@@ -59,6 +61,7 @@ class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
             _("Authentication"),
             {
                 "fields": [
+                    "endpoint_security",
                     "user",
                     "password",
                     "certificate",

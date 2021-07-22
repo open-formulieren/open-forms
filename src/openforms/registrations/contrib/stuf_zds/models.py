@@ -45,6 +45,11 @@ class StufZDSConfig(SingletonModel):
         max_length=10,
         help_text=_("Zaaktype status code for newly created zaken in StUF-ZDS"),
     )
+    zds_zaaktype_status_omschrijving = models.CharField(
+        _("Zaaktype status omschrijving"),
+        max_length=80,
+        help_text=_("Zaaktype status omschrijving for newly created zaken in StUF-ZDS"),
+    )
     zds_documenttype_omschrijving = models.CharField(
         _("Documenttype description"),
         max_length=80,
@@ -58,6 +63,9 @@ class StufZDSConfig(SingletonModel):
         options.setdefault("zds_zaaktype_code", self.zds_zaaktype_code)
         options.setdefault("zds_zaaktype_omschrijving", self.zds_zaaktype_omschrijving)
         options.setdefault("zds_zaaktype_status_code", self.zds_zaaktype_status_code)
+        options.setdefault(
+            "zds_zaaktype_status_omschrijving", self.zds_zaaktype_status_omschrijving
+        )
         options.setdefault(
             "zds_documenttype_omschrijving", self.zds_documenttype_omschrijving
         )

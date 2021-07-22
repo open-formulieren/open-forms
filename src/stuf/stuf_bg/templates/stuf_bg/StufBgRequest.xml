@@ -6,7 +6,7 @@
         <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
             <Timestamp>
                 <Created>{{ created }}</Created>
-                <Expires>{{ expired }}</Expires>
+                <Expires>{{ expires }}</Expires>
             </Timestamp>
             {% if username or password %}
                 <UsernameToken>

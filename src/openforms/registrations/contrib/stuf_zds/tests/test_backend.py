@@ -93,8 +93,12 @@ class StufTestBase(TestCase):
 
     def assertSoapXMLCommon(self, xml_doc):
         self.assertIsNotNone(xml_doc)
-        self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Header")
-        self.assertXPathExists(xml_doc, "/soapenv:Envelope/soapenv:Body")
+        self.assertXPathExists(
+            xml_doc, "/*[local-name()='Envelope']/*[local-name()='Header']"
+        )
+        self.assertXPathExists(
+            xml_doc, "/*[local-name()='Envelope']/*[local-name()='Body']"
+        )
 
 
 class StufZDSHelperTests(StufTestBase):
@@ -221,6 +225,7 @@ class StufZDSClientTests(StufTestBase):
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
             "zds_zaaktype_status_code": "zt-st-code",
+            "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving": "dt-omschrijving",
             "referentienummer": str(uuid.uuid4()),
         }
