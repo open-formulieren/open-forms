@@ -133,7 +133,7 @@ cssselect==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pyquery
-ddt-api-calls==0.2.0
+ddt-api-calls==0.3.2
     # via -r requirements/dev.in
 defusedxml==0.6.0
     # via
