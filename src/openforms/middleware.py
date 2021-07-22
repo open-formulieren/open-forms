@@ -23,6 +23,10 @@ class SameSiteNoneCookieMiddlware:
 
 
 class SessionTimeoutMiddleware:
+    """
+    Allows us to set the expiry time of the session based on what
+    is configured in our GlobalConfiguration
+    """
     def __init__(self, get_response):
         self.get_response = get_response
 
