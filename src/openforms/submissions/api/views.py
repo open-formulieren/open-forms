@@ -16,7 +16,8 @@ from rest_framework.response import Response
 from ..attachments import clean_mime_type
 from ..models import SubmissionFileAttachment, SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
-from .permissions import AnyActiveSubmissionPermission
+from ..utils import add_upload_to_session, remove_upload_from_session
+from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
 from .renderers import FileRenderer, PDFRenderer
 from .serializers import ReportStatusSerializer, TemporaryFileUploadSerializer
 
@@ -124,6 +125,8 @@ class TemporaryFileUploadView(GenericAPIView):
             file_name=name,
             content_type=clean_mime_type(file.content_type),
         )
+        add_upload_to_session(upload, self.request.session)
+
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data
         )
@@ -156,7 +159,7 @@ class TemporaryFileUploadView(GenericAPIView):
 )
 class TemporaryFileView(DestroyAPIView):
     authentication_classes = []
-    permission_classes = [AnyActiveSubmissionPermission]
+    permission_classes = [OwnsTemporaryUploadPermission]
     renderer_classes = [FileRenderer]
 
     queryset = TemporaryFileUpload.objects.all()
@@ -171,6 +174,10 @@ class TemporaryFileView(DestroyAPIView):
             attachment_filename=upload.file_name,
             mimetype=upload.content_type,
         )
+
+    def perform_destroy(self, instance):
+        remove_upload_from_session(instance, self.request.session)
+        instance.delete()
 
 
 class BaseAdminFileRetrieveView(RetrieveAPIView):

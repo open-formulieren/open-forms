@@ -28,6 +28,7 @@ from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
+    remove_submission_uploads_from_session,
     send_confirmation_email,
 )
 from .permissions import ActiveSubmissionPermission
@@ -86,7 +87,7 @@ class SubmissionViewSet(
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
         # note: possible race condition with concurrent requests
-        add_submmission_to_session(serializer.instance, self.request)
+        add_submmission_to_session(serializer.instance, self.request.session)
 
     @extend_schema(
         summary=_("Complete a submission"),
@@ -115,7 +116,8 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         submission.save()
-        remove_submission_from_session(submission, self.request)
+        remove_submission_from_session(submission, self.request.session)
+        remove_submission_uploads_from_session(submission, self.request.session)
 
         submission_report = SubmissionReport.objects.create(
             title=_("%(title)s: Submission report") % {"title": submission.form.name},
@@ -130,7 +132,7 @@ class SubmissionViewSet(
             ) | register_submission.si(submission.id)
             chain.delay()
 
-            # this can run any time
+            # this can run any time because they have been claimed earlier
             cleanup_temporary_files_for.delay(submission.id)
 
         transaction.on_commit(on_submission_commit)

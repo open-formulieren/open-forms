@@ -1,41 +1,71 @@
 import logging
-from typing import Union
+from typing import Any
 
 from django.conf import settings
+from django.contrib.sessions.backends.base import SessionBase
 from django.core.mail import send_mail
-from django.http import HttpRequest
 
-from rest_framework.request import Request
-
-from .constants import SUBMISSIONS_SESSION_KEY
-from .models import Submission
+from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from .models import Submission, TemporaryFileUpload
 
 logger = logging.getLogger(__name__)
 
 
-def add_submmission_to_session(
-    submission: Submission, request: Union[Request, HttpRequest]
+def append_to_session_list(session: SessionBase, session_key: str, value: Any) -> None:
+    # note: possible race condition with concurrent requests
+    active = session.get(session_key, [])
+    if value not in active:
+        active.append(value)
+        session[session_key] = active
+
+
+def remove_from_session_list(
+    session: SessionBase, session_key: str, value: Any
 ) -> None:
+    # note: possible race condition with concurrent requests
+    active = session.get(session_key, [])
+    if value in active:
+        active.remove(value)
+        session[session_key] = active
+
+
+def add_submmission_to_session(submission: Submission, session: SessionBase) -> None:
     """
     Store the submission UUID in the request session for authorization checks.
     """
-    # note: possible race condition with concurrent requests
-    submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
-    submissions.append(str(submission.uuid))
-    request.session[SUBMISSIONS_SESSION_KEY] = submissions
+    append_to_session_list(session, SUBMISSIONS_SESSION_KEY, str(submission.uuid))
 
 
 def remove_submission_from_session(
-    submission: Submission, request: Union[Request, HttpRequest]
+    submission: Submission, session: SessionBase
 ) -> None:
     """
     Remove the submission UUID from the session if it's present.
     """
-    id_to_check = str(submission.uuid)
-    submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
-    if id_to_check in submissions:
-        submissions.remove(id_to_check)
-        request.session[SUBMISSIONS_SESSION_KEY] = submissions
+    remove_from_session_list(session, SUBMISSIONS_SESSION_KEY, str(submission.uuid))
+
+
+def add_upload_to_session(upload: TemporaryFileUpload, session: SessionBase) -> None:
+    """
+    Store the upload UUID in the request session for authorization checks.
+    """
+    append_to_session_list(session, UPLOADS_SESSION_KEY, str(upload.uuid))
+
+
+def remove_upload_from_session(
+    upload: TemporaryFileUpload, session: SessionBase
+) -> None:
+    """
+    Remove the submission UUID from the session if it's present.
+    """
+    remove_from_session_list(session, UPLOADS_SESSION_KEY, str(upload.uuid))
+
+
+def remove_submission_uploads_from_session(
+    submission: Submission, session: SessionBase
+) -> None:
+    for attachment in submission.get_attachments().filter(temporary_file__isnull=False):
+        remove_upload_from_session(attachment.temporary_file, session)
 
 
 def send_confirmation_email(submission: Submission):
