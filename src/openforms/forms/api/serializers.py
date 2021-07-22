@@ -262,12 +262,6 @@ class FormImportSerializer(serializers.Serializer):
     )
 
 
-class FormVersionRestoreSerializer(serializers.Serializer):
-    uuid = serializers.UUIDField(
-        help_text=_("The UUID of the form version to restore.")
-    )
-
-
 class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormVersion

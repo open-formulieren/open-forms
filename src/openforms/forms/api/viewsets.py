@@ -36,7 +36,6 @@ from .serializers import (
     FormImportSerializer,
     FormSerializer,
     FormStepSerializer,
-    FormVersionRestoreSerializer,
     FormVersionSerializer,
 )
 

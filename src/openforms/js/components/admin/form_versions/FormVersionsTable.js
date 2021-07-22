@@ -61,4 +61,10 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
 
 };
 
+FormVersionsTable.propTypes = {
+    csrftoken: PropTypes.string.isRequired,
+    formUuid: PropTypes.string.isRequired,
+    formAdminUrl: PropTypes.string.isRequired,
+}
+
 export default FormVersionsTable;

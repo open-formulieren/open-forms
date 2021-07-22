@@ -256,7 +256,6 @@ function reducer(draft, action) {
             break;
         }
         case 'SET_FETCH_ERRORS': {
-            console.log(action.payload);
             draft.errors = action.payload;
             draft.submitting = false;
             break;
@@ -277,7 +276,7 @@ const getFormStepsData = async (formUuid, dispatch) => {
             throw new Error('An error occurred while fetching the form steps.');
         }
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormStepsData: ${e.message}`}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 
     return response.data;
@@ -313,7 +312,7 @@ const getFormData = async (formUuid, dispatch) => {
             });
         }
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormData: ${e.message}`}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
 
@@ -325,7 +324,7 @@ const getFormDefinitions = async (dispatch) => {
             payload: response.data.results,
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getFormDefinitionData: ${e.message}`}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
 
@@ -337,7 +336,7 @@ const getAuthPlugins = async (dispatch) => {
             payload: response.data
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getAuthPlugins: ${e.message}`}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
 
@@ -349,7 +348,7 @@ const getPrefillPlugins = async (dispatch) => {
             payload: response.data
         });
     } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: `getPrefillPlugins: ${e.message}`}});
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
 

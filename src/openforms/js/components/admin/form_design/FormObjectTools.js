@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 
 const FormObjectTools = ({isLoading, historyUrl}) => {
     /* TODO The buttons are disabled if the form page is still loading. Interrupting the fetch of form data
@@ -15,5 +15,10 @@ const FormObjectTools = ({isLoading, historyUrl}) => {
         </div>
     );
 };
+
+FormObjectTools.propTypes = {
+    isLoading: PropTypes.bool.isRequired,
+    historyUrl: PropTypes.string.isRequired
+}
 
 export default FormObjectTools;
