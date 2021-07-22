@@ -21,18 +21,29 @@ class GetStreetNameAndCityView(APIView):
     authentication_classes = ()
 
     @extend_schema(
-        operation_id="street_name_and_city",
-        summary=_("Validate value using validation plugin"),
+        operation_id="street_name_and_city_list",
+        summary=_("Get a street name and city"),
+        description=_("Get the street name and city for a given post code and house number"),
         request=GetStreetNameAndCityViewInputSerializer,
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
             OpenApiParameter(
-                "Street Name and City",
+                "Postcode",
                 OpenApiTypes.STR,
-                OpenApiParameter.PATH,
+                OpenApiParameter.QUERY,
                 description=_(
-                    "Get Street Name and City by passing in Postcode and House Number"
+                    "Postcode of the address"
                 ),
+                required=True,
+            ),
+            OpenApiParameter(
+                "House number",
+                OpenApiTypes.NUMBER,
+                OpenApiParameter.QUERY,
+                description=_(
+                    "House number of the address"
+                ),
+                required=True,
             ),
         ],
     )
