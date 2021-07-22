@@ -29,7 +29,7 @@
                         {% for key, files in attachments.items %}
                             <li>{{ key }}:
                                 {% for file in files %}
-                                    <a href="{% url "admin_attachment_retrieve" uuid=file.uuid %}">
+                                    <a href="{% url "admin:submissions_submissionfileattachment_content" pk=file.id %}">
                                     {{ file.get_display_name }} - {{ file.content.size }} bytes
                                     </a>
                                     {% if not forloop.last %} - {% endif %}

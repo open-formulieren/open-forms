@@ -1,11 +1,9 @@
 from django.contrib import admin, messages
 from django.template.defaultfilters import filesizeformat
-from django.urls import reverse
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from privates.admin import PrivateMediaMixin
-from rest_framework.permissions import IsAdminUser
+from privates.views import PrivateMediaView
 
 from .constants import IMAGE_COMPONENTS
 from .exports import export_submissions
@@ -97,74 +95,98 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
         return False
 
 
+class TemporaryFileUploadMediaView(PrivateMediaView):
+    def get_sendfile_opts(self):
+        object = self.get_object()
+        return {
+            "attachment": True,
+            "attachment_filename": object.file_name,
+            "mimetype": object.content_type,
+        }
+
+
 @admin.register(TemporaryFileUpload)
-class TemporaryFileUploadAdmin(admin.ModelAdmin):
-    list_display = ("uuid", "file_name", "content_type", "created_on")
-    fields = ("uuid", "created_on", "filename_url", "content_type", "file_size")
+class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = (
+        "uuid",
+        "file_name",
+        "content_type",
+        "created_on",
+        "file_size",
+    )
+    fields = (
+        "uuid",
+        "created_on",
+        "file_name",
+        "content_type",
+        "file_size",
+        "content",
+    )
 
     search_fields = ("uuid",)
     readonly_fields = (
-        "filename_url",
+        "uuid",
+        "created_on",
         "file_size",
     )
     date_hierarchy = "created_on"
 
-    def filename_url(self, obj):
-        url = reverse("admin_upload_retrieve", kwargs={"uuid": obj.uuid})
-        return format_html('<a href="{u}">{n}</a>', u=url, n=obj.file_name)
-
-    filename_url.allow_tags = True
-    filename_url.short_description = _("File name")
+    private_media_fields = ("content",)
+    private_media_view_class = TemporaryFileUploadMediaView
 
     def file_size(self, obj):
         return filesizeformat(obj.content.size)
 
-    file_size.allow_tags = True
     file_size.short_description = _("File size")
 
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_change_permission(self, request, obj=None):
-        return False
+
+class SubmissionFileAttachmentMediaView(PrivateMediaView):
+    def get_sendfile_opts(self):
+        object = self.get_object()
+        return {
+            "attachment": True,
+            "attachment_filename": object.get_display_name(),
+            "mimetype": object.content_type,
+        }
 
 
 @admin.register(SubmissionFileAttachment)
-class SubmissionFileAttachmentAdmin(admin.ModelAdmin):
+class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
+    list_display = (
+        "uuid",
+        "file_name",
+        "content_type",
+        "created_on",
+        "file_size",
+    )
     fields = (
         "uuid",
         "submission_step",
         "form_key",
         "created_on",
-        "filename_url",
         "original_name",
         "content_type",
         "file_size",
+        "content",
     )
+    raw_id_fields = ("submission_step",)
     readonly_fields = (
-        "filename_url",
+        "uuid",
+        "created_on",
         "file_size",
     )
     date_hierarchy = "created_on"
 
-    def filename_url(self, obj):
-        url = reverse("admin_attachment_retrieve", kwargs={"uuid": obj.uuid})
-        return format_html('<a href="{u}">{n}</a>', u=url, n=obj.get_display_name())
-
-    filename_url.allow_tags = True
-    filename_url.short_description = _("File name")
+    private_media_fields = ("content",)
+    private_media_view_class = SubmissionFileAttachmentMediaView
 
     def file_size(self, obj):
         return filesizeformat(obj.content.size)
 
-    file_size.allow_tags = True
     file_size.short_description = _("File size")
 
     def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
         return False

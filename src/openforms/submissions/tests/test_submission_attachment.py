@@ -7,7 +7,7 @@ from django.urls import reverse
 from PIL import Image, UnidentifiedImageError
 from privates.test import temp_private_root
 
-from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.attachments import (
     append_file_num_postfix,
@@ -260,14 +260,17 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.original_name, "my-image.png")
         self.assertImageSize(attachment.content, 100, 100, "png")
 
-    def test_attachment_retrieve_view_requires_staff_permission(self):
+    def test_attachment_retrieve_view_requires_permission(self):
         attachment = SubmissionFileAttachmentFactory.create()
-        url = reverse("admin_attachment_retrieve", kwargs={"uuid": attachment.uuid})
+        url = reverse(
+            "admin:submissions_submissionfileattachment_content",
+            kwargs={"pk": attachment.id},
+        )
 
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
 
-        user = StaffUserFactory()
+        user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

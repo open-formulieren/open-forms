@@ -7,14 +7,12 @@ from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import DestroyAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 from ..attachments import clean_mime_type
-from ..models import SubmissionFileAttachment, SubmissionReport, TemporaryFileUpload
+from ..models import SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
 from ..utils import add_upload_to_session, remove_upload_from_session
 from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
@@ -178,39 +176,3 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
-
-
-class BaseAdminFileRetrieveView(RetrieveAPIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAdminUser]
-    renderer_classes = [FileRenderer]
-
-    lookup_field = "uuid"
-
-    def get(self, request, *args, **kwargs):
-        object = self.get_object()
-        return sendfile(
-            request,
-            object.content.path,
-            attachment=True,
-            attachment_filename=object.file_name,
-            mimetype=object.content_type,
-        )
-
-
-@extend_schema(
-    summary=_("Retrieve temporary file for admins."),
-    description=_("Retrieve temporary file attachment for review by admins. "),
-    responses={200: bytes},
-)
-class TemporaryFileAdminRetrieveView(BaseAdminFileRetrieveView):
-    queryset = TemporaryFileUpload.objects.all()
-
-
-@extend_schema(
-    summary=_("Retrieve submission file attachment for admins."),
-    description=_("Retrieve submission file attachment for review by admins. "),
-    responses={200: bytes},
-)
-class SubmissionFileAttachmentAdminRetrieveView(BaseAdminFileRetrieveView):
-    queryset = SubmissionFileAttachment.objects.all()

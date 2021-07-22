@@ -11,10 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 from decorator_include import decorator_include
 
 from openforms.emails.admin import EmailTestAdminView
-from openforms.submissions.api.views import (
-    SubmissionFileAttachmentAdminRetrieveView,
-    TemporaryFileAdminRetrieveView,
-)
 
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
@@ -36,16 +32,6 @@ urlpatterns = [
         "admin/email/test/",
         admin.site.admin_view(EmailTestAdminView.as_view()),
         name="admin_email_test",
-    ),
-    path(
-        "admin/uploads/retrieve/<uuid:uuid>/",
-        TemporaryFileAdminRetrieveView.as_view(),
-        name="admin_upload_retrieve",
-    ),
-    path(
-        "admin/attachments/retrieve/<uuid:uuid>/",
-        SubmissionFileAttachmentAdminRetrieveView.as_view(),
-        name="admin_attachment_retrieve",
     ),
     path("admin/hijack/", include("hijack.urls")),
     path("admin/", admin.site.urls),
