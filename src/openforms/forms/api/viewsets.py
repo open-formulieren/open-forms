@@ -309,7 +309,6 @@ class FormViewSet(viewsets.ModelViewSet):
     create=extend_schema(
         summary=_("Save form version"),
         tags=["forms"],
-        request=None,
         responses={status.HTTP_201_CREATED: FormVersionSerializer},
     ),
     restore=extend_schema(
@@ -329,7 +328,6 @@ class FormViewSet(viewsets.ModelViewSet):
                 description=_("The uuid of the form version"),
             ),
         ],
-        request={},
         responses={status.HTTP_201_CREATED: ""},
     ),
     list=extend_schema(
