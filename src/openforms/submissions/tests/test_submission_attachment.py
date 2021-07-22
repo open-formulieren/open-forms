@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings
@@ -63,7 +64,8 @@ class SubmissionAttachmentTest(TestCase):
         actual = resolve_uploads_from_data(components, data)
         self.assertEqual(actual, {"my_file": (components[1], [upload])})
 
-    def test_attach_uploads_to_submission_step(self):
+    @patch("openforms.registrations.tasks.resize_submission_attachment.delay")
+    def test_attach_uploads_to_submission_step(self, resize_mock):
         upload = TemporaryFileUploadFactory.create(file_name="my-image.jpg")
         data = {
             "my_normal_key": "foo",
@@ -99,6 +101,7 @@ class SubmissionAttachmentTest(TestCase):
 
         # test attaching the file
         result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0][1], True)  # created new
@@ -114,6 +117,8 @@ class SubmissionAttachmentTest(TestCase):
 
         # test attaching again is idempotent
         result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
+
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0][1], False)  # not created
         self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
@@ -125,7 +130,8 @@ class SubmissionAttachmentTest(TestCase):
         # verify the new FileField has its own content
         self.assertEqual(attachment.content.read(), b"content")
 
-    def test_attach_multiple_uploads_to_submission_step(self):
+    @patch("openforms.registrations.tasks.resize_submission_attachment.delay")
+    def test_attach_multiple_uploads_to_submission_step(self, resize_mock):
         upload_1 = TemporaryFileUploadFactory.create(file_name="my-image-1.jpg")
         upload_2 = TemporaryFileUploadFactory.create(file_name="my-image-2.jpg")
         data = {
@@ -183,6 +189,7 @@ class SubmissionAttachmentTest(TestCase):
 
         # test attaching the file
         result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
 
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0][1], True)  # created new
@@ -202,6 +209,8 @@ class SubmissionAttachmentTest(TestCase):
 
         # test attaching again is idempotent
         result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
+
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0][1], False)  # not created
         self.assertEqual(result[1][1], False)  # not created
@@ -255,6 +264,7 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(result[0][1], True)  # created new
         self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
 
+        # verify resize
         attachment = submission_step.attachments.get()
         self.assertEqual(attachment.form_key, "my_file")
         self.assertEqual(attachment.original_name, "my-image.png")
