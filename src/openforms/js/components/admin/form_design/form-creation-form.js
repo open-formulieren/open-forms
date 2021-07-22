@@ -628,7 +628,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         // Save this new version of the form in the "form version control"
         try {
             var versionResponse = await apiCall(
-                `${FORM_ENDPOINT}/${formUuid}/save_version`,
+                `${FORM_ENDPOINT}/${formUuid}/version`,
                 {
                     method: 'POST',
                     headers: {

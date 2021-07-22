@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 
-import {post, get} from '../../../utils/fetch';
+import {get, apiCall} from '../../../utils/fetch';
 import {FORM_ENDPOINT} from '../form_design/constants';
 
 
@@ -10,17 +10,22 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
     const [formVersions, setFormVersions] = useState([]);
 
     const restoreVersion = async (csrftoken, formUuid, versionUuid, redirectUrl) => {
-        await post(
-            `${FORM_ENDPOINT}/${formUuid}/restore_version`,
-            csrftoken,
-            {uuid: versionUuid}
+        await apiCall(
+            `${FORM_ENDPOINT}/${formUuid}/version/${versionUuid}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+            }
         );
         window.location = redirectUrl;
     };
 
     const getFormVersions = async (uuid) => {
         const response = await get(
-            `${FORM_ENDPOINT}/${uuid}/retrieve_versions`
+            `${FORM_ENDPOINT}/${uuid}/versions`
         );
         setFormVersions(response.data);
     };
@@ -32,7 +37,7 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
         return (
            <tr key={index}>
                 <th>{ dateCreation.toDateString() } { dateCreation.toLocaleTimeString() }</th>
-                <td><a href="#" onClick={() => restoreVersion(csrftoken, formUuid, version.uuid, formAdminUrl)}>Restore</a></td>
+                <td><a href="#" onClick={() => restoreVersion(csrftoken, formUuid, version.uuid, formAdminUrl)}>Herstellen</a></td>
             </tr>
         );
     });
