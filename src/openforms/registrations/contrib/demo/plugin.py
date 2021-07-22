@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.submissions.models import Submission
@@ -23,5 +25,5 @@ class DemoFailRegistration(BasePlugin):
     verbose_name = _("Demo - fail registration")
     configuration_options = DemoOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: dict) -> None:
+    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")
