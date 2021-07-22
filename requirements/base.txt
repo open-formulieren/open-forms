@@ -26,9 +26,12 @@ cairocffi==1.2.0
     #   weasyprint
 cairosvg==2.5.2
     # via weasyprint
+celery-once==3.0.1
+    # via -r requirements/base.in
 celery==4.4.7
     # via
     #   -r requirements/base.in
+    #   celery-once
     #   flower
 certifi==2020.6.20
     # via
@@ -216,7 +219,9 @@ pyyaml==5.4.1
 pyzmail36==1.0.4
     # via django-yubin
 redis==3.5.3
-    # via django-redis
+    # via
+    #   celery-once
+    #   django-redis
 requests-mock==1.8.0
     # via zgw-consumers
 requests==2.26.0

@@ -38,6 +38,7 @@ local.py
 /log/nginx/*.log*
 /.env
 /private_media/
+/celerybeat
 
 # Static files
 src/openforms/static/bundles/

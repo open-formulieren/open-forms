@@ -72,10 +72,15 @@ cairosvg==2.5.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
+celery-once==3.0.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 celery==4.4.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery-once
     #   flower
 certifi==2020.6.20
     # via
@@ -591,6 +596,7 @@ redis==3.5.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery-once
     #   django-redis
 regex==2020.11.13
     # via

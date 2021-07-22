@@ -488,6 +488,10 @@ CELERY_BEAT_SCHEDULE = {
         # https://docs.celeryproject.org/en/v4.4.7/userguide/periodic-tasks.html#crontab-schedules
         "schedule": crontab(minute=0, hour=0),
     },
+    "send-emails": {
+        "task": "openforms.utils.tasks.send_emails",
+        "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
+    },
 }
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
