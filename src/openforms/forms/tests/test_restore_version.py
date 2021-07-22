@@ -33,7 +33,7 @@ class RestoreVersionTest(TestCase):
         self.assertEqual(1, FormVersion.objects.all().count())
         self.assertEqual(1, FormDefinition.objects.all().count())
 
-        form.restore_old_version(version)
+        form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
         self.assertEqual(1, FormVersion.objects.all().count())
@@ -66,7 +66,7 @@ class RestoreVersionTest(TestCase):
             export_blob=EXPORT_BLOB,
         )
 
-        form.restore_old_version(version)
+        form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
         self.assertEqual(1, FormVersion.objects.all().count())
@@ -94,7 +94,7 @@ class RestoreVersionTest(TestCase):
         )
 
         for _ in range(2):
-            form.restore_old_version(version)
+            form.restore_old_version(version.uuid)
             form.refresh_from_db()
 
         self.assertEqual(2, FormDefinition.objects.all().count())
@@ -115,7 +115,7 @@ class RestoreVersionTest(TestCase):
             export_blob=EXPORT_BLOB,
         )
 
-        form.restore_old_version(version)
+        form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
         self.assertEqual(1, FormVersion.objects.all().count())

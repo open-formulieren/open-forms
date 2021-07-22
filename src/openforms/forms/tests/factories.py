@@ -43,6 +43,7 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
         model = FormVersion
 
     form = factory.SubFactory(FormFactory)
+    export_blob = {}
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):

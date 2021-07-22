@@ -10,7 +10,12 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import UserFactory
 
 from ..models import Form, FormDefinition, FormStep, FormVersion
-from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+from .factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+    FormVersionFactory,
+)
 
 EXPORT_BLOB = {
     "forms": '[{"uuid": "324cadce-a627-4e3f-b117-37ca232f16b2", "name": "Test Form 1", "login_required": false, "authentication_backends": ["digid-mock", "digid"], "product": null, "slug": "auth-plugins", "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "show_progress_indicator": true, "maintenance_mode": false, "active": true, "is_deleted": false}]',
@@ -22,7 +27,7 @@ EXPORT_BLOB = {
 class FormVersionSaveAPITests(APITestCase):
     def test_auth_required(self):
         form = FormFactory.create()
-        url = reverse("api:form-save-version", args=(form.uuid,))
+        url = reverse("api:form-versions-list", args=(form.uuid,))
 
         response = self.client.post(url)
 
@@ -39,7 +44,7 @@ class FormVersionSaveAPITests(APITestCase):
         self.client.login(
             request=HttpRequest(), username=user.username, password="test"
         )
-        url = reverse("api:form-save-version", args=(form.uuid,))
+        url = reverse("api:form-versions-list", args=(form.uuid,))
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
@@ -56,7 +61,7 @@ class FormVersionSaveAPITests(APITestCase):
         self.client.login(
             request=HttpRequest(), username=user.username, password="test"
         )
-        url = reverse("api:form-save-version", args=(form.uuid,))
+        url = reverse("api:form-versions-list", args=(form.uuid,))
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -69,7 +74,9 @@ class FormVersionSaveAPITests(APITestCase):
 
         self.assertEqual(form, version.form)
         self.assertEqual(
-            datetime.strptime("2020-12-11T10:53:19+01:00", "%Y-%m-%dT%H:%M:%S%z"),
+            datetime.datetime.strptime(
+                "2020-12-11T10:53:19+01:00", "%Y-%m-%dT%H:%M:%S%z"
+            ),
             version.date_creation,
         )
 
@@ -77,7 +84,11 @@ class FormVersionSaveAPITests(APITestCase):
 class FormVersionRestoreAPITests(APITestCase):
     def test_auth_required(self):
         form = FormFactory.create()
-        url = reverse("api:form-restore-version", args=(form.uuid,))
+        form_version = FormVersionFactory.create(form=form)
+        url = reverse(
+            "api:form-versions-restore",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_version.uuid},
+        )
 
         response = self.client.post(url)
 
@@ -86,15 +97,15 @@ class FormVersionRestoreAPITests(APITestCase):
     def test_must_be_staff_user(self):
         user = UserFactory.create(username="test", password="test", is_staff=False)
         form = FormFactory.create()
-
-        versions = FormVersion.objects.filter(form=form)
-
-        self.assertEqual(0, versions.count())
+        form_version = FormVersionFactory.create(form=form)
 
         self.client.login(
             request=HttpRequest(), username=user.username, password="test"
         )
-        url = reverse("api:form-restore-version", args=(form.uuid,))
+        url = reverse(
+            "api:form-versions-restore",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_version.uuid},
+        )
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
@@ -116,7 +127,10 @@ class FormVersionRestoreAPITests(APITestCase):
         self.client.login(
             request=HttpRequest(), username=user.username, password="test"
         )
-        url = reverse("api:form-restore-version", args=(form.uuid,))
+        url = reverse(
+            "api:form-versions-restore",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": version.uuid},
+        )
 
         self.assertEqual(1, FormVersion.objects.all().count())
         self.assertEqual(1, FormDefinition.objects.all().count())
