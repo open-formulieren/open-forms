@@ -17,6 +17,7 @@ from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
 from .utils import literal_getter
+from ...config.models import GlobalConfiguration
 
 
 class FormQuerySet(models.QuerySet):
@@ -152,6 +153,10 @@ class Form(models.Model):
     @property
     def first_step(self):
         return self.formstep_set.first().order
+
+    @property
+    def session_timeout(self):
+        return GlobalConfiguration.get_solo().form_session_timeout
 
     @transaction.atomic
     def copy(self):
