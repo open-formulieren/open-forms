@@ -134,3 +134,22 @@ class RegistrationHookTests(TestCase):
         )
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
+
+    def test_submission_marked_complete_when_form_has_no_registration_backend(self):
+        submission_no_registration_backend = SubmissionFactory.create(
+            form__registration_backend="", form__registration_backend_options={}
+        )
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with patch_registry(model_field, Registry()):
+            register_submission(submission_no_registration_backend.id)
+
+        submission_no_registration_backend.refresh_from_db()
+        self.assertEqual(
+            submission_no_registration_backend.registration_status,
+            RegistrationStatuses.success,
+        )
+        self.assertIsNone(
+            submission_no_registration_backend.registration_result,
+        )
