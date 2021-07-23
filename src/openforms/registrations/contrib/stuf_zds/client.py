@@ -2,6 +2,7 @@ import base64
 import logging
 import os
 from collections import OrderedDict
+from datetime import timedelta
 from typing import Tuple
 
 from django.template import loader
@@ -17,6 +18,7 @@ from requests import RequestException, Response
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionReport
+from stuf.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointSecurity, EndpointType
 from stuf.models import SoapService
 
 logger = logging.getLogger(__name__)
@@ -29,8 +31,6 @@ nsmap = OrderedDict(
         ("zds", "http://www.stufstandaarden.nl/koppelvlak/zds0120"),
         ("gml", "http://www.opengis.net/gml"),
         ("xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-        # ("soap11env", "http://www.w3.org/2003/05/soap-envelope"), # ugly
-        ("soapenv", "http://www.w3.org/2003/05/soap-envelope"),  # added
     )
 )
 
@@ -74,6 +74,17 @@ class StufZDSClient:
 
     def _get_request_base_context(self):
         return {
+            "soap_version": self.service.soap_version,
+            "soap_use_wss": (
+                self.service.endpoint_security
+                in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
+            ),
+            "wss_username": self.service.user,
+            "wss_password": self.service.password,
+            "wss_created": fmt_soap_date(timezone.now()),
+            "wss_expires": fmt_soap_date(
+                timezone.now() + timedelta(minutes=STUF_ZDS_EXPIRY_MINUTES)
+            ),
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
             "zender_gebruiker": self.service.zender_gebruiker,
@@ -89,6 +100,9 @@ class StufZDSClient:
             "zds_zaaktype_code": self.options["zds_zaaktype_code"],
             "zds_zaaktype_omschrijving": self.options["zds_zaaktype_omschrijving"],
             "zds_zaaktype_status_code": self.options["zds_zaaktype_status_code"],
+            "zds_zaaktype_status_omschrijving": self.options[
+                "zds_zaaktype_status_omschrijving"
+            ],
             "zaak_omschrijving": self.options["omschrijving"],
             "zds_documenttype_omschrijving": self.options[
                 "zds_documenttype_omschrijving"
@@ -106,14 +120,16 @@ class StufZDSClient:
         self,
         template_name: str,
         context: dict,
-        sync=False,
+        endpoint_type,
         soap_action: str = "",
     ) -> Tuple[Response, Element]:
 
         request_body = loader.render_to_string(template_name, context)
         request_data = self._wrap_soap_envelope(request_body)
 
-        url = self.service.get_endpoint(sync=sync)
+        url = self.service.get_endpoint(endpoint_type)
+
+        logger.debug("SOAP-request:\n%s\n%s", url, request_data)
 
         try:
             response = requests.post(
@@ -123,16 +139,19 @@ class StufZDSClient:
                     "Content-Type": "application/soap+xml",
                     "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
                 },
-                auth=(self.service.user, self.service.password),
+                auth=self.service.get_auth(),
                 cert=self.service.get_cert(),
             )
             if response.status_code < 200 or response.status_code >= 400:
+                logger.debug("SOAP-response:\n%s", response.content)
                 logger.error(
                     "bad response for referentienummer/submission '%s'\n%s",
                     self.options["referentienummer"],
                     parse_soap_error_text(response),
                 )
                 raise RegistrationFailed("error while making backend request")
+            else:
+                logger.debug("SOAP-response:\n%s", response.content)
         except RequestException as e:
             logger.error(
                 "bad request for referentienummer/submission '%s'",
@@ -153,7 +172,10 @@ class StufZDSClient:
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         context = self._get_request_base_context()
         response, xml = self._make_request(
-            template, context, sync=True, soap_action="genereerZaakIdentificatie_Di02"
+            template,
+            context,
+            endpoint_type=EndpointType.vrije_berichten,
+            soap_action="genereerZaakIdentificatie_Di02",
         )
 
         try:
@@ -178,7 +200,10 @@ class StufZDSClient:
         )
         context.update(zaak_data)
         response, xml = self._make_request(
-            template, context, soap_action="creeerZaak_Lk01"
+            template,
+            context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+            soap_action="creeerZaak_Lk01",
         )
 
         return None
@@ -189,7 +214,7 @@ class StufZDSClient:
         response, xml = self._make_request(
             template,
             context,
-            sync=True,
+            endpoint_type=EndpointType.vrije_berichten,
             soap_action="genereerDocumentIdentificatie_Di02",
         )
 
@@ -244,7 +269,10 @@ class StufZDSClient:
         # TODO: vertrouwelijkAanduiding
 
         response, xml = self._make_request(
-            template, context, soap_action="voegZaakdocumentToe_Lk01"
+            template,
+            context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+            soap_action="voegZaakdocumentToe_Lk01",
         )
 
         return None
@@ -283,9 +311,7 @@ def parse_soap_error_text(response):
     else:
         try:
             xml = df_fromstring(response.text.encode("utf8"))
-            faults = xml.xpath(
-                "/soapenv:Envelope/soapenv:Body/soapenv:Fault", namespaces=nsmap
-            )
+            faults = xml.xpath("//*[local-name()='Fault']", namespaces=nsmap)
             if faults:
                 messages = []
                 for fault in faults:

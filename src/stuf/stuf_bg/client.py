@@ -7,6 +7,7 @@ from django.utils import dateformat, timezone
 
 import requests
 
+from stuf.constants import EndpointType
 from stuf.models import SoapService
 
 from .constants import STUF_BG_EXPIRY_MINUTES
@@ -25,7 +26,7 @@ class StufBGClient:
 
         return {
             "created": timezone.now(),
-            "expired": timezone.now() + timedelta(minutes=STUF_BG_EXPIRY_MINUTES),
+            "expires": timezone.now() + timedelta(minutes=STUF_BG_EXPIRY_MINUTES),
             "username": self.service.user,
             "password": self.service.password,
             "zender_organisatie": self.service.zender_organisatie,
@@ -43,11 +44,11 @@ class StufBGClient:
     def _make_request(self, data):
 
         response = requests.post(
-            f"{self.service.url}{self.service.endpoint_sync}",
+            self.service.get_endpoint(type=EndpointType.vrije_berichten),
             data=data,
             headers={"Content-Type": "application/soap+xml"},
             cert=self.service.get_cert(),
-            auth=(self.service.user, self.service.password),
+            auth=self.service.get_auth(),
         )
 
         return response

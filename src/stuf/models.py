@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 
 from privates.fields import PrivateMediaFileField
 
+from stuf.constants import EndpointSecurity, SOAPVersion
+
 
 class SoapService(models.Model):
     label = models.CharField(
@@ -58,24 +60,48 @@ class SoapService(models.Model):
 
     url = models.URLField(
         _("URL"),
-        help_text=_("URL of the StUF-ZDS service to connect to."),
+        blank=True,
+        help_text=_("URL of the StUF service to connect to."),
     )
-    endpoint_sync = models.CharField(
-        _("endpoint sync requests"),
-        max_length=200,
+
+    endpoint_beantwoord_vraag = models.URLField(
+        _("endpoint BeantwoordVraag"),
         blank=True,
         help_text=_(
-            "Endpoint for synchronous SOAP request, usually '/VerwerkSynchroonVrijBericht'."
+            "Endpoint for synchronous request messages, usually '[...]/BeantwoordVraag'"
         ),
     )
-    endpoint_async = models.CharField(
-        _("endpoint async requests"),
-        help_text=_(
-            "Endpoint for asynchronous SOAP request, usually '/OntvangAsynchroon'."
-        ),
-        max_length=200,
+    endpoint_vrije_berichten = models.URLField(
+        _("endpoint VrijeBerichten"),
         blank=True,
+        help_text=_(
+            "Endpoint for synchronous free messages, usually '[...]/VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'."
+        ),
     )
+    endpoint_ontvang_asynchroon = models.URLField(
+        _("endpoint OntvangAsynchroon"),
+        blank=True,
+        help_text=_(
+            "Endpoint for asynchronous messages, usually '[...]/OntvangAsynchroon'."
+        ),
+    )
+
+    soap_version = models.CharField(
+        _("SOAP version"),
+        max_length=5,
+        default=SOAPVersion.soap12,
+        choices=SOAPVersion.choices,
+        help_text=_("The SOAP version to use for the message envelope."),
+    )
+
+    endpoint_security = models.CharField(
+        _("Security"),
+        max_length=20,
+        blank=True,
+        choices=EndpointSecurity.choices,
+        help_text=_("The security to use for messages sent to the endpoints."),
+    )
+
     user = models.CharField(
         _("user"),
         max_length=200,
@@ -119,11 +145,24 @@ class SoapService(models.Model):
 
         return cert
 
-    def get_endpoint(self, *, sync: bool):
-        if sync:
-            return f"{self.url}{self.endpoint_sync}"
-        else:
-            return f"{self.url}{self.endpoint_async}"
+    def get_endpoint(self, type):
+        attr = f"endpoint_{type}"
+
+        if not hasattr(self, attr):
+            raise ValueError(f"Endpoint type {type} does not exist.")
+
+        val = getattr(self, attr, None)
+        return val or self.url
+
+    def get_auth(self):
+        if (
+            self.endpoint_security
+            in [EndpointSecurity.basicauth, EndpointSecurity.wss_basicauth]
+            and self.user
+            and self.password
+        ):
+            return (self.user, self.password)
+        return (None, None)
 
     def __str__(self):
-        return f"{self.label} ({self.url})"
+        return self.label
