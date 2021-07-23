@@ -32,6 +32,5 @@ class SessionTimeoutMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        config = GlobalConfiguration.get_solo()
-        request.session.set_expiry(config.admin_session_timeout)
+        request.session.set_expiry(GlobalConfiguration.get_solo().admin_session_timeout)
         return self.get_response(request)

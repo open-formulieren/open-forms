@@ -70,7 +70,10 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Sessions"),
             {
-                "fields": ("admin_session_timeout", "form_session_timeout",),
+                "fields": (
+                    "admin_session_timeout",
+                    "form_session_timeout",
+                ),
             },
         ),
         (

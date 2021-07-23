@@ -113,7 +113,7 @@ class FormSerializer(serializers.ModelSerializer):
             "active",
             "is_deleted",
             "submission_confirmation_template",
-            "session_timeout"
+            "session_timeout",
         )
         extra_kwargs = {
             "uuid": {

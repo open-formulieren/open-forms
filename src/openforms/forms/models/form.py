@@ -16,8 +16,8 @@ from openforms.authentication.fields import BackendMultiSelectField
 from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
-from .utils import literal_getter
 from ...config.models import GlobalConfiguration
+from .utils import literal_getter
 
 
 class FormQuerySet(models.QuerySet):
