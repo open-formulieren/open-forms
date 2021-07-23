@@ -11,6 +11,7 @@ from openforms.locations.api.serializers import (
     GetStreetNameAndCityViewInputSerializer,
     GetStreetNameAndCityViewResultSerializer,
 )
+from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 
 class GetStreetNameAndCityView(APIView):
@@ -19,6 +20,7 @@ class GetStreetNameAndCityView(APIView):
     """
 
     authentication_classes = ()
+    permission_classes = [AnyActiveSubmissionPermission]
 
     @extend_schema(
         operation_id="get_street_name_and_city_list",
@@ -26,7 +28,6 @@ class GetStreetNameAndCityView(APIView):
         description=_(
             "Get the street name and city for a given postcode and house number"
         ),
-        request=GetStreetNameAndCityViewInputSerializer,
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
             OpenApiParameter(
@@ -46,7 +47,7 @@ class GetStreetNameAndCityView(APIView):
         ],
     )
     def get(self, request, *args, **kwargs):
-        serializer = GetStreetNameAndCityViewInputSerializer(data=self.request.GET)
+        serializer = GetStreetNameAndCityViewInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data

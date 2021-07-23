@@ -2,9 +2,20 @@ from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 
-class GetStreetNameAndCityViewAPITests(TestCase):
+class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.create()
+
+    def setUp(self):
+        self._add_submission_to_session(self.submission)
+
     @patch("openforms.locations.api.views.import_string")
     def test_getting_street_name_and_city(self, import_string_mock):
         import_string_mock.return_value.get_address.return_value = {
@@ -28,7 +39,7 @@ class GetStreetNameAndCityViewAPITests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {"postcode": ["Dit veld is vereist."]})
+        self.assertEqual(response.json(), {"postcode": [_("This field is required.")]})
 
     def test_getting_street_name_and_city_without_house_number_returns_error(self):
 
@@ -37,7 +48,9 @@ class GetStreetNameAndCityViewAPITests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {"houseNumber": ["Dit veld is vereist."]})
+        self.assertEqual(
+            response.json(), {"houseNumber": [_("This field is required.")]}
+        )
 
     @patch("openforms.locations.api.views.import_string")
     def test_getting_street_name_and_city_with_extra_query_params_ignores_extra_param(
@@ -66,5 +79,4 @@ class GetStreetNameAndCityViewAPITests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 0)
         self.assertEqual(response.json(), {})
