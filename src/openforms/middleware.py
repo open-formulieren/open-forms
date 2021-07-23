@@ -32,5 +32,6 @@ class SessionTimeoutMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
         request.session.set_expiry(GlobalConfiguration.get_solo().admin_session_timeout)
         return self.get_response(request)
