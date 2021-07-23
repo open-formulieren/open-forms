@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     "openforms.submissions",
     "openforms.contrib.brp",
     "openforms.contrib.kvk",
+    "openforms.contrib.bag.apps.BAGConfig",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.email",
@@ -653,6 +654,7 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/contrib/bag/tests/files"),
 ]
 
 #
@@ -776,3 +778,11 @@ EHERKENNING = {
     },
     "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
 }
+
+
+#
+# Location Client
+#
+OPENFORMS_LOCATION_CLIENT = config(
+    "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
+)

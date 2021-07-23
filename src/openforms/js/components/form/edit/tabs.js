@@ -53,7 +53,54 @@ const TEXT_BASIC = {
             tooltip: 'Show a live count of the number of characters.',
             key: 'showCharCount',
             input: true
+        }
+    ]
+};
+
+
+const LOCATION = {
+    key: 'location',
+    label: 'Location',
+    components: [
+
+        {
+            type: 'checkbox',
+            key: 'deriveStreetName',
+            label: 'Derive street name',
+            tooltip: 'If the postcode and house number are entered this field will autofill with the street name'
         },
+        {
+            type: 'checkbox',
+            key: 'deriveCity',
+            label: 'Derive city',
+            tooltip: 'If the postcode and house number are entered this field will autofill with the city'
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Postcode component',
+            key: 'derivePostcode',
+            dataSrc: 'custom',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'House number component:',
+            key: 'deriveHouseNumber',
+            dataSrc: 'custom',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        }
     ]
 };
 
@@ -239,11 +286,14 @@ const DEFAULT_TEXT_TABS = {
     key: 'tabs',
     components: [
         TEXT_BASIC,
+        LOCATION,
         ADVANCED,
         TEXT_VALIDATION,
         REGISTRATION,
     ]
 };
 
-export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
+
+export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, LOCATION, ADVANCED,
+    VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
 export default DEFAULT_TABS;

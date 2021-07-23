@@ -182,6 +182,9 @@ Other settings
 
 * ``TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS``: Configure how many days before unclaimed temporary uploads are removed.
 
+* ``OPENFORMS_LOCATION_CLIENT``: The client to be used for auto filling a street name and city
+  when given a postcode and house number.  Defaults to our internal BAG configuration.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables
