@@ -35,6 +35,8 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     if not backend:
         logger.info("Form %s has no registration plugin configured, aborting", form)
+        submission.registration_status = RegistrationStatuses.success
+        submission.save()
         return
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
