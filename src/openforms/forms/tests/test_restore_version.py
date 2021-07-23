@@ -80,6 +80,33 @@ class RestoreVersionTest(TestCase):
 
         self.assertEqual("test-definition-1-2", restored_form_definition.slug)
 
+    def test_handling_uuid(self):
+        """Test what happens if the version being imported has the same definition UUID as another existing form definition"""
+        form_definition = FormDefinitionFactory.create(
+            uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+            slug="test-definition-1",
+            configuration={"test": "2"},
+        )
+        form = FormFactory.create(name="Test Form 2")
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        version = FormVersion.objects.create(
+            form=form,
+            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            export_blob=EXPORT_BLOB,
+        )
+
+        form.restore_old_version(version.uuid)
+        form.refresh_from_db()
+
+        new_fd = FormStep.objects.get(form=form).form_definition
+
+        self.assertEqual(
+            form_definition,
+            FormDefinition.objects.get(uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8"),
+        )
+        self.assertNotEqual("f0dad93b-333b-49af-868b-a6bcb94fa1b8", new_fd.uuid)
+
     def test_restore_twice_a_version(self):
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-2", configuration={"test": "2"}
