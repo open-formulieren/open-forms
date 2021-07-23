@@ -129,7 +129,7 @@ class StufZDSClient:
 
         url = self.service.get_endpoint(endpoint_type)
 
-        logger.debug("SOAP-request:\n{}\n{}".format(url, request_data))
+        logger.debug("SOAP-request:\n%s\n%s", url, request_data)
 
         try:
             response = requests.post(
@@ -143,7 +143,7 @@ class StufZDSClient:
                 cert=self.service.get_cert(),
             )
             if response.status_code < 200 or response.status_code >= 400:
-                logger.debug("SOAP-response:\n{}".format(response.content))
+                logger.debug("SOAP-response:\n%s", response.content)
                 logger.error(
                     "bad response for referentienummer/submission '%s'\n%s",
                     self.options["referentienummer"],
@@ -151,7 +151,7 @@ class StufZDSClient:
                 )
                 raise RegistrationFailed("error while making backend request")
             else:
-                logger.debug("SOAP-response:\n{}".format(response.content))
+                logger.debug("SOAP-response:\n%s", response.content)
         except RequestException as e:
             logger.error(
                 "bad request for referentienummer/submission '%s'",
