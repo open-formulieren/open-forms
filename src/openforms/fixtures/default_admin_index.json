@@ -95,6 +95,10 @@
                 "tokenproxy"
             ],
             [
+                "bag",
+                "bagconfig"
+            ],
+            [
                 "brp",
                 "brpconfig"
             ],
