@@ -32,7 +32,7 @@ class NumericBaseValidator:
 @deconstructible
 class KVKNumberValidator(NumericBaseValidator):
     value_size = 8
-    value_label = _("KVK number")
+    value_label = _("KvK number")
 
 
 @deconstructible
@@ -77,18 +77,18 @@ class KVKRemoteBaseValidator:
                 return True
 
 
-@register("kvk-kvkNumber", verbose_name=_("KVK Number"))
+@register("kvk-kvkNumber", verbose_name=_("KvK number"))
 @deconstructible
 class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "kvkNumber"
-    value_label = _("KVK number")
+    value_label = _("KvK number")
 
     def __call__(self, value):
         validate_kvk(value)
         super().__call__(value)
 
 
-@register("kvk-rsin", verbose_name=_("KVK RSIN"))
+@register("kvk-rsin", verbose_name=_("KvK RSIN"))
 @deconstructible
 class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
     query_param = "rsin"
@@ -99,7 +99,7 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
         super().__call__(value)
 
 
-@register("kvk-branchNumber", verbose_name=_("KVK Branch Number"))
+@register("kvk-branchNumber", verbose_name=_("KvK branch number"))
 @deconstructible
 class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "branchNumber"

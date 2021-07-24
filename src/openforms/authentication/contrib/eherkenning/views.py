@@ -22,7 +22,7 @@ class eHerkenningAssertionConsumerServiceView(
         BaseSaml2Backend.error_messages,
         **{
             "eherkenning_no_kvk": _(
-                "Login failed due to no KVK being returned by eHerkenning."
+                "Login failed due to no KvK number being returned by eHerkenning."
             )
         },
     )

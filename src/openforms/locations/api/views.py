@@ -26,7 +26,7 @@ class GetStreetNameAndCityView(APIView):
         operation_id="get_street_name_and_city_list",
         summary=_("Get a street name and city"),
         description=_(
-            "Get the street name and city for a given postcode and house number"
+            "Get the street name and city for a given postal code and house number"
         ),
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
@@ -34,7 +34,7 @@ class GetStreetNameAndCityView(APIView):
                 "postcode",
                 OpenApiTypes.STR,
                 OpenApiParameter.QUERY,
-                description=_("Postcode of the address"),
+                description=_("Postal code of the address"),
                 required=True,
             ),
             OpenApiParameter(

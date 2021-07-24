@@ -46,7 +46,7 @@ class FormStep(OrderedModel):
     )
 
     previous_text = models.CharField(
-        _("previous text"),
+        _("step previous text"),
         max_length=50,
         blank=True,
         help_text=_(
@@ -55,7 +55,7 @@ class FormStep(OrderedModel):
         ),
     )
     save_text = models.CharField(
-        _("save text"),
+        _("step save text"),
         max_length=50,
         blank=True,
         help_text=_(
@@ -64,7 +64,7 @@ class FormStep(OrderedModel):
         ),
     )
     next_text = models.CharField(
-        _("next text"),
+        _("step next text"),
         max_length=50,
         blank=True,
         help_text=_(

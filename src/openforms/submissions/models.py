@@ -518,7 +518,7 @@ class SubmissionFileAttachment(models.Model):
         to="SubmissionStep",
         on_delete=models.CASCADE,
         verbose_name=_("submission"),
-        help_text=_("SubmissionStep the file is attached to."),
+        help_text=_("Submission step the file is attached to."),
         related_name="attachments",
     )
     # TODO OneToOne?
@@ -552,7 +552,7 @@ class SubmissionFileAttachment(models.Model):
 
     class Meta:
         verbose_name = _("submission file attachment")
-        verbose_name_plural = _("submission file attachment")
+        verbose_name_plural = _("submission file attachments")
 
     def delete(self, using=None, keep_parents=False):
         self.content.delete(save=False)

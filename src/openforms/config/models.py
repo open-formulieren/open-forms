@@ -75,7 +75,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_previous_text = models.CharField(
-        _("form previous text"),
+        _("previous text"),
         max_length=50,
         default=runtime_gettext(_("Previous page")),
         help_text=_(
@@ -84,7 +84,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_change_text = models.CharField(
-        _("form change text"),
+        _("change text"),
         max_length=50,
         default=runtime_gettext(_("Change")),
         help_text=_(
@@ -93,7 +93,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_confirm_text = models.CharField(
-        _("form confirm text"),
+        _("confirm text"),
         max_length=50,
         default=runtime_gettext(_("Confirm")),
         help_text=_(
@@ -102,7 +102,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_begin_text = models.CharField(
-        _("form begin text"),
+        _("begin text"),
         max_length=50,
         default=runtime_gettext(_("Begin form")),
         help_text=_(
@@ -112,7 +112,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_step_previous_text = models.CharField(
-        _("form step previous text"),
+        _("step previous text"),
         max_length=50,
         default=runtime_gettext(_("Previous page")),
         help_text=_(
@@ -120,7 +120,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_step_save_text = models.CharField(
-        _("form step save text"),
+        _("step save text"),
         max_length=50,
         default=runtime_gettext(_("Save current information")),
         help_text=_(
@@ -128,7 +128,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_step_next_text = models.CharField(
-        _("form step next text"),
+        _("step next text"),
         max_length=50,
         default=runtime_gettext(_("Next")),
         help_text=_(
@@ -166,7 +166,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("The 'idsite' of the website you're tracking in Matomo."),
     )
     piwik_url = models.CharField(
-        _("piwik server URL"),
+        _("Piwik server URL"),
         max_length=255,
         blank=True,
         help_text=_("The base URL of your Piwik server, e.g. 'piwik.example.com'."),

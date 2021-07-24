@@ -260,7 +260,7 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField(write_only=True, required=True, use_url=False)
 
     url = serializers.SerializerMethodField(
-        label=_("Url"), source="get_url", read_only=True
+        label=_("URL"), source="get_url", read_only=True
     )
     name = serializers.CharField(
         label=_("File name"), source="file_name", read_only=True

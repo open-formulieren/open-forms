@@ -24,7 +24,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
-            _("Button Texts"),
+            _("Button labels"),
             {
                 "fields": (
                     "form_begin_text",

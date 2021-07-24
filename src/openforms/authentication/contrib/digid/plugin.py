@@ -14,7 +14,7 @@ from openforms.authentication.registry import register
 
 @register("digid")
 class DigidAuthentication(BasePlugin):
-    verbose_name = _("Digid")
+    verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
 
     def start_login(self, request, form, form_url):
