@@ -931,7 +931,7 @@ msgstr[1] "Onderhoudsmodus uitgezet voor {count} {verbose_name_plural}"
 #: openforms/forms/admin/form.py:248
 #, python-format
 msgid "Remove %(verbose_name_plural)s from maintenance mode"
-msgstr "Verwijder %(verbose_name_plural)s uit de onderhoudsmodus."
+msgstr "Schakel de onderhoudsmodus uit voor geselecteerde %(verbose_name_plural)s."
 
 #: openforms/forms/admin/form_definition.py:18
 #, python-brace-format
