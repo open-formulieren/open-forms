@@ -1,3 +1,5 @@
+# Pinned to https://github.com/maykinmedia/objects-api/commit/81375d9db271a7eea2cb828c48fba0f513b44bb0
+# See discussion at: https://github.com/open-formulieren/open-forms/pull/501#discussion_r674013458
 openapi: 3.0.3
 info:
   title: Objects API
@@ -68,7 +70,7 @@ info:
   license:
     name: EUPL-1.2
 paths:
-  /api/v2/objects:
+  /objects:
     get:
       operationId: object_list
       description: Retrieve a list of OBJECTs and their actual RECORD. The actual
@@ -76,7 +78,6 @@ paths:
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -93,7 +94,7 @@ paths:
           Data filtering expressions are comma-separated and are structured as follows:
           A valid parameter value has the form `key__operator__value`.
           `key` is the attribute name, `operator` is the comparison operator to be used and `value` is the attribute value.
-          Note: Values can be string or numeric. Dates are not supported.
+          Note: Values can be string, numeric, or dates (ISO format; YYYY-MM-DD).
 
           Valid operator values are:
           * `exact` - equal to
@@ -175,7 +176,6 @@ paths:
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -227,7 +227,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Object'
           description: Created
-  /api/v2/objects/{uuid}:
+  /objects/{uuid}:
     get:
       operationId: object_read
       description: Retrieve a single OBJECT and its actual RECORD. The actual record
@@ -235,7 +235,6 @@ paths:
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -282,7 +281,6 @@ paths:
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -347,7 +345,6 @@ paths:
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -423,14 +420,13 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/v2/objects/{uuid}/history:
+  /objects/{uuid}/history:
     get:
       operationId: object_history
       description: Retrieve all RECORDs of an OBJECT.
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -477,14 +473,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedHistoryRecordList'
           description: OK
-  /api/v2/objects/search:
+  /objects/search:
     post:
       operationId: object_search
       description: Perform a (geo) search on OBJECTs.
       parameters:
       - in: header
         name: Accept-Crs
-        required: True
         schema:
           type: string
           enum:
@@ -546,7 +541,7 @@ paths:
                       Data filtering expressions are comma-separated and are structured as follows:
                       A valid parameter value has the form `key__operator__value`.
                       `key` is the attribute name, `operator` is the comparison operator to be used and `value` is the attribute value.
-                      Note: Values can be string or numeric. Dates are not supported.
+                      Note: Values can be string, numeric, or dates (ISO format; YYYY-MM-DD).
 
                       Valid operator values are:
                       * `exact` - equal to
@@ -762,7 +757,7 @@ components:
       type: object
       description: |-
         this mixin allows selecting fields for serializer in the query param
-        It also supports nested fields which are serializers themselves.
+        It also supports nested fields.
       properties:
         url:
           type: string
@@ -886,7 +881,7 @@ components:
       type: object
       description: |-
         this mixin allows selecting fields for serializer in the query param
-        It also supports nested fields which are serializers themselves.
+        It also supports nested fields.
       properties:
         url:
           type: string
@@ -954,5 +949,9 @@ components:
       in: header
       name: Authorization
       description: Token-based authentication with required prefix "Token"
+tags:
+- name: Objects
 externalDocs:
   url: https://objects-and-objecttypes-api.readthedocs.io/
+servers:
+- url: /api/v2

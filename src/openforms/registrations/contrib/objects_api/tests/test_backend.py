@@ -23,7 +23,7 @@ class ObjectsAPIBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         ObjectsAPIConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v2/",
+            objects_service__api_root="https://objecten.nl/api/v1/",
             objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
             objecttype_version=1,
             productaanvraag_type="terugbelnotitie",
@@ -80,7 +80,7 @@ class ObjectsAPIBackendTests(TestCase):
             bsn="111222333",
         )
 
-        mock_service_oas_get(m, "https://objecten.nl/api/v2/", "objecten")
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
 
         objects_form_options = dict(
@@ -119,8 +119,7 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         m.post(
-            # FIXME zgw-consumers seems to duplicate /api/v2
-            "https://objecten.nl/api/v2/api/v2/objects",
+            "https://objecten.nl/api/v1/objects",
             status_code=201,
             json=expected_result,
         )
@@ -169,7 +168,7 @@ class ObjectsAPIBackendTests(TestCase):
 
         self.assertEqual(objecten_oas_get.method, "GET")
         self.assertEqual(
-            objecten_oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+            objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
         )
 
         expected_object_body = {
@@ -188,7 +187,7 @@ class ObjectsAPIBackendTests(TestCase):
 
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
-        self.assertEqual(object_create.url, "https://objecten.nl/api/v2/api/v2/objects")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertDictEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_use_config_defaults(self, m):
@@ -228,7 +227,7 @@ class ObjectsAPIBackendTests(TestCase):
             bsn="111222333",
         )
 
-        mock_service_oas_get(m, "https://objecten.nl/api/v2/", "objecten")
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
 
         expected_result = {
@@ -258,8 +257,7 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         m.post(
-            # FIXME zgw-consumers seems to duplicate /api/v2
-            "https://objecten.nl/api/v2/api/v2/objects",
+            "https://objecten.nl/api/v1/objects",
             status_code=201,
             json=expected_result,
         )
@@ -305,7 +303,7 @@ class ObjectsAPIBackendTests(TestCase):
 
         self.assertEqual(objecten_oas_get.method, "GET")
         self.assertEqual(
-            objecten_oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+            objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
         )
 
         expected_object_body = {
@@ -324,5 +322,5 @@ class ObjectsAPIBackendTests(TestCase):
 
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
-        self.assertEqual(object_create.url, "https://objecten.nl/api/v2/api/v2/objects")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertDictEqual(object_create_body, expected_object_body)
