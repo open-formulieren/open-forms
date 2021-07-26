@@ -85,6 +85,14 @@ CACHES = {
             "IGNORE_EXCEPTIONS": True,
         },
     },
+    "oidc": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{config('CACHE_DEFAULT', 'localhost:6379/0')}",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": True,
+        },
+    },
 }
 
 
@@ -129,6 +137,8 @@ INSTALLED_APPS = [
     "zgw_consumers",
     "stuf",
     "stuf.stuf_bg",
+    "mozilla_django_oidc",
+    "mozilla_django_oidc_db",
     # Project applications.
     "openforms.accounts",
     "openforms.config",
@@ -168,6 +178,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
+    "mozilla_django_oidc_db.middleware.SessionRefresh",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -346,6 +357,10 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "mozilla_django_oidc": {
+            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "level": "DEBUG",
+        },
     },
 }
 
@@ -369,6 +384,7 @@ AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
+    "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
 ]
 
 SESSION_COOKIE_NAME = "openforms_sessionid"
@@ -376,6 +392,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 LOGIN_URL = reverse_lazy("admin:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
+LOGOUT_REDIRECT_URL = reverse_lazy("admin:index")
 
 #
 # SECURITY settings
@@ -787,3 +804,11 @@ EHERKENNING = {
 OPENFORMS_LOCATION_CLIENT = config(
     "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
 )
+
+
+#
+# Mozilla Django OIDC DB settings
+#
+OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
+MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 1
