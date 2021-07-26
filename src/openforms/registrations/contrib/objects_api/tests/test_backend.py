@@ -4,12 +4,14 @@ from django.test import TestCase
 
 import requests_mock
 from zds_client.oas import schema_fetcher
+from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...zgw_apis.tests.factories import ZgwConfigFactory
 from ..models import ObjectsAPIConfig
 from .factories import ObjectsAPIConfigFactory
 
@@ -25,6 +27,13 @@ class ObjectsAPIBackendTests(TestCase):
             objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
             objecttype_version=1,
             productaanvraag_type="terugbelnotitie",
+        )
+        ZgwConfigFactory.create(
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogi.nl/api/v1/",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
         )
 
     def tearDown(self):
@@ -72,11 +81,15 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v2/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
 
         objects_form_options = dict(
             objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            organisatie_rsin="123456782",
+            vertrouwelijkheidaanduiding="geheim",
         )
 
         expected_result = {
@@ -99,12 +112,22 @@ class ObjectsAPIBackendTests(TestCase):
                 "correctedBy": "",
             },
         }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
 
         m.post(
             # FIXME zgw-consumers seems to duplicate /api/v2
             "https://objecten.nl/api/v2/api/v2/objects",
             status_code=201,
             json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
         )
 
         plugin = ObjectsAPIRegistration("objects_api")
@@ -113,15 +136,43 @@ class ObjectsAPIBackendTests(TestCase):
         # Result is simply the created object
         self.assertEqual(result, expected_result)
 
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 4)
 
-        oas_get = m.request_history[0]
-        self.assertEqual(oas_get.method, "GET")
+        (
+            documenten_oas_get,
+            document_create,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        self.assertEqual(documenten_oas_get.method, "GET")
         self.assertEqual(
-            oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+            documenten_oas_get.url,
+            "https://documenten.nl/api/v1/schema/openapi.yaml?v=3",
         )
 
-        expected_body = {
+        document_create_body = document_create.json()
+        self.assertEqual(document_create.method, "POST")
+        self.assertEqual(
+            document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(document_create_body["bronorganisatie"], "123456782")
+        self.assertEqual(
+            document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/2",
+        )
+        self.assertEqual(
+            document_create_body["vertrouwelijkheidaanduiding"],
+            "geheim",
+        )
+
+        self.assertEqual(objecten_oas_get.method, "GET")
+        self.assertEqual(
+            objecten_oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+        )
+
+        expected_object_body = {
             "type": "https://objecttypen.nl/api/v1/objecttypes/2",
             "record": {
                 "typeVersion": 2,
@@ -129,16 +180,16 @@ class ObjectsAPIBackendTests(TestCase):
                     "data": submission.get_merged_data(),
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
+                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
         }
 
-        create_object = m.request_history[-1]
-        create_object_body = create_object.json()
-        self.assertEqual(create_object.method, "POST")
-        self.assertEqual(create_object.url, "https://objecten.nl/api/v2/api/v2/objects")
-        self.assertDictEqual(create_object_body, expected_body)
+        object_create_body = object_create.json()
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v2/api/v2/objects")
+        self.assertDictEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_use_config_defaults(self, m):
         submission = SubmissionFactory.from_components(
@@ -178,6 +229,7 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v2/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
 
         expected_result = {
             "url": "https://objecten.nl/api/v1/objects/1",
@@ -199,12 +251,22 @@ class ObjectsAPIBackendTests(TestCase):
                 "correctedBy": "",
             },
         }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
 
         m.post(
             # FIXME zgw-consumers seems to duplicate /api/v2
             "https://objecten.nl/api/v2/api/v2/objects",
             status_code=201,
             json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
         )
 
         plugin = ObjectsAPIRegistration("objects_api")
@@ -213,15 +275,40 @@ class ObjectsAPIBackendTests(TestCase):
         # Result is simply the created object
         self.assertEqual(result, expected_result)
 
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 4)
 
-        oas_get = m.request_history[0]
-        self.assertEqual(oas_get.method, "GET")
+        (
+            documenten_oas_get,
+            document_create,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        self.assertEqual(documenten_oas_get.method, "GET")
         self.assertEqual(
-            oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+            documenten_oas_get.url,
+            "https://documenten.nl/api/v1/schema/openapi.yaml?v=3",
         )
 
-        expected_body = {
+        document_create_body = document_create.json()
+        self.assertEqual(document_create.method, "POST")
+        self.assertEqual(
+            document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(document_create_body["bronorganisatie"], "000000000")
+        self.assertEqual(
+            document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        )
+        self.assertNotIn("vertrouwelijkheidaanduiding", document_create_body)
+
+        self.assertEqual(objecten_oas_get.method, "GET")
+        self.assertEqual(
+            objecten_oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+        )
+
+        expected_object_body = {
             "type": "https://objecttypen.nl/api/v1/objecttypes/1",
             "record": {
                 "typeVersion": 1,
@@ -229,13 +316,13 @@ class ObjectsAPIBackendTests(TestCase):
                     "data": submission.get_merged_data(),
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
         }
 
-        create_object = m.request_history[-1]
-        create_object_body = create_object.json()
-        self.assertEqual(create_object.method, "POST")
-        self.assertEqual(create_object.url, "https://objecten.nl/api/v2/api/v2/objects")
-        self.assertDictEqual(create_object_body, expected_body)
+        object_create_body = object_create.json()
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v2/api/v2/objects")
+        self.assertDictEqual(object_create_body, expected_object_body)
