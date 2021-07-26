@@ -14,7 +14,7 @@ from openforms.authentication.registry import register
 
 @register("digid-mock")
 class DigidMockAuthentication(BasePlugin):
-    verbose_name = _("Digid Mock")
+    verbose_name = _("DigiD Mock")
     provides_auth = AuthAttribute.bsn
 
     def start_login(self, request, form, form_url):

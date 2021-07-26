@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 class GetStreetNameAndCityViewInputSerializer(serializers.Serializer):
     postcode = serializers.CharField(
-        label=_("postcode"), help_text=_("Postcode to use in search")
+        label=_("postal code"), help_text=_("Postal code to use in search")
     )
     house_number = serializers.CharField(
         label=_("house number"), help_text=_("House number to use in search")

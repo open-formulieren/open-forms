@@ -46,7 +46,7 @@ development machine.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:open-formulieren/open-forms.git
+       $ git clone git@github.com:open-formulieren/open-forms.git
        $ cd open-forms
 
 3. Install all required libraries.
@@ -167,7 +167,7 @@ The easiest way to get the project started is by using `Docker Compose`_.
 
    .. code-block:: bash
 
-       $ git clone git@bitbucket.org:open-formulieren/open-forms.git
+       $ git clone git@github.com.org:open-formulieren/open-forms.git
        Cloning into 'open-forms'...
        ...
 

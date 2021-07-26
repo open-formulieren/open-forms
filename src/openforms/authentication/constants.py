@@ -8,5 +8,5 @@ class AuthAttribute(DjangoChoices):
     core identifying attributes retrieved from the authentication plugins
     """
 
-    bsn = ChoiceItem("bsn", _("citizen service number"))
-    kvk = ChoiceItem("kvk", _("chamber of commerce number"))
+    bsn = ChoiceItem("bsn", _("BSN"))
+    kvk = ChoiceItem("kvk", _("KvK number"))

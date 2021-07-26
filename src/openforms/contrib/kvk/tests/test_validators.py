@@ -67,18 +67,18 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
         validator("69599084")
 
         with self.assertRaisesMessage(
-            ValidationError, _("%(type)s does not exist.") % {"type": _("KVK number")}
+            ValidationError, _("%(type)s does not exist.") % {"type": _("KvK number")}
         ):
             validator("90004760")
         with self.assertRaisesMessage(
-            ValidationError, _("%(type)s does not exist.") % {"type": _("KVK number")}
+            ValidationError, _("%(type)s does not exist.") % {"type": _("KvK number")}
         ):
             validator("68750110")
 
         with self.assertRaisesMessage(
             ValidationError,
             _("%(type)s should have %(size)i characters.")
-            % {"type": _("KVK number"), "size": 8},
+            % {"type": _("KvK number"), "size": 8},
         ):
             validator("123")
         with self.assertRaisesMessage(

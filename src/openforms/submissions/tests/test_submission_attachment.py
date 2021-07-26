@@ -200,12 +200,16 @@ class SubmissionAttachmentTest(TestCase):
 
         # expect the names to have postfixes
         attachment_1 = attachments[0]
-        self.assertEqual(attachment_1.file_name, "my-filename-1.jpg")
-        self.assertEqual(attachment_1.original_name, "my-image-1.jpg")
-
         attachment_2 = attachments[1]
-        self.assertEqual(attachment_2.file_name, "my-filename-2.jpg")
-        self.assertEqual(attachment_2.original_name, "my-image-2.jpg")
+
+        self.assertSetEqual(
+            {attachment_1.file_name, attachment_2.file_name},
+            {"my-filename-1.jpg", "my-filename-2.jpg"},
+        )
+        self.assertSetEqual(
+            {attachment_1.original_name, attachment_2.original_name},
+            {"my-image-1.jpg", "my-image-2.jpg"},
+        )
 
         # test attaching again is idempotent
         result = attach_uploads_to_submission_step(submission_step)
