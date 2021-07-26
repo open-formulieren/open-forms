@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
 
 from . import exceptions
-from .exception_handling import HandledException
+from .handling import HandledException
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 ERROR_CONTENT_TYPE = "application/problem+json"
 
 
-def exception_handler(exc, context):
+def handler(exc, context):
     """
     Transform 4xx and 5xx errors into DSO-compliant shape.
     """

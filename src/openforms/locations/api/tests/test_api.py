@@ -33,7 +33,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json()["city"], "Amsterdam")
 
     @patch(
-        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        "openforms.exception_handler.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_getting_street_name_and_city_without_post_code_returns_error(self, _mock):
@@ -63,7 +63,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
     @patch(
-        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        "openforms.exception_handler.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_getting_street_name_and_city_without_house_number_returns_error(

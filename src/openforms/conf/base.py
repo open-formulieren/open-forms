@@ -596,7 +596,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {"anon": "200/day", "user": "1000/day"},
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_SCHEMA_CLASS": "openforms.api.schema.AutoSchema",
-    "EXCEPTION_HANDLER": "openforms.exception_handler.views.exception_handler",
+    "EXCEPTION_HANDLER": "openforms.exception_handler.views.handler",
 }
 
 #

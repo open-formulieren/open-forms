@@ -145,7 +145,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.slug, "test-post-form")
 
     @patch(
-        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        "openforms.exception_handler.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_create_form_unsuccessful_with_bad_data(self, _mock):
@@ -494,7 +494,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.begin_text, "Different Begin Text")
 
     @patch(
-        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        "openforms.exception_handler.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_update_of_form_with_incomplete_data_unsuccessful(self, _mock):
@@ -543,7 +543,7 @@ class FormsAPITests(APITestCase):
         self.assertNotEqual(form.slug, "test-put-form")
 
     @patch(
-        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        "openforms.exception_handler.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_update_of_form_unsuccessful_with_bad_data(self, _mock):
