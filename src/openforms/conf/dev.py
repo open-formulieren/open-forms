@@ -112,6 +112,15 @@ SENDFILE_BACKEND = "django_sendfile.backends.development"
 ROSETTA_SHOW_AT_ADMIN_PANEL = True
 INSTALLED_APPS += ["rosetta"]
 
+#
+# DJANGO-SILK
+#
+if config("PROFILE", default=False):
+    INSTALLED_APPS += ["silk"]
+    MIDDLEWARE = ["silk.middleware.SilkyMiddleware"] + MIDDLEWARE
+    security_index = MIDDLEWARE.index("django.middleware.security.SecurityMiddleware")
+    MIDDLEWARE.insert(security_index + 1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
     "error",

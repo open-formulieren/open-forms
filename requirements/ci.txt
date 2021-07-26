@@ -286,7 +286,7 @@ faker==7.0.1
     #   -r requirements/base.txt
     #   factory-boy
     #   zgw-consumers
-flake8==3.8.4
+flake8==3.9.2
     # via -r requirements/test-tools.in
 flower==0.9.7
     # via
@@ -408,14 +408,14 @@ psycopg2==2.8.6
     #   -r requirements/base.txt
 py==1.10.0
     # via pytest
-pycodestyle==2.6.0
+pycodestyle==2.7.0
     # via flake8
 pycparser==2.20
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cffi
-pyflakes==2.2.0
+pyflakes==2.3.1
     # via flake8
 pygments==2.9.0
     # via
