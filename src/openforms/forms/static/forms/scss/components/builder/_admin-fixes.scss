@@ -54,7 +54,7 @@ div#content h1 {
 }
 
 .fetch-error {
-    @include color-danger;
-    color: $color-danger;
-    font-weight: bold;
+  @include color-danger;
+  color: $color-danger;
+  font-weight: bold;
 }

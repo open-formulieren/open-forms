@@ -48,3 +48,15 @@ li.nav-item {
 .formio-builder-wrapper {
   padding-top: 10px;
 }
+
+[ref="editForm"] {
+  .choices__list + .choices__input {
+    border: none;
+    border-radius: unset;
+    padding: 4px 0 4px 2px;
+  }
+
+  .choices__list:not(:empty) + .choices__input {
+    width: 1ch;
+  }
+}
