@@ -107,7 +107,7 @@ class HandledException:
     @property
     def type(self) -> str:
         exc_detail_url = reverse(
-            "api:error-detail",
+            "exception_handler:error-detail",
             kwargs={"exception_class": self.exc.__class__.__name__},
         )
         if self.request is not None:

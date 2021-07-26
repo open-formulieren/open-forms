@@ -17,9 +17,6 @@ from openforms.forms.api.viewsets import (
 )
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
-from .views import ErrorDetailView
-
-
 # from .schema import schema_view
 
 app_name = "api"
@@ -70,7 +67,6 @@ urlpatterns = [
                 path("location/", include("openforms.locations.api.urls")),
                 path("authentication/", include("openforms.authentication.api.urls")),
                 path("registration/", include("openforms.registrations.api.urls")),
-                path("fouten/<exception_class>/", ErrorDetailView.as_view(), name="error-detail"),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),

@@ -45,7 +45,7 @@ def exception_handler(exc, context):
 
 
 class ErrorDetailView(TemplateView):
-    template_name = "refs/error_detail.html"
+    template_name = "errors/error_detail.html"
 
     def _get_exception_klass(self):
         klass = self.kwargs["exception_class"]
