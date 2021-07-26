@@ -4,14 +4,16 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {get, apiCall} from '../../../utils/fetch';
 import {FORM_ENDPOINT} from '../form_design/constants';
+import Loader from "../Loader";
 
 
 const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
     const [formVersions, setFormVersions] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const restoreVersion = async (csrftoken, formUuid, versionUuid, redirectUrl) => {
         await apiCall(
-            `${FORM_ENDPOINT}/${formUuid}/version/${versionUuid}`,
+            `${FORM_ENDPOINT}/${formUuid}/versions/${versionUuid}/restore`,
             {
                 method: 'POST',
                 headers: {
@@ -28,6 +30,7 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
             `${FORM_ENDPOINT}/${uuid}/versions`
         );
         setFormVersions(response.data);
+        setIsLoading(false);
     };
 
     useAsync(async () => {await getFormVersions(formUuid);}, []);
@@ -42,22 +45,27 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
         );
     });
 
-    return (
-        <>
-            {rows.length > 0 ?
-                <table id="change-history">
-                    <thead>
-                    <tr>
-                        <th scope="col">Datum/Tijd</th>
-                        <th scope="col">Actie</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {rows}
-                    </tbody>
-                </table> : <p>Dit formulier heeft geen versies.</p>}
-        </>
-    );
+    if (isLoading) {
+        return (<Loader />);
+    } else {
+        return (
+            <>
+                {rows.length > 0 ?
+                    <table id="change-history">
+                        <thead>
+                        <tr>
+                            <th scope="col">Datum/Tijd</th>
+                            <th scope="col">Actie</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {rows}
+                        </tbody>
+                    </table> : <p>Dit formulier heeft geen versies.</p>
+                }
+            </>
+        );
+    }
 
 };
 
