@@ -14,3 +14,4 @@ integrating with Open Forms.
    prefill_plugins
    manual_testing
    sdk/index
+   profiling
