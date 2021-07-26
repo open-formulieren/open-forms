@@ -92,6 +92,11 @@ function reducer(draft, action) {
                 ...action.payload,
             };
         }
+        case 'FORM_CREATED': {
+            draft.newForm = false;
+            draft.form = action.payload;
+            break;
+        }
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             // names are prefixed like `form.foo` and `literals.bar`
@@ -535,9 +540,10 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 throw new Error('An error occurred while saving the form.');
             }
             var formUuid = formResponse.data.uuid;
+            dispatch({type: 'FORM_CREATED', payload: formResponse.data});
 
         } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: formResponse.data});
+            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
             window.scrollTo(0, 0);
             return;
         }
