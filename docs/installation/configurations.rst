@@ -1,10 +1,10 @@
-.. _services:
+.. _configurations:
 
 =======================
-Services
+Configurations
 =======================
 
-Various services can be configured within Open Forms to add data and validation to the forms.
+Various configurations can be configured within Open Forms to add data and validation to the forms.
 
 BAG configuration
 -----------------
