@@ -43,7 +43,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_all_required_steps_validated(self):
+    @patch(
+        "openforms.exception_handler.handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_all_required_steps_validated(self, _mock):
         step = FormStepFactory.create(optional=False)
         submission = SubmissionFactory.create(form=step.form)
         self._add_submission_to_session(submission)
@@ -59,11 +63,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        errors = response.json()
-        self.assertEqual(len(errors["invalidParams"]), 1)
+
         self.assertEqual(
-            errors["invalidParams"][0]["reason"],
-            f"http://testserver{form_step_url}",
+            response.json(),
+            {
+                "type": "http://testserver/exception-handler/fouten/ValidationError/",
+                "code": "invalid",
+                "title": "Invalid input.",
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "incompleteSteps.0.formStep",
+                        "code": "invalid",
+                        "reason": f"http://testserver{form_step_url}",
+                    }
+                ],
+            },
         )
 
     @freeze_time("2020-12-11T10:53:19+01:00")
