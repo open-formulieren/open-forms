@@ -58,7 +58,6 @@ class Migration(migrations.Migration):
                         limit_choices_to={"api_type": "orc"},
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
-                        related_name="objects_objects_config",
                         to="zgw_consumers.Service",
                         verbose_name="Objects API",
                     ),

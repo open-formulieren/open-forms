@@ -15,7 +15,6 @@ class ObjectsAPIConfig(SingletonModel):
         verbose_name=_("Objects API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
-        related_name="objects_objects_config",
         null=True,
     )
 

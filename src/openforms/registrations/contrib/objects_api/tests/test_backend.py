@@ -3,6 +3,7 @@ from datetime import date
 from django.test import TestCase
 
 import requests_mock
+from zds_client.oas import schema_fetcher
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.registrations.constants import RegistrationAttribute
@@ -25,6 +26,13 @@ class ObjectsAPIBackendTests(TestCase):
             objecttype_version=1,
             productaanvraag_type="terugbelnotitie",
         )
+
+    def tearDown(self):
+        super().tearDown()
+
+        # Reset the schema fetcher cache, to verify that
+        # the OAS is being retrieved on every submission
+        schema_fetcher.cache = {}
 
     def test_submission_with_objects_api_backend_override_defaults(self, m):
         submission = SubmissionFactory.from_components(
@@ -105,7 +113,13 @@ class ObjectsAPIBackendTests(TestCase):
         # Result is simply the created object
         self.assertEqual(result, expected_result)
 
-        # self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(len(m.request_history), 2)
+
+        oas_get = m.request_history[0]
+        self.assertEqual(oas_get.method, "GET")
+        self.assertEqual(
+            oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+        )
 
         expected_body = {
             "type": "https://objecttypen.nl/api/v1/objecttypes/2",
@@ -199,7 +213,13 @@ class ObjectsAPIBackendTests(TestCase):
         # Result is simply the created object
         self.assertEqual(result, expected_result)
 
-        # self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(len(m.request_history), 2)
+
+        oas_get = m.request_history[0]
+        self.assertEqual(oas_get.method, "GET")
+        self.assertEqual(
+            oas_get.url, "https://objecten.nl/api/v2/schema/openapi.yaml?v=3"
+        )
 
         expected_body = {
             "type": "https://objecttypen.nl/api/v1/objecttypes/1",
