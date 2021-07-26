@@ -11,3 +11,4 @@ Installation
    quickstart
    deployment
    self_signed
+   services
