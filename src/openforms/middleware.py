@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 
 from openforms.config.models import GlobalConfiguration
@@ -32,6 +34,11 @@ class SessionTimeoutMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if request.user.is_staff:
+            timeout = GlobalConfiguration.get_solo().admin_session_timeout
+        else:
+            timeout = GlobalConfiguration.get_solo().form_session_timeout
+
         # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
-        request.session.set_expiry(GlobalConfiguration.get_solo().admin_session_timeout)
+        request.session.set_expiry(timedelta(minutes=timeout).seconds)
         return self.get_response(request)

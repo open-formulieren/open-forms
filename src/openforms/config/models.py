@@ -139,17 +139,18 @@ class GlobalConfiguration(SingletonModel):
 
     admin_session_timeout = models.PositiveIntegerField(
         _("admin session timeout"),
-        default=3600,
-        validators=[MinValueValidator(60)],
+        default=60,
+        validators=[MinValueValidator(5)],
         help_text=_(
-            "Amount of time in seconds the admin can be inactive for before being logged out"
+            "Amount of time in minutes the admin can be inactive for before being logged out"
         ),
     )
     form_session_timeout = models.PositiveIntegerField(
         _("form session timeout"),
-        default=3600,
+        default=60,
+        validators=[MinValueValidator(5)],
         help_text=_(
-            "Amount of time in seconds a user filling in a form can be inactive for before being logged out"
+            "Amount of time in minutes a user filling in a form can be inactive for before being logged out"
         ),
     )
 
