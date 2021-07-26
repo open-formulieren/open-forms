@@ -1,15 +1,9 @@
 import re
 from typing import Union
 
-try:
-    from djangorestframework_camel_case.util import (
-        underscore_to_camel as _underscore_to_camel,
-    )
-except ImportError:
-    from djangorestframework_camel_case.util import (
-        underscoreToCamel as _underscore_to_camel,
-    )
-
+from djangorestframework_camel_case.util import (
+    underscore_to_camel as _underscore_to_camel,
+)
 
 RE_UNDERSCORE = re.compile(r"[a-z]_[a-z]")
 

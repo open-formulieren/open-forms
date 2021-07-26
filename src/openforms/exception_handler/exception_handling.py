@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 ErrorSerializer = Union[FoutSerializer, ValidatieFoutSerializer]
 
-STATUS_TO_TITLE = {}
-
 
 def _translate_exceptions(exc):
     # Taken from DRF default exc handler
@@ -70,7 +68,6 @@ class HandledException:
         assert 400 <= response.status_code < 600, "Unsupported status code"
         self.response = response
         self.request = request
-
         self._exc_id = str(uuid.uuid4())
 
     @property
@@ -125,9 +122,7 @@ class HandledException:
         """
         Return the generic message for this type of exception.
         """
-        default_title = getattr(self.exc, "default_detail", str(self._error_detail))
-        title = STATUS_TO_TITLE.get(self.response.status_code, default_title)
-        return title
+        return getattr(self.exc, "default_detail", str(self._error_detail))
 
     @property
     def status(self) -> int:
