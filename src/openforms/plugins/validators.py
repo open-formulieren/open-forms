@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 @deconstructible
-class PluginValidator:
+class PluginExistsValidator:
     message = _("Choose a valid plugin")
     code = "invalid"
 

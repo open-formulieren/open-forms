@@ -8,6 +8,7 @@ from openforms.products.api.serializers import ProductSerializer
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
+from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 
@@ -85,6 +86,7 @@ class FormLiteralsSerializer(serializers.Serializer):
 class FormSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
+
     authentication_backends = serializers.ListField(
         child=serializers.ChoiceField(choices=[]),
         write_only=True,
@@ -92,6 +94,16 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
+
+    payment_backend = serializers.ChoiceField(
+        choices=[],
+        write_only=True,
+        required=False,
+        default="",
+    )
+    payment_options = PaymentOptionsReadOnlyField()
+    payment_required = serializers.BooleanField()
+
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
@@ -105,6 +117,9 @@ class FormSerializer(serializers.ModelSerializer):
             "registration_backend_options",
             "authentication_backends",
             "login_options",
+            "payment_required",
+            "payment_backend",
+            "payment_options",
             "literals",
             "product",
             "slug",

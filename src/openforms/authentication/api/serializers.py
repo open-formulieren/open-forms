@@ -6,6 +6,7 @@ from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
 class AuthPluginSerializer(PluginBaseSerializer):
+    # serializer for form builder
     provides_auth = serializers.ListField(
         child=serializers.CharField(label=_("Authentication attribute")),
         source="get_provides_auth",
@@ -34,6 +35,7 @@ class LoginLogoSerializer(serializers.Serializer):
 
 
 class LoginOptionSerializer(serializers.Serializer):
+    # serializer for form
     identifier = serializers.CharField(label=_("Identifier"), read_only=True)
     label = serializers.CharField(
         label=_("Button label"), help_text=_("Button label"), read_only=True

@@ -69,6 +69,7 @@ urlpatterns = [
                 path("location/", include("openforms.locations.api.urls")),
                 path("authentication/", include("openforms.authentication.api.urls")),
                 path("registration/", include("openforms.registrations.api.urls")),
+                path("payment/", include("openforms.payments.api.urls")),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),

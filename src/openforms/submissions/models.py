@@ -27,7 +27,7 @@ from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from ..utils.helpers import get_flattened_components
-from .constants import RegistrationStatuses
+from .constants import PaymentStatuses, RegistrationStatuses
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +129,25 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
+
+    # payment_status = models.CharField(
+    #     _("payment status"),
+    #     max_length=50,
+    #     choices=PaymentStatuses,
+    #     default=PaymentStatuses.not_required,
+    #     help_text=_(
+    #         "Status of the payment process in the configured backend."
+    #     ),
+    # )
+    # payment_amount = models.DecimalField(
+    #     _("payment amount"),
+    #     max_digits=8,  # TODO how many digits?
+    #     decimal_places=2,
+    #     default=0,
+    #     help_text=_(
+    #         "Total payment amount."
+    #     ),
+    # )
 
     class Meta:
         verbose_name = _("Submission")

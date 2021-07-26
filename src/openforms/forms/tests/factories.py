@@ -11,7 +11,7 @@ class FormFactory(factory.django.DjangoModelFactory):
     slug = factory.Faker("word")
     active = True
     product = factory.SubFactory(ProductFactory)
-
+    payment_backend = ""
     # factory-boy ignores attributes starting with an underscore so we'll use Meta.rename
     deleted_ = False
 

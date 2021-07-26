@@ -2,8 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 from djchoices import ChoiceItem, DjangoChoices
 
-UNIQUE_ID_MAX_LENGTH = 100
-
 # field name in the component configuration JSON schema
 REGISTRATION_ATTRIBUTE = "registration.attribute"
 

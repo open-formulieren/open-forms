@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError as DJ_ValidationError
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 from rest_framework.serializers import as_serializer_error
 
+from openforms.plugins.registry import BaseRegistry
+
 logger = logging.getLogger(__name__)
 
 ValidatorType = Callable[[str], None]
@@ -42,16 +44,13 @@ def flatten(iterables: Iterable) -> List[str]:
     return list(_flat(iterables))
 
 
-class Registry:
+class Registry(BaseRegistry):
     """
     A registry for the validations module plugins.
 
     The plugins can be any Django or DRF style validator;
         eg: a function or callable class (or instance thereof) that raises either a Django or DRF ValidationError
     """
-
-    def __init__(self):
-        self._registry = {}
 
     def __call__(self, identifier: str, verbose_name: str, *args, **kwargs) -> Callable:
         def decorator(validator: Union[Type, ValidatorType]):
@@ -75,17 +74,6 @@ class Registry:
             return validator
 
         return decorator
-
-    def __iter__(self) -> Iterator[RegisteredValidator]:
-        return iter(self._registry.values())
-
-    def __getitem__(self, key: str) -> RegisteredValidator:
-        return self._registry[key]
-
-    def choices(
-        self,
-    ) -> List[Tuple[str, str]]:
-        return [(v.identifier, v.verbose_name) for v in self]
 
     def validate(self, plugin_id: str, value: str) -> ValidationResult:
         try:

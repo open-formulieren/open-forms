@@ -42,3 +42,6 @@ class BasePlugin:
         self, submission: "Submission", options: dict
     ) -> Optional[dict]:
         raise NotImplementedError()
+
+    def get_label(self):
+        return self.verbose_name

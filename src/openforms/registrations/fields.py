@@ -1,11 +1,11 @@
 from django.db.models.fields import CharField
 
-from .constants import UNIQUE_ID_MAX_LENGTH
+from ..plugins.constants import UNIQUE_ID_MAX_LENGTH
+from ..plugins.validators import PluginExistsValidator
 from .registry import register
-from .validators import PluginValidator
 
 
-class BackendChoiceField(CharField):
+class RegistrationBackendChoiceField(CharField):
     def __init__(self, *args, **kwargs):
         self.registry = kwargs.pop("registry", register)
 
@@ -15,7 +15,7 @@ class BackendChoiceField(CharField):
 
         super().__init__(*args, **kwargs)
 
-        self.validators.append(PluginValidator(self.registry))
+        self.validators.append(PluginExistsValidator(self.registry))
 
     def formfield(self, **kwargs):
         """
@@ -31,4 +31,4 @@ class BackendChoiceField(CharField):
         return field
 
     def _get_plugin_choices(self):
-        return [(plugin.identifier, plugin.verbose_name) for plugin in self.registry]
+        return self.registry.get_choices()
