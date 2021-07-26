@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 ErrorSerializer = Union[FoutSerializer, ValidatieFoutSerializer]
 
-STATUS_TO_TITLE = {}  # TODO
+STATUS_TO_TITLE = {}
 
 
 def _translate_exceptions(exc):

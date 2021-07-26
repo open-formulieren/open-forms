@@ -2,17 +2,15 @@ import logging
 import os
 from collections import OrderedDict
 
-from rest_framework.response import Response
-from rest_framework.views import exception_handler as drf_exception_handler
-from django.views.generic import TemplateView
 from django.http import Http404
-
-
-from .exception_handling import HandledException
-from . import exceptions
+from django.views.generic import TemplateView
 
 from rest_framework import exceptions as drf_exceptions, status
+from rest_framework.response import Response
+from rest_framework.views import exception_handler as drf_exception_handler
 
+from . import exceptions
+from .exception_handling import HandledException
 
 logger = logging.getLogger(__name__)
 

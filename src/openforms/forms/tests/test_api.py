@@ -2,6 +2,7 @@ import json
 import uuid
 from io import BytesIO
 from unittest import expectedFailure
+from unittest.mock import patch
 from zipfile import ZipFile
 
 from django.contrib.auth import get_user_model
@@ -143,7 +144,11 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
 
-    def test_create_form_unsuccessful_with_bad_data(self):
+    @patch(
+        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_create_form_unsuccessful_with_bad_data(self, _mock):
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -157,8 +162,24 @@ class FormsAPITests(APITestCase):
         self.assertEqual(
             response.json(),
             {
-                "name": [_("This field is required.")],
-                "slug": [_("This field is required.")],
+                "type": "http://testserver/exception-handler/fouten/ValidationError/",
+                "code": "invalid",
+                "title": "Invalid input.",
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "name",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    },
+                    {
+                        "name": "slug",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    },
+                ],
             },
         )
 
@@ -472,7 +493,11 @@ class FormsAPITests(APITestCase):
         form.refresh_from_db()
         self.assertEqual(form.begin_text, "Different Begin Text")
 
-    def test_complete_update_of_form_with_incomplete_data_unsuccessful(self):
+    @patch(
+        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_complete_update_of_form_with_incomplete_data_unsuccessful(self, _mock):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
@@ -484,7 +509,24 @@ class FormsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {"slug": [_("This field is required.")]})
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/exception-handler/fouten/ValidationError/",
+                "code": "invalid",
+                "title": "Invalid input.",
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "slug",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    }
+                ],
+            },
+        )
 
     def test_complete_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
@@ -500,7 +542,11 @@ class FormsAPITests(APITestCase):
         self.assertNotEqual(form.name, "Test Put Form")
         self.assertNotEqual(form.slug, "test-put-form")
 
-    def test_complete_update_of_form_unsuccessful_with_bad_data(self):
+    @patch(
+        "openforms.exception_handler.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_complete_update_of_form_unsuccessful_with_bad_data(self, _mock):
         form = FormFactory.create()
         self.user.is_staff = True
         self.user.save()
@@ -514,8 +560,24 @@ class FormsAPITests(APITestCase):
         self.assertEqual(
             response.json(),
             {
-                "name": [_("This field is required.")],
-                "slug": [_("This field is required.")],
+                "type": "http://testserver/exception-handler/fouten/ValidationError/",
+                "code": "invalid",
+                "title": "Invalid input.",
+                "status": 400,
+                "detail": "",
+                "instance": f"urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "name",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    },
+                    {
+                        "name": "slug",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    },
+                ],
             },
         )
 
@@ -634,10 +696,14 @@ class FormsStepsAPITests(APITestCase):
 
         errors = response.json()
 
-        self.assertIn("formDefinition", errors)
-        self.assertIn("index", errors)
-        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
-        self.assertEqual(errors["index"], [_("This field is required.")])
+        self.assertIn("formDefinition", errors["invalidParams"][1]["name"])
+        self.assertIn("index", errors["invalidParams"][0]["name"])
+        self.assertEqual(
+            errors["invalidParams"][1]["reason"], _("This field is required.")
+        )
+        self.assertEqual(
+            errors["invalidParams"][0]["reason"], _("This field is required.")
+        )
 
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
         self.user.is_staff = True
@@ -757,8 +823,8 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
         self.assertEqual(
-            response.json(),
-            {"formDefinition": ["Ongeldige hyperlink - Object bestaat niet."]},
+            response.json()["invalidParams"][0]["reason"],
+            "Ongeldige hyperlink - Object bestaat niet.",
         )
 
     def test_complete_form_step_update_unsuccessful_with_bad_data(self):
@@ -777,10 +843,14 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 1)
 
         errors = response.json()
-        self.assertIn("formDefinition", errors)
-        self.assertIn("index", errors)
-        self.assertEqual(errors["formDefinition"], [_("This field is required.")])
-        self.assertEqual(errors["index"], [_("This field is required.")])
+        self.assertIn("formDefinition", errors["invalidParams"][1]["name"])
+        self.assertIn("index", errors["invalidParams"][0]["name"])
+        self.assertEqual(
+            errors["invalidParams"][1]["reason"], _("This field is required.")
+        )
+        self.assertEqual(
+            errors["invalidParams"][0]["reason"], _("This field is required.")
+        )
 
     def test_complete_form_step_update_unsuccessful_without_authorization(self):
         url = reverse(
@@ -912,8 +982,8 @@ class FormsStepsAPITests(APITestCase):
             FormStep.objects.filter(form_definition=self.other_form_definition).exists()
         )
         self.assertEqual(
-            response.json(),
-            {"formDefinition": ["Ongeldige hyperlink - Object bestaat niet."]},
+            response.json()["invalidParams"][0]["reason"],
+            "Ongeldige hyperlink - Object bestaat niet.",
         )
 
     def test_partial_form_step_update_unsuccessful_without_authorization(self):
@@ -1426,7 +1496,7 @@ class ImportExportAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        self.assertEqual(response.data["non_field_errors"].code, "invalid")
+        self.assertEqual(response.data["code"], "invalid")
 
     def test_form_import_token_auth_required(self):
         url = reverse("api:forms-import")

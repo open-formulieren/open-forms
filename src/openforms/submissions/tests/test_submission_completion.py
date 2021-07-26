@@ -60,10 +60,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         errors = response.json()
-        self.assertEqual(len(errors["incompleteSteps"]), 1)
+        self.assertEqual(len(errors["invalidParams"]), 1)
         self.assertEqual(
-            errors["incompleteSteps"],
-            [{"formStep": f"http://testserver{form_step_url}"}],
+            errors["invalidParams"][0]["reason"],
+            f"http://testserver{form_step_url}",
         )
 
     @freeze_time("2020-12-11T10:53:19+01:00")

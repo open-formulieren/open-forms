@@ -1,7 +1,6 @@
 import re
 from typing import Union
 
-
 try:
     from djangorestframework_camel_case.util import (
         underscore_to_camel as _underscore_to_camel,
