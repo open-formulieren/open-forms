@@ -12,7 +12,7 @@ from django.db import models
 from django.shortcuts import render
 from django.template import Context, Template
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
