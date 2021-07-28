@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 
 import {FormException} from "../../../utils/exception";
-import {apiDelete, get, post, put, apiCall} from '../../../utils/fetch';
+import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -632,15 +632,9 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
         // Save this new version of the form in the "form version control"
         try {
-            var versionResponse = await apiCall(
+            var versionResponse = await post(
                 `${FORM_ENDPOINT}/${formUuid}/versions`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken,
-                    },
-                }
+                csrftoken
             );
             if (!versionResponse.ok) {
                 throw new Error('An error occurred while saving the form version.');

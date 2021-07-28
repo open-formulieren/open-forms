@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 
-import {get, apiCall} from '../../../utils/fetch';
+import {get, post} from '../../../utils/fetch';
 import {FORM_ENDPOINT} from '../form_design/constants';
 import Loader from "../Loader";
 
@@ -12,15 +12,9 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
     const [isLoading, setIsLoading] = useState(true);
 
     const restoreVersion = async (csrftoken, formUuid, versionUuid, redirectUrl) => {
-        await apiCall(
+        await post(
             `${FORM_ENDPOINT}/${formUuid}/versions/${versionUuid}/restore`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-            }
+            csrftoken
         );
         window.location = redirectUrl;
     };
