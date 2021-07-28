@@ -346,6 +346,16 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "digid_eherkenning": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "onelogin": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }
 
