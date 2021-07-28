@@ -39,11 +39,11 @@ class FormStepFactory(factory.django.DjangoModelFactory):
 
 
 class FormVersionFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = FormVersion
-
     form = factory.SubFactory(FormFactory)
     export_blob = {}
+
+    class Meta:
+        model = FormVersion
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):

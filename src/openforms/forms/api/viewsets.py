@@ -19,6 +19,7 @@ from rest_framework import (
 )
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -309,7 +310,6 @@ class FormViewSet(viewsets.ModelViewSet):
     create=extend_schema(
         summary=_("Save form version"),
         tags=["forms"],
-        responses={status.HTTP_201_CREATED: FormVersionSerializer},
     ),
     restore=extend_schema(
         summary=_("Restore form version"),
@@ -328,7 +328,7 @@ class FormViewSet(viewsets.ModelViewSet):
                 description=_("The uuid of the form version"),
             ),
         ],
-        responses={status.HTTP_201_CREATED: ""},
+        responses={status.HTTP_204_NO_CONTENT: ""},
     ),
     list=extend_schema(
         summary=_("List form versions"),
@@ -341,11 +341,9 @@ class FormViewSet(viewsets.ModelViewSet):
                 description=_("Either a UUID4 or a slug identifying the form."),
             )
         ],
-        request=FormVersionSerializer,
-        responses={status.HTTP_200_OK: FormVersionSerializer(many=True)},
     ),
 )
-class FormVersionViewSet(NestedViewSetMixin, viewsets.ViewSet):
+class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericViewSet):
     serializer_class = FormVersionSerializer
     queryset = FormVersion.objects.all()
     permission_classes = [IsStaffOrReadOnly]
@@ -372,15 +370,6 @@ class FormVersionViewSet(NestedViewSetMixin, viewsets.ViewSet):
         form.restore_old_version(form_version.uuid)
 
         return Response(status=status.HTTP_201_CREATED)
-
-    def list(self, request, *args, **kwargs):
-        """List all the versions of a form"""
-        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
-
-        form_version_serializer = FormVersionSerializer(
-            instance=FormVersion.objects.filter(form=form), many=True
-        )
-        return Response(status=status.HTTP_200_OK, data=form_version_serializer.data)
 
 
 class FormsImportAPIView(views.APIView):

@@ -33,11 +33,11 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "date_creation",
+                    "created",
                     models.DateTimeField(
                         auto_now_add=True,
                         help_text="Date and time of creation of the form version.",
-                        verbose_name="date of creation",
+                        verbose_name="created",
                     ),
                 ),
                 (

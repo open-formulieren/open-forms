@@ -10,8 +10,8 @@ from openforms.utils.fields import StringUUIDField
 class FormVersion(models.Model):
     uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
 
-    date_creation = models.DateTimeField(
-        verbose_name=_("date of creation"),
+    created = models.DateTimeField(
+        verbose_name=_("created"),
         help_text=_("Date and time of creation of the form version."),
         auto_now_add=True,
     )
@@ -31,4 +31,4 @@ class FormVersion(models.Model):
         verbose_name_plural = _("form versions")
 
     def __str__(self):
-        return f"{self.form.name} ({self.date_creation})"
+        return f"{self.form.name} ({self.created})"

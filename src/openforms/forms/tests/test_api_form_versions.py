@@ -77,8 +77,27 @@ class FormVersionSaveAPITests(APITestCase):
             datetime.datetime.strptime(
                 "2020-12-11T10:53:19+01:00", "%Y-%m-%dT%H:%M:%S%z"
             ),
-            version.date_creation,
+            version.created,
         )
+
+    def test_list_versions(self):
+        user = UserFactory.create(username="test", password="test", is_staff=True)
+        form_1 = FormFactory.create()
+        form_2 = FormFactory.create()
+
+        FormVersionFactory.create(form=form_1)
+        FormVersionFactory.create(form=form_2)
+
+        self.assertEqual(2, FormVersion.objects.all().count())
+
+        self.client.login(
+            request=HttpRequest(), username=user.username, password="test"
+        )
+        url = reverse("api:form-versions-list", args=(form_1.uuid,))
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(1, len(response.data))
 
 
 class FormVersionRestoreAPITests(APITestCase):
@@ -119,7 +138,7 @@ class FormVersionRestoreAPITests(APITestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 

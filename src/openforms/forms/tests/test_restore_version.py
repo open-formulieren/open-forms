@@ -26,7 +26,7 @@ class RestoreVersionTest(TestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 
@@ -62,7 +62,7 @@ class RestoreVersionTest(TestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 
@@ -92,7 +92,7 @@ class RestoreVersionTest(TestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 
@@ -116,7 +116,7 @@ class RestoreVersionTest(TestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 
@@ -138,7 +138,7 @@ class RestoreVersionTest(TestCase):
 
         version = FormVersion.objects.create(
             form=form,
-            date_creation=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
             export_blob=EXPORT_BLOB,
         )
 

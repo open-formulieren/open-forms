@@ -7,7 +7,7 @@ const FormObjectTools = ({isLoading, historyUrl}) => {
      */
     return (
         <div className="form-object-tools">
-            <ul className={`object-tools ${isLoading ? 'form-object-tools__loading' : ''}`}>
+            <ul className={`object-tools form-object-tools__list ${isLoading ? 'form-object-tools__loading' : ''}`}>
                 <li>
                     <a href={historyUrl} className="historylink">Geschiedenis</a>
                 </li>

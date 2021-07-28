@@ -185,11 +185,6 @@ class Form(models.Model):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
 
-    def all_versions(self):
-        from .form_version import FormVersion
-
-        return FormVersion.objects.filter(form=self)
-
     # TODO Refactor to avoid code duplication in src/openforms/forms/utils.py
     @transaction.atomic
     def restore_old_version(self, form_version_uuid: str) -> None:

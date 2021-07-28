@@ -2,12 +2,12 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import SuperUserFactory
 
 
 class FormVersionAdminImportExportTests(WebTest):
     def setUp(self):
-        self.user = UserFactory.create(is_superuser=True, is_staff=True)
+        self.user = SuperUserFactory.create()
 
     def test_form(self):
         response = self.app.get(

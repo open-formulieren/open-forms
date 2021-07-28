@@ -36,11 +36,14 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
     useAsync(async () => {await getFormVersions(formUuid);}, []);
 
     const rows = formVersions.map((version, index) => {
-        const dateCreation = new Date(version.dateCreation);
+        const created = new Date(version.created);
         return (
            <tr key={index}>
-                <th>{ dateCreation.toDateString() } { dateCreation.toLocaleTimeString() }</th>
-                <td><a href="#" onClick={() => restoreVersion(csrftoken, formUuid, version.uuid, formAdminUrl)}>Herstellen</a></td>
+                <th>{ created.toDateString() } { created.toLocaleTimeString() }</th>
+                <td><a href="#" onClick={(event) => {
+                    event.preventDefault();
+                    restoreVersion(csrftoken, formUuid, version.uuid, formAdminUrl);
+                }}>Herstellen</a></td>
             </tr>
         );
     });
