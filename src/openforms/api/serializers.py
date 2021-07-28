@@ -14,11 +14,11 @@ class FieldValidationErrorSerializer(serializers.Serializer):
     name = serializers.CharField(help_text=_("Name of the field with invalid data"))
     code = serializers.CharField(help_text=_("System code of the type of error"))
     reason = serializers.CharField(
-        help_text=_("Explanation of what when wrong with the data")
+        help_text=_("Explanation of what went wrong with the data")
     )
 
 
-class FoutSerializer(serializers.Serializer):
+class ExceptionSerializer(serializers.Serializer):
     """
     Error format for HTTP 4xx and 5xx errors.
 
@@ -46,5 +46,5 @@ class FoutSerializer(serializers.Serializer):
     )
 
 
-class ValidatieFoutSerializer(FoutSerializer):
+class ValidationErrorSerializer(ExceptionSerializer):
     invalid_params = FieldValidationErrorSerializer(many=True)

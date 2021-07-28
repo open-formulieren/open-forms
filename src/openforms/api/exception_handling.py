@@ -9,12 +9,12 @@ from django.urls import reverse
 
 from rest_framework import exceptions
 
-from .serializers import FoutSerializer, ValidatieFoutSerializer
+from .serializers import ExceptionSerializer, ValidationErrorSerializer
 from .utils import underscore_to_camel
 
 logger = logging.getLogger(__name__)
 
-ErrorSerializer = Union[FoutSerializer, ValidatieFoutSerializer]
+ErrorSerializer = Union[ExceptionSerializer, ValidationErrorSerializer]
 
 
 def _translate_exceptions(exc):
@@ -92,9 +92,9 @@ class HandledException:
         self.log()
 
         if isinstance(exc, exceptions.ValidationError):
-            serializer_class = ValidatieFoutSerializer
+            serializer_class = ValidationErrorSerializer
         else:
-            serializer_class = FoutSerializer
+            serializer_class = ExceptionSerializer
 
         return serializer_class(instance=self)
 
