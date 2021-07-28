@@ -29,9 +29,7 @@ class ExceptionHandlerTests(APITestCase):
         del response.data["instance"]
 
         exc_class = view.exception.__class__.__name__
-        expected_data[
-            "type"
-        ] = f"http://testserver/exception-handler/fouten/{exc_class}/"
+        expected_data["type"] = f"http://testserver/fouten/{exc_class}/"
         self.assertEqual(response.data, expected_data)
 
     def test_400_error(self):

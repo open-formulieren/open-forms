@@ -44,7 +44,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @patch(
-        "openforms.exception_handler.handling.uuid.uuid4",
+        "openforms.api.handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_all_required_steps_validated(self, _mock):
@@ -67,7 +67,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(
             response.json(),
             {
-                "type": "http://testserver/exception-handler/fouten/ValidationError/",
+                "type": "http://testserver/fouten/ValidationError/",
                 "code": "invalid",
                 "title": "Invalid input.",
                 "status": 400,

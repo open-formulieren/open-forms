@@ -2,10 +2,9 @@ import re
 from typing import Union
 
 from djangorestframework_camel_case.util import (
+    camelize_re,
     underscore_to_camel as _underscore_to_camel,
 )
-
-RE_UNDERSCORE = re.compile(r"[a-z]_[a-z]")
 
 
 def underscore_to_camel(input_: Union[str, int]) -> str:
@@ -15,4 +14,4 @@ def underscore_to_camel(input_: Union[str, int]) -> str:
     if not isinstance(input_, str):
         return input_
 
-    return re.sub(RE_UNDERSCORE, _underscore_to_camel, input_)
+    return re.sub(camelize_re, _underscore_to_camel, input_)

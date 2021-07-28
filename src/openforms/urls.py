@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
+from openforms.api.views import ErrorDetailView
 from openforms.emails.admin import EmailTestAdminView
 
 handler500 = "openforms.utils.views.server_error"
@@ -53,10 +54,7 @@ urlpatterns = [
     path("digid/", include("openforms.authentication.contrib.digid.urls")),
     path("eherkenning/", include("openforms.authentication.contrib.eherkenning.urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
-    path(
-        "exception-handler/",
-        include("openforms.exception_handler.urls", namespace="exception_handler"),
-    ),
+    path("fouten/<exception_class>/", ErrorDetailView.as_view(), name="error-detail"),
     path("", include("openforms.forms.urls", namespace="core")),
 ]
 
