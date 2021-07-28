@@ -154,10 +154,6 @@ class Form(models.Model):
     def first_step(self):
         return self.formstep_set.first().order
 
-    @property
-    def session_timeout(self):
-        return GlobalConfiguration.get_solo().form_session_timeout
-
     @transaction.atomic
     def copy(self):
         form_steps = self.formstep_set.all()
