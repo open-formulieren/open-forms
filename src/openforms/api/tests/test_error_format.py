@@ -44,7 +44,7 @@ class ExceptionHandlerTests(APITestCase):
                     {
                         "name": "foo",
                         "code": "validation-error",
-                        "reason": "Invalid data.",
+                        "reason": _("Invalid data."),
                     }
                 ],
             },

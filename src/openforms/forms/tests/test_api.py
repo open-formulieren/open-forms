@@ -855,7 +855,7 @@ class FormsStepsAPITests(APITestCase):
                     {
                         "name": "formDefinition",
                         "code": "does_not_exist",
-                        "reason": "Ongeldige hyperlink - Object bestaat niet.",
+                        "reason": _("Invalid hyperlink - Object does not exist."),
                     }
                 ],
             },
@@ -1051,7 +1051,7 @@ class FormsStepsAPITests(APITestCase):
                     {
                         "name": "formDefinition",
                         "code": "does_not_exist",
-                        "reason": "Ongeldige hyperlink - Object bestaat niet.",
+                        "reason": _("Invalid hyperlink - Object does not exist."),
                     }
                 ],
             },
