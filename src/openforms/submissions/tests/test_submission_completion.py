@@ -69,7 +69,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             {
                 "type": "http://testserver/fouten/ValidationError/",
                 "code": "invalid",
-                "title": "Invalid input.",
+                "title": _("Invalid input."),
                 "status": 400,
                 "detail": "",
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",

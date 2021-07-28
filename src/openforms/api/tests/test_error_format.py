@@ -37,7 +37,7 @@ class ExceptionHandlerTests(APITestCase):
             views.ValidationErrorView,
             {
                 "code": "invalid",
-                "title": "Invalid input.",
+                "title": _("Invalid input."),
                 "status": 400,
                 "detail": "",
                 "invalid_params": [
