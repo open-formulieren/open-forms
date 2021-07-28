@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
 
 from . import exceptions
-from .handling import HandledException
+from .exception_handling import HandledException
 
 logger = logging.getLogger(__name__)
 

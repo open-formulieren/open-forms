@@ -145,7 +145,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.slug, "test-post-form")
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_create_form_unsuccessful_with_bad_data(self, _mock):
@@ -494,7 +494,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.begin_text, "Different Begin Text")
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_update_of_form_with_incomplete_data_unsuccessful(self, _mock):
@@ -543,7 +543,7 @@ class FormsAPITests(APITestCase):
         self.assertNotEqual(form.slug, "test-put-form")
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_update_of_form_unsuccessful_with_bad_data(self, _mock):
@@ -681,7 +681,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(form_step.next_text, "Different Next Text")
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_create_form_step_unsuccessful_with_bad_data(self, _mock):
@@ -819,7 +819,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_form_step_update_unsuccessful_with_non_existant_form_definition(
@@ -862,7 +862,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_form_step_update_unsuccessful_with_bad_data(self, _mock):
@@ -1016,7 +1016,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_partial_form_step_update_unsuccessful_when_form_definition_not_found(
@@ -1538,7 +1538,7 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(imported_form_step.order, form_step1.order)
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_form_import_error_slug_already_exists(self, _mock):

@@ -58,7 +58,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertIn(str(submission.uuid), submissions_in_session)
 
     @patch(
-        "openforms.api.handling.uuid.uuid4",
+        "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_missing_email(self, _mock):
