@@ -1,0 +1,73 @@
+<S11:Envelope xmlns:S11="http://schemas.xmlsoap.org/soap/envelope/">
+    <S11:Body>
+        <samlp:ArtifactResponse
+            xmlns="urn:oasis:names:tc:SAML:2.0:assertion"
+            xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+            ID="_1330416516"
+            InResponseTo="_1330416516"
+            IssueInstant="2021-07-29T08:17:12Z"
+            Version="2.0"
+        >
+	        <Issuer>urn:etoegang:DV:00000001111111111000:entities:9000</Issuer>
+            <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	            <ds:SignedInfo>
+	                <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                    <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+                    <ds:Reference URI="#_cec1b60c-35fb-39b1-89ef-ea937d0e6d19">
+                        <ds:Transforms>
+                            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+                                <ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xacml-saml"/>
+                            </ds:Transform>
+                        </ds:Transforms>
+                        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+                        <ds:DigestValue>ckk8aVKiCAhF/CgZPb8Sp8ueNiUHctYEydV5JfOBTps=</ds:DigestValue>
+                    </ds:Reference>
+                </ds:SignedInfo>
+                <ds:SignatureValue>Test Signature</ds:SignatureValue>
+                <ds:KeyInfo>
+                    <ds:KeyName>Test Key 1</ds:KeyName>
+                </ds:KeyInfo>
+            </ds:Signature>
+            <samlp:Status>
+                <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+            </samlp:Status>
+            <samlp:Response
+                xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                Destination="https://open-forms.test.maykin.opengem.nl/eherkenning/acs/"
+                ID="_e901db5e-1f7c-356b-8662-59dda20b6cfa"
+                InResponseTo="ONELOGIN_b145f56d6f6a661cea6a13bd409e7bc049fe072d"
+                IssueInstant="2021-07-29T08:17:12Z"
+                Version="2.0"
+            >
+                <saml:Issuer>urn:etoegang:DV:00000001111111111000:entities:9000</saml:Issuer>
+                <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    	            <ds:SignedInfo>
+	                    <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                        <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+                        <ds:Reference URI="#_e901db5e-1f7c-356b-8662-59dda20b6cfa">
+	                        <ds:Transforms>
+	                            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                                <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+                                    <ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xacml-saml"/>
+                                </ds:Transform>
+                            </ds:Transforms>
+                            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+                            <ds:DigestValue>Z3XkA/6OgIp28eAcgWoonSME/qS+ZlBNjzXvYU8NGDA=</ds:DigestValue>
+                        </ds:Reference>
+                    </ds:SignedInfo>
+                    <ds:SignatureValue>Test Signature 2</ds:SignatureValue>
+                    <ds:KeyInfo>
+                        <ds:KeyName>34f9bb8797bac35199094d32eac5ece597132a343ed82091e9db3fddfc86eb49</ds:KeyName>
+                    </ds:KeyInfo>
+                </ds:Signature>
+                <samlp:Status>
+                    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Responder">
+                        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:AuthnFailed"/>
+                    </samlp:StatusCode>
+                    <samlp:StatusMessage>The user cancelled.</samlp:StatusMessage>
+                </samlp:Status>
+            </samlp:Response>
+        </samlp:ArtifactResponse>
+    </S11:Body>
+</S11:Envelope>

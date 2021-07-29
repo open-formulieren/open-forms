@@ -1,5 +1,4 @@
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from digid_eherkenning.backends import BaseSaml2Backend
@@ -9,12 +8,20 @@ from digid_eherkenning.views import (
 )
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
+from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+
 
 class KVKNotPresentError(Exception):
     pass
 
 
+EHERKENNING_MESSAGE_PARAMETER = "_eherkenning-message"
+LOGIN_CANCELLED = "login-cancelled"
+GENERIC_LOGIN_ERROR = "error"
+
+
 class eHerkenningAssertionConsumerServiceView(
+    AssertionConsumerServiceMixin,
     BaseSaml2Backend,
     _eHerkenningAssertionConsumerServiceView,
 ):
@@ -34,14 +41,23 @@ class eHerkenningAssertionConsumerServiceView(
         try:
             response = client.artifact_resolve(request, saml_art)
         except OneLogin_Saml2_ValidationError as exc:
-            self.handle_validation_error(request)
-            raise exc
+            if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
+                failure_url = self.get_failure_url(
+                    EHERKENNING_MESSAGE_PARAMETER, LOGIN_CANCELLED
+                )
+            else:
+                failure_url = self.get_failure_url(
+                    EHERKENNING_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
+                )
+            return HttpResponseRedirect(failure_url)
 
         try:
             attributes = response.get_attributes()
         except OneLogin_Saml2_ValidationError as exc:
-            self.handle_validation_error(request)
-            raise exc
+            failure_url = self.get_failure_url(
+                EHERKENNING_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
+            )
+            return HttpResponseRedirect(failure_url)
 
         kvk = None
         for attribute_value in attributes["urn:etoegang:core:LegalSubjectID"]:
