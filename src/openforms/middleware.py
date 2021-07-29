@@ -34,11 +34,13 @@ class SessionTimeoutMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_staff:
-            timeout = GlobalConfiguration.get_solo().admin_session_timeout
-        else:
-            timeout = GlobalConfiguration.get_solo().form_session_timeout
-
+        config = GlobalConfiguration.get_solo()
+        timeout = (
+            config.admin_session_timeout
+            if request.user.is_staff
+            else config.form_session_timeout
+        )
         # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
-        request.session.set_expiry(timedelta(minutes=timeout).seconds)
+        # request.session.set_expiry(timedelta(minutes=timeout).seconds)
+        request.session.set_expiry(10)
         return self.get_response(request)
