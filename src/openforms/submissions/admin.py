@@ -31,7 +31,6 @@ class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
     list_display = (
         "form",
-        "get_registration_backend",
         "registration_status",
         "created_on",
         "completed_on",
@@ -41,7 +40,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    readonly_fields = ["created_on"]
+    readonly_fields = ["created_on", "get_registration_backend",]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 
     def get_registration_backend(self, obj):
