@@ -7,7 +7,6 @@ from django.conf import settings
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils.http import urlencode
 
 from freezegun import freeze_time
 from furl import furl
@@ -134,7 +133,7 @@ class AuthenticationStep2Tests(TestCase):
 @override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True)
 @Mocker()
 class AuthenticationStep5Tests(TestCase):
-    def _create_test_artifact(self, service_entity_id):
+    def _create_test_artifact(self, service_entity_id) -> bytes:
         type_code = b"\x00\x04"
         endpoint_index = b"\x00\x00"
         sha_entity_id = sha1(service_entity_id.encode("utf-8")).digest()
@@ -199,15 +198,13 @@ class AuthenticationStep5Tests(TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}?_start=1"
 
-        url = (
-            reverse("digid:acs")
-            + "?"
-            + urlencode(
-                {
-                    "SAMLart": self._create_test_artifact(DIGID["service_entity_id"]),
-                    "RelayState": form_url,
-                }
-            )
+        url = furl(reverse("digid:acs")).set(
+            {
+                "SAMLart": self._create_test_artifact(
+                    DIGID["service_entity_id"]
+                ).decode("ascii"),
+                "RelayState": form_url,
+            }
         )
 
         response = self.client.get(url)
@@ -264,20 +261,19 @@ class AuthenticationStep5Tests(TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}?_start=1"
 
-        url = (
-            reverse("digid:acs")
-            + "?"
-            + urlencode(
-                {
-                    "SAMLart": self._create_test_artifact(DIGID["service_entity_id"]),
-                    "RelayState": form_url,
-                }
-            )
+        url = furl(reverse("digid:acs")).set(
+            {
+                "SAMLart": self._create_test_artifact(
+                    DIGID["service_entity_id"]
+                ).decode("ascii"),
+                "RelayState": form_url,
+            }
         )
 
         response = self.client.get(url)
 
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-        self.assertEqual(
-            form_url + "&_digid-message=login-cancelled", response["location"]
+        self.assertRedirects(
+            response,
+            form_url + "&_digid-message=login-cancelled",
+            status_code=302,
         )
