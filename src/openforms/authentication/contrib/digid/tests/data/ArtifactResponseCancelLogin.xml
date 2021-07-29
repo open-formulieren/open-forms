@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Body>
+        <samlp:ArtifactResponse
+                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"
+                ID="_1330416516"
+                Version="2.0"
+                IssueInstant="2021-07-28T09:00:50Z"
+                InResponseTo="_1330416516"
+        >
+            <saml:Issuer>https://test-digid.nl</saml:Issuer>
+            <ds:Signature>
+                <ds:SignedInfo>
+                    <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                    <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+                    <ds:Reference URI="#_755c7171c87beb644d771ae97b6bfa73eda103a2">
+                        <ds:Transforms>
+                            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+                                <ec:InclusiveNamespaces PrefixList="ds saml samlp xs"/>
+                            </ds:Transform>
+                        </ds:Transforms>
+                        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+                        <ds:DigestValue>ue2JQQ8XFUpykQ9ATeDi2a8tkweygyPvYgC6z/peEmA=</ds:DigestValue>
+                    </ds:Reference>
+                </ds:SignedInfo>
+                <ds:SignatureValue> </ds:SignatureValue>
+                <ds:KeyInfo>
+                    <ds:KeyName>Test Key 1</ds:KeyName>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+</ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </ds:Signature>
+            <samlp:Status>
+                <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
+            <samlp:Response ID="_df4de1fae6eec918bbbbc1b6d491d235f04d2c33" Version="2.0" IssueInstant="2021-07-28T09:00:50Z" InResponseTo="ONELOGIN_3da134924ad79019f6db1a4a7a052b6acd0fd2e3">
+                <saml:Issuer>https://test-digid.nl/saml/idp/metadata</saml:Issuer>
+                <samlp:Status>
+                    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Responder">
+                        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:AuthnFailed"/>
+                    </samlp:StatusCode>
+                </samlp:Status>
+            </samlp:Response>
+        </samlp:ArtifactResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
