@@ -1,0 +1,211 @@
+"""
+Assert that the session expiry works as intended.
+
+Administrators can configure the maximum session duration. The intent is that the
+session expires if there's no activity within that timespan.
+"""
+from copy import deepcopy
+from datetime import datetime
+from unittest.mock import patch
+
+from django.conf import settings
+from django.test import override_settings
+from django.utils import timezone
+from django.utils.translation import gettext as _
+
+from freezegun import freeze_time
+from rest_framework import status
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
+
+from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
+
+from ..accounts.tests.factories import SuperUserFactory
+from .utils import NOOP_CACHES
+
+SESSION_CACHES = deepcopy(NOOP_CACHES)
+SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+
+
+@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
+class FormUserSessionExpiryTests(APITestCase):
+    """
+    Session expiry tests for non-admin users.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        config = GlobalConfiguration.get_solo()
+        config.form_session_timeout = 5  # minimum value
+        config.save()
+
+        cls.form = FormFactory.create()
+        cls.steps = FormStepFactory.create_batch(2, form=cls.form)
+        cls.form_url = reverse(
+            "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
+        )
+
+    def test_activity_within_expiry_does_not_expire_session(self):
+        """
+        Assert that any activity within the expiry period postpones the expiry.
+
+        Django's session expiry is calculated against the last time the session is
+        _modified_. Posting step submission data does not modify the session, so there
+        is a chance the user is active and the session does still expire (which is
+        not intended).
+        """
+        # start the submission - this modifies the session
+        with self.subTest(part="start submission"):
+            body = {
+                "form": f"http://testserver{self.form_url}",
+            }
+            with freeze_time("2021-07-29T14:00:00Z"):
+                response = self.client.post(reverse("api:submission-list"), body)
+
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                session = response.wsgi_request.session
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+        # submit the first step, one minute later, simulating some time to fill out the step
+        with self.subTest(part="fill out step 1"):
+            with freeze_time("2021-07-29T14:01:00Z"):
+                step1_response = self.client.put(
+                    response.data["steps"][0]["url"], {"data": {"foo": "bar"}}
+                )
+
+                self.assertEqual(step1_response.status_code, status.HTTP_201_CREATED)
+                session = step1_response.wsgi_request.session
+                expected_expiry = datetime(2021, 7, 29, 14, 6).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+        # now, simulate the second step took 4 minutes and 30s to fill out. This puts us
+        # 30s after the initial expiry. If the # previous step reset the session expiry,
+        # this should go through, because the expiry is now 14:06:00.
+        with self.subTest(part="fill out step 2"):
+            with freeze_time("2021-07-29T14:05:30Z"):
+                step2_response = self.client.put(
+                    response.data["steps"][1]["url"], {"data": {"foo": "bar"}}
+                )
+
+                self.assertEqual(step2_response.status_code, status.HTTP_201_CREATED)
+                session = step2_response.wsgi_request.session
+                expected_expiry = datetime(2021, 7, 29, 14, 10, 30).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_activity_over_expiry_returns_a_403_error(self, _mock):
+        """
+        Assert that any activity outside of the expiry period returns a 403.
+        """
+        # start the submission - this modifies the session
+        with self.subTest(part="start submission"):
+            body = {
+                "form": f"http://testserver{self.form_url}",
+            }
+            with freeze_time("2021-07-29T14:00:00Z"):
+                response = self.client.post(reverse("api:submission-list"), body)
+
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                session = response.wsgi_request.session
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+        # submit the first step, 5 and a half minutes later, simulating the session has expired
+        with self.subTest(part="fill out step 1"):
+            with freeze_time("2021-07-29T14:05:30Z"):
+                step1_response = self.client.put(
+                    response.data["steps"][0]["url"], {"data": {"foo": "bar"}}
+                )
+
+                self.assertEqual(step1_response.status_code, status.HTTP_403_FORBIDDEN)
+                self.assertEqual(
+                    step1_response.json(),
+                    {
+                        "type": "http://testserver/fouten/PermissionDenied/",
+                        "code": "permission_denied",
+                        "title": _(
+                            "You do not have permission to perform this action."
+                        ),
+                        "status": 403,
+                        "detail": _(
+                            "You do not have permission to perform this action."
+                        ),
+                        "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                    },
+                )
+
+
+@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
+class AdminSessionExpiryTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        config = GlobalConfiguration.get_solo()
+        config.admin_session_timeout = 5  # minimum value
+        config.save()
+
+        # Just a random admin url to use for testing
+        cls.url = reverse("admin:submissions_submission_changelist")
+        cls.superuser = SuperUserFactory.create()
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.superuser)
+
+    def test_admin_activity_session_timeout(self):
+        """
+        Assert that any activity outside of the expiry period returns a 302
+        and redirects the admin to the login page
+        """
+        # make a request to the admin to validate this modifies the session
+        with self.subTest(part="initial check"):
+            with freeze_time("2021-07-29T14:00:00Z"):
+                response = self.client.get(self.url, user=self.superuser)
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                session = response.wsgi_request.session
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+        # make another request to the admin to validate the session has not expired yet
+        with self.subTest(part="check not expired"):
+            with freeze_time("2021-07-29T14:04:00Z"):
+                response = self.client.get(self.url, user=self.superuser)
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                session = response.wsgi_request.session
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 9).replace(
+                    tzinfo=timezone.utc
+                )
+                self.assertEqual(session.get_expiry_date(), expected_expiry)
+
+        # make another request to the admin to validate the session has expired
+        #  and the user will be redirected to the admin login page
+        with self.subTest(part="check expired and redirection to login page"):
+            with freeze_time("2021-07-29T14:10:00Z"):
+                response = self.client.get(self.url, user=self.superuser)
+
+                self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+                self.assertEqual(response.url, f"{settings.LOGIN_URL}?next={self.url}")

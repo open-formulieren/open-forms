@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 from django.conf import settings
+
+from openforms.config.models import GlobalConfiguration
 
 # for CORS, the session cookie must be set with SameSite "None" to be sent.
 # This is a breaking change by Chrome, which was not going to be backported in Django
@@ -18,3 +22,24 @@ class SameSiteNoneCookieMiddlware:
             value = SAMESITE_VALUE if origin and not settings.DEBUG else "Lax"
             response.cookies[settings.SESSION_COOKIE_NAME]["samesite"] = value
         return response
+
+
+class SessionTimeoutMiddleware:
+    """
+    Allows us to set the expiry time of the session based on what
+    is configured in our GlobalConfiguration
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        config = GlobalConfiguration.get_solo()
+        timeout = (
+            config.admin_session_timeout
+            if request.user.is_staff
+            else config.form_session_timeout
+        )
+        # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
+        request.session.set_expiry(int(timedelta(minutes=timeout).total_seconds()))
+        return self.get_response(request)

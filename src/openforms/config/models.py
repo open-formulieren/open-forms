@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -133,6 +134,23 @@ class GlobalConfiguration(SingletonModel):
         default=runtime_gettext(_("Next")),
         help_text=_(
             "The text that will be displayed in the form step to go to the next step"
+        ),
+    )
+
+    admin_session_timeout = models.PositiveIntegerField(
+        _("admin session timeout"),
+        default=60,
+        validators=[MinValueValidator(5)],
+        help_text=_(
+            "Amount of time in minutes the admin can be inactive for before being logged out"
+        ),
+    )
+    form_session_timeout = models.PositiveIntegerField(
+        _("form session timeout"),
+        default=60,
+        validators=[MinValueValidator(5)],
+        help_text=_(
+            "Amount of time in minutes a user filling in a form can be inactive for before being logged out"
         ),
     )
 
