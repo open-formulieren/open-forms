@@ -25,9 +25,12 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task()
+@app.task(bind=True)
 @transaction.atomic()
-def register_submission(submission_id: int) -> Optional[dict]:
+def register_submission(task, submission_id: int) -> Optional[dict]:
+    # TODO Check current status in case of admin action occurring after celery beat task
+    #   is scheduled or similar cases where this submission may have already been successfully
+    #   registered with backend
     submission = Submission.objects.get(id=submission_id)
     submission.last_register_date = timezone.now()
     # figure out which registry and backend to use from the model field used
@@ -56,9 +59,13 @@ def register_submission(submission_id: int) -> Optional[dict]:
             submission, options_serializer.validated_data
         )
     except RegistrationFailed:
-        formatted_tb = traceback.format_exc()
-        status = RegistrationStatuses.failed
-        result_data = {"traceback": formatted_tb}
+        # TODO Update this to retry and only fail after 48 hours
+        if False:
+            return task.retry(submission_id=submission_id, countdown=int(random.uniform(2, 4)) ** task.request.retries)
+        else:
+            formatted_tb = traceback.format_exc()
+            status = RegistrationStatuses.failed
+            result_data = {"traceback": formatted_tb}
     else:
         status = RegistrationStatuses.success
         if plugin.backend_feedback_serializer:
@@ -83,6 +90,8 @@ def register_submission(submission_id: int) -> Optional[dict]:
             "last_register_date",
         ]
     )
+
+# TODO Add celery beat task that gets all pending/failed submissions and calls the task above
 
 
 @app.task(bind=True)

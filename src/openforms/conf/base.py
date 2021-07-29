@@ -527,6 +527,9 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
+# After this amount of time stop retrying to run the celery task
+CELERY_STOP_RETRY_TIME = 48  # hours
+
 #
 # DJANGO-HIJACK
 #
