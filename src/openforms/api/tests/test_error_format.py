@@ -55,9 +55,9 @@ class ExceptionHandlerTests(APITestCase):
             views.NotAuthenticatedView,
             {
                 "code": "not_authenticated",
-                "title": "Authenticatiegegevens zijn niet opgegeven.",
+                "title": _("Authentication credentials were not provided."),
                 "status": 401,
-                "detail": "Authenticatiegegevens zijn niet opgegeven.",
+                "detail": _("Authentication credentials were not provided."),
             },
         )
 
@@ -66,9 +66,9 @@ class ExceptionHandlerTests(APITestCase):
             views.PermissionDeniedView,
             {
                 "code": "permission_denied",
-                "title": "Je hebt geen toestemming om deze actie uit te voeren.",
+                "title": _("You do not have permission to perform this action."),
                 "status": 403,
-                "detail": "This action is not allowed",
+                "detail": _("This action is not allowed"),
             },
         )
 
@@ -77,9 +77,9 @@ class ExceptionHandlerTests(APITestCase):
             views.NotFoundView,
             {
                 "code": "not_found",
-                "title": "Niet gevonden.",
+                "title": _("Not found."),
                 "status": 404,
-                "detail": "Some detail message",
+                "detail": _("Some detail message"),
             },
         )
 
@@ -88,9 +88,9 @@ class ExceptionHandlerTests(APITestCase):
             views.MethodNotAllowedView,
             {
                 "code": "method_not_allowed",
-                "title": 'Methode "{method}" niet toegestaan.',
+                "title": _('Method "{method}" not allowed.'),
                 "status": 405,
-                "detail": 'Methode "GET" niet toegestaan.',
+                "detail": _('Method "{method}" not allowed.').format(method="GET"),
             },
         )
 
@@ -99,9 +99,9 @@ class ExceptionHandlerTests(APITestCase):
             views.NotAcceptableView,
             {
                 "code": "not_acceptable",
-                "title": "Kan niet voldoen aan de opgegeven Accept header.",
+                "title": _("Could not satisfy the request Accept header."),
                 "status": 406,
-                "detail": "Content negotation failed",
+                "detail": _("Content negotation failed"),
             },
         )
 
@@ -110,9 +110,9 @@ class ExceptionHandlerTests(APITestCase):
             views.ConflictView,
             {
                 "code": "conflict",
-                "title": "A conflict occurred",
+                "title": _("A conflict occurred"),
                 "status": 409,
-                "detail": "The resource was updated, please retrieve it again",
+                "detail": _("The resource was updated, please retrieve it again"),
             },
         )
 
@@ -123,7 +123,7 @@ class ExceptionHandlerTests(APITestCase):
                 "code": "gone",
                 "title": _("The resource is gone"),
                 "status": 410,
-                "detail": "The resource was destroyed",
+                "detail": _("The resource was destroyed"),
             },
         )
 
@@ -134,7 +134,7 @@ class ExceptionHandlerTests(APITestCase):
                 "code": "precondition_failed",
                 "title": _("Precondition failed"),
                 "status": 412,
-                "detail": "Something about CRS",
+                "detail": _("Something about CRS"),
             },
         )
 
@@ -143,9 +143,9 @@ class ExceptionHandlerTests(APITestCase):
             views.UnsupportedMediaTypeView,
             {
                 "code": "unsupported_media_type",
-                "title": 'Ongeldige media type "{media_type}" in aanvraag.',
+                "title": _('Unsupported media type "{media_type}" in request.'),
                 "status": 415,
-                "detail": "This media type is not supported",
+                "detail": _("This media type is not supported"),
             },
         )
 
@@ -154,7 +154,7 @@ class ExceptionHandlerTests(APITestCase):
             views.ThrottledView,
             {
                 "code": "throttled",
-                "title": "Aanvraag was verstikt.",
+                "title": _("Request was throttled."),
                 "status": 429,
                 "detail": "Too many requests",
             },
@@ -165,7 +165,7 @@ class ExceptionHandlerTests(APITestCase):
             views.InternalServerErrorView,
             {
                 "code": "error",
-                "title": "Er is een serverfout opgetreden.",
+                "title": _("A server error occurred."),
                 "status": 500,
                 "detail": "Everything broke",
             },

@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import authentication, exceptions, permissions
 from rest_framework.views import APIView
 
@@ -16,12 +18,12 @@ class BaseErrorView(APIView):
 
 class ValidationErrorView(BaseErrorView):
     exception = exceptions.ValidationError(
-        {"foo": ["Invalid data."]}, code="validation-error"
+        {"foo": [_("Invalid data.")]}, code="validation-error"
     )
 
 
 class NotFoundView(BaseErrorView):
-    exception = exceptions.NotFound("Some detail message")
+    exception = exceptions.NotFound(_("Some detail message"))
 
 
 class NotAuthenticatedView(BaseErrorView):
@@ -31,7 +33,7 @@ class NotAuthenticatedView(BaseErrorView):
 
 
 class PermissionDeniedView(BaseErrorView):
-    exception = exceptions.PermissionDenied("This action is not allowed")
+    exception = exceptions.PermissionDenied(_("This action is not allowed"))
 
 
 class MethodNotAllowedView(BaseErrorView):
@@ -39,30 +41,30 @@ class MethodNotAllowedView(BaseErrorView):
 
 
 class NotAcceptableView(BaseErrorView):
-    exception = exceptions.NotAcceptable("Content negotation failed")
+    exception = exceptions.NotAcceptable(_("Content negotation failed"))
 
 
 class ConflictView(BaseErrorView):
-    exception = Conflict("The resource was updated, please retrieve it again")
+    exception = Conflict(_("The resource was updated, please retrieve it again"))
 
 
 class GoneView(BaseErrorView):
-    exception = Gone("The resource was destroyed")
+    exception = Gone(_("The resource was destroyed"))
 
 
 class PreconditionFailed(BaseErrorView):
-    exception = PreconditionFailed("Something about CRS")
+    exception = PreconditionFailed(_("Something about CRS"))
 
 
 class UnsupportedMediaTypeView(BaseErrorView):
     exception = exceptions.UnsupportedMediaType(
-        "application/xml", detail="This media type is not supported"
+        "application/xml", detail=_("This media type is not supported")
     )
 
 
 class ThrottledView(BaseErrorView):
-    exception = exceptions.Throttled(detail="Too many requests")
+    exception = exceptions.Throttled(detail=_("Too many requests"))
 
 
 class InternalServerErrorView(BaseErrorView):
-    exception = exceptions.APIException("Everything broke")
+    exception = exceptions.APIException(_("Everything broke"))

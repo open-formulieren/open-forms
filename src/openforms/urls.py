@@ -10,8 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
 
-from openforms.api.views import ErrorDetailView
 from openforms.emails.admin import EmailTestAdminView
+from openforms.utils.views import ErrorDetailView
 
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
