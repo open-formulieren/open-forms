@@ -4,6 +4,7 @@ Assert that the session expiry works as intended.
 Administrators can configure the maximum session duration. The intent is that the
 session expires if there's no activity within that timespan.
 """
+from copy import deepcopy
 from datetime import datetime
 from unittest.mock import patch
 
@@ -23,8 +24,11 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from ..accounts.tests.factories import SuperUserFactory
 from .utils import NOOP_CACHES
 
+SESSION_CACHES = deepcopy(NOOP_CACHES)
+SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
 
-@override_settings(CACHES=NOOP_CACHES)
+
+@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
 class FormUserSessionExpiryTests(APITestCase):
     """
     Session expiry tests for non-admin users.
@@ -148,7 +152,7 @@ class FormUserSessionExpiryTests(APITestCase):
                 )
 
 
-@override_settings(CACHES=NOOP_CACHES)
+@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
 class AdminSessionExpiryTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
