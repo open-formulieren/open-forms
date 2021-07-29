@@ -1570,6 +1570,11 @@ class ImportExportAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        _slugfield = Form._meta.get_field("slug")
+        error = _slugfield.error_messages["unique"] % {
+            "model_name": Form._meta.verbose_name,
+            "field_label": _slugfield.verbose_name,
+        }
         self.assertEqual(
             response.json(),
             {
@@ -1581,9 +1586,9 @@ class ImportExportAPITests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "nonFieldErrors",
-                        "code": "invalid",
-                        "reason": "{'slug': [ErrorDetail(string='Er bestaat al een form met eenzelfde slug.', code='unique')]}",
+                        "name": "slug",
+                        "code": "unique",
+                        "reason": error,
                     }
                 ],
             },
