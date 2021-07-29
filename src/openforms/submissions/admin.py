@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext, gettext_lazy as _
 
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
@@ -31,6 +31,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
     list_display = (
         "form",
+        "get_registration_backend",
         "registration_status",
         "created_on",
         "completed_on",
@@ -42,6 +43,10 @@ class SubmissionAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ["created_on"]
     actions = ["export_csv", "export_xlsx"]
+
+    def get_registration_backend(self, obj):
+        return obj.form.registration_backend
+    get_registration_backend.short_description = 'Registration Backend'
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
