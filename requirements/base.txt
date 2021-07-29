@@ -189,14 +189,14 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
-maykin-django-two-factor-auth==2.0.0
+maykin-django-two-factor-auth[phonenumbers]==2.0.0
     # via -r requirements/base.in
 openpyxl==3.0.7
     # via tablib
 orderedmultidict==1.0.1
     # via furl
 phonenumbers==8.12.26
-    # via -r requirements/base.in
+    # via maykin-django-two-factor-auth
 pillow==8.2.0
     # via
     #   -r requirements/base.in

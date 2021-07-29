@@ -9,8 +9,7 @@ from django.urls import include, path
 from django.utils.translation import ugettext_lazy as _
 
 from decorator_include import decorator_include
-from two_factor.admin import AdminSiteOTPRequired
-from two_factor.urls import urlpatterns as tf_urls
+from two_factor.urls import urlpatterns as tfa_urls
 
 from openforms.emails.admin import EmailTestAdminView
 from openforms.utils.views import ErrorDetailView
@@ -19,11 +18,6 @@ handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
 admin.site.index_title = _("Welcome to the Open Forms admin")
-
-# This will cause users not to be able to login any longer without the OTP setup. There are some
-# issues in this package that need to be resolved.
-admin.site.__class__ = AdminSiteOTPRequired
-
 
 urlpatterns = [
     path(
@@ -42,8 +36,8 @@ urlpatterns = [
         name="admin_email_test",
     ),
     path("admin/hijack/", include("hijack.urls")),
+    path("admin/", include(tfa_urls)),
     path("admin/", admin.site.urls),
-    path("admin/", include(tf_urls)),
     path(
         "reset/<uidb64>/<token>/",
         auth_views.PasswordResetConfirmView.as_view(),
