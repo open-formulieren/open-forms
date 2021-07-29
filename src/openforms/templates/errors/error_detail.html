@@ -1,0 +1,27 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+  <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">{{ settings.PROJECT_NAME }} foutomschrijving</h1>
+    <p class="lead">{{ settings.SITE_TITLE }}</p>
+  </div>
+
+  <div class="container">
+
+    <h2><code>{{ type }}</code> fouttype</h2>
+
+    <dl class="error-detail-properties">
+      <dt class="error-detail-properties__property">HTTP Status code</dt>
+      <dd class="error-detail-properties__value"><code>{{ status_code }}</code></dd>
+
+      <dt class="error-detail-properties__property">Default title</dt>
+      <dd class="error-detail-properties__value"><code>{{ default_detail }}</code></dd>
+
+      <dt class="error-detail-properties__property">Default code</dt>
+      <dd class="error-detail-properties__value"><code>{{ default_code }}</code></dd>
+    </dl>
+
+  </div>
+
+{% endblock %}

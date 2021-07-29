@@ -32,16 +32,43 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json()["streetName"], "Keizersgracht")
         self.assertEqual(response.json()["city"], "Amsterdam")
 
-    def test_getting_street_name_and_city_without_post_code_returns_error(self):
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_getting_street_name_and_city_without_post_code_returns_error(self, _mock):
 
         response = self.client.get(
             f"{reverse('api:get-street-name-and-city-list')}?house_number=117"
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {"postcode": [_("This field is required.")]})
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "postcode",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    }
+                ],
+            },
+        )
 
-    def test_getting_street_name_and_city_without_house_number_returns_error(self):
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_getting_street_name_and_city_without_house_number_returns_error(
+        self, _mock
+    ):
 
         response = self.client.get(
             f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ"
@@ -49,7 +76,22 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            response.json(), {"houseNumber": [_("This field is required.")]}
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "houseNumber",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    }
+                ],
+            },
         )
 
     @patch("openforms.locations.api.views.import_string")

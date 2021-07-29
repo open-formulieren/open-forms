@@ -7,6 +7,8 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+from unittest.mock import patch
+
 from django.core import mail
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -55,7 +57,11 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
         self.assertIn(str(submission.uuid), submissions_in_session)
 
-    def test_missing_email(self):
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_missing_email(self, _mock):
         form = FormFactory.create()
         FormStepFactory.create(form=form, optional=False)
         step2 = FormStepFactory.create(form=form, optional=True)  # noqa
@@ -69,7 +75,24 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, {})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("email", response.json())
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "email",
+                        "code": "required",
+                        "reason": _("This field is required."),
+                    }
+                ],
+            },
+        )
         submission.refresh_from_db()
         self.assertIsNone(submission.suspended_on)
 
