@@ -156,7 +156,7 @@ class ExceptionHandlerTests(APITestCase):
                 "code": "throttled",
                 "title": _("Request was throttled."),
                 "status": 429,
-                "detail": "Too many requests",
+                "detail": _("Too many requests"),
             },
         )
 
@@ -167,6 +167,6 @@ class ExceptionHandlerTests(APITestCase):
                 "code": "error",
                 "title": _("A server error occurred."),
                 "status": 500,
-                "detail": "Everything broke",
+                "detail": _("Everything broke"),
             },
         )
