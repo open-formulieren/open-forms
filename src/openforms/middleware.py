@@ -41,5 +41,5 @@ class SessionTimeoutMiddleware:
             else config.form_session_timeout
         )
         # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
-        request.session.set_expiry(timedelta(minutes=timeout).seconds)
+        request.session.set_expiry(int(timedelta(minutes=timeout).total_seconds()))
         return self.get_response(request)
