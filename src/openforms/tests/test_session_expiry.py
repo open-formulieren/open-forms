@@ -35,7 +35,6 @@ class FormUserSessionExpiryTests(APITestCase):
         super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
-        config.admin_session_timeout = 10
         config.form_session_timeout = 5  # minimum value
         config.save()
 
@@ -148,38 +147,51 @@ class FormUserSessionExpiryTests(APITestCase):
                     },
                 )
 
+
+@override_settings(CACHES=NOOP_CACHES)
+class AdminSessionExpiryTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        config = GlobalConfiguration.get_solo()
+        config.admin_session_timeout = 5  # minimum value
+        config.save()
+
+        # Just a random admin url to use for testing
+        cls.url = reverse("admin:submissions_submission_changelist")
+        cls.superuser = SuperUserFactory.create()
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.superuser)
+
     def test_admin_activity_is_not_affected_by_form_session_timeout(self):
         """
         Assert that any activity outside of the expiry period returns a 403.
         """
-        superuser = SuperUserFactory.create()
-        self.client.force_login(superuser)
         # make a request to the admin to validate this modifies the session
         with self.subTest(part="initial check"):
             with freeze_time("2021-07-29T14:00:00Z"):
-                response = self.client.get(
-                    reverse("admin:submissions_submission_changelist"), user=superuser
-                )
+                response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 session = response.wsgi_request.session
-                self.assertEqual(session.get_expiry_age(), 600)
-                expected_expiry = datetime(2021, 7, 29, 14, 10).replace(
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
                     tzinfo=timezone.utc
                 )
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # make another request to the admin to validate the session has not expired yet
         with self.subTest(part="check not expired"):
-            with freeze_time("2021-07-29T14:09:00Z"):
-                response = self.client.get(
-                    reverse("admin:submissions_submission_changelist"), user=superuser
-                )
+            with freeze_time("2021-07-29T14:04:00Z"):
+                response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 session = response.wsgi_request.session
-                self.assertEqual(session.get_expiry_age(), 600)
-                expected_expiry = datetime(2021, 7, 29, 14, 19).replace(
+                self.assertEqual(session.get_expiry_age(), 300)
+                expected_expiry = datetime(2021, 7, 29, 14, 9).replace(
                     tzinfo=timezone.utc
                 )
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
@@ -187,9 +199,9 @@ class FormUserSessionExpiryTests(APITestCase):
         # make another request to the admin to validate the session has expired
         #  and the user will be redirected to the admin login page
         with self.subTest(part="check expired and redirection to login page"):
-            with freeze_time("2021-07-29T14:20:00Z"):
+            with freeze_time("2021-07-29T14:10:00Z"):
                 url = reverse("admin:submissions_submission_changelist")
-                response = self.client.get(url, user=superuser)
+                response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_302_FOUND)
                 self.assertEqual(response.url, f"{settings.LOGIN_URL}?next={url}")
