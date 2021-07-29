@@ -265,4 +265,7 @@ class FormImportSerializer(serializers.Serializer):
 class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormVersion
-        fields = ("uuid", "created", "export_blob")
+        fields = (
+            "uuid",
+            "created",
+        )
