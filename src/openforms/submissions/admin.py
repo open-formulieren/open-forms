@@ -42,7 +42,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         SubmissionStepInline,
     ]
     readonly_fields = ["created_on"]
-    actions = ["export_csv", "export_xlsx"]
+    actions = ["export_csv", "export_xlsx", "resend_submissions"]
 
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
@@ -84,6 +84,26 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     export_xlsx.short_description = _(
         "Export selected %(verbose_name_plural)s as Excel-file."
+    )
+
+    def resend_submissions(self, request, queryset):
+        submissions = queryset.filter(maintenance_mode=False)
+        messages.success(
+            request,
+            ngettext(
+                "Resending {count} {verbose_name} to registration backend",
+                "Resending {count} {verbose_name_plural} to registration backend",
+                submissions.count(),
+            ).format(
+                count=submissions.count(),
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
+            ),
+        )
+        # TODO Call same beat task that will resend the submission
+
+    resend_submissions.short_description = _(
+        "Resend %(verbose_name_plural)s to the registration backend."
     )
 
 
