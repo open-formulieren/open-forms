@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import (
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 @transaction.atomic()
 def register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
+    submission.last_register_date = timezone.now()
     # figure out which registry and backend to use from the model field used
     form = submission.form
     backend = form.registration_backend
@@ -74,7 +76,13 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     submission.registration_status = status
     submission.registration_result = result_data
-    submission.save(update_fields=["registration_status", "registration_result"])
+    submission.save(
+        update_fields=[
+            "registration_status",
+            "registration_result",
+            "last_register_date",
+        ]
+    )
 
 
 @app.task(bind=True)

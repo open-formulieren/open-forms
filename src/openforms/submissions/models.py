@@ -86,6 +86,15 @@ class Submission(models.Model):
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
+    last_register_date = models.DateTimeField(
+        _("last register date"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "The last time the submission was registered with the backend.  "
+            "Note that this date will be updated even if the registration is not successful."
+        ),
+    )
     bsn = models.CharField(
         _("BSN"),
         max_length=9,

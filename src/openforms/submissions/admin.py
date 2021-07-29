@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import ngettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
@@ -32,6 +32,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
         "form",
         "registration_status",
+        "last_register_date",
         "created_on",
         "completed_on",
     )
@@ -40,12 +41,16 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    readonly_fields = ["created_on", "get_registration_backend",]
+    readonly_fields = [
+        "created_on",
+        "get_registration_backend",
+    ]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
-    get_registration_backend.short_description = 'Registration Backend'
+
+    get_registration_backend.short_description = "Registration Backend"
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
