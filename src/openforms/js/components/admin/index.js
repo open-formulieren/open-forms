@@ -5,6 +5,7 @@ import ReactModal from 'react-modal';
 import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext} from './form_design/Context';
 import FormVersionsTable from "./form_versions/FormVersionsTable";
+import './sdk-snippet';
 
 
 const mountForm = () => {

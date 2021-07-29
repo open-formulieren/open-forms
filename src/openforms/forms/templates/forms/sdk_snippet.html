@@ -1,5 +1,4 @@
-{% load openforms %}
-{% with 'openforms-container' as div_id %}
+{% load openforms %}{% if form %}{% with 'openforms-container' as div_id %}
 <div id="{{ div_id }}"></div>
 <script src="{{ sdk_js_url }}"></script>
 <script>
@@ -9,5 +8,4 @@
     const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
     const form = new OpenForms.OpenForm(targetNode, { baseUrl, formId, basePath });
     form.init();
-</script>
-{% endwith %}
+</script>{% endwith %}{% endif %}

@@ -8,21 +8,12 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import (
-    exceptions,
-    parsers,
-    permissions,
-    response,
-    status,
-    views,
-    viewsets,
-)
+from rest_framework import parsers, permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -391,9 +382,6 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            import_form(serializer.validated_data["file"])
-        except exceptions.ValidationError as e:
-            raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e})
+        import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
