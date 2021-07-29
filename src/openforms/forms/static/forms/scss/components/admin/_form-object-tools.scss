@@ -1,0 +1,13 @@
+.form-object-tools {
+
+  &__list {
+    margin: 0;
+  }
+
+  &__loading {
+    a {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+}

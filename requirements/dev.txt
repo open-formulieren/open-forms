@@ -234,10 +234,6 @@ django-relativedelta==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-django-reversion==3.0.9
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 django-rosetta==0.9.4
     # via -r requirements/dev.in
 django-sendfile2==0.6.0
@@ -282,7 +278,6 @@ django==2.2.24
     #   django-privates
     #   django-redis
     #   django-relativedelta
-    #   django-reversion
     #   django-rosetta
     #   django-sendfile2
     #   django-silk

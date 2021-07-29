@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 
 import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext} from './form_design/Context';
+import FormVersionsTable from "./form_versions/FormVersionsTable";
 
 
 const mountForm = () => {
@@ -12,7 +13,9 @@ const mountForm = () => {
 
     for (const formCreationFormNode of formCreationFormNodes) {
         const { formUuid, formName, formSlug, csrftoken, tinymceUrl,
-                formBeginText, formPreviousText, formChangeText, formConfirmText } = formCreationFormNode.dataset;
+                formBeginText, formPreviousText, formChangeText, formConfirmText,
+                formHistoryUrl,
+        } = formCreationFormNode.dataset;
 
         ReactModal.setAppElement(formCreationFormNode);
 
@@ -27,6 +30,7 @@ const mountForm = () => {
                     formPreviousText={formPreviousText}
                     formChangeText={formChangeText}
                     formConfirmText={formConfirmText}
+                    formHistoryUrl={formHistoryUrl}
                 />
             </TinyMceContext.Provider>,
             formCreationFormNode
@@ -34,4 +38,23 @@ const mountForm = () => {
     }
 };
 
+const mountFormVersions = () => {
+    const formVersionsNodes = document.getElementsByClassName('react-form-versions-table');
+    if (!formVersionsNodes.length) return;
+
+    for (const formVersionsNode of formVersionsNodes) {
+        const { formUuid, csrftoken, formAdminUrl } = formVersionsNode.dataset;
+
+        ReactDOM.render(
+            <FormVersionsTable
+                csrftoken={csrftoken}
+                formUuid={formUuid}
+                formAdminUrl={formAdminUrl}
+            />,
+            formVersionsNode
+        );
+    }
+};
+
 mountForm();
+mountFormVersions();

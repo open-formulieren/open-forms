@@ -194,10 +194,6 @@ django-relativedelta==1.1.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-django-reversion==3.0.9
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 django-sendfile2==0.6.0
     # via
     #   -c requirements/base.txt
@@ -234,7 +230,6 @@ django==2.2.24
     #   django-privates
     #   django-redis
     #   django-relativedelta
-    #   django-reversion
     #   django-sendfile2
     #   djangorestframework
     #   drf-nested-routers

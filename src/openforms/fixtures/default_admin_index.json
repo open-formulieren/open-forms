@@ -35,6 +35,10 @@
             [
                 "forms",
                 "formdefinition"
+            ],
+            [
+                "forms",
+                "formversion"
             ]
         ]
     }

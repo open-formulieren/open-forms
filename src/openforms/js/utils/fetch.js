@@ -40,11 +40,22 @@ const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
         body: JSON.stringify(data),
     };
     const response = await fetch(url, opts);
-    const responseData = await response.json();
+
+    // Check if the response contains json data
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        const responseData = await response.json();
+        return {
+            ok: response.ok,
+            status: response.status,
+            data: responseData,
+        };
+    }
+
     return {
         ok: response.ok,
         status: response.status,
-        data: responseData,
+        data: null,
     };
 };
 

@@ -6,7 +6,6 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
-import reversion
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import (
@@ -20,16 +19,16 @@ from rest_framework import (
 )
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from reversion.views import RevisionMixin
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..models import Form, FormDefinition, FormStep
-from ..utils import export_form, import_form
+from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..utils import export_form, form_to_json, import_form
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
@@ -38,6 +37,7 @@ from .serializers import (
     FormImportSerializer,
     FormSerializer,
     FormStepSerializer,
+    FormVersionSerializer,
 )
 
 
@@ -175,7 +175,7 @@ UUID_OR_SLUG_PARAMETER = OpenApiParameter(
         parameters=[UUID_OR_SLUG_PARAMETER],
     ),
 )
-class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
+class FormViewSet(viewsets.ModelViewSet):
     """
     Manage forms.
 
@@ -294,7 +294,82 @@ class FormViewSet(RevisionMixin, viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance._is_deleted = True
         instance.save()
-        reversion.set_comment(_("Form deleted via the API."))
+
+
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="form_uuid_or_slug",
+            location=OpenApiParameter.PATH,
+            type=str,
+            description=_("Either a UUID4 or a slug identifying the form."),
+        )
+    ]
+)
+@extend_schema_view(
+    create=extend_schema(
+        summary=_("Save form version"),
+        tags=["forms"],
+    ),
+    restore=extend_schema(
+        summary=_("Restore form version"),
+        tags=["forms"],
+        parameters=[
+            OpenApiParameter(
+                name="form_uuid_or_slug",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("Either a UUID4 or a slug identifying the form."),
+            ),
+            OpenApiParameter(
+                name="uuid",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("The uuid of the form version"),
+            ),
+        ],
+        responses={status.HTTP_204_NO_CONTENT: ""},
+    ),
+    list=extend_schema(
+        summary=_("List form versions"),
+        tags=["forms"],
+        parameters=[
+            OpenApiParameter(
+                name="form_uuid_or_slug",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("Either a UUID4 or a slug identifying the form."),
+            )
+        ],
+    ),
+)
+class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = FormVersionSerializer
+    queryset = FormVersion.objects.all()
+    permission_classes = [IsStaffOrReadOnly]
+    lookup_field = "uuid"
+    parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
+
+    def create(self, request, *args, **kwargs):
+        """Save the current version of the form so that it can later be retrieved"""
+
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+
+        form_json = form_to_json(form.id)
+        form_version = FormVersion.objects.create(form=form, export_blob=form_json)
+
+        serializer = self.serializer_class(instance=form_version)
+        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def restore(self, request, *args, **kwargs):
+        """Restore a previously saved version of a form."""
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+        form_version = get_object_or_404(FormVersion, uuid=self.kwargs["uuid"])
+
+        form.restore_old_version(form_version.uuid)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class FormsImportAPIView(views.APIView):

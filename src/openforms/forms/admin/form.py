@@ -8,7 +8,6 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
-from reversion.admin import VersionAdmin
 
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import BackendChoiceFieldMixin
@@ -41,7 +40,9 @@ class FormStepInline(OrderedTabularInline):
 
 
 @admin.register(Form)
-class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAdmin):
+class FormAdmin(
+    BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, admin.ModelAdmin
+):
     list_display = (
         "name",
         "active",
@@ -54,9 +55,7 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
     list_filter = ("active", "maintenance_mode")
 
-    change_list_template = (
-        "admin/forms/form/change_list.html"  # override reversion template
-    )
+    change_list_template = "admin/forms/form/change_list.html"
 
     def use_react(self, request):
         if not hasattr(request, "_use_react_form_crud"):
@@ -70,15 +69,17 @@ class FormAdmin(BackendChoiceFieldMixin, OrderedInlineModelAdminMixin, VersionAd
         context.update({"use_react": self.use_react(request)})
         return super().render_change_form(request, context, add, change, form_url, obj)
 
+    def changelist_view(self, request, extra_context=None):
+        context = {
+            "has_change_permission": self.has_change_permission(request),
+        }
+        context.update(extra_context or {})
+        return super().changelist_view(request, context)
+
     def get_inline_instances(self, request, *args, **kwargs):
         if self.use_react(request):
             return []
         return super().get_inline_instances(request, *args, **kwargs)
-
-    def _reversion_autoregister(self, model, follow):
-        # because this is called in the __init__, it seems to run before the
-        # `AppConfig.ready` hook runs, causing registration errors.
-        pass
 
     def get_form(self, request, *args, **kwargs):
         if self.use_react(request):

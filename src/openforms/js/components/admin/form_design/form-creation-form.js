@@ -8,7 +8,6 @@ import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import {TextInput, Checkbox} from '../forms/Inputs';
 import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
@@ -16,6 +15,7 @@ import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import TinyMCEEditor from "./Editor";
 import FormMetaFields from './FormMetaFields';
+import FormObjectTools from "./FormObjectTools";
 
 const initialFormState = {
     form: {
@@ -91,6 +91,11 @@ function reducer(draft, action) {
                 ...draft,
                 ...action.payload,
             };
+        }
+        case 'FORM_CREATED': {
+            draft.newForm = false;
+            draft.form = action.payload;
+            break;
         }
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
@@ -381,7 +386,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText }) => {
+                              formBeginText, formPreviousText, formChangeText, formConfirmText, formHistoryUrl }) => {
     const initialState = {
         ...initialFormState,
         form: {
@@ -535,9 +540,10 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 throw new Error('An error occurred while saving the form.');
             }
             var formUuid = formResponse.data.uuid;
+            dispatch({type: 'FORM_CREATED', payload: formResponse.data});
 
         } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: formResponse.data});
+            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
             window.scrollTo(0, 0);
             return;
         }
@@ -624,6 +630,21 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             }
         }
 
+        // Save this new version of the form in the "form version control"
+        try {
+            var versionResponse = await post(
+                `${FORM_ENDPOINT}/${formUuid}/versions`,
+                csrftoken
+            );
+            if (!versionResponse.ok) {
+                throw new Error('An error occurred while saving the form version.');
+            }
+        } catch (e) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
+            window.scrollTo(0, 0);
+            return;
+        }
+
         // redirect back to list/overview page
         window.location = ADMIN_PAGE;
     };
@@ -638,6 +659,13 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
     return (
         <>
+            <FormObjectTools
+                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading || state.availablePrefillPlugins.loading}
+                historyUrl={formHistoryUrl}
+            />
+
+            <h1>Form wijzigen</h1>
+
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
             <FormMetaFields
                 form={state.form}
@@ -723,6 +751,7 @@ FormCreationForm.propTypes = {
     formPreviousText: PropTypes.string.isRequired,
     formChangeText: PropTypes.string.isRequired,
     formConfirmText: PropTypes.string.isRequired,
+    formHistoryUrl: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

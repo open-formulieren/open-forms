@@ -124,7 +124,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "digid_eherkenning",
     "solo",
-    "reversion",
     "tinymce",
     "privates",
     "zgw_consumers",

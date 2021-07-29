@@ -9,7 +9,7 @@ from openforms.products.api.serializers import ProductSerializer
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ..custom_field_types import handle_custom_types
-from ..models import Form, FormDefinition, FormStep
+from ..models import Form, FormDefinition, FormStep, FormVersion
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -260,3 +260,12 @@ class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+
+
+class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FormVersion
+        fields = (
+            "uuid",
+            "created",
+        )
