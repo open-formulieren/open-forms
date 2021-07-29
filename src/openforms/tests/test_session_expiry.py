@@ -166,9 +166,10 @@ class AdminSessionExpiryTests(APITestCase):
         super().setUp()
         self.client.force_login(self.superuser)
 
-    def test_admin_activity_is_not_affected_by_form_session_timeout(self):
+    def test_admin_activity_session_timeout(self):
         """
-        Assert that any activity outside of the expiry period returns a 403.
+        Assert that any activity outside of the expiry period returns a 302
+        and redirects the admin to the login page
         """
         # make a request to the admin to validate this modifies the session
         with self.subTest(part="initial check"):
@@ -200,8 +201,7 @@ class AdminSessionExpiryTests(APITestCase):
         #  and the user will be redirected to the admin login page
         with self.subTest(part="check expired and redirection to login page"):
             with freeze_time("2021-07-29T14:10:00Z"):
-                url = reverse("admin:submissions_submission_changelist")
                 response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_302_FOUND)
-                self.assertEqual(response.url, f"{settings.LOGIN_URL}?next={url}")
+                self.assertEqual(response.url, f"{settings.LOGIN_URL}?next={self.url}")
