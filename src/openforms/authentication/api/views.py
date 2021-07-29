@@ -1,7 +1,8 @@
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import authentication, permissions
+from rest_framework import authentication, permissions, serializers, status
 from rest_framework.views import APIView
 
 from ...utils.api.views import ListMixin
@@ -28,3 +29,21 @@ class PluginListView(ListMixin, APIView):
 
     def get_objects(self):
         return list(register)
+
+
+class AuthenticationLogoutView(APIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = (
+        serializers.Serializer
+    )  # just to shut up some warnings in drf-spectacular
+
+    @extend_schema(
+        summary=_("Delete session"),
+        description=_(
+            "Calling this endpoint will clear the current user session and delete the session cookie."
+        ),
+    )
+    def delete(self, request, *args, **kwargs):
+        request.session.flush()
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
