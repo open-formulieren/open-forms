@@ -63,3 +63,10 @@ class StyleDictionaryTests(SimpleTestCase):
         tokens = style_dictionary(style_dict, prefix="of")
 
         self.assertEqual(tokens, {"--of-foo": "bar"})
+
+    def test_missing_value(self):
+        style_dict = {"foo": {"bar": "baz"}}
+
+        tokens = style_dictionary(style_dict)
+
+        self.assertEqual(tokens, {})
