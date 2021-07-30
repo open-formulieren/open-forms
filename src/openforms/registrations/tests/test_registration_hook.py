@@ -3,8 +3,9 @@ Test the registration hook on submissions.
 """
 import uuid
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from celery.exceptions import Retry
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
@@ -110,6 +111,7 @@ class RegistrationHookTests(TestCase):
             {"external_id": str(result_uuid)},
         )
 
+    @override_settings(CELERY_MAX_RETRIES=-1)
     def test_failing_registration(self):
         register = Registry()
 
@@ -134,6 +136,30 @@ class RegistrationHookTests(TestCase):
         )
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
+
+    def test_retrying_registration(self):
+        register = Registry()
+
+        # register the callback, including the assertions
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                err = ZeroDivisionError("Can't divide by zero")
+                raise RegistrationFailed("zerodiv") from err
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with self.assertRaises(Retry):
+            with patch_registry(model_field, register):
+                register_submission(self.submission.id)
+
+        self.submission.refresh_from_db()
+        self.assertEqual(
+            self.submission.registration_status, RegistrationStatuses.in_progress
+        )
 
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
