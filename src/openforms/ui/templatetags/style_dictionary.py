@@ -36,6 +36,7 @@ def extract_tokens(prefix: str, node: dict) -> Dict[str, JSONPrimitive]:
     return tokens
 
 
+@register.simple_tag()
 def style_dictionary(styles: dict, prefix: str = "of") -> Dict[str, JSONPrimitive]:
     """
     Transform a style dictionary into a mapping of resolved design tokens.

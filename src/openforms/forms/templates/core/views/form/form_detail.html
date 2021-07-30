@@ -2,18 +2,6 @@
 {% load static openforms %}
 
 {% block extra_css %}
-<style>
-:root {
-    {% comment %}
-    --of-color-link: red;
-    --of-color-link-hover: green;
-    --of-page-header-background: fuchsia;
-    --of-page-header-padding-mobile: 50px;
-    {% endcomment %}
-    --of-logo-header-width: 200px;
-    --of-logo-header-height: auto;
-}
-</style>
 {{ block.super }}
 {% include "forms/sdk_css_snippet.html" %}
 {% endblock %}
