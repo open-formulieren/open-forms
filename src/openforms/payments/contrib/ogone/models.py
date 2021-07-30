@@ -2,14 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from solo.models import SingletonModel
-
 from openforms.payments.contrib.ogone.constants import HashAlgorithm, OgoneEndpoints
-
-
-class OgoneConfig(SingletonModel):
-    class Meta:
-        abstract = True
 
 
 class OgoneMerchant(models.Model):

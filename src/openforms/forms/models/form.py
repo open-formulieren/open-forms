@@ -55,7 +55,6 @@ class Form(models.Model):
     payment_backend_options = JSONField(
         _("payment backend options"), default=dict, blank=True, null=True
     )
-    payment_required = True
 
     authentication_backends = AuthenticationBackendMultiSelectField(
         _("authentication backend(s)"), blank=True
@@ -160,6 +159,11 @@ class Form(models.Model):
                 for form_step in self.formstep_set.all()
             ]
         )
+
+    @property
+    def payment_required(self) -> bool:
+        # this will later be determined dynamic from oa. the linked Product
+        return bool(self.payment_backend and self.payment_backend_options)
 
     @property
     def first_step(self):

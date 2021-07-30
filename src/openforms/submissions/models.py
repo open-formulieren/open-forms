@@ -26,8 +26,9 @@ from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
+from ..payments.constants import PaymentStatus
 from ..utils.helpers import get_flattened_components
-from .constants import PaymentStatuses, RegistrationStatuses
+from .constants import RegistrationStatuses
 
 logger = logging.getLogger(__name__)
 
@@ -129,25 +130,6 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
-
-    # payment_status = models.CharField(
-    #     _("payment status"),
-    #     max_length=50,
-    #     choices=PaymentStatuses,
-    #     default=PaymentStatuses.not_required,
-    #     help_text=_(
-    #         "Status of the payment process in the configured backend."
-    #     ),
-    # )
-    # payment_amount = models.DecimalField(
-    #     _("payment amount"),
-    #     max_digits=8,  # TODO how many digits?
-    #     decimal_places=2,
-    #     default=0,
-    #     help_text=_(
-    #         "Total payment amount."
-    #     ),
-    # )
 
     class Meta:
         verbose_name = _("Submission")
@@ -293,6 +275,14 @@ class Submission(models.Model):
                     recipient_emails.update(value)
 
         return list(recipient_emails)
+
+    @property
+    def payment_required(self):
+        return self.form.payment_required
+
+    @property
+    def payment_completed(self):
+        return self.payments.filter(status=PaymentStatus.completed).exists()
 
 
 class SubmissionStep(models.Model):

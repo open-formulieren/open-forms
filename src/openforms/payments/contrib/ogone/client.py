@@ -1,20 +1,13 @@
-import dataclasses
-from typing import Mapping
-
 from furl import furl
 
-from openforms.payments.constants import UserAction
-from openforms.payments.contrib.ogone.data import OgoneRequestParams
+from openforms.payments.base import PaymentInfo
+from openforms.payments.constants import PaymentRequestType, UserAction
+from openforms.payments.contrib.ogone.data import (
+    OgoneFeedbackParams,
+    OgoneRequestParams,
+)
 from openforms.payments.contrib.ogone.models import OgoneMerchant
 from openforms.payments.contrib.ogone.signing import calculate_shasign
-
-
-@dataclasses.dataclass
-class PaymentInfo:
-    type: str
-    url: str = ""
-    data: Mapping[str, str] = None
-    method: str = ""
 
 
 class OgoneClient:
@@ -37,7 +30,7 @@ class OgoneClient:
         return_url: str,
         return_action_param: str,
         **extra_params
-    ):
+    ) -> PaymentInfo:
         # base params
         params = OgoneRequestParams(
             AMOUNT=amount_cents,
@@ -61,10 +54,22 @@ class OgoneClient:
         data["SHASIGN"] = calculate_shasign(
             data, self.merchant.sha_in_passphrase, self.merchant.hash_algorithm
         )
+
         # return info
         info = PaymentInfo(
-            type="form",
+            type=PaymentRequestType.post,
             url=self.merchant.endpoint,
             data=data,
         )
         return info
+
+    def get_validated_params(self, value_dict) -> OgoneFeedbackParams:
+        params = OgoneFeedbackParams.from_dict(value_dict)
+        sign = calculate_shasign(
+            params.get_dict(),
+            self.merchant.sha_out_passphrase,
+            self.merchant.hash_algorithm,
+        )
+        if sign != params.SHASIGN:
+            raise ValueError("shasign mismatch")
+        return params

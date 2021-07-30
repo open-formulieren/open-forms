@@ -102,7 +102,7 @@ class FormSerializer(serializers.ModelSerializer):
         default="",
     )
     payment_options = PaymentOptionsReadOnlyField()
-    payment_required = serializers.BooleanField()
+    payment_required = serializers.BooleanField(read_only=True)
 
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)

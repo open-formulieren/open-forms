@@ -1,5 +1,33 @@
 import dataclasses
-from typing import Union
+from typing import Optional, Sequence, Union
+
+
+@dataclasses.dataclass()
+class OgoneFeedbackParams:
+    """
+    stripped from docs example form (might not be complete)
+    """
+
+    # we'll always receive these
+    NCERROR: str = ""
+    PAYID: str = ""
+    ORDERID: str = ""
+    STATUS: str = ""
+
+    SHASIGN: str = ""
+
+    @classmethod
+    def from_dict(cls, value_dict):
+        kws = dict()
+        for f in dataclasses.fields(cls):
+            if f.name in value_dict:
+                kws[f.name] = value_dict[f.name]
+        return cls(**kws)
+
+    def get_dict(self):
+        # clean and filter
+        normalized = ((k, str(v).strip()) for k, v in dataclasses.asdict(self).items())
+        return {k: v for k, v in normalized if v}
 
 
 @dataclasses.dataclass()

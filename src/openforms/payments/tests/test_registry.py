@@ -1,41 +1,50 @@
 from urllib.parse import quote
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
+
 from rest_framework.reverse import reverse
 
-from ..base import BasePlugin
-from ..registry import Registry
-from ..views import (
-    PaymentReturnView,
-    PaymentStartView,
-)
 from ...forms.tests.factories import FormStepFactory
-from ...submissions.tests.factories import SubmissionFactory
+from ..base import BasePlugin, PaymentInfo
+from ..contrib.ogone.tests.factories import OgoneMerchantFactory
+from ..registry import Registry
+from ..views import PaymentReturnView, PaymentStartView, PaymentWebhookView
+from .factories import SubmissionPaymentFactory
 
 
 class Plugin(BasePlugin):
     verbose_name = "some human readable label"
+    return_method = "GET"
+    webhook_method = "POST"
 
-    def start_payment(self, request, submission, form_url, amount):
-        return HttpResponse("start")
+    def start_payment(self, request, payment):
+        return PaymentInfo(type="get", url="http://testserver/foo")
 
-    def handle_return(self, request, submission):
-        return HttpResponseRedirect(request.GET.get("next"))
+    def handle_return(self, request, payment):
+        return HttpResponseRedirect(payment.form_url)
+
+    def handle_webhook(self, request):
+        return None
 
 
 class FailingPlugin(BasePlugin):
     verbose_name = "some human readable label"
 
-    def start_payment(self, request, submission, form_url, amount):
+    def start_payment(self, request, payment):
         raise Exception("start")
 
-    def handle_return(self, request, submission):
+    def handle_return(self, request, payment):
         raise Exception("return")
+
+    def handle_webhook(self, request):
+        raise Exception("webhook")
 
 
 class RegistryTests(TestCase):
+    maxDiff = 1024
+
     def test_register_function(self):
         register = Registry()
 
@@ -92,10 +101,8 @@ class RegistryTests(TestCase):
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
-        submission = SubmissionFactory(
-            form__slug="myform",
-            form__payment_backend="plugin1",
-        )
+        payment = SubmissionPaymentFactory.for_backend("plugin1")
+        submission = payment.submission
 
         # we need an arbitrary request
         factory = RequestFactory()
@@ -114,14 +121,25 @@ class RegistryTests(TestCase):
         )
 
         # check the return url
-        url = plugin.get_return_url(request, submission)
+        url = plugin.get_return_url(request, payment)
         self.assertRegex(url, r"^http://")
         self.assertEqual(
             url,
             reverse(
                 "payments:return",
                 request=request,
-                kwargs={"uuid": submission.uuid, "plugin_id": "plugin1"},
+                kwargs={"uuid": payment.uuid},
+            ),
+        )
+        # check the webhook url
+        url = plugin.get_webhook_url(request)
+        self.assertRegex(url, r"^http://")
+        self.assertEqual(
+            url,
+            reverse(
+                "payments:webhook",
+                request=request,
+                kwargs={"plugin_id": "plugin1"},
             ),
         )
 
@@ -133,10 +151,10 @@ class RegistryTests(TestCase):
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
-        submission = SubmissionFactory(
-            form__slug="myform",
-            form__payment_backend="plugin1",
+        payment = SubmissionPaymentFactory.for_backend(
+            "plugin1", form_url="http://foo.bar"
         )
+        submission = payment.submission
 
         # we need an arbitrary request
         factory = RequestFactory()
@@ -146,7 +164,7 @@ class RegistryTests(TestCase):
         bad_url_enc = quote("http://buzz.bazz")
 
         # check the start view
-        url = plugin.get_start_url(init_request, submission)
+        url = plugin.get_start_url(init_request, payment)
 
         start_view = PaymentStartView.as_view(register=register)
 
@@ -155,7 +173,14 @@ class RegistryTests(TestCase):
             response = start_view(
                 request, uuid=submission.uuid, plugin_id=plugin.identifier
             )
-            self.assertEqual(response.content, b"start")
+            self.assertEqual(
+                response.data,
+                {
+                    "url": "http://testserver/foo",
+                    "type": "get",
+                    "data": None,
+                },
+            )
             self.assertEqual(response.status_code, 200)
 
         with self.subTest("start missing next"):
@@ -181,39 +206,63 @@ class RegistryTests(TestCase):
             self.assertEqual(response.status_code, 400)
 
         # check the return view
-        url = plugin.get_return_url(request, submission)
+        url = plugin.get_return_url(request, payment)
 
         return_view = PaymentReturnView.as_view(register=register)
 
         with self.subTest("return ok"):
-            request = factory.get(f"{url}?next={next_url_enc}")
-            response = return_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
-            )
+            request = factory.get(url)
+            response = return_view(request, uuid=payment.uuid)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
         with self.subTest("return bad method"):
-            request = factory.post(f"{url}?next={next_url_enc}")
-            response = return_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
-            )
+            request = factory.post(url)
+            response = return_view(request, uuid=payment.uuid)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
 
         with self.subTest("return bad plugin"):
-            request = factory.get(f"{url}?next={next_url_enc}")
-            response = return_view(
-                request, uuid=submission.uuid, plugin_id="bad_plugin"
+            request = factory.get(url)
+            payment_bad = SubmissionPaymentFactory.for_backend(
+                "bad_plugin", form_url="http://foo.bar"
             )
+
+            response = return_view(request, uuid=payment_bad.uuid)
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("return bad redirect"):
-            request = factory.get(f"{url}?next={bad_url_enc}")
-            response = return_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
+            request = factory.get(url)
+            payment_bad = SubmissionPaymentFactory.for_backend(
+                "plugin1", form_url="http://buzz.bazz"
             )
+
+            response = return_view(request, uuid=payment_bad.uuid)
             self.assertEqual(response.content, b"redirect not allowed")
+            self.assertEqual(response.status_code, 400)
+
+        # check the webhook view
+        url = plugin.get_webhook_url(request)
+
+        webhook_view = PaymentWebhookView.as_view(register=register)
+
+        with self.subTest("webhook ok"):
+            request = factory.post(url)
+            response = webhook_view(request, plugin_id=plugin.identifier)
+            self.assertEqual(response.content, b"")
+            self.assertEqual(response.status_code, 200)
+
+        with self.subTest("webhook bad method"):
+            request = factory.get(url)
+            response = webhook_view(request, plugin_id=plugin.identifier)
+            self.assertEqual(response.content, b"")
+            self.assertEqual(response.status_code, 405)
+            self.assertEqual(response["Allow"], "POST")
+
+        with self.subTest("webhook bad plugin"):
+            request = factory.get(url)
+            response = webhook_view(request, plugin_id="bad_plugin")
+            self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)

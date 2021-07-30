@@ -17,8 +17,7 @@ class OgoneClientTest(TestCase):
         info = client.get_payment_info("123", 1000, return_url, "action")
 
         self.assertEqual(info.url, merchant.endpoint)
-        self.assertEqual(info.type, "form")
-        self.assertEqual(info.method, "post")
+        self.assertEqual(info.type, "post")
 
         expected = {
             "PSPID": "merchant",
