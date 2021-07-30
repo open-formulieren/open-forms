@@ -3,7 +3,7 @@
 @import '~microscope-sass/lib/transform';
 @import '~microscope-sass/lib/typography';
 @import '~microscope-sass/lib/util';
-@import '../../../../../../ui/static/ui/scss/lib/numbers';
+@import '../../ui/static/ui/scss/lib/numbers';
 
 
 $checkbox-checkmark-size: 1em * strip_unit($typography-line-height-text-big) !default;
