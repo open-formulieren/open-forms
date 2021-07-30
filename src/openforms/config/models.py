@@ -119,6 +119,7 @@ class GlobalConfiguration(SingletonModel):
     # * DoS
     logo = SVGOrImageField(
         _("municipality logo"),
+        upload_to="logo/",
         blank=True,
         help_text=_(
             "Upload the municipality logo, visible to users filling out forms. We "

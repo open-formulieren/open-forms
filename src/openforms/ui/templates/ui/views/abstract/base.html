@@ -1,11 +1,9 @@
-{% extends 'master.html' %}
+{% extends "master.html" %}
 {% load ui %}
 
 {% block content %}
-    {% block nav %}
-        {% skiplink %}
-        {% nav %}
-        {% skiplink_target %}
+    {% block header %}
+        {% include "ui/includes/header.html" %}
     {% endblock %}
 
     {% block layout %}

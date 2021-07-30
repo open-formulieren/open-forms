@@ -1,0 +1,17 @@
+{% comment %}
+This header template is deliberately minimal. It is end-user facing and usually they
+will be redirected here from the municipality/organization website when they can't
+include the SDK snippet directly.
+{% endcomment %}
+{% load i18n solo_tags %}
+
+{% get_solo 'config.GlobalConfiguration' as config %}
+
+<header class="page-header {% if config.logo %}page-header--has-logo{% endif %}">
+    {# if there's a logo, output a design token that the CSS can pick up to set as background #}
+    <a
+        class="anchor page-header__return-url"
+        href="{% firstof config.main_website '#' %}"
+        {% if config.logo %}style="--of-logo-header-url: url('{{ config.logo.url }}')"{% endif %}
+    >{% if config.main_website %}{% trans "Back to website" %}{% endif %}</a>
+</header>

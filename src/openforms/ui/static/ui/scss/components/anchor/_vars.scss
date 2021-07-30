@@ -1,0 +1,4 @@
+@import '../../settings';
+
+$of-color-link: var(--of-color-link, $color-primary);
+$of-color-link-hover: var(--of-color-link-hover, $typography-color-link);

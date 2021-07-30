@@ -55,7 +55,6 @@ urlpatterns = [
     path("eherkenning/", include("openforms.authentication.contrib.eherkenning.urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
     path("fouten/<exception_class>/", ErrorDetailView.as_view(), name="error-detail"),
-    path("", include("openforms.forms.urls", namespace="core")),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
@@ -76,3 +75,8 @@ if apps.is_installed("rosetta"):
 
 if apps.is_installed("silk"):
     urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
+
+# render a form detail page, as catch-all since it takes the slug of a form
+urlpatterns += [
+    path("", include("openforms.forms.urls", namespace="core")),
+]
