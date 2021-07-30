@@ -18,7 +18,12 @@ from requests import RequestException, Response
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionReport
-from stuf.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointSecurity, EndpointType
+from stuf.constants import (
+    STUF_ZDS_EXPIRY_MINUTES,
+    EndpointSecurity,
+    EndpointType,
+    SOAPVersion,
+)
 from stuf.models import SoapService
 
 logger = logging.getLogger(__name__)
@@ -74,17 +79,6 @@ class StufZDSClient:
 
     def _get_request_base_context(self):
         return {
-            "soap_version": self.service.soap_version,
-            "soap_use_wss": (
-                self.service.endpoint_security
-                in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
-            ),
-            "wss_username": self.service.user,
-            "wss_password": self.service.password,
-            "wss_created": fmt_soap_date(timezone.now()),
-            "wss_expires": fmt_soap_date(
-                timezone.now() + timedelta(minutes=STUF_ZDS_EXPIRY_MINUTES)
-            ),
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
             "zender_gebruiker": self.service.zender_gebruiker,
@@ -113,7 +107,21 @@ class StufZDSClient:
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
         return loader.render_to_string(
-            "stuf_zds/soap/includes/envelope.xml", {"content": mark_safe(xml_str)}
+            "stuf_zds/soap/includes/envelope.xml",
+            {
+                "soap_version": self.service.soap_version,
+                "soap_use_wss": (
+                    self.service.endpoint_security
+                    in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
+                ),
+                "wss_username": self.service.user,
+                "wss_password": self.service.password,
+                "wss_created": fmt_soap_date(timezone.now()),
+                "wss_expires": fmt_soap_date(
+                    timezone.now() + timedelta(minutes=STUF_ZDS_EXPIRY_MINUTES)
+                ),
+                "content": mark_safe(xml_str),
+            },
         )
 
     def _make_request(
@@ -136,7 +144,9 @@ class StufZDSClient:
                 url,
                 data=request_data,
                 headers={
-                    "Content-Type": "application/soap+xml",
+                    "Content-Type": "text/xml"
+                    if self.service.soap_version == SOAPVersion.soap11
+                    else "application/soap+xml",
                     "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
                 },
                 auth=self.service.get_auth(),
