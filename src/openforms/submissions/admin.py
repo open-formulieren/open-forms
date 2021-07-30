@@ -5,7 +5,9 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
-from .constants import IMAGE_COMPONENTS
+from openforms.registrations.tasks import register_submission
+
+from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (
     Submission,
@@ -91,7 +93,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     )
 
     def resend_submissions(self, request, queryset):
-        submissions = queryset.filter(maintenance_mode=False)
+        submissions = queryset.filter(registration_status=RegistrationStatuses.failed)
         messages.success(
             request,
             ngettext(
@@ -104,7 +106,8 @@ class SubmissionAdmin(admin.ModelAdmin):
                 verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
-        # TODO Call same beat task that will resend the submission
+        for submission in submissions:
+            register_submission.si(submission.id)
 
     resend_submissions.short_description = _(
         "Resend %(verbose_name_plural)s to the registration backend."
