@@ -20,7 +20,7 @@ module.exports = {
         [`${paths.package.name}-css`]: `${__dirname}/${paths.scssEntry}`,
         [`${paths.package.name}-js`]: `${__dirname}/${paths.jsEntry}`,
         [`admin_overrides`]:  `${__dirname}/${paths.sourcesRoot}scss/admin/admin_overrides.scss`,
-        [`core-css`]:  `${__dirname}/${paths.sourcesRoot}forms/static/forms/scss/screen.scss`,
+        [`core-css`]:  `${__dirname}/${paths.sourcesRoot}scss/screen.scss`,
         [`core-js`]:  `${__dirname}/${paths.sourcesRoot}js/index.js`,
     },
 
