@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.encoding import force_str
@@ -7,6 +8,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
+from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
 
@@ -22,41 +24,7 @@ class GlobalConfiguration(SingletonModel):
         blank=True,
         default=list,
     )
-    enable_react_form = models.BooleanField(
-        _("enable React form page"),
-        default=False,
-        help_text=_(
-            "If enabled, the admin page to create forms will use the new React page."
-        ),
-    )
 
-    # for testing purposes!
-    default_test_bsn = models.CharField(
-        _("default test BSN"),
-        blank=True,
-        default="",
-        max_length=9,
-        help_text=_(
-            "When provided, submissions that are started will have this BSN set as "
-            "default for the session. Useful to test/demo prefill functionality."
-        ),
-    )
-    default_test_kvk = models.CharField(
-        _("default test KvK Number"),
-        blank=True,
-        default="",
-        max_length=9,
-        help_text=_(
-            "When provided, submissions that are started will have this KvK Number set as "
-            "default for the session. Useful to test/demo prefill functionality."
-        ),
-    )
-
-    display_sdk_information = models.BooleanField(
-        _("display SDK information"),
-        default=False,
-        help_text=_("When enabled, information about the used SDK is displayed."),
-    )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
         help_text=_(
@@ -65,6 +33,7 @@ class GlobalConfiguration(SingletonModel):
         ),
         default="Thank you for submitting this form.",
     )
+
     allow_empty_initiator = models.BooleanField(
         _("allow empty initiator"),
         default=False,
@@ -136,6 +105,66 @@ class GlobalConfiguration(SingletonModel):
             "The text that will be displayed in the form step to go to the next step"
         ),
     )
+
+    # 'subdomain' styling & content configuration
+    # FIXME: do not expose this field via the API to non-admin users! There is not
+    # sufficient input validation to protect against the SVG attack surface. The SVG
+    # is rendered by the browser of end-users.
+    #
+    # See https://www.fortinet.com/blog/threat-research/scalable-vector-graphics-attack-surface-anatomy
+    #
+    # * XSS
+    # * HTML Injection
+    # * XML entity processing
+    # * DoS
+    logo = SVGOrImageField(
+        _("municipality logo"),
+        blank=True,
+        help_text=_(
+            "Upload the municipality logo, visible to users filling out forms. We "
+            "advise dimensions around 150px by 75px. SVG's are allowed."
+        ),
+    )
+    main_website = models.URLField(
+        _("main website link"),
+        blank=True,
+        help_text=_(
+            "URL to the main website. Used for the 'back to municipality website' link."
+        ),
+    )
+    # the configuration of the values of available design tokens, following the
+    # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
+    # is used by NLDS.
+    # TODO: specify a serializer describing the supported design parameters to use for
+    # validation.
+    # Example:
+    # {
+    #   "of": {
+    #     "button": {
+    #       "background-color": {
+    #         "value": "fuchsia"
+    #       }
+    #     }
+    #   }
+    # }
+    #
+    # TODO: later on, we should have the ability to include a dist/index.css file containing
+    # the municipality styles. This would then allow us to use references to existing design
+    # tokens or even have the OF-specific design tokens included in the municipality dist
+    # already, see for example https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css
+
+    design_token_values = JSONField(
+        _("design token values"),
+        blank=True,
+        default=dict,
+        help_text=_(
+            "Values of various style parameters, such as border radii, background "
+            "colors... Note that this is advanced usage. Any available but un-specified "
+            "values will use fallback default values."
+        ),
+    )
+
+    # session timeouts
 
     admin_session_timeout = models.PositiveIntegerField(
         _("admin session timeout"),
@@ -215,6 +244,42 @@ class GlobalConfiguration(SingletonModel):
             "The cookie group used for analytical cookies. The analytics scripts are "
             "loaded only if this cookie group is accepted by the end-user."
         ),
+    )
+
+    # debug/feature flags
+    enable_react_form = models.BooleanField(
+        _("enable React form page"),
+        default=False,
+        help_text=_(
+            "If enabled, the admin page to create forms will use the new React page."
+        ),
+    )
+
+    default_test_bsn = models.CharField(
+        _("default test BSN"),
+        blank=True,
+        default="",
+        max_length=9,
+        help_text=_(
+            "When provided, submissions that are started will have this BSN set as "
+            "default for the session. Useful to test/demo prefill functionality."
+        ),
+    )
+    default_test_kvk = models.CharField(
+        _("default test KvK Number"),
+        blank=True,
+        default="",
+        max_length=9,
+        help_text=_(
+            "When provided, submissions that are started will have this KvK Number set as "
+            "default for the session. Useful to test/demo prefill functionality."
+        ),
+    )
+
+    display_sdk_information = models.BooleanField(
+        _("display SDK information"),
+        default=False,
+        help_text=_("When enabled, information about the used SDK is displayed."),
     )
 
     class Meta:
