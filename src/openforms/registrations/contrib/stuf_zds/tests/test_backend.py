@@ -23,6 +23,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionReportFactory,
 )
+from stuf.constants import SOAPVersion
 from stuf.tests.factories import SoapServiceFactory
 
 
@@ -244,6 +245,60 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:ontvanger/stuf:administratie": "OntAdmin",
                 "//zkn:stuurgegevens/stuf:ontvanger/stuf:gebruiker": "OntUser",
             },
+        )
+
+    def test_soap_12(self, m):
+        self.service.soap_version = SOAPVersion.soap12
+        self.service.save()
+
+        m.post(
+            self.service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        self.client.create_zaak_identificatie()
+
+        request = m.request_history[0]
+
+        self.assertEqual(request.headers.get("Content-Type"), "application/soap+xml")
+        xml = etree.fromstring(bytes(request.text, encoding="utf8"))
+        soap_header = xml.xpath("/*[local-name()='Envelope']/*[local-name()='Header']")[
+            0
+        ]
+        self.assertEqual(
+            soap_header.nsmap["soapenv"], "http://www.w3.org/2003/05/soap-envelope"
+        )
+
+    def test_soap_11(self, m):
+        self.service.soap_version = SOAPVersion.soap11
+        self.service.save()
+
+        m.post(
+            self.service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        self.client.create_zaak_identificatie()
+
+        request = m.request_history[0]
+
+        self.assertEqual(request.headers.get("Content-Type"), "text/xml")
+        xml = etree.fromstring(bytes(request.text, encoding="utf8"))
+        soap_header = xml.xpath("/*[local-name()='Envelope']/*[local-name()='Header']")[
+            0
+        ]
+        self.assertEqual(
+            soap_header.nsmap["soapenv"], "http://schemas.xmlsoap.org/soap/envelope/"
         )
 
     def test_create_zaak_identificatie(self, m):
