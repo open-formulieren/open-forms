@@ -4,16 +4,13 @@
 {% block content %}
     {% block header %}
         {% include "ui/includes/header.html" %}
+        {% skiplink target="main-content" %}
     {% endblock %}
 
     {% block layout %}
-        <main class="layout">
+        <main class="layout layout--container">
+            {% skiplink_target target="main-content" %}
             {% block layout_inner %}
-                <section class="layout__row layout__column--secondary">
-                    <div class="layout__column">
-                        {% breadcrumbs %}
-                    </div>
-                </section>
             {% endblock %}
         </main>
     {% endblock %}
