@@ -101,7 +101,14 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
         ]
     )
 
-# TODO Add celery beat task that gets all pending/failed submissions and calls the task above
+
+@app.task
+def resend_submissions():
+    # TODO How to accept "permanent" failures to prevent infinitely retrying failed submissions?
+    for submission in Submission.objects.filter(
+        registration_status=RegistrationStatuses.failed
+    ):
+        register_submission.si(submission.id)
 
 
 @app.task(bind=True)

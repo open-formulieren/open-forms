@@ -515,6 +515,12 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.send_emails",
         "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
+    "resend-submissions": {
+        "task": "openforms.utils.registrations.resend_submissions",
+        "schedule": config(
+            "BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60  # every minute
+        ),
+    },
 }
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
