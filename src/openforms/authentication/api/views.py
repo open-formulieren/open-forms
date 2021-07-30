@@ -1,8 +1,8 @@
-from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, serializers, status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ...utils.api.views import ListMixin
@@ -46,4 +46,4 @@ class AuthenticationLogoutView(APIView):
     )
     def delete(self, request, *args, **kwargs):
         request.session.flush()
-        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
