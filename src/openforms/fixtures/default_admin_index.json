@@ -127,6 +127,10 @@
                 "kvkconfig"
             ],
             [
+                "mozilla_django_oidc_db",
+                "openidconnectconfig"
+            ],
+            [
                 "prefill_haalcentraal",
                 "haalcentraalconfig"
             ],

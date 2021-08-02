@@ -31,6 +31,7 @@ django-redis
 django-solo
 django-tinymce
 django-yubin
+mozilla-django-oidc-db
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
 pyopenssl
