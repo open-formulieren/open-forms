@@ -86,6 +86,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
                 }
             ],
             "nextStep": f"http://testserver{submission_step_path}",
+            "canSubmit": True,
         }
 
         self.assertEqual(

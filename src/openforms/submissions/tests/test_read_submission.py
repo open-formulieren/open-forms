@@ -77,6 +77,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                     }
                 ],
                 "nextStep": f"http://testserver{submission_step_path}",
+                "canSubmit": True,
             },
         )
 
