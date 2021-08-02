@@ -9,7 +9,7 @@ from openforms.submissions.models import Submission, SubmissionReport
 from ...base import BasePlugin
 from ...registry import register
 from ..zgw_apis.models import ZgwConfig
-from ..zgw_apis.service import create_document
+from ..zgw_apis.service import create_attachment, create_document
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 
@@ -37,6 +37,17 @@ class ObjectsAPIRegistration(BasePlugin):
             config=config,
         )
 
+        attachment_options = deepcopy(options)
+        attachment_options["informatieobjecttype"] = options[
+            "informatieobjecttype_attachment"
+        ]
+        attachments = []
+        for attachment in submission.attachments:
+            attachment_document = create_attachment(
+                submission.form.name, attachment, attachment_options, config=config
+            )
+            attachments.append(attachment_document["url"])
+
         objects_client = config.objects_service.build_client()
 
         created_object = objects_client.create(
@@ -49,6 +60,7 @@ class ObjectsAPIRegistration(BasePlugin):
                         "data": submission.get_merged_data(),
                         "type": options["productaanvraag_type"],
                         "submission_id": str(submission.uuid),
+                        "attachments": attachments,
                         "pdf_url": document["url"],
                     },
                     "startAt": date.today().isoformat(),

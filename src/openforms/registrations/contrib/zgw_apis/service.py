@@ -39,7 +39,7 @@ def create_document(
     name: str,
     submission_report: SubmissionReport,
     options: dict,
-    config: SingletonModel = None,
+    config: Optional[SingletonModel] = None,
 ) -> dict:
     if not config:
         config = ZgwConfig.get_solo()
@@ -71,9 +71,14 @@ def create_document(
 
 
 def create_attachment(
-    name: str, submission_attachment: SubmissionFileAttachment, options: dict
+    name: str,
+    submission_attachment: SubmissionFileAttachment,
+    options: dict,
+    config: Optional[SingletonModel] = None,
 ) -> dict:
-    config = ZgwConfig.get_solo()
+    if not config:
+        config = ZgwConfig.get_solo()
+
     client = config.drc_service.build_client()
     today = date.today().isoformat()
 
