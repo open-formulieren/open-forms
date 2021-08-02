@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date
 from typing import Optional
 
@@ -24,11 +25,17 @@ class ObjectsAPIRegistration(BasePlugin):
         config = ObjectsAPIConfig.get_solo()
         config.apply_defaults_to(options)
 
-        zgw_config = ZgwConfig.get_solo()
-        zgw_config.apply_defaults_to(options)
-
         submission_report = SubmissionReport.objects.get(submission=submission)
-        document = create_document(submission.form.name, submission_report, options)
+        submission_report_options = deepcopy(options)
+        submission_report_options["informatieobjecttype"] = options[
+            "informatieobjecttype_submission_report"
+        ]
+        document = create_document(
+            submission.form.name,
+            submission_report,
+            submission_report_options,
+            config=config,
+        )
 
         objects_client = config.objects_service.build_client()
 

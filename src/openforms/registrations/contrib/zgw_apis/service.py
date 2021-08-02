@@ -5,6 +5,7 @@ from typing import Optional
 
 from django.utils import timezone
 
+from solo.models import SingletonModel
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
@@ -35,9 +36,14 @@ def create_zaak(options: dict) -> dict:
 
 
 def create_document(
-    name: str, submission_report: SubmissionReport, options: dict
+    name: str,
+    submission_report: SubmissionReport,
+    options: dict,
+    config: SingletonModel = None,
 ) -> dict:
-    config = ZgwConfig.get_solo()
+    if not config:
+        config = ZgwConfig.get_solo()
+
     client = config.drc_service.build_client()
     today = date.today().isoformat()
 
