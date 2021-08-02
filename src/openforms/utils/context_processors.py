@@ -10,6 +10,7 @@ def settings(request):
         "RELEASE",
         "GIT_SHA",
         "SDK_BASE_URL",
+        "PRIVACY_POLICY_URL",
     )
 
     context = {

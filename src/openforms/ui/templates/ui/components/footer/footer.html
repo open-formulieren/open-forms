@@ -1,31 +1,16 @@
 {% load ui %}
 
+{% url 'cookie_consent_cookie_group_list' as manage_cookies_url %}
+
 <footer class="footer">
-    <div class="footer__header">
-        <h2 class="subtitle subtitle--emphasized">Samen maken we onderwijs en ontwikkeling mogelijk</h2>
-    </div>
-
-    <div class="footer__body">
-        <nav class="footer__nav">
-            <h3 class="caption">Language</h3>
-
-            <ul class="list list--compact">
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='English site' %}</li>
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='Deutsche seite' %}</li>
-            </ul>
-        </nav>
-
-
-        <nav class="footer__nav">
-            <h3 class="caption">Service</h3>
-
-            <ul class="list list--compact">
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='Contact' %}</li>
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='Privacy' %}</li>
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='Proclaimer' %}</li>
-                <li class="list__item">{% anchor href='#' hover=True style='inherit' label='Toegankelijkheid' %}</li>
-                <li class="list__item">{% anchor href='admin:login' hover=True style='inherit' label='Inloggen' icon_icon='lock' icon_style='solid' icon_position='right' %}</li>
-            </ul>
-        </nav>
-    </div>
+    <nav class="footer__nav">
+        <ul class="list list--compact">
+            <li class="list__item">
+                {% anchor href=settings.PRIVACY_POLICY_URL hover=True style='inherit' label=_('Privacy policy') %}
+            </li>
+            <li class="list__item">
+                {% anchor href=manage_cookies_url hover=True style='inherit' label=_('Manage cookies') %}
+            </li>
+        </ul>
+    </nav>
 </footer>

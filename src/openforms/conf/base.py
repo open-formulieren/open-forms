@@ -728,7 +728,7 @@ EHERKENNING_MAKELAAR_ID = config(
     "EHERKENNING_MAKELAAR_ID",
     "00000003520354760000",
 )
-EHERKENNING_PRIVACY_POLICY = config(
+PRIVACY_POLICY_URL = config(
     "EHERKENNING_PRIVACY_POLICY",
     "",
 )
@@ -775,7 +775,7 @@ EHERKENNING = {
         "urn:etoegang:1.11:attribute-represented:KvKnr",
     ],
     "privacy_policy_url": {
-        "nl": EHERKENNING_PRIVACY_POLICY,
+        "nl": PRIVACY_POLICY_URL,
     },
     "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
 }

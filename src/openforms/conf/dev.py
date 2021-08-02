@@ -15,6 +15,10 @@ os.environ.setdefault("DB_PASSWORD", "openforms"),
 
 os.environ.setdefault("ENVIRONMENT", "development")
 
+os.environ.setdefault(
+    "EHERKENNING_PRIVACY_POLICY", "https://www.maykinmedia.nl/en/privacy/"
+)
+
 from .base import *  # noqa isort:skip
 
 # Feel free to switch dev to sqlite3 for simple projects,
