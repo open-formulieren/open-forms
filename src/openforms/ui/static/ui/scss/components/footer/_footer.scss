@@ -19,8 +19,8 @@
     }
 
     .list__item {
-      @include margin(auto, margin-right);
       @include tablet {
+        @include margin(auto, margin-right);
         margin-bottom: 0 !important;
       }
     }

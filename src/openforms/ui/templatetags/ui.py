@@ -61,31 +61,8 @@ def skiplink_target(**kwargs):
     }
 
 
-@register.inclusion_tag("ui/components/nav/nav.html")
-def nav(**kwargs):
-    config = get_config(kwargs)
-    return config
-
-
-@register.inclusion_tag("ui/components/breadcrumbs/breadcrumbs.html")
-def breadcrumbs(**kwargs):
-    config = get_config(kwargs)
-    return config
-
-
-@register.inclusion_tag("ui/components/costs_indicator/costs_indicator.html")
-def costs_indicator(**kwargs):
-    config = get_config(kwargs)
-
-
 @register.inclusion_tag("ui/components/a11y_toolbar/a11y_toolbar.html")
 def a11y_toolbar(**kwargs):
-    config = get_config(kwargs)
-    return config
-
-
-@register.inclusion_tag("ui/components/footer/footer.html")
-def footer(**kwargs):
     config = get_config(kwargs)
     return config
 
@@ -145,107 +122,6 @@ def anchor(context, **kwargs):
         "target": config.get("target", "_self"),
         "icon_config": get_icon_config(),
         "icon_position": kwargs.get("icon_position", "left"),
-    }
-
-
-@register.inclusion_tag("ui/components/button/button.html")
-def button(**kwargs):
-    """
-    Renders a button.
-    :param kwargs:
-
-    Example:
-
-        {% button config=config %}
-        {% button option1='foo' option2='bar' %}
-
-    Available options:
-
-        - disabled (bool) (optional): Makes this button non-intractable.
-        - href (str) (optional): Creates an anchor to href, can be a url or a url name.
-        - label (str) (optional): The button label.
-        - name (str) (optional): Name attribute, should only be used when "href" is not set.
-        - src (str) (optional): Path to the image file (sets type to "button").
-        - style (str) (optional): The button style, either "primary", "secondary" or "image". Defaults to "primary".
-        - type (str) (optional): The button type. Defaults to "button".
-
-        - toggle_target (str) (optional): A query selector matching an element to toggle "toggle_modifier" on when
-          clicked.
-        - toggle_modifier (str) (optional): A BEM modifier to toggle on element selected by "toggle_target" when
-          clicked.
-        - toggle_clear_target (str) (optional): A query selector matching an element to remove "toggle_modifier" from
-          "toggle_target" when clicked.
-          clicked.
-
-        - icon_*: Prefixed configuration. See fa_icon.
-
-    :return: dict
-    """
-    config = get_config(kwargs)
-
-    def get_src():
-        return config.get("src", "")
-
-    def get_style():
-        if get_src() and not get_href(config):
-            return "image"
-        return config.get("style", "primary")
-
-    def get_tag():
-        if get_src():
-            return "input"
-        return "a" if get_href(config) else "button"
-
-    def get_type():
-        if get_href(config):
-            return ""
-
-        if get_src():
-            return "image"
-        return config.get("type", "button")
-
-    return {
-        "disabled": config.get("disabled", False),
-        "href": get_href(config),
-        "label": config.get("label", ""),
-        "name": kwargs.get("name", ""),
-        "src": get_src(),
-        "style": get_style(),
-        "type": get_type(),
-        "tag": get_tag(),
-        "toggle_target": config.get("toggle_target"),
-        "toggle_modifier": config.get("toggle_modifier"),
-        "toggle_clear_target": config.get("toggle_clear_target"),
-        "icon_config": get_config_from_prefix(config, "icon"),
-    }
-
-
-@register.inclusion_tag("ui/components/image/image.html")
-def image(**kwargs):
-    """
-    Renders an image.
-    :param kwargs:
-
-    Example:
-
-        {% image config=config %}
-        {% image option1='foo' option2='bar' %}
-
-    Available options:
-
-        - alt (str): The button label.
-        - src (str): Path to the image file.
-
-        - href (str) (optional): Creates an anchor to href, can be a url or a url name.
-
-    :return: dict
-    """
-    config = get_config(kwargs)
-
-    return {
-        "alt": get_required_config_value(config, "alt", "image"),
-        "src": get_required_config_value(config, "src", "image"),
-        "href": get_href(config),
     }
 
 
