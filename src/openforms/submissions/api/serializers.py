@@ -85,6 +85,13 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "submission_uuid": "submission__uuid",
         },
     )
+    can_submit = serializers.BooleanField(
+        label=_("can submit"),
+        source="form.can_submit",
+        help_text=_("Whether the user is allowed to submit this form."),
+        required=False,
+        read_only=True,
+    )
 
     class Meta:
         model = Submission
@@ -94,6 +101,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "form",
             "steps",
             "next_step",
+            "can_submit",
         )
         extra_kwargs = {
             "id": {
