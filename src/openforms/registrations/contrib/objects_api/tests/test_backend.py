@@ -24,15 +24,12 @@ class ObjectsAPIBackendTests(TestCase):
     def setUpTestData(cls):
         ObjectsAPIConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
             objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
             objecttype_version=1,
             productaanvraag_type="terugbelnotitie",
-        )
-        ZgwConfigFactory.create(
-            zrc_service__api_root="https://zaken.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-            ztc_service__api_root="https://catalogi.nl/api/v1/",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
             organisatie_rsin="000000000",
         )
 
@@ -87,7 +84,7 @@ class ObjectsAPIBackendTests(TestCase):
             objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
             organisatie_rsin="123456782",
             vertrouwelijkheidaanduiding="geheim",
         )

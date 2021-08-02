@@ -7,6 +7,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFact
 
 class ObjectsAPIConfigFactory(factory.django.DjangoModelFactory):
     objects_service = factory.SubFactory(ServiceFactory, api_type=APITypes.orc)
+    drc_service = factory.SubFactory(ServiceFactory, api_type=APITypes.drc)
 
     class Meta:
         model = ObjectsAPIConfig
