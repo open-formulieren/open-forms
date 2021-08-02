@@ -27,6 +27,7 @@ const initialFormState = {
         isDeleted: false,
         maintenanceMode: false,
         submissionConfirmationTemplate: '',
+        canSubmit: true,
     },
     literals: {
         beginText: {
