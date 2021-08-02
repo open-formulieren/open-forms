@@ -60,7 +60,11 @@ class Form(models.Model):
         ),
         blank=True,
     )
-
+    can_submit = models.BooleanField(
+        _("can submit"),
+        default=True,
+        help_text=_("Whether the user is allowed to submit this form or not."),
+    )
     show_progress_indicator = models.BooleanField(
         _("show progress indicator"),
         default=True,
