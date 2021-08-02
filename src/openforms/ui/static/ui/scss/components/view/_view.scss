@@ -8,6 +8,20 @@
     -moz-osx-font-smoothing: grayscale;
     position: relative;
     margin: 0;
+
+    // main layout w/ footer pushdown
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    > .layout {
+      flex-grow: 1;
+    }
+
+    > .page-header,
+    > .footer {
+      flex-shrink: 0;
+    }
   }
 
   &--open:before {
@@ -15,6 +29,6 @@
     content: '';
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 100;
-
   }
+
 }
