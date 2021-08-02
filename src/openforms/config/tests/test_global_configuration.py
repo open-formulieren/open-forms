@@ -18,7 +18,11 @@ from ..models import GlobalConfiguration
 LOGO_FILE = Path(settings.BASE_DIR) / "docs" / "logo.svg"
 
 
-@override_settings(CACHES=NOOP_CACHES, MEDIA_ROOT=tempfile.mkdtemp())
+@override_settings(
+    CACHES=NOOP_CACHES,
+    MEDIA_ROOT=tempfile.mkdtemp(),
+    SESSION_ENGINE="django.contrib.sessions.backends.db",
+)
 class AdminTests(WebTest):
     @classmethod
     def setUpTestData(cls):

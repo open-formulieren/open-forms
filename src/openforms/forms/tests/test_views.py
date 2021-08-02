@@ -10,7 +10,9 @@ from openforms.tests.utils import NOOP_CACHES
 from .factories import FormFactory
 
 
-@override_settings(CACHES=NOOP_CACHES)
+@override_settings(
+    CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
+)
 class FormListViewTests(WebTest):
 
     url = reverse_lazy("forms:form-list")
@@ -55,7 +57,9 @@ class FormListViewTests(WebTest):
         self.assertTemplateUsed(list_page, "core/views/form/form_list.html")
 
 
-@override_settings(CACHES=NOOP_CACHES)
+@override_settings(
+    CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
+)
 class FormDetailViewTests(WebTest):
     @classmethod
     def setUpTestData(cls):

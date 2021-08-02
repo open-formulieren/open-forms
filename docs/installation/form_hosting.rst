@@ -107,7 +107,7 @@ The configuration in the admin requires this to be provided as JSON, for example
     }
 
 
-.. _style dictionary: https://amzn.github.io/style-dictionary/#/
+.. _style dictionary: https://amzn.github.io/style-dictionary/
 
 Configuration with CNAME DNS records
 ====================================
