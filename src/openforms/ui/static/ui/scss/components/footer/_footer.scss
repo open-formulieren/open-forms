@@ -1,13 +1,14 @@
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/responsive';
+
 @import 'constants';
+@import 'vars';
 
 
 .footer {
-  @include color-primary(background-color);
   @include margin(true, padding);
-  // @include rows(1, (padding-top, padding-bottom));
+  background-color: $footer-background;
   box-sizing: border-box;
   min-height: $footer-min-height;
 
@@ -26,6 +27,6 @@
   }
 
   .list__item {
-    @include color-background(color);
+    color: $footer-color;
   }
 }
