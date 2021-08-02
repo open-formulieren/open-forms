@@ -33,12 +33,12 @@ class ObjectsAPIBackendTests(TestCase):
             organisatie_rsin="000000000",
         )
 
-    def tearDown(self):
-        super().tearDown()
+    def setUp(self):
+        super().setUp()
 
-        # Reset the schema fetcher cache, to verify that
-        # the OAS is being retrieved on every submission
-        schema_fetcher.cache = {}
+        # ensure the schema cache is cleared before and after each test
+        schema_fetcher.cache.clear()
+        self.addCleanup(schema_fetcher.cache.clear)
 
     def test_submission_with_objects_api_backend_override_defaults(self, m):
         submission = SubmissionFactory.from_components(
