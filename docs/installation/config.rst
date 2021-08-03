@@ -109,6 +109,8 @@ Log settings
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
 
+.. _installation_config_eherkenning:
+
 DigiD/EHerkenning settings
 --------------------------
 

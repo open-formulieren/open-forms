@@ -1,9 +1,12 @@
+{% load i18n %}
 <nav class="a11y-toolbar">
     <ul class="a11y-toolbar__list">
-        <li class="a11y-toolbar__list-item">
-            <a class="anchor" href="{% url 'api:api-docs' %}">API docs</a>
-        </li>
-        <li class="a11y-toolbar__list-item"><a class="anchor" href="javascript:print()">Print deze pagina</a></li>
-        <li class="a11y-toolbar__list-item"><a class="anchor" href="#skiplink_target">Terug naar boven</a></li>
+        {% if user.is_staff %}
+            <li class="a11y-toolbar__list-item">
+                <a class="anchor" href="{% url 'api:api-docs' %}">{% trans "API docs" %}</a>
+            </li>
+        {% endif %}
+        <li class="a11y-toolbar__list-item"><a class="anchor" href="javascript:print()">{% trans "Print this page" %}</a></li>
+        <li class="a11y-toolbar__list-item"><a class="anchor" href="#main-content">{% trans "Back to top" %}</a></li>
     </ul>
 </nav>

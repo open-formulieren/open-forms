@@ -1,0 +1,15 @@
+@import '~microscope-sass/lib/typography';
+
+@import '../../settings';
+
+@import './vars';
+
+@mixin of-anchor($hover-to-decorate: $typography-default-hover-link) {
+  $_typography-color-link: $typography-color-link;
+  $_typography-color-link-hover: $typography-color-link-hover;
+  $typography-color-link: $of-color-link !global;
+  $typography-color-link-hover: $of-color-link-hover !global;
+  @include anchor($hover-to-decorate);
+  $typography-color-link: $_typography-color-link !global;
+  $typography-color-link-hover: $_typography-color-link-hover !global;
+}

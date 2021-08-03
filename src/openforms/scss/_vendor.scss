@@ -4,5 +4,11 @@
 // this violates a check by postcss-selector-lint, but it's the SDK snippet which has no
 // classnames to target.
 #openforms-container {
-  @include margin(true, $properties: (margin-left margin-right), $value-mobile: -10px, $value-tablet: -10px, $value-laptop: -20px);
+  @include margin(
+    true,
+    $properties: (margin-left margin-right),
+    $value-mobile: -$grid-container-margin,
+    $value-tablet: -$grid-container-margin,
+    $value-laptop: -20px
+  );
 }

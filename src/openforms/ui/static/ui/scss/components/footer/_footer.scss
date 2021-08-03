@@ -1,42 +1,32 @@
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/responsive';
+
 @import 'constants';
+@import 'vars';
 
 
 .footer {
-  @include color-primary(background-color);
-  @include rows(1, (padding-top, padding-bottom));
+  @include margin(true, padding);
+  background-color: $footer-background;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
   min-height: $footer-min-height;
 
-  @media print {
-    display: none;
-  }
+  .footer__nav {
+    .list {
+      @include container(flex);
+      @include responsive(flex-direction, column, row);
+    }
 
-  .footer__header,
-  .footer__body {
-    @include margin(true, margin-top);
-    @include margin(true, margin-bottom);
-    @include container(flex);
-
-    @include mobile-only {
-      padding: 0;
+    .list__item {
+      @include tablet {
+        @include margin(auto, margin-right);
+        margin-bottom: 0 !important;
+      }
     }
   }
 
-  .footer__nav {
-    @include columns-responsive(2, 2, 2, 2);
-  }
-
-  .subtitle,
-  .caption,
   .list__item {
-    @include color-background(color);
-  }
-
-  .caption {
-    font-weight: bold;
+    color: $footer-color;
   }
 }

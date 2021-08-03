@@ -2,23 +2,25 @@
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/typography';
+
 @import '../nav/constants';
 @import '../footer/constants';
+@import './vars';
 
 .layout {
-  background-color: $color-gray;
+  background-color: $layout-color-background;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - #{$nav-min-height-tablet + $footer-min-height});
+
+  &--container {
+    @include margin(true, $properties: padding, $value-mobile: 0, $value-tablet: $typography-margin-text);
+  }
 
   &__row {
     @include container(flex);
     @include responsive(flex-direction, column, row);
 
-
     @include mobile-only {
-      @include container-margin($properties: margin-top);
-      @include container-margin($properties: margin-bottom);
       padding: 0;
     }
   }

@@ -1,26 +1,36 @@
-{% extends 'master.html' %}
-{% load ui %}
+{% extends "master.html" %}
+{% load ui solo_tags style_dictionary %}
 
 {% block content %}
-    {% block nav %}
-        {% skiplink %}
-        {% nav %}
-        {% skiplink_target %}
+    {% block header %}
+        {% include "ui/includes/header.html" %}
+        {% skiplink target="main-content" %}
     {% endblock %}
 
     {% block layout %}
-        <main class="layout">
+        <main class="layout layout--container">
+            {% skiplink_target id="main-content" %}
             {% block layout_inner %}
-                <section class="layout__row layout__column--secondary">
-                    <div class="layout__column">
-                        {% breadcrumbs %}
-                    </div>
-                </section>
             {% endblock %}
         </main>
     {% endblock %}
 
     {% block footer %}
-        {% footer %}
+        {% include "ui/components/footer/footer.html" %}
     {% endblock %}
+{% endblock %}
+
+
+{% block extra_css %}
+{% get_solo 'config.GlobalConfiguration' as config %}
+{# Template out the configured design tokens JSON, if provided #}
+{% if config.design_token_values %}
+    {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
+    <style>
+    :root {{% for token, value in design_tokens.items %}
+      {{ token }}: {{ value }};{% endfor %}
+    }
+    </style>
+{% endif %}
+
 {% endblock %}

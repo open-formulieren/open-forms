@@ -1,0 +1,5 @@
+@import '../../settings';
+
+// colors
+$footer-background: var(--of-footer-background, $color-primary);
+$footer-color: var(--of-footer-color, $color-background);

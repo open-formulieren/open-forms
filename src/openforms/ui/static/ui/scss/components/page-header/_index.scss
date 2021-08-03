@@ -1,0 +1,47 @@
+@import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/grid';
+@import '~microscope-sass/lib/typography';
+
+@import './vars';
+
+.page-header {
+  @include margin(
+    true,
+    $properties: padding,
+    $value-mobile: $page-header-padding--mobile,
+    $value-tablet: $page-header-padding--tablet,
+    $value-laptop: $page-header-padding--laptop,
+    $value-desktop: $page-header-padding--desktop,
+  );
+
+  background: $page-header-background;
+  display: flex;
+  justify-content: flex-start;
+
+  &--has-logo {
+    .page-header__return-url {
+      &, &:hover {
+        color: transparent !important;
+        text-decoration: none !important;
+      }
+
+      font-size: 0;
+
+      background-image: $page-header-logo-url;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      min-width: 100px;
+      min-height: 50px;
+      width: $page-header-logo-width;
+      height: $page-header-logo-height;
+
+      &:hover {
+      }
+    }
+  }
+
+  & &__return-url {
+    display: block;
+  }
+}

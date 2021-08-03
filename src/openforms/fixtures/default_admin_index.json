@@ -200,6 +200,15 @@
     }
 },
 {
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 6,
+        "name": "Handige links",
+        "slug": "handige-links",
+        "models": []
+    }
+},
+{
     "model": "admin_index.applink",
     "fields": {
         "order": 0,
@@ -208,6 +217,39 @@
         ],
         "name": "Test email backend",
         "link": "/admin/email/test/"
+    }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 1,
+        "app_group": [
+            "handige-links"
+        ],
+        "name": "API Documentatie",
+        "link": "/api/docs/"
+    }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 2,
+        "app_group": [
+            "handige-links"
+        ],
+        "name": "Documentatie",
+        "link": "http://open-forms.readthedocs.io/"
+    }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 3,
+        "app_group": [
+            "handige-links"
+        ],
+        "name": "Github",
+        "link": "https://github.com/open-formulieren/open-forms"
     }
 }
 ]

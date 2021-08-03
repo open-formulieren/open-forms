@@ -1,14 +1,17 @@
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/typography';
 
+@import './vars';
+@import './mixins';
+
 .anchor {
   @include text;
 
   &:not(#{&}--hover) {
-    @include anchor;
+    @include of-anchor;
   }
   &--hover {
-    @include anchor(true);
+    @include of-anchor(true);
   }
 
   &--active {

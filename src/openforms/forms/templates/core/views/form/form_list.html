@@ -1,1 +1,11 @@
 {% extends 'ui/views/abstract/list.html' %}
+{% load i18n %}
+
+{% block card %}
+<div class="info-bar">
+    <span>{% blocktrans trimmed %}
+    You are seeing this page because you're a staff user or the redirect URL is not configured (yet).
+    {% endblocktrans %}</span>
+</div>
+{{ block.super }}
+{% endblock %}
