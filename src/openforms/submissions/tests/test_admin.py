@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -5,6 +7,7 @@ from django_webtest import WebTest
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
 
+from ..constants import RegistrationStatuses
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
@@ -142,3 +145,25 @@ class TestSubmissionAdmin(WebTest):
             response["content-type"],
             "text/html; charset=utf-8",
         )
+
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    def test_resend_submissions_only_resends_failed_submissions(self, task_mock):
+        failed = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.failed
+        )
+        not_failed = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.pending
+        )
+
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "resend_submissions"
+        form["_selected_action"] = [str(failed.pk), str(not_failed.pk)]
+
+        form.submit()
+
+        self.assertEqual(task_mock.call_count, 1)
+        task_mock.assert_called_once_with(failed.id)

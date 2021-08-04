@@ -108,7 +108,7 @@ def resend_submissions():
         completed_on__gte=timezone.now()
         - timedelta(hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT),
     ):
-        register_submission.si(submission.id)
+        register_submission.delay(submission.id)
 
 
 @app.task(bind=True)

@@ -107,7 +107,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             ),
         )
         for submission in submissions:
-            register_submission.si(submission.id)
+            register_submission.delay(submission.id)
 
     resend_submissions.short_description = _(
         "Resend %(verbose_name_plural)s to the registration backend."
