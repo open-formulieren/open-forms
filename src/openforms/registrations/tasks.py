@@ -5,7 +5,6 @@ from datetime import timedelta
 from typing import Optional, Tuple
 
 from django.conf import settings
-from django.db import transaction
 from django.utils import timezone
 
 from openforms.submissions.constants import RegistrationStatuses
@@ -104,9 +103,10 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
 
 @app.task
 def resend_submissions():
-    # TODO How to accept "permanent" failures to prevent infinitely retrying failed submissions?
     for submission in Submission.objects.filter(
-        registration_status=RegistrationStatuses.failed
+        registration_status=RegistrationStatuses.failed,
+        completed_on__gte=timezone.now()
+        - timedelta(hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT),
     ):
         register_submission.si(submission.id)
 
