@@ -524,8 +524,8 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
-    "CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT", default=48
-)  # hours
+    "CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT", default=48  # hours
+)
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
 # the drawback that tasks should be idempotent (if they execute partially, the mutations

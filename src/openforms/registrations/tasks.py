@@ -39,7 +39,7 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
 
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
-    submission.save()
+    submission.save(update_fields=["last_register_date", "registration_status"])
     # figure out which registry and backend to use from the model field used
     form = submission.form
     backend = form.registration_backend
@@ -48,7 +48,7 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
     if not backend:
         logger.info("Form %s has no registration plugin configured, aborting", form)
         submission.registration_status = RegistrationStatuses.success
-        submission.save()
+        submission.save(update_fields=["registration_status"])
         return
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
@@ -69,7 +69,7 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
         if task.request.retries <= settings.CELERY_MAX_RETRIES:
             return task.retry(
                 submission_id=submission_id,
-                countdown=2 ** task.request.retries,
+                countdown=60 ** task.request.retries,
             )
         else:
             formatted_tb = traceback.format_exc()

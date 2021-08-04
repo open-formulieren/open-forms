@@ -10,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from celery.exceptions import Retry
+from freezegun import freeze_time
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
@@ -53,6 +54,7 @@ class RegistrationHookTests(TestCase):
             },
         )
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_assertion_plugin_with_deserialized_options(self):
         register = Registry()
 
@@ -85,7 +87,9 @@ class RegistrationHookTests(TestCase):
             self.submission.registration_result,
             {"result": "ok"},
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_plugin_with_custom_result_serializer(self):
         register = Registry()
 
@@ -114,8 +118,10 @@ class RegistrationHookTests(TestCase):
             self.submission.registration_result,
             {"external_id": str(result_uuid)},
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @override_settings(CELERY_MAX_RETRIES=-1)
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration(self):
         register = Registry()
 
@@ -140,7 +146,9 @@ class RegistrationHookTests(TestCase):
         )
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_retrying_registration(self):
         register = Registry()
 
@@ -164,7 +172,9 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.in_progress
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_retrying_registration_already_in_progress_just_returns(self):
         register = Registry()
 
@@ -196,7 +206,9 @@ class RegistrationHookTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
             form__registration_backend="", form__registration_backend_options={}
@@ -215,6 +227,7 @@ class RegistrationHookTests(TestCase):
         self.assertIsNone(
             submission_no_registration_backend.registration_result,
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
 
 class ResendSubmissionTest(TestCase):
