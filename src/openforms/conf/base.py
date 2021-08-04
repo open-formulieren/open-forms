@@ -516,7 +516,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
     "resend-submissions": {
-        "task": "openforms.utils.registrations.resend_submissions",
+        "task": "openforms.registrations.tasks.resend_submissions",
         "schedule": config(
             "BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60  # every minute
         ),
