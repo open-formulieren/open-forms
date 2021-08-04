@@ -29,7 +29,7 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
 
     if submission.registration_status == RegistrationStatuses.success:
-        # It's possible for two instance of this task to run for the same submission
+        # It's possible for two instances of this task to run for the same submission
         #  (eg.  A user runs the admin action and the celery beat task runs)
         # so if the submission has already succeed we just return
         return

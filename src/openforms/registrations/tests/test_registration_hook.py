@@ -175,7 +175,7 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @freeze_time("2021-08-04T12:00:00+02:00")
-    def test_retrying_registration_already_in_progress_just_returns(self):
+    def test_retrying_registration_already_succeeded_just_returns(self):
         register = Registry()
 
         # register the callback, including the assertions
@@ -191,7 +191,9 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
 
+        last_register_date = timezone.now() - timedelta(hours=1)
         submission = SubmissionFactory.create(
+            last_register_date=last_register_date,
             registration_status=RegistrationStatuses.success,
             form__registration_backend="callback",
             form__registration_backend_options={
@@ -206,7 +208,7 @@ class RegistrationHookTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
-        self.assertEqual(self.submission.last_register_date, timezone.now())
+        self.assertEqual(submission.last_register_date, last_register_date)
 
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):

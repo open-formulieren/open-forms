@@ -537,7 +537,7 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
-# After this amount of times to retry the celery task before stopping
+# Amount of times to retry the celery task before stopping
 CELERY_MAX_RETRIES = config("CELERY_MAX_RETRIES", default=10)
 
 #
