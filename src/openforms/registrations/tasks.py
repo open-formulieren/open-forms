@@ -1,5 +1,4 @@
 import logging
-import random
 import traceback
 from datetime import timedelta
 from typing import Optional, Tuple
@@ -25,16 +24,14 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True)
+@app.task(bind=True, max_retries=settings.CELERY_MAX_RETRIES)
 def register_submission(task, submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
-    if submission.registration_status not in [
-        RegistrationStatuses.pending,
-        RegistrationStatuses.failed,
-    ]:
-        # Only allow registering the submission if it is pending
-        # (implying the first time this has been registered) or if it is in the failed state
-        # This will prevent two separate tasks trying to register the same submission
+
+    if submission.registration_status == RegistrationStatuses.success:
+        # It's possible for two instance of this task to run for the same submission
+        #  (eg.  A user runs the admin action and the celery beat task runs)
+        # so if the submission has already succeed we just return
         return
 
     submission.last_register_date = timezone.now()
