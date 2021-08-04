@@ -69,7 +69,7 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
         if task.request.retries <= settings.CELERY_MAX_RETRIES:
             return task.retry(
                 submission_id=submission_id,
-                countdown=int(random.uniform(2, 4)) ** task.request.retries,
+                countdown=2 ** task.request.retries,
             )
         else:
             formatted_tb = traceback.format_exc()
@@ -96,7 +96,6 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
         update_fields=[
             "registration_status",
             "registration_result",
-            "last_register_date",
         ]
     )
 
