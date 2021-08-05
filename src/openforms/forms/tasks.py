@@ -1,3 +1,4 @@
+import copy
 import logging
 
 from djangorestframework_camel_case.util import camelize
@@ -5,6 +6,18 @@ from djangorestframework_camel_case.util import camelize
 from ..celery import app
 
 logger = logging.getLogger(__name__)
+
+
+def _remove_key_from_dict(dictionary, key):
+    for dict_key in list(dictionary.keys()):
+        if key == dict_key:
+            del dictionary[key]
+        elif isinstance(dictionary[dict_key], dict):
+            _remove_key_from_dict(dictionary[dict_key], key)
+        elif isinstance(dictionary[dict_key], list):
+            for value in dictionary[dict_key]:
+                if isinstance(value, dict):
+                    _remove_key_from_dict(value, key)
 
 
 @app.task()
@@ -27,7 +40,8 @@ def detect_formiojs_configuration_snake_case(
     if fd is None:  # in case the record does not exist (anymore) in the DB
         return
 
-    config_now = fd.configuration
+    config_now = copy.deepcopy(fd.configuration)
+    _remove_key_from_dict(config_now, 'time_24hr')
     camelized_config = camelize(config_now)
 
     if config_now != camelized_config:
