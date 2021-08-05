@@ -14,6 +14,7 @@ from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 
 from ...forms.validators import validate_not_maintainance_mode
+from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from .fields import NestedRelatedField
 
@@ -204,6 +205,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 "allow_null": True,
             },
         }
+
+    def to_representation(self, instance):
+        # invoke the configured form logic to dynamically update the Formio.js configuration
+        evaluate_form_logic(instance, instance.submission.data)
+        return super().to_representation(instance)
 
 
 class FormDataSerializer(serializers.Serializer):
