@@ -46,6 +46,37 @@ class TestFormDefinitionAdmin(WebTest):
             str(response.content),
         )
 
+    def test_used_in_forms_shows_forms_for_each_for_each_form_definition_without_duplicates(
+        self,
+    ):
+        second_form_definition = FormDefinitionFactory.create()
+        second_form = FormFactory.create()
+        second_form_url = reverse(
+            "admin:forms_form_change",
+            kwargs={"object_id": second_form.pk},
+        )
+
+        FormStepFactory.create(form=self.form, form_definition=second_form_definition)
+        FormStepFactory.create(form=second_form, form_definition=self.form_definition)
+        FormStepFactory.create(form=second_form, form_definition=second_form_definition)
+
+        # Duplicate steps
+        FormStepFactory.create(form=self.form, form_definition=second_form_definition)
+        FormStepFactory.create(form=second_form, form_definition=second_form_definition)
+
+        response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
+
+        self.assertInHTML(
+            f'<li><a href="{self.form_url}">{self.form.name}</a></li>',
+            str(response.content),
+            count=2,
+        )
+        self.assertInHTML(
+            f'<li><a href="{second_form_url}">{second_form.name}</a></li>',
+            str(response.content),
+            count=2,
+        )
+
     def test_make_copies_action_makes_copy_of_a_form_definition(self):
         response = self.app.get(
             reverse("admin:forms_formdefinition_changelist"), user=self.user
