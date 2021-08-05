@@ -3,7 +3,7 @@ import uuid as _uuid
 from copy import deepcopy
 from typing import List
 
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
@@ -269,3 +269,27 @@ class Form(models.Model):
         for form_definition in created_form_definitions:
             form_steps.append(FormStep(form=self, form_definition=form_definition))
         FormStep.objects.bulk_create(form_steps)
+
+
+class FormLogic(models.Model):
+    form_step = models.ForeignKey(
+        to="forms.FormStep",
+        on_delete=models.CASCADE,
+        help_text=_("Form step to which the JSON logic applies."),
+    )
+    json_logic_trigger = JSONField(
+        verbose_name=_("JSON logic"),
+        help_text=_("JSON logic associated with a step in a form."),
+    )
+    component = models.CharField(
+        verbose_name=_("component"),
+        help_text=_(
+            "Formio key of the component in the step to which the logic applies."
+        ),
+        max_length=100,
+    )
+    actions = ArrayField(
+        JSONField(default=dict),
+        verbose_name=_("actions"),
+        help_text=_("What action to perform if the JSON logic evaluates to true."),
+    )
