@@ -1,6 +1,8 @@
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/typography';
 
+@import '~react-tabs/style/react-tabs';
+
 // this violates a check by postcss-selector-lint, but it's the SDK snippet which has no
 // classnames to target.
 #openforms-container {
