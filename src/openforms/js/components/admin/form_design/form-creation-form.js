@@ -17,6 +17,7 @@ import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDP
 import TinyMCEEditor from "./Editor";
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from "./FormObjectTools";
+import FormLogic from './FormLogic';
 
 const initialFormState = {
     form: {
@@ -670,7 +671,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
 
 
-            <Tabs>
+            <Tabs defaultIndex={2}>
                 <TabList>
                     <Tab>Formulier</Tab>
                     <Tab>Stappen en velden</Tab>
@@ -736,7 +737,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 
                 <TabPanel>
                     <Fieldset title="Logica">
-                        LOGIC
+                        <FormLogic formSteps={state.formSteps.data} />
                     </Fieldset>
                 </TabPanel>
             </Tabs>
