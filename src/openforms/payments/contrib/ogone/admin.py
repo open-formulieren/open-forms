@@ -1,10 +1,6 @@
 from django.contrib import admin
 
 from openforms.payments.contrib.ogone.models import OgoneMerchant
-
-# @admin.register(OgoneConfig)
-# class OgoneConfigAdmin(admin.ModelAdmin):
-#     pass
 from openforms.payments.registry import register
 
 
@@ -31,7 +27,11 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
         "endpoint",
     )
 
-    def feedback_url(self, request, obj=None):
+    def get_queryset(self, request):
+        self.request = request
+        return super().get_queryset(request)
+
+    def feedback_url(self, obj=None):
         if not obj:
             return ""
-        return register["ogone-legacy"].get_webhook_url(request)
+        return register["ogone-legacy"].get_webhook_url(self.request)

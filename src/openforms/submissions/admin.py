@@ -5,9 +5,10 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
+from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
-
-from .constants import IMAGE_COMPONENTS, RegistrationStatuses
+from .constants import IMAGE_COMPONENTS
+from .constants import RegistrationStatuses
 from .exports import export_submissions
 from .models import (
     Submission,
@@ -28,6 +29,37 @@ class SubmissionStepInline(admin.StackedInline):
     )
 
 
+class SubmissionPaymentInline(admin.StackedInline):
+    model = SubmissionPayment
+    extra = 0
+    fields = (
+        "uuid",
+        "created",
+        "submission",
+        "plugin_id",
+        "form_url",
+        "order_id",
+        "amount",
+        "status",
+    )
+    readonly_fields = (
+        "uuid",
+        "created",
+        "submission",
+        "plugin_id",
+        "form_url",
+        "order_id",
+        "amount",
+        "status",
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
@@ -42,6 +74,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     search_fields = ("form__name",)
     inlines = [
         SubmissionStepInline,
+        SubmissionPaymentInline,
     ]
     readonly_fields = [
         "created_on",

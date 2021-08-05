@@ -53,7 +53,6 @@ class OgoneMerchant(models.Model):
     def clean(self):
         super().clean()
         if not self.endpoint_custom and not self.endpoint_preset:
-            # TODO test this
             raise ValidationError(
                 _("Specify either '%s' or '%s'")
                 % (_("Preset Endpoint"), _("Custom Endpoint"))
