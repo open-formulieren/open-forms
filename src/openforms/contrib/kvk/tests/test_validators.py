@@ -50,16 +50,16 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
     def test_kvkNumber_validator(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=69599084",
+            "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=200,
             json=self.load_json_mock("companies.json"),
         )
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=90004760",
+            "https://companies/v1/zoeken?kvkNummer=90004760",
             status_code=404,
         )
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=68750110",
+            "https://companies/v1/zoeken?kvkNummer=68750110",
             status_code=500,
         )
 
@@ -90,12 +90,12 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
     def test_rsin_validator(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?rsin=111222333",
+            "https://companies/v1/zoeken?rsin=111222333",
             status_code=200,
             json=self.load_json_mock("companies.json"),
         )
         m.get(
-            "https://companies/api/v2/testprofile/companies?rsin=063308836",
+            "https://companies/v1/zoeken?rsin=063308836",
             status_code=404,
         )
 
@@ -122,12 +122,12 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
     def test_branchNumber_validator(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?branchNumber=112233445566",
+            "https://companies/v1/zoeken?vestigingsnummer=112233445566",
             status_code=200,
             json=self.load_json_mock("companies.json"),
         )
         m.get(
-            "https://companies/api/v2/testprofile/companies?branchNumber=665544332211",
+            "https://companies/v1/zoeken?vestigingsnummer=665544332211",
             status_code=404,
         )
 

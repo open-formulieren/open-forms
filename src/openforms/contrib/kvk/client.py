@@ -29,7 +29,7 @@ class KVKClient:
 
         try:
             results = client.operation(
-                config.use_operation,
+                "getResults",
                 method="GET",
                 data=None,
                 request_kwargs=dict(

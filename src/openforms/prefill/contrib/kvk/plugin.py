@@ -23,7 +23,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
     verbose_name = _("KvK Company by KvK number")
 
     # the KVK api also supports lookup by RSIN and branchNumber but we only support kvkNumber
-    query_param = "kvkNumber"
+    query_param = "kvkNummer"
     submission_attr = "kvk"
     requires_auth = AuthAttribute.kvk
 
@@ -46,13 +46,12 @@ class KVK_KVKNumberPrefill(BasePlugin):
         except (RequestException, ClientError, KVKClientError):
             return {}
 
-        items = results["data"]["items"]
+        items = results["resultaten"]
         if not items:
             return {}
 
         if len(items) > 1:
-            logger.warning("multiple results for")
-            return {}
+            logger.warning("multiple results for KvK search")
 
         data = items[0]
 
