@@ -7,7 +7,10 @@ from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.zgw_apis.plugin import ZGWRegistration
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+)
 
 from .factories import ZgwConfigFactory
 
@@ -60,6 +63,10 @@ class ZGWBackendTests(TestCase):
             bsn="111222333",
         )
 
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+        )
+
         zgw_form_options = dict(
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
@@ -83,21 +90,47 @@ class ZGWBackendTests(TestCase):
         )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+                    ),
+                    "status_code": 201,
+                },
+            ],
         )
         m.post(
             "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            status_code=201,
-            json=generate_oas_component(
-                "zaken",
-                "schemas/ZaakInformatieObject",
-                url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
-            ),
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "zaken",
+                        "schemas/ZaakInformatieObject",
+                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": generate_oas_component(
+                        "zaken",
+                        "schemas/ZaakInformatieObject",
+                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/2",
+                    ),
+                    "status_code": 201,
+                },
+            ],
         )
 
         m.get(
@@ -167,8 +200,8 @@ class ZGWBackendTests(TestCase):
             result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
 
-        # 10 requests in total, 3 of which are GETs on the OAS and 2 are searches
-        self.assertEqual(len(m.request_history), 10)
+        # 12 requests in total, 3 of which are GETs on the OAS and 2 are searches and 2 are the attachment
+        self.assertEqual(len(m.request_history), 12)
 
         create_zaak = m.request_history[1]
         create_zaak_body = create_zaak.json()
@@ -244,4 +277,27 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             create_status_body["statustype"],
             "https://catalogus.nl/api/v1/statustypen/1",
+        )
+
+        create_attachment = m.request_history[10]
+        create_attachment_body = create_attachment.json()
+        self.assertEqual(create_attachment.method, "POST")
+        self.assertEqual(
+            create_attachment.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
+
+        relate_attachment = m.request_history[11]
+        relate_attachment_body = relate_attachment.json()
+        self.assertEqual(relate_attachment.method, "POST")
+        self.assertEqual(
+            relate_attachment.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+        )
+        self.assertEqual(
+            relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+        )
+        self.assertEqual(
+            relate_attachment_body["informatieobject"],
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
         )
