@@ -21,6 +21,7 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionReportFactory,
 )
 from stuf.constants import SOAPVersion
@@ -404,6 +405,39 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:identificatie": "bar",
                 "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
+                "//zkn:object/zkn:formaat": "pdf",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
+            },
+        )
+
+    def test_create_zaak_attachment(self, m):
+        m.post(
+            self.service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        submission_attachment = SubmissionFileAttachmentFactory.create(
+            file_name="my-attachment.doc"
+        )
+
+        self.client.create_zaak_attachment(
+            zaak_id="foo", doc_id="bar", submission_attachment=submission_attachment
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zkn:edcLk01")
+        self.assertStuurgegevens(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                "//zkn:object/zkn:identificatie": "bar",
+                "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:formaat": "doc",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },
@@ -532,6 +566,11 @@ class StufZDSPluginTests(StufTestBase):
             },
         )
 
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+        )
+
         m.post(
             self.service.url,
             content=load_mock(
@@ -613,8 +652,44 @@ class StufZDSPluginTests(StufTestBase):
             xml_doc, "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']"
         )
 
+        # PDF report
         xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
 
         xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
+                "//zkn:object/zkn:formaat": "pdf",
+            },
+        )
+
+        # attachment
+        xml_doc = xml_from_request_history(m, 4)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 5)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:formaat": "doc",
+            },
+        )
