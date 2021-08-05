@@ -8,18 +8,6 @@ from ..celery import app
 logger = logging.getLogger(__name__)
 
 
-def _remove_key_from_dict(dictionary, key):
-    for dict_key in list(dictionary.keys()):
-        if key == dict_key:
-            del dictionary[key]
-        elif isinstance(dictionary[dict_key], dict):
-            _remove_key_from_dict(dictionary[dict_key], key)
-        elif isinstance(dictionary[dict_key], list):
-            for value in dictionary[dict_key]:
-                if isinstance(value, dict):
-                    _remove_key_from_dict(value, key)
-
-
 @app.task()
 def detect_formiojs_configuration_snake_case(
     form_definition_id: int, raise_exception=False
@@ -35,13 +23,14 @@ def detect_formiojs_configuration_snake_case(
     mistakes in API endpoints, see github issue #449 for an example of such a mistake.
     """
     from .models import FormDefinition
+    from .utils import remove_key_from_dict
 
     fd = FormDefinition.objects.filter(id=form_definition_id).first()
     if fd is None:  # in case the record does not exist (anymore) in the DB
         return
 
     config_now = copy.deepcopy(fd.configuration)
-    _remove_key_from_dict(config_now, "time_24hr")
+    remove_key_from_dict(config_now, "time_24hr")
     camelized_config = camelize(config_now)
 
     if config_now != camelized_config:
