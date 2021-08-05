@@ -3,7 +3,7 @@ from typing import Any, Dict
 from .models import SubmissionStep
 
 
-def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> None:
+def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
     """
@@ -15,3 +15,5 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> None:
     for component in configuration["components"]:
         if label := component.get("label"):
             component["label"] = f"{label} (updated by logic check)"
+
+    return configuration
