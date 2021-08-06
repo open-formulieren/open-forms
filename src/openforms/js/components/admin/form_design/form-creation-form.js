@@ -417,7 +417,8 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText, formHistoryUrl }) => {
+                              formBeginText, formPreviousText, formChangeText, formConfirmText,
+                              formHistoryUrl, formRegistrationBackend }) => {
     const initialState = {
         ...initialFormState,
         form: {
@@ -440,6 +441,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 value: formConfirmText
             },
         },
+        selectedRegistrationBackend: formRegistrationBackend,
         newForm: !formUuid,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
@@ -796,6 +798,7 @@ FormCreationForm.propTypes = {
     formChangeText: PropTypes.string.isRequired,
     formConfirmText: PropTypes.string.isRequired,
     formHistoryUrl: PropTypes.string.isRequired,
+    formRegistrationBackend: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };
