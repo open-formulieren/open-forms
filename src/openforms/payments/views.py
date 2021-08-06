@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 class PaymentFlowBaseView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
+    serializer_class = serializers.Serializer
     register = register
 
 
@@ -82,7 +83,7 @@ class PaymentFlowBaseView(APIView):
         ),
     },
 )
-class PaymentStartView(GenericAPIView, PaymentFlowBaseView):
+class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
     queryset = Submission.objects.all()
@@ -174,13 +175,12 @@ class PaymentStartView(GenericAPIView, PaymentFlowBaseView):
         ),
     },
 )
-class PaymentReturnView(GenericAPIView, PaymentFlowBaseView):
+class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
     queryset = SubmissionPayment.objects.all()
 
     parser_classes = (FormParser, MultiPartParser)
-    serializer_class = None
 
     def _handle_return(self, request, uuid: str):
         """
@@ -277,10 +277,6 @@ class PaymentReturnView(GenericAPIView, PaymentFlowBaseView):
     },
 )
 class PaymentWebhookView(PaymentFlowBaseView):
-    register = register
-    parser_classes = (FormParser, MultiPartParser)
-    serializer_class = None
-
     def _handle_webhook(self, request, *args, **kwargs):
         try:
             plugin = self.register[kwargs["plugin_id"]]
