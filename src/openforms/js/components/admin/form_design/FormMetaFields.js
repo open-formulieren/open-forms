@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
+import Select from "../forms/Select";
 import {TextInput, Checkbox} from '../forms/Inputs';
 import AuthPluginField from './AuthPluginField';
 
@@ -14,7 +15,9 @@ import AuthPluginField from './AuthPluginField';
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
+const FormMetaFields = ({ form, literals, onChange, errors={},
+                          availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
+                          availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
     const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, canSubmit } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
@@ -115,6 +118,20 @@ const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlug
                 </Field>
             </FormRow>
             <FormRow>
+                <Field
+                    name="form.RegistrationBackend"
+                    label="Select registration backend"
+                >
+                    <Select
+                        name="Registration backend"
+                        choices={availableRegistrationBackends.data}
+                        value={selectedRegistrationBackend}
+                        onChange={onRegistrationBackendChange}
+                        allowBlank={true}
+                    />
+                </Field>
+            </FormRow>
+            <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}
                     availableAuthPlugins={availableAuthPlugins.data}
@@ -205,6 +222,12 @@ FormMetaFields.propTypes = {
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
+    availableRegistrationBackends: PropTypes.shape({
+        loading: PropTypes.bool.isRequired,
+        data: PropTypes.array.isRequired,
+    }).isRequired,
+    selectedRegistrationBackend: PropTypes.string.isRequired,
+    onRegistrationBackendChange: PropTypes.func.isRequired,
     availableAuthPlugins: PropTypes.shape({
         loading: PropTypes.bool.isRequired,
         data: PropTypes.object.isRequired,

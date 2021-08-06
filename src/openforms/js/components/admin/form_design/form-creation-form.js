@@ -12,7 +12,8 @@ import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
+            REGISTRATION_BACKENDS_ENDPOINT, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import TinyMCEEditor from "./Editor";
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from "./FormObjectTools";
@@ -50,6 +51,10 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: {},
+    availableRegistrationBackends: {
+        loading: true,
+        data: []
+    },
     availableAuthPlugins: {
         loading: true,
         data: {}
@@ -58,6 +63,7 @@ const initialFormState = {
         loading: true,
         data: {}
     },
+    selectedRegistrationBackend: '',
     selectedAuthPlugins: [],
     stepsToDelete: [],
     submitting: false,
@@ -134,6 +140,14 @@ function reducer(draft, action) {
             };
             break;
         }
+        case 'REGISTRATION_BACKENDS_LOADED': {
+            const data = action.payload.map(backend => [backend.id, backend.label]);
+            draft.availableRegistrationBackends = {
+                loading: false,
+                data
+            };
+            break;
+        }
         case 'AUTH_PLUGINS_LOADED': {
             var formattedAuthPlugins = {};
             for (const plugin of action.payload) {
@@ -154,6 +168,10 @@ function reducer(draft, action) {
                 loading: false,
                 data: formattedPrefillPlugins,
             };
+            break;
+        }
+        case 'CHANGE_REGISTRATION_BACKEND': {
+            draft.selectedRegistrationBackend = action.payload;
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -334,6 +352,18 @@ const getFormDefinitions = async (dispatch) => {
     }
 };
 
+const getRegistrationBackends = async (dispatch) => {
+    try {
+        const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
+        dispatch({
+            type: 'REGISTRATION_BACKENDS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
 const getAuthPlugins = async (dispatch) => {
     try {
         const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -422,7 +452,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         const promises = [
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
-
+            getRegistrationBackends(dispatch),
         ];
         await Promise.all(promises);
         // We want the data of all available plugins to be loaded after the form data has been loaded,
@@ -650,6 +680,14 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         window.location = ADMIN_PAGE;
     };
 
+    const onRegistrationBackendChange = (event) => {
+        const registrationBackend = event.target.value;
+        dispatch({
+            type: 'CHANGE_REGISTRATION_BACKEND',
+            payload: registrationBackend,
+        })
+    };
+
     const onAuthPluginChange = (event) => {
         const pluginId = event.target.value;
         dispatch({
@@ -661,7 +699,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
     return (
         <>
             <FormObjectTools
-                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading || state.availablePrefillPlugins.loading}
+                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading ||
+                            state.availableRegistrationBackends.loading || state.availablePrefillPlugins.loading}
                 historyUrl={formHistoryUrl}
             />
 
@@ -673,6 +712,9 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 literals={state.literals}
                 onChange={onFieldChange}
                 errors={state.error}
+                availableRegistrationBackends={state.availableRegistrationBackends}
+                selectedRegistrationBackend={state.selectedRegistrationBackend}
+                onRegistrationBackendChange={onRegistrationBackendChange}
                 availableAuthPlugins={state.availableAuthPlugins}
                 selectedAuthPlugins={state.selectedAuthPlugins}
                 onAuthPluginChange={onAuthPluginChange}
