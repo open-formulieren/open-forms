@@ -19,6 +19,7 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models.form import FormLogic
 from ..utils import export_form, form_to_json, import_form
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
@@ -26,6 +27,8 @@ from .serializers import (
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
+    FormLogicSerializer,
+    FormSearchSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVersionSerializer,
@@ -63,6 +66,42 @@ class FormStepViewSet(
         context = super().get_serializer_context()
         context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         return context
+
+
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="form_uuid_or_slug",
+            location=OpenApiParameter.PATH,
+            type=str,
+            description=_("Either a UUID4 or a slug identifying the form."),
+        )
+    ]
+)
+@extend_schema_view(
+    list=extend_schema(summary=_("List form logics")),
+    retrieve=extend_schema(summary=_("Retrieve form logic details")),
+    create=extend_schema(summary=_("Create a form logic")),
+    update=extend_schema(summary=_("Update all details of a form logic")),
+    partial_update=extend_schema(summary=_("Update some details of a form logic")),
+    destroy=extend_schema(summary=_("Delete a form logic")),
+)
+class FormLogicViewSet(
+    viewsets.ModelViewSet,
+):
+    serializer_class = FormLogicSerializer
+    queryset = FormLogic.objects.all()
+    permission_classes = [IsStaffOrReadOnly]
+    lookup_field = "uuid"
+
+    def get_queryset(self):
+        if "form" in self.request.query_params:
+            serializer = FormSearchSerializer(data=self.request.query_params)
+            serializer.is_valid(raise_exception=True)
+            return self.queryset.filter(
+                form_step__form__uuid=serializer.validated_data["form"]
+            )
+        return self.queryset
 
 
 @extend_schema_view(

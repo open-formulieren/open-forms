@@ -272,6 +272,7 @@ class Form(models.Model):
 
 
 class FormLogic(models.Model):
+    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     form_step = models.ForeignKey(
         to="forms.FormStep",
         on_delete=models.CASCADE,

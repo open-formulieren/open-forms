@@ -12,6 +12,7 @@ from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models.form import FormLogic
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -297,3 +298,31 @@ class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
             "uuid",
             "created",
         )
+
+
+class FormSearchSerializer(serializers.Serializer):
+    form = serializers.UUIDField()
+
+
+class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
+    form_step = NestedHyperlinkedRelatedField(
+        queryset=FormStep.objects.all(),
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+    )
+
+    class Meta:
+        model = FormLogic
+        fields = (
+            "uuid",
+            "form_step",
+            "json_logic_trigger",
+            "component",
+            "actions",
+        )
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            }
+        }
