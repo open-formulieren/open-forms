@@ -51,8 +51,8 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str,
                 set_property_value(
                     configuration, rule.component, property_name, property_value
                 )
-            else:
-                raise NotImplementedError("This action has not been implemented yet.")
+            elif trigger and action["type"] == "disable-next":
+                step._can_submit = False
 
     step._form_logic_evaluated = True
 
