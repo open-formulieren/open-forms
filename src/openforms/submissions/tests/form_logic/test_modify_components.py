@@ -140,3 +140,63 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
+
+
+class StepModificationTests(TestCase):
+    def test_next_button_disabled(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step2_textfield1",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form_step=step2,
+            component="step2_textfield1",
+            json_logic_trigger={
+                "==": [
+                    {"var": "step1_textfield1"},
+                    "disable next button",
+                ]
+            },
+            actions=[
+                {
+                    "name": "Hide element",
+                    "type": "disable-next",
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"step1_textfield1": "disable next button"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        self.assertTrue(submission_step_2.can_submit)
+
+        evaluate_form_logic(submission_step_2, submission.data)
+
+        self.assertFalse(submission_step_2.can_submit)
