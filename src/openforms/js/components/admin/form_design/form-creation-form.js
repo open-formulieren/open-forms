@@ -29,6 +29,7 @@ const initialFormState = {
         maintenanceMode: false,
         submissionConfirmationTemplate: '',
         canSubmit: true,
+        registrationBackendOptions: '',
     },
     literals: {
         beginText: {
@@ -418,7 +419,7 @@ StepsFieldSet.propTypes = {
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                               formBeginText, formPreviousText, formChangeText, formConfirmText,
-                              formHistoryUrl, formRegistrationBackend }) => {
+                              formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions }) => {
     const initialState = {
         ...initialFormState,
         form: {
@@ -426,6 +427,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             uuid: formUuid,
             name: formName,
             slug: formSlug,
+            registrationBackendOptions: formRegistrationBackendOptions,
         },
         literals: {
             beginText: {

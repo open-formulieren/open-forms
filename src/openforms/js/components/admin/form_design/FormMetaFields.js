@@ -18,7 +18,7 @@ import AuthPluginField from './AuthPluginField';
 const FormMetaFields = ({ form, literals, onChange, errors={},
                           availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
                           availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, canSubmit } = form;
+    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, registrationBackendOptions, canSubmit } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -129,6 +129,18 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
                         onChange={onRegistrationBackendChange}
                         allowBlank={true}
                     />
+                </Field>
+            </FormRow>
+            <FormRow>
+                <Field
+                    name="form.registrationBackendOptions"
+                    label="Registration Backend Options"
+                >
+                    <TextInput value={typeof registrationBackendOptions === "string" ?
+                                        registrationBackendOptions :
+                                        JSON.stringify(registrationBackendOptions)}
+                               onChange={onChange}
+                               maxLength="1000" />
                 </Field>
             </FormRow>
             <FormRow>
