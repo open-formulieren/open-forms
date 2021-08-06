@@ -4,11 +4,7 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
-
-
-class FormLogicFactory:
-    # Placeholder because otherwise linter screams
-    pass
+from .factories import FormLogicFactory
 
 
 class ComponentModificationTests(TestCase):
@@ -41,10 +37,10 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
             component="step2_textfield1",
             json_logic_trigger={
-                "==": {
+                "==": [
                     {"var": "step1_textfield1"},
                     "hide step 2",
-                }
+                ]
             },
             actions=[
                 {
@@ -110,9 +106,7 @@ class ComponentModificationTests(TestCase):
         FormLogicFactory.create(
             form_step=step2,
             component="step2_textfield1",
-            json_logic_trigger={
-                {"var": "step1_textfield1"},
-            },
+            json_logic_trigger={"var": "step1_textfield1"},
             actions=[
                 {
                     "name": "Set extracted value",
