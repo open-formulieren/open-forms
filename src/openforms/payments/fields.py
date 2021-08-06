@@ -24,8 +24,11 @@ class PaymentBackendChoiceField(CharField):
         monkeypatch = not self.choices
         if monkeypatch:
             _old = self.choices
-            self.choices = self.registry.get_choices()
+            self.choices = self._get_plugin_choices()
         field = super().formfield(**kwargs)
         if monkeypatch:
             self.choices = _old
         return field
+
+    def _get_plugin_choices(self):
+        return self.registry.get_choices()

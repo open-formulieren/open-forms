@@ -68,7 +68,9 @@ class ImportExportTests(TestCase):
 
     def test_import(self):
         product = ProductFactory.create()
-        form = FormFactory.create(product=product, authentication_backends=["demo"])
+        form = FormFactory.create(
+            product=product, authentication_backends=["demo"], payment_backend="demo"
+        )
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
 
@@ -100,6 +102,7 @@ class ImportExportTests(TestCase):
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
         self.assertEqual(forms.last().authentication_backends, ["demo"])
+        self.assertEqual(forms.last().payment_backend, "demo")
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()
@@ -121,6 +124,24 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
+
+    def test_import_no_backends(self):
+        """
+        explicitly test import/export of Form without backends as they use custom fields/choices
+        """
+        product = ProductFactory.create()
+        form = FormFactory.create(product=product)
+        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        call_command("export", form.pk, self.filepath)
+
+        form_definition.slug = "modified"
+        form_definition.save()
+        form.slug = "modified"
+        form.save()
+
+        call_command("import", import_file=self.filepath)
 
     def test_import_form_slug_already_exists(self):
         product = ProductFactory.create()

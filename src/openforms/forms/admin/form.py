@@ -12,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 
+from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
@@ -41,7 +42,10 @@ class FormStepInline(OrderedTabularInline):
 
 @admin.register(Form)
 class FormAdmin(
-    RegistrationBackendFieldMixin, OrderedInlineModelAdminMixin, admin.ModelAdmin
+    RegistrationBackendFieldMixin,
+    PaymentBackendChoiceFieldMixin,
+    OrderedInlineModelAdminMixin,
+    admin.ModelAdmin,
 ):
     list_display = (
         "name",

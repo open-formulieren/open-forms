@@ -11,7 +11,7 @@ class RegistrationBackendChoiceField(CharField):
 
         kwargs.setdefault("max_length", UNIQUE_ID_MAX_LENGTH)
         if kwargs["max_length"] > UNIQUE_ID_MAX_LENGTH:
-            raise ValueError("'max_length' is capped at {UNIQUE_ID_MAX_LENGTH}")
+            raise ValueError(f"'max_length' is capped at {UNIQUE_ID_MAX_LENGTH}")
 
         super().__init__(*args, **kwargs)
 

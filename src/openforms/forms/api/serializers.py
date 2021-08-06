@@ -9,6 +9,7 @@ from openforms.products.api.serializers import ProductSerializer
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
+from ...payments.registry import register as payment_register
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 
@@ -102,7 +103,6 @@ class FormSerializer(serializers.ModelSerializer):
         default="",
     )
     payment_options = PaymentOptionsReadOnlyField()
-    payment_required = serializers.BooleanField(read_only=True)
 
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
@@ -147,6 +147,7 @@ class FormSerializer(serializers.ModelSerializer):
         fields = super().get_fields()
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
+        fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
 
 
@@ -155,7 +156,9 @@ class FormExportSerializer(FormSerializer):
         fields = super().get_fields()
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
+        del fields["payment_options"]
         fields["authentication_backends"].write_only = False
+        fields["payment_backend"].write_only = False
         return fields
 
 
