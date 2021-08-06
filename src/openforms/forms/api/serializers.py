@@ -101,6 +101,7 @@ class FormSerializer(serializers.ModelSerializer):
             "uuid",
             "name",
             "login_required",
+            "registration_backend",
             "authentication_backends",
             "login_options",
             "literals",

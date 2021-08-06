@@ -554,6 +554,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                     value: state.literals.confirmText.value
                 }
             },
+            registrationBackend: state.selectedRegistrationBackend,
             authenticationBackends: state.selectedAuthPlugins,
         };
 
