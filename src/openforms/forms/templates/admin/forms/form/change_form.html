@@ -24,6 +24,8 @@
         data-form-previous-text="{{ original.previous_text|default:'' }}"
         data-form-change-text="{{ original.change_text|default:'' }}"
         data-form-confirm-text="{{ original.begin_text|default:'' }}"
+        data-form-registration-backend="{{ original.registration_backend|default:'' }}"
+        data-form-registration-backend-options="{{ original.registration_backend_options|default:'' }}"
         data-form-history-url="{{ history_url }}"
         data-csrftoken="{{ csrf_token }}"
         data-tinymce-url="{% static 'tinymce/tinymce.min.js' %}"

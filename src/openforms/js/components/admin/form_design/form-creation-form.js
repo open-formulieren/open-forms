@@ -12,7 +12,8 @@ import SubmitRow from "../forms/SubmitRow";
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
+            REGISTRATION_BACKENDS_ENDPOINT, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import TinyMCEEditor from "./Editor";
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from "./FormObjectTools";
@@ -28,6 +29,8 @@ const initialFormState = {
         maintenanceMode: false,
         submissionConfirmationTemplate: '',
         canSubmit: true,
+        registrationBackend: '',
+        registrationBackendOptions: '',
     },
     literals: {
         beginText: {
@@ -50,6 +53,10 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: {},
+    availableRegistrationBackends: {
+        loading: true,
+        data: []
+    },
     availableAuthPlugins: {
         loading: true,
         data: {}
@@ -131,6 +138,14 @@ function reducer(draft, action) {
             draft.formSteps = {
                 loading: false,
                 data: action.payload,
+            };
+            break;
+        }
+        case 'REGISTRATION_BACKENDS_LOADED': {
+            const data = action.payload.map(backend => [backend.id, backend.label]);
+            draft.availableRegistrationBackends = {
+                loading: false,
+                data
             };
             break;
         }
@@ -334,6 +349,18 @@ const getFormDefinitions = async (dispatch) => {
     }
 };
 
+const getRegistrationBackends = async (dispatch) => {
+    try {
+        const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
+        dispatch({
+            type: 'REGISTRATION_BACKENDS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
 const getAuthPlugins = async (dispatch) => {
     try {
         const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -387,7 +414,8 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText, formHistoryUrl }) => {
+                              formBeginText, formPreviousText, formChangeText, formConfirmText,
+                              formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions }) => {
     const initialState = {
         ...initialFormState,
         form: {
@@ -395,6 +423,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             uuid: formUuid,
             name: formName,
             slug: formSlug,
+            registrationBackend: formRegistrationBackend,
+            registrationBackendOptions: formRegistrationBackendOptions,
         },
         literals: {
             beginText: {
@@ -422,7 +452,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         const promises = [
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
-
+            getRegistrationBackends(dispatch),
         ];
         await Promise.all(promises);
         // We want the data of all available plugins to be loaded after the form data has been loaded,
@@ -661,7 +691,8 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
     return (
         <>
             <FormObjectTools
-                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading || state.availablePrefillPlugins.loading}
+                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading ||
+                            state.availableRegistrationBackends.loading || state.availablePrefillPlugins.loading}
                 historyUrl={formHistoryUrl}
             />
 
@@ -673,6 +704,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 literals={state.literals}
                 onChange={onFieldChange}
                 errors={state.error}
+                availableRegistrationBackends={state.availableRegistrationBackends}
                 availableAuthPlugins={state.availableAuthPlugins}
                 selectedAuthPlugins={state.selectedAuthPlugins}
                 onAuthPluginChange={onAuthPluginChange}
@@ -753,6 +785,8 @@ FormCreationForm.propTypes = {
     formChangeText: PropTypes.string.isRequired,
     formConfirmText: PropTypes.string.isRequired,
     formHistoryUrl: PropTypes.string.isRequired,
+    formRegistrationBackend: PropTypes.string.isRequired,
+    formRegistrationBackendOptions: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

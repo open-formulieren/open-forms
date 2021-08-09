@@ -15,7 +15,7 @@ const mountForm = () => {
     for (const formCreationFormNode of formCreationFormNodes) {
         const { formUuid, formName, formSlug, csrftoken, tinymceUrl,
                 formBeginText, formPreviousText, formChangeText, formConfirmText,
-                formHistoryUrl,
+                formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions,
         } = formCreationFormNode.dataset;
 
         ReactModal.setAppElement(formCreationFormNode);
@@ -32,6 +32,8 @@ const mountForm = () => {
                     formChangeText={formChangeText}
                     formConfirmText={formConfirmText}
                     formHistoryUrl={formHistoryUrl}
+                    formRegistrationBackend={formRegistrationBackend}
+                    formRegistrationBackendOptions={formRegistrationBackendOptions}
                 />
             </TinyMceContext.Provider>,
             formCreationFormNode

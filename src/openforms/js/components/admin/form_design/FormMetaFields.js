@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
+import Select from "../forms/Select";
 import {TextInput, Checkbox} from '../forms/Inputs';
 import AuthPluginField from './AuthPluginField';
 
@@ -14,8 +15,11 @@ import AuthPluginField from './AuthPluginField';
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, canSubmit } = form;
+const FormMetaFields = ({ form, literals, onChange, errors={},
+                          availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
+                          availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
+    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode,
+            registrationBackend, registrationBackendOptions, canSubmit } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -115,6 +119,32 @@ const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlug
                 </Field>
             </FormRow>
             <FormRow>
+                <Field
+                    name="form.registrationBackend"
+                    label="Select registration backend"
+                >
+                    <Select
+                        name="Registration backend"
+                        choices={availableRegistrationBackends.data}
+                        value={registrationBackend}
+                        onChange={onChange}
+                        allowBlank={true}
+                    />
+                </Field>
+            </FormRow>
+            <FormRow>
+                <Field
+                    name="form.registrationBackendOptions"
+                    label="Registration Backend Options"
+                >
+                    <TextInput value={typeof registrationBackendOptions === "string" ?
+                                        registrationBackendOptions :
+                                        JSON.stringify(registrationBackendOptions)}
+                               onChange={onChange}
+                               maxLength="1000" />
+                </Field>
+            </FormRow>
+            <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}
                     availableAuthPlugins={availableAuthPlugins.data}
@@ -188,6 +218,8 @@ FormMetaFields.propTypes = {
         isDeleted: PropTypes.bool.isRequired,
         maintenanceMode: PropTypes.bool.isRequired,
         submissionConfirmationTemplate: PropTypes.string.isRequired,
+        registrationBackend: PropTypes.string.isRequired,
+        registrationBackendOptions: PropTypes.string.isRequired,
     }).isRequired,
     literals: PropTypes.shape({
         beginText: PropTypes.shape({
@@ -205,6 +237,10 @@ FormMetaFields.propTypes = {
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
+    availableRegistrationBackends: PropTypes.shape({
+        loading: PropTypes.bool.isRequired,
+        data: PropTypes.array.isRequired,
+    }).isRequired,
     availableAuthPlugins: PropTypes.shape({
         loading: PropTypes.bool.isRequired,
         data: PropTypes.object.isRequired,
