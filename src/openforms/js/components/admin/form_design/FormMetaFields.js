@@ -15,11 +15,30 @@ import AuthPluginField from './AuthPluginField';
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormMetaFields = ({ form, literals, onChange, errors={},
-                          availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
-                          availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode,
-            registrationBackend, registrationBackendOptions, canSubmit } = form;
+const FormMetaFields = ({
+    form,
+    literals,
+    onChange,
+    errors={},
+    availableRegistrationBackends,
+    selectedRegistrationBackend,
+    onRegistrationBackendChange,
+    availableAuthPlugins,
+    selectedAuthPlugins,
+    onAuthPluginChange
+}) => {
+    const {
+        uuid,
+        name,
+        slug,
+        showProgressIndicator,
+        active,
+        isDeleted,
+        maintenanceMode,
+        registrationBackend,
+        registrationBackendOptions={},
+        canSubmit
+    } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -137,9 +156,7 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
                     name="form.registrationBackendOptions"
                     label="Registration Backend Options"
                 >
-                    <TextInput value={typeof registrationBackendOptions === "string" ?
-                                        registrationBackendOptions :
-                                        JSON.stringify(registrationBackendOptions)}
+                    <TextInput value={JSON.stringify(registrationBackendOptions || {})}
                                onChange={onChange}
                                maxLength="1000" />
                 </Field>
@@ -219,7 +236,7 @@ FormMetaFields.propTypes = {
         maintenanceMode: PropTypes.bool.isRequired,
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
-        registrationBackendOptions: PropTypes.string.isRequired,
+        registrationBackendOptions: PropTypes.object,
     }).isRequired,
     literals: PropTypes.shape({
         beginText: PropTypes.shape({

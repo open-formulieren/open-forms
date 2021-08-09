@@ -30,7 +30,7 @@ const initialFormState = {
         submissionConfirmationTemplate: '',
         canSubmit: true,
         registrationBackend: '',
-        registrationBackendOptions: '',
+        registrationBackendOptions: {},
     },
     literals: {
         beginText: {
@@ -316,22 +316,24 @@ const getFormData = async (formUuid, dispatch) => {
         const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
-        } else {
-            // Update the selected authentication plugins
-            dispatch({
-                type: 'FORM_LOADED',
-                payload: {
-                    selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
-                    form: response.data,
-                },
-            });
-            // Get the form definition data from the form steps
-            const formStepsData = await getFormStepsData(formUuid, dispatch);
-            dispatch({
-                type: 'FORM_STEPS_LOADED',
-                payload: formStepsData,
-            });
         }
+
+        // Set the loaded form data as state.
+        const { literals, ...form } = response.data;
+        dispatch({
+            type: 'FORM_LOADED',
+            payload: {
+                selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
+                form: form,
+                literals: literals,
+            },
+        });
+        // Get the form definition data from the form steps
+        const formStepsData = await getFormStepsData(formUuid, dispatch);
+        dispatch({
+            type: 'FORM_STEPS_LOADED',
+            payload: formStepsData,
+        });
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
@@ -413,32 +415,12 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText,
-                              formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions }) => {
+const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const initialState = {
         ...initialFormState,
         form: {
             ...initialFormState.form,
             uuid: formUuid,
-            name: formName,
-            slug: formSlug,
-            registrationBackend: formRegistrationBackend,
-            registrationBackendOptions: formRegistrationBackendOptions,
-        },
-        literals: {
-            beginText: {
-                value: formBeginText
-            },
-            previousText: {
-                value: formPreviousText
-            },
-            changeText: {
-                value: formChangeText
-            },
-            confirmText: {
-                value: formConfirmText
-            },
         },
         newForm: !formUuid,
     };
@@ -778,15 +760,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 FormCreationForm.propTypes = {
     csrftoken: PropTypes.string.isRequired,
     formUuid: PropTypes.string.isRequired,
-    formName: PropTypes.string.isRequired,
-    formSlug: PropTypes.string.isRequired,
-    formBeginText: PropTypes.string.isRequired,
-    formPreviousText: PropTypes.string.isRequired,
-    formChangeText: PropTypes.string.isRequired,
-    formConfirmText: PropTypes.string.isRequired,
     formHistoryUrl: PropTypes.string.isRequired,
-    formRegistrationBackend: PropTypes.string.isRequired,
-    formRegistrationBackendOptions: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };
