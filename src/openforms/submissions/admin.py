@@ -52,7 +52,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
 
-    get_registration_backend.short_description = "Registration Backend"
+    get_registration_backend.short_description = _("Registration Backend")
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)

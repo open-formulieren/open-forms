@@ -120,7 +120,6 @@ class RegistrationHookTests(TestCase):
         )
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
-    @override_settings(CELERY_MAX_RETRIES=-1)
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration(self):
         register = Registry()
@@ -138,7 +137,8 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission.id)
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -146,32 +146,6 @@ class RegistrationHookTests(TestCase):
         )
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
-        self.assertEqual(self.submission.last_register_date, timezone.now())
-
-    @freeze_time("2021-08-04T12:00:00+02:00")
-    def test_retrying_registration(self):
-        register = Registry()
-
-        # register the callback, including the assertions
-        @register("callback")
-        class Plugin(BasePlugin):
-            verbose_name = "Assertion callback"
-            configuration_options = OptionsSerializer
-
-            def register_submission(self, submission, options):
-                err = ZeroDivisionError("Can't divide by zero")
-                raise RegistrationFailed("zerodiv") from err
-
-        # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
-        with self.assertRaises(Retry):
-            with patch_registry(model_field, register):
-                register_submission(self.submission.id)
-
-        self.submission.refresh_from_db()
-        self.assertEqual(
-            self.submission.registration_status, RegistrationStatuses.in_progress
-        )
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @freeze_time("2021-08-04T12:00:00+02:00")

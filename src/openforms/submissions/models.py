@@ -87,11 +87,11 @@ class Submission(models.Model):
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
     last_register_date = models.DateTimeField(
-        _("last register date"),
+        _("last register attempt date"),
         blank=True,
         null=True,
         help_text=_(
-            "The last time the submission was registered with the backend.  "
+            "The last time the submission registration was attempted with the backend.  "
             "Note that this date will be updated even if the registration is not successful."
         ),
     )

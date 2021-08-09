@@ -24,8 +24,12 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True, max_retries=settings.CELERY_MAX_RETRIES)
-def register_submission(task, submission_id: int) -> Optional[dict]:
+@app.task(
+    autoretry_For=(RegistrationFailed,),
+    retry_backoff=True,
+    max_retries=settings.SUBMISSION_REGISTRATION_MAX_RETRIES,
+)
+def register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
 
     if submission.registration_status == RegistrationStatuses.success:
@@ -63,15 +67,16 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
             submission, options_serializer.validated_data
         )
     except RegistrationFailed:
-        if task.request.retries <= settings.CELERY_MAX_RETRIES:
-            return task.retry(
-                submission_id=submission_id,
-                countdown=3 ** task.request.retries,
-            )
-        else:
-            formatted_tb = traceback.format_exc()
-            status = RegistrationStatuses.failed
-            result_data = {"traceback": formatted_tb}
+        formatted_tb = traceback.format_exc()
+        submission.registration_status = RegistrationStatuses.failed
+        submission.registration_result = {"traceback": formatted_tb}
+        submission.save(
+            update_fields=[
+                "registration_status",
+                "registration_result",
+            ]
+        )
+        raise
     else:
         status = RegistrationStatuses.success
         if plugin.backend_feedback_serializer:
@@ -99,10 +104,12 @@ def register_submission(task, submission_id: int) -> Optional[dict]:
 
 @app.task
 def resend_submissions():
+    resend_time_limit = timezone.now() - timedelta(
+        hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT
+    )
     for submission in Submission.objects.filter(
         registration_status=RegistrationStatuses.failed,
-        completed_on__gte=timezone.now()
-        - timedelta(hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT),
+        completed_on__gte=resend_time_limit,
     ):
         register_submission.delay(submission.id)
 
