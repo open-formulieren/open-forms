@@ -42,3 +42,16 @@ class SnakeCaseDetectionTests(TestCase):
         capture.check(
             ("openforms.forms.tasks", "ERROR", msg),
         )
+
+    @log_capture(level=logging.ERROR)
+    def test_ignores_time_24hr_key(self, capture):
+        configuration = {
+            "time_24hr": False,
+            "innerDict": {"time_24hr": False},
+            "components": [{"time_24hr": False, "innerDict": {"time_24hr": False}}],
+        }
+        fd = FormDefinitionFactory.create(configuration=configuration)
+
+        detect_formiojs_configuration_snake_case(fd.id)
+
+        capture.check()

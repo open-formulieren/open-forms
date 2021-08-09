@@ -1,3 +1,4 @@
+import copy
 import logging
 
 from djangorestframework_camel_case.util import camelize
@@ -22,12 +23,14 @@ def detect_formiojs_configuration_snake_case(
     mistakes in API endpoints, see github issue #449 for an example of such a mistake.
     """
     from .models import FormDefinition
+    from .utils import remove_key_from_dict
 
     fd = FormDefinition.objects.filter(id=form_definition_id).first()
     if fd is None:  # in case the record does not exist (anymore) in the DB
         return
 
-    config_now = fd.configuration
+    config_now = copy.deepcopy(fd.configuration)
+    remove_key_from_dict(config_now, "time_24hr")
     camelized_config = camelize(config_now)
 
     if config_now != camelized_config:
