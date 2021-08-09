@@ -1,49 +1,60 @@
 .. _configuration_ogone:
 
-===========================
-Ingenico Ogone configureren
-===========================
+==============
+Ingenico Ogone
+==============
 
-Open Formulieren ondersteunt de Ingenico Ogone legacy payment backend (met PSPID).
+Open Forms supports the **Ingenico Ogone** legacy payment backend (using a ``PSPID``).
 
-Om deze te kunnen gebruiken moet er een `Ogone merchant` worden aangemaakt in de Open Formulieren beheer module:
+In order to make use of this module, administrators must create an *Ogone merchant* in
+the administration interface.
 
-Navigeer in de beheer module via het menu `Configuratie > Ogone merchant` en klik `Ogone merchant toevoegen`:
+1. Navigate to **Configuration** > **Ogone Merchant**.
 
-Voor het **Label** vul je een herkenbare naam in.
+2. Click **Add Ogone merchant**.
 
-Voor de **PSPID** vul je de Ingenico Ogone PSPID in.
+3. Complete the form fields:
 
-Open dan in een andere browser-tab de Ogone backoffice om configuratie gegevens in te stellen en over te nemen.
+    * **Label**: enter a recognizable name
+    * **PSPID**: enter your Ingenico Ogone PSPID
+    * **Hash algorithm**: SHA-512
 
-Navigeer in de Ogone backoffice naar `Configuration > Technical Configuration > Global security parameters` en kies deze waardes:
+4. In another browser tab or window, open the Ogone backoffice to configure the Ogone
+   aspects.
 
-**Hash algorithm**: SHA-512
+5. In the Ogone backoffice, navigate to **Configuration** > **Technical Configuration**
+   > **Global security parameters**
 
-**Character encoding**: UTF-8
+6. Fill out the following values:
 
-Configureer in de Open Formulieren Ogone merchant het **Hash algorithm** met dezelfde waarde als in de Ogone backoffice.
+    * **Hash algorithm**: SHA-512
+    * **Character encoding**: UTF-8
 
-Navigeer in de Ogone backoffice naar de tab: `Configuration > Technical Configuration > Data and origin verification`.
+7. Next, nagivate in the Ogone backoffice to: **Configuration** > **Technical Configuration**
+   > **Data and origin verification**
 
-Kopieer dan `Checks for e-Commerce > SHA-IN pass phrase` naar onze Ogone merchant **SHA-IN passphrase**.
+8. Copy the *Checks for e-Commerce > SHA-IN pass phrase* to the Ogone merchant
+   **SHA-IN passphrase** in the Open Forms administration interface.
 
-Navigeer in de Ogone backoffice naar de tab: `Configuration > Technical Configuration > Transaction feedback`
+9. In the Ogone backoffice, nagivate to: **Configuration** >
+   **Technical Configuration** > **Transaction feedback**
 
-Activeer dan onder `eCommerce` de checkbox `"I would like to receive transaction feedback parameters on the redirection URLs."`
+10. Under *eCommerce*, tick the checkbox "I would like to receive transaction feedback
+    parameters on the redirection URLs."
 
-Kopieer dan `All transaction submission modes > Security for request parameters > SHA-OUT pass phrase` naar onze Ogone merchant **SHA-OUT passphrase**.
+11. Then, copy *All transaction submission modes > Security for request parameters >
+    SHA-OUT pass phrase* to the Ogone merchant **SHA-OUT passphrase** in the Open Forms
+    administration interface.
 
-Kies dan een voorgedefineerde **Ogone endpoint** of vul een custom URL van een proxy in.
+12. Back in the Open Forms administration interface, select a pre-defined
+    **Ogone endpoint** or enter a custom proxy URL, and save the configuration.
 
-Sla nu de Ogone merchant op en kopieer daarna de gegenereerde **Feedback url**.
+13. Finally, copy the generated **Feedback url** and finalize the Ogone backoffice
+    configuration:
 
-Vind dan in de Ogone backoffice op dezelfde tab `All transaction submission modes > Security for request parameters > HTTP request for status changes`
+    * Enable *All transaction submission modes > Security for request parameters > HTTP
+      request for status changes*
+    * Enter the copied **Feedback url** in the field **"URL on which the merchant wishes
+      to receive a deferred HTTP request, should the status of a transaction change offline."**
 
-- Selecteer `"For each offline status change (payment, cancellation, etc.)."`
-
-- Vul de eerder gekopieerde **Feedback url** in bij `"URL on which the merchant wishes to receive a deferred HTTP request, should the status of a transaction change offline."`
-
-Sla dit op en controleer of de waardes goed zijn opgeslagen.
-
-
+14. Save the changes and verify that all configuration is correct.
