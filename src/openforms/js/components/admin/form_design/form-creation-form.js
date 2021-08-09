@@ -786,6 +786,7 @@ FormCreationForm.propTypes = {
     formConfirmText: PropTypes.string.isRequired,
     formHistoryUrl: PropTypes.string.isRequired,
     formRegistrationBackend: PropTypes.string.isRequired,
+    formRegistrationBackendOptions: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

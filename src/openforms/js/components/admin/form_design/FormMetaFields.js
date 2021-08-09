@@ -219,6 +219,7 @@ FormMetaFields.propTypes = {
         maintenanceMode: PropTypes.bool.isRequired,
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
+        registrationBackendOptions: PropTypes.string.isRequired,
     }).isRequired,
     literals: PropTypes.shape({
         beginText: PropTypes.shape({
