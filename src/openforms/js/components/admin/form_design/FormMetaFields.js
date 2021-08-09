@@ -15,7 +15,7 @@ import AuthPluginField from './AuthPluginField';
  * Component to render the metadata admin form for an Open Forms form.
  */
 const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode } = form;
+    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, canSubmit } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -162,6 +162,16 @@ const FormMetaFields = ({ form, literals, onChange, errors={}, availableAuthPlug
                     checked={maintenanceMode}
                     errors={errors.maintenanceMode}
                     onChange={(event) => onCheckboxChange(event, maintenanceMode)}
+                />
+            </FormRow>
+            <FormRow>
+                <Checkbox
+                    name="form.canSubmit"
+                    label="Can submit"
+                    helpText="Can the user submit the form?"
+                    checked={canSubmit}
+                    errors={errors.canSubmit}
+                    onChange={(event) => onCheckboxChange(event, canSubmit)}
                 />
             </FormRow>
         </Fieldset>
