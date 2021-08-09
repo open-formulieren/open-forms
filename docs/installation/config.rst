@@ -180,6 +180,15 @@ Other settings
 * ``BEAT_SEND_EMAIL_INTERVAL``: the interval (in seconds) of sending queued e-mails,
   defaults to ``20``.
 
+* ``BEAT_RESEND_SUBMISSIONS_INTERVAL``: the interval (in seconds) of resending failed submissions
+  to the registration backend, defaults to ``60``.
+
+* ``CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT``: the time limit (in hours) from when a failed submission is completed
+  that it will automatically be resent to the registration backend, defaults to ``48``.
+
+* ``SUBMISSION_REGISTRATION_MAX_RETRIES``: the number of times a failed submission will be resent to
+  the registration backend when not successful, defaults to ``10``.
+
 * ``SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS``: Configure how many days the URL to the submission report is usable.
 
 * ``TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS``: Configure how many days before unclaimed temporary uploads are removed.
