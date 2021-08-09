@@ -18,7 +18,8 @@ import AuthPluginField from './AuthPluginField';
 const FormMetaFields = ({ form, literals, onChange, errors={},
                           availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
                           availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode, registrationBackendOptions, canSubmit } = form;
+    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode,
+            registrationBackend, registrationBackendOptions, canSubmit } = form;
     const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -119,14 +120,14 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             </FormRow>
             <FormRow>
                 <Field
-                    name="form.RegistrationBackend"
+                    name="form.registrationBackend"
                     label="Select registration backend"
                 >
                     <Select
                         name="Registration backend"
                         choices={availableRegistrationBackends.data}
-                        value={selectedRegistrationBackend}
-                        onChange={onRegistrationBackendChange}
+                        value={registrationBackend}
+                        onChange={onChange}
                         allowBlank={true}
                     />
                 </Field>
@@ -217,6 +218,7 @@ FormMetaFields.propTypes = {
         isDeleted: PropTypes.bool.isRequired,
         maintenanceMode: PropTypes.bool.isRequired,
         submissionConfirmationTemplate: PropTypes.string.isRequired,
+        registrationBackend: PropTypes.string.isRequired,
     }).isRequired,
     literals: PropTypes.shape({
         beginText: PropTypes.shape({
@@ -238,8 +240,6 @@ FormMetaFields.propTypes = {
         loading: PropTypes.bool.isRequired,
         data: PropTypes.array.isRequired,
     }).isRequired,
-    selectedRegistrationBackend: PropTypes.string.isRequired,
-    onRegistrationBackendChange: PropTypes.func.isRequired,
     availableAuthPlugins: PropTypes.shape({
         loading: PropTypes.bool.isRequired,
         data: PropTypes.object.isRequired,

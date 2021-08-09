@@ -29,6 +29,7 @@ const initialFormState = {
         maintenanceMode: false,
         submissionConfirmationTemplate: '',
         canSubmit: true,
+        registrationBackend: '',
         registrationBackendOptions: '',
     },
     literals: {
@@ -64,7 +65,6 @@ const initialFormState = {
         loading: true,
         data: {}
     },
-    selectedRegistrationBackend: '',
     selectedAuthPlugins: [],
     stepsToDelete: [],
     submitting: false,
@@ -169,10 +169,6 @@ function reducer(draft, action) {
                 loading: false,
                 data: formattedPrefillPlugins,
             };
-            break;
-        }
-        case 'CHANGE_REGISTRATION_BACKEND': {
-            draft.selectedRegistrationBackend = action.payload;
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -427,6 +423,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
             uuid: formUuid,
             name: formName,
             slug: formSlug,
+            registrationBackend: formRegistrationBackend,
             registrationBackendOptions: formRegistrationBackendOptions,
         },
         literals: {
@@ -443,7 +440,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 value: formConfirmText
             },
         },
-        selectedRegistrationBackend: formRegistrationBackend,
         newForm: !formUuid,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
@@ -558,7 +554,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                     value: state.literals.confirmText.value
                 }
             },
-            registrationBackend: state.selectedRegistrationBackend,
             authenticationBackends: state.selectedAuthPlugins,
         };
 
@@ -685,14 +680,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         window.location = ADMIN_PAGE;
     };
 
-    const onRegistrationBackendChange = (event) => {
-        const registrationBackend = event.target.value;
-        dispatch({
-            type: 'CHANGE_REGISTRATION_BACKEND',
-            payload: registrationBackend,
-        })
-    };
-
     const onAuthPluginChange = (event) => {
         const pluginId = event.target.value;
         dispatch({
@@ -718,8 +705,6 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
                 onChange={onFieldChange}
                 errors={state.error}
                 availableRegistrationBackends={state.availableRegistrationBackends}
-                selectedRegistrationBackend={state.selectedRegistrationBackend}
-                onRegistrationBackendChange={onRegistrationBackendChange}
                 availableAuthPlugins={state.availableAuthPlugins}
                 selectedAuthPlugins={state.selectedAuthPlugins}
                 onAuthPluginChange={onAuthPluginChange}
