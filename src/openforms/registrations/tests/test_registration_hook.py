@@ -2,9 +2,15 @@
 Test the registration hook on submissions.
 """
 import uuid
+from datetime import timedelta
+from unittest.mock import patch
 
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
+from django.utils import timezone
 
+from celery.exceptions import Retry
+from freezegun import freeze_time
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
@@ -16,7 +22,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
-from ..tasks import register_submission
+from ..tasks import register_submission, resend_submissions
 from .utils import patch_registry
 
 
@@ -48,6 +54,7 @@ class RegistrationHookTests(TestCase):
             },
         )
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_assertion_plugin_with_deserialized_options(self):
         register = Registry()
 
@@ -80,7 +87,9 @@ class RegistrationHookTests(TestCase):
             self.submission.registration_result,
             {"result": "ok"},
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_plugin_with_custom_result_serializer(self):
         register = Registry()
 
@@ -109,7 +118,9 @@ class RegistrationHookTests(TestCase):
             self.submission.registration_result,
             {"external_id": str(result_uuid)},
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration(self):
         register = Registry()
 
@@ -126,7 +137,8 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission.id)
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -134,7 +146,45 @@ class RegistrationHookTests(TestCase):
         )
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
+        self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    @freeze_time("2021-08-04T12:00:00+02:00")
+    def test_retrying_registration_already_succeeded_just_returns(self):
+        register = Registry()
+
+        # register the callback, including the assertions
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                err = ZeroDivisionError("Can't divide by zero")
+                raise RegistrationFailed("zerodiv") from err
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+
+        last_register_date = timezone.now() - timedelta(hours=1)
+        submission = SubmissionFactory.create(
+            last_register_date=last_register_date,
+            registration_status=RegistrationStatuses.success,
+            form__registration_backend="callback",
+            form__registration_backend_options={
+                "string": "some-option",
+                "service": self.service.id,
+            },
+        )
+
+        with patch_registry(model_field, register):
+            # Assert task just returns
+            self.assertIsNone(register_submission(submission.id))
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+        self.assertEqual(submission.last_register_date, last_register_date)
+
+    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
             form__registration_backend="", form__registration_backend_options={}
@@ -153,3 +203,32 @@ class RegistrationHookTests(TestCase):
         self.assertIsNone(
             submission_no_registration_backend.registration_result,
         )
+        self.assertEqual(self.submission.last_register_date, timezone.now())
+
+
+class ResendSubmissionTest(TestCase):
+    @patch("openforms.registrations.tasks.register_submission.delay")
+    def test_resend_submission_task_only_resends_certain_submissions(self, task_mock):
+        failed_within_time_limit = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
+        )
+        # Outside time limit
+        SubmissionFactory.create(
+            registration_status=RegistrationStatuses.failed,
+            completed_on=(
+                timezone.now()
+                - timedelta(
+                    hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT + 1
+                )
+            ),
+        )
+        # Not failed
+        SubmissionFactory.create(
+            registration_status=RegistrationStatuses.pending,
+            completed_on=timezone.now(),
+        )
+
+        resend_submissions()
+
+        self.assertEqual(task_mock.call_count, 1)
+        task_mock.assert_called_once_with(failed_within_time_limit.id)

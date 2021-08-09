@@ -515,7 +515,17 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.send_emails",
         "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
+    "resend-submissions": {
+        "task": "openforms.registrations.tasks.resend_submissions",
+        "schedule": config(
+            "BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60  # every minute
+        ),
+    },
 }
+
+CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
+    "CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT", default=48  # hours
+)
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
 # the drawback that tasks should be idempotent (if they execute partially, the mutations
@@ -526,6 +536,11 @@ CELERY_TASK_ACKS_LATE = True
 # operation, leading to idle workers and backed-up workers. The `-O fair` option
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+
+# Amount of times to retry the celery task before stopping
+SUBMISSION_REGISTRATION_MAX_RETRIES = config(
+    "SUBMISSION_REGISTRATION_MAX_RETRIES", default=10
+)
 
 #
 # DJANGO-HIJACK

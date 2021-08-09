@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import Optional, Tuple
 
 from django.conf import settings
-from django.db import transaction
+from django.utils import timezone
 
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import (
@@ -24,10 +24,23 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task()
-@transaction.atomic()
+@app.task(
+    autoretry_For=(RegistrationFailed,),
+    retry_backoff=True,
+    max_retries=settings.SUBMISSION_REGISTRATION_MAX_RETRIES,
+)
 def register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
+
+    if submission.registration_status == RegistrationStatuses.success:
+        # It's possible for two instances of this task to run for the same submission
+        #  (eg.  A user runs the admin action and the celery beat task runs)
+        # so if the submission has already succeed we just return
+        return
+
+    submission.last_register_date = timezone.now()
+    submission.registration_status = RegistrationStatuses.in_progress
+    submission.save(update_fields=["last_register_date", "registration_status"])
     # figure out which registry and backend to use from the model field used
     form = submission.form
     backend = form.registration_backend
@@ -36,7 +49,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
     if not backend:
         logger.info("Form %s has no registration plugin configured, aborting", form)
         submission.registration_status = RegistrationStatuses.success
-        submission.save()
+        submission.save(update_fields=["registration_status"])
         return
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
@@ -55,8 +68,15 @@ def register_submission(submission_id: int) -> Optional[dict]:
         )
     except RegistrationFailed:
         formatted_tb = traceback.format_exc()
-        status = RegistrationStatuses.failed
-        result_data = {"traceback": formatted_tb}
+        submission.registration_status = RegistrationStatuses.failed
+        submission.registration_result = {"traceback": formatted_tb}
+        submission.save(
+            update_fields=[
+                "registration_status",
+                "registration_result",
+            ]
+        )
+        raise
     else:
         status = RegistrationStatuses.success
         if plugin.backend_feedback_serializer:
@@ -74,7 +94,24 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     submission.registration_status = status
     submission.registration_result = result_data
-    submission.save(update_fields=["registration_status", "registration_result"])
+    submission.save(
+        update_fields=[
+            "registration_status",
+            "registration_result",
+        ]
+    )
+
+
+@app.task
+def resend_submissions():
+    resend_time_limit = timezone.now() - timedelta(
+        hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT
+    )
+    for submission in Submission.objects.filter(
+        registration_status=RegistrationStatuses.failed,
+        completed_on__gte=resend_time_limit,
+    ):
+        register_submission.delay(submission.id)
 
 
 @app.task(bind=True)

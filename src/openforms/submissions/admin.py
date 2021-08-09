@@ -1,11 +1,13 @@
 from django.contrib import admin, messages
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
-from .constants import IMAGE_COMPONENTS
+from openforms.registrations.tasks import register_submission
+
+from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (
     Submission,
@@ -32,6 +34,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
         "form",
         "registration_status",
+        "last_register_date",
         "created_on",
         "completed_on",
     )
@@ -40,8 +43,16 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
     ]
-    readonly_fields = ["created_on"]
-    actions = ["export_csv", "export_xlsx"]
+    readonly_fields = [
+        "created_on",
+        "get_registration_backend",
+    ]
+    actions = ["export_csv", "export_xlsx", "resend_submissions"]
+
+    def get_registration_backend(self, obj):
+        return obj.form.registration_backend
+
+    get_registration_backend.short_description = _("Registration Backend")
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
@@ -79,6 +90,27 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     export_xlsx.short_description = _(
         "Export selected %(verbose_name_plural)s as Excel-file."
+    )
+
+    def resend_submissions(self, request, queryset):
+        submissions = queryset.filter(registration_status=RegistrationStatuses.failed)
+        messages.success(
+            request,
+            ngettext(
+                "Resending {count} {verbose_name} to registration backend",
+                "Resending {count} {verbose_name_plural} to registration backend",
+                submissions.count(),
+            ).format(
+                count=submissions.count(),
+                verbose_name=queryset.model._meta.verbose_name,
+                verbose_name_plural=queryset.model._meta.verbose_name_plural,
+            ),
+        )
+        for submission in submissions:
+            register_submission.delay(submission.id)
+
+    resend_submissions.short_description = _(
+        "Resend %(verbose_name_plural)s to the registration backend."
     )
 
 
