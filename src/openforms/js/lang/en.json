@@ -1,0 +1,34 @@
+{
+  "70Q0CM": {
+    "defaultMessage": "Previous text",
+    "description": "literals.previousText form label"
+  },
+  "7JMcZW": {
+    "defaultMessage": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration.",
+    "description": "literals.beginText help text"
+  },
+  "AUADgz": {
+    "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
+    "description": "literals.changeText help text"
+  },
+  "GfH2yX": {
+    "defaultMessage": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration.",
+    "description": "literals.confirmText help text"
+  },
+  "M1L9/1": {
+    "defaultMessage": "Change text",
+    "description": "literals.changeText form label"
+  },
+  "TCQic2": {
+    "defaultMessage": "Confirm text",
+    "description": "literals.confirmText form label"
+  },
+  "f590Rb": {
+    "defaultMessage": "Begin text",
+    "description": "literals.beginText form label"
+  },
+  "gGNIdG": {
+    "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
+    "description": "literals.previousText help text"
+  }
+}

@@ -1,0 +1,44 @@
+.. _developers_i18n:
+
+===========================
+Internationalization (i18n)
+===========================
+
+Backend
+=======
+
+For the backend, see the Django `i18n documentation`_.
+
+
+.. _i18n documentation: https://docs.djangoproject.com/en/2.2/topics/i18n/translation/
+
+Frontend
+========
+
+In the frontend, we use `react-intl`_ to manage translations.
+
+Declaring messages
+------------------
+
+The preferred way is to use the ``FormattedMessage`` component. If that's not possible
+or inconvevient, the declarative API through the ``const intl = useIntl();`` hook is
+available.
+
+Extracting messages
+-------------------
+
+To extract messages from the codebase, run:
+
+.. code-block:: bash
+
+    npm run makemessages
+
+The resulting message catalogs are now available in ``src/openforms/js/lang/{locale}.json``.
+
+Edit these files with the correct translations, and then compile them:
+
+.. code-block:: bash
+
+    npm run compilemessages
+
+.. _react-intl: https://formatjs.io/docs/getting-started/installation

@@ -1,0 +1,50 @@
+{
+  "70Q0CM": [
+    {
+      "type": 0,
+      "value": "Previous text"
+    }
+  ],
+  "7JMcZW": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
+    }
+  ],
+  "AUADgz": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+    }
+  ],
+  "GfH2yX": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+    }
+  ],
+  "M1L9/1": [
+    {
+      "type": 0,
+      "value": "Change text"
+    }
+  ],
+  "TCQic2": [
+    {
+      "type": 0,
+      "value": "Confirm text"
+    }
+  ],
+  "f590Rb": [
+    {
+      "type": 0,
+      "value": "Begin text"
+    }
+  ],
+  "gGNIdG": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ]
+}

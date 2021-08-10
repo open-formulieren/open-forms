@@ -15,3 +15,4 @@ integrating with Open Forms.
    manual_testing
    sdk/index
    profiling
+   i18n

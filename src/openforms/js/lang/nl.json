@@ -1,0 +1,34 @@
+{
+  "70Q0CM": {
+    "defaultMessage": "'Vorige' tekst",
+    "description": "literals.previousText form label"
+  },
+  "7JMcZW": {
+    "defaultMessage": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "literals.beginText help text"
+  },
+  "AUADgz": {
+    "defaultMessage": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "literals.changeText help text"
+  },
+  "GfH2yX": {
+    "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "literals.confirmText help text"
+  },
+  "M1L9/1": {
+    "defaultMessage": "'Wijzigen' tekst",
+    "description": "literals.changeText form label"
+  },
+  "TCQic2": {
+    "defaultMessage": "'Bevestigen' tekst",
+    "description": "literals.confirmText form label"
+  },
+  "f590Rb": {
+    "defaultMessage": "'Start' tekst",
+    "description": "literals.beginText form label"
+  },
+  "gGNIdG": {
+    "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "literals.previousText help text"
+  }
+}

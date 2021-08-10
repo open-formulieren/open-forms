@@ -8,13 +8,16 @@ import {TinyMceContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 
-const messages = {
-    nl: {},
+const loadLocaleData = (locale) => {
+    switch (locale) {
+        case 'nl':
+            return import('../../compiled-lang/nl.json');
+        default:
+            return import('../../compiled-lang/en.json');
+    }
 };
 
-const lang = document.querySelector('html').getAttribute("lang");
-
-const mountForm = () => {
+const mountForm = (locale, messages) => {
     const formCreationFormNodes = document.getElementsByClassName('react-form-create');
     if (!formCreationFormNodes.length) return;
 
@@ -24,7 +27,7 @@ const mountForm = () => {
         ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
-            <IntlProvider messages={messages[lang]} locale={lang} defaultLocale="en">
+            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
                 <TinyMceContext.Provider value={tinymceUrl}>
                     <FormCreationForm csrftoken={csrftoken} formUuid={formUuid} formHistoryUrl={formHistoryUrl} />
                 </TinyMceContext.Provider>
@@ -34,7 +37,7 @@ const mountForm = () => {
     }
 };
 
-const mountFormVersions = () => {
+const mountFormVersions = (locale, messages) => {
     const formVersionsNodes = document.getElementsByClassName('react-form-versions-table');
     if (!formVersionsNodes.length) return;
 
@@ -42,7 +45,7 @@ const mountFormVersions = () => {
         const { formUuid, csrftoken, formAdminUrl } = formVersionsNode.dataset;
 
         ReactDOM.render(
-            <IntlProvider messages={messages[lang]} locale={lang} defaultLocale="en">
+            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
                 <FormVersionsTable
                     csrftoken={csrftoken}
                     formUuid={formUuid}
@@ -54,5 +57,13 @@ const mountFormVersions = () => {
     }
 };
 
-mountForm();
-mountFormVersions();
+
+const bootstrapApplication = async () => {
+    const lang = document.querySelector('html').getAttribute("lang");
+    const messages = await loadLocaleData(lang);
+
+    mountForm(lang, messages);
+    mountFormVersions(lang, messages);
+};
+
+bootstrapApplication();
