@@ -1,0 +1,20 @@
+@import '~react-tabs/style/react-tabs';
+
+@import '../vars';
+
+// overrides of the default styles
+
+.react-tabs {
+  &__tab-list {
+    border-bottom-color: $color_secondary_dark;
+  }
+
+  &__tab {
+    font-size: 106%;
+
+    &--selected {
+      border-radius: 0;
+      border-color: $color_secondary_dark;
+    }
+  }
+}

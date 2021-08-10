@@ -2,6 +2,7 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import {FormException} from "../../../utils/exception";
 import {apiDelete, get, post, put} from '../../../utils/fetch';
@@ -670,70 +671,95 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         })
     };
 
+    const isAnyLoading = [
+        state.formSteps.loading,
+        state.availableAuthPlugins.loading,
+        state.availableRegistrationBackends.loading,
+        state.availablePrefillPlugins.loading,
+    ].some( el => el );
+
     return (
         <>
-            <FormObjectTools
-                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading ||
-                            state.availableRegistrationBackends.loading || state.availablePrefillPlugins.loading}
-                historyUrl={formHistoryUrl}
-            />
+            <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />
 
             <h1>Form wijzigen</h1>
 
-            {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
-            <FormMetaFields
-                form={state.form}
-                literals={state.literals}
-                onChange={onFieldChange}
-                errors={state.error}
-                availableRegistrationBackends={state.availableRegistrationBackends}
-                availableAuthPlugins={state.availableAuthPlugins}
-                selectedAuthPlugins={state.selectedAuthPlugins}
-                onAuthPluginChange={onAuthPluginChange}
-            />
+            { Object.keys(state.errors).length
+                ? (<div className='fetch-error'>The form is invalid. Please correct the errors below.</div>)
+                : null
+            }
 
-            <Fieldset title="Form design">
-                <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                    <PluginsContext.Provider value={{
-                        availableAuthPlugins: state.availableAuthPlugins,
-                        selectedAuthPlugins: state.selectedAuthPlugins,
-                        availablePrefillPlugins: state.availablePrefillPlugins
-                    }}>
-                        <StepsFieldSet
-                            steps={state.formSteps.data}
-                            loading={state.formSteps.loading}
-                            loadingErrors={state.errors.loadingErrors}
-                            onEdit={onStepEdit}
-                            onFieldChange={onStepFieldChange}
-                            onLiteralFieldChange={onStepLiteralFieldChange}
-                            onDelete={onStepDelete}
-                            onReorder={onStepReorder}
-                            onReplace={onStepReplace}
-                            onAdd={onAddStep}
-                            submitting={state.submitting}
-                            errors={state.errors.formSteps}
-                        />
-                    </PluginsContext.Provider>
-                </FormDefinitionsContext.Provider>
-            </Fieldset>
+            <Tabs>
+                <TabList>
+                    <Tab>Formulier</Tab>
+                    <Tab>Stappen en velden</Tab>
+                    <Tab>Bevestiging</Tab>
+                    <Tab>Registratie</Tab>
+                </TabList>
 
-            <Fieldset title="Submission confirmation template">
-                <FormRow>
-                    <Field
-                        name="SubmissionConfirmationTemplate"
-                        label="Submission page content"
-                        helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-                        errors={state.errors.submissionConfirmationTemplate}
-                    >
-                        <TinyMCEEditor
-                            content={state.form.submissionConfirmationTemplate}
-                            onEditorChange={(newValue, editor) => onFieldChange(
-                                {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
-                            )}
-                        />
-                    </Field>
-                </FormRow>
-            </Fieldset>
+                <TabPanel>
+                    <FormMetaFields
+                        form={state.form}
+                        literals={state.literals}
+                        onChange={onFieldChange}
+                        errors={state.error}
+                        availableRegistrationBackends={state.availableRegistrationBackends}
+                        availableAuthPlugins={state.availableAuthPlugins}
+                        selectedAuthPlugins={state.selectedAuthPlugins}
+                        onAuthPluginChange={onAuthPluginChange}
+                    />
+                </TabPanel>
+
+                <TabPanel>
+                    <Fieldset title="Form design">
+                        <FormDefinitionsContext.Provider value={state.formDefinitions}>
+                            <PluginsContext.Provider value={{
+                                availableAuthPlugins: state.availableAuthPlugins,
+                                selectedAuthPlugins: state.selectedAuthPlugins,
+                                availablePrefillPlugins: state.availablePrefillPlugins
+                            }}>
+                                <StepsFieldSet
+                                    steps={state.formSteps.data}
+                                    loading={state.formSteps.loading}
+                                    loadingErrors={state.errors.loadingErrors}
+                                    onEdit={onStepEdit}
+                                    onFieldChange={onStepFieldChange}
+                                    onLiteralFieldChange={onStepLiteralFieldChange}
+                                    onDelete={onStepDelete}
+                                    onReorder={onStepReorder}
+                                    onReplace={onStepReplace}
+                                    onAdd={onAddStep}
+                                    submitting={state.submitting}
+                                    errors={state.errors.formSteps}
+                                />
+                            </PluginsContext.Provider>
+                        </FormDefinitionsContext.Provider>
+                    </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                    <Fieldset title="Submission confirmation template">
+                        <FormRow>
+                            <Field
+                                name="SubmissionConfirmationTemplate"
+                                label="Submission page content"
+                                helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                                errors={state.errors.submissionConfirmationTemplate}
+                            >
+                                <TinyMCEEditor
+                                    content={state.form.submissionConfirmationTemplate}
+                                    onEditorChange={(newValue, editor) => onFieldChange(
+                                        {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
+                                    )}
+                                />
+                            </Field>
+                        </FormRow>
+                    </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                </TabPanel>
+            </Tabs>
 
             <SubmitRow onSubmit={onSubmit} isDefault />
             { !state.newForm ?
