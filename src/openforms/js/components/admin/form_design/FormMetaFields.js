@@ -17,7 +17,6 @@ import AuthPluginField from './AuthPluginField';
  */
 const FormMetaFields = ({
     form,
-    literals,
     onChange,
     errors={},
     availableAuthPlugins,
@@ -34,7 +33,6 @@ const FormMetaFields = ({
         maintenanceMode,
         canSubmit
     } = form;
-    const { beginText, previousText, changeText, confirmText } = literals;
 
     const onCheckboxChange = (event, currentValue) => {
         const { target: {name} } = event;
@@ -90,48 +88,7 @@ const FormMetaFields = ({
                     <TextInput value={slug} onChange={onChange} />
                 </Field>
             </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.beginText"
-                    label="Begin text"
-                    helpText="The text that will be displayed at the start of the form to indicate
-                                the user can begin to fill in the form.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={beginText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.previousText"
-                    label="Previous text"
-                    helpText="The text that will be displayed in the overview page to go to the previous step.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={previousText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.changeText"
-                    label="Change text"
-                    helpText="The text that will be displayed in the overview page to change a certain step.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={changeText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.confirmText"
-                    label="Confirm text"
-                    helpText="The text that will be displayed in the overview page to confirm
-                                the form is filled in correctly.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={confirmText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
+
             <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}
@@ -208,20 +165,6 @@ FormMetaFields.propTypes = {
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
         registrationBackendOptions: PropTypes.object,
-    }).isRequired,
-    literals: PropTypes.shape({
-        beginText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        previousText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        changeText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        confirmText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,

@@ -19,6 +19,7 @@ import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
 import RegistrationFields from './RegistrationFields';
+import TextLiterals from './TextLiterals';
 
 const initialFormState = {
     form: {
@@ -695,6 +696,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>Stappen en velden</Tab>
                     <Tab>Bevestiging</Tab>
                     <Tab>Registratie</Tab>
+                    <Tab>Knopteksten</Tab>
                 </TabList>
 
                 <TabPanel>
@@ -763,6 +765,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backendOptions={state.form.registrationBackendOptions}
                         onChange={onFieldChange}
                     />
+                </TabPanel>
+
+                <TabPanel>
+                    <TextLiterals literals={state.literals} onChange={onFieldChange} />
                 </TabPanel>
             </Tabs>
 
