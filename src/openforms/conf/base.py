@@ -625,7 +625,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ),
-    "DEFAULT_THROTTLE_RATES": {"anon": "200/day", "user": "1000/day"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "2000/day", "user": "10000/day"},
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_SCHEMA_CLASS": "openforms.api.schema.AutoSchema",
     "EXCEPTION_HANDLER": "openforms.api.views.exception_handler",
