@@ -9,15 +9,16 @@ import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import SubmitRow from "../forms/SubmitRow";
+import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
             REGISTRATION_BACKENDS_ENDPOINT, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
-import TinyMCEEditor from "./Editor";
+import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
-import FormObjectTools from "./FormObjectTools";
+import FormObjectTools from './FormObjectTools';
+import RegistrationFields from './RegistrationFields';
 
 const initialFormState = {
     form: {
@@ -143,10 +144,9 @@ function reducer(draft, action) {
             break;
         }
         case 'REGISTRATION_BACKENDS_LOADED': {
-            const data = action.payload.map(backend => [backend.id, backend.label]);
             draft.availableRegistrationBackends = {
                 loading: false,
-                data
+                data: action.payload,
             };
             break;
         }
@@ -703,7 +703,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         literals={state.literals}
                         onChange={onFieldChange}
                         errors={state.error}
-                        availableRegistrationBackends={state.availableRegistrationBackends}
                         availableAuthPlugins={state.availableAuthPlugins}
                         selectedAuthPlugins={state.selectedAuthPlugins}
                         onAuthPluginChange={onAuthPluginChange}
@@ -758,6 +757,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
+                    <RegistrationFields
+                        backends={state.availableRegistrationBackends.data}
+                        selectedBackend={state.form.registrationBackend}
+                        backendOptions={state.form.registrationBackendOptions}
+                        onChange={onFieldChange}
+                    />
                 </TabPanel>
             </Tabs>
 
