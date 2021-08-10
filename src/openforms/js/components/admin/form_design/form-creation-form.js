@@ -3,6 +3,7 @@ import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from "../../../utils/exception";
 import {apiDelete, get, post, put} from '../../../utils/fetch';
@@ -418,6 +419,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
+    const intl = useIntl();
     const initialState = {
         ...initialFormState,
         form: {
@@ -683,20 +685,34 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         <>
             <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />
 
-            <h1>Form wijzigen</h1>
+            <h1>
+                <FormattedMessage defaultMessage="Change form" description="Change form page title" />
+            </h1>
 
             { Object.keys(state.errors).length
-                ? (<div className='fetch-error'>The form is invalid. Please correct the errors below.</div>)
+                ? (<div className="fetch-error">
+                     <FormattedMessage defaultMessage="The form is invalid. Please correct the errors below." description="Generic error message" />
+                   </div>)
                 : null
             }
 
             <Tabs>
                 <TabList>
-                    <Tab>Formulier</Tab>
-                    <Tab>Stappen en velden</Tab>
-                    <Tab>Bevestiging</Tab>
-                    <Tab>Registratie</Tab>
-                    <Tab>Knopteksten</Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
+                    </Tab>
                 </TabList>
 
                 <TabPanel>
@@ -712,7 +728,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title="Form design">
+                    <Fieldset title={<FormattedMessage defaultMessage="Form design" description="Form design/editor fieldset title" />}>
                         <FormDefinitionsContext.Provider value={state.formDefinitions}>
                             <PluginsContext.Provider value={{
                                 availableAuthPlugins: state.availableAuthPlugins,
@@ -739,12 +755,17 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title="Submission confirmation template">
+                    <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation template" description="Submission confirmation fieldset title" />}>
                         <FormRow>
                             <Field
                                 name="SubmissionConfirmationTemplate"
-                                label="Submission page content"
-                                helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                                label={<FormattedMessage defaultMessage="Submission page content" description="Confirmation template label" />}
+                                helpText={
+                                    <FormattedMessage
+                                        defaultMessage="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                                        description="Confirmation template help text"
+                                    />
+                                }
                                 errors={state.errors.submissionConfirmationTemplate}
                             >
                                 <TinyMCEEditor
@@ -777,15 +798,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 <SubmitRow extraClassName="submit-row-extended">
                     <input
                         type="submit"
-                        value="Kopiëren"
+                        value={intl.formatMessage({defaultMessage: 'Copy', description: 'Copy form button'})}
                         name="_copy"
-                        title="Duplicate this form"
+                        title={intl.formatMessage({defaultMessage: 'Duplicate this form', description: 'Copy form button title'})}
                     />
                     <input
                         type="submit"
-                        value="Exporteren"
+                        value={intl.formatMessage({defaultMessage: 'Export', description: 'Export form button'})}
                         name="_export"
-                        title="Export this form"
+                        title={intl.formatMessage({defaultMessage: 'Export this form', description: 'Export form button title'})}
                     />
                 </SubmitRow> : null
             }

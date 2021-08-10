@@ -1,4 +1,16 @@
 {
+  "0RXE97": [
+    {
+      "type": 0,
+      "value": "Knopteksten"
+    }
+  ],
+  "1GyseX": [
+    {
+      "type": 0,
+      "value": "Inhoud bevestigingspagina"
+    }
+  ],
   "70Q0CM": [
     {
       "type": 0,
@@ -17,10 +29,34 @@
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "BStu9Z": [
+    {
+      "type": 0,
+      "value": "Formulier"
+    }
+  ],
+  "CXKQZZ": [
+    {
+      "type": 0,
+      "value": "Bevestiging"
+    }
+  ],
+  "EtAvFF": [
+    {
+      "type": 0,
+      "value": "Maak een kopie van dit formulier"
+    }
+  ],
   "GfH2yX": [
     {
       "type": 0,
       "value": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "LNeqFF": [
+    {
+      "type": 0,
+      "value": "Kopiëren"
     }
   ],
   "M1L9/1": [
@@ -29,10 +65,22 @@
       "value": "'Wijzigen' tekst"
     }
   ],
+  "OFAJVW": [
+    {
+      "type": 0,
+      "value": "Registratie"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
       "value": "'Bevestigen' tekst"
+    }
+  ],
+  "d45v2X": [
+    {
+      "type": 0,
+      "value": "Exporteer dit formulier"
     }
   ],
   "f590Rb": [
@@ -45,6 +93,48 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "hWRRHx": [
+    {
+      "type": 0,
+      "value": "Formulierontwerp"
+    }
+  ],
+  "mOjKcm": [
+    {
+      "type": 0,
+      "value": "Stappen en velden"
+    }
+  ],
+  "ow5AAO": [
+    {
+      "type": 0,
+      "value": "De gegevens zijn ongeldig. Los de problemen hieronder op."
+    }
+  ],
+  "qo1UbS": [
+    {
+      "type": 0,
+      "value": "Exporteren"
+    }
+  ],
+  "tLL2x4": [
+    {
+      "type": 0,
+      "value": "Formulier configureren"
+    }
+  ],
+  "viEfGU": [
+    {
+      "type": 0,
+      "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "xJBMaf": [
+    {
+      "type": 0,
+      "value": "Sjabloon bevestigingspagina"
     }
   ]
 }

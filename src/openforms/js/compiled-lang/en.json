@@ -1,4 +1,16 @@
 {
+  "0RXE97": [
+    {
+      "type": 0,
+      "value": "Literals"
+    }
+  ],
+  "1GyseX": [
+    {
+      "type": 0,
+      "value": "Submission page content"
+    }
+  ],
   "70Q0CM": [
     {
       "type": 0,
@@ -17,10 +29,34 @@
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
     }
   ],
+  "BStu9Z": [
+    {
+      "type": 0,
+      "value": "Form"
+    }
+  ],
+  "CXKQZZ": [
+    {
+      "type": 0,
+      "value": "Confirmation"
+    }
+  ],
+  "EtAvFF": [
+    {
+      "type": 0,
+      "value": "Duplicate this form"
+    }
+  ],
   "GfH2yX": [
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+    }
+  ],
+  "LNeqFF": [
+    {
+      "type": 0,
+      "value": "Copy"
     }
   ],
   "M1L9/1": [
@@ -29,10 +65,22 @@
       "value": "Change text"
     }
   ],
+  "OFAJVW": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
       "value": "Confirm text"
+    }
+  ],
+  "d45v2X": [
+    {
+      "type": 0,
+      "value": "Export this form"
     }
   ],
   "f590Rb": [
@@ -45,6 +93,48 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "hWRRHx": [
+    {
+      "type": 0,
+      "value": "Form design"
+    }
+  ],
+  "mOjKcm": [
+    {
+      "type": 0,
+      "value": "Steps and fields"
+    }
+  ],
+  "ow5AAO": [
+    {
+      "type": 0,
+      "value": "The form is invalid. Please correct the errors below."
+    }
+  ],
+  "qo1UbS": [
+    {
+      "type": 0,
+      "value": "Export"
+    }
+  ],
+  "tLL2x4": [
+    {
+      "type": 0,
+      "value": "Change form"
+    }
+  ],
+  "viEfGU": [
+    {
+      "type": 0,
+      "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+    }
+  ],
+  "xJBMaf": [
+    {
+      "type": 0,
+      "value": "Submission confirmation template"
     }
   ]
 }
