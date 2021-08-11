@@ -55,19 +55,15 @@ const FormMetaFields = ({
         });
     };
 
-    const schema = {
-        type: "object",
-        required: ["title"],
-        properties: {
-            title: {type: "string", title: "Title", default: "A different new task"},
-            done: {type: "boolean", title: "Done?", default: false}
-        }
-    };
-
     const onRegistrationBackendOptionsFormChange = ({ formData }) => {
         console.log('---------------');
         console.log('In onRegistrationBackendOptionsFormChange: formData');
         console.log(formData);
+        // TODO Call onChange here just like text field was being called
+        if (formData) {
+            onChange({target: {name: 'form.registrationBackendOptions', value: formData}});
+        }
+        // I think
         console.log('---------------');
     };
 
@@ -110,14 +106,19 @@ const FormMetaFields = ({
 
             <FormRow>
                 <Field
-                    name="form.otherThing"
-                    label="Testing form"
+                    name="form.registrationBackendOptionsForm"
+                    label="Registration Backend Options Form"
                 >
-                    <Form
-                        schema={schema}
-                        onChange={onRegistrationBackendOptionsFormChange}
-                        children={true}
-                    />
+                    {registrationBackendOptionsForms ?
+                        <Form
+                            schema={registrationBackendOptionsForms[registrationBackend]}
+                            formData={registrationBackendOptions}
+                            onChange={onRegistrationBackendOptionsFormChange}
+                            children={true}
+                        />
+                        :
+                        <div> </div>
+                    }
                 </Field>
             </FormRow>
             <FormRow>

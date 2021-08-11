@@ -158,8 +158,10 @@ class FormSerializer(serializers.ModelSerializer):
         representation['registration_backend_options_forms'] = {
             _register.identifier: _register.configuration_options.display_as_jsonschema()
             # TODO Remove this if statement
-            for _register in list(register) if _register.identifier in ['demo', 'failing_demo']
+            for _register in list(register) if _register.identifier in ['demo', 'failing-demo']
         }
+
+        return representation
 
 
 class FormExportSerializer(FormSerializer):
