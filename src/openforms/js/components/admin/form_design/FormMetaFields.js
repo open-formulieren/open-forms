@@ -2,6 +2,7 @@
 global URLify;
  */
 import React from 'react';
+import Form from "@rjsf/core";
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -54,6 +55,23 @@ const FormMetaFields = ({
         });
     };
 
+    const schema = {
+        type: "object",
+        required: ["title"],
+        properties: {
+            title: {type: "string", title: "Title", default: "A different new task"},
+            done: {type: "boolean", title: "Done?", default: false}
+        }
+    };
+
+    const onRegistrationBackendOptionsFormChange = ({ formData }) => {
+        console.log('---------------');
+        console.log('In onRegistrationBackendOptionsFormChange: formData');
+        console.log(formData);
+        console.log('---------------');
+    };
+
+
     return (
         <Fieldset>
             <FormRow>
@@ -90,6 +108,18 @@ const FormMetaFields = ({
                 </Field>
             </FormRow>
 
+            <FormRow>
+                <Field
+                    name="form.otherThing"
+                    label="Testing form"
+                >
+                    <Form
+                        schema={schema}
+                        onChange={onRegistrationBackendOptionsFormChange}
+                        children={true}
+                    />
+                </Field>
+            </FormRow>
             <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}
