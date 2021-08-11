@@ -174,6 +174,11 @@ class FormExportSerializer(FormSerializer):
         fields["payment_backend"].write_only = False
         return fields
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        del representation['registration_backend_options_forms']
+        return representation
+
 
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):

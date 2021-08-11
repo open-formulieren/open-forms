@@ -56,15 +56,7 @@ const FormMetaFields = ({
     };
 
     const onRegistrationBackendOptionsFormChange = ({ formData }) => {
-        console.log('---------------');
-        console.log('In onRegistrationBackendOptionsFormChange: formData');
-        console.log(formData);
-        // TODO Call onChange here just like text field was being called
-        if (formData) {
-            onChange({target: {name: 'form.registrationBackendOptions', value: formData}});
-        }
-        // I think
-        console.log('---------------');
+        onChange({target: {name: 'form.registrationBackendOptions', value: formData}});
     };
 
 
@@ -197,6 +189,7 @@ FormMetaFields.propTypes = {
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
         registrationBackendOptions: PropTypes.object,
+        registrationBackendOptionsForms: PropTypes.object,
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
