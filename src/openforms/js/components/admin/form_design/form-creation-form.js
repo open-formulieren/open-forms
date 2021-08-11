@@ -616,7 +616,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 : null
             }
 
-            <Tabs defaultIndex={2}>
+            <Tabs defaultIndex={5}>
                 <TabList>
                     <Tab>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />

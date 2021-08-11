@@ -8,6 +8,8 @@ import {LOGICS_ENDPOINT} from './constants';
 import {apiDelete, get, post, put} from "../../../utils/fetch";
 import useAsync from "react-use/esm/useAsync";
 import FAIcon from "../FAIcon";
+import Trigger from './logic/Trigger';
+import {ComponentsContext} from './logic/Context';
 
 
 const initialState = {
@@ -20,7 +22,6 @@ const initialState = {
 };
 
 const EMPTY_CHOICE = [['', '-------']];
-
 
 const EMPTY_RULE = {
     uuid: '',
@@ -78,7 +79,7 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
         ).reduce((acc, currentValue) => ({...acc, ...currentValue}), {});
         dispatch({
             type: 'FORMATTED_COMPONENTS_CHOICES',
-            payload: Object.entries(allComponents).map( ([key, comp]) => [key, comp.label || comp.key] )
+            payload: allComponents,
         });
     };
 
@@ -87,7 +88,7 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
         if (rulesResponse.ok) {
             dispatch({
                 type: 'LOADED_RULES',
-                payload: rulesResponse.data
+                payload: rulesResponse.data.length ? rulesResponse.data : [EMPTY_RULE],
             });
         }
     };
@@ -159,7 +160,7 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
     }, [formSteps]);
 
     return (
-        <>
+        <ComponentsContext.Provider value={state.components.choices}>
             {state.rules.map((rule, i) => (
                 <Rule
                     key={i}
@@ -176,7 +177,7 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
              <button type="button" onClick={onSubmit}>
                 Save logic
             </button>
-        </>
+        </ComponentsContext.Provider>
     );
 };
 
@@ -199,10 +200,14 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
     };
     return (
         <div className="logic-rule">
+
+            <Trigger id="test" />
+
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
             </div>
             <div>
+                {/*
                 When the following logic evaluates to true
                 <TextArea
                     name='jsonLogicTrigger'
@@ -233,6 +238,7 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
                     value={JSON.stringify(actions)}
                     onChange={onChangeJsonFields}
                 />
+                */}
             </div>
         </div>
     );
