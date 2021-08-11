@@ -29,6 +29,11 @@
     "description": "Form name field label",
     "originalDefault": "Name"
   },
+  "5zieWh": {
+    "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
+    "description": "Form step name field help text",
+    "originalDefault": "Name of the form definition used in this form step"
+  },
   "6PIG4q": {
     "defaultMessage": "Inlogopties",
     "description": "Auth plugin field label",
@@ -58,6 +63,16 @@
     "defaultMessage": "Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op <link>{count, plural, one {# formulier} other {# formulieren} }</link>.",
     "description": "Warning when modifying existing form definitions",
     "originalDefault": "You are modifying an existing form definition! This change affects <link>{count, plural, one {# form} other {# forms} }</link>"
+  },
+  "7YqZOp": {
+    "defaultMessage": "'Volgende' tekst",
+    "description": "Form step next text label",
+    "originalDefault": "Next text"
+  },
+  "8LLxRg": {
+    "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step save text field help text",
+    "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
   "9bGp7h": {
     "defaultMessage": "Actief",
@@ -119,10 +134,20 @@
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
   },
+  "Iv+lBL": {
+    "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step next text field help text",
+    "originalDefault": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+  },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
     "description": "Form name field help text",
     "originalDefault": "Name/title of the form"
+  },
+  "KUXH/H": {
+    "defaultMessage": "De onderstaande formulierdefinitie bevat fouten.",
+    "description": "Invalid form step error",
+    "originalDefault": "The form step below is invalid."
   },
   "LNeqFF": {
     "defaultMessage": "Kopiëren",
@@ -139,6 +164,11 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "QLTh2N": {
+    "defaultMessage": "'Opslaan' tekst",
+    "description": "Form step save text label",
+    "originalDefault": "Save text"
+  },
   "TCQic2": {
     "defaultMessage": "'Bevestigen' tekst",
     "description": "literals.confirmText form label",
@@ -153,6 +183,21 @@
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "ZICfus": {
+    "defaultMessage": "'Vorige' tekst",
+    "description": "Form step previous text label",
+    "originalDefault": "Previous text"
+  },
+  "a9RqmQ": {
+    "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
+    "description": "Form step slug field help text",
+    "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aXg4YH": {
+    "defaultMessage": "Inloggen vereist?",
+    "description": "Form step login required label",
+    "originalDefault": "Login required?"
   },
   "d45v2X": {
     "defaultMessage": "Exporteer dit formulier",
@@ -174,10 +219,20 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "h1EURI": {
+    "defaultMessage": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step previous text field help text",
+    "originalDefault": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+  },
   "hWRRHx": {
     "defaultMessage": "Formulierontwerp",
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
+  },
+  "jARYB7": {
+    "defaultMessage": "(Herbruikbare) stapgegevens",
+    "description": "Form definition module title",
+    "originalDefault": "Form definition"
   },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",
@@ -199,15 +254,30 @@
     "description": "Registration backend label",
     "originalDefault": "Select registration backend"
   },
+  "poZZD9": {
+    "defaultMessage": "Naam",
+    "description": "Form step name label",
+    "originalDefault": "Step name"
+  },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
     "description": "Export form button",
     "originalDefault": "Export"
   },
+  "qzISfx": {
+    "defaultMessage": "URL-deel",
+    "description": "Form step slug label",
+    "originalDefault": "Step slug"
+  },
   "tLL2x4": {
     "defaultMessage": "Formulier configureren",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "uleYj3": {
+    "defaultMessage": "Geschiedenis",
+    "description": "History link button",
+    "originalDefault": "History"
   },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",

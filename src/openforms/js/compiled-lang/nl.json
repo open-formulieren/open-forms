@@ -35,6 +35,12 @@
       "value": "Naam"
     }
   ],
+  "5zieWh": [
+    {
+      "type": 0,
+      "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
+    }
+  ],
   "6PIG4q": [
     {
       "type": 0,
@@ -111,6 +117,18 @@
       "value": "."
     }
   ],
+  "7YqZOp": [
+    {
+      "type": 0,
+      "value": "'Volgende' tekst"
+    }
+  ],
+  "8LLxRg": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -183,10 +201,22 @@
       "value": "URL-deel van het formulier."
     }
   ],
+  "Iv+lBL": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Naam (of titel) van het formulier."
+    }
+  ],
+  "KUXH/H": [
+    {
+      "type": 0,
+      "value": "De onderstaande formulierdefinitie bevat fouten."
     }
   ],
   "LNeqFF": [
@@ -207,6 +237,12 @@
       "value": "Registratie"
     }
   ],
+  "QLTh2N": [
+    {
+      "type": 0,
+      "value": "'Opslaan' tekst"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -223,6 +259,24 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "ZICfus": [
+    {
+      "type": 0,
+      "value": "'Vorige' tekst"
+    }
+  ],
+  "a9RqmQ": [
+    {
+      "type": 0,
+      "value": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf."
+    }
+  ],
+  "aXg4YH": [
+    {
+      "type": 0,
+      "value": "Inloggen vereist?"
     }
   ],
   "d45v2X": [
@@ -249,10 +303,22 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "h1EURI": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "hWRRHx": [
     {
       "type": 0,
       "value": "Formulierontwerp"
+    }
+  ],
+  "jARYB7": [
+    {
+      "type": 0,
+      "value": "(Herbruikbare) stapgegevens"
     }
   ],
   "mOjKcm": [
@@ -279,16 +345,34 @@
       "value": "Registratiemethode"
     }
   ],
+  "poZZD9": [
+    {
+      "type": 0,
+      "value": "Naam"
+    }
+  ],
   "qo1UbS": [
     {
       "type": 0,
       "value": "Exporteren"
     }
   ],
+  "qzISfx": [
+    {
+      "type": 0,
+      "value": "URL-deel"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "uleYj3": [
+    {
+      "type": 0,
+      "value": "Geschiedenis"
     }
   ],
   "viEfGU": [

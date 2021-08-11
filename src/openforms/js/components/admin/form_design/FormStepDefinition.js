@@ -3,6 +3,7 @@ global URLify;
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import FormIOBuilder from '../../formio_builder/builder';
 import {Checkbox, TextInput} from "../forms/Inputs";
@@ -55,13 +56,17 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
             <PluginWarning loginRequired={loginRequired} configuration={configuration}/>
 
             <fieldset className="module aligned">
-                <h2>Formulierdefinitie</h2>
+                <h2>
+                    <FormattedMessage description="Form definition module title"defaultMessage="Form definition" />
+                </h2>
 
                 <FormRow>
                     <Field
-                        name='name'
-                        label='Step name'
-                        helpText='Name of the form definition used in this form step'
+                        name="name"
+                        label={<FormattedMessage defaultMessage="Step name" description="Form step name label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="Name of the form definition used in this form step"
+                            description="Form step name field help text" />}
                         errors={errors.name}
                         required
                         fieldBox
@@ -69,9 +74,11 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
                     </Field>
                     <Field
-                        name='slug'
-                        label='Step slug'
-                        helpText='Slug of the form definition used in this form step'
+                        name="slug"
+                        label={<FormattedMessage defaultMessage="Step slug" description="Form step slug label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="Slug of the form definition used in this form step"
+                            description="Form step slug field help text" />}
                         errors={errors.slug}
                         required
                         fieldBox
@@ -81,28 +88,31 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                 </FormRow>
                 <FormRow>
                     <Field
-                        name='previousText'
-                        label='Previous text'
-                        helpText='The text that will be displayed in the form step to go to the previous step.
-                                    Leave blank to get value from global configuration.'
+                        name="previousText"
+                        label={<FormattedMessage defaultMessage="Previous text" description="Form step previous text label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+                            description="Form step previous text field help text" />}
                         fieldBox
                     >
                         <TextInput value={previousText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
                     <Field
-                        name='saveText'
-                        label='Save text'
-                        helpText='The text that will be displayed in the form step to save the current information.
-                                    Leave blank to get value from global configuration.'
+                        name="saveText"
+                        label={<FormattedMessage defaultMessage="Save text" description="Form step save text label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
+                            description="Form step save text field help text" />}
                         fieldBox
                     >
                         <TextInput value={saveText} onChange={onLiteralFieldChange} maxLength="50"/>
                     </Field>
                     <Field
-                        name='nextText'
-                        label='Next text'
-                        helpText='The text that will be displayed in the form step to go to the next step.
-                                    Leave blank to get value from global configuration.'
+                        name="nextText"
+                        label={<FormattedMessage defaultMessage="Next text" description="Form step next text label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+                            description="Form step next text field help text" />}
                         fieldBox
                     >
                         <TextInput value={nextText} onChange={onLiteralFieldChange} maxLength="50"/>
@@ -110,7 +120,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                 </FormRow>
                 <FormRow>
                     <Checkbox
-                        label="Login required?"
+                        label={<FormattedMessage defaultMessage="Login required?" description="Form step login required label" />}
                         name="loginRequired"
                         checked={loginRequired}
                         onChange={(e) => onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})}

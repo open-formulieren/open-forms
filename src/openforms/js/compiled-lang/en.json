@@ -35,6 +35,12 @@
       "value": "Name"
     }
   ],
+  "5zieWh": [
+    {
+      "type": 0,
+      "value": "Name of the form definition used in this form step"
+    }
+  ],
   "6PIG4q": [
     {
       "type": 0,
@@ -105,6 +111,18 @@
       ],
       "type": 8,
       "value": "link"
+    }
+  ],
+  "7YqZOp": [
+    {
+      "type": 0,
+      "value": "Next text"
+    }
+  ],
+  "8LLxRg": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
     }
   ],
   "9bGp7h": [
@@ -179,10 +197,22 @@
       "value": "Slug of the form, used in URLs"
     }
   ],
+  "Iv+lBL": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Name/title of the form"
+    }
+  ],
+  "KUXH/H": [
+    {
+      "type": 0,
+      "value": "The form step below is invalid."
     }
   ],
   "LNeqFF": [
@@ -203,6 +233,12 @@
       "value": "Registration"
     }
   ],
+  "QLTh2N": [
+    {
+      "type": 0,
+      "value": "Save text"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -219,6 +255,24 @@
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "ZICfus": [
+    {
+      "type": 0,
+      "value": "Previous text"
+    }
+  ],
+  "a9RqmQ": [
+    {
+      "type": 0,
+      "value": "Slug of the form definition used in this form step"
+    }
+  ],
+  "aXg4YH": [
+    {
+      "type": 0,
+      "value": "Login required?"
     }
   ],
   "d45v2X": [
@@ -245,10 +299,22 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "h1EURI": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
   "hWRRHx": [
     {
       "type": 0,
       "value": "Form design"
+    }
+  ],
+  "jARYB7": [
+    {
+      "type": 0,
+      "value": "Form definition"
     }
   ],
   "mOjKcm": [
@@ -275,16 +341,34 @@
       "value": "Select registration backend"
     }
   ],
+  "poZZD9": [
+    {
+      "type": 0,
+      "value": "Step name"
+    }
+  ],
   "qo1UbS": [
     {
       "type": 0,
       "value": "Export"
     }
   ],
+  "qzISfx": [
+    {
+      "type": 0,
+      "value": "Step slug"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Change form"
+    }
+  ],
+  "uleYj3": [
+    {
+      "type": 0,
+      "value": "History"
     }
   ],
   "viEfGU": [

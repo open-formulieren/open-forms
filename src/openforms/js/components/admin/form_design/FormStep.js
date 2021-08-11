@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import usePrevious from 'react-use/esm/usePrevious';
+import {FormattedMessage} from 'react-intl';
 
 import FormStepDefinition from './FormStepDefinition';
 import FAIcon from '../FAIcon';
@@ -29,7 +30,11 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onLiteralFieldChange, on
 
     return (
         <>
-            { Object.keys(errors).length ? <div className='fetch-error'>The form step below is invalid.</div> : null }
+            { Object.keys(errors).length ? (
+                <div className="fetch-error">
+                    <FormattedMessage description="Invalid form step error" defaultMessage="The form step below is invalid." />
+                </div>
+            ) : null }
             <FormStepDefinition
                 name={name}
                 slug={slug}
