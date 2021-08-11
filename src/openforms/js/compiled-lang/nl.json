@@ -11,6 +11,20 @@
       "value": "Knopteksten"
     }
   ],
+  "0ZtMje": [
+    {
+      "type": 0,
+      "value": "Ben je zeker dat je de stap "
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": " wil verwijderen?"
+    }
+  ],
   "1GyseX": [
     {
       "type": 0,
@@ -33,6 +47,12 @@
     {
       "type": 0,
       "value": "Naam"
+    }
+  ],
+  "5P+YgL": [
+    {
+      "type": 0,
+      "value": "Stap toevoegen"
     }
   ],
   "5zieWh": [
@@ -165,6 +185,12 @@
       "value": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier."
     }
   ],
+  "DGpAyT": [
+    {
+      "type": 0,
+      "value": "Omlaag"
+    }
+  ],
   "EtAvFF": [
     {
       "type": 0,
@@ -261,6 +287,12 @@
       "value": "URL-deel"
     }
   ],
+  "Y5A1Tn": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -277,6 +309,12 @@
     {
       "type": 0,
       "value": "Inloggen vereist?"
+    }
+  ],
+  "bzVhb6": [
+    {
+      "type": 0,
+      "value": "Omhoog"
     }
   ],
   "d45v2X": [
@@ -313,6 +351,16 @@
     {
       "type": 0,
       "value": "Formulierontwerp"
+    }
+  ],
+  "ixiVhj": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " [nieuw]"
     }
   ],
   "jARYB7": [
@@ -367,6 +415,12 @@
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "uBO/Al": [
+    {
+      "type": 0,
+      "value": "Kies een stap om te bekijken of aan te passen."
     }
   ],
   "uleYj3": [

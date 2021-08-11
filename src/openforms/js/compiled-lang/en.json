@@ -11,6 +11,20 @@
       "value": "Literals"
     }
   ],
+  "0ZtMje": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete the step "
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": "?"
+    }
+  ],
   "1GyseX": [
     {
       "type": 0,
@@ -33,6 +47,12 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "5P+YgL": [
+    {
+      "type": 0,
+      "value": "Add step"
     }
   ],
   "5zieWh": [
@@ -161,6 +181,12 @@
       "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
+  "DGpAyT": [
+    {
+      "type": 0,
+      "value": "Move down"
+    }
+  ],
   "EtAvFF": [
     {
       "type": 0,
@@ -257,6 +283,12 @@
       "value": "Slug"
     }
   ],
+  "Y5A1Tn": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -273,6 +305,12 @@
     {
       "type": 0,
       "value": "Login required?"
+    }
+  ],
+  "bzVhb6": [
+    {
+      "type": 0,
+      "value": "Move up"
     }
   ],
   "d45v2X": [
@@ -309,6 +347,16 @@
     {
       "type": 0,
       "value": "Form design"
+    }
+  ],
+  "ixiVhj": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " [new]"
     }
   ],
   "jARYB7": [
@@ -363,6 +411,12 @@
     {
       "type": 0,
       "value": "Change form"
+    }
+  ],
+  "uBO/Al": [
+    {
+      "type": 0,
+      "value": "Select a step to view or modify."
     }
   ],
   "uleYj3": [

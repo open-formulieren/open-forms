@@ -9,6 +9,11 @@
     "description": "Form literals tab title",
     "originalDefault": "Literals"
   },
+  "0ZtMje": {
+    "defaultMessage": "Are you sure you want to delete the step {step}?",
+    "description": "Step delete confirmation",
+    "originalDefault": "Are you sure you want to delete the step {step}?"
+  },
   "1GyseX": {
     "defaultMessage": "Submission page content",
     "description": "Confirmation template label",
@@ -28,6 +33,11 @@
     "defaultMessage": "Name",
     "description": "Form name field label",
     "originalDefault": "Name"
+  },
+  "5P+YgL": {
+    "defaultMessage": "Add step",
+    "description": "add step button",
+    "originalDefault": "Add step"
   },
   "5zieWh": {
     "defaultMessage": "Name of the form definition used in this form step",
@@ -103,6 +113,11 @@
     "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
+  },
+  "DGpAyT": {
+    "defaultMessage": "Move down",
+    "description": "Move down icon title",
+    "originalDefault": "Move down"
   },
   "EtAvFF": {
     "defaultMessage": "Duplicate this form",
@@ -184,6 +199,11 @@
     "description": "Form slug field label",
     "originalDefault": "Slug"
   },
+  "Y5A1Tn": {
+    "defaultMessage": "Delete",
+    "description": "Delete step icon title",
+    "originalDefault": "Delete"
+  },
   "ZICfus": {
     "defaultMessage": "Previous text",
     "description": "Form step previous text label",
@@ -198,6 +218,11 @@
     "defaultMessage": "Login required?",
     "description": "Form step login required label",
     "originalDefault": "Login required?"
+  },
+  "bzVhb6": {
+    "defaultMessage": "Move up",
+    "description": "Move up icon title",
+    "originalDefault": "Move up"
   },
   "d45v2X": {
     "defaultMessage": "Export this form",
@@ -228,6 +253,11 @@
     "defaultMessage": "Form design",
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
+  },
+  "ixiVhj": {
+    "defaultMessage": "{name} [new]",
+    "description": "form step label in nav",
+    "originalDefault": "{name} [new]"
   },
   "jARYB7": {
     "defaultMessage": "Form definition",
@@ -273,6 +303,11 @@
     "defaultMessage": "Change form",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "uBO/Al": {
+    "defaultMessage": "Select a step to view or modify.",
+    "description": "No-active-step-selected notice",
+    "originalDefault": "Select a step to view or modify."
   },
   "uleYj3": {
     "defaultMessage": "History",

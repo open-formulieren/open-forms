@@ -8,7 +8,7 @@ import FAIcon from '../FAIcon';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
-const FormStep = ({ title, data, onEdit, onFieldChange, onLiteralFieldChange, onReplace, errors={} }) => {
+const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace, errors={} }) => {
     const { configuration, formDefinition, name, slug, literals, loginRequired, isNew } = data;
 
     const previousFormDefinition = usePrevious(formDefinition);
@@ -56,7 +56,6 @@ const FormStep = ({ title, data, onEdit, onFieldChange, onLiteralFieldChange, on
 
 
 FormStep.propTypes = {
-    title: PropTypes.string.isRequired,
     data: PropTypes.shape({
         configuration: PropTypes.object,
         formDefinition: PropTypes.string,
