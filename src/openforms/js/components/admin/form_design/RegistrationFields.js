@@ -45,6 +45,7 @@ const RegistrationFields = ({
                     label={<FormattedMessage defaultMessage="Select registration backend" description="Registration backend label" />}
                 >
                     <Select
+                        name='Registration Method'
                         choices={backendChoices}
                         value={selectedBackend}
                         onChange={onChange}
@@ -91,6 +92,7 @@ RegistrationFields.propTypes = {
     })),
     selectedBackend: PropTypes.string,
     backendOptions: PropTypes.object,
+    backendOptionsForms: PropTypes.object,
     onChange: PropTypes.func.isRequired,
 };
 
