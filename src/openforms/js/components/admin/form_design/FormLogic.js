@@ -5,8 +5,9 @@ import {useImmerReducer} from 'use-immer';
 import {TextArea} from "../forms/Inputs";
 import Select from "../forms/Select";
 import {LOGICS_ENDPOINT} from './constants';
-import {get, post, put} from "../../../utils/fetch";
+import {apiDelete, get, post, put} from "../../../utils/fetch";
 import useAsync from "react-use/esm/useAsync";
+import FAIcon from "../FAIcon";
 
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
         choices: []
     },
     rules: [],
+    rulesToDelete: []
 };
 
 const EMPTY_CHOICE = [['', '-------']];
@@ -41,6 +43,15 @@ const reducer = (draft, action) => {
         case 'CHANGED_RULE': {
             const {index, name, value} = action.payload;
             draft.rules[index][name] = value;
+            break;
+        }
+        case 'DELETED_RULE': {
+            const {index} = action.payload;
+            draft.rulesToDelete.push(draft.rules[index].uuid);
+
+            const updatedRules = [...draft.rules];
+            updatedRules.splice(index, 1);
+            draft.rules = updatedRules;
             break;
         }
         case 'FORMATTED_COMPONENTS_CHOICES': {
@@ -89,6 +100,13 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
         });
     };
 
+    const onRuleDelete = (index) => {
+        dispatch({
+            type: 'DELETED_RULE',
+            payload: {index: index}
+        });
+    };
+
     const onSubmit = async (event) => {
         event.preventDefault();
 
@@ -116,6 +134,19 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
             }
 
         }
+
+        if (state.rulesToDelete.length) {
+            for (const ruleUuid of state.rulesToDelete) {
+                // Rules that were added but are not saved in the backend yet don't have a UUID.
+                if (!ruleUuid) return;
+
+                var response = await apiDelete(`${LOGICS_ENDPOINT}/${ruleUuid}`, csrftoken);
+                if (!response.ok) {
+                    throw new Error('An error occurred while deleting logic rules.');
+                }
+
+            }
+        }
     }
 
     const getFormStepChoices = (formSteps) => {
@@ -136,6 +167,7 @@ const FormLogic = ({ formUuid, formSteps, csrftoken }) => {
                     formStepsChoices={getFormStepChoices(formSteps)}
                     components={state.components}
                     onChange={onRuleChange.bind(null, i)}
+                    onDelete={onRuleDelete.bind(null, i)}
                 />
             ))}
             <button type="button" onClick={ () => dispatch({type: 'ADD_RULE'}) }>
@@ -153,44 +185,55 @@ FormLogic.propTypes = {
 };
 
 
-const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogicTrigger, actions, onChange}) => {
+const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogicTrigger, actions, onChange, onDelete}) => {
     const onChangeJsonFields = (event) => {
         const jsonField = JSON.parse(event.target.value);
         console.log(jsonField);
         onChange({target: {name: event.target.name, value: jsonField}});
     }
+
+    const confirmDelete = (index) => {
+        if(window.confirm('Are you sure you want to delete this rule?')){
+            onDelete(index);
+        }
+    };
     return (
-        <div>
-            When the following logic evaluates to true
-            <TextArea
-                name='jsonLogicTrigger'
-                rows={7}
-                cols={20}
-                value={JSON.stringify(jsonLogicTrigger)}
-                onChange={onChangeJsonFields}
-            />
-            update the field
-            <Select
-                name="component"
-                choices={EMPTY_CHOICE.concat(components.choices)}
-                value={component}
-                onChange={onChange}
-            />
-            of the form step
-            <Select
-                name="formStep"
-                choices={EMPTY_CHOICE.concat(formStepsChoices)}
-                value={formStep}
-                onChange={onChange}
-            />
-            with the following actions
-            <TextArea
-                name='actions'
-                rows={7}
-                cols={20}
-                value={JSON.stringify(actions)}
-                onChange={onChangeJsonFields}
-            />
+        <div className="logic-rule">
+            <div className="actions">
+                <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
+            </div>
+            <div>
+                When the following logic evaluates to true
+                <TextArea
+                    name='jsonLogicTrigger'
+                    rows={7}
+                    cols={20}
+                    value={JSON.stringify(jsonLogicTrigger)}
+                    onChange={onChangeJsonFields}
+                />
+                update the field
+                <Select
+                    name="component"
+                    choices={EMPTY_CHOICE.concat(components.choices)}
+                    value={component}
+                    onChange={onChange}
+                />
+                of the form step
+                <Select
+                    name="formStep"
+                    choices={EMPTY_CHOICE.concat(formStepsChoices)}
+                    value={formStep}
+                    onChange={onChange}
+                />
+                with the following actions
+                <TextArea
+                    name='actions'
+                    rows={7}
+                    cols={20}
+                    value={JSON.stringify(actions)}
+                    onChange={onChangeJsonFields}
+                />
+            </div>
         </div>
     );
 };
