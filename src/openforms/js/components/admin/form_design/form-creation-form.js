@@ -15,7 +15,8 @@ import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
-            REGISTRATION_BACKENDS_ENDPOINT, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+            REGISTRATION_BACKENDS_ENDPOINT, REGISTRATION_BACKEND_OPTIONS_ENDPOINT,
+            AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -35,7 +36,6 @@ const initialFormState = {
         canSubmit: true,
         registrationBackend: '',
         registrationBackendOptions: {},
-        registrationBackendOptionsForms: {},
     },
     literals: {
         beginText: {
@@ -61,6 +61,10 @@ const initialFormState = {
     availableRegistrationBackends: {
         loading: true,
         data: []
+    },
+    availableRegistrationBackendOptions: {
+        loading: true,
+        data: {}
     },
     availableAuthPlugins: {
         loading: true,
@@ -148,6 +152,13 @@ function reducer(draft, action) {
         }
         case 'REGISTRATION_BACKENDS_LOADED': {
             draft.availableRegistrationBackends = {
+                loading: false,
+                data: action.payload,
+            };
+            break;
+        }
+        case 'REGISTRATION_BACKEND_OPTIONS_LOADED': {
+            draft.availableRegistrationBackendOptions = {
                 loading: false,
                 data: action.payload,
             };
@@ -367,6 +378,19 @@ const getRegistrationBackends = async (dispatch) => {
     }
 };
 
+const getRegistrationBackendOptions = async (dispatch) => {
+    try {
+        const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
+        debugger;
+        dispatch({
+            type: 'REGISTRATION_BACKEND_OPTIONS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
 const getAuthPlugins = async (dispatch) => {
     try {
         const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -440,6 +464,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
             getRegistrationBackends(dispatch),
+            getRegistrationBackendOptions(dispatch),
         ];
         await Promise.all(promises);
         // We want the data of all available plugins to be loaded after the form data has been loaded,
@@ -789,7 +814,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backends={state.availableRegistrationBackends.data}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
-                        backendOptionsForms={state.form.registrationBackendOptionsForms}
+                        backendOptionsForms={state.availableRegistrationBackendOptions.data}
                         onChange={onFieldChange}
                     />
                 </TabPanel>

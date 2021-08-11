@@ -11,6 +11,15 @@ class RegistrationPluginSerializer(PluginBaseSerializer):
     pass
 
 
+class RegistrationPluginOptionsSerializer(serializers.Serializer):
+    identifier = serializers.CharField()
+
+    def get_registration_backend_options_forms(self, obj):
+        return {
+            obj.identifier: obj.configuration_options.display_as_jsonschema()
+        }
+
+
 @dataclass
 class ChoiceWrapper:
     choice: tuple

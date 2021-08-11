@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -6,7 +6,6 @@ import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from "../forms/Select";
-import {TextInput} from '../forms/Inputs';
 import Form from "@rjsf/core";
 
 
@@ -37,7 +36,7 @@ const RegistrationFields = ({
             </FormRow>
             <FormRow>
                 <Field
-                    name="form.registrationBackendOptionsForm"
+                    name="form.registrationBackendOptions"
                     label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
                 >
                     {backendOptionsForms[selectedBackend] ?
