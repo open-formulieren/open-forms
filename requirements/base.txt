@@ -188,6 +188,8 @@ isodate==0.6.0
     # via python3-saml
 josepy==1.8.0
     # via mozilla-django-oidc
+git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
+    # via -r requirements/base.in
 jsonschema==3.2.0
     # via
     #   drf-jsonschema
@@ -286,6 +288,7 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
+    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict

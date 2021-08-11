@@ -367,6 +367,10 @@ josepy==1.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc
+git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 jsonschema==3.2.0
     # via
     #   -c requirements/base.txt
@@ -587,6 +591,7 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
+    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict
