@@ -18,11 +18,12 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.utils.jsonschema.mixins import JsonSchemaSerializerMixin
 
 from .models import StufZDSConfig
 
 
-class ZaakOptionsSerializer(serializers.Serializer):
+class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zds_zaaktype_code = serializers.CharField(
         required=False,
         help_text=_("Zaaktype code for newly created Zaken in StUF-ZDS"),

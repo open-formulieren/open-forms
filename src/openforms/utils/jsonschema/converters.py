@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
-from .config import converter, field_to_jsonschema
+from .convert import converter, field_to_jsonschema
 
 
 class Error(Exception):
