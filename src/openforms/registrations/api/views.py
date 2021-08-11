@@ -12,8 +12,9 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     RegistrationAttributeSerializer,
+    RegistrationPluginOptionsSerializer,
     RegistrationPluginSerializer,
-    RegistrationPluginOptionsSerializer)
+)
 
 
 @extend_schema_view(
@@ -36,27 +37,24 @@ class PluginListView(ListMixin, APIView):
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available registration plugin options")),
+    get=extend_schema(
+        summary=_("Get the json schema of the plugins configuration options")
+    ),
 )
-class PluginOptionsView(RetrieveAPIView):
+class PluginConfigurationOptionsJsonSchemaView(RetrieveAPIView):
     """
-    List all available registration plugins.
-
-    Registration plugins are responsible for the implementation details to register the form submission
-    with various backends, such as "API's voor zaakgericht werken", StUF-ZDS and others.
+    Get the json schema of the plugin options
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
-        # TODO Try doing this with the serializer.  Will need to override get_object
         data = {
             _register.identifier: _register.configuration_options.display_as_jsonschema()
             for _register in list(register)
         }
-
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 @extend_schema_view(

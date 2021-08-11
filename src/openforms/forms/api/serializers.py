@@ -107,8 +107,6 @@ class FormSerializer(serializers.ModelSerializer):
 
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
-    # TODO Remove this
-    registration_backend_options_forms = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
@@ -134,8 +132,6 @@ class FormSerializer(serializers.ModelSerializer):
             "is_deleted",
             "submission_confirmation_template",
             "can_submit",
-            # TODO Remove this
-            "registration_backend_options_forms",
         )
         extra_kwargs = {
             "uuid": {
@@ -155,13 +151,6 @@ class FormSerializer(serializers.ModelSerializer):
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
 
-    # TODO Remove this
-    def get_registration_backend_options_forms(self, obj):
-        return {
-            _register.identifier: _register.configuration_options.display_as_jsonschema()
-            for _register in list(register)
-        }
-
 
 class FormExportSerializer(FormSerializer):
     def get_fields(self):
@@ -169,10 +158,6 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
-        # TODO Remove this
-        # Used by frontend, not something we want to export
-        del fields["registration_backend_options_forms"]
-
         fields["authentication_backends"].write_only = False
         fields["payment_backend"].write_only = False
         return fields
