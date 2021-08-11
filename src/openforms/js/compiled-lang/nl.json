@@ -35,6 +35,12 @@
       "value": "Naam"
     }
   ],
+  "6PIG4q": [
+    {
+      "type": 0,
+      "value": "Inlogopties"
+    }
+  ],
   "70Q0CM": [
     {
       "type": 0,
@@ -87,6 +93,12 @@
     {
       "type": 0,
       "value": "Indien het formulier gedeactiveerd is, dan kan het niet gestart worden."
+    }
+  ],
+  "CiaAYL": [
+    {
+      "type": 0,
+      "value": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier."
     }
   ],
   "EtAvFF": [

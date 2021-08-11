@@ -23,6 +23,10 @@
     "defaultMessage": "Name",
     "description": "Form name field label"
   },
+  "6PIG4q": {
+    "defaultMessage": "Authentication",
+    "description": "Auth plugin field label"
+  },
   "70Q0CM": {
     "defaultMessage": "Previous text",
     "description": "literals.previousText form label"
@@ -58,6 +62,10 @@
   "CXwWdu": {
     "defaultMessage": "Whether the form is active or not. Deactivated forms cannot be started.",
     "description": "Form active field help text"
+  },
+  "CiaAYL": {
+    "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
+    "description": "Auth plugin field help text"
   },
   "EtAvFF": {
     "defaultMessage": "Duplicate this form",

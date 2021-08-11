@@ -681,6 +681,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         state.availablePrefillPlugins.loading,
     ].some( el => el );
 
+    if (isAnyLoading) {
+        return (<Loader />);
+    }
+
     return (
         <>
             <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />

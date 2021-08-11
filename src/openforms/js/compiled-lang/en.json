@@ -35,6 +35,12 @@
       "value": "Name"
     }
   ],
+  "6PIG4q": [
+    {
+      "type": 0,
+      "value": "Authentication"
+    }
+  ],
   "70Q0CM": [
     {
       "type": 0,
@@ -87,6 +93,12 @@
     {
       "type": 0,
       "value": "Whether the form is active or not. Deactivated forms cannot be started."
+    }
+  ],
+  "CiaAYL": [
+    {
+      "type": 0,
+      "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
   "EtAvFF": [

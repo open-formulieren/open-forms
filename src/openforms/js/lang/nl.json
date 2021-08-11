@@ -23,6 +23,10 @@
     "defaultMessage": "Naam",
     "description": "Form name field label"
   },
+  "6PIG4q": {
+    "defaultMessage": "Inlogopties",
+    "description": "Auth plugin field label"
+  },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
     "description": "literals.previousText form label"
@@ -58,6 +62,10 @@
   "CXwWdu": {
     "defaultMessage": "Indien het formulier gedeactiveerd is, dan kan het niet gestart worden.",
     "description": "Form active field help text"
+  },
+  "CiaAYL": {
+    "defaultMessage": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier.",
+    "description": "Auth plugin field help text"
   },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
