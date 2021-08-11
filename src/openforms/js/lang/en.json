@@ -44,6 +44,11 @@
     "description": "Form step name field help text",
     "originalDefault": "Name of the form definition used in this form step"
   },
+  "6IAwkJ": {
+    "defaultMessage": "This form step requires a login, but no authentication backend has been specified.",
+    "description": "No authentication backend selected warning.",
+    "originalDefault": "This form step requires a login, but no authentication backend has been specified."
+  },
   "6PIG4q": {
     "defaultMessage": "Authentication",
     "description": "Auth plugin field label",
@@ -194,6 +199,11 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "PwUKIe": {
+    "defaultMessage": "(provides {attrs})",
+    "description": "Auth plugin provided attributes suffix",
+    "originalDefault": "(provides {attrs})"
+  },
   "QDBI2H": {
     "defaultMessage": "Select existing form definition",
     "description": "Select form definition tile",
@@ -218,6 +228,11 @@
     "defaultMessage": "Slug",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "VQYmOD": {
+    "defaultMessage": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
   "Y5A1Tn": {
     "defaultMessage": "Delete",

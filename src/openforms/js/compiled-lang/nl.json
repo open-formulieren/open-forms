@@ -61,10 +61,16 @@
       "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
     }
   ],
+  "6IAwkJ": [
+    {
+      "type": 0,
+      "value": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier."
+    }
+  ],
   "6PIG4q": [
     {
       "type": 0,
-      "value": "Inlogopties"
+      "value": "Authentication"
     }
   ],
   "70Q0CM": [
@@ -188,7 +194,7 @@
   "CiaAYL": [
     {
       "type": 0,
-      "value": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier."
+      "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
   "DGpAyT": [
@@ -281,6 +287,20 @@
       "value": "Registratie"
     }
   ],
+  "PwUKIe": [
+    {
+      "type": 0,
+      "value": "(biedt "
+    },
+    {
+      "type": 1,
+      "value": "attrs"
+    },
+    {
+      "type": 0,
+      "value": " aan)"
+    }
+  ],
   "QDBI2H": [
     {
       "type": 0,
@@ -309,6 +329,28 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "VQYmOD": [
+    {
+      "type": 0,
+      "value": "De component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" gebruikt een prefill die het \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
     }
   ],
   "Y5A1Tn": [

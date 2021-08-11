@@ -61,6 +61,12 @@
       "value": "Name of the form definition used in this form step"
     }
   ],
+  "6IAwkJ": [
+    {
+      "type": 0,
+      "value": "This form step requires a login, but no authentication backend has been specified."
+    }
+  ],
   "6PIG4q": [
     {
       "type": 0,
@@ -277,6 +283,20 @@
       "value": "Registration"
     }
   ],
+  "PwUKIe": [
+    {
+      "type": 0,
+      "value": "(provides "
+    },
+    {
+      "type": 1,
+      "value": "attrs"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "QDBI2H": [
     {
       "type": 0,
@@ -305,6 +325,28 @@
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "VQYmOD": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
   "Y5A1Tn": [

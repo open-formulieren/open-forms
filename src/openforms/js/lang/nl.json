@@ -44,8 +44,13 @@
     "description": "Form step name field help text",
     "originalDefault": "Name of the form definition used in this form step"
   },
+  "6IAwkJ": {
+    "defaultMessage": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier.",
+    "description": "No authentication backend selected warning.",
+    "originalDefault": "This form step requires a login, but no authentication backend has been specified."
+  },
   "6PIG4q": {
-    "defaultMessage": "Inlogopties",
+    "defaultMessage": "Authentication",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
   },
@@ -115,7 +120,7 @@
     "originalDefault": "Whether the form is active or not. Deactivated forms cannot be started."
   },
   "CiaAYL": {
-    "defaultMessage": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier.",
+    "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
@@ -194,6 +199,11 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "PwUKIe": {
+    "defaultMessage": "(biedt {attrs} aan)",
+    "description": "Auth plugin provided attributes suffix",
+    "originalDefault": "(provides {attrs})"
+  },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
     "description": "Select form definition tile",
@@ -218,6 +228,11 @@
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "VQYmOD": {
+    "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
   "Y5A1Tn": {
     "defaultMessage": "Verwijderen",
