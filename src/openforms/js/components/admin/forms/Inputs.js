@@ -40,8 +40,8 @@ const Checkbox = ({ name, label, helpText, ...extraProps }) => {
 
 Checkbox.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    helpText: PropTypes.string,
+    label: PropTypes.node.isRequired,
+    helpText: PropTypes.node,
 };
 
 export { Input, TextInput, NumberInput, Checkbox };

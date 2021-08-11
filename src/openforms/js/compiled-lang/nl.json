@@ -65,6 +65,52 @@
       "value": "Globaal uniek ID voor het formulier"
     }
   ],
+  "7X6yT4": [
+    {
+      "type": 0,
+      "value": "Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " formulier"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " formulieren"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
