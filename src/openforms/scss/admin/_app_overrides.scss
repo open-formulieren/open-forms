@@ -30,3 +30,44 @@
   clear: both;
   padding-top: 1em;
 }
+
+
+/* Styling for react-jsonschema-form */
+.rjsf {
+  .array-item {
+    min-width: 170px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+
+  legend {
+    font-size: 0.9rem;
+  }
+
+  .glyphicon {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .glyphicon-plus:before {
+    content: "\f067";
+  }
+
+  .glyphicon-remove:before {
+    content: "\f1f8";
+  }
+
+  .glyphicon-arrow-down:before {
+    content: '\f107';
+  }
+
+  .glyphicon-arrow-up:before {
+    content: '\f106';
+  }
+}

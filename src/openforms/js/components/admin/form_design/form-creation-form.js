@@ -381,7 +381,6 @@ const getRegistrationBackends = async (dispatch) => {
 const getRegistrationBackendOptions = async (dispatch) => {
     try {
         const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
-        debugger;
         dispatch({
             type: 'REGISTRATION_BACKEND_OPTIONS_LOADED',
             payload: response.data

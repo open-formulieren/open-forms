@@ -12,7 +12,6 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     RegistrationAttributeSerializer,
-    RegistrationPluginOptionsSerializer,
     RegistrationPluginSerializer,
 )
 
