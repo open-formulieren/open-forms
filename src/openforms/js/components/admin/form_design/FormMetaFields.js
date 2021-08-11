@@ -55,10 +55,6 @@ const FormMetaFields = ({
         });
     };
 
-    const onRegistrationBackendOptionsFormChange = ({ formData }) => {
-        onChange({target: {name: 'form.registrationBackendOptions', value: formData}});
-    };
-
 
     return (
         <Fieldset>
@@ -93,24 +89,6 @@ const FormMetaFields = ({
                     required
                 >
                     <TextInput value={slug} onChange={onChange} />
-                </Field>
-            </FormRow>
-
-            <FormRow>
-                <Field
-                    name="form.registrationBackendOptionsForm"
-                    label="Registration Backend Options Form"
-                >
-                    {registrationBackendOptionsForms ?
-                        <Form
-                            schema={registrationBackendOptionsForms[registrationBackend]}
-                            formData={registrationBackendOptions}
-                            onChange={onRegistrationBackendOptionsFormChange}
-                            children={true}
-                        />
-                        :
-                        <div> </div>
-                    }
                 </Field>
             </FormRow>
             <FormRow>

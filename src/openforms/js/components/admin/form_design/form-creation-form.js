@@ -35,6 +35,7 @@ const initialFormState = {
         canSubmit: true,
         registrationBackend: '',
         registrationBackendOptions: {},
+        registrationBackendOptionsForms: {},
     },
     literals: {
         beginText: {
@@ -788,6 +789,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backends={state.availableRegistrationBackends.data}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
+                        backendOptionsForms={state.form.registrationBackendOptionsForms}
                         onChange={onFieldChange}
                     />
                 </TabPanel>
