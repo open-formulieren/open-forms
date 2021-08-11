@@ -13,6 +13,8 @@ from ...payments.registry import register as payment_register
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 
+from openforms.registrations.registry import register
+
 
 class ButtonTextSerializer(serializers.Serializer):
     resolved = serializers.SerializerMethodField()
@@ -149,6 +151,15 @@ class FormSerializer(serializers.ModelSerializer):
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        representation['registration_backend_options_forms'] = {
+            _register.identifier: _register.configuration_options.display_as_jsonschema()
+            # TODO Remove this if statement
+            for _register in list(register) if _register.identifier in ['demo', 'failing_demo']
+        }
 
 
 class FormExportSerializer(FormSerializer):

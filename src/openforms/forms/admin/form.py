@@ -5,7 +5,6 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.translation import ngettext, ugettext_lazy as _
-from django.contrib.postgres.fields import JSONField
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
@@ -18,7 +17,6 @@ from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
 from ..utils import export_form, import_form
-from ...registrations.contrib.demo.widget import RegistrationBackendOptionsWidget
 
 
 class FormStepInline(OrderedTabularInline):
@@ -58,7 +56,6 @@ class FormAdmin(
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
-    formfield_overrides = {JSONField: {"widget": RegistrationBackendOptionsWidget}}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
     list_filter = ("active", "maintenance_mode")
 

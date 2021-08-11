@@ -55,6 +55,7 @@ class DemoOptionsSerializer(serializers.Serializer):
         required=True,
     )
 
+    # TODO Move this to a base serializer so all serializers have this option
     @classmethod
     def display_as_jsonschema(cls):
         json_schema = to_jsonschema(cls())
