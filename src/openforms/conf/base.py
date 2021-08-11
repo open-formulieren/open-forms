@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     "stuf.stuf_bg",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
+    "django_filters",
     # Project applications.
     "openforms.accounts",
     "openforms.config",

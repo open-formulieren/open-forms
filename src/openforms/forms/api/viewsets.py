@@ -6,6 +6,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
+from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
@@ -21,6 +22,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
 from ..utils import export_form, form_to_json, import_form
+from .filters import FormLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
@@ -68,16 +70,6 @@ class FormStepViewSet(
         return context
 
 
-@extend_schema(
-    parameters=[
-        OpenApiParameter(
-            name="form_uuid_or_slug",
-            location=OpenApiParameter.PATH,
-            type=str,
-            description=_("Either a UUID4 or a slug identifying the form."),
-        )
-    ]
-)
 @extend_schema_view(
     list=extend_schema(summary=_("List form logics")),
     retrieve=extend_schema(summary=_("Retrieve form logic details")),
@@ -92,16 +84,9 @@ class FormLogicViewSet(
     serializer_class = FormLogicSerializer
     queryset = FormLogic.objects.all()
     permission_classes = [IsStaffOrReadOnly]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FormLogicFilter
     lookup_field = "uuid"
-
-    def get_queryset(self):
-        if "form" in self.request.query_params:
-            serializer = FormSearchSerializer(data=self.request.query_params)
-            serializer.is_valid(raise_exception=True)
-            return self.queryset.filter(
-                form_step__form__uuid=serializer.validated_data["form"]
-            )
-        return self.queryset
 
 
 @extend_schema_view(
