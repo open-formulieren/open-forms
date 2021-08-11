@@ -89,6 +89,7 @@ const FormMetaFields = ({
                     <TextInput value={slug} onChange={onChange} />
                 </Field>
             </FormRow>
+
             <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}

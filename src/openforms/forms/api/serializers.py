@@ -5,6 +5,7 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
 from openforms.products.api.serializers import ProductSerializer
+from openforms.registrations.registry import register
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
@@ -12,8 +13,6 @@ from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
-
-from openforms.registrations.registry import register
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -108,6 +107,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
+    registration_backend_options_forms = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
@@ -133,6 +133,7 @@ class FormSerializer(serializers.ModelSerializer):
             "is_deleted",
             "submission_confirmation_template",
             "can_submit",
+            "registration_backend_options_forms",
         )
         extra_kwargs = {
             "uuid": {
@@ -152,15 +153,11 @@ class FormSerializer(serializers.ModelSerializer):
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-
-        representation['registration_backend_options_forms'] = {
+    def get_registration_backend_options_forms(self, obj):
+        return {
             _register.identifier: _register.configuration_options.display_as_jsonschema()
             for _register in list(register)
         }
-
-        return representation
 
 
 class FormExportSerializer(FormSerializer):
@@ -169,14 +166,12 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
+        # Used by frontend, not something we want to export
+        del fields["registration_backend_options_forms"]
+
         fields["authentication_backends"].write_only = False
         fields["payment_backend"].write_only = False
         return fields
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        del representation['registration_backend_options_forms']
-        return representation
 
 
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):

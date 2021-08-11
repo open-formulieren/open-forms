@@ -38,19 +38,17 @@ const RegistrationFields = ({
             <FormRow>
                 <Field
                     name="form.registrationBackendOptionsForm"
-                    label="Registration Backend Options Form"
+                    label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
                 >
                     {backendOptionsForms[selectedBackend] ?
                         <Form
                             schema={backendOptionsForms[selectedBackend]}
                             formData={backendOptions}
-                            onChange={({ formData }) => {
-                                onChange({target: {name: 'form.registrationBackendOptions', value: formData}});
-                            }}
+                            onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
                             children={true}
                         />
                         :
-                        <div> </div>
+                        <></>
                     }
                 </Field>
             </FormRow>

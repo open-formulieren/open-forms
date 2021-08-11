@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from rest_framework.utils.field_mapping import ClassLookupDict
 
 field_to_converter = ClassLookupDict({})
