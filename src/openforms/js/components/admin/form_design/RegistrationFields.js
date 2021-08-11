@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
@@ -35,10 +36,9 @@ const RegistrationFields = ({
             <FormRow>
                 <Field
                     name="form.registrationBackend"
-                    label="Select registration backend"
+                    label={<FormattedMessage defaultMessage="Select registration backend" description="Registration backend label" />}
                 >
                     <Select
-                        name="Registration backend"
                         choices={backendChoices}
                         value={selectedBackend}
                         onChange={onChange}
@@ -49,7 +49,7 @@ const RegistrationFields = ({
             <FormRow>
                 <Field
                     name="form.registrationBackendOptions"
-                    label="Registration Backend Options"
+                    label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
                 >
                     <TextInput
                         value={JSON.stringify(backendOptions || {})}

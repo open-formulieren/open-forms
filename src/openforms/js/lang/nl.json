@@ -7,6 +7,10 @@
     "defaultMessage": "Inhoud bevestigingspagina",
     "description": "Confirmation template label"
   },
+  "2d5RfI": {
+    "defaultMessage": "Opties",
+    "description": "Registration backend options label"
+  },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
     "description": "literals.previousText form label"
@@ -74,6 +78,10 @@
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
     "description": "Generic error message"
+  },
+  "piUWzT": {
+    "defaultMessage": "Registratiemethode",
+    "description": "Registration backend label"
   },
   "qo1UbS": {
     "defaultMessage": "Exporteren",

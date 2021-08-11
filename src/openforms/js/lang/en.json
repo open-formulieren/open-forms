@@ -7,6 +7,10 @@
     "defaultMessage": "Submission page content",
     "description": "Confirmation template label"
   },
+  "2d5RfI": {
+    "defaultMessage": "Registration backend options",
+    "description": "Registration backend options label"
+  },
   "70Q0CM": {
     "defaultMessage": "Previous text",
     "description": "literals.previousText form label"
@@ -74,6 +78,10 @@
   "ow5AAO": {
     "defaultMessage": "The form is invalid. Please correct the errors below.",
     "description": "Generic error message"
+  },
+  "piUWzT": {
+    "defaultMessage": "Select registration backend",
+    "description": "Registration backend label"
   },
   "qo1UbS": {
     "defaultMessage": "Export",
