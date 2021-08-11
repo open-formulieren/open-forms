@@ -88,6 +88,8 @@ django-cors-headers==3.7.0
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
+django-filter==2.4.0
+    # via -r requirements/base.in
 django-formtools==2.3
     # via maykin-django-two-factor-auth
 django-hijack-admin==2.1.10
@@ -131,6 +133,7 @@ django==2.2.24
     #   django-cookie-consent
     #   django-cors-headers
     #   django-decorator-include
+    #   django-filter
     #   django-formtools
     #   django-otp
     #   django-phonenumber-field

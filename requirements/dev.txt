@@ -197,6 +197,10 @@ django-decorator-include==3.0
     #   -r requirements/ci.txt
 django-extensions==3.0.7
     # via -r requirements/dev.in
+django-filter==2.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-formtools==2.3
     # via
     #   -c requirements/ci.txt
@@ -289,6 +293,7 @@ django==2.2.24
     #   django-cors-headers
     #   django-debug-toolbar
     #   django-decorator-include
+    #   django-filter
     #   django-formtools
     #   django-jenkins
     #   django-otp
