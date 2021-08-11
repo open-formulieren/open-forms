@@ -89,6 +89,10 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 },
             },
             "data": None,
+            "available": True,
+            "completed": False,
+            "optional": False,
+            "canSubmit": True,
         }
         self.assertEqual(response.json(), expected)
 
@@ -124,6 +128,10 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 },
             },
             "data": None,
+            "available": True,
+            "completed": False,
+            "optional": False,
+            "canSubmit": True,
         }
         self.assertEqual(response.json(), expected)
 

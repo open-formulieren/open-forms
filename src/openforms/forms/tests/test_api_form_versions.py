@@ -9,7 +9,8 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
 
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ...submissions.tests.form_logic.factories import FormLogicFactory
+from ..models import FormDefinition, FormLogic, FormStep, FormVersion
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -19,8 +20,9 @@ from .factories import (
 
 EXPORT_BLOB = {
     "forms": '[{"uuid": "324cadce-a627-4e3f-b117-37ca232f16b2", "name": "Test Form 1", "login_required": false, "authentication_backends": ["digid-mock", "digid"], "product": null, "slug": "auth-plugins", "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "show_progress_indicator": true, "maintenance_mode": false, "active": true, "is_deleted": false}]',
-    "formSteps": '[{"index": 0, "slug": "test-step-1", "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/3fc61825-1d2d-4db7-a93b-85b21426dc64"}]',
+    "formSteps": '[{"uuid": "3ca01601-cd20-4746-bce5-baab47636823", "index": 0, "slug": "test-step-1", "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2"}]',
     "formDefinitions": '[{"url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8", "name": "Test Definition 1", "slug": "test-definition-1", "configuration": {"test": "1"}}]',
+    "formLogic": '[{"uuid": "b92342be-05e0-4070-b2cc-1b88af472091", "form_step": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/3ca01601-cd20-4746-bce5-baab47636823", "component": "test", "actions": [{"action": "test_action"}], "json_logic_trigger": {"==": [1, 1]}}]',
 }
 
 
@@ -134,7 +136,8 @@ class FormVersionRestoreAPITests(APITestCase):
             slug="test-definition-2", configuration={"test": "2"}
         )
         form = FormFactory.create(name="Test Form 2")
-        FormStepFactory.create(form=form, form_definition=form_definition)
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        FormLogicFactory.create(form_step=form_step)
 
         version = FormVersion.objects.create(
             form=form,
@@ -165,8 +168,10 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(2, FormDefinition.objects.all().count())
 
         form_steps = FormStep.objects.filter(form=form)
+        form_logic = FormLogic.objects.filter(form_step__form=form)
 
         self.assertEqual(1, form_steps.count())
+        self.assertEqual(1, form_logic.count())
 
         restored_form_definition = form_steps.get().form_definition
 

@@ -1396,7 +1396,8 @@ class ImportExportAPITests(APITestCase):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(), ["forms.json", "formSteps.json", "formDefinitions.json"]
+            zf.namelist(),
+            ["forms.json", "formSteps.json", "formDefinitions.json", "formLogic.json"],
         )
 
         forms = json.loads(zf.read("forms.json"))

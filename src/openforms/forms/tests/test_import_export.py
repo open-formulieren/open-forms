@@ -237,7 +237,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.order, form_step.order)
 
         form_logics = FormLogic.objects.all()
-        form_logic_2 = form_steps.last()
+        form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 1)
         self.assertEqual(form_logic_2.pk, form_logic_pk)
 
