@@ -263,6 +263,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormStep
         fields = (
+            "uuid",
             "index",
             "slug",
             "configuration",
@@ -277,6 +278,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "form_definition": {
                 "view_name": "api:formdefinition-detail",
                 "lookup_field": "uuid",
+            },
+            "uuid": {
+                "read_only": True,
             },
         }
 

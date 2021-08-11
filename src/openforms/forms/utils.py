@@ -12,14 +12,16 @@ from .api import serializers as api_serializers
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
+    FormLogicSerializer,
     FormStepSerializer,
 )
-from .models import Form, FormDefinition, FormStep
+from .models import Form, FormDefinition, FormLogic, FormStep
 
 IMPORT_ORDER = {
     "formDefinitions": FormDefinition,
     "forms": Form,
     "formSteps": FormStep,
+    "formLogic": FormLogic,
 }
 
 
@@ -47,6 +49,8 @@ def form_to_json(form_id: int) -> dict:
         pk__in=form_steps.values_list("form_definition", flat=True)
     )
 
+    form_logic = FormLogic.objects.filter(form_step__form=form)
+
     request = _get_mock_request()
 
     forms = [FormExportSerializer(instance=form, context={"request": request}).data]
@@ -58,11 +62,15 @@ def form_to_json(form_id: int) -> dict:
     form_steps = FormStepSerializer(
         instance=form_steps, many=True, context={"request": request}
     ).data
+    form_logic = FormLogicSerializer(
+        instance=form_logic, many=True, context={"request": request}
+    ).data
 
     resources = {
         "forms": json.dumps(forms),
         "formSteps": json.dumps(form_steps),
         "formDefinitions": json.dumps(form_definitions),
+        "formLogic": json.dumps(form_logic),
     }
 
     return resources
@@ -99,12 +107,13 @@ def import_form(import_file):
                     serializer = api_serializers.FormSerializer
                 if resource == "formSteps":
                     serializer = api_serializers.FormStepSerializer
+                if resource == "formLogic":
+                    serializer = api_serializers.FormLogicSerializer
 
                 for entry in json.loads(data):
                     if "uuid" in entry:
                         old_uuid = entry["uuid"]
                         entry["uuid"] = str(uuid4())
-                        uuid_mapping[old_uuid] = entry["uuid"]
 
                     if resource == "forms":
                         entry["active"] = False
@@ -119,6 +128,11 @@ def import_form(import_file):
                         deserialized.save()
                         if resource == "forms":
                             created_form = deserialized.instance
+
+                        # The FormSerializer/FormStepSerializer/FormLogicSerializer have the uuid as a read only field.
+                        # So the mapping between the old uuid and the new needs to be done after the instance is saved.
+                        if hasattr(deserialized.instance, "uuid") and "uuid" in entry:
+                            uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
                     except ValidationError as e:
                         if (
                             resource == "formDefinitions"
