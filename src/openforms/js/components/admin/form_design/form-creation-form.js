@@ -2,21 +2,25 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from "../../../utils/exception";
 import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import SubmitRow from "../forms/SubmitRow";
+import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
 import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
             REGISTRATION_BACKENDS_ENDPOINT, AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
-import TinyMCEEditor from "./Editor";
+import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
-import FormObjectTools from "./FormObjectTools";
+import FormObjectTools from './FormObjectTools';
+import RegistrationFields from './RegistrationFields';
+import TextLiterals from './TextLiterals';
 
 const initialFormState = {
     form: {
@@ -30,7 +34,7 @@ const initialFormState = {
         submissionConfirmationTemplate: '',
         canSubmit: true,
         registrationBackend: '',
-        registrationBackendOptions: '',
+        registrationBackendOptions: {},
     },
     literals: {
         beginText: {
@@ -142,10 +146,9 @@ function reducer(draft, action) {
             break;
         }
         case 'REGISTRATION_BACKENDS_LOADED': {
-            const data = action.payload.map(backend => [backend.id, backend.label]);
             draft.availableRegistrationBackends = {
                 loading: false,
-                data
+                data: action.payload,
             };
             break;
         }
@@ -316,22 +319,24 @@ const getFormData = async (formUuid, dispatch) => {
         const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
-        } else {
-            // Update the selected authentication plugins
-            dispatch({
-                type: 'FORM_LOADED',
-                payload: {
-                    selectedAuthPlugins: response.data.loginOptions.map((plugin, index) => plugin.identifier),
-                    form: response.data,
-                },
-            });
-            // Get the form definition data from the form steps
-            const formStepsData = await getFormStepsData(formUuid, dispatch);
-            dispatch({
-                type: 'FORM_STEPS_LOADED',
-                payload: formStepsData,
-            });
         }
+
+        // Set the loaded form data as state.
+        const { literals, ...form } = response.data;
+        dispatch({
+            type: 'FORM_LOADED',
+            payload: {
+                selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
+                form: form,
+                literals: literals,
+            },
+        });
+        // Get the form definition data from the form steps
+        const formStepsData = await getFormStepsData(formUuid, dispatch);
+        dispatch({
+            type: 'FORM_STEPS_LOADED',
+            payload: formStepsData,
+        });
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
@@ -413,32 +418,13 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
-                              formBeginText, formPreviousText, formChangeText, formConfirmText,
-                              formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions }) => {
+const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
+    const intl = useIntl();
     const initialState = {
         ...initialFormState,
         form: {
             ...initialFormState.form,
             uuid: formUuid,
-            name: formName,
-            slug: formSlug,
-            registrationBackend: formRegistrationBackend,
-            registrationBackendOptions: formRegistrationBackendOptions,
-        },
-        literals: {
-            beginText: {
-                value: formBeginText
-            },
-            previousText: {
-                value: formPreviousText
-            },
-            changeText: {
-                value: formChangeText
-            },
-            confirmText: {
-                value: formConfirmText
-            },
         },
         newForm: !formUuid,
     };
@@ -688,85 +674,143 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
         })
     };
 
+    const isAnyLoading = [
+        state.formSteps.loading,
+        state.availableAuthPlugins.loading,
+        state.availableRegistrationBackends.loading,
+        state.availablePrefillPlugins.loading,
+    ].some( el => el );
+
+    if (isAnyLoading) {
+        return (<Loader />);
+    }
+
     return (
         <>
-            <FormObjectTools
-                isLoading={state.formSteps.loading || state.availableAuthPlugins.loading ||
-                            state.availableRegistrationBackends.loading || state.availablePrefillPlugins.loading}
-                historyUrl={formHistoryUrl}
-            />
+            <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />
 
-            <h1>Form wijzigen</h1>
+            <h1>
+                <FormattedMessage defaultMessage="Change form" description="Change form page title" />
+            </h1>
 
-            {Object.keys(state.errors).length ? <div className='fetch-error'>The form is invalid. Please correct the errors below.</div> : null}
-            <FormMetaFields
-                form={state.form}
-                literals={state.literals}
-                onChange={onFieldChange}
-                errors={state.error}
-                availableRegistrationBackends={state.availableRegistrationBackends}
-                availableAuthPlugins={state.availableAuthPlugins}
-                selectedAuthPlugins={state.selectedAuthPlugins}
-                onAuthPluginChange={onAuthPluginChange}
-            />
+            { Object.keys(state.errors).length
+                ? (<div className="fetch-error">
+                     <FormattedMessage defaultMessage="The form is invalid. Please correct the errors below." description="Generic error message" />
+                   </div>)
+                : null
+            }
 
-            <Fieldset title="Form design">
-                <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                    <PluginsContext.Provider value={{
-                        availableAuthPlugins: state.availableAuthPlugins,
-                        selectedAuthPlugins: state.selectedAuthPlugins,
-                        availablePrefillPlugins: state.availablePrefillPlugins
-                    }}>
-                        <StepsFieldSet
-                            steps={state.formSteps.data}
-                            loading={state.formSteps.loading}
-                            loadingErrors={state.errors.loadingErrors}
-                            onEdit={onStepEdit}
-                            onFieldChange={onStepFieldChange}
-                            onLiteralFieldChange={onStepLiteralFieldChange}
-                            onDelete={onStepDelete}
-                            onReorder={onStepReorder}
-                            onReplace={onStepReplace}
-                            onAdd={onAddStep}
-                            submitting={state.submitting}
-                            errors={state.errors.formSteps}
-                        />
-                    </PluginsContext.Provider>
-                </FormDefinitionsContext.Provider>
-            </Fieldset>
+            <Tabs>
+                <TabList>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
+                    </Tab>
+                </TabList>
 
-            <Fieldset title="Submission confirmation template">
-                <FormRow>
-                    <Field
-                        name="SubmissionConfirmationTemplate"
-                        label="Submission page content"
-                        helpText="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-                        errors={state.errors.submissionConfirmationTemplate}
-                    >
-                        <TinyMCEEditor
-                            content={state.form.submissionConfirmationTemplate}
-                            onEditorChange={(newValue, editor) => onFieldChange(
-                                {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
-                            )}
-                        />
-                    </Field>
-                </FormRow>
-            </Fieldset>
+                <TabPanel>
+                    <FormMetaFields
+                        form={state.form}
+                        literals={state.literals}
+                        onChange={onFieldChange}
+                        errors={state.error}
+                        availableAuthPlugins={state.availableAuthPlugins}
+                        selectedAuthPlugins={state.selectedAuthPlugins}
+                        onAuthPluginChange={onAuthPluginChange}
+                    />
+                </TabPanel>
+
+                <TabPanel>
+                    <Fieldset title={<FormattedMessage defaultMessage="Form design" description="Form design/editor fieldset title" />}>
+                        <FormDefinitionsContext.Provider value={state.formDefinitions}>
+                            <PluginsContext.Provider value={{
+                                availableAuthPlugins: state.availableAuthPlugins,
+                                selectedAuthPlugins: state.selectedAuthPlugins,
+                                availablePrefillPlugins: state.availablePrefillPlugins
+                            }}>
+                                <StepsFieldSet
+                                    steps={state.formSteps.data}
+                                    loading={state.formSteps.loading}
+                                    loadingErrors={state.errors.loadingErrors}
+                                    onEdit={onStepEdit}
+                                    onFieldChange={onStepFieldChange}
+                                    onLiteralFieldChange={onStepLiteralFieldChange}
+                                    onDelete={onStepDelete}
+                                    onReorder={onStepReorder}
+                                    onReplace={onStepReplace}
+                                    onAdd={onAddStep}
+                                    submitting={state.submitting}
+                                    errors={state.errors.formSteps}
+                                />
+                            </PluginsContext.Provider>
+                        </FormDefinitionsContext.Provider>
+                    </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                    <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation template" description="Submission confirmation fieldset title" />}>
+                        <FormRow>
+                            <Field
+                                name="SubmissionConfirmationTemplate"
+                                label={<FormattedMessage defaultMessage="Submission page content" description="Confirmation template label" />}
+                                helpText={
+                                    <FormattedMessage
+                                        defaultMessage="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                                        description="Confirmation template help text"
+                                    />
+                                }
+                                errors={state.errors.submissionConfirmationTemplate}
+                            >
+                                <TinyMCEEditor
+                                    content={state.form.submissionConfirmationTemplate}
+                                    onEditorChange={(newValue, editor) => onFieldChange(
+                                        {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
+                                    )}
+                                />
+                            </Field>
+                        </FormRow>
+                    </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                    <RegistrationFields
+                        backends={state.availableRegistrationBackends.data}
+                        selectedBackend={state.form.registrationBackend}
+                        backendOptions={state.form.registrationBackendOptions}
+                        onChange={onFieldChange}
+                    />
+                </TabPanel>
+
+                <TabPanel>
+                    <TextLiterals literals={state.literals} onChange={onFieldChange} />
+                </TabPanel>
+            </Tabs>
 
             <SubmitRow onSubmit={onSubmit} isDefault />
             { !state.newForm ?
                 <SubmitRow extraClassName="submit-row-extended">
                     <input
                         type="submit"
-                        value="Kopiëren"
+                        value={intl.formatMessage({defaultMessage: 'Copy', description: 'Copy form button'})}
                         name="_copy"
-                        title="Duplicate this form"
+                        title={intl.formatMessage({defaultMessage: 'Duplicate this form', description: 'Copy form button title'})}
                     />
                     <input
                         type="submit"
-                        value="Exporteren"
+                        value={intl.formatMessage({defaultMessage: 'Export', description: 'Export form button'})}
                         name="_export"
-                        title="Export this form"
+                        title={intl.formatMessage({defaultMessage: 'Export this form', description: 'Export form button title'})}
                     />
                 </SubmitRow> : null
             }
@@ -778,15 +822,7 @@ const FormCreationForm = ({csrftoken, formUuid, formName, formSlug,
 FormCreationForm.propTypes = {
     csrftoken: PropTypes.string.isRequired,
     formUuid: PropTypes.string.isRequired,
-    formName: PropTypes.string.isRequired,
-    formSlug: PropTypes.string.isRequired,
-    formBeginText: PropTypes.string.isRequired,
-    formPreviousText: PropTypes.string.isRequired,
-    formChangeText: PropTypes.string.isRequired,
-    formConfirmText: PropTypes.string.isRequired,
     formHistoryUrl: PropTypes.string.isRequired,
-    formRegistrationBackend: PropTypes.string.isRequired,
-    formRegistrationBackendOptions: PropTypes.string.isRequired,
 };
 
 export { FormCreationForm };

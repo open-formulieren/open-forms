@@ -1,47 +1,43 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 import ReactModal from 'react-modal';
+import {IntlProvider} from 'react-intl';
 
 import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext} from './form_design/Context';
-import FormVersionsTable from "./form_versions/FormVersionsTable";
+import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 
+const loadLocaleData = (locale) => {
+    switch (locale) {
+        case 'nl':
+            return import('../../compiled-lang/nl.json');
+        default:
+            return import('../../compiled-lang/en.json');
+    }
+};
 
-const mountForm = () => {
+const mountForm = (locale, messages) => {
     const formCreationFormNodes = document.getElementsByClassName('react-form-create');
     if (!formCreationFormNodes.length) return;
 
     for (const formCreationFormNode of formCreationFormNodes) {
-        const { formUuid, formName, formSlug, csrftoken, tinymceUrl,
-                formBeginText, formPreviousText, formChangeText, formConfirmText,
-                formHistoryUrl, formRegistrationBackend, formRegistrationBackendOptions,
-        } = formCreationFormNode.dataset;
+        const { csrftoken, formUuid, tinymceUrl, formHistoryUrl } = formCreationFormNode.dataset;
 
         ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
-            <TinyMceContext.Provider value={tinymceUrl}>
-                <FormCreationForm
-                    csrftoken={csrftoken}
-                    formUuid={formUuid}
-                    formName={formName}
-                    formSlug={formSlug}
-                    formBeginText={formBeginText}
-                    formPreviousText={formPreviousText}
-                    formChangeText={formChangeText}
-                    formConfirmText={formConfirmText}
-                    formHistoryUrl={formHistoryUrl}
-                    formRegistrationBackend={formRegistrationBackend}
-                    formRegistrationBackendOptions={formRegistrationBackendOptions}
-                />
-            </TinyMceContext.Provider>,
+            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
+                <TinyMceContext.Provider value={tinymceUrl}>
+                    <FormCreationForm csrftoken={csrftoken} formUuid={formUuid} formHistoryUrl={formHistoryUrl} />
+                </TinyMceContext.Provider>
+            </IntlProvider>,
             formCreationFormNode
         );
     }
 };
 
-const mountFormVersions = () => {
+const mountFormVersions = (locale, messages) => {
     const formVersionsNodes = document.getElementsByClassName('react-form-versions-table');
     if (!formVersionsNodes.length) return;
 
@@ -49,15 +45,25 @@ const mountFormVersions = () => {
         const { formUuid, csrftoken, formAdminUrl } = formVersionsNode.dataset;
 
         ReactDOM.render(
-            <FormVersionsTable
-                csrftoken={csrftoken}
-                formUuid={formUuid}
-                formAdminUrl={formAdminUrl}
-            />,
+            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
+                <FormVersionsTable
+                    csrftoken={csrftoken}
+                    formUuid={formUuid}
+                    formAdminUrl={formAdminUrl}
+                />
+            </IntlProvider>,
             formVersionsNode
         );
     }
 };
 
-mountForm();
-mountFormVersions();
+
+const bootstrapApplication = async () => {
+    const lang = document.querySelector('html').getAttribute("lang");
+    const messages = await loadLocaleData(lang);
+
+    mountForm(lang, messages);
+    mountFormVersions(lang, messages);
+};
+
+bootstrapApplication();

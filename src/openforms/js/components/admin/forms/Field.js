@@ -44,9 +44,9 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children, 
 
 Field.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.node.isRequired,
     children: PropTypes.element.isRequired,
-    helpText: PropTypes.string,
+    helpText: PropTypes.node,
     required: PropTypes.bool,
     errors: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.string),

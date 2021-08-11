@@ -1,0 +1,174 @@
+{
+  "+hAGg7": {
+    "defaultMessage": "Users will not be able to start the form if it is in maintenance mode.",
+    "description": "Form maintenance mode field help text"
+  },
+  "0RXE97": {
+    "defaultMessage": "Literals",
+    "description": "Form literals tab title"
+  },
+  "1GyseX": {
+    "defaultMessage": "Submission page content",
+    "description": "Confirmation template label"
+  },
+  "294MCM": {
+    "defaultMessage": "Is deleted",
+    "description": "Form deleted field label"
+  },
+  "2d5RfI": {
+    "defaultMessage": "Registration backend options",
+    "description": "Registration backend options label"
+  },
+  "5/xPX6": {
+    "defaultMessage": "Name",
+    "description": "Form name field label"
+  },
+  "6PIG4q": {
+    "defaultMessage": "Authentication",
+    "description": "Auth plugin field label"
+  },
+  "70Q0CM": {
+    "defaultMessage": "Previous text",
+    "description": "literals.previousText form label"
+  },
+  "7F64bK": {
+    "defaultMessage": "Whether the form is (soft) deleted",
+    "description": "Form deleted field help text"
+  },
+  "7JMcZW": {
+    "defaultMessage": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration.",
+    "description": "literals.beginText help text"
+  },
+  "7RVZYq": {
+    "defaultMessage": "Unique identifier for the form",
+    "description": "Form ID field help text"
+  },
+  "9bGp7h": {
+    "defaultMessage": "Active",
+    "description": "Form active field label"
+  },
+  "AUADgz": {
+    "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
+    "description": "literals.changeText help text"
+  },
+  "BStu9Z": {
+    "defaultMessage": "Form",
+    "description": "Form fields tab title"
+  },
+  "CXKQZZ": {
+    "defaultMessage": "Confirmation",
+    "description": "Form confirmation options tab title"
+  },
+  "CXwWdu": {
+    "defaultMessage": "Whether the form is active or not. Deactivated forms cannot be started.",
+    "description": "Form active field help text"
+  },
+  "CiaAYL": {
+    "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
+    "description": "Auth plugin field help text"
+  },
+  "EtAvFF": {
+    "defaultMessage": "Duplicate this form",
+    "description": "Copy form button title"
+  },
+  "G2rpx2": {
+    "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
+    "description": "Progress indicator help text"
+  },
+  "GWkSOd": {
+    "defaultMessage": "If checked, the user can submit the form. Uncheck this for 'decision' trees.",
+    "description": "Form canSubmit field help text"
+  },
+  "GfH2yX": {
+    "defaultMessage": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration.",
+    "description": "literals.confirmText help text"
+  },
+  "H6VxhG": {
+    "defaultMessage": "Maintenance mode",
+    "description": "Form maintenance mode field label"
+  },
+  "HXE3Mm": {
+    "defaultMessage": "Slug of the form, used in URLs",
+    "description": "Form slug field help text"
+  },
+  "KIy7Wr": {
+    "defaultMessage": "Name/title of the form",
+    "description": "Form name field help text"
+  },
+  "LNeqFF": {
+    "defaultMessage": "Copy",
+    "description": "Copy form button"
+  },
+  "M1L9/1": {
+    "defaultMessage": "Change text",
+    "description": "literals.changeText form label"
+  },
+  "OFAJVW": {
+    "defaultMessage": "Registration",
+    "description": "Form registration options tab title"
+  },
+  "TCQic2": {
+    "defaultMessage": "Confirm text",
+    "description": "literals.confirmText form label"
+  },
+  "TF+tAc": {
+    "defaultMessage": "ID",
+    "description": "Form ID field label"
+  },
+  "TXwGu1": {
+    "defaultMessage": "Slug",
+    "description": "Form slug field label"
+  },
+  "d45v2X": {
+    "defaultMessage": "Export this form",
+    "description": "Export form button title"
+  },
+  "deoN5r": {
+    "defaultMessage": "Show progress indicator",
+    "description": "Progress indicator field label"
+  },
+  "f590Rb": {
+    "defaultMessage": "Begin text",
+    "description": "literals.beginText form label"
+  },
+  "gGNIdG": {
+    "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
+    "description": "literals.previousText help text"
+  },
+  "hWRRHx": {
+    "defaultMessage": "Form design",
+    "description": "Form design/editor fieldset title"
+  },
+  "mOjKcm": {
+    "defaultMessage": "Steps and fields",
+    "description": "Form design tab title"
+  },
+  "ow5AAO": {
+    "defaultMessage": "The form is invalid. Please correct the errors below.",
+    "description": "Generic error message"
+  },
+  "pd8iHF": {
+    "defaultMessage": "Submit button enabled",
+    "description": "Form canSubmit field label"
+  },
+  "piUWzT": {
+    "defaultMessage": "Select registration backend",
+    "description": "Registration backend label"
+  },
+  "qo1UbS": {
+    "defaultMessage": "Export",
+    "description": "Export form button"
+  },
+  "tLL2x4": {
+    "defaultMessage": "Change form",
+    "description": "Change form page title"
+  },
+  "viEfGU": {
+    "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
+    "description": "Confirmation template help text"
+  },
+  "xJBMaf": {
+    "defaultMessage": "Submission confirmation template",
+    "description": "Submission confirmation fieldset title"
+  }
+}

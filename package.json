@@ -9,7 +9,11 @@
   "scripts": {
     "test": "gulp test",
     "build": "gulp build",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "makemessages-en": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "makemessages-nl": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/nl.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "makemessages": "npm run makemessages-nl && npm run makemessages-en",
+    "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang"
   },
   "repository": {
     "type": "git",
@@ -32,6 +36,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-formio": "^4.3.0",
+    "react-intl": "^5.20.7",
+    "react-tabs": "^3.2.2",
     "react-use": "^17.2.4",
     "use-immer": "^0.5.2",
     "uuid": "^8.3.2"
@@ -41,8 +47,10 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.13.13",
+    "@formatjs/cli": "^4.2.30",
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
+    "babel-plugin-formatjs": "^10.3.4",
     "chai": "^4.3.0",
     "classnames": "^2.3.1",
     "css-loader": "^5.0.2",
@@ -53,6 +61,7 @@
     "gulp-if": "^3.0.0",
     "gulp-jshint": "^2.1.0",
     "gulp-jshint-jslint-file-reporter": "^0.1.0",
+    "gulp-run": "^1.7.1",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jshint": "^2.12.0",
     "jshint-stylish": "^2.2.1",
@@ -73,6 +82,7 @@
     "sass-loader": "^10.1.1",
     "simulant": "^0.2.2",
     "sinon": "^9.2.4",
+    "typescript": "^4.3.5",
     "url-loader": "^4.1.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^4.5.0",

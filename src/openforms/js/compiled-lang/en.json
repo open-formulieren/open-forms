@@ -1,0 +1,260 @@
+{
+  "+hAGg7": [
+    {
+      "type": 0,
+      "value": "Users will not be able to start the form if it is in maintenance mode."
+    }
+  ],
+  "0RXE97": [
+    {
+      "type": 0,
+      "value": "Literals"
+    }
+  ],
+  "1GyseX": [
+    {
+      "type": 0,
+      "value": "Submission page content"
+    }
+  ],
+  "294MCM": [
+    {
+      "type": 0,
+      "value": "Is deleted"
+    }
+  ],
+  "2d5RfI": [
+    {
+      "type": 0,
+      "value": "Registration backend options"
+    }
+  ],
+  "5/xPX6": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
+  "6PIG4q": [
+    {
+      "type": 0,
+      "value": "Authentication"
+    }
+  ],
+  "70Q0CM": [
+    {
+      "type": 0,
+      "value": "Previous text"
+    }
+  ],
+  "7F64bK": [
+    {
+      "type": 0,
+      "value": "Whether the form is (soft) deleted"
+    }
+  ],
+  "7JMcZW": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
+    }
+  ],
+  "7RVZYq": [
+    {
+      "type": 0,
+      "value": "Unique identifier for the form"
+    }
+  ],
+  "9bGp7h": [
+    {
+      "type": 0,
+      "value": "Active"
+    }
+  ],
+  "AUADgz": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+    }
+  ],
+  "BStu9Z": [
+    {
+      "type": 0,
+      "value": "Form"
+    }
+  ],
+  "CXKQZZ": [
+    {
+      "type": 0,
+      "value": "Confirmation"
+    }
+  ],
+  "CXwWdu": [
+    {
+      "type": 0,
+      "value": "Whether the form is active or not. Deactivated forms cannot be started."
+    }
+  ],
+  "CiaAYL": [
+    {
+      "type": 0,
+      "value": "Select the allowed authentication plugins to log in at the start of the form."
+    }
+  ],
+  "EtAvFF": [
+    {
+      "type": 0,
+      "value": "Duplicate this form"
+    }
+  ],
+  "G2rpx2": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not."
+    }
+  ],
+  "GWkSOd": [
+    {
+      "type": 0,
+      "value": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
+    }
+  ],
+  "GfH2yX": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+    }
+  ],
+  "H6VxhG": [
+    {
+      "type": 0,
+      "value": "Maintenance mode"
+    }
+  ],
+  "HXE3Mm": [
+    {
+      "type": 0,
+      "value": "Slug of the form, used in URLs"
+    }
+  ],
+  "KIy7Wr": [
+    {
+      "type": 0,
+      "value": "Name/title of the form"
+    }
+  ],
+  "LNeqFF": [
+    {
+      "type": 0,
+      "value": "Copy"
+    }
+  ],
+  "M1L9/1": [
+    {
+      "type": 0,
+      "value": "Change text"
+    }
+  ],
+  "OFAJVW": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
+  "TCQic2": [
+    {
+      "type": 0,
+      "value": "Confirm text"
+    }
+  ],
+  "TF+tAc": [
+    {
+      "type": 0,
+      "value": "ID"
+    }
+  ],
+  "TXwGu1": [
+    {
+      "type": 0,
+      "value": "Slug"
+    }
+  ],
+  "d45v2X": [
+    {
+      "type": 0,
+      "value": "Export this form"
+    }
+  ],
+  "deoN5r": [
+    {
+      "type": 0,
+      "value": "Show progress indicator"
+    }
+  ],
+  "f590Rb": [
+    {
+      "type": 0,
+      "value": "Begin text"
+    }
+  ],
+  "gGNIdG": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "hWRRHx": [
+    {
+      "type": 0,
+      "value": "Form design"
+    }
+  ],
+  "mOjKcm": [
+    {
+      "type": 0,
+      "value": "Steps and fields"
+    }
+  ],
+  "ow5AAO": [
+    {
+      "type": 0,
+      "value": "The form is invalid. Please correct the errors below."
+    }
+  ],
+  "pd8iHF": [
+    {
+      "type": 0,
+      "value": "Submit button enabled"
+    }
+  ],
+  "piUWzT": [
+    {
+      "type": 0,
+      "value": "Select registration backend"
+    }
+  ],
+  "qo1UbS": [
+    {
+      "type": 0,
+      "value": "Export"
+    }
+  ],
+  "tLL2x4": [
+    {
+      "type": 0,
+      "value": "Change form"
+    }
+  ],
+  "viEfGU": [
+    {
+      "type": 0,
+      "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+    }
+  ],
+  "xJBMaf": [
+    {
+      "type": 0,
+      "value": "Submission confirmation template"
+    }
+  ]
+}

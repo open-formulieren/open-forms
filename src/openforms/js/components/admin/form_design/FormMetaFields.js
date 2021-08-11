@@ -3,6 +3,7 @@ global URLify;
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
@@ -15,12 +16,24 @@ import AuthPluginField from './AuthPluginField';
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormMetaFields = ({ form, literals, onChange, errors={},
-                          availableRegistrationBackends, selectedRegistrationBackend, onRegistrationBackendChange,
-                          availableAuthPlugins, selectedAuthPlugins, onAuthPluginChange }) => {
-    const { uuid, name, slug, showProgressIndicator, active, isDeleted, maintenanceMode,
-            registrationBackend, registrationBackendOptions, canSubmit } = form;
-    const { beginText, previousText, changeText, confirmText } = literals;
+const FormMetaFields = ({
+    form,
+    onChange,
+    errors={},
+    availableAuthPlugins,
+    selectedAuthPlugins,
+    onAuthPluginChange
+}) => {
+    const {
+        uuid,
+        name,
+        slug,
+        showProgressIndicator,
+        active,
+        isDeleted,
+        maintenanceMode,
+        canSubmit
+    } = form;
 
     const onCheckboxChange = (event, currentValue) => {
         const { target: {name} } = event;
@@ -46,8 +59,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Field
                     name="form.uuid"
-                    label="Form UUID"
-                    helpText="Unique identifier for the form"
+                    label={<FormattedMessage defaultMessage="ID" description="Form ID field label" />}
+                    helpText={<FormattedMessage defaultMessage="Unique identifier for the form" description="Form ID field help text" />}
                     errors={errors.uuid}
                     required
                 >
@@ -57,8 +70,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Field
                     name="form.name"
-                    label="Form name"
-                    helpText="Name of the form"
+                    label={<FormattedMessage defaultMessage="Name" description="Form name field label" />}
+                    helpText={<FormattedMessage defaultMessage="Name/title of the form" description="Form name field help text" />}
                     errors={errors.name}
                     required
                 >
@@ -68,82 +81,15 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Field
                     name="form.slug"
-                    label="Form slug"
-                    helpText="Slug of the form"
+                    label={<FormattedMessage defaultMessage="Slug" description="Form slug field label" />}
+                    helpText={<FormattedMessage defaultMessage="Slug of the form, used in URLs" description="Form slug field help text" />}
                     errors={errors.slug}
                     required
                 >
                     <TextInput value={slug} onChange={onChange} />
                 </Field>
             </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.beginText"
-                    label="Begin text"
-                    helpText="The text that will be displayed at the start of the form to indicate
-                                the user can begin to fill in the form.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={beginText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.previousText"
-                    label="Previous text"
-                    helpText="The text that will be displayed in the overview page to go to the previous step.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={previousText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.changeText"
-                    label="Change text"
-                    helpText="The text that will be displayed in the overview page to change a certain step.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={changeText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="literals.confirmText"
-                    label="Confirm text"
-                    helpText="The text that will be displayed in the overview page to confirm
-                                the form is filled in correctly.
-                                Leave blank to get value from global configuration."
-                >
-                    <TextInput value={confirmText.value} onChange={onChange} maxLength="50" />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="form.registrationBackend"
-                    label="Select registration backend"
-                >
-                    <Select
-                        name="Registration backend"
-                        choices={availableRegistrationBackends.data}
-                        value={registrationBackend}
-                        onChange={onChange}
-                        allowBlank={true}
-                    />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
-                    name="form.registrationBackendOptions"
-                    label="Registration Backend Options"
-                >
-                    <TextInput value={typeof registrationBackendOptions === "string" ?
-                                        registrationBackendOptions :
-                                        JSON.stringify(registrationBackendOptions)}
-                               onChange={onChange}
-                               maxLength="1000" />
-                </Field>
-            </FormRow>
+
             <FormRow>
                 <AuthPluginField
                     loading={availableAuthPlugins.loading}
@@ -157,8 +103,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Checkbox
                     name="form.showProgressIndicator"
-                    label="Show progress indicator"
-                    helpText="Whether the step progression should be displayed in the UI or not."
+                    label={<FormattedMessage defaultMessage="Show progress indicator" description="Progress indicator field label" />}
+                    helpText={<FormattedMessage defaultMessage="Whether the step progression should be displayed in the UI or not." description="Progress indicator help text" />}
                     checked={showProgressIndicator}
                     errors={errors.showProgressIndicator}
                     onChange={(event) => onCheckboxChange(event, showProgressIndicator)}
@@ -167,8 +113,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Checkbox
                     name="form.active"
-                    label="Active"
-                    helpText="Whether the form is active or not"
+                    label={<FormattedMessage defaultMessage="Active" description="Form active field label" />}
+                    helpText={<FormattedMessage defaultMessage="Whether the form is active or not. Deactivated forms cannot be started." description="Form active field help text" />}
                     checked={active}
                     errors={errors.active}
                     onChange={(event) => onCheckboxChange(event, active)}
@@ -177,8 +123,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Checkbox
                     name="form.isDeleted"
-                    label="Is deleted"
-                    helpText="Whether the form is (soft) deleted"
+                    label={<FormattedMessage defaultMessage="Is deleted" description="Form deleted field label" />}
+                    helpText={<FormattedMessage defaultMessage="Whether the form is (soft) deleted" description="Form deleted field help text" />}
                     checked={isDeleted}
                     errors={errors.isDeleted}
                     onChange={(event) => onCheckboxChange(event, isDeleted)}
@@ -187,8 +133,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Checkbox
                     name="form.maintenanceMode"
-                    label="Maintenance mode"
-                    helpText="Users will not be able to start the form if it is in maintenance mode."
+                    label={<FormattedMessage defaultMessage="Maintenance mode" description="Form maintenance mode field label" />}
+                    helpText={<FormattedMessage defaultMessage="Users will not be able to start the form if it is in maintenance mode." description="Form maintenance mode field help text" />}
                     checked={maintenanceMode}
                     errors={errors.maintenanceMode}
                     onChange={(event) => onCheckboxChange(event, maintenanceMode)}
@@ -197,8 +143,8 @@ const FormMetaFields = ({ form, literals, onChange, errors={},
             <FormRow>
                 <Checkbox
                     name="form.canSubmit"
-                    label="Can submit"
-                    helpText="Can the user submit the form?"
+                    label={<FormattedMessage defaultMessage="Submit button enabled" description="Form canSubmit field label" />}
+                    helpText={<FormattedMessage defaultMessage="If checked, the user can submit the form. Uncheck this for 'decision' trees." description="Form canSubmit field help text" />}
                     checked={canSubmit}
                     errors={errors.canSubmit}
                     onChange={(event) => onCheckboxChange(event, canSubmit)}
@@ -219,28 +165,10 @@ FormMetaFields.propTypes = {
         maintenanceMode: PropTypes.bool.isRequired,
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
-        registrationBackendOptions: PropTypes.string.isRequired,
-    }).isRequired,
-    literals: PropTypes.shape({
-        beginText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        previousText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        changeText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
-        confirmText: PropTypes.shape({
-            value: PropTypes.string.isRequired,
-        }).isRequired,
+        registrationBackendOptions: PropTypes.object,
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
-    availableRegistrationBackends: PropTypes.shape({
-        loading: PropTypes.bool.isRequired,
-        data: PropTypes.array.isRequired,
-    }).isRequired,
     availableAuthPlugins: PropTypes.shape({
         loading: PropTypes.bool.isRequired,
         data: PropTypes.object.isRequired,

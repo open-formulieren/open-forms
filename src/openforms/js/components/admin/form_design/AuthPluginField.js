@@ -1,9 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
-import Field from "../forms/Field";
-import {Checkbox} from "../forms/Inputs";
-import Loader from "../Loader";
+import Field from '../forms/Field';
+import {Checkbox} from '../forms/Inputs';
+import Loader from '../Loader';
 
 const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
     const authCheckboxes = Object.entries(availableAuthPlugins).map(([pluginId, plugin]) => {
@@ -25,9 +26,9 @@ const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, on
 
     return (
         <Field
-            name='formAuthPlugin'
-            label='Authentication'
-            helpText='The authentication backends required to be able to fill in the form.'
+            name="formAuthPlugin"
+            label={<FormattedMessage defaultMessage="Authentication" description="Auth plugin field label" />}
+            helpText={<FormattedMessage defaultMessage="Select the allowed authentication plugins to log in at the start of the form." description="Auth plugin field help text" />}
             errors={errors}
             required
         >
