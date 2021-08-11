@@ -608,6 +608,15 @@ else:
 #
 # DJANGO REST FRAMEWORK
 #
+ENABLE_THROTTLING = config("ENABLE_THROTTLING", default=True)
+
+throttle_rate_anon = (
+    config("THROTTLE_RATE_ANON", default="1000/hour") if ENABLE_THROTTLING else None
+)
+throttle_rate_user = (
+    config("THROTTLE_RATE_USER", default="10000/hour") if ENABLE_THROTTLING else None
+)
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
@@ -625,7 +634,17 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ),
-    "DEFAULT_THROTTLE_RATES": {"anon": "2000/day", "user": "10000/day"},
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": throttle_rate_anon,
+        "user": throttle_rate_user,
+    },
+    # required to get the right IP addres for throttling depending on the amount of
+    # reverse proxies (X-Forwarded-For).
+    "NUM_PROXIES": config(
+        "NUM_PROXIES",
+        default=None,
+        cast=lambda val: int(val) if val is not None else None,
+    ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_SCHEMA_CLASS": "openforms.api.schema.AutoSchema",
     "EXCEPTION_HANDLER": "openforms.api.views.exception_handler",

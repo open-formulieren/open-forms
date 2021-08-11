@@ -196,6 +196,16 @@ Other settings
 * ``OPENFORMS_LOCATION_CLIENT``: The client to be used for auto filling a street name and city
   when given a postcode and house number.  Defaults to our internal BAG configuration.
 
+* ``ENABLE_THROTTLING``: Enable or disable request throttling (to protect against (D)DOS, for example). Default enabled.
+
+* ``THROTTLE_RATE_ANON``: Default throttle rate for anonymous users (this includes the
+  end-users filling out (embedded) forms using the SDK!). Defaults to ``1000/hour``. Note
+  that if throttling is disabled altogether, this configuration parameter has no effect.
+
+* ``THROTTLE_RATE_USER``: Default throttle rate for authenticated users (typicall users
+  logged in to the admin interface). Defaults to ``10000/hour``. Note that if throttling
+  is disabled altogether, this configuration parameter has no effect.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables
