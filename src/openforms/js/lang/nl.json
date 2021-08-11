@@ -1,4 +1,8 @@
 {
+  "+hAGg7": {
+    "defaultMessage": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is",
+    "description": "Form maintenance mode field help text"
+  },
   "0RXE97": {
     "defaultMessage": "Knopteksten",
     "description": "Form literals tab title"
@@ -7,17 +11,37 @@
     "defaultMessage": "Inhoud bevestigingspagina",
     "description": "Confirmation template label"
   },
+  "294MCM": {
+    "defaultMessage": "Verwijderd",
+    "description": "Form deleted field label"
+  },
   "2d5RfI": {
     "defaultMessage": "Opties",
     "description": "Registration backend options label"
+  },
+  "5/xPX6": {
+    "defaultMessage": "Naam",
+    "description": "Form name field label"
   },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
     "description": "literals.previousText form label"
   },
+  "7F64bK": {
+    "defaultMessage": "Formulieren die als 'verwijderd' gemarkeerd zijn worden op termijn uit de database verwijderd.",
+    "description": "Form deleted field help text"
+  },
   "7JMcZW": {
     "defaultMessage": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.beginText help text"
+  },
+  "7RVZYq": {
+    "defaultMessage": "Globaal uniek ID voor het formulier",
+    "description": "Form ID field help text"
+  },
+  "9bGp7h": {
+    "defaultMessage": "Actief",
+    "description": "Form active field label"
   },
   "AUADgz": {
     "defaultMessage": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -31,13 +55,37 @@
     "defaultMessage": "Bevestiging",
     "description": "Form confirmation options tab title"
   },
+  "CXwWdu": {
+    "defaultMessage": "Indien het formulier gedeactiveerd is, dan kan het niet gestart worden.",
+    "description": "Form active field help text"
+  },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
     "description": "Copy form button title"
   },
+  "G2rpx2": {
+    "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
+    "description": "Progress indicator help text"
+  },
+  "GWkSOd": {
+    "defaultMessage": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren.",
+    "description": "Form canSubmit field help text"
+  },
   "GfH2yX": {
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.confirmText help text"
+  },
+  "H6VxhG": {
+    "defaultMessage": "Onderhoudsmodus",
+    "description": "Form maintenance mode field label"
+  },
+  "HXE3Mm": {
+    "defaultMessage": "URL-deel van het formulier.",
+    "description": "Form slug field help text"
+  },
+  "KIy7Wr": {
+    "defaultMessage": "Naam (of titel) van het formulier.",
+    "description": "Form name field help text"
   },
   "LNeqFF": {
     "defaultMessage": "Kopiëren",
@@ -55,9 +103,21 @@
     "defaultMessage": "'Bevestigen' tekst",
     "description": "literals.confirmText form label"
   },
+  "TF+tAc": {
+    "defaultMessage": "Uniek ID",
+    "description": "Form ID field label"
+  },
+  "TXwGu1": {
+    "defaultMessage": "URL-deel",
+    "description": "Form slug field label"
+  },
   "d45v2X": {
     "defaultMessage": "Exporteer dit formulier",
     "description": "Export form button title"
+  },
+  "deoN5r": {
+    "defaultMessage": "Toon voortang",
+    "description": "Progress indicator field label"
   },
   "f590Rb": {
     "defaultMessage": "'Start' tekst",
@@ -78,6 +138,10 @@
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
     "description": "Generic error message"
+  },
+  "pd8iHF": {
+    "defaultMessage": "Inzenden mogelijk",
+    "description": "Form canSubmit field label"
   },
   "piUWzT": {
     "defaultMessage": "Registratiemethode",
