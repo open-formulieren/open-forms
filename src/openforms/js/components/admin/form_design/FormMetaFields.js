@@ -2,7 +2,6 @@
 global URLify;
  */
 import React from 'react';
-import Form from "@rjsf/core";
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -54,7 +53,6 @@ const FormMetaFields = ({
             }
         });
     };
-
 
     return (
         <Fieldset>

@@ -174,9 +174,6 @@ class Form(models.Model):
     def first_step(self):
         return self.formstep_set.first().order
 
-    def registration_backend_options_form(self):
-        return {'some different': 'stuff here'}
-
     @transaction.atomic
     def copy(self):
         form_steps = self.formstep_set.all()
