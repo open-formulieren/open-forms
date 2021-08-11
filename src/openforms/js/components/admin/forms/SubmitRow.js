@@ -32,7 +32,7 @@ SubmitRow.propTypes = {
     onSubmit: PropTypes.func,
     preventDefault: PropTypes.bool,
     isDefault: PropTypes.bool,
-    btnText: PropTypes.string,
+    btnText: PropTypes.node,
     extraClassName: PropTypes.string,
     children: PropTypes.node,
 };

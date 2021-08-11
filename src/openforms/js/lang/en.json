@@ -94,6 +94,11 @@
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
   },
+  "AtBVAV": {
+    "defaultMessage": "Confirm",
+    "description": "Form definition select confirm button",
+    "originalDefault": "Confirm"
+  },
   "BStu9Z": {
     "defaultMessage": "Form",
     "description": "Form fields tab title",
@@ -129,6 +134,11 @@
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
   },
+  "GIdTgB": {
+    "defaultMessage": "Use existing form definition",
+    "description": "Form definition selection modal title",
+    "originalDefault": "Use existing form definition"
+  },
   "GWkSOd": {
     "defaultMessage": "If checked, the user can submit the form. Uncheck this for 'decision' trees.",
     "description": "Form canSubmit field help text",
@@ -148,6 +158,11 @@
     "defaultMessage": "Slug of the form, used in URLs",
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
+  },
+  "I3zyib": {
+    "defaultMessage": "Select form definition",
+    "description": "Form definition select label",
+    "originalDefault": "Select form definition"
   },
   "Iv+lBL": {
     "defaultMessage": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration.",
@@ -178,6 +193,11 @@
     "defaultMessage": "Registration",
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
+  },
+  "QDBI2H": {
+    "defaultMessage": "Select existing form definition",
+    "description": "Select form definition tile",
+    "originalDefault": "Select existing form definition"
   },
   "QLTh2N": {
     "defaultMessage": "Save text",
@@ -213,6 +233,11 @@
     "defaultMessage": "Slug of the form definition used in this form step",
     "description": "Form step slug field help text",
     "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aXJpiI": {
+    "defaultMessage": "This field is required.",
+    "description": "Field required error",
+    "originalDefault": "This field is required."
   },
   "aXg4YH": {
     "defaultMessage": "Login required?",
@@ -314,6 +339,11 @@
     "description": "History link button",
     "originalDefault": "History"
   },
+  "vQME+l": {
+    "defaultMessage": "Create a new form definition",
+    "description": "Create form definition tile",
+    "originalDefault": "Create a new form definition"
+  },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
@@ -323,5 +353,15 @@
     "defaultMessage": "Submission confirmation template",
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
+  },
+  "xcp+LU": {
+    "defaultMessage": "Create definition",
+    "description": "create form definition icon title",
+    "originalDefault": "Create definition"
+  },
+  "yCogwi": {
+    "defaultMessage": "Select definition",
+    "description": "select definition icon title",
+    "originalDefault": "Select definition"
   }
 }

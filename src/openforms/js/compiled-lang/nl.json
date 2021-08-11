@@ -161,6 +161,12 @@
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "AtBVAV": [
+    {
+      "type": 0,
+      "value": "Bevestigen"
+    }
+  ],
   "BStu9Z": [
     {
       "type": 0,
@@ -203,6 +209,12 @@
       "value": "Geef de voortgang in de formulierstappen wel of niet weer."
     }
   ],
+  "GIdTgB": [
+    {
+      "type": 0,
+      "value": "Gebruik bestaande formulierdefinitie"
+    }
+  ],
   "GWkSOd": [
     {
       "type": 0,
@@ -225,6 +237,12 @@
     {
       "type": 0,
       "value": "URL-deel van het formulier."
+    }
+  ],
+  "I3zyib": [
+    {
+      "type": 0,
+      "value": "Selecteer formulierdefinitie"
     }
   ],
   "Iv+lBL": [
@@ -261,6 +279,12 @@
     {
       "type": 0,
       "value": "Registratie"
+    }
+  ],
+  "QDBI2H": [
+    {
+      "type": 0,
+      "value": "Selecteer een bestaande formulierdefinitie"
     }
   ],
   "QLTh2N": [
@@ -303,6 +327,12 @@
     {
       "type": 0,
       "value": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf."
+    }
+  ],
+  "aXJpiI": [
+    {
+      "type": 0,
+      "value": "Dit veld is verplicht."
     }
   ],
   "aXg4YH": [
@@ -429,6 +459,12 @@
       "value": "Geschiedenis"
     }
   ],
+  "vQME+l": [
+    {
+      "type": 0,
+      "value": "Maak een nieuwe formulierdefinitie"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -439,6 +475,18 @@
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
+    }
+  ],
+  "xcp+LU": [
+    {
+      "type": 0,
+      "value": "Formulierdefinitie aanmaken"
+    }
+  ],
+  "yCogwi": [
+    {
+      "type": 0,
+      "value": "Formulierdefinitie selecteren"
     }
   ]
 }

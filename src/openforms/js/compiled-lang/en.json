@@ -157,6 +157,12 @@
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
     }
   ],
+  "AtBVAV": [
+    {
+      "type": 0,
+      "value": "Confirm"
+    }
+  ],
   "BStu9Z": [
     {
       "type": 0,
@@ -199,6 +205,12 @@
       "value": "Whether the step progression should be displayed in the UI or not."
     }
   ],
+  "GIdTgB": [
+    {
+      "type": 0,
+      "value": "Use existing form definition"
+    }
+  ],
   "GWkSOd": [
     {
       "type": 0,
@@ -221,6 +233,12 @@
     {
       "type": 0,
       "value": "Slug of the form, used in URLs"
+    }
+  ],
+  "I3zyib": [
+    {
+      "type": 0,
+      "value": "Select form definition"
     }
   ],
   "Iv+lBL": [
@@ -257,6 +275,12 @@
     {
       "type": 0,
       "value": "Registration"
+    }
+  ],
+  "QDBI2H": [
+    {
+      "type": 0,
+      "value": "Select existing form definition"
     }
   ],
   "QLTh2N": [
@@ -299,6 +323,12 @@
     {
       "type": 0,
       "value": "Slug of the form definition used in this form step"
+    }
+  ],
+  "aXJpiI": [
+    {
+      "type": 0,
+      "value": "This field is required."
     }
   ],
   "aXg4YH": [
@@ -425,6 +455,12 @@
       "value": "History"
     }
   ],
+  "vQME+l": [
+    {
+      "type": 0,
+      "value": "Create a new form definition"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -435,6 +471,18 @@
     {
       "type": 0,
       "value": "Submission confirmation template"
+    }
+  ],
+  "xcp+LU": [
+    {
+      "type": 0,
+      "value": "Create definition"
+    }
+  ],
+  "yCogwi": [
+    {
+      "type": 0,
+      "value": "Select definition"
     }
   ]
 }

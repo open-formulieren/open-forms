@@ -94,6 +94,11 @@
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
   },
+  "AtBVAV": {
+    "defaultMessage": "Bevestigen",
+    "description": "Form definition select confirm button",
+    "originalDefault": "Confirm"
+  },
   "BStu9Z": {
     "defaultMessage": "Formulier",
     "description": "Form fields tab title",
@@ -129,6 +134,11 @@
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
   },
+  "GIdTgB": {
+    "defaultMessage": "Gebruik bestaande formulierdefinitie",
+    "description": "Form definition selection modal title",
+    "originalDefault": "Use existing form definition"
+  },
   "GWkSOd": {
     "defaultMessage": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren.",
     "description": "Form canSubmit field help text",
@@ -148,6 +158,11 @@
     "defaultMessage": "URL-deel van het formulier.",
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
+  },
+  "I3zyib": {
+    "defaultMessage": "Selecteer formulierdefinitie",
+    "description": "Form definition select label",
+    "originalDefault": "Select form definition"
   },
   "Iv+lBL": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -178,6 +193,11 @@
     "defaultMessage": "Registratie",
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
+  },
+  "QDBI2H": {
+    "defaultMessage": "Selecteer een bestaande formulierdefinitie",
+    "description": "Select form definition tile",
+    "originalDefault": "Select existing form definition"
   },
   "QLTh2N": {
     "defaultMessage": "'Opslaan' tekst",
@@ -213,6 +233,11 @@
     "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
     "description": "Form step slug field help text",
     "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aXJpiI": {
+    "defaultMessage": "Dit veld is verplicht.",
+    "description": "Field required error",
+    "originalDefault": "This field is required."
   },
   "aXg4YH": {
     "defaultMessage": "Inloggen vereist?",
@@ -314,6 +339,11 @@
     "description": "History link button",
     "originalDefault": "History"
   },
+  "vQME+l": {
+    "defaultMessage": "Maak een nieuwe formulierdefinitie",
+    "description": "Create form definition tile",
+    "originalDefault": "Create a new form definition"
+  },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
@@ -323,5 +353,15 @@
     "defaultMessage": "Sjabloon bevestigingspagina",
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
+  },
+  "xcp+LU": {
+    "defaultMessage": "Formulierdefinitie aanmaken",
+    "description": "create form definition icon title",
+    "originalDefault": "Create definition"
+  },
+  "yCogwi": {
+    "defaultMessage": "Formulierdefinitie selecteren",
+    "description": "select definition icon title",
+    "originalDefault": "Select definition"
   }
 }
