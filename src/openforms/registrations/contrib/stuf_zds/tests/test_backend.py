@@ -405,7 +405,7 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:identificatie": "bar",
                 "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
-                "//zkn:object/zkn:formaat": "pdf",
+                "//zkn:object/zkn:formaat": "application/pdf",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },
@@ -418,7 +418,8 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("edcLk01"),
         )
         submission_attachment = SubmissionFileAttachmentFactory.create(
-            file_name="my-attachment.doc"
+            file_name="my-attachment.doc",
+            content_type="application/msword",
         )
 
         self.client.create_zaak_attachment(
@@ -437,7 +438,7 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:identificatie": "bar",
                 "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
-                "//zkn:object/zkn:formaat": "doc",
+                "//zkn:object/zkn:formaat": "application/msword",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },
@@ -569,6 +570,7 @@ class StufZDSPluginTests(StufTestBase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="my-attachment.doc",
+            content_type="application/msword",
         )
 
         m.post(
@@ -669,7 +671,7 @@ class StufZDSPluginTests(StufTestBase):
             xml_doc,
             {
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
-                "//zkn:object/zkn:formaat": "pdf",
+                "//zkn:object/zkn:formaat": "application/pdf",
             },
         )
 
@@ -690,6 +692,6 @@ class StufZDSPluginTests(StufTestBase):
             xml_doc,
             {
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
-                "//zkn:object/zkn:formaat": "doc",
+                "//zkn:object/zkn:formaat": "application/msword",
             },
         )

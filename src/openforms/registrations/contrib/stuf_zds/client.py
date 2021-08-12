@@ -271,7 +271,7 @@ class StufZDSClient:
                 "bestandsnaam": f"open-forms-inzending.pdf",
                 # TODO: Use name in filename
                 # "bestandsnaam": f"open-forms-{name}.pdf",
-                "formaat": "pdf",
+                "formaat": "application/pdf",
                 "beschrijving": "Ingezonden formulier",
             }
         )
@@ -310,7 +310,7 @@ class StufZDSClient:
                 "inhoud": base64_body,
                 "status": "definitief",
                 "bestandsnaam": submission_attachment.get_display_name(),
-                "formaat": submission_attachment.get_format(),
+                "formaat": submission_attachment.content_type,
                 "beschrijving": "Bijgevoegd document",
             }
         )
