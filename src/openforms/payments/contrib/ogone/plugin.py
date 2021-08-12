@@ -37,7 +37,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
     def start_payment(self, request, payment: SubmissionPayment):
         # decimal to cents
-        amount_cents = round(payment.amount * 100)
+        amount_cents = int((payment.amount * 100).to_integral_exact())
 
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
