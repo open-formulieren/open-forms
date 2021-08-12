@@ -130,6 +130,13 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
+    registration_id = models.CharField(
+        _("registration id"),
+        blank=True,
+        default="",
+        max_length=255,
+        help_text=_("ID or reference in the configured registration backend."),
+    )
 
     class Meta:
         verbose_name = _("Submission")
