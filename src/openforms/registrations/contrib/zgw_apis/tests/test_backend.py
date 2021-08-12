@@ -228,6 +228,7 @@ class ZGWBackendTests(TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
         self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
+        self.assertEqual(create_eio_body["formaat"], "application/pdf")
         self.assertEqual(
             create_eio_body["vertrouwelijkheidaanduiding"],
             "openbaar",
@@ -287,6 +288,7 @@ class ZGWBackendTests(TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
         self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
+        self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
 
         relate_attachment = m.request_history[11]
         relate_attachment_body = relate_attachment.json()
