@@ -235,8 +235,7 @@ class FormLogic(models.Model):
         ),
         max_length=100,
     )
-    actions = ArrayField(
-        JSONField(default=dict),
+    actions = JSONField(
         verbose_name=_("actions"),
         help_text=_("What action to perform if the JSON logic evaluates to true."),
     )

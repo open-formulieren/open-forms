@@ -4,6 +4,8 @@ import django.contrib.postgres.fields
 import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 import django.db.models.deletion
+import openforms.utils.fields
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -26,6 +28,12 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "uuid",
+                    openforms.utils.fields.StringUUIDField(
+                        default=uuid.uuid4, unique=True, verbose_name="UUID"
+                    ),
+                ),
+                (
                     "json_logic_trigger",
                     django.contrib.postgres.fields.jsonb.JSONField(
                         help_text="JSON logic associated with a step in a form.",
@@ -42,12 +50,8 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "actions",
-                    django.contrib.postgres.fields.ArrayField(
-                        base_field=django.contrib.postgres.fields.jsonb.JSONField(
-                            default=dict
-                        ),
+                    django.contrib.postgres.fields.JSONField(
                         help_text="What action to perform if the JSON logic evaluates to true.",
-                        size=None,
                         verbose_name="actions",
                     ),
                 ),

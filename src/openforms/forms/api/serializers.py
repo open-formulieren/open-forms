@@ -330,3 +330,10 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
                 "read_only": True,
             }
         }
+
+    def validate_actions(self, value):
+        if not isinstance(value, list):
+            raise serializers.ValidationError(
+                _("Attribute 'actions' of form logic should be a list.")
+            )
+        return value
