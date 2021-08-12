@@ -46,14 +46,9 @@ class KVK_KVKNumberPrefill(BasePlugin):
         except (RequestException, ClientError, KVKClientError):
             return {}
 
-        items = results["resultaten"]
-        if not items:
+        data = self.select_item(results["resultaten"])
+        if not data:
             return {}
-
-        if len(items) > 1:
-            logger.warning("multiple results for KvK search")
-
-        data = items[0]
 
         values = dict()
         for attr in attributes:
@@ -64,6 +59,14 @@ class KVK_KVKNumberPrefill(BasePlugin):
                     f"missing expected attribute '{attr}' in backend response"
                 )
         return values
+
+    def select_item(self, items):
+        if not items:
+            return None
+        for item in items:
+            if item.get("type") == "hoofdvestiging":
+                return item
+        return items[0]
 
     def get_submission_attr(self, submission):
         assert self.submission_attr

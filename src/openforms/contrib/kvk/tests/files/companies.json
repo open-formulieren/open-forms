@@ -5,6 +5,25 @@
   "resultaten": [
     {
       "kvkNummer": "69599084",
+      "vestigingsnummer": "000038509520",
+      "handelsnaam": "Test EMZ Nevenvestiging Govert",
+      "straatnaam": "Geneinde",
+      "plaats": "Maastricht",
+      "type": "nevenvestiging",
+      "rsin": "123456789",
+      "links": [
+        {
+          "rel": "basisprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
+        },
+        {
+          "rel": "vestigingsprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"
+        }
+      ]
+    },
+    {
+      "kvkNummer": "69599084",
       "vestigingsnummer": "000038509504",
       "handelsnaam": "Test EMZ Dagobert",
       "straatnaam": "Abebe Bikilalaan",
@@ -19,24 +38,6 @@
         {
           "rel": "vestigingsprofiel",
           "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"
-        }
-      ]
-    },
-    {
-      "kvkNummer": "69599084",
-      "vestigingsnummer": "000038509520",
-      "handelsnaam": "Test EMZ Nevenvestiging Govert",
-      "straatnaam": "Geneinde",
-      "plaats": "Maastricht",
-      "type": "nevenvestiging",
-      "links": [
-        {
-          "rel": "basisprofiel",
-          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
-        },
-        {
-          "rel": "vestigingsprofiel",
-          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"
         }
       ]
     }
