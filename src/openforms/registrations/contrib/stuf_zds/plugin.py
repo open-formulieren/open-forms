@@ -139,6 +139,10 @@ class StufZDSRegistration(BasePlugin):
         submission_report = SubmissionReport.objects.get(submission=submission)
         client.create_zaak_document(zaak_id, doc_id, submission_report)
 
+        for attachment in submission.attachments:
+            attachment_doc_id = client.create_document_identificatie()
+            client.create_zaak_attachment(zaak_id, attachment_doc_id, attachment)
+
         result = {
             "zaak": zaak_id,
             "document": doc_id,

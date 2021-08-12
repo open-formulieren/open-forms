@@ -17,7 +17,7 @@ from requests import RequestException, Response
 
 from openforms.config.models import GlobalConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.submissions.models import SubmissionReport
+from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 from stuf.constants import (
     STUF_ZDS_EXPIRY_MINUTES,
     EndpointSecurity,
@@ -271,12 +271,49 @@ class StufZDSClient:
                 "bestandsnaam": f"open-forms-inzending.pdf",
                 # TODO: Use name in filename
                 # "bestandsnaam": f"open-forms-{name}.pdf",
-                "formaat": "pdf",
+                "formaat": "application/pdf",
                 "beschrijving": "Ingezonden formulier",
             }
         )
 
         # TODO: vertrouwelijkAanduiding
+
+        response, xml = self._make_request(
+            template,
+            context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+            soap_action="voegZaakdocumentToe_Lk01",
+        )
+
+        return None
+
+    def create_zaak_attachment(
+        self, zaak_id: str, doc_id: str, submission_attachment: SubmissionFileAttachment
+    ) -> None:
+        """
+        Create a zaakdocument with the submitted file.
+        """
+        template = "stuf_zds/soap/voegZaakdocumentToe.xml"
+
+        submission_attachment.content.seek(0)
+
+        base64_body = base64.b64encode(submission_attachment.content.read()).decode()
+
+        context = self._get_request_base_context()
+        context.update(
+            {
+                "zaak_identificatie": zaak_id,
+                "document_identificatie": doc_id,
+                "titel": "bijlage",
+                "auteur": "open-forms",
+                "taal": "nld",
+                "inhoud": base64_body,
+                "status": "definitief",
+                "bestandsnaam": submission_attachment.get_display_name(),
+                "formaat": submission_attachment.content_type,
+                "beschrijving": "Bijgevoegd document",
+            }
+        )
 
         response, xml = self._make_request(
             template,

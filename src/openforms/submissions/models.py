@@ -569,3 +569,6 @@ class SubmissionFileAttachment(models.Model):
 
     def get_display_name(self):
         return self.file_name or self.original_name
+
+    def get_format(self):
+        return os.path.splitext(self.get_display_name())[1].lstrip(".")
