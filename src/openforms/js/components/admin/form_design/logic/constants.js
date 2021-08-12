@@ -38,5 +38,39 @@ const COMPONENT_TYPE_TO_OPERATORS = {
     ],
 };
 
+const ACTION_TYPES = [
+    ['disable-next', 'disable continuing to the next form step.'],
+    ['property', 'change a property of a component.'],
+    ['value', 'change the value of a component']
+];
 
-export { OPERATORS, COMPONENT_TYPE_TO_OPERATORS };
+
+// Action types that once they are selected need further configurations.
+// For example, picking which property of a component should be changed.
+const ACTIONS_WITH_OPTIONS = [
+    'property',
+    'value'
+];
+
+
+const MODIFIABLE_PROPERTIES = [
+    ['required', 'required'],
+    ['hidden', 'hidden'],
+    ['disabled', 'disabled']
+];
+
+
+const PROPERTY_VALUES = [
+  ['true', 'Yes'],
+  ['false', 'No']
+];
+
+
+export {
+    OPERATORS,
+    COMPONENT_TYPE_TO_OPERATORS,
+    ACTION_TYPES,
+    ACTIONS_WITH_OPTIONS,
+    MODIFIABLE_PROPERTIES,
+    PROPERTY_VALUES,
+};

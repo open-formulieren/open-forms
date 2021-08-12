@@ -2,14 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FormioUtils from 'formiojs/utils';
 import {useImmerReducer} from 'use-immer';
-import {TextArea} from "../forms/Inputs";
-import Select from "../forms/Select";
+import {TextArea} from '../forms/Inputs';
+import Select from '../forms/Select';
 import {LOGICS_ENDPOINT} from './constants';
-import {apiDelete, get, post, put} from "../../../utils/fetch";
-import useAsync from "react-use/esm/useAsync";
-import FAIcon from "../FAIcon";
+import {apiDelete, get, post, put} from '../../../utils/fetch';
+import useAsync from 'react-use/esm/useAsync';
+import FAIcon from '../FAIcon';
 import Trigger from './logic/Trigger';
 import {ComponentsContext} from './logic/Context';
+import {Action} from './logic/Action';
 
 
 const initialState = {
@@ -200,6 +201,7 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
                 name="jsonLogicTrigger"
                 onChange={onChange}
             />
+            <Action />
 
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
