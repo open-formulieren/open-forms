@@ -6,6 +6,7 @@ from furl import furl
 
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.contrib.ogone.constants import OgoneStatus
+from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
 from openforms.payments.contrib.ogone.signing import calculate_shasign
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.payments.registry import register
@@ -88,7 +89,7 @@ class OgoneTests(TestCase):
 
         return_url = furl(url)
         return_url.args.update(ogone_params)
-        return_url.args["action"] = "accept"
+        return_url.args[RETURN_ACTION_PARAM] = "accept"
 
         # good
         response = self.client.get(return_url.url)

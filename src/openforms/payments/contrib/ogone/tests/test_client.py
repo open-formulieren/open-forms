@@ -3,6 +3,7 @@ from dataclasses import asdict
 from django.test import TestCase
 
 from openforms.payments.contrib.ogone.client import OgoneClient
+from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 
 
@@ -14,7 +15,7 @@ class OgoneClientTest(TestCase):
         client = OgoneClient(merchant)
 
         return_url = "http://foo.bar/return?bazz=buzz"
-        info = client.get_payment_info("123", 1000, return_url, "action")
+        info = client.get_payment_info("123", 1000, return_url, RETURN_ACTION_PARAM)
 
         self.assertEqual(info.url, merchant.endpoint)
         self.assertEqual(info.type, "post")

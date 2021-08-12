@@ -27,6 +27,9 @@ class OgoneOptionsSerializer(serializers.Serializer):
     )
 
 
+RETURN_ACTION_PARAM = "action"
+
+
 @register("ogone-legacy")
 class OgoneLegacyPaymentPlugin(BasePlugin):
     verbose_name = _("Ogone Legacy")
@@ -42,12 +45,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         return_url = self.get_return_url(request, payment)
 
         info = client.get_payment_info(
-            payment.order_id, amount_cents, return_url, "action"
+            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM
         )
         return info
 
     def handle_return(self, request, payment: SubmissionPayment):
-        action = request.GET.get("action")
+        action = request.query_params.get(RETURN_ACTION_PARAM)
 
         merchant = get_object_or_404(OgoneMerchant, id=payment.options["merchant_id"])
         client = OgoneClient(merchant)
