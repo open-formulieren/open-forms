@@ -36,6 +36,13 @@
 .rjsf {
   .array-item {
     min-width: 170px;
+    margin-bottom: 10px;
+  }
+
+  .array-item-move-up,
+  .array-item-move-down,
+  .array-item-remove {
+    border: 1px solid $color_darkest;
   }
 
   .row {
