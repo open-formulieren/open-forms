@@ -114,6 +114,11 @@
     "description": "Form fields tab title",
     "originalDefault": "Form"
   },
+  "Bbs/0a": {
+    "defaultMessage": "Logica",
+    "description": "Form logic tab title",
+    "originalDefault": "Logics"
+  },
   "CXKQZZ": {
     "defaultMessage": "Bevestiging",
     "description": "Form confirmation options tab title",
