@@ -8,7 +8,7 @@ from django.utils import timezone
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
-from openforms.submissions.models import SubmissionReport
+from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 
 logger = logging.getLogger(__name__)
 
@@ -51,10 +51,41 @@ def create_document(
         "titel": name,
         "auteur": "open-forms",
         "taal": "nld",
+        "formaat": "application/pdf",
         "inhoud": base64_body,
         "status": "definitief",
         "bestandsnaam": f"open-forms-{name}.pdf",
         "beschrijving": "Ingezonden formulier",
+    }
+    if "vertrouwelijkheidaanduiding" in options:
+        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
+
+    informatieobject = client.create("enkelvoudiginformatieobject", data)
+    return informatieobject
+
+
+def create_attachment(
+    name: str, submission_attachment: SubmissionFileAttachment, options: dict
+) -> dict:
+    config = ZgwConfig.get_solo()
+    client = config.drc_service.build_client()
+    today = date.today().isoformat()
+
+    submission_attachment.content.seek(0)
+    base64_body = b64encode(submission_attachment.content.read()).decode()
+
+    data = {
+        "informatieobjecttype": options["informatieobjecttype"],
+        "bronorganisatie": options["organisatie_rsin"],
+        "creatiedatum": today,
+        "titel": name,
+        "auteur": "open-forms",
+        "taal": "nld",
+        "formaat": submission_attachment.content_type,
+        "inhoud": base64_body,
+        "status": "definitief",
+        "bestandsnaam": submission_attachment.get_display_name(),
+        "beschrijving": "Bijgevoegd document",
     }
     if "vertrouwelijkheidaanduiding" in options:
         data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]

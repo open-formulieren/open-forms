@@ -12,6 +12,7 @@ from openforms.registrations.constants import (
 )
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.service import (
+    create_attachment,
     create_document,
     create_rol,
     create_status,
@@ -88,6 +89,10 @@ class ZGWRegistration(BasePlugin):
 
         # for now create generic status
         status = create_status(zaak)
+
+        for attachment in submission.attachments:
+            attachment = create_attachment(submission.form.name, attachment, options)
+            relate_document(zaak["url"], attachment["url"])
 
         result = {
             "zaak": zaak,
