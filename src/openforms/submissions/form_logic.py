@@ -39,20 +39,21 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str,
 
     rules = FormLogic.objects.filter(form_step=step.form_step)
     for rule in rules:
-        trigger = jsonLogic(rule.json_logic_trigger, data)
-        for action in rule.actions:
-            if action["type"] == "value":
-                configuration = set_property_value(
-                    configuration, rule.component, "value", trigger
-                )
-            elif trigger and action["type"] == "property":
-                property_name = action["property"]["value"]
-                property_value = action["state"]
-                set_property_value(
-                    configuration, rule.component, property_name, property_value
-                )
-            elif trigger and action["type"] == "disable-next":
-                step._can_submit = False
+        if jsonLogic(rule.json_logic_trigger, data):
+            for action in rule.actions:
+                if action["type"] == "value":
+                    new_value = jsonLogic(action["value"], data)
+                    configuration = set_property_value(
+                        configuration, rule.component, "value", new_value
+                    )
+                elif action["type"] == "property":
+                    property_name = action["property"]["value"]
+                    property_value = action["state"]
+                    set_property_value(
+                        configuration, rule.component, property_name, property_value
+                    )
+                elif action["type"] == "disable-next":
+                    step._can_submit = False
 
     step._form_logic_evaluated = True
 

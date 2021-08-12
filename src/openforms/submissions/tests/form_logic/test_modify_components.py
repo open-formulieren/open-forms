@@ -106,12 +106,12 @@ class ComponentModificationTests(TestCase):
         FormLogicFactory.create(
             form_step=step2,
             component="step2_textfield1",
-            json_logic_trigger={"var": "step1_textfield1"},
+            json_logic_trigger={"==": [1, 1]},
             actions=[
                 {
                     "name": "Set extracted value",
                     "type": "value",
-                    "value": "step1_textfield1",
+                    "value": {"var": "step1_textfield1"},
                 }
             ],
         )
