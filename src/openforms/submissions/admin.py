@@ -42,16 +42,7 @@ class SubmissionPaymentInline(admin.StackedInline):
         "amount",
         "status",
     )
-    readonly_fields = (
-        "uuid",
-        "created",
-        "submission",
-        "plugin_id",
-        "form_url",
-        "order_id",
-        "amount",
-        "status",
-    )
+    readonly_fields = fields
 
     def has_add_permission(self, request, obj=None):
         return False

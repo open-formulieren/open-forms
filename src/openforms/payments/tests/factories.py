@@ -11,7 +11,7 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
     plugin_id = "demo"
     plugin_options = {"foo": 123}
     form_url = "http://test/form/url"
-    order_id = "order-1234"
+    order_id = factory.Sequence(lambda n: int(f"2020{n:05}"))
     amount = Decimal("10.00")
 
     class Meta:
@@ -25,6 +25,6 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
             plugin_options=options,
             submission__form__payment_backend=plugin_id,
             submission__form__payment_backend_options=options,
-            **kwargs
+            **kwargs,
         )
         return payment

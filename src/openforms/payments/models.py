@@ -1,13 +1,17 @@
+import re
 import uuid
 from decimal import Decimal
 
 from django.contrib.postgres.fields import JSONField
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 
 from openforms.payments.constants import PaymentStatus
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
+
+RE_INVOICE_NUMBER = re.compile(r"(?P<year>20\d{2})(?P<number>\d+)$")
 
 
 class SubmissionPaymentManager(models.Manager):
@@ -21,18 +25,36 @@ class SubmissionPaymentManager(models.Manager):
     ):
         assert isinstance(amount, Decimal)
 
-        # TODO use expression to grab number on database without race-condition
-        count = self.filter(submission=submission, plugin_id=plugin_id).count()
-        order_id = f"{str(submission.uuid)}-{count}"
-
-        return self.create(
+        # first create without order_id
+        payment = self.create(
             submission=submission,
             plugin_id=plugin_id,
             plugin_options=plugin_options,
             amount=amount,
             form_url=form_url,
-            order_id=order_id,
         )
+        # then update with a unique order_id
+        while True:
+            try:
+                with transaction.atomic():
+                    payment.order_id = self.get_next_order_id(payment)
+                    payment.save(update_fields=("order_id",))
+                    break
+            except IntegrityError:
+                # race condition on unique order_id
+                continue
+        return payment
+
+    def get_next_order_id(self, payment):
+        prefix = payment.created.year
+        agg = self.aggregate(Max("order_id"))
+        max_order_id = str(agg["order_id__max"] or "202000000")
+        match = RE_INVOICE_NUMBER.match(max_order_id)
+        if not match:
+            raise ValueError("Invalid invoice number for invoice %d", payment.pk)
+        max_number = int(match.group("number"))
+        next_number = "{:05d}".format(max_number + 1)
+        return int(f"{prefix}{next_number}")
 
 
 class SubmissionQuerySet(models.QuerySet):
@@ -54,10 +76,12 @@ class SubmissionPayment(models.Model):
         help_text=_("Copy of payment options at time of initializing payment."),
     )
     form_url = models.URLField(_("Form URL"), max_length=255)
-    order_id = models.CharField(
-        _("Order ID"), max_length=255, help_text=_("Unique tracking across backend")
+    order_id = models.BigIntegerField(
+        _("Order ID"),
+        unique=True,
+        null=True,
+        help_text=_("Unique tracking across backend"),
     )
-
     amount = models.DecimalField(
         _("payment amount"),
         max_digits=8,
@@ -73,9 +97,6 @@ class SubmissionPayment(models.Model):
         help_text=_("Status of the payment process in the configured backend."),
     )
     objects = SubmissionPaymentManager.from_queryset(SubmissionQuerySet)()
-
-    class Meta:
-        unique_together = (("submission", "plugin_id", "order_id"),)
 
     def __str__(self):
         return f"{self.uuid} {self.amount} '{self.get_status_display()}'"
