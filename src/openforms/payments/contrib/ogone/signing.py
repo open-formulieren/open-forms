@@ -70,6 +70,10 @@ class _HashMatcher:
         return False
 
 
+"""
+list of params from https://shared.ecom-psp.com/v2/docs/guides/e-Commerce/SHA-IN_params_24092019.txt
+via https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page
+"""
 is_hashable = _HashMatcher(
     [
         "ACCEPTANCE",

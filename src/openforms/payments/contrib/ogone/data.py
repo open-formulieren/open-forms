@@ -5,7 +5,9 @@ from typing import Optional, Sequence, Union
 @dataclasses.dataclass()
 class OgoneFeedbackParams:
     """
-    stripped from docs example form (might not be complete)
+    from docs 'Get transaction feedback':
+
+    https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page#eCommerce-get-transaction-feedback
     """
 
     # we'll always receive these
@@ -34,6 +36,12 @@ class OgoneFeedbackParams:
 class OgoneRequestParams:
     """
     stripped from docs example form (might not be complete)
+
+    to reproduce login on the backoffice: https://secure.ogone.com/Ncol/Test/Backoffice/
+    navigate to tab: 'Configuration' > 'Technical Information' > 'Test Info' >
+    follow 'Create a test payment with Ingenico e-Commerce in UTF-8'
+    then copy/strip the form at the end of the page, or add new fields from the list
+
     """
 
     # required
