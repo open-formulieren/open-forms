@@ -45,7 +45,7 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }
 };
 
 FormStepNavItem.propTypes = {
-    name: PropTypes.string.isRequired,
+    name: PropTypes.node.isRequired,
     active: PropTypes.bool.isRequired,
     onActivate: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,

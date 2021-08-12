@@ -57,7 +57,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
 
             <fieldset className="module aligned">
                 <h2>
-                    <FormattedMessage description="Form definition module title"defaultMessage="Form definition" />
+                    <FormattedMessage description="Form definition module title" defaultMessage="Form definition" />
                 </h2>
 
                 <FormRow>

@@ -50,7 +50,7 @@
     "originalDefault": "This form step requires a login, but no authentication backend has been specified."
   },
   "6PIG4q": {
-    "defaultMessage": "Authentication",
+    "defaultMessage": "Inlogopties",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
   },

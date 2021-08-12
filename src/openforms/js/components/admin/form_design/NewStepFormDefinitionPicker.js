@@ -88,6 +88,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                         required
                     >
                         <Select
+                            name="form-definition"
                             choices={formDefinitionChoices}
                             value={selectedFormDefinition}
                             onChange={onSelectChange}
@@ -97,7 +98,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
 
                 <SubmitRow
                     onSubmit={onFormDefinitionConfirmed}
-                    btnText={<FormattedMessage description="Form definition select confirm button" defaultMessage="Confirm" />}
+                    btnText={intl.formatMessage({description: 'Form definition select confirm button', defaultMessage: 'Confirm'})}
                     isDefault
                     preventDefault
                 />
