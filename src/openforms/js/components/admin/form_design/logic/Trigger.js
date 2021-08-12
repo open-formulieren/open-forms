@@ -7,6 +7,7 @@ import {ComponentsContext} from './Context';
 import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS } from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
+import OperandTypeSelection from './OperandTypeSelection';
 
 
 const OperatorSelection = ({selectedComponent, operator, onChange}) => {
@@ -40,34 +41,7 @@ OperatorSelection.propTypes = {
 };
 
 
-const OPERAND_TYPES = {
-    literal: 'value',
-    component: 'the field',
-};
-
-
-const OperandTypeSelection = ({operandType, onChange}) => {
-    const choices = Object.entries(OPERAND_TYPES);
-    return (
-        <Select
-            name="trigger.operandType"
-            choices={choices}
-            allowBlank
-            onChange={onChange}
-            value={operandType}
-        />
-    );
-};
-
-OperandTypeSelection.propTypes = {
-    operandType: PropTypes.oneOf(
-        [''].concat(Object.keys(OPERAND_TYPES))
-    ).isRequired,
-    onChange: PropTypes.func.isRequired,
-};
-
-
-const Trigger = ({ id }) => {
+const Trigger = ({ id, name, onChange }) => {
     const [triggerComponent, setTriggerComponent] = useState('');
     const [operator, setOperator] = useState('');
     const [compareValue, setCompareValue] = useState('');
@@ -150,7 +124,11 @@ const Trigger = ({ id }) => {
                 }
                 &nbsp;
                 { (triggerComponent && operator)
-                    ? (<OperandTypeSelection operandType={operandType} onChange={event => setOperandType(event.target.value)} /> )
+                    ? (<OperandTypeSelection
+                        name="trigger.operandType"
+                        operandType={operandType}
+                        onChange={event => setOperandType(event.target.value)}
+                    /> )
                     : null
                 }
                 &nbsp;
@@ -171,6 +149,8 @@ const Trigger = ({ id }) => {
 
 Trigger.propTypes = {
     id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 

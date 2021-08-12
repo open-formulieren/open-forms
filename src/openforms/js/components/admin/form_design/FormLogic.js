@@ -187,12 +187,6 @@ FormLogic.propTypes = {
 
 
 const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogicTrigger, actions, onChange, onDelete}) => {
-    const onChangeJsonFields = (event) => {
-        const jsonField = JSON.parse(event.target.value);
-        console.log(jsonField);
-        onChange({target: {name: event.target.name, value: jsonField}});
-    }
-
     const confirmDelete = (index) => {
         if(window.confirm('Are you sure you want to delete this rule?')){
             onDelete(index);
@@ -201,21 +195,17 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
     return (
         <div className="logic-rule">
 
-            <Trigger id="test" />
+            <Trigger
+                id="test"
+                name="jsonLogicTrigger"
+                onChange={onChange}
+            />
 
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
             </div>
             <div>
                 {/*
-                When the following logic evaluates to true
-                <TextArea
-                    name='jsonLogicTrigger'
-                    rows={7}
-                    cols={20}
-                    value={JSON.stringify(jsonLogicTrigger)}
-                    onChange={onChangeJsonFields}
-                />
                 update the field
                 <Select
                     name="component"
