@@ -40,7 +40,7 @@ class PluginListView(ListMixin, APIView):
         summary=_("Get the json schema of the plugins configuration options")
     ),
 )
-class PluginsConfigurationOptionsJsonSchemaView(RetrieveAPIView):
+class PluginsConfigurationOptionsView(RetrieveAPIView):
     """
     Get the json schema of the plugins configuration options
     """

@@ -2,16 +2,16 @@ from django.urls import path
 
 from .views import (
     AllAttributesListView,
-    PluginsConfigurationOptionsJsonSchemaView,
     PluginListView,
+    PluginsConfigurationOptionsView,
 )
 
 urlpatterns = [
     path("plugins", PluginListView.as_view(), name="registrations-plugin-list"),
     path(
         "plugins-configuration-options",
-        PluginsConfigurationOptionsJsonSchemaView.as_view(),
-        name="plugins-configuration-options-jsonschema-retrieve",
+        PluginsConfigurationOptionsView.as_view(),
+        name="plugins-configuration-options-retrieve",
     ),
     path(
         "attributes",
