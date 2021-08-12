@@ -41,8 +41,8 @@ OperatorSelection.propTypes = {
 
 
 const OPERAND_TYPES = {
-    literal: 'Enter value',
-    component: 'Select component',
+    literal: 'value',
+    component: 'the field',
 };
 
 
@@ -73,6 +73,7 @@ const Trigger = ({ id }) => {
     const [compareValue, setCompareValue] = useState('');
     const [operandType, setOperandType] = useState('');
     const [literalValue, setLiteralValue] = useState('');
+    const [componentValue, setComponentValue] = useState('');
 
     const allComponents = useContext(ComponentsContext);
     const componentType = allComponents[triggerComponent]?.type;
@@ -95,6 +96,22 @@ const Trigger = ({ id }) => {
             break;
         }
         case 'component': {
+            // filter components of the same type as the trigger component
+            const filterFunc = (comp) => {
+                return comp.type === componentType;
+            };
+            valueInput = (
+                <ComponentSelection
+                    name="trigger.componentValue"
+                    value={componentValue}
+                    onChange={event => {
+                        const {value: componentKey} = event.target;
+                        setComponentValue(componentKey);
+                        setCompareValue({"var": componentKey});
+                    }}
+                    filter={filterFunc}
+                />
+            );
             break;
         }
         case '': { // nothing selected yet
@@ -141,8 +158,8 @@ const Trigger = ({ id }) => {
                 }
             </div>
 
+            jsonLogic:
             <div style={{background: '#eee', border: 'dashed 1px #ccc', 'marginTop': '1em'}}>
-                jsonLogic:
                 <pre>{JSON.stringify(jsonLogic, null, 2)}</pre>
             </div>
 
