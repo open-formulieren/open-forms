@@ -82,6 +82,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         order_id = request.data.get("ORDERID")
         if not order_id:
             return HttpResponseBadRequest("missing ORDERID")
+
         payment = get_object_or_404(SubmissionPayment, remote_order_id=order_id)
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
@@ -102,6 +103,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             return
 
         new_status = OgoneStatus.as_payment_status(ogone_status)
-        if payment.status != new_status:
-            payment.status = new_status
-            payment.save()
+
+        # run this query as atomic update()
+        qs = SubmissionPayment.objects.filter(id=payment.id).select_for_update()
+        qs = qs.exclude(status__in=PaymentStatus.is_final)
+        qs = qs.exclude(status=new_status)
+        res = qs.update(status=new_status)
+
+        if res > 0:
+            payment.refresh_from_db()
