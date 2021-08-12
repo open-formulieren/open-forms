@@ -198,42 +198,11 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
     return (
         <div className="logic-rule">
 
-            <Trigger
-                id="test"
-                name="jsonLogicTrigger"
-                logic={jsonLogicTrigger}
-                onChange={onChange}
-            />
+            <Trigger name="jsonLogicTrigger"logic={jsonLogicTrigger} onChange={onChange} />
             <ActionSet actions={[]} />
 
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
-            </div>
-            <div>
-                {/*
-                update the field
-                <Select
-                    name="component"
-                    choices={EMPTY_CHOICE.concat(components.choices)}
-                    value={component}
-                    onChange={onChange}
-                />
-                of the form step
-                <Select
-                    name="formStep"
-                    choices={EMPTY_CHOICE.concat(formStepsChoices)}
-                    value={formStep}
-                    onChange={onChange}
-                />
-                with the following actions
-                <TextArea
-                    name='actions'
-                    rows={7}
-                    cols={20}
-                    value={JSON.stringify(actions)}
-                    onChange={onChangeJsonFields}
-                />
-                */}
             </div>
         </div>
     );

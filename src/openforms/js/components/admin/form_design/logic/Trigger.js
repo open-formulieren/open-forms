@@ -125,7 +125,7 @@ const reducer = (draft, action) => {
     }
 };
 
-const Trigger = ({ id, name, logic, onChange }) => {
+const Trigger = ({ name, logic, onChange }) => {
     // hooks
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const allComponents = useContext(ComponentsContext);
@@ -272,7 +272,6 @@ const Trigger = ({ id, name, logic, onChange }) => {
 };
 
 Trigger.propTypes = {
-    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
 };
