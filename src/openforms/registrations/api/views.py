@@ -40,9 +40,9 @@ class PluginListView(ListMixin, APIView):
         summary=_("Get the json schema of the plugins configuration options")
     ),
 )
-class PluginConfigurationOptionsJsonSchemaView(RetrieveAPIView):
+class PluginsConfigurationOptionsJsonSchemaView(RetrieveAPIView):
     """
-    Get the json schema of the plugin options
+    Get the json schema of the plugins configuration options
     """
 
     authentication_classes = (authentication.SessionAuthentication,)

@@ -119,7 +119,7 @@ class ResponseTests(APITestCase):
         self.assertEqual(response.json(), expected)
 
     def test_plugin_configuration_options(self):
-        endpoint = reverse("api:plugin-configuration-options-jsonschema-retrieve")
+        endpoint = reverse("api:plugins-configuration-options-jsonschema-retrieve")
 
         response = self.client.get(endpoint)
 

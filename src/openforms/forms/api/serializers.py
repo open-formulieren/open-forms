@@ -5,7 +5,6 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
 from openforms.products.api.serializers import ProductSerializer
-from openforms.registrations.registry import register
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
