@@ -122,9 +122,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         )
 
         info = plugin.start_payment(request, payment)
-        return Response(
-            self.serializer_class(instance=info, context={"request": request}).data
-        )
+        return Response(self.get_serializer(instance=info).data)
 
 
 @extend_schema(
