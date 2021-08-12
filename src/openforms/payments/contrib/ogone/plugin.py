@@ -39,7 +39,9 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         # decimal to cents
         amount_cents = round(payment.amount * 100)
 
-        merchant = get_object_or_404(OgoneMerchant, id=payment.options["merchant_id"])
+        merchant = get_object_or_404(
+            OgoneMerchant, id=payment.plugin_options["merchant_id"]
+        )
         client = OgoneClient(merchant)
 
         return_url = self.get_return_url(request, payment)
@@ -52,7 +54,9 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
     def handle_return(self, request, payment: SubmissionPayment):
         action = request.query_params.get(RETURN_ACTION_PARAM)
 
-        merchant = get_object_or_404(OgoneMerchant, id=payment.options["merchant_id"])
+        merchant = get_object_or_404(
+            OgoneMerchant, id=payment.plugin_options["merchant_id"]
+        )
         client = OgoneClient(merchant)
 
         try:
@@ -79,11 +83,13 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         if not order_id:
             return HttpResponseBadRequest("missing ORDERID")
         payment = get_object_or_404(SubmissionPayment, remote_order_id=order_id)
-        merchant = get_object_or_404(OgoneMerchant, id=payment.options["merchant_id"])
+        merchant = get_object_or_404(
+            OgoneMerchant, id=payment.plugin_options["merchant_id"]
+        )
         client = OgoneClient(merchant)
 
         try:
-            params = client.get_validated_params(request.DATA)
+            params = client.get_validated_params(request.data)
         except InvalidSignature:
             logger.warning(f"invalid SHASIGN for payment {payment}")
             return HttpResponseBadRequest("bad shasign")

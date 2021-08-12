@@ -117,6 +117,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         payment = SubmissionPayment.objects.create_for(
             submission,
             plugin_id,
+            submission.form.payment_backend_options,
             # TODO pass amount from form
             Decimal(10),
             form_url,

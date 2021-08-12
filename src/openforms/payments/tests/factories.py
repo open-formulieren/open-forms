@@ -9,6 +9,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
     plugin_id = "demo"
+    plugin_options = {"foo": 123}
     form_url = "http://test/form/url"
     order_id = "order-1234"
     amount = Decimal("10.00")
@@ -18,10 +19,12 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
 
     @classmethod
     def for_backend(cls, plugin_id, options=None, **kwargs):
+        options = options or {"non-empty": True}
         payment = SubmissionPaymentFactory.create(
             plugin_id=plugin_id,
+            plugin_options=options,
             submission__form__payment_backend=plugin_id,
-            submission__form__payment_backend_options=options or {"non-empty": True},
+            submission__form__payment_backend_options=options,
             **kwargs
         )
         return payment
