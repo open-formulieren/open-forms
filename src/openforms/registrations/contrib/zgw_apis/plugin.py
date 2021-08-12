@@ -22,7 +22,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
 from openforms.registrations.registry import register
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.utils.jsonschema.mixins import JsonSchemaSerializerMixin
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 

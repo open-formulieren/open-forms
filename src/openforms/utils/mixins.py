@@ -1,4 +1,4 @@
-from openforms.utils.jsonschema.convert import to_jsonschema
+from drf_jsonschema import to_jsonschema
 
 
 class JsonSchemaSerializerMixin:

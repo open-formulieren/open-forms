@@ -8,7 +8,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.utils.jsonschema.mixins import JsonSchemaSerializerMixin
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
 from ...registry import Registry

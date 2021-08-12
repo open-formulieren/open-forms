@@ -18,7 +18,7 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.utils.jsonschema.mixins import JsonSchemaSerializerMixin
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .models import StufZDSConfig
 

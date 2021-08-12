@@ -8,6 +8,10 @@
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+-e git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via
     #   -c requirements/ci.txt
@@ -286,6 +290,7 @@ django==2.2.24
     #   django-sendfile2
     #   django-silk
     #   djangorestframework
+    #   drf-jsonschema
     #   drf-nested-routers
     #   drf-spectacular
     #   mozilla-django-oidc
@@ -299,6 +304,7 @@ djangorestframework==3.12.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   drf-jsonschema
     #   drf-nested-routers
     #   drf-spectacular
 docutils==0.16
@@ -426,6 +432,7 @@ jsonschema==3.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   drf-jsonschema
     #   drf-spectacular
 kombu==4.6.11
     # via
@@ -657,6 +664,11 @@ requests==2.26.0
     #   requests-mock
     #   sphinx
     #   zgw-consumers
+rfc3987==1.3.8
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   drf-jsonschema
 self-certifi==1.0.0
     # via
     #   -c requirements/ci.txt
@@ -751,6 +763,11 @@ sqlparse==0.3.1
     #   django
     #   django-debug-toolbar
     #   django-silk
+strict-rfc3339==0.7
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   drf-jsonschema
 tablib[xlsx]==3.0.0
     # via
     #   -c requirements/ci.txt
