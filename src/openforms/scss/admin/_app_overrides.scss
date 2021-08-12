@@ -37,37 +37,47 @@
   .array-item {
     min-width: 170px;
     margin-bottom: 10px;
+    display: flex;
   }
 
-  .array-item-move-up,
-  .array-item-move-down,
-  .array-item-remove {
-    border: 1px solid $color_darkest;
+  .array-item-add {
+    text-align: left !important;
   }
 
   .row {
     flex-direction: column;
+    padding-left: 13px;
   }
 
   legend {
     font-size: 13px;
   }
 
+  .btn-danger {
+    color: unset;
+    background-color: unset;
+    border: unset;
+  }
+
   .glyphicon {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
+    font-weight: 900;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   .glyphicon-plus:before {
-    content: "\f067";
+    content: "Add another";
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: 13px;
   }
 
   .glyphicon-remove:before {
     content: "\f1f8";
+    font-weight: normal;
   }
 
   .glyphicon-arrow-down:before {
