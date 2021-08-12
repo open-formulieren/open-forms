@@ -64,9 +64,13 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         self.apply_status(payment, params.STATUS)
 
         form_url = furl(payment.form_url)
-        form_url.args["of_payment_status"] = payment.status
-        form_url.args["of_payment_id"] = str(payment.uuid)
-        form_url.args["of_payment_action"] = action or UserAction.unknown
+        form_url.args.update(
+            {
+                "of_payment_status": payment.status,
+                "of_payment_id": str(payment.uuid),
+                "of_payment_action": action or UserAction.unknown,
+            }
+        )
         return HttpResponseRedirect(form_url.url)
 
     def handle_webhook(self, request):
