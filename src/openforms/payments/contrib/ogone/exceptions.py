@@ -1,0 +1,2 @@
+class InvalidSignature(ValueError):
+    pass

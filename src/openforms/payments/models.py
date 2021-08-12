@@ -61,6 +61,12 @@ class SubmissionPayment(models.Model):
 
     objects = SubmissionPaymentManager.from_queryset(SubmissionQuerySet)()
 
+    class Meta:
+        unique_together = (("submission", "plugin_id", "order_id"),)
+
+    def __str__(self):
+        return f"{self.uuid} {self.amount} '{self.get_status_display()}'"
+
     @property
     def options(self):
         # TODO we should store a copy of this
@@ -69,6 +75,3 @@ class SubmissionPayment(models.Model):
     @property
     def form(self):
         return self.submission.form
-
-    class Meta:
-        unique_together = (("submission", "plugin_id", "order_id"),)

@@ -6,6 +6,7 @@ from openforms.payments.contrib.ogone.data import (
     OgoneFeedbackParams,
     OgoneRequestParams,
 )
+from openforms.payments.contrib.ogone.exceptions import InvalidSignature
 from openforms.payments.contrib.ogone.models import OgoneMerchant
 from openforms.payments.contrib.ogone.signing import calculate_shasign
 
@@ -71,5 +72,5 @@ class OgoneClient:
             self.merchant.hash_algorithm,
         )
         if sign != params.SHASIGN:
-            raise ValueError("shasign mismatch")
+            raise InvalidSignature("shasign mismatch")
         return params

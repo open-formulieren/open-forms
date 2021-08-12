@@ -12,7 +12,7 @@ def calculate_shasign(params, passphrase, hash_algo):
     https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page#SHASIGNCALCULATION
     """
     if hash_algo not in HashAlgorithm.values:
-        raise Exception(f"hashing algo not allowed: {hash_algo}")
+        raise ValueError(f"hashing algo not allowed: {hash_algo}")
 
     # only a subset of values is hashed
     pairs = extract_hashable_data(params)

@@ -1,20 +1,22 @@
-from dataclasses import asdict
+import logging
 
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 from furl import furl
-from rest_framework import serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 
 from openforms.payments.base import BasePlugin
 from openforms.payments.constants import PaymentStatus, UserAction
 from openforms.payments.contrib.ogone.client import OgoneClient
 from openforms.payments.contrib.ogone.constants import OgoneStatus
+from openforms.payments.contrib.ogone.exceptions import InvalidSignature
 from openforms.payments.contrib.ogone.models import OgoneMerchant
 from openforms.payments.models import SubmissionPayment
 from openforms.payments.registry import register
+
+logger = logging.getLogger(__name__)
 
 
 class OgoneOptionsSerializer(serializers.Serializer):
@@ -52,8 +54,8 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         try:
             params = client.get_validated_params(request.query_params)
-        except ValueError:
-            # TODO log this
+        except InvalidSignature:
+            logger.warning(f"invalid SHASIGN for payment {payment}")
             return HttpResponseBadRequest("bad shasign")
 
         self.apply_status(payment, params.STATUS)
@@ -75,7 +77,8 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         try:
             params = client.get_validated_params(request.DATA)
-        except ValueError:
+        except InvalidSignature:
+            logger.warning(f"invalid SHASIGN for payment {payment}")
             return HttpResponseBadRequest("bad shasign")
 
         self.apply_status(payment, params.STATUS)
