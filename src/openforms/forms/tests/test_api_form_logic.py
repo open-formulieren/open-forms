@@ -112,7 +112,7 @@ class FormLogicAPITests(APITestCase):
             },
         )
 
-        form_version_data = {
+        form_logic_data = {
             "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
             "component": "step1_textfield1",
             "json_logic_trigger": {
@@ -137,7 +137,7 @@ class FormLogicAPITests(APITestCase):
             request=HttpRequest(), username=user.username, password="test"
         )
         url = reverse("api:form-logics-list")
-        response = self.client.post(url, data=form_version_data)
+        response = self.client.post(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
@@ -148,6 +148,48 @@ class FormLogicAPITests(APITestCase):
         form_logic = form_logics_qs.get()
 
         self.assertEqual(step, form_logic.form_step)
+
+    def test_actions_is_a_list(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                    }
+                ]
+            },
+        )
+
+        form_logic_data = {
+            "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
+            "component": "step1_textfield1",
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "step1_textfield1"},
+                    "hide step 1",
+                ]
+            },
+            "actions": {
+                "name": "Hide element",
+                "type": "property",
+                "property": {
+                    "value": "hidden",
+                },
+                "state": True,
+            },
+        }
+
+        self.client.login(
+            request=HttpRequest(), username=user.username, password="test"
+        )
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_partial_update_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
