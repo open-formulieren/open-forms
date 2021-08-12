@@ -1,33 +1,80 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import Select from '../../forms/Select';
 import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
-import OperandTypeSelection from "./OperandTypeSelection";
+import OperandTypeSelection from './OperandTypeSelection';
+import {useImmerReducer} from 'use-immer';
+
+
+const initialState = {
+    actionType: '',
+    componentToChange: '',
+    componentValueSource: '',
+    componentProperty: '',
+    componentPropertyValue: '',
+    componentVariableValue: '',
+    componentLiteralValue: '',
+};
+
+const ACTION_SELECTION_ORDER = [
+    'actionType',
+    'componentToChange',
+    'componentValueSource',
+    'componentProperty',
+    'componentPropertyValue',
+    'componentVariableValue',
+    'componentLiteralValue',
+];
+
+
+const reducer = (draft, action) => {
+    switch(action.type) {
+        case 'ACTION_CHANGED': {
+            const {name, value} = action.payload;
+            draft[name] = value;
+
+            // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
+            const currentFieldIndex = ACTION_SELECTION_ORDER.indexOf(name);
+            const nextFieldNames = ACTION_SELECTION_ORDER.slice(currentFieldIndex + 1);
+            for (const name of nextFieldNames) {
+                draft[name] = initialState[name];
+            }
+            break;
+        }
+        default: {
+            throw new Error(`Unknown action type: ${action.type}`);
+        }
+    }
+};
+
 
 const Action = ({}) => {
-    const [actionType, setActionType] = useState('');
-    // componentToChange should change a field directly on the Rule and not the action
-    const [componentToChange, setComponentToChange] = useState('');
-    const [valueSource, setValueSource] = useState('');
-    const [componentProperty, setComponentProperty] = useState('');
-    const [componentPropertyValue, setComponentPropertyValue] = useState('');
-    const [componentValueSource, setComponentValueSource] = useState('');
-    const [componentValue, setComponentValue] = useState('');
-
+    const [state, dispatch] = useImmerReducer(reducer, initialState);
     const allComponents = useContext(ComponentsContext);
-    const componentType = allComponents[componentToChange]?.type;
+    const componentType = allComponents[state.componentToChange]?.type;
 
     const jsonAction = {
-        component: componentToChange,
+        component: state.componentToChange,
         action: {
-            type: actionType,
-            property: {value: componentProperty},
+            type: state.actionType,
+            property: {value: state.componentProperty},
             // The data in 'value' needs to be valid jsonLogic
-            value: componentValue || {var: componentValueSource},
-            state: componentPropertyValue,
+            value: state.componentLiteralValue || {var: state.componentVariableValue},
+            state: state.componentPropertyValue,
         }
+    };
+
+    const onActionChange = (event) => {
+        const {name, value} = event.target;
+        dispatch({
+            type: 'ACTION_CHANGED',
+            payload: {
+                name,
+                value
+            },
+        });
     };
 
     return (
@@ -38,65 +85,64 @@ const Action = ({}) => {
                 name="actionType"
                 choices={ACTION_TYPES}
                 allowBlank
-                onChange={event => setActionType(event.target.value)}
-                value={actionType}
+                onChange={onActionChange}
+                value={state.actionType}
             />
             &nbsp;
             {
-                ACTIONS_WITH_OPTIONS.includes(actionType) ?
+                ACTIONS_WITH_OPTIONS.includes(state.actionType) ?
                     <ComponentSelection
                         name="componentToChange"
-                        value={componentToChange}
-                        onChange={event => {
-                            setComponentToChange(event.target.value);
-                        }}
+                        value={state.componentToChange}
+                        onChange={onActionChange}
                     /> : null
             }
             {
-                actionType === 'property' ?
+                state.actionType === 'property' ?
                     <>
                         <Select
                             name="componentProperty"
                             choices={MODIFIABLE_PROPERTIES}
                             allowBlank
-                            onChange={event => setComponentProperty(event.target.value)}
-                            value={componentProperty}
+                            onChange={onActionChange}
+                            value={state.componentProperty}
                         />
                         &nbsp;
                         <Select
                             name="componentPropertyValue"
                             choices={PROPERTY_VALUES}
                             allowBlank
-                            onChange={event => setComponentPropertyValue(event.target.value)}
-                            value={componentPropertyValue}
+                            onChange={onActionChange}
+                            value={state.componentPropertyValue}
                         />
                     </> : null
             }
             {
-                actionType === 'value' ?
+                state.actionType === 'value' ?
                     <OperandTypeSelection
-                        name="actionValueSource"
-                        onChange={event => setValueSource(event.target.value)}
-                        operandType={valueSource}
+                        name="componentValueSource"
+                        onChange={onActionChange}
+                        operandType={state.componentValueSource}
                     /> : null
             }
             {
-                actionType === 'value' && valueSource === 'literal' ?
+                state.actionType === 'value' && state.componentValueSource === 'literal' ?
                     <LiteralValueInput
                         name="componentLiteralValue"
                         componentType={componentType}
-                        value={componentValue}
-                        onChange={event => setComponentValue(event.target.value)}
+                        value={state.componentLiteralValue}
+                        onChange={onActionChange}
                     /> : null
             }
             {
-                actionType === 'value' && valueSource === 'component' ?
+                state.actionType === 'value' && state.componentValueSource === 'component' ?
                     <ComponentSelection
-                        name="componentValueSource"
-                        value={componentValueSource}
+                        name="componentVariableValue"
+                        value={state.componentVariableValue}
                         onChange={event => {
-                            setComponentValue('');
-                            setComponentValueSource(event.target.value);
+                            const fakeEvent = {target: {name: 'componentLiteralValue', value: ''}};
+                            onActionChange(fakeEvent);
+                            onActionChange(event);
                         }}
                         filter={(comp) => (comp.type === componentType)}
                     /> : null
