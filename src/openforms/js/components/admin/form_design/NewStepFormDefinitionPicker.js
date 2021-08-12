@@ -1,5 +1,6 @@
 import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from '../FAIcon';
 import FormModal from '../FormModal';
@@ -12,6 +13,7 @@ import { getFormDefinitionChoices } from './utils';
 
 
 const NewStepFormDefinitionPicker = ({ onReplace }) => {
+    const intl = useIntl();
     const formDefinitions = useContext(FormDefinitionsContext);
     const formDefinitionChoices = getFormDefinitionChoices(formDefinitions);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +26,11 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
 
     const onFormDefinitionConfirmed = () => {
         if (!selectedFormDefinition) {
-            setValidationErrors(['Dit veld is verplicht.']);
+            const requiredError = intl.formatMessage({
+                description: 'Field required error',
+                defaultMessage: 'This field is required.',
+            });
+            setValidationErrors([requiredError]);
         } else {
             closeModal();
             onReplace(selectedFormDefinition);
@@ -40,31 +46,49 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
     return (
         <div className="tiles tiles--horizontal">
             <button type="button" className="tiles__tile" onClick={() => setIsModalOpen(true)}>
-                <FAIcon icon="recycle" extraClassname="fa-2x" title="Selecteer definitie" />
-                <span>Gebruik bestaande formulierdefinitie</span>
+                <FAIcon
+                    icon="recycle"
+                    extraClassname="fa-2x"
+                    title={intl.formatMessage({description: 'select definition icon title', defaultMessage: 'Select definition'})}
+                />
+                <span>
+                    <FormattedMessage
+                        description="Select form definition tile"
+                        defaultMessage="Select existing form definition" />
+                </span>
             </button>
 
             <span className="tiles__separator">&bull;</span>
 
             <button type="button" className="tiles__tile" onClick={() => {onReplace('')}}>
-                <FAIcon icon="pencil-square-o" extraClassname="fa-2x" title="Maak definitie" />
-                <span>Maak een nieuwe formulierdefinitie</span>
+                <FAIcon
+                    icon="pencil-square-o"
+                    extraClassname="fa-2x"
+                    title={intl.formatMessage({description: 'create form definition icon title', defaultMessage: 'Create definition'})}
+                />
+                <span>
+                    <FormattedMessage
+                        description="Create form definition tile"
+                        defaultMessage="Create a new form definition" />
+                </span>
             </button>
 
             <FormModal
                 isOpen={isModalOpen}
                 closeModal={closeModal}
-                title="Gebruik bestaande formulierdefinitie"
+                title={<FormattedMessage
+                        description="Form definition selection modal title"
+                        defaultMessage="Use existing form definition" />}
             >
                 <FormRow>
                     <Field
                         name="form-definition"
-                        label="Selecteer formulierdefinitie"
+                        label={<FormattedMessage description="Form definition select label" defaultMessage="Select form definition" />}
                         errors={validationErrors}
                         required
                     >
                         <Select
-                            name="Form definition"
+                            name="form-definition"
                             choices={formDefinitionChoices}
                             value={selectedFormDefinition}
                             onChange={onSelectChange}
@@ -72,7 +96,12 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                     </Field>
                 </FormRow>
 
-                <SubmitRow onSubmit={onFormDefinitionConfirmed} btnText="Bevestigen" isDefault preventDefault />
+                <SubmitRow
+                    onSubmit={onFormDefinitionConfirmed}
+                    btnText={intl.formatMessage({description: 'Form definition select confirm button', defaultMessage: 'Confirm'})}
+                    isDefault
+                    preventDefault
+                />
             </FormModal>
 
         </div>

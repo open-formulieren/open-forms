@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import {FormattedMessage} from 'react-intl';
 
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
@@ -40,7 +41,6 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDe
                 { activeStep
                     ? (
                         <FormStep
-                            title={`Stap ${activeStepIndex+1}`}
                             data={activeStep}
                             onEdit={onEdit.bind(null, activeStepIndex)}
                             onFieldChange={onFieldChange.bind(null, activeStepIndex)}
@@ -49,7 +49,13 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDe
                             errors={errors.length ? errors[activeStepIndex] : {}}
                         />
                     )
-                    : 'Select a step to view or modify.' }
+                    : (
+                        <FormattedMessage
+                            defaultMessage="Select a step to view or modify."
+                            description="No-active-step-selected notice"
+                        />
+                    )
+                }
 
             </div>
         </section>

@@ -1,7 +1,8 @@
-import React, {useContext} from "react";
-import PropTypes from "prop-types";
+import React, {useContext} from 'react';
+import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
-import {PluginsContext} from "./Context";
+import {PluginsContext} from './Context';
 
 
 const PluginWarning = ({loginRequired, configuration}) => {
@@ -35,8 +36,20 @@ const PluginWarning = ({loginRequired, configuration}) => {
                 }
 
                 if ( !pluginProvidesAttribute ) {
-                    warnings.push(`Component "${configuration.label}" uses a prefill that requires the "${requiredAuthAttribute}"
-                    attribute. Please select an authentication plugin that provides this attribute.`);
+                    const warning = (
+                        <FormattedMessage
+                            description="Prefill plugin requires unavailable auth attribute warning"
+                            defaultMessage={
+                                "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. \
+                                Please select an authentication plugin that provides this attribute."
+                            }
+                            values={{
+                                label: configuration.label,
+                                requiredAuthAttribute
+                            }}
+                        />
+                    );
+                    warnings.push(warning);
                 }
             }
         }
@@ -44,7 +57,11 @@ const PluginWarning = ({loginRequired, configuration}) => {
 
     const checkLoginRequired = (loginRequired) => {
         if (loginRequired && selectedAuthPlugins.length === 0) {
-            warnings.push('This form step requires a login, but no authentication backend has been specified.');
+            warnings.push(
+                <FormattedMessage
+                    description="No authentication backend selected warning."
+                    defaultMessage="This form step requires a login, but no authentication backend has been specified." />
+            );
         }
     };
 
@@ -54,8 +71,8 @@ const PluginWarning = ({loginRequired, configuration}) => {
     if ( warnings.length > 0 ) {
      const formattedWarnings = warnings.map((item, index) => {
          return (
-             <li key={index} className="warning" >
-                 {item}
+            <li key={index} className="warning" >
+                {item}
             </li>
          )
      })

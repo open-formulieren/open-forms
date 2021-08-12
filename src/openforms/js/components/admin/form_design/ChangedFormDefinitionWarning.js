@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import Modal from '../Modal';
 
@@ -25,8 +26,17 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
 
             <ul className="messagelist">
                 <li className="warning">
-                    Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft
-                    effect op <a href="#" onClick={onShowModal}>{affectedForms.length} formulier(en)</a>.
+                    <FormattedMessage
+                        description="Warning when modifying existing form definitions"
+                        defaultMessage="You are modifying an existing form definition! This change affects <link>{count, plural,
+                            one {# form}
+                            other {# forms}
+                        }</link>"
+                        values={{
+                            count: affectedForms.length,
+                            link: (chunks) => (<a href="#" onClick={onShowModal}>{chunks}</a>)
+                        }}
+                    />
                 </li>
             </ul>
         </>

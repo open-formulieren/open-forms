@@ -27,7 +27,7 @@ const Modal = ({ isOpen=false, title='', closeModal, children, contentModifiers=
 
 Modal.propTypes = {
     isOpen: PropTypes.bool,
-    title: PropTypes.string,
+    title: PropTypes.node,
     closeModal: PropTypes.func.isRequired,
     children: PropTypes.node,
     contentModifiers: PropTypes.arrayOf(PropTypes.string),

@@ -11,6 +11,20 @@
       "value": "Literals"
     }
   ],
+  "0ZtMje": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete the step "
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": "?"
+    }
+  ],
   "1GyseX": [
     {
       "type": 0,
@@ -33,6 +47,24 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "5P+YgL": [
+    {
+      "type": 0,
+      "value": "Add step"
+    }
+  ],
+  "5zieWh": [
+    {
+      "type": 0,
+      "value": "Name of the form definition used in this form step"
+    }
+  ],
+  "6IAwkJ": [
+    {
+      "type": 0,
+      "value": "This form step requires a login, but no authentication backend has been specified."
     }
   ],
   "6PIG4q": [
@@ -65,6 +97,60 @@
       "value": "Unique identifier for the form"
     }
   ],
+  "7X6yT4": [
+    {
+      "type": 0,
+      "value": "You are modifying an existing form definition! This change affects "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " form"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " forms"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    }
+  ],
+  "7YqZOp": [
+    {
+      "type": 0,
+      "value": "Next text"
+    }
+  ],
+  "8LLxRg": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -75,6 +161,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+    }
+  ],
+  "AtBVAV": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "BStu9Z": [
@@ -101,6 +193,12 @@
       "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
+  "DGpAyT": [
+    {
+      "type": 0,
+      "value": "Move down"
+    }
+  ],
   "EtAvFF": [
     {
       "type": 0,
@@ -111,6 +209,12 @@
     {
       "type": 0,
       "value": "Whether the step progression should be displayed in the UI or not."
+    }
+  ],
+  "GIdTgB": [
+    {
+      "type": 0,
+      "value": "Use existing form definition"
     }
   ],
   "GWkSOd": [
@@ -137,10 +241,28 @@
       "value": "Slug of the form, used in URLs"
     }
   ],
+  "I3zyib": [
+    {
+      "type": 0,
+      "value": "Select form definition"
+    }
+  ],
+  "Iv+lBL": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Name/title of the form"
+    }
+  ],
+  "KUXH/H": [
+    {
+      "type": 0,
+      "value": "The form step below is invalid."
     }
   ],
   "LNeqFF": [
@@ -161,6 +283,32 @@
       "value": "Registration"
     }
   ],
+  "PwUKIe": [
+    {
+      "type": 0,
+      "value": "(provides "
+    },
+    {
+      "type": 1,
+      "value": "attrs"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "QDBI2H": [
+    {
+      "type": 0,
+      "value": "Select existing form definition"
+    }
+  ],
+  "QLTh2N": [
+    {
+      "type": 0,
+      "value": "Save text"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -177,6 +325,64 @@
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "VQYmOD": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attribute. Please select an authentication plugin that provides this attribute."
+    }
+  ],
+  "Y5A1Tn": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "ZICfus": [
+    {
+      "type": 0,
+      "value": "Previous text"
+    }
+  ],
+  "a9RqmQ": [
+    {
+      "type": 0,
+      "value": "Slug of the form definition used in this form step"
+    }
+  ],
+  "aXJpiI": [
+    {
+      "type": 0,
+      "value": "This field is required."
+    }
+  ],
+  "aXg4YH": [
+    {
+      "type": 0,
+      "value": "Login required?"
+    }
+  ],
+  "bzVhb6": [
+    {
+      "type": 0,
+      "value": "Move up"
     }
   ],
   "d45v2X": [
@@ -203,10 +409,32 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "h1EURI": [
+    {
+      "type": 0,
+      "value": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
   "hWRRHx": [
     {
       "type": 0,
       "value": "Form design"
+    }
+  ],
+  "ixiVhj": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " [new]"
+    }
+  ],
+  "jARYB7": [
+    {
+      "type": 0,
+      "value": "Form definition"
     }
   ],
   "mOjKcm": [
@@ -233,16 +461,46 @@
       "value": "Select registration backend"
     }
   ],
+  "poZZD9": [
+    {
+      "type": 0,
+      "value": "Step name"
+    }
+  ],
   "qo1UbS": [
     {
       "type": 0,
       "value": "Export"
     }
   ],
+  "qzISfx": [
+    {
+      "type": 0,
+      "value": "Step slug"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Change form"
+    }
+  ],
+  "uBO/Al": [
+    {
+      "type": 0,
+      "value": "Select a step to view or modify."
+    }
+  ],
+  "uleYj3": [
+    {
+      "type": 0,
+      "value": "History"
+    }
+  ],
+  "vQME+l": [
+    {
+      "type": 0,
+      "value": "Create a new form definition"
     }
   ],
   "viEfGU": [
@@ -255,6 +513,18 @@
     {
       "type": 0,
       "value": "Submission confirmation template"
+    }
+  ],
+  "xcp+LU": [
+    {
+      "type": 0,
+      "value": "Create definition"
+    }
+  ],
+  "yCogwi": [
+    {
+      "type": 0,
+      "value": "Select definition"
     }
   ]
 }

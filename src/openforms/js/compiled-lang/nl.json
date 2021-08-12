@@ -11,6 +11,20 @@
       "value": "Knopteksten"
     }
   ],
+  "0ZtMje": [
+    {
+      "type": 0,
+      "value": "Ben je zeker dat je de stap "
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": " wil verwijderen?"
+    }
+  ],
   "1GyseX": [
     {
       "type": 0,
@@ -33,6 +47,24 @@
     {
       "type": 0,
       "value": "Naam"
+    }
+  ],
+  "5P+YgL": [
+    {
+      "type": 0,
+      "value": "Stap toevoegen"
+    }
+  ],
+  "5zieWh": [
+    {
+      "type": 0,
+      "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
+    }
+  ],
+  "6IAwkJ": [
+    {
+      "type": 0,
+      "value": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier."
     }
   ],
   "6PIG4q": [
@@ -65,6 +97,64 @@
       "value": "Globaal uniek ID voor het formulier"
     }
   ],
+  "7X6yT4": [
+    {
+      "type": 0,
+      "value": "Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " formulier"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " formulieren"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "7YqZOp": [
+    {
+      "type": 0,
+      "value": "'Volgende' tekst"
+    }
+  ],
+  "8LLxRg": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -75,6 +165,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "AtBVAV": [
+    {
+      "type": 0,
+      "value": "Bevestigen"
     }
   ],
   "BStu9Z": [
@@ -98,7 +194,13 @@
   "CiaAYL": [
     {
       "type": 0,
-      "value": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier."
+      "value": "Select the allowed authentication plugins to log in at the start of the form."
+    }
+  ],
+  "DGpAyT": [
+    {
+      "type": 0,
+      "value": "Omlaag"
     }
   ],
   "EtAvFF": [
@@ -111,6 +213,12 @@
     {
       "type": 0,
       "value": "Geef de voortgang in de formulierstappen wel of niet weer."
+    }
+  ],
+  "GIdTgB": [
+    {
+      "type": 0,
+      "value": "Gebruik bestaande formulierdefinitie"
     }
   ],
   "GWkSOd": [
@@ -137,10 +245,28 @@
       "value": "URL-deel van het formulier."
     }
   ],
+  "I3zyib": [
+    {
+      "type": 0,
+      "value": "Selecteer formulierdefinitie"
+    }
+  ],
+  "Iv+lBL": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Naam (of titel) van het formulier."
+    }
+  ],
+  "KUXH/H": [
+    {
+      "type": 0,
+      "value": "De onderstaande formulierdefinitie bevat fouten."
     }
   ],
   "LNeqFF": [
@@ -161,6 +287,32 @@
       "value": "Registratie"
     }
   ],
+  "PwUKIe": [
+    {
+      "type": 0,
+      "value": "(biedt "
+    },
+    {
+      "type": 1,
+      "value": "attrs"
+    },
+    {
+      "type": 0,
+      "value": " aan)"
+    }
+  ],
+  "QDBI2H": [
+    {
+      "type": 0,
+      "value": "Selecteer een bestaande formulierdefinitie"
+    }
+  ],
+  "QLTh2N": [
+    {
+      "type": 0,
+      "value": "'Opslaan' tekst"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -177,6 +329,64 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "VQYmOD": [
+    {
+      "type": 0,
+      "value": "De component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" gebruikt een prefill die het \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
+    }
+  ],
+  "Y5A1Tn": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
+    }
+  ],
+  "ZICfus": [
+    {
+      "type": 0,
+      "value": "'Vorige' tekst"
+    }
+  ],
+  "a9RqmQ": [
+    {
+      "type": 0,
+      "value": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf."
+    }
+  ],
+  "aXJpiI": [
+    {
+      "type": 0,
+      "value": "Dit veld is verplicht."
+    }
+  ],
+  "aXg4YH": [
+    {
+      "type": 0,
+      "value": "Inloggen vereist?"
+    }
+  ],
+  "bzVhb6": [
+    {
+      "type": 0,
+      "value": "Omhoog"
     }
   ],
   "d45v2X": [
@@ -203,10 +413,32 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "h1EURI": [
+    {
+      "type": 0,
+      "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
   "hWRRHx": [
     {
       "type": 0,
       "value": "Formulierontwerp"
+    }
+  ],
+  "ixiVhj": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " [nieuw]"
+    }
+  ],
+  "jARYB7": [
+    {
+      "type": 0,
+      "value": "(Herbruikbare) stapgegevens"
     }
   ],
   "mOjKcm": [
@@ -233,16 +465,46 @@
       "value": "Registratiemethode"
     }
   ],
+  "poZZD9": [
+    {
+      "type": 0,
+      "value": "Naam"
+    }
+  ],
   "qo1UbS": [
     {
       "type": 0,
       "value": "Exporteren"
     }
   ],
+  "qzISfx": [
+    {
+      "type": 0,
+      "value": "URL-deel"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "uBO/Al": [
+    {
+      "type": 0,
+      "value": "Kies een stap om te bekijken of aan te passen."
+    }
+  ],
+  "uleYj3": [
+    {
+      "type": 0,
+      "value": "Geschiedenis"
+    }
+  ],
+  "vQME+l": [
+    {
+      "type": 0,
+      "value": "Maak een nieuwe formulierdefinitie"
     }
   ],
   "viEfGU": [
@@ -255,6 +517,18 @@
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
+    }
+  ],
+  "xcp+LU": [
+    {
+      "type": 0,
+      "value": "Formulierdefinitie aanmaken"
+    }
+  ],
+  "yCogwi": [
+    {
+      "type": 0,
+      "value": "Formulierdefinitie selecteren"
     }
   ]
 }

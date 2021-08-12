@@ -19,7 +19,7 @@ const FormModal = ({ isOpen=false, title, closeModal, children }) => (
 
 
 FormModal.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.node.isRequired,
     isOpen: PropTypes.bool,
     closeModal: PropTypes.func.isRequired,
     children: PropTypes.node,

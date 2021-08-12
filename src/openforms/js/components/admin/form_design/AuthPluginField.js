@@ -8,8 +8,19 @@ import Loader from '../Loader';
 
 const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
     const authCheckboxes = Object.entries(availableAuthPlugins).map(([pluginId, plugin]) => {
-        const providedAttributes = `(provides ${plugin.providesAuth.join(', ')})`;
-        const label = `${plugin.label} ${plugin.providesAuth.length > 0 ? providedAttributes : ''}`;
+        const providedAttributes = (
+            <FormattedMessage
+                description="Auth plugin provided attributes suffix"
+                defaultMessage="(provides {attrs})"
+                values={{attrs: plugin.providesAuth.join(', ')}}
+            />
+        );
+        const label = (
+            <>
+                {plugin.label}
+                {plugin.providesAuth.length ? (<>{' '}{providedAttributes}</>) : null}
+            </>
+        );
 
         return (
             <li key={pluginId}>

@@ -1,174 +1,382 @@
 {
   "+hAGg7": {
     "defaultMessage": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is",
-    "description": "Form maintenance mode field help text"
+    "description": "Form maintenance mode field help text",
+    "originalDefault": "Users will not be able to start the form if it is in maintenance mode."
   },
   "0RXE97": {
     "defaultMessage": "Knopteksten",
-    "description": "Form literals tab title"
+    "description": "Form literals tab title",
+    "originalDefault": "Literals"
+  },
+  "0ZtMje": {
+    "defaultMessage": "Ben je zeker dat je de stap {step} wil verwijderen?",
+    "description": "Step delete confirmation",
+    "originalDefault": "Are you sure you want to delete the step {step}?"
   },
   "1GyseX": {
     "defaultMessage": "Inhoud bevestigingspagina",
-    "description": "Confirmation template label"
+    "description": "Confirmation template label",
+    "originalDefault": "Submission page content"
   },
   "294MCM": {
     "defaultMessage": "Verwijderd",
-    "description": "Form deleted field label"
+    "description": "Form deleted field label",
+    "originalDefault": "Is deleted"
   },
   "2d5RfI": {
     "defaultMessage": "Opties",
-    "description": "Registration backend options label"
+    "description": "Registration backend options label",
+    "originalDefault": "Registration backend options"
   },
   "5/xPX6": {
     "defaultMessage": "Naam",
-    "description": "Form name field label"
+    "description": "Form name field label",
+    "originalDefault": "Name"
+  },
+  "5P+YgL": {
+    "defaultMessage": "Stap toevoegen",
+    "description": "add step button",
+    "originalDefault": "Add step"
+  },
+  "5zieWh": {
+    "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
+    "description": "Form step name field help text",
+    "originalDefault": "Name of the form definition used in this form step"
+  },
+  "6IAwkJ": {
+    "defaultMessage": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier.",
+    "description": "No authentication backend selected warning.",
+    "originalDefault": "This form step requires a login, but no authentication backend has been specified."
   },
   "6PIG4q": {
     "defaultMessage": "Inlogopties",
-    "description": "Auth plugin field label"
+    "description": "Auth plugin field label",
+    "originalDefault": "Authentication"
   },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
-    "description": "literals.previousText form label"
+    "description": "literals.previousText form label",
+    "originalDefault": "Previous text"
   },
   "7F64bK": {
     "defaultMessage": "Formulieren die als 'verwijderd' gemarkeerd zijn worden op termijn uit de database verwijderd.",
-    "description": "Form deleted field help text"
+    "description": "Form deleted field help text",
+    "originalDefault": "Whether the form is (soft) deleted"
   },
   "7JMcZW": {
     "defaultMessage": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken.",
-    "description": "literals.beginText help text"
+    "description": "literals.beginText help text",
+    "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
   },
   "7RVZYq": {
     "defaultMessage": "Globaal uniek ID voor het formulier",
-    "description": "Form ID field help text"
+    "description": "Form ID field help text",
+    "originalDefault": "Unique identifier for the form"
+  },
+  "7X6yT4": {
+    "defaultMessage": "Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op <link>{count, plural, one {# formulier} other {# formulieren} }</link>.",
+    "description": "Warning when modifying existing form definitions",
+    "originalDefault": "You are modifying an existing form definition! This change affects <link>{count, plural, one {# form} other {# forms} }</link>"
+  },
+  "7YqZOp": {
+    "defaultMessage": "'Volgende' tekst",
+    "description": "Form step next text label",
+    "originalDefault": "Next text"
+  },
+  "8LLxRg": {
+    "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step save text field help text",
+    "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
   "9bGp7h": {
     "defaultMessage": "Actief",
-    "description": "Form active field label"
+    "description": "Form active field label",
+    "originalDefault": "Active"
   },
   "AUADgz": {
     "defaultMessage": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken.",
-    "description": "literals.changeText help text"
+    "description": "literals.changeText help text",
+    "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+  },
+  "AtBVAV": {
+    "defaultMessage": "Bevestigen",
+    "description": "Form definition select confirm button",
+    "originalDefault": "Confirm"
   },
   "BStu9Z": {
     "defaultMessage": "Formulier",
-    "description": "Form fields tab title"
+    "description": "Form fields tab title",
+    "originalDefault": "Form"
   },
   "CXKQZZ": {
     "defaultMessage": "Bevestiging",
-    "description": "Form confirmation options tab title"
+    "description": "Form confirmation options tab title",
+    "originalDefault": "Confirmation"
   },
   "CXwWdu": {
     "defaultMessage": "Indien het formulier gedeactiveerd is, dan kan het niet gestart worden.",
-    "description": "Form active field help text"
+    "description": "Form active field help text",
+    "originalDefault": "Whether the form is active or not. Deactivated forms cannot be started."
   },
   "CiaAYL": {
-    "defaultMessage": "Selecteer de mogelijke authenticatieplugins om in te loggen bij de start van het formulier.",
-    "description": "Auth plugin field help text"
+    "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
+    "description": "Auth plugin field help text",
+    "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
+  },
+  "DGpAyT": {
+    "defaultMessage": "Omlaag",
+    "description": "Move down icon title",
+    "originalDefault": "Move down"
   },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
-    "description": "Copy form button title"
+    "description": "Copy form button title",
+    "originalDefault": "Duplicate this form"
   },
   "G2rpx2": {
     "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
-    "description": "Progress indicator help text"
+    "description": "Progress indicator help text",
+    "originalDefault": "Whether the step progression should be displayed in the UI or not."
+  },
+  "GIdTgB": {
+    "defaultMessage": "Gebruik bestaande formulierdefinitie",
+    "description": "Form definition selection modal title",
+    "originalDefault": "Use existing form definition"
   },
   "GWkSOd": {
     "defaultMessage": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren.",
-    "description": "Form canSubmit field help text"
+    "description": "Form canSubmit field help text",
+    "originalDefault": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
   },
   "GfH2yX": {
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
-    "description": "literals.confirmText help text"
+    "description": "literals.confirmText help text",
+    "originalDefault": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
   },
   "H6VxhG": {
     "defaultMessage": "Onderhoudsmodus",
-    "description": "Form maintenance mode field label"
+    "description": "Form maintenance mode field label",
+    "originalDefault": "Maintenance mode"
   },
   "HXE3Mm": {
     "defaultMessage": "URL-deel van het formulier.",
-    "description": "Form slug field help text"
+    "description": "Form slug field help text",
+    "originalDefault": "Slug of the form, used in URLs"
+  },
+  "I3zyib": {
+    "defaultMessage": "Selecteer formulierdefinitie",
+    "description": "Form definition select label",
+    "originalDefault": "Select form definition"
+  },
+  "Iv+lBL": {
+    "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step next text field help text",
+    "originalDefault": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
   },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
-    "description": "Form name field help text"
+    "description": "Form name field help text",
+    "originalDefault": "Name/title of the form"
+  },
+  "KUXH/H": {
+    "defaultMessage": "De onderstaande formulierdefinitie bevat fouten.",
+    "description": "Invalid form step error",
+    "originalDefault": "The form step below is invalid."
   },
   "LNeqFF": {
     "defaultMessage": "Kopiëren",
-    "description": "Copy form button"
+    "description": "Copy form button",
+    "originalDefault": "Copy"
   },
   "M1L9/1": {
     "defaultMessage": "'Wijzigen' tekst",
-    "description": "literals.changeText form label"
+    "description": "literals.changeText form label",
+    "originalDefault": "Change text"
   },
   "OFAJVW": {
     "defaultMessage": "Registratie",
-    "description": "Form registration options tab title"
+    "description": "Form registration options tab title",
+    "originalDefault": "Registration"
+  },
+  "PwUKIe": {
+    "defaultMessage": "(biedt {attrs} aan)",
+    "description": "Auth plugin provided attributes suffix",
+    "originalDefault": "(provides {attrs})"
+  },
+  "QDBI2H": {
+    "defaultMessage": "Selecteer een bestaande formulierdefinitie",
+    "description": "Select form definition tile",
+    "originalDefault": "Select existing form definition"
+  },
+  "QLTh2N": {
+    "defaultMessage": "'Opslaan' tekst",
+    "description": "Form step save text label",
+    "originalDefault": "Save text"
   },
   "TCQic2": {
     "defaultMessage": "'Bevestigen' tekst",
-    "description": "literals.confirmText form label"
+    "description": "literals.confirmText form label",
+    "originalDefault": "Confirm text"
   },
   "TF+tAc": {
     "defaultMessage": "Uniek ID",
-    "description": "Form ID field label"
+    "description": "Form ID field label",
+    "originalDefault": "ID"
   },
   "TXwGu1": {
     "defaultMessage": "URL-deel",
-    "description": "Form slug field label"
+    "description": "Form slug field label",
+    "originalDefault": "Slug"
+  },
+  "VQYmOD": {
+    "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
+  },
+  "Y5A1Tn": {
+    "defaultMessage": "Verwijderen",
+    "description": "Delete step icon title",
+    "originalDefault": "Delete"
+  },
+  "ZICfus": {
+    "defaultMessage": "'Vorige' tekst",
+    "description": "Form step previous text label",
+    "originalDefault": "Previous text"
+  },
+  "a9RqmQ": {
+    "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
+    "description": "Form step slug field help text",
+    "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aXJpiI": {
+    "defaultMessage": "Dit veld is verplicht.",
+    "description": "Field required error",
+    "originalDefault": "This field is required."
+  },
+  "aXg4YH": {
+    "defaultMessage": "Inloggen vereist?",
+    "description": "Form step login required label",
+    "originalDefault": "Login required?"
+  },
+  "bzVhb6": {
+    "defaultMessage": "Omhoog",
+    "description": "Move up icon title",
+    "originalDefault": "Move up"
   },
   "d45v2X": {
     "defaultMessage": "Exporteer dit formulier",
-    "description": "Export form button title"
+    "description": "Export form button title",
+    "originalDefault": "Export this form"
   },
   "deoN5r": {
     "defaultMessage": "Toon voortang",
-    "description": "Progress indicator field label"
+    "description": "Progress indicator field label",
+    "originalDefault": "Show progress indicator"
   },
   "f590Rb": {
     "defaultMessage": "'Start' tekst",
-    "description": "literals.beginText form label"
+    "description": "literals.beginText form label",
+    "originalDefault": "Begin text"
   },
   "gGNIdG": {
     "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
-    "description": "literals.previousText help text"
+    "description": "literals.previousText help text",
+    "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "h1EURI": {
+    "defaultMessage": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken.",
+    "description": "Form step previous text field help text",
+    "originalDefault": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
   },
   "hWRRHx": {
     "defaultMessage": "Formulierontwerp",
-    "description": "Form design/editor fieldset title"
+    "description": "Form design/editor fieldset title",
+    "originalDefault": "Form design"
+  },
+  "ixiVhj": {
+    "defaultMessage": "{name} [nieuw]",
+    "description": "form step label in nav",
+    "originalDefault": "{name} [new]"
+  },
+  "jARYB7": {
+    "defaultMessage": "(Herbruikbare) stapgegevens",
+    "description": "Form definition module title",
+    "originalDefault": "Form definition"
   },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",
-    "description": "Form design tab title"
+    "description": "Form design tab title",
+    "originalDefault": "Steps and fields"
   },
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
-    "description": "Generic error message"
+    "description": "Generic error message",
+    "originalDefault": "The form is invalid. Please correct the errors below."
   },
   "pd8iHF": {
     "defaultMessage": "Inzenden mogelijk",
-    "description": "Form canSubmit field label"
+    "description": "Form canSubmit field label",
+    "originalDefault": "Submit button enabled"
   },
   "piUWzT": {
     "defaultMessage": "Registratiemethode",
-    "description": "Registration backend label"
+    "description": "Registration backend label",
+    "originalDefault": "Select registration backend"
+  },
+  "poZZD9": {
+    "defaultMessage": "Naam",
+    "description": "Form step name label",
+    "originalDefault": "Step name"
   },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
-    "description": "Export form button"
+    "description": "Export form button",
+    "originalDefault": "Export"
+  },
+  "qzISfx": {
+    "defaultMessage": "URL-deel",
+    "description": "Form step slug label",
+    "originalDefault": "Step slug"
   },
   "tLL2x4": {
     "defaultMessage": "Formulier configureren",
-    "description": "Change form page title"
+    "description": "Change form page title",
+    "originalDefault": "Change form"
+  },
+  "uBO/Al": {
+    "defaultMessage": "Kies een stap om te bekijken of aan te passen.",
+    "description": "No-active-step-selected notice",
+    "originalDefault": "Select a step to view or modify."
+  },
+  "uleYj3": {
+    "defaultMessage": "Geschiedenis",
+    "description": "History link button",
+    "originalDefault": "History"
+  },
+  "vQME+l": {
+    "defaultMessage": "Maak een nieuwe formulierdefinitie",
+    "description": "Create form definition tile",
+    "originalDefault": "Create a new form definition"
   },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
-    "description": "Confirmation template help text"
+    "description": "Confirmation template help text",
+    "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",
-    "description": "Submission confirmation fieldset title"
+    "description": "Submission confirmation fieldset title",
+    "originalDefault": "Submission confirmation template"
+  },
+  "xcp+LU": {
+    "defaultMessage": "Formulierdefinitie aanmaken",
+    "description": "create form definition icon title",
+    "originalDefault": "Create definition"
+  },
+  "yCogwi": {
+    "defaultMessage": "Formulierdefinitie selecteren",
+    "description": "select definition icon title",
+    "originalDefault": "Select definition"
   }
 }
