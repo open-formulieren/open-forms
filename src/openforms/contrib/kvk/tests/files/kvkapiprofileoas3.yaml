@@ -1,246 +1,80 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  version: 2-oas3
-  title: KvK.GsaSearch.WebApi
+  title: API Zoeken
+  description: Documentatie voor API Zoeken.
+  version: "1.0"
+servers:
+  - url: /test/api
+    description: only for testing with Swagger widget
+  - url: https://api.kvk.nl/test/api
+    description: Test API (uses Staat der Nederlanden Private Root CA – G1 certificate chain)
+  - url: https://api.kvk.nl/api
+    description: Production API (uses Staat der Nederlanden Private Root CA – G1 certificate chain)
 paths:
-  /api/v2/profile/companies:
+  /v1/zoeken:
     get:
       tags:
-        - Companies
-      summary: Get extended information about a specific company or establishment
-      operationId: Companies_GetCompaniesExtendedV2
+        - Zoeken
+      summary: Voor een bedrijf zoeken naar basisinformatie.
+      operationId: getResults
       parameters:
-        - name: kvkNumber
+        - name: kvkNummer
           in: query
-          description: >-
-            KvK number, identifying number for a registration in the Netherlands
-            Business Register. Consists of 8 digits
-          required: false
+          description: "Nederlands Kamer van Koophandel nummer: bestaat uit 8 cijfers"
           schema:
-            type: string
-        - name: branchNumber
-          in: query
-          description: >-
-            Branch number (Vestigingsnummer), identifying number of a branch.
-            Consists of 12 digits
-          required: false
-          schema:
+            pattern: "^[0-9]{8}$"
             type: string
         - name: rsin
           in: query
-          description: >-
-            RSIN is an identification number for legal entities and
-            partnerships. Consists of only digits
-          required: false
+          description: Rechtspersonen Samenwerkingsverbanden Informatie Nummer
+          schema:
+            pattern: "^[0-9]{9}$"
+            type: string
+        - name: vestigingsnummer
+          in: query
+          description: "Vestigingsnummer: uniek nummer dat bestaat uit 12 cijfers"
+          schema:
+            pattern: "^[0-9]{12}$"
+            type: string
+        - name: handelsnaam
+          in: query
+          description: De naam waaronder een vestiging of rechtspersoon handelt
           schema:
             type: string
-        - name: includeInactiveRegistrations
+        - name: straatnaam
           in: query
-          description: "Indication (true/false) to include searching through inactive dossiers/deregistered companies. Default is false.\r\nNote: History of inactive companies is after 1 January 2013"
-          required: false
-          schema:
-            type: boolean
-        - name: restrictToMainBranch
-          in: query
-          description: Search is restricted to main branches. Default is false.
-          required: false
-          schema:
-            type: boolean
-        - name: startPage
-          in: query
-          description: >-
-            Number indicating which page to fetch for pagination. Default = 1,
-            showing the first result
-          required: false
           schema:
             type: string
-        - name: context
+        - name: plaats
           in: query
-          description: User can optionally add a context to identify his result later on
-          required: false
           schema:
             type: string
-        - name: q
+        - name: type
           in: query
-          description: Free format text search for in the compiled search description.
-          required: false
+          description: "Filter op type: hoofdvestiging, nevenvestiging of rechtspersoon"
           schema:
             type: string
+        - name: pagina
+          in: query
+          description: Paginanummer
+          schema:
+            type: number
+            default: "1"
+        - name: aantal
+          in: query
+          description: "Kies het aantal resultaten per pagina, minimaal 1 en maximaal 100"
+          schema:
+            type: number
+            default: "10"
       security:
         - ApiKeyAuth: []
       responses:
-        '200':
-          description: OK
+        default:
+          description: default response
           content:
-            application/json:
+            application/hal+json:
               schema:
-                $ref: '#/components/schemas/ProfileResult'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResult'
-            text/html:
-              schema:
-                $ref: '#/components/schemas/ProfileResult'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-               type: string
-               example: Bad Request
-            text/json:
-              schema:
-               type: string
-               example: Bad Request
-            text/html:
-              schema:
-               type: string
-               example: Bad Request
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-               type: string
-               example: Forbidden
-            text/json:
-              schema:
-               type: string
-               example: Forbidden
-            text/html:
-              schema:
-               type: string
-               example: Forbidden
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-            text/html:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-  /api/v2/testprofile/companies:
-    get:
-      tags:
-        - CompaniesTest
-      summary: Get extended information about a specific company or establishment
-      operationId: CompaniesTest_GetCompaniesExtendedV2
-      parameters:
-        - name: kvkNumber
-          in: query
-          description: >-
-            KvK number, identifying number for a registration in the Netherlands
-            Business Register. Consists of 8 digits
-          required: false
-          schema:
-            type: string
-        - name: branchNumber
-          in: query
-          description: >-
-            Branch number (Vestigingsnummer), identifying number of a branch.
-            Consists of 12 digits
-          required: false
-          schema:
-            type: string
-        - name: rsin
-          in: query
-          description: >-
-            RSIN is an identification number for legal entities and
-            partnerships. Consists of only digits
-          required: false
-          schema:
-            type: string
-        - name: includeInactiveRegistrations
-          in: query
-          description: "Indication (true/false) to include searching through inactive dossiers/deregistered companies. Default is false.\r\nNote: History of inactive companies is after 1 January 2013"
-          required: false
-          schema:
-            type: boolean
-        - name: restrictToMainBranch
-          in: query
-          description: Search is restricted to main branches. Default is false.
-          required: false
-          schema:
-            type: boolean
-        - name: site
-          in: query
-          description: Defines the search collection for the query
-          required: false
-          schema:
-            type: string
-        - name: context
-          in: query
-          description: User can optionally add a context to identify his result later on
-          required: false
-          schema:
-            type: string
-        - name: q
-          in: query
-          description: Free format text search for in the compiled search description.
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResult'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResult'
-            text/html:
-              schema:
-                $ref: '#/components/schemas/ProfileResult'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-               type: string
-               example: Bad Request
-            text/json:
-              schema:
-               type: string
-               example: Bad Request
-            text/html:
-              schema:
-               type: string
-               example: Bad Request
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-               type: string
-               example: Forbidden
-            text/json:
-              schema:
-               type: string
-               example: Forbidden
-            text/html:
-              schema:
-               type: string
-               example: Forbidden
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-            text/html:
-              schema:
-                $ref: "#/components/schemas/ResultData_ErrorResult404"
-servers:
-  - url: 'https://api.kvk.nl'
+                $ref: '#/components/schemas/Resultaat'
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -248,176 +82,75 @@ components:
       in: header
       name: apikey
   schemas:
-    ProfileResult:
+    Link:
       type: object
       properties:
-        apiVersion:
+        rel:
           type: string
-          example: "2.0"
-        meta:
-          type: object
-        data:
-          $ref: "#/components/schemas/ResultData_CompanyExtendedV2"
-    CompanyExtendedV2:
-      type: object
-      properties:
-        kvkNumber:
+        href:
           type: string
-        branchNumber:
+        hreflang:
           type: string
-        rsin:
+        media:
           type: string
-        tradeNames:
-          $ref: '#/components/schemas/CompanyProfileV2TradeNames'
-        legalForm:
+        title:
           type: string
-        businessActivities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompanyProfileV2BusinessActivity'
-        hasEntryInBusinessRegister:
-          type: boolean
-        hasCommercialActivities:
-          type: boolean
-        hasNonMailingIndication:
-          type: boolean
-        isLegalPerson:
-          type: boolean
-        isBranch:
-          type: boolean
-        isMainBranch:
-          type: boolean
-        employees:
-          format: int32
-          type: integer
-        foundationDate:
-          type: string
-        registrationDate:
-          type: string
-        deregistrationDate:
-          type: string
-        addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompanyProfileV2Address'
-        websites:
-          type: array
-          items:
-            type: string
-    CompanyProfileV2TradeNames:
-      type: object
-      properties:
-        businessName:
-          type: string
-        shortBusinessName:
-          type: string
-        currentTradeNames:
-          type: array
-          items:
-            type: string
-        formerTradeNames:
-          type: array
-          items:
-            type: string
-        currentStatutoryNames:
-          type: array
-          items:
-            type: string
-        formerStatutoryNames:
-          type: array
-          items:
-            type: string
-        currentNames:
-          type: array
-          items:
-            type: string
-        formerNames:
-          type: array
-          items:
-            type: string
-    CompanyProfileV2BusinessActivity:
-      type: object
-      properties:
-        sbiCode:
-          type: string
-        sbiCodeDescription:
-          type: string
-        isMainSbi:
-          type: boolean
-    CompanyProfileV2Address:
-      type: object
-      properties:
         type:
           type: string
-        bagId:
+        deprecation:
           type: string
-        street:
+        profile:
           type: string
-        houseNumber:
+        name:
           type: string
-        houseNumberAddition:
-          type: string
-        postalCode:
-          type: string
-        city:
-          type: string
-        country:
-          type: string
-        gpsLatitude:
-          format: double
-          type: number
-        gpsLongitude:
-          format: double
-          type: number
-        rijksdriehoekX:
-          format: double
-          type: number
-        rijksdriehoekY:
-          format: double
-          type: number
-        rijksdriehoekZ:
-          format: double
-          type: number
-    ResultData_CompanyExtendedV2:
-      description: Standardized Resultdata
+    Resultaat:
       type: object
       properties:
-        itemsPerPage:
-          format: int32
-          description: Amount of search results per page used for the query
+        pagina:
           type: integer
-        startPage:
+          description: Geeft aan op welke pagina je bent. Start vanaf pagina 1
           format: int32
-          description: The current page of the results
+        aantal:
           type: integer
-        totalItems:
+          description: Geeft het aantal zoek resultaten per pagina weer
           format: int32
-          description: Total amount of results spread over multiple pages
+        totaal:
           type: integer
-        nextLink:
-          description: Link to next set of ItemsPerPage result items
+          description: Totaal aantal zoekresultaten gevonden
+          format: int32
+        vorige:
           type: string
-        previousLink:
-          description: Link to previous set of ItemsPerPage result items
+          description: Link naar de vorige pagina indien beschikbaar
+        volgende:
           type: string
-        items:
-          description: Actual search results
+          description: Link naar de volgende pagina indien beschikbaar
+        resultaten:
           type: array
           items:
-            $ref: '#/components/schemas/CompanyExtendedV2'
-    ResultData_ErrorResult404:
-      description: Possible Error Messages
+            $ref: '#/components/schemas/ResultaatItem'
+    ResultaatItem:
       type: object
       properties:
-       code:
-        description: http status code
-        type: string
-        example: 404
-       message:
-        description: Error Message
-        type: string
-        example: NotFound
-       reason:
-        description: Reason for getting the Error Message
-        type: string
-        example: No companies found for the given query.
+        kvkNummer:
+          type: string
+          description: "Nederlands Kamer van Koophandel nummer: bestaat uit 8 cijfers"
+        rsin:
+          type: string
+          description: Rechtspersonen Samenwerkingsverbanden Informatie Nummer
+        vestigingsnummer:
+          type: string
+          description: "Vestigingsnummer: uniek nummer dat bestaat uit 12 cijfers"
+        handelsnaam:
+          type: string
+          description: De naam waaronder een vestiging of rechtspersoon handelt
+        straatnaam:
+          type: string
+        plaats:
+          type: string
+        type:
+          type: string
+          description: hoofdvestiging/nevenvestiging/rechtspersoon
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'

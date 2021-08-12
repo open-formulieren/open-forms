@@ -67,7 +67,7 @@ class KVKRemoteBaseValidator:
                 code="invalid",
             )
         else:
-            if not len(result["data"]["items"]):
+            if not len(result.get("resultaten", [])):
                 raise ValidationError(
                     self.error_messages["not_found"],
                     params={"type": self.value_label},
@@ -80,7 +80,7 @@ class KVKRemoteBaseValidator:
 @register("kvk-kvkNumber", verbose_name=_("KvK number"))
 @deconstructible
 class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
-    query_param = "kvkNumber"
+    query_param = "kvkNummer"
     value_label = _("KvK number")
 
     def __call__(self, value):
@@ -102,7 +102,7 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
 @register("kvk-branchNumber", verbose_name=_("KvK branch number"))
 @deconstructible
 class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
-    query_param = "branchNumber"
+    query_param = "vestigingsnummer"
     value_label = _("Branch number")
 
     def __call__(self, value):

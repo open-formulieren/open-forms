@@ -13,7 +13,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_defined_attributes_paths_resolve(self):
         data = self.load_json_mock("companies.json")
-        data = data["data"]["items"][0]
+        data = data["resultaten"][0]
         for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
             # TODO support array elements
             if "[]" in key:
@@ -28,7 +28,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_get_prefill_values(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=69599084",
+            "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=200,
             json=self.load_json_mock("companies.json"),
         )
@@ -37,11 +37,11 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.legalForm, Attributes.tradeNames_businessName],
+            [Attributes.straatnaam, Attributes.plaats],
         )
         expected = {
-            "tradeNames.businessName": "Test EMZ Dagobert",
-            "legalForm": "Eenmanszaak",
+            "straatnaam": "Abebe Bikilalaan",
+            "plaats": "Amsterdam",
         }
         self.assertEqual(values, expected)
 
@@ -49,7 +49,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_get_prefill_values_404(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=69599084",
+            "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=404,
         )
 
@@ -57,7 +57,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.legalForm, Attributes.tradeNames_businessName],
+            [Attributes.straatnaam, Attributes.plaats],
         )
         expected = {}
         self.assertEqual(values, expected)
@@ -66,7 +66,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_get_prefill_values_500(self, m):
         mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
         m.get(
-            "https://companies/api/v2/testprofile/companies?kvkNumber=69599084",
+            "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=500,
         )
 
@@ -74,7 +74,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.legalForm, Attributes.tradeNames_businessName],
+            [Attributes.straatnaam, Attributes.plaats],
         )
         expected = {}
         self.assertEqual(values, expected)
