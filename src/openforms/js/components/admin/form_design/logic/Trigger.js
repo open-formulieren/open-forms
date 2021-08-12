@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import Select from '../../forms/Select';
+import {TextInput, NumberInput} from '../../forms/Inputs';
 import {ComponentsContext} from './Context';
 
 
@@ -66,6 +67,13 @@ const COMPONENT_TYPE_TO_OPERATORS = {
 };
 
 
+const COMPONENT_TYPE_TO_INPUT_TYPE = {
+    number: NumberInput,
+    textfield: TextInput,
+    iban: TextInput,
+};
+
+
 const OperatorSelection = ({selectedComponent, operator, onChange}) => {
     // check the component type, which is used to filter the possible choices
     const allComponents = useContext(ComponentsContext);
@@ -125,11 +133,86 @@ OperandTypeSelection.propTypes = {
 
 
 
+const LiteralValueInput = ({componentType, value='', onChange}) => {
+    const InputComponent = COMPONENT_TYPE_TO_INPUT_TYPE[componentType] || TextInput;
+
+    const onInputChange = (event) => {
+        const inputValue = event.target.value;
+        let value;
+
+        // do any input type conversions if needed, e.g. date to native datetime/ISO-8601 format
+        switch (componentType) {
+            case 'number': {
+                value = Number.parseFloat(inputValue);
+                break;
+            }
+            default:
+                value = inputValue;
+        }
+
+        onChange({
+            target: {
+                name: event.target.name,
+                value: value,
+            }
+        })
+    };
+
+    return (
+        <InputComponent
+            name="trigger.literalValue"
+            value={value}
+            onChange={onInputChange}
+        />
+    );
+};
+
+LiteralValueInput.propTypes = {
+    componentType: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
+    onChange: PropTypes.func.isRequired,
+};
+
+
 const Trigger = ({ id }) => {
     const [triggerComponent, setTriggerComponent] = useState('');
     const [operator, setOperator] = useState('');
     const [compareValue, setCompareValue] = useState('');
     const [operandType, setOperandType] = useState('');
+    const [literalValue, setLiteralValue] = useState('');
+
+    const allComponents = useContext(ComponentsContext);
+    const componentType = allComponents[triggerComponent]?.type;
+
+    let valueInput = null;
+
+    switch (operandType) {
+        case 'literal': {
+            valueInput = (
+                <LiteralValueInput
+                    componentType={componentType}
+                    value={literalValue}
+                    onChange={event => {
+                        const {value} = event.target;
+                        setLiteralValue(value);
+                        setCompareValue(value);
+                    }} />
+            );
+            break;
+        }
+        case 'component': {
+            break;
+        }
+        case '': { // nothing selected yet
+            break;
+        }
+        default: {
+            throw new Error(`Unknown operand type: ${operandType}`);
+        }
+    }
 
     const jsonLogic = {
         [operator]: [
@@ -154,8 +237,14 @@ const Trigger = ({ id }) => {
                     operator={operator}
                     onChange={event => setOperator(event.target.value)}
                 />
+                &nbsp;
                 { operator
                     ? (<OperandTypeSelection operandType={operandType} onChange={event => setOperandType(event.target.value)} /> )
+                    : null
+                }
+                &nbsp;
+                { (operator && operandType)
+                    ? valueInput
                     : null
                 }
             </div>
