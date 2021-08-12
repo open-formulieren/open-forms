@@ -97,7 +97,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         except KeyError:
             raise NotFound(detail="unknown plugin")
 
-        if not submission.form.payment_required:
+        if not submission.payment_required:
             raise ParseError(detail="payment not required")
 
         if plugin_id != submission.form.payment_backend:
@@ -118,8 +118,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             submission,
             plugin_id,
             submission.form.payment_backend_options,
-            # TODO pass amount from form
-            Decimal(10),
+            submission.form.product.price,
             form_url,
         )
 
@@ -198,7 +197,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
-        if not payment.form.payment_required:
+        if not payment.submission.payment_required:
             raise ParseError(detail="payment not required")
 
         if payment.plugin_id != payment.form.payment_backend:

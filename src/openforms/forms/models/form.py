@@ -162,8 +162,13 @@ class Form(models.Model):
 
     @property
     def payment_required(self) -> bool:
-        # this will later be determined dynamic from oa. the linked Product
-        return bool(self.payment_backend and self.payment_backend_options)
+        # this will later be more dynamic and determined from oa. the linked Product
+        return bool(
+            self.payment_backend
+            and self.payment_backend_options
+            and self.product
+            and self.product.price
+        )
 
     @property
     def first_step(self):

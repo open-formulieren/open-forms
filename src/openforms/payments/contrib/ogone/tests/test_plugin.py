@@ -1,3 +1,4 @@
+from decimal import Decimal
 from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
@@ -27,6 +28,7 @@ class OgoneTests(TestCase):
             form__slug="myform",
             form__payment_backend="ogone-legacy",
             form__payment_backend_options={"merchant_id": merchant.id},
+            form__product__price=Decimal("11.35"),
         )
 
         self.assertEqual(submission.payment_required, True)
@@ -57,7 +59,7 @@ class OgoneTests(TestCase):
         self.assertEqual(data["data"]["PSPID"], "psp123")
         self.assertEqual(data["data"]["CURRENCY"], "EUR")
         self.assertEqual(data["data"]["LANGUAGE"], "nl_NL")
-        self.assertEqual(data["data"]["AMOUNT"], "1000")
+        self.assertEqual(data["data"]["AMOUNT"], "1135")
 
         url = data["data"]["ACCEPTURL"]
         self.assertIn("action=accept", url)
