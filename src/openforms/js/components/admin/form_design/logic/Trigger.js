@@ -1,5 +1,6 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import {useImmerReducer} from 'use-immer';
 
 import Select from '../../forms/Select';
 
@@ -10,7 +11,7 @@ import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 
 
-const OperatorSelection = ({selectedComponent, operator, onChange}) => {
+const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
     // check the component type, which is used to filter the possible choices
     const allComponents = useContext(ComponentsContext);
     const componentType = allComponents[selectedComponent]?.type;
@@ -25,7 +26,7 @@ const OperatorSelection = ({selectedComponent, operator, onChange}) => {
 
     return (
         <Select
-            name="trigger.operator"
+            name={name}
             choices={choices}
             allowBlank
             onChange={onChange}
@@ -35,54 +36,101 @@ const OperatorSelection = ({selectedComponent, operator, onChange}) => {
 };
 
 OperatorSelection.propTypes = {
+    name: PropTypes.string.isRequired,
     selectedComponent: PropTypes.string.isRequired,
     operator: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
 };
 
 
-const Trigger = ({ id, name, onChange }) => {
-    const [triggerComponent, setTriggerComponent] = useState('');
-    const [operator, setOperator] = useState('');
-    const [compareValue, setCompareValue] = useState('');
-    const [operandType, setOperandType] = useState('');
-    const [literalValue, setLiteralValue] = useState('');
-    const [componentValue, setComponentValue] = useState('');
+const initialState = {
+    component: '',
+    operator: '',
+    operandType: '',
+    operand: '',
+};
 
+const TRIGGER_FIELD_ORDER = [
+    'component',
+    'operator',
+    'operandType',
+    'operand',
+];
+
+const reducer = (draft, action) => {
+    switch(action.type) {
+        case 'TRIGGER_CONFIGURATION_CHANGED': {
+            const {name, value} = action.payload;
+            draft[name] = value;
+
+            // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
+            const currentFieldIndex = TRIGGER_FIELD_ORDER.indexOf(name);
+            const nextFieldNames = TRIGGER_FIELD_ORDER.slice(currentFieldIndex + 1);
+            for (const name of nextFieldNames) {
+                draft[name] = initialState[name];
+            }
+            break;
+        }
+        default: {
+            throw new Error(`Unknown action type: ${action.type}`);
+        }
+    }
+};
+
+const Trigger = ({ id, name, onChange }) => {
+    // hooks
+    const [state, dispatch] = useImmerReducer(reducer, initialState);
     const allComponents = useContext(ComponentsContext);
+
+    // event handlers
+    const onTriggerChange = (event) => {
+        const {name, value} = event.target;
+        dispatch({
+            type: 'TRIGGER_CONFIGURATION_CHANGED',
+            payload: {
+                name,
+                value
+            },
+        });
+    };
+
+    // rendering logic
+    const {
+        component: triggerComponent,
+        operator,
+        operandType,
+        operand,
+    } = state;
+
     const componentType = allComponents[triggerComponent]?.type;
 
+    let compareValue = null;
     let valueInput = null;
 
     switch (operandType) {
         case 'literal': {
             valueInput = (
                 <LiteralValueInput
-                    name="trigger.literalValue"
+                    name="operand"
                     componentType={componentType}
-                    value={literalValue}
-                    onChange={event => {
-                        const {value} = event.target;
-                        setLiteralValue(value);
-                        setCompareValue(value);
-                    }} />
+                    value={operand}
+                    onChange={onTriggerChange}
+                />
             );
+            compareValue = operand;
             break;
         }
         case 'component': {
             valueInput = (
                 <ComponentSelection
-                    name="trigger.componentValue"
-                    value={componentValue}
-                    onChange={event => {
-                        const {value: componentKey} = event.target;
-                        setComponentValue(componentKey);
-                        setCompareValue({"var": componentKey});
-                    }}
+                    name="operand"
+                    value={operand}
+                    onChange={onTriggerChange}
                     // filter components of the same type as the trigger component
                     filter={(comp) => (comp.type === componentType)}
                 />
             );
+            compareValue = {"var": operand};
             break;
         }
         case '': { // nothing selected yet
@@ -107,17 +155,18 @@ const Trigger = ({ id, name, onChange }) => {
 
             <div>
                 <ComponentSelection
-                    name="trigger.component"
+                    name="component"
                     value={triggerComponent}
-                    onChange={event => setTriggerComponent(event.target.value)}
+                    onChange={onTriggerChange}
                 />
                 &nbsp;
                 {
                     triggerComponent ? (
                         <OperatorSelection
+                            name="operator"
                             selectedComponent={triggerComponent}
                             operator={operator}
-                            onChange={event => setOperator(event.target.value)}
+                            onChange={onTriggerChange}
                         />
                     )
                     : null
@@ -125,9 +174,9 @@ const Trigger = ({ id, name, onChange }) => {
                 &nbsp;
                 { (triggerComponent && operator)
                     ? (<OperandTypeSelection
-                        name="trigger.operandType"
+                        name="operandType"
                         operandType={operandType}
-                        onChange={event => setOperandType(event.target.value)}
+                        onChange={onTriggerChange}
                     /> )
                     : null
                 }
