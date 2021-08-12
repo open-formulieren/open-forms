@@ -11,6 +11,7 @@ import FAIcon from '../FAIcon';
 import Trigger from './logic/Trigger';
 import {ComponentsContext} from './logic/Context';
 import {Action} from './logic/Action';
+import {ActionSet} from "./logic/ActionSet";
 
 
 const initialState = {
@@ -203,7 +204,7 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
                 logic={jsonLogicTrigger}
                 onChange={onChange}
             />
-            <Action />
+            <ActionSet actions={[]} />
 
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
