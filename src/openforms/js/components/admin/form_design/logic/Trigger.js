@@ -97,10 +97,39 @@ OperatorSelection.propTypes = {
 };
 
 
+const OPERAND_TYPES = {
+    literal: 'Enter value',
+    component: 'Select component',
+};
+
+
+const OperandTypeSelection = ({operandType, onChange}) => {
+    const choices = Object.entries(OPERAND_TYPES);
+    return (
+        <Select
+            name="trigger.operandType"
+            choices={choices}
+            allowBlank
+            onChange={onChange}
+            value={operandType}
+        />
+    );
+};
+
+OperandTypeSelection.propTypes = {
+    operandType: PropTypes.oneOf(
+        [''].concat(Object.keys(OPERAND_TYPES))
+    ).isRequired,
+    onChange: PropTypes.func.isRequired,
+};
+
+
+
 const Trigger = ({ id }) => {
     const [triggerComponent, setTriggerComponent] = useState('');
     const [operator, setOperator] = useState('');
     const [compareValue, setCompareValue] = useState('');
+    const [operandType, setOperandType] = useState('');
 
     const jsonLogic = {
         [operator]: [
@@ -125,6 +154,10 @@ const Trigger = ({ id }) => {
                     operator={operator}
                     onChange={event => setOperator(event.target.value)}
                 />
+                { operator
+                    ? (<OperandTypeSelection operandType={operandType} onChange={event => setOperandType(event.target.value)} /> )
+                    : null
+                }
             </div>
 
             <div style={{background: '#eee', border: 'dashed 1px #ccc', 'marginTop': '1em'}}>
