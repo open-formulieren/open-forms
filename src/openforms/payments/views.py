@@ -1,13 +1,14 @@
 import logging
 from decimal import Decimal
 
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import permissions, serializers
-from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.exceptions import MethodNotAllowed, NotFound, ParseError
+from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -94,24 +95,24 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         try:
             plugin = self.register[plugin_id]
         except KeyError:
-            return HttpResponseBadRequest("unknown plugin")
+            raise NotFound(detail="unknown plugin")
 
         if not submission.form.payment_required:
-            return HttpResponseBadRequest("payment not required")
+            raise ParseError(detail="payment not required")
 
         if plugin_id != submission.form.payment_backend:
-            return HttpResponseBadRequest("plugin not allowed")
+            raise ParseError(detail="plugin not allowed")
 
         form_url = request.GET.get("next")
         if not form_url:
-            return HttpResponseBadRequest("missing 'next' parameter")
+            raise ParseError(detail="missing 'next' parameter")
 
         if not allow_redirect_url(form_url):
             logger.warning(
                 "blocked payment start with non-allowed redirect to '%(form_url)s'",
                 {"form_url": form_url},
             )
-            return HttpResponseBadRequest("redirect not allowed")
+            raise ParseError(detail="redirect not allowed")
 
         payment = SubmissionPayment.objects.create_for(
             submission,
@@ -193,17 +194,17 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         try:
             plugin = self.register[payment.plugin_id]
         except KeyError:
-            return HttpResponseBadRequest("unknown plugin")
+            raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
         if not payment.form.payment_required:
-            return HttpResponseBadRequest("payment not required")
+            raise ParseError(detail="payment not required")
 
         if payment.plugin_id != payment.form.payment_backend:
-            return HttpResponseBadRequest("plugin not allowed")
+            raise ParseError(detail="plugin not allowed")
 
         if plugin.return_method.upper() != request.method.upper():
-            return HttpResponseNotAllowed([plugin.return_method])
+            raise MethodNotAllowed(request.method)
 
         response = plugin.handle_return(request, payment)
 
@@ -215,7 +216,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                     "plugin '%(plugin_id)s' to '%(location)s'",
                     {"plugin_id": payment.plugin_id, "location": location},
                 )
-                return HttpResponseBadRequest("redirect not allowed")
+                raise ParseError(detail="redirect not allowed")
 
         return response
 
@@ -279,11 +280,11 @@ class PaymentWebhookView(PaymentFlowBaseView):
         try:
             plugin = self.register[kwargs["plugin_id"]]
         except KeyError:
-            return HttpResponseBadRequest("unknown plugin")
+            raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
         if plugin.webhook_method.upper() != request.method.upper():
-            return HttpResponseNotAllowed([plugin.webhook_method])
+            raise MethodNotAllowed(request.method)
 
         plugin.handle_webhook(request)
         return HttpResponse("")

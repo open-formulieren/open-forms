@@ -44,8 +44,8 @@ class OgoneTests(TestCase):
 
         # bad without ?next=
         response = self.client.post(url)
-        self.assertEqual(response.content, b"missing 'next' parameter")
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["detail"], "missing 'next' parameter")
 
         # good
         response = self.client.post(f"{url}?next={next_url}")

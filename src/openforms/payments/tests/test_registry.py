@@ -198,21 +198,24 @@ class RegistryTests(TestCase):
             response = start_view(
                 request, uuid=submission.uuid, plugin_id=plugin.identifier
             )
-            self.assertEqual(response.content, b"missing 'next' parameter")
+            response.render()
+            self.assertEqual(response.data["detail"], "missing 'next' parameter")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad plugin"):
             request = factory.post(f"{url}?next={next_url_enc}")
             response = start_view(request, uuid=submission.uuid, plugin_id="bad_plugin")
-            self.assertEqual(response.content, b"unknown plugin")
-            self.assertEqual(response.status_code, 400)
+            response.render()
+            self.assertEqual(response.data["detail"], "unknown plugin")
+            self.assertEqual(response.status_code, 404)
 
         with self.subTest("start bad redirect"):
             request = factory.post(f"{url}?next={bad_url_enc}")
             response = start_view(
                 request, uuid=submission.uuid, plugin_id=plugin.identifier
             )
-            self.assertEqual(response.content, b"redirect not allowed")
+            response.render()
+            self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
         # check the return view
@@ -229,7 +232,6 @@ class RegistryTests(TestCase):
         with self.subTest("return bad method"):
             request = factory.post(url)
             response = return_view(request, uuid=payment.uuid)
-            self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
 
@@ -238,19 +240,19 @@ class RegistryTests(TestCase):
             payment_bad = SubmissionPaymentFactory.for_backend(
                 "bad_plugin", form_url="http://foo.bar"
             )
-
             response = return_view(request, uuid=payment_bad.uuid)
-            self.assertEqual(response.content, b"unknown plugin")
-            self.assertEqual(response.status_code, 400)
+            response.render()
+            self.assertEqual(response.data["detail"], "unknown plugin")
+            self.assertEqual(response.status_code, 404)
 
         with self.subTest("return bad redirect"):
             request = factory.get(url)
             payment_bad = SubmissionPaymentFactory.for_backend(
                 "plugin1", form_url="http://buzz.bazz"
             )
-
             response = return_view(request, uuid=payment_bad.uuid)
-            self.assertEqual(response.content, b"redirect not allowed")
+            response.render()
+            self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
         # check the webhook view
@@ -267,12 +269,12 @@ class RegistryTests(TestCase):
         with self.subTest("webhook bad method"):
             request = factory.get(url)
             response = webhook_view(request, plugin_id=plugin.identifier)
-            self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "POST")
 
         with self.subTest("webhook bad plugin"):
             request = factory.get(url)
             response = webhook_view(request, plugin_id="bad_plugin")
-            self.assertEqual(response.content, b"unknown plugin")
-            self.assertEqual(response.status_code, 400)
+            response.render()
+            self.assertEqual(response.data["detail"], "unknown plugin")
+            self.assertEqual(response.status_code, 404)
