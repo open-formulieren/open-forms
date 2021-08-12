@@ -1,6 +1,9 @@
-import React, {useContext} from 'react';
+import isEqual from 'lodash/isEqual';
+import React, {useContext, useEffect} from 'react';
+import usePrevious from 'react-use/esm/usePrevious';
 import PropTypes from 'prop-types';
 import {useImmerReducer} from 'use-immer';
+import jsonLogic from 'json-logic-js';
 
 import Select from '../../forms/Select';
 
@@ -71,16 +74,70 @@ const reducer = (draft, action) => {
             }
             break;
         }
+        case 'PROCESS_JSON_LOGIC': {
+            // break down the json logic back into state that can be managed by components
+            // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
+            // with our own organization.
+            const logic = action.payload;
+            if (!logic) return;
+
+            // reference for parsing: https://jsonlogic.com/
+            // a rule is always in the format {"operator": ["values" ...]} -> so grab the operator
+            const operator = jsonLogic.get_operator(logic);
+            let values = logic[operator];
+            if (! Array.isArray(values)) {
+                values = [values];
+            }
+
+            // first value should be the reference to the component
+            const component = values[0].var;
+
+            // check if we're using a literal value, or a component reference
+            const compareValue = values[1];
+            let operandType = initialState.operandType;
+            let operand = initialState.operand;
+
+            if (jsonLogic.is_logic(compareValue)) {
+                const op = jsonLogic.get_operator(compareValue);
+                if (op === 'var') {
+                    operandType = 'component';
+                    operand = compareValue.var;
+                } else {
+                    console.warn(`Unsupported operator: ${op}, can't derive operandType`);
+                }
+            } else if (compareValue != null) {
+                operandType = 'literal';
+                operand = compareValue;
+            }
+
+            // update the state
+            Object.assign(draft, {
+                component,
+                operator,
+                operandType,
+                operand,
+            });
+            break;
+        }
         default: {
             throw new Error(`Unknown action type: ${action.type}`);
         }
     }
 };
 
-const Trigger = ({ id, name, onChange }) => {
+const Trigger = ({ id, name, logic, onChange }) => {
     // hooks
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const allComponents = useContext(ComponentsContext);
+
+    // parse logic to build or update state
+    useEffect(
+        () => dispatch({
+            type: 'PROCESS_JSON_LOGIC',
+            payload: logic,
+        }),
+        [logic]
+    );
 
     // event handlers
     const onTriggerChange = (event) => {
@@ -141,12 +198,30 @@ const Trigger = ({ id, name, onChange }) => {
         }
     }
 
-    const jsonLogic = {
+    const jsonLogicFromState = {
         [operator]: [
             {var: triggerComponent},
             compareValue,
         ],
     };
+
+    const previousLogicFromState = usePrevious(jsonLogicFromState);
+
+    // whenever we get a change in the jsonLogic definition, relay that back to the
+    // parent component
+    useEffect(
+        () => {
+            // if nothing changed, do not fire an update
+            if (previousLogicFromState && isEqual(previousLogicFromState, jsonLogicFromState)) return;
+            onChange({
+                target: {
+                    name: name,
+                    value: jsonLogicFromState,
+                }
+            });
+        },
+        [jsonLogicFromState]
+    );
 
     return (
         <div style={{padding: '1em'}}>
@@ -189,7 +264,7 @@ const Trigger = ({ id, name, onChange }) => {
 
             jsonLogic:
             <div style={{background: '#eee', border: 'dashed 1px #ccc', 'marginTop': '1em'}}>
-                <pre>{JSON.stringify(jsonLogic, null, 2)}</pre>
+                <pre>{JSON.stringify(jsonLogicFromState, null, 2)}</pre>
             </div>
 
         </div>

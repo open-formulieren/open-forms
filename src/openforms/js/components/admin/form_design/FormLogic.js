@@ -193,12 +193,14 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
             onDelete(index);
         }
     };
+
     return (
         <div className="logic-rule">
 
             <Trigger
                 id="test"
                 name="jsonLogicTrigger"
+                logic={jsonLogicTrigger}
                 onChange={onChange}
             />
             <Action />
