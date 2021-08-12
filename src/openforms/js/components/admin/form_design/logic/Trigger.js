@@ -96,10 +96,6 @@ const Trigger = ({ id }) => {
             break;
         }
         case 'component': {
-            // filter components of the same type as the trigger component
-            const filterFunc = (comp) => {
-                return comp.type === componentType;
-            };
             valueInput = (
                 <ComponentSelection
                     name="trigger.componentValue"
@@ -109,7 +105,8 @@ const Trigger = ({ id }) => {
                         setComponentValue(componentKey);
                         setCompareValue({"var": componentKey});
                     }}
-                    filter={filterFunc}
+                    // filter components of the same type as the trigger component
+                    filter={(comp) => (comp.type === componentType)}
                 />
             );
             break;
@@ -141,18 +138,23 @@ const Trigger = ({ id }) => {
                     onChange={event => setTriggerComponent(event.target.value)}
                 />
                 &nbsp;
-                <OperatorSelection
-                    selectedComponent={triggerComponent}
-                    operator={operator}
-                    onChange={event => setOperator(event.target.value)}
-                />
+                {
+                    triggerComponent ? (
+                        <OperatorSelection
+                            selectedComponent={triggerComponent}
+                            operator={operator}
+                            onChange={event => setOperator(event.target.value)}
+                        />
+                    )
+                    : null
+                }
                 &nbsp;
-                { operator
+                { (triggerComponent && operator)
                     ? (<OperandTypeSelection operandType={operandType} onChange={event => setOperandType(event.target.value)} /> )
                     : null
                 }
                 &nbsp;
-                { (operator && operandType)
+                { (triggerComponent && operator && operandType)
                     ? valueInput
                     : null
                 }
