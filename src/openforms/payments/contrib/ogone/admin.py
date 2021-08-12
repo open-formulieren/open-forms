@@ -28,6 +28,8 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
     )
 
     def get_queryset(self, request):
+        # NOTE it is generally bad practice to store the request since admins aren't thread safe,
+        #  but we only need it for the .get_host()
         self.request = request
         return super().get_queryset(request)
 

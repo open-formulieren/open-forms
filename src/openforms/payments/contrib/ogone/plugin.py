@@ -42,7 +42,6 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         info = client.get_payment_info(
             payment.order_id, amount_cents, return_url, "action"
         )
-        # TODO PaymentInfoSerializer
         return info
 
     def handle_return(self, request, payment: SubmissionPayment):

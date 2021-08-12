@@ -186,7 +186,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         """
         Handle the return flow after the user provided payment credentials.
 
-        This can be either directly to us, or via an payment plugin. This
+        This can be either directly to us, or via a payment plugin. This
         method essentially relays the django 'dispatch' to the relevant payment
         plugin. We must define ``get`` and ``post`` to have them properly show up and
         be documented in the OAS.

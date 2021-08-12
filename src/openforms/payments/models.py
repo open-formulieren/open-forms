@@ -46,7 +46,7 @@ class SubmissionPayment(models.Model):
 
     amount = models.DecimalField(
         _("payment amount"),
-        max_digits=8,  # TODO how many digits?
+        max_digits=8,
         decimal_places=2,
         default=0,
         help_text=_("Total payment amount."),
