@@ -7,8 +7,8 @@ from django.test.client import RequestFactory
 from rest_framework.reverse import reverse
 
 from ...forms.tests.factories import FormStepFactory
+from ...plugins.constants import UNIQUE_ID_MAX_LENGTH
 from ..base import BasePlugin, PaymentInfo
-from ..contrib.ogone.tests.factories import OgoneMerchantFactory
 from ..registry import Registry
 from ..views import PaymentReturnView, PaymentStartView, PaymentWebhookView
 from .factories import SubmissionPaymentFactory
@@ -66,6 +66,16 @@ class RegistryTests(TestCase):
             "The unique identifier 'plugin' is already present in the registry",
         ):
             register("plugin")(Plugin)
+
+    def test_long_identifier(self):
+        register = Registry()
+        long_identifier = "x" * (UNIQUE_ID_MAX_LENGTH + 1)
+
+        with self.assertRaisesMessage(
+            ValueError,
+            f"The unique identifier '{long_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters.",
+        ):
+            register(long_identifier)(Plugin)
 
     def test_get_choices(self):
         register = Registry()

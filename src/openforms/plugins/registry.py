@@ -1,5 +1,7 @@
 from typing import Type
 
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
+
 
 class BaseRegistry:
     """
@@ -11,6 +13,10 @@ class BaseRegistry:
 
     def __call__(self, unique_identifier: str, *args, **kwargs) -> callable:
         def decorator(plugin_cls: Type) -> Type:
+            if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
+                raise ValueError(
+                    f"The unique identifier '{unique_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters."
+                )
             if unique_identifier in self._registry:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is already present "

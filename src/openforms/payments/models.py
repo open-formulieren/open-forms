@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from openforms.payments.constants import PaymentStatus
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
 
 
@@ -38,7 +39,7 @@ class SubmissionPayment(models.Model):
     submission = models.ForeignKey(
         "submissions.Submission", related_name="payments", on_delete=models.CASCADE
     )
-    plugin_id = models.CharField(_("Payment backend"), max_length=64)
+    plugin_id = models.CharField(_("Payment backend"), max_length=UNIQUE_ID_MAX_LENGTH)
     form_url = models.URLField(_("Form URL"), max_length=255)
     order_id = models.CharField(
         _("Order ID"), max_length=255, help_text=_("Unique tracking across backend")
