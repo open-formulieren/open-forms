@@ -7,8 +7,8 @@ from privates.views import PrivateMediaView
 
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
-from .constants import IMAGE_COMPONENTS
-from .constants import RegistrationStatuses
+
+from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (
     Submission,
