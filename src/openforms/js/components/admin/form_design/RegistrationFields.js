@@ -29,7 +29,11 @@ const RegistrationFields = ({
                         name='Registration Method'
                         choices={backendChoices}
                         value={selectedBackend}
-                        onChange={onChange}
+                        onChange={(event) => {
+                            onChange(event);
+                            // Clear options when changing backend
+                            onChange({target: {name: 'form.registrationBackendOptions', value: {}}})
+                        }}
                         allowBlank={true}
                     />
                 </Field>
