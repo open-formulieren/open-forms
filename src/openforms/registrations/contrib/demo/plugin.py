@@ -22,6 +22,9 @@ class DemoRegistration(BasePlugin):
         print(options["extra_line"])
         return "demo", None
 
+    def update_payment_status(self, submission: "Submission"):
+        print(submission)
+
 
 @register("failing-demo")
 class DemoFailRegistration(BasePlugin):
@@ -30,3 +33,6 @@ class DemoFailRegistration(BasePlugin):
 
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")
+
+    def update_payment_status(self, submission: "Submission"):
+        pass

@@ -13,7 +13,7 @@ from openforms.submissions.models import SubmissionFileAttachment, SubmissionRep
 logger = logging.getLogger(__name__)
 
 
-def create_zaak(options: dict) -> dict:
+def create_zaak(options: dict, payment_required: bool = False) -> dict:
     config = ZgwConfig.get_solo()
     client = config.zrc_service.build_client()
     today = date.today().isoformat()
@@ -25,13 +25,28 @@ def create_zaak(options: dict) -> dict:
         "startdatum": today,
         "omschrijving": "Zaak naar aanleiding van ingezonden formulier",
         "toelichting": "Aangemaakt door Open Formulieren",
-        # "betalingsindicatie": "nvt",
+        "betalingsindicatie": "nog_niet" if payment_required else "nvt",
     }
     if "vertrouwelijkheidaanduiding" in options:
         data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
 
     zaak = client.create("zaak", data)
     return zaak
+
+
+def partial_update_zaak(zaak_url: str, data: dict) -> dict:
+    config = ZgwConfig.get_solo()
+    client = config.zrc_service.build_client()
+    zaak = client.partial_update("zaak", data, url=zaak_url)
+    return zaak
+
+
+def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
+    data = {
+        "betalingsindicatie": "gedeeltelijk" if partial else "geheel",
+        "laatsteBetaaldatum": timezone.now().isoformat(),
+    }
+    return partial_update_zaak(zaak_url, data)
 
 
 def create_document(

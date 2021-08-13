@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
-from django.db.models import Max
+from django.db.models import Max, Sum
 from django.utils.translation import gettext_lazy as _
 
 from openforms.payments.constants import PaymentStatus
@@ -57,8 +57,9 @@ class SubmissionPaymentManager(models.Manager):
         return int(f"{prefix}{next_number}")
 
 
-class SubmissionQuerySet(models.QuerySet):
-    pass
+class SubmissionPaymentQuerySet(models.QuerySet):
+    def sum_amount(self) -> Decimal:
+        return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
 
 
 class SubmissionPayment(models.Model):
@@ -96,7 +97,7 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
-    objects = SubmissionPaymentManager.from_queryset(SubmissionQuerySet)()
+    objects = SubmissionPaymentManager.from_queryset(SubmissionPaymentQuerySet)()
 
     def __str__(self):
         return f"{self.uuid} {self.amount} '{self.get_status_display()}'"
