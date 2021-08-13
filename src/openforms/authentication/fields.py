@@ -1,13 +1,13 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 
-from ..registrations.constants import UNIQUE_ID_MAX_LENGTH
-from ..registrations.validators import PluginValidator
+from ..plugins.constants import UNIQUE_ID_MAX_LENGTH
+from ..plugins.validators import PluginExistsValidator
 from ..utils.validators import UniqueValuesValidator
 from .registry import register
 
 
-class BackendMultiSelectField(ArrayField):
+class AuthenticationBackendMultiSelectField(ArrayField):
     def __init__(self, *args, **kwargs):
         self.registry = kwargs.pop("registry", register)
         kwargs["base_field"] = BackendChoiceField(registry=self.registry)
@@ -27,7 +27,7 @@ class BackendChoiceField(CharField):
 
         super().__init__(*args, **kwargs)
 
-        self.validators.append(PluginValidator(self.registry))
+        self.validators.append(PluginExistsValidator(self.registry))
 
     def formfield(self, **kwargs):
         """

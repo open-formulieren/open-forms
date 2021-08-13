@@ -26,6 +26,7 @@ from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
+from ..payments.constants import PaymentStatus
 from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
 
@@ -274,6 +275,14 @@ class Submission(models.Model):
                     recipient_emails.update(value)
 
         return list(recipient_emails)
+
+    @property
+    def payment_required(self):
+        return self.form.payment_required
+
+    @property
+    def payment_completed(self):
+        return self.payments.filter(status=PaymentStatus.completed).exists()
 
 
 class SubmissionStep(models.Model):

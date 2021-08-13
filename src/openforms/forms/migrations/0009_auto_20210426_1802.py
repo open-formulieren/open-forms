@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="form",
             name="registration_backend",
-            field=openforms.registrations.fields.BackendChoiceField(
+            field=openforms.registrations.fields.RegistrationBackendChoiceField(
                 blank=True, max_length=100, verbose_name="registration backend"
             ),
         ),

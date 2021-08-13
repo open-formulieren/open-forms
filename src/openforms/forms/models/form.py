@@ -12,10 +12,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
-from openforms.authentication.fields import BackendMultiSelectField
-from openforms.registrations.fields import BackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
+from ...authentication.fields import AuthenticationBackendMultiSelectField
+from ...payments.fields import PaymentBackendChoiceField
+from ...registrations.fields import RegistrationBackendChoiceField
 from .utils import literal_getter
 
 
@@ -43,14 +44,20 @@ class Form(models.Model):
     )
 
     # backend integration - which registration to use?
-    registration_backend = BackendChoiceField(_("registration backend"), blank=True)
+    registration_backend = RegistrationBackendChoiceField(
+        _("registration backend"), blank=True
+    )
     registration_backend_options = JSONField(
         _("registration backend options"), default=dict, blank=True, null=True
     )
 
-    authentication_backends = BackendMultiSelectField(
-        _("authentication backend(s)"),
-        blank=True,
+    payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
+    payment_backend_options = JSONField(
+        _("payment backend options"), default=dict, blank=True, null=True
+    )
+
+    authentication_backends = AuthenticationBackendMultiSelectField(
+        _("authentication backend(s)"), blank=True
     )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
@@ -151,6 +158,16 @@ class Form(models.Model):
                 form_step.form_definition.login_required
                 for form_step in self.formstep_set.all()
             ]
+        )
+
+    @property
+    def payment_required(self) -> bool:
+        # this will later be more dynamic and determined from oa. the linked Product
+        return bool(
+            self.payment_backend
+            and self.payment_backend_options
+            and self.product
+            and self.product.price
         )
 
     @property

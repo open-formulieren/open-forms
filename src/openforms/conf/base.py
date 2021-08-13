@@ -166,6 +166,9 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
+    "openforms.payments.apps.PaymentsConfig",
+    "openforms.payments.contrib.demo.apps.DemoApp",
+    "openforms.payments.contrib.ogone.apps.OgoneApp",
 ]
 
 MIDDLEWARE = [

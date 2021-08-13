@@ -15,9 +15,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="form",
             name="authentication_backends",
-            field=openforms.authentication.fields.BackendMultiSelectField(
+            field=openforms.authentication.fields.AuthenticationBackendMultiSelectField(
                 base_field=openforms.authentication.fields.BackendChoiceField(
-                    max_length=100
+                    max_length=100,
                 ),
                 blank=True,
                 default=list,
