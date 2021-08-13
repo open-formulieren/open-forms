@@ -7,7 +7,7 @@ import { PrefixContext } from './Context';
 const BLANK_OPTION = ['', '------'];
 
 
-const Select = ({ name, choices, allowBlank=false, ...extraProps }) => {
+const Select = ({ name='select', choices, allowBlank=false, ...extraProps }) => {
     const prefix = useContext(PrefixContext);
     name = prefix ? `${prefix}-${name}` : name;
     const options = allowBlank ? [BLANK_OPTION].concat(choices) : choices;
@@ -24,7 +24,7 @@ const Select = ({ name, choices, allowBlank=false, ...extraProps }) => {
 
 
 Select.propTypes = {
-    name: PropTypes.string.isRequired,
+    name: PropTypes.string, // typically injected by the wrapping <Field> component
     allowBlank: PropTypes.bool,
     choices: PropTypes.arrayOf(
         PropTypes.arrayOf(PropTypes.string),

@@ -26,7 +26,6 @@ const RegistrationFields = ({
                     label={<FormattedMessage defaultMessage="Select registration backend" description="Registration backend label" />}
                 >
                     <Select
-                        name='Registration Method'
                         choices={backendChoices}
                         value={selectedBackend}
                         onChange={(event) => {

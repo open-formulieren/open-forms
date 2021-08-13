@@ -166,7 +166,6 @@ FormMetaFields.propTypes = {
         submissionConfirmationTemplate: PropTypes.string.isRequired,
         registrationBackend: PropTypes.string.isRequired,
         registrationBackendOptions: PropTypes.object,
-        registrationBackendOptionsForms: PropTypes.object,
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
