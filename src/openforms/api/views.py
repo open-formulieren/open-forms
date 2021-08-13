@@ -11,6 +11,9 @@ from .exception_handling import HandledException
 logger = logging.getLogger(__name__)
 
 
+ERR_CONTENT_TYPE = "application/problem+json"
+
+
 def exception_handler(exc, context):
     """
     Transform 4xx and 5xx errors into DSO-compliant shape.
@@ -31,5 +34,5 @@ def exception_handler(exc, context):
     serializer = HandledException.as_serializer(exc, response, request)
     response.data = OrderedDict(serializer.data.items())
     # custom content type
-    response["Content-Type"] = "application/problem+json"
+    response["Content-Type"] = ERR_CONTENT_TYPE
     return response

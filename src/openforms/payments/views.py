@@ -1,5 +1,4 @@
 import logging
-from decimal import Decimal
 
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
@@ -13,11 +12,14 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.payments.api.serializers import PaymentInfoSerializer
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.registry import register
+from openforms.api.serializers import ExceptionSerializer
+from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.submissions.models import Submission
 from openforms.utils.redirect import allow_redirect_url
+
+from .api.serializers import PaymentInfoSerializer
+from .models import SubmissionPayment
+from .registry import register
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +34,18 @@ class PaymentFlowBaseView(APIView):
 @extend_schema(
     summary=_("Start payment flow"),
     description=_(
-        "This endpoint provides information to start external login flow for a submission."
-        "\n\nDue to support for legacy platforms this view doesn't redirect but provides information for the frontend to be used client side."
+        "This endpoint provides information to start the payment flow for a submission."
+        "\n\nDue to support for legacy platforms this view doesn't redirect but provides "
+        "information for the frontend to be used client side."
         "\n\nVarious validations are performed:"
         "\n* the form and submission must require payment"
         "\n* the `plugin_id` is configured on the form"
         "\n* payment is required and configured on the form"
         "\n* the `next` parameter must be present"
         "\n* the `next` parameter must match the CORS policy"
+        "\n\nThe HTTP 200 response contains the information to start the flow with the "
+        "payment provider. Depending on the 'type', send a `GET` or `POST` request with "
+        "the `data` as 'Form Data' to the given 'url'."
     ),
     parameters=[
         OpenApiParameter(
@@ -68,19 +74,19 @@ class PaymentFlowBaseView(APIView):
             required=True,
         ),
     ],
+    request=None,
     responses={
-        (200, "application/json"): OpenApiResponse(
-            response=PaymentInfoSerializer,
+        200: PaymentInfoSerializer,
+        (400, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Bad request. Invalid parameters were passed."),
+        ),
+        (404, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
             description=_(
-                "Depending on the 'type' send a GET or POST request with the 'data' as Form Data to given 'url'."
+                "Not found. The slug did not point to a live submission or the "
+                "`plugin_id` does not exist."
             ),
-        ),
-        (400, "text/html"): OpenApiResponse(
-            response=str, description=_("Bad request. Invalid parameters were passed.")
-        ),
-        (404, "text/html"): OpenApiResponse(
-            response=str,
-            description=_("Not found. The slug did not point to a live submission."),
         ),
     },
 )
@@ -103,7 +109,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         if plugin_id != submission.form.payment_backend:
             raise ParseError(detail="plugin not allowed")
 
-        form_url = request.GET.get("next")
+        form_url = request.query_params.get("next")
         if not form_url:
             raise ParseError(detail="missing 'next' parameter")
 
@@ -150,7 +156,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             name="Location",
             location=OpenApiParameter.HEADER,
             type=OpenApiTypes.URI,
-            description=_("URL where the SDK initiated the authentication flow."),
+            description=_("URL where the SDK initiated the payment flow."),
             response=[302],
             required=True,
         ),
@@ -164,13 +170,17 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         ),
     ],
     responses={
-        302: None,
-        (400, "text/html"): OpenApiResponse(
-            response=str, description=_("Bad request. Invalid parameters were passed.")
+        302: OpenApiResponse(response=None, description=_("Tempomrary redirect")),
+        (400, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Bad request. Invalid parameters were passed."),
         ),
-        (404, "text/html"): OpenApiResponse(
-            response=str,
-            description=_("Not found. The slug did not point to a live form."),
+        (404, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_(
+                "Not found. The slug did not point to a live submission payment or "
+                "the `plugin_id` does not exist."
+            ),
         ),
     },
 )
@@ -266,11 +276,12 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     ],
     responses={
         200: None,
-        (400, "text/html"): OpenApiResponse(
-            response=str, description=_("Bad request. Invalid parameters were passed.")
+        (400, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Bad request. Invalid parameters were passed."),
         ),
-        (404, "text/html"): OpenApiResponse(
-            response=str,
+        (404, ERR_CONTENT_TYPE): OpenApiResponse(
+            response=ExceptionSerializer,
             description=_("Not found. The slug did not point to a live plugin."),
         ),
     },
