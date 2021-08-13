@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Action} from './Action';
 import {useImmerReducer} from "use-immer";
+import usePrevious from "react-use/esm/usePrevious";
+import isEqual from 'lodash/isEqual';
+
 
 const emptyAction = {
     actionType: '',
@@ -41,6 +44,39 @@ const reducer = (draft, action) => {
             }
             break;
         }
+        case 'PROCESS_ACTIONS': {
+            let parsedActions = [];
+            for (const jsonAction of action.payload) {
+
+                let componentValueSource, componentLiteralValue, componentVariableValue;
+                if (jsonAction.action.value.var === undefined) {
+                    componentValueSource = 'literal';
+                    componentLiteralValue = jsonAction.action.value;
+                    componentVariableValue = '';
+                } else {
+                    if (!jsonAction.action.value.var.length) {
+                        componentValueSource = '';
+                    } else {
+                        componentValueSource = 'component';
+                    }
+                    componentLiteralValue = '';
+                    componentVariableValue = jsonAction.action.value.var;
+                }
+                if (!!jsonAction.action.source) componentValueSource = jsonAction.action.source;
+
+                parsedActions.push({
+                    componentToChange: jsonAction.component,
+                    actionType: jsonAction.action.type,
+                    componentValueSource: componentValueSource,
+                    componentProperty: jsonAction.action.property.value,
+                    componentLiteralValue: componentLiteralValue,
+                    componentVariableValue: componentVariableValue,
+                    componentPropertyValue: jsonAction.action.state,
+                });
+            }
+            draft.actions = parsedActions;
+            break;
+        }
         case 'ACTION_ADDED': {
             draft.actions.push(emptyAction);
             break;
@@ -58,8 +94,52 @@ const reducer = (draft, action) => {
     }
 };
 
-const ActionSet = ({actions}) => {
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, actions: actions});
+const convertActionToJson = (action) => {
+        return {
+            component: action.componentToChange,
+            action: {
+                type: action.actionType,
+                property: {value: action.componentProperty},
+                // The data in 'value' needs to be valid jsonLogic
+                value: action.componentLiteralValue || {var: action.componentVariableValue},
+                state: action.componentPropertyValue,
+                // Selecting if the new component value should come from a literal or another component doesn't
+                // change anything in the JSON, only entering the literal or picking the component does.
+                // So, this 'source' attribute is here only to keep track of the value for the OperandTypeSelection
+                // dropdown, but is not used in the backend
+                source: action.componentValueSource
+        }
+    };
+};
+
+const ActionSet = ({name, actions, onChange}) => {
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, actions: actions || []});
+
+    // whenever we get a change in the actions, relay that back to the
+    // parent component
+    const previousActions = usePrevious(state.actions);
+    useEffect(
+        () => {
+            // if nothing changed, do not fire an update
+            if (previousActions && isEqual(previousActions, state.actions)) return;
+            onChange({
+                target: {
+                    name: name,
+                    value: state.actions.map((action, index) => convertActionToJson(action)),
+                }
+            });
+        },
+        [state.actions]
+    );
+
+    // Parse the actions (expressed in JSON) to the variables that can be handled in the state
+    useEffect(
+        () => dispatch({
+            type: 'PROCESS_ACTIONS',
+            payload: actions,
+        }),
+        [actions]
+    );
 
     const onActionChange = (index, event) => {
         const {name, value} = event.target;

@@ -23,8 +23,6 @@ const initialState = {
     rulesToDelete: []
 };
 
-const EMPTY_CHOICE = [['', '-------']];
-
 const EMPTY_RULE = {
     uuid: '',
     formStep: '',
@@ -198,8 +196,8 @@ const Rule = ({components, formStepsChoices, uuid, component, formStep, jsonLogi
     return (
         <div className="logic-rule">
 
-            <Trigger name="jsonLogicTrigger"logic={jsonLogicTrigger} onChange={onChange} />
-            <ActionSet actions={[]} />
+            <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
+            <ActionSet name="actions" actions={actions} onChange={onChange} />
 
             <div className="actions">
                 <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />

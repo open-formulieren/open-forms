@@ -74,6 +74,7 @@ const Action = ({action, onChange, onDelete}) => {
                     </> : null
             }
             {
+                // Used to pick whether the new value of a component will be a literal or a value from another component
                 action.actionType === 'value' ?
                     <OperandTypeSelection
                         name="componentValueSource"
