@@ -10,6 +10,7 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     RegistrationAttributeSerializer,
+    RegistrationPluginOptionsSchemaSerializer,
     RegistrationPluginSerializer,
 )
 
@@ -49,3 +50,22 @@ class AllAttributesListView(ListMixin, APIView):
         choices = RegistrationAttribute.choices
 
         return [ChoiceWrapper(choice) for choice in choices]
+
+
+@extend_schema_view(
+    get=extend_schema(summary=_("List the plugin configuration options form schemas"))
+)
+class PluginsConfigurationOptionsView(ListMixin, APIView):
+    """
+    Retrieve the JSON schema of each plugin's configuration options.
+
+    The JSON schema can be used to generate a configuration form matching the
+    available options.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = RegistrationPluginOptionsSchemaSerializer
+
+    def get_objects(self):
+        return register

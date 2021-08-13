@@ -3,12 +3,12 @@ from unittest.mock import patch
 from django.utils.translation import gettext_lazy as _
 
 from djchoices import ChoiceItem, DjangoChoices
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.reverse import reverse, reverse_lazy
-from rest_framework.serializers import Serializer
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
 from ...registry import Registry
@@ -21,8 +21,11 @@ class TestAttributes(DjangoChoices):
     two = ChoiceItem("two_id", "Two Label")
 
 
-class OptionsSerializer(Serializer):
-    pass
+class OptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    attribute = serializers.CharField(
+        label=_("Example attribute"),
+        required=True,
+    )
 
 
 class Plugin(BasePlugin):
@@ -109,6 +112,31 @@ class ResponseTests(APITestCase):
             {
                 "id": "test",
                 "label": "Test",
+            }
+        ]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected)
+
+    def test_plugin_configuration_options(self):
+        endpoint = reverse("api:plugins-configuration-options-retrieve")
+
+        response = self.client.get(endpoint)
+
+        expected = [
+            {
+                "id": "test",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "attribute": {
+                            "type": "string",
+                            "minLength": 1,
+                            "title": "Example attribute",
+                        }
+                    },
+                    "required": ["attribute"],
+                },
             }
         ]
 

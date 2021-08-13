@@ -30,3 +30,78 @@
   clear: both;
   padding-top: 1em;
 }
+
+
+/* Styling for react-jsonschema-form */
+.rjsf {
+  legend {
+    font-size: 13px;
+  }
+
+  input, select, .btn-group {
+    height: 30px;
+  }
+
+  .array-item {
+    min-width: 170px;
+    margin-bottom: 2px;
+    display: flex;
+  }
+
+  .array-item-add {
+    text-align: left !important;
+  }
+
+  .btn-add {
+    height: 35px;
+    margin-top: 10px;
+  }
+
+  .btn-danger, .btn-danger:hover {
+    color: unset;
+    background-color: unset;
+    border: unset;
+  }
+
+  .form-group {
+    margin-bottom: unset;
+  }
+
+  .glyphicon {
+    display: block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    font-weight: 900;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .glyphicon-plus:before {
+    content: var(--of-add-another-text, "Add another");
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: 13px;
+  }
+
+  .glyphicon-remove:before {
+    content: "\f1f8";
+    font-weight: normal;
+  }
+
+  .glyphicon-arrow-down:before {
+    content: '\f107';
+  }
+
+  .glyphicon-arrow-up:before {
+    content: '\f106';
+  }
+
+  .row {
+    flex-direction: column;
+    padding-left: 13px;
+  }
+
+  .field-description {
+    color: #999; // same color as django forms.css
+  }
+}

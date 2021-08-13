@@ -30,3 +30,16 @@ class RegistrationAttributeSerializer(serializers.Serializer):
         label=_("Label"),
         help_text=_("The human-readable name for an attribute."),
     )
+
+
+class RegistrationPluginOptionsSchemaSerializer(serializers.Serializer):
+    id = serializers.CharField(
+        source="identifier",
+        label=_("plugin ID"),
+        help_text=_("The unique plugin identifier"),
+    )
+    schema = serializers.JSONField(
+        source="configuration_options.display_as_jsonschema",
+        label=_("JSON schema"),
+        help_text=_("The generated JSON schema for the plugin options."),
+    )
