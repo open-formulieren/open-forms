@@ -1,0 +1,11 @@
+{% load multidomain %}
+
+{% if sites|length > 1 %}
+    <form class="user-tools__switcher" method="GET" style="display: inline-block;">
+        <select onchange="window.location.href=this.value" title="Domain switcher">
+            {% for site in sites %}
+                <option {% if site.is_current %}selected="selected"{% endif %} value="{{ site.url }}?next={{ next }}">{{ site.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+{% endif %}

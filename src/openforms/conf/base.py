@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     "openforms.config",
     "openforms.emails",
     "openforms.forms",
+    "openforms.multidomain",
     "openforms.products",
     "openforms.ui",
     "openforms.utils",
@@ -446,7 +447,6 @@ SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
 TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
     "TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS", default=2
 )
-
 
 ##############################
 #                            #

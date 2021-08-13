@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load i18n static hijack_tags %}
+{% load i18n static hijack_tags multidomain %}
 
 {% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
@@ -27,6 +27,8 @@
     <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
     {% endif %}
     <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+
+    {% multidomain_switcher %}
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

@@ -8,6 +8,10 @@
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+-e git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@806ba7a0448ecaae0c1271b4afa2f282601e8a6a#egg=mozilla-django-oidc-db
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via
     #   -c requirements/ci.txt
@@ -459,10 +463,6 @@ mccabe==0.6.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-mozilla-django-oidc-db==0.3.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 mozilla-django-oidc==1.2.4
     # via
     #   -c requirements/ci.txt

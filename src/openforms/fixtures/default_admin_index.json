@@ -131,6 +131,10 @@
                 "openidconnectconfig"
             ],
             [
+                "multidomain",
+                "domain"
+            ],
+            [
                 "prefill_haalcentraal",
                 "haalcentraalconfig"
             ],
