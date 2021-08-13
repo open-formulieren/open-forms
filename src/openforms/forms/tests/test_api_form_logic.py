@@ -306,3 +306,52 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         self.assertEqual(0, FormLogic.objects.all().count())
+
+    def test_invalid_logic_trigger(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                    }
+                ]
+            },
+        )
+
+        form_logic_data = {
+            "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
+            "component": "step1_textfield1",
+            "json_logic_trigger": {
+                "invalid_op": [
+                    {"var": "step1_textfield1"},
+                    "hide step 1",
+                ]
+            },
+            "actions": [
+                {
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    }
+                }
+            ],
+        }
+
+        self.client.login(
+            request=HttpRequest(), username=user.username, password="test"
+        )
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(
+            "jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
+        )
