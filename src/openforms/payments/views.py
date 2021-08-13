@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 from openforms.payments.api.serializers import PaymentInfoSerializer
 from openforms.payments.models import SubmissionPayment
 from openforms.payments.registry import register
+from openforms.payments.services import update_submission_payment_registration
 from openforms.submissions.models import Submission
 from openforms.utils.redirect import allow_redirect_url
 
@@ -26,7 +27,6 @@ class PaymentFlowBaseView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.Serializer
-    register = register
 
 
 @extend_schema(
@@ -93,7 +93,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
     def post(self, request, uuid: str, plugin_id: str):
         submission = self.get_object()
         try:
-            plugin = self.register[plugin_id]
+            plugin = register[plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
 
@@ -192,7 +192,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         """
         payment = self.get_object()
         try:
-            plugin = self.register[payment.plugin_id]
+            plugin = register[payment.plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
@@ -217,6 +217,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                     {"plugin_id": payment.plugin_id, "location": location},
                 )
                 raise ParseError(detail="redirect not allowed")
+
+        update_submission_payment_registration(payment.submission)
 
         return response
 
@@ -278,7 +280,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 class PaymentWebhookView(PaymentFlowBaseView):
     def _handle_webhook(self, request, *args, **kwargs):
         try:
-            plugin = self.register[kwargs["plugin_id"]]
+            plugin = register[kwargs["plugin_id"]]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
@@ -286,7 +288,10 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if plugin.webhook_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
-        plugin.handle_webhook(request)
+        payment = plugin.handle_webhook(request)
+        if payment:
+            update_submission_payment_registration(payment.submission)
+
         return HttpResponse("")
 
     def get(self, request, *args, **kwargs):

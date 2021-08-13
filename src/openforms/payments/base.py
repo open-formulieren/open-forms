@@ -53,7 +53,7 @@ class BasePlugin:
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: HttpRequest) -> None:
+    def handle_webhook(self, request: HttpRequest) -> "SubmissionPayment":
         raise NotImplementedError()
 
     # helpers
