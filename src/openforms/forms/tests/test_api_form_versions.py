@@ -22,7 +22,7 @@ EXPORT_BLOB = {
     "forms": '[{"uuid": "324cadce-a627-4e3f-b117-37ca232f16b2", "name": "Test Form 1", "login_required": false, "authentication_backends": ["digid-mock", "digid"], "product": null, "slug": "auth-plugins", "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "show_progress_indicator": true, "maintenance_mode": false, "active": true, "is_deleted": false}]',
     "formSteps": '[{"uuid": "3ca01601-cd20-4746-bce5-baab47636823", "index": 0, "slug": "test-step-1", "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2"}]',
     "formDefinitions": '[{"url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8", "name": "Test Definition 1", "slug": "test-definition-1", "configuration": {"test": "1"}}]',
-    "formLogic": '[{"uuid": "b92342be-05e0-4070-b2cc-1b88af472091", "form_step": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/3ca01601-cd20-4746-bce5-baab47636823", "component": "test", "actions": [{"action": "test_action"}], "json_logic_trigger": {"==": [1, 1]}}]',
+    "formLogic": '[{"uuid": "b92342be-05e0-4070-b2cc-1b88af472091", "form_step": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/3ca01601-cd20-4746-bce5-baab47636823", "component": "test", "actions": [{"action": {"type": "disable-next"}}], "json_logic_trigger": {"==": [1, 1]}}]',
 }
 
 

@@ -76,12 +76,14 @@ class FormLogicAPITests(APITestCase):
             },
             actions=[
                 {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
-                    },
-                    "state": True,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    }
                 }
             ],
         )
@@ -123,12 +125,14 @@ class FormLogicAPITests(APITestCase):
             },
             "actions": [
                 {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
-                    },
-                    "state": True,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    }
                 }
             ],
         }
@@ -227,12 +231,14 @@ class FormLogicAPITests(APITestCase):
             },
             actions=[
                 {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
-                    },
-                    "state": True,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    }
                 }
             ],
         )
@@ -280,12 +286,14 @@ class FormLogicAPITests(APITestCase):
             },
             actions=[
                 {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
-                    },
-                    "state": True,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    }
                 }
             ],
         )
