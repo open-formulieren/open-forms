@@ -284,14 +284,13 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("When enabled, information about the used SDK is displayed."),
     )
 
-    # GDPR related removing data configurations
-    # Successful, incomplete, error, all(No dropdown)
+    # Removing data configurations
     successful_submissions_removal_limit = models.PositiveIntegerField(
         _("successful submission removal limit"),
         default=7,
         validators=[MinValueValidator(1)],
         help_text=_(
-            "Amount of days a successful submission will remain before being removed"
+            "Amount of days successful submissions will remain before being removed"
         ),
     )
     successful_submissions_removal_method = models.CharField(
@@ -308,7 +307,7 @@ class GlobalConfiguration(SingletonModel):
         default=7,
         validators=[MinValueValidator(1)],
         help_text=_(
-            "Amount of days an incomplete submission will remain before being removed"
+            "Amount of days incomplete submissions will remain before being removed"
         ),
     )
     incomplete_submissions_removal_method = models.CharField(
@@ -325,7 +324,7 @@ class GlobalConfiguration(SingletonModel):
         default=30,
         validators=[MinValueValidator(1)],
         help_text=_(
-            "Amount of days an errored submission will remain before being removed"
+            "Amount of days errored submissions will remain before being removed"
         ),
     )
     errored_submissions_removal_method = models.CharField(

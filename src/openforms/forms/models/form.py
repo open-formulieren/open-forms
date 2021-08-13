@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import List
 
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
@@ -16,6 +17,7 @@ from ...authentication.fields import AuthenticationBackendMultiSelectField
 from ...payments.fields import PaymentBackendChoiceField
 from ...registrations.fields import RegistrationBackendChoiceField
 from .utils import literal_getter
+from ...config.constants import RemovalMethods
 
 
 class FormQuerySet(models.QuerySet):
@@ -128,6 +130,81 @@ class Form(models.Model):
         ),
     )
     _is_deleted = models.BooleanField(default=False)
+
+    # Data removal
+    successful_submissions_removal_limit = models.PositiveIntegerField(
+        _("successful submission removal limit"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days successful submissions of this form will remain before being removed. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    successful_submissions_removal_method = models.CharField(
+        _("successful submissions removal method"),
+        max_length=50,
+        blank=True,
+        null=True,
+        choices=RemovalMethods,
+        help_text=_(
+            "How successful submissions of this form will be removed after the limit. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    incomplete_submissions_removal_limit = models.PositiveIntegerField(
+        _("incomplete submission removal limit"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days incomplete submissions of this form will remain before being removed. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    incomplete_submissions_removal_method = models.CharField(
+        _("registration backend status"),
+        max_length=50,
+        blank=True,
+        null=True,
+        choices=RemovalMethods,
+        help_text=_(
+            "How incomplete submissions of this form will be removed after the limit. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    errored_submissions_removal_limit = models.PositiveIntegerField(
+        _("errored submission removal days limit"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days errored submissions of this form will remain before being removed. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    errored_submissions_removal_method = models.CharField(
+        _("registration backend status"),
+        max_length=50,
+        blank=True,
+        null=True,
+        choices=RemovalMethods,
+        help_text=_(
+            "How errored submissions of this form will be removed after the limit of days. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
+    all_submissions_removal_limit = models.PositiveIntegerField(
+        _("errored submission removal days limit"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days when all submissions of this form will be permanently deleted. "
+            "Leave blank to use value in General Configuration."
+        ),
+    )
 
     objects = FormManager()
 
