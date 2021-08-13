@@ -8,6 +8,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
+from openforms.config.constants import RemovalMethods
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
@@ -281,6 +282,68 @@ class GlobalConfiguration(SingletonModel):
         _("display SDK information"),
         default=False,
         help_text=_("When enabled, information about the used SDK is displayed."),
+    )
+
+    # GDPR related removing data configurations
+    # Successful, incomplete, error, all(No dropdown)
+    successful_submissions_removal_limit = models.PositiveIntegerField(
+        _("successful submission removal limit"),
+        default=7,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days a successful submission will remain before being removed"
+        ),
+    )
+    successful_submissions_removal_method = models.CharField(
+        _("successful submissions removal method"),
+        max_length=50,
+        choices=RemovalMethods,
+        default=RemovalMethods.delete_permanently,
+        help_text=_(
+            "How successful submissions will be removed after the limit"
+        ),
+    )
+    incomplete_submissions_removal_limit = models.PositiveIntegerField(
+        _("incomplete submission removal limit"),
+        default=7,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days an incomplete submission will remain before being removed"
+        ),
+    )
+    incomplete_submissions_removal_method = models.CharField(
+        _("registration backend status"),
+        max_length=50,
+        choices=RemovalMethods,
+        default=RemovalMethods.delete_permanently,
+        help_text=_(
+            "How incomplete submissions will be removed after the limit"
+        ),
+    )
+    errored_submissions_removal_limit = models.PositiveIntegerField(
+        _("errored submission removal days limit"),
+        default=30,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days an errored submission will remain before being removed"
+        ),
+    )
+    errored_submissions_removal_method = models.CharField(
+        _("registration backend status"),
+        max_length=50,
+        choices=RemovalMethods,
+        default=RemovalMethods.delete_permanently,
+        help_text=_(
+            "How errored submissions will be removed after the limit of days"
+        ),
+    )
+    all_submissions_removal_limit = models.PositiveIntegerField(
+        _("errored submission removal days limit"),
+        default=90,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "Amount of days when all submissions will be permanently deleted"
+        ),
     )
 
     class Meta:
