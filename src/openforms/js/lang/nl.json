@@ -29,6 +29,11 @@
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
   },
+  "3W3Px9": {
+    "defaultMessage": "Voeg nog één toe",
+    "description": "Button text to add extra item",
+    "originalDefault": "Add another"
+  },
   "5/xPX6": {
     "defaultMessage": "Naam",
     "description": "Form name field label",

@@ -123,19 +123,22 @@ class ResponseTests(APITestCase):
 
         response = self.client.get(endpoint)
 
-        expected = {
-            "test": {
-                "type": "object",
-                "properties": {
-                    "attribute": {
-                        "type": "string",
-                        "minLength": 1,
-                        "title": "Example attribute",
-                    }
+        expected = [
+            {
+                "id": "test",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "attribute": {
+                            "type": "string",
+                            "minLength": 1,
+                            "title": "Example attribute",
+                        }
+                    },
+                    "required": ["attribute"],
                 },
-                "required": ["attribute"],
             }
-        }
+        ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)

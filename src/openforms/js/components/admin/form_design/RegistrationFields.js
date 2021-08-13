@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
@@ -16,10 +16,19 @@ const RegistrationFields = ({
     backendOptionsForms={},
     onChange,
 }) => {
+    const intl = useIntl();
     const backendChoices = backends.map( backend => [backend.id, backend.label]);
+    const optionsFormSchema = backendOptionsForms[selectedBackend];
+
+    const addAnotherMsg = intl.formatMessage({
+        description: 'Button text to add extra item',
+        defaultMessage: 'Add another',
+    });
 
     return (
-        <Fieldset>
+        <Fieldset style={{
+            '--of-add-another-text': `"${addAnotherMsg}"`
+        }}>
             <FormRow>
                 <Field
                     name="form.registrationBackend"
@@ -37,23 +46,22 @@ const RegistrationFields = ({
                     />
                 </Field>
             </FormRow>
-            <FormRow>
-                <Field
-                    name="form.registrationBackendOptions"
-                    label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
-                >
-                    {backendOptionsForms[selectedBackend] ?
+            {optionsFormSchema
+                ? (<FormRow>
+                    <Field
+                        name="form.registrationBackendOptions"
+                        label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
+                    >
                         <Form
-                            schema={backendOptionsForms[selectedBackend]}
+                            schema={optionsFormSchema}
                             formData={backendOptions}
                             onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
                             children={true}
                         />
-                        :
-                        <></>
-                    }
-                </Field>
-            </FormRow>
+                    </Field>
+                </FormRow> )
+                : null
+            }
         </Fieldset>
     );
 };
@@ -65,7 +73,11 @@ RegistrationFields.propTypes = {
     })),
     selectedBackend: PropTypes.string,
     backendOptions: PropTypes.object,
-    backendOptionsForms: PropTypes.object,
+    backendOptionsForms: PropTypes.objectOf(PropTypes.shape({
+        type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
+        properties: PropTypes.object,
+        required: PropTypes.arrayOf(PropTypes.string),
+    })),
     onChange: PropTypes.func.isRequired,
 };
 

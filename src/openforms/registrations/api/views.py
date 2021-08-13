@@ -1,9 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import authentication, permissions, status
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.response import Response
+from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 
 from ...utils.api.views import ListMixin
@@ -12,6 +10,7 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     RegistrationAttributeSerializer,
+    RegistrationPluginOptionsSchemaSerializer,
     RegistrationPluginSerializer,
 )
 
@@ -36,27 +35,6 @@ class PluginListView(ListMixin, APIView):
 
 
 @extend_schema_view(
-    get=extend_schema(
-        summary=_("Get the json schema of the plugins configuration options")
-    ),
-)
-class PluginsConfigurationOptionsView(RetrieveAPIView):
-    """
-    Get the json schema of the plugins configuration options
-    """
-
-    authentication_classes = (authentication.SessionAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, *args, **kwargs):
-        data = {
-            _register.identifier: _register.configuration_options.display_as_jsonschema()
-            for _register in list(register)
-        }
-        return Response(data=data, status=status.HTTP_200_OK)
-
-
-@extend_schema_view(
     get=extend_schema(summary=_("List available registration attributes")),
 )
 class AllAttributesListView(ListMixin, APIView):
@@ -72,3 +50,22 @@ class AllAttributesListView(ListMixin, APIView):
         choices = RegistrationAttribute.choices
 
         return [ChoiceWrapper(choice) for choice in choices]
+
+
+@extend_schema_view(
+    get=extend_schema(summary=_("List the plugin configuration options form schemas"))
+)
+class PluginsConfigurationOptionsView(ListMixin, APIView):
+    """
+    Retrieve the JSON schema of each plugin's configuration options.
+
+    The JSON schema can be used to generate a configuration form matching the
+    available options.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = RegistrationPluginOptionsSchemaSerializer
+
+    def get_objects(self):
+        return register

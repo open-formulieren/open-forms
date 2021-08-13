@@ -62,7 +62,7 @@ const initialFormState = {
         loading: true,
         data: []
     },
-    availableRegistrationBackendOptions: {
+    registrationBackendOptionFormSchemas: {
         loading: true,
         data: {}
     },
@@ -157,10 +157,13 @@ function reducer(draft, action) {
             };
             break;
         }
-        case 'REGISTRATION_BACKEND_OPTIONS_LOADED': {
-            draft.availableRegistrationBackendOptions = {
+        case 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED': {
+            const data = Object.fromEntries(
+                action.payload.map( ({id, schema}) => [id, schema] )
+            );
+            draft.registrationBackendOptionFormSchemas = {
                 loading: false,
-                data: action.payload,
+                data,
             };
             break;
         }
@@ -382,7 +385,7 @@ const getRegistrationBackendOptions = async (dispatch) => {
     try {
         const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
         dispatch({
-            type: 'REGISTRATION_BACKEND_OPTIONS_LOADED',
+            type: 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED',
             payload: response.data
         });
     } catch (e) {
@@ -704,6 +707,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         state.availableAuthPlugins.loading,
         state.availableRegistrationBackends.loading,
         state.availablePrefillPlugins.loading,
+        state.registrationBackendOptionFormSchemas.loading,
     ].some( el => el );
 
     if (isAnyLoading) {
@@ -813,7 +817,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backends={state.availableRegistrationBackends.data}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
-                        backendOptionsForms={state.availableRegistrationBackendOptions.data}
+                        backendOptionsForms={state.registrationBackendOptionFormSchemas.data}
                         onChange={onFieldChange}
                     />
                 </TabPanel>

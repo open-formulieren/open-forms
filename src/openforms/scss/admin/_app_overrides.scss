@@ -78,7 +78,7 @@
   }
 
   .glyphicon-plus:before {
-    content: "Add another";
+    content: var(--of-add-another-text, "Add another");
     font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
     font-size: 13px;
   }
@@ -99,5 +99,9 @@
   .row {
     flex-direction: column;
     padding-left: 13px;
+  }
+
+  .field-description {
+    color: #999; // same color as django forms.css
   }
 }
