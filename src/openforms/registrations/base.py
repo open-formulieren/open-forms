@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Optional, Tuple, Type
 
 from django.utils.translation import gettext_lazy as _
 
@@ -40,7 +40,10 @@ class BasePlugin:
 
     def register_submission(
         self, submission: "Submission", options: dict
-    ) -> Optional[dict]:
+    ) -> Tuple[str, Optional[dict]]:
+        raise NotImplementedError()
+
+    def update_payment_status(self, submission: "Submission"):
         raise NotImplementedError()
 
     def get_label(self):

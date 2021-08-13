@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from django.utils.translation import gettext_lazy as _
 
@@ -63,7 +63,7 @@ class ZGWRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    ) -> Tuple[str, Optional[dict]]:
         """
         Create a zaak and document with the submitted data as PDF.
 
@@ -100,4 +100,4 @@ class ZGWRegistration(BasePlugin):
             "status": status,
             "rol": rol,
         }
-        return result
+        return zaak["url"], result

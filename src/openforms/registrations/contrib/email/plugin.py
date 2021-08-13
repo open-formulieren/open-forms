@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from django.conf import settings
 from django.template import Context, Template
@@ -23,7 +23,7 @@ class EmailRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    ) -> Tuple[str, None]:
         submitted_data = submission.get_merged_data()
 
         # TODO move check to shared code
@@ -51,7 +51,7 @@ class EmailRegistration(BasePlugin):
 
         attachments = submission.attachments.as_mail_tuples()
 
-        send_mail_plus(
+        message_id, num = send_mail_plus(
             _("[Open Forms] {} - submission {}").format(
                 submission.form.name, submission.uuid
             ),
@@ -62,3 +62,4 @@ class EmailRegistration(BasePlugin):
             html_message=content,
             attachments=attachments,
         )
+        return message_id, None

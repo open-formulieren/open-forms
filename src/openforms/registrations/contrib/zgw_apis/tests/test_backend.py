@@ -188,7 +188,10 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
+        registration_id, result = plugin.register_submission(
+            submission, zgw_form_options
+        )
+        self.assertEqual(registration_id, "https://zaken.nl/api/v1/zaken/1")
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",

@@ -56,12 +56,17 @@ class EmailBackendTests(TestCase):
         )
 
         email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        registration_id, result = email_submission.register_submission(
+            submission, email_form_options
+        )
+
+        self.assertIsNone(result)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
+
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
@@ -70,6 +75,7 @@ class EmailBackendTests(TestCase):
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+        self.assertEqual(message.extra_headers["Message-ID"], registration_id)
 
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)

@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Tuple
 
 from django.utils.translation import gettext_lazy as _
 
@@ -114,7 +114,7 @@ class StufZDSRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    ) -> Tuple[str, Optional[dict]]:
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
 
@@ -147,4 +147,4 @@ class StufZDSRegistration(BasePlugin):
             "zaak": zaak_id,
             "document": doc_id,
         }
-        return result
+        return zaak_id, result

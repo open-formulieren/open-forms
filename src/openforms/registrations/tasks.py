@@ -63,7 +63,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     logger.debug("Invoking the '%r' plugin callback", plugin)
     try:
-        result = plugin.register_submission(
+        registration_id, result = plugin.register_submission(
             submission, options_serializer.validated_data
         )
     except RegistrationFailed:
@@ -94,10 +94,12 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     submission.registration_status = status
     submission.registration_result = result_data
+    submission.registration_id = registration_id
     submission.save(
         update_fields=[
             "registration_status",
             "registration_result",
+            "registration_id",
         ]
     )
 

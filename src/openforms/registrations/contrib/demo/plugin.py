@@ -1,4 +1,4 @@
-from typing import NoReturn
+from typing import NoReturn, Tuple
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -15,9 +15,12 @@ class DemoRegistration(BasePlugin):
     verbose_name = _("Demo - print to console")
     configuration_options = DemoOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: dict) -> None:
+    def register_submission(
+        self, submission: Submission, options: dict
+    ) -> Tuple[str, None]:
         print(submission)
         print(options["extra_line"])
+        return "demo", None
 
 
 @register("failing-demo")

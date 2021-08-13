@@ -611,7 +611,7 @@ class StufZDSPluginTests(StufTestBase):
         }
 
         plugin = StufZDSRegistration("stuf")
-        result = plugin.register_submission(submission, form_options)
+        registration_id, result = plugin.register_submission(submission, form_options)
         self.assertEqual(
             result,
             {
@@ -619,6 +619,7 @@ class StufZDSPluginTests(StufTestBase):
                 "document": "bar-document",
             },
         )
+        self.assertEqual(registration_id, "foo-zaak")
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)

@@ -6,10 +6,9 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.utils import timezone
 
-from celery.exceptions import Retry
 from freezegun import freeze_time
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -72,7 +71,7 @@ class RegistrationHookTests(TestCase):
                 test_closure.assertEqual(options["string"], "some-option")
                 test_closure.assertEqual(options["service"], test_closure.service)
 
-                return {"result": "ok"}
+                return "external-id", {"result": "ok"}
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -83,10 +82,8 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.success
         )
-        self.assertEqual(
-            self.submission.registration_result,
-            {"result": "ok"},
-        )
+        self.assertEqual(self.submission.registration_result, {"result": "ok"})
+        self.assertEqual(self.submission.registration_id, "external-id")
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @freeze_time("2021-08-04T12:00:00+02:00")
@@ -103,7 +100,7 @@ class RegistrationHookTests(TestCase):
             backend_feedback_serializer = ResultSerializer
 
             def register_submission(self, submission, options):
-                return {"external_id": result_uuid}
+                return result_uuid, {"external_id": result_uuid}
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -169,6 +166,7 @@ class RegistrationHookTests(TestCase):
         submission = SubmissionFactory.create(
             last_register_date=last_register_date,
             registration_status=RegistrationStatuses.success,
+            registration_id="external-id",
             form__registration_backend="callback",
             form__registration_backend_options={
                 "string": "some-option",
@@ -182,6 +180,7 @@ class RegistrationHookTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+        self.assertEqual(submission.registration_id, "external-id")
         self.assertEqual(submission.last_register_date, last_register_date)
 
     @freeze_time("2021-08-04T12:00:00+02:00")
