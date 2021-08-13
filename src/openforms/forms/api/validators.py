@@ -80,3 +80,13 @@ class LogicActionValidator:
             raise serializers.ValidationError(
                 _("Invalid JSON logic specified in the 'value' attribute")
             )
+
+
+class JsonLogicValidator:
+    """Validates that a json object is a valid jsonLogic expression"""
+
+    def __call__(self, value: dict):
+        try:
+            jsonLogic(value)
+        except ValueError:
+            raise serializers.ValidationError(_("Invalid JSON logic."))
