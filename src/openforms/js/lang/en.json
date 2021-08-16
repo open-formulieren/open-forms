@@ -224,6 +224,11 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "Qr2wnR": {
+    "defaultMessage": "Payment backend options",
+    "description": "Payment backend options label",
+    "originalDefault": "Payment backend options"
+  },
   "TCQic2": {
     "defaultMessage": "Confirm text",
     "description": "literals.confirmText form label",

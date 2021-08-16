@@ -16,6 +16,9 @@ const PaymentFields = ({
     onChange
 }) => {
     const backendChoices = backends.map( backend => [backend.id, backend.label]);
+    const backend = backends.find( backend => backend.id === selectedBackend );
+    const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
+
     return (
         <Fieldset>
             <FormRow>
@@ -36,6 +39,25 @@ const PaymentFields = ({
                 </Field>
             </FormRow>
 
+            {
+                hasOptionsForm
+                ? (
+                    <FormRow>
+                        <Field
+                            name="form.paymentBackendOptions"
+                            label={<FormattedMessage description="Payment backend options label" defaultMessage="Payment backend options" />}
+                        >
+                            <Form
+                                schema={backend.schema}
+                                formData={backendOptions}
+                                onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
+                                children={true}
+                            />
+                        </Field>
+                    </FormRow>
+                )
+                : null
+            }
 
         </Fieldset>
     );
