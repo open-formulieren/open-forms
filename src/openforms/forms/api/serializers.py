@@ -15,6 +15,7 @@ from ...payments.registry import register as payment_register
 from ..constants import LogicActionTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
+from ...config.constants import RemovalMethods
 from ..models.form import FormLogic
 from .validators import JsonLogicValidator
 
@@ -118,6 +119,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     literals = FormLiteralsSerializer(source="*", required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
+    removal_methods = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
@@ -144,6 +146,14 @@ class FormSerializer(serializers.ModelSerializer):
             "is_deleted",
             "submission_confirmation_template",
             "can_submit",
+            "successful_submissions_removal_limit",
+            "successful_submissions_removal_method",
+            "incomplete_submissions_removal_limit",
+            "incomplete_submissions_removal_method",
+            "errored_submissions_removal_limit",
+            "errored_submissions_removal_method",
+            "all_submissions_removal_limit",
+            "removal_methods",
         )
         extra_kwargs = {
             "uuid": {
@@ -163,6 +173,9 @@ class FormSerializer(serializers.ModelSerializer):
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
 
+    def get_removal_methods(self, obj):
+        return list(RemovalMethods)
+
 
 class FormExportSerializer(FormSerializer):
     def get_fields(self):
@@ -170,6 +183,7 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
+        del fields["removal_methods"]
         fields["authentication_backends"].write_only = False
         return fields
 
