@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework import serializers
 
+from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    merchant_id = serializers.PrimaryKeyRelatedField(
+    merchant_id = PrimaryKeyRelatedAsChoicesField(
         queryset=OgoneMerchant.objects.all(),
         required=True,
         help_text=_("Merchant to use"),
