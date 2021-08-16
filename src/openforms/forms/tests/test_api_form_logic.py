@@ -22,70 +22,13 @@ class FormLogicAPITests(APITestCase):
     def test_list_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
         form1 = FormFactory.create()
-        step1 = FormStepFactory.create(
-            form=form1,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "step1_textfield1",
-                    }
-                ]
-            },
-        )
         form2 = FormFactory.create()
-        step2 = FormStepFactory.create(
+
+        FormLogicFactory.create(
+            form=form1,
+        )
+        FormLogicFactory.create(
             form=form2,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "step2_textfield1",
-                    }
-                ]
-            },
-        )
-        FormLogicFactory.create(
-            form_step=step2,
-            component="step2_textfield1",
-            json_logic_trigger={
-                "==": [
-                    {"var": "step1_textfield1"},
-                    "hide step 2",
-                ]
-            },
-            actions=[
-                {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
-                    },
-                    "state": True,
-                }
-            ],
-        )
-        FormLogicFactory.create(
-            form_step=step1,
-            component="step1_textfield1",
-            json_logic_trigger={
-                "==": [
-                    {"var": "step1_textfield1"},
-                    "hide step 1",
-                ]
-            },
-            actions=[
-                {
-                    "action": {
-                        "name": "Hide element",
-                        "type": "property",
-                        "property": {
-                            "value": "hidden",
-                        },
-                        "state": True,
-                    }
-                }
-            ],
         )
 
         force_authenticate(user)
@@ -115,8 +58,7 @@ class FormLogicAPITests(APITestCase):
         )
 
         form_logic_data = {
-            "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
-            "component": "step1_textfield1",
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
             "json_logic_trigger": {
                 "==": [
                     {"var": "step1_textfield1"},
@@ -125,6 +67,7 @@ class FormLogicAPITests(APITestCase):
             },
             "actions": [
                 {
+                    "component": "step1_textfield1",
                     "action": {
                         "name": "Hide element",
                         "type": "property",
@@ -132,7 +75,7 @@ class FormLogicAPITests(APITestCase):
                             "value": "hidden",
                         },
                         "state": True,
-                    }
+                    },
                 }
             ],
         }
@@ -151,7 +94,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic = form_logics_qs.get()
 
-        self.assertEqual(step, form_logic.form_step)
+        self.assertEqual(form, form_logic.form)
 
     def test_actions_is_a_list(self):
         user = SuperUserFactory.create(username="test", password="test")
@@ -197,32 +140,11 @@ class FormLogicAPITests(APITestCase):
 
     def test_partial_update_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form = FormFactory.create()
-        step1 = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "step1_textfield1",
-                    }
-                ]
-            },
-        )
-        step2 = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "step2_textfield1",
-                    }
-                ]
-            },
-        )
+        form1 = FormFactory.create()
+        form2 = FormFactory.create()
+
         logic = FormLogicFactory.create(
-            form_step=step1,
-            component="step1_textfield1",
+            form=form1,
             json_logic_trigger={
                 "==": [
                     {"var": "step1_textfield1"},
@@ -231,6 +153,7 @@ class FormLogicAPITests(APITestCase):
             },
             actions=[
                 {
+                    "component": "step1_textfield1",
                     "action": {
                         "name": "Hide element",
                         "type": "property",
@@ -238,7 +161,7 @@ class FormLogicAPITests(APITestCase):
                             "value": "hidden",
                         },
                         "state": True,
-                    }
+                    },
                 }
             ],
         )
@@ -250,7 +173,7 @@ class FormLogicAPITests(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step2.uuid})}"
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form2.uuid})}"
             },
         )
 
@@ -258,26 +181,14 @@ class FormLogicAPITests(APITestCase):
 
         logic.refresh_from_db()
 
-        self.assertEqual(step2, logic.form_step)
+        self.assertEqual(form2, logic.form)
 
     def test_delete_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "step1_textfield1",
-                    }
-                ]
-            },
-        )
 
         logic = FormLogicFactory.create(
-            form_step=step,
-            component="step1_textfield1",
+            form=form,
             json_logic_trigger={
                 "==": [
                     {"var": "step1_textfield1"},
@@ -286,6 +197,7 @@ class FormLogicAPITests(APITestCase):
             },
             actions=[
                 {
+                    "component": "step1_textfield1",
                     "action": {
                         "name": "Hide element",
                         "type": "property",
@@ -293,7 +205,7 @@ class FormLogicAPITests(APITestCase):
                             "value": "hidden",
                         },
                         "state": True,
-                    }
+                    },
                 }
             ],
         )
@@ -323,8 +235,7 @@ class FormLogicAPITests(APITestCase):
         )
 
         form_logic_data = {
-            "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
-            "component": "step1_textfield1",
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
             "json_logic_trigger": {
                 "invalid_op": [
                     {"var": "step1_textfield1"},
@@ -333,6 +244,7 @@ class FormLogicAPITests(APITestCase):
             },
             "actions": [
                 {
+                    "component": "step1_textfield1",
                     "action": {
                         "name": "Hide element",
                         "type": "property",
@@ -340,7 +252,7 @@ class FormLogicAPITests(APITestCase):
                             "value": "hidden",
                         },
                         "state": True,
-                    }
+                    },
                 }
             ],
         }

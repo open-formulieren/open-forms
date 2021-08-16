@@ -35,10 +35,10 @@ class ImportExportTests(TestCase):
         form_step.form_definition = form_definition
         form_step.save()
         FormLogicFactory.create(
-            form_step=form_step,
-            component="test_component",
+            form=form,
             actions=[
                 {
+                    "component": "test_component",
                     "action": "test action",
                 }
             ],
@@ -84,16 +84,9 @@ class ImportExportTests(TestCase):
 
             form_logic = json.loads(f.read("formLogic.json"))
             self.assertEqual(1, len(form_logic))
-            self.assertEqual("test_component", form_logic[0]["component"])
-            self.assertIn(str(form_step.uuid), form_logic[0]["form_step"])
-            self.assertEqual(
-                [
-                    {
-                        "action": "test action",
-                    }
-                ],
-                form_logic[0]["actions"],
-            )
+            self.assertEqual("test_component", form_logic[0]["actions"][0]["component"])
+            self.assertEqual("test action", form_logic[0]["actions"][0]["action"])
+            self.assertIn(str(form.uuid), form_logic[0]["form"])
 
     def test_import(self):
         product = ProductFactory.create()
@@ -102,7 +95,7 @@ class ImportExportTests(TestCase):
         )
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form_step=form_step)
+        form_logic = FormLogicFactory.create(form=form)
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
@@ -161,8 +154,7 @@ class ImportExportTests(TestCase):
         form_logic_2 = form_logics.last()
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
         self.assertNotEqual(form_logic_2.uuid, str(form_logic.uuid))
-        self.assertEqual(form_logic_2.form_step.form.pk, forms.last().pk)
-        self.assertEqual(form_logic_2.form_step.pk, form_steps.last().pk)
+        self.assertEqual(form_logic_2.form.pk, forms.last().pk)
 
     def test_import_no_backends(self):
         """
@@ -187,7 +179,7 @@ class ImportExportTests(TestCase):
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form_step=form_step)
+        form_logic = FormLogicFactory.create(form=form)
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
@@ -240,13 +232,14 @@ class ImportExportTests(TestCase):
         form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 1)
         self.assertEqual(form_logic_2.pk, form_logic_pk)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
 
     def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form_step=form_step)
+        form_logic = FormLogicFactory.create(form=form)
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
@@ -298,14 +291,14 @@ class ImportExportTests(TestCase):
         form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
-        self.assertEqual(fs2, form_logic_2.form_step)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
 
     def test_import_form_definition_slug_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form_step=form_step)
+        form_logic = FormLogicFactory.create(form=form)
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
@@ -361,4 +354,4 @@ class ImportExportTests(TestCase):
         form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
-        self.assertEqual(fs2, form_logic_2.form_step)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)

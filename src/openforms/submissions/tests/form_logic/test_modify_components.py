@@ -34,8 +34,7 @@ class ComponentModificationTests(TestCase):
             },
         )
         FormLogicFactory.create(
-            form_step=step2,
-            component="step2_textfield1",
+            form=form,
             json_logic_trigger={
                 "==": [
                     {"var": "step1_textfield1"},
@@ -44,12 +43,15 @@ class ComponentModificationTests(TestCase):
             },
             actions=[
                 {
-                    "name": "Hide element",
-                    "type": "property",
-                    "property": {
-                        "value": "hidden",
+                    "component": "step2_textfield1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
                     },
-                    "state": True,
                 }
             ],
         )
@@ -104,14 +106,16 @@ class ComponentModificationTests(TestCase):
             },
         )
         FormLogicFactory.create(
-            form_step=step2,
-            component="step2_textfield1",
+            form=form,
             json_logic_trigger={"==": [1, 1]},
             actions=[
                 {
-                    "name": "Set extracted value",
-                    "type": "value",
-                    "value": {"var": "step1_textfield1"},
+                    "component": "step2_textfield1",
+                    "action": {
+                        "name": "Set extracted value",
+                        "type": "value",
+                        "value": {"var": "step1_textfield1"},
+                    },
                 }
             ],
         )
@@ -168,8 +172,7 @@ class StepModificationTests(TestCase):
             },
         )
         FormLogicFactory.create(
-            form_step=step2,
-            component="step2_textfield1",
+            form=form,
             json_logic_trigger={
                 "==": [
                     {"var": "step1_textfield1"},
@@ -178,8 +181,11 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "name": "Hide element",
-                    "type": "disable-next",
+                    "component": "step2_textfield1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "disable-next",
+                    },
                 }
             ],
         )
