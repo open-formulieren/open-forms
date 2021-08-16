@@ -68,10 +68,7 @@ const initialFormState = {
     },
     errors: {},
     formDefinitions: [],
-    availableRegistrationBackends: {
-        loading: true,
-        data: []
-    },
+    availableRegistrationBackends: [],
     availableAuthPlugins: {
         loading: true,
         data: {}
@@ -148,13 +145,6 @@ function reducer(draft, action) {
         }
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = {
-                loading: false,
-                data: action.payload,
-            };
-            break;
-        }
-        case 'REGISTRATION_BACKENDS_LOADED': {
-            draft.availableRegistrationBackends = {
                 loading: false,
                 data: action.payload,
             };
@@ -350,18 +340,6 @@ const getFormData = async (formUuid, dispatch) => {
     }
 };
 
-const getRegistrationBackends = async (dispatch) => {
-    try {
-        const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
-        dispatch({
-            type: 'REGISTRATION_BACKENDS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
 const getAuthPlugins = async (dispatch) => {
     try {
         const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -474,6 +452,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const pluginsToLoad = [
         {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
         {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
+        {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     ];
 
     const {loading} = useAsync(async () => {
@@ -496,7 +475,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
         const promises = [
             getFormData(formUuid, dispatch),
-            getRegistrationBackends(dispatch),
         ];
         await Promise.all(promises);
         // We want the data of all available plugins to be loaded after the form data has been loaded,
@@ -729,7 +707,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         loading,
         state.formSteps.loading,
         state.availableAuthPlugins.loading,
-        state.availableRegistrationBackends.loading,
         state.availablePrefillPlugins.loading,
     ].some( el => el );
 
@@ -843,7 +820,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <RegistrationFields
-                        backends={state.availableRegistrationBackends.data}
+                        backends={state.availableRegistrationBackends}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
                         onChange={onFieldChange}
