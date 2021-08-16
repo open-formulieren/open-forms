@@ -1,5 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
+
+import Field from '../forms/Field';
+import FormRow from '../forms/FormRow';
+import Fieldset from '../forms/Fieldset';
+import Select from "../forms/Select";
+import Form from "@rjsf/core";
 
 
 const PaymentFields = ({
@@ -8,8 +15,29 @@ const PaymentFields = ({
     backendOptions={},
     onChange
 }) => {
+    const backendChoices = backends.map( backend => [backend.id, backend.label]);
     return (
-        null
+        <Fieldset>
+            <FormRow>
+                <Field
+                    name="form.paymentBackend"
+                    label={<FormattedMessage description="Payment backend label" defaultMessage="Select payment backend" />}
+                >
+                    <Select
+                        choices={backendChoices}
+                        value={selectedBackend}
+                        onChange={ (event) => {
+                            onChange(event);
+                            // Clear options when changing backend
+                            onChange({target: {name: 'form.paymentBackendOptions', value: {}}})
+                        }}
+                        allowBlank
+                    />
+                </Field>
+            </FormRow>
+
+
+        </Fieldset>
     );
 };
 

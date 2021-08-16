@@ -149,6 +149,11 @@
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
   },
+  "GV8HnZ": {
+    "defaultMessage": "Select payment backend",
+    "description": "Payment backend label",
+    "originalDefault": "Select payment backend"
+  },
   "GWkSOd": {
     "defaultMessage": "If checked, the user can submit the form. Uncheck this for 'decision' trees.",
     "description": "Form canSubmit field help text",
