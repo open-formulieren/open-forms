@@ -219,21 +219,15 @@ class Form(models.Model):
 
 class FormLogic(models.Model):
     uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
-    form_step = models.ForeignKey(
-        to="forms.FormStep",
+    form = models.ForeignKey(
+        to="forms.Form",
         on_delete=models.CASCADE,
-        help_text=_("Form step to which the JSON logic applies."),
+        help_text=_("Form to which the JSON logic applies."),
+        null=True,
     )
     json_logic_trigger = JSONField(
         verbose_name=_("JSON logic"),
         help_text=_("JSON logic associated with a step in a form."),
-    )
-    component = models.CharField(
-        verbose_name=_("component"),
-        help_text=_(
-            "Formio key of the component in the step to which the logic applies."
-        ),
-        max_length=100,
     )
     actions = JSONField(
         verbose_name=_("actions"),

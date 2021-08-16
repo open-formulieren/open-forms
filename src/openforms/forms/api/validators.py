@@ -25,6 +25,10 @@ class LogicActionValidator:
                 raise serializers.ValidationError(
                     _("The 'action' attribute is required within the action.")
                 )
+            if "component" not in action:
+                raise serializers.ValidationError(
+                    _("The 'component' attribute is required within the action.")
+                )
 
             action_data = action["action"]
 

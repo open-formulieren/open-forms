@@ -50,7 +50,7 @@ def form_to_json(form_id: int) -> dict:
         pk__in=form_steps.values_list("form_definition", flat=True)
     )
 
-    form_logic = FormLogic.objects.filter(form_step__form=form)
+    form_logic = FormLogic.objects.filter(form=form)
 
     request = _get_mock_request()
 
@@ -133,6 +133,9 @@ def import_form_data(
 
             if resource == "formSteps" and existing_form_instance:
                 FormStep.objects.filter(form=existing_form_instance).delete()
+
+            if resource == "formLogic" and existing_form_instance:
+                FormLogic.objects.filter(form=existing_form_instance).delete()
 
             if resource == "forms" and existing_form_instance:
                 deserialized = serializer(

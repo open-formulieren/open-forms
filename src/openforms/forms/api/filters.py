@@ -7,7 +7,7 @@ from ..models import FormLogic
 
 class FormLogicFilter(django_filters.FilterSet):
     form = django_filters.UUIDFilter(
-        field_name="form_step__form__uuid",
+        field_name="form__uuid",
         label=_("The UUID of a form associated with logic rules"),
     )
 

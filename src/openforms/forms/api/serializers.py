@@ -310,20 +310,19 @@ class FormSearchSerializer(serializers.Serializer):
 
 
 class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
-    form_step = NestedHyperlinkedRelatedField(
-        queryset=FormStep.objects.all(),
-        view_name="api:form-steps-detail",
+    form = serializers.HyperlinkedRelatedField(
+        queryset=Form.objects.all(),
+        view_name="api:form-detail",
         lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        lookup_url_kwarg="uuid_or_slug",
     )
 
     class Meta:
         model = FormLogic
         fields = (
             "uuid",
-            "form_step",
+            "form",
             "json_logic_trigger",
-            "component",
             "actions",
         )
         extra_kwargs = {
