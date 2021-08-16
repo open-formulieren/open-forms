@@ -382,7 +382,7 @@ markupsafe==1.1.1
     #   sphinx
 mccabe==0.6.1
     # via flake8
-mozilla-django-oidc-db==0.3.0
+mozilla-django-oidc-db==0.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

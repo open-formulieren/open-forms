@@ -466,7 +466,7 @@ mccabe==0.6.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-mozilla-django-oidc-db==0.3.0
+mozilla-django-oidc-db==0.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

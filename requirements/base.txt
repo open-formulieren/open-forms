@@ -192,7 +192,7 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
-mozilla-django-oidc-db==0.3.0
+mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db

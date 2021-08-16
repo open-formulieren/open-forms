@@ -135,6 +135,10 @@
                 "openidconnectconfig"
             ],
             [
+                "multidomain",
+                "domain"
+            ],
+            [
                 "payments_ogone",
                 "ogonemerchant"
             ],
