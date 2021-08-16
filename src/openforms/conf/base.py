@@ -794,3 +794,6 @@ EHERKENNING = {
 OPENFORMS_LOCATION_CLIENT = config(
     "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
 )
+
+
+ADMIN_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = "openforms.utils.django-two-factors.should_display_dropdown_menu"
