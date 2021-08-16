@@ -23,6 +23,7 @@ import {
     AUTH_PLUGINS_ENDPOINT,
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
+    LOGICS_ENDPOINT,
 } from './constants';
 import {loadPlugins, PluginLoadingError} from './data';
 import TinyMCEEditor from './Editor';
@@ -32,7 +33,7 @@ import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
-import FormLogic from './FormLogic';
+import {FormLogic, EMPTY_RULE, formatRuleComponentChoices} from './FormLogic';
 
 const initialFormState = {
     form: {
@@ -76,6 +77,14 @@ const initialFormState = {
     availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
+    rules: {
+        components: {
+            loading: true,
+            choices: []
+        },
+        rules: [],
+        rulesToDelete: []
+    }
 };
 
 const newStepData = {
@@ -96,6 +105,7 @@ const newStepData = {
     },
     isNew: true,
 };
+
 
 function reducer(draft, action) {
     switch (action.type) {
@@ -125,6 +135,10 @@ function reducer(draft, action) {
                 }
                 case 'literals': {
                     draft.literals[fieldName].value = value;
+                    break;
+                }
+                case 'rules': {
+                    draft.rules = value;
                     break;
                 }
                 default: {
@@ -240,6 +254,38 @@ function reducer(draft, action) {
             break;
         }
         /**
+         * Form Logic rules actions
+         */
+        case 'LOADED_RULES': {
+            draft.rules.rules = action.payload;
+            break;
+        }
+        case 'ADD_RULE': {
+            draft.rules.rules.push(EMPTY_RULE);
+            break;
+        }
+        case 'CHANGED_RULE': {
+            const {index, name, value} = action.payload;
+            draft.rules.rules[index][name] = value;
+            break;
+        }
+        case 'DELETED_RULE': {
+            const {index} = action.payload;
+            draft.rules.rulesToDelete.push(draft.rules.rules[index].uuid);
+
+            const updatedRules = [...draft.rules.rules];
+            updatedRules.splice(index, 1);
+            draft.rules.rules = updatedRules;
+            break;
+        }
+        case 'FORMATTED_RULES_COMPONENTS_CHOICES': {
+            draft.rules.components = {
+                loading: false,
+                choices: action.payload
+            };
+            break;
+        }
+        /**
          * Misc
          */
         case 'SUBMIT_STARTED': {
@@ -308,7 +354,84 @@ const getFormData = async (formUuid, dispatch) => {
             type: 'FORM_STEPS_LOADED',
             payload: formStepsData,
         });
+        formatRuleComponentChoices(formStepsData, dispatch, 'FORMATTED_RULES_COMPONENTS_CHOICES');
     } catch (e) { // TODO: convert to ErrorBoundary
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+
+const getFormDefinitions = async (dispatch) => {
+    try {
+        const response = await get(FORM_DEFINITIONS_ENDPOINT);
+        dispatch({
+            type: 'FORM_DEFINITIONS_LOADED',
+            payload: response.data.results,
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getRegistrationBackends = async (dispatch) => {
+    try {
+        const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
+        dispatch({
+            type: 'REGISTRATION_BACKENDS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getRegistrationBackendOptions = async (dispatch) => {
+    try {
+        const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
+        dispatch({
+            type: 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getAuthPlugins = async (dispatch) => {
+    try {
+        const response = await get(AUTH_PLUGINS_ENDPOINT);
+        dispatch({
+            type: 'AUTH_PLUGINS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const getPrefillPlugins = async (dispatch) => {
+    try {
+        const response = await get(PREFILL_PLUGINS_ENDPOINT);
+        dispatch({
+            type: 'PREFILL_PLUGINS_LOADED',
+            payload: response.data
+        });
+    } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+};
+
+const loadExistingRules = async (formUuid, dispatch) => {
+    try {
+        const rulesResponse = await get(`${LOGICS_ENDPOINT}?form=${formUuid}`);
+        if (!rulesResponse.ok) {
+            throw new Error('An error occurred while fetching the form logic rules.');
+        }
+        dispatch({
+            type: 'LOADED_RULES',
+            payload: rulesResponse.data.length ? rulesResponse.data : [EMPTY_RULE],
+        });
+    } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
@@ -358,6 +481,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         const promises = [
             loadPlugins(pluginsToLoad),
             getFormData(formUuid, dispatch),
+            loadExistingRules(formUuid, dispatch),
         ];
         const [
             pluginsData,
@@ -386,6 +510,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             payload: {name, value},
         });
     };
+
     const onStepDelete = (index) => {
         dispatch({
             type: 'DELETE_STEP',
@@ -440,6 +565,64 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 type: 'MOVE_UP_STEP',
                 payload: index+1,
             });
+        }
+    };
+
+    const onRuleChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'CHANGED_RULE',
+            payload: {name, value, index},
+        });
+    };
+
+    const onRuleDelete = (index) => {
+        dispatch({
+            type: 'DELETED_RULE',
+            payload: {index: index}
+        });
+    };
+
+    const onRuleAdd = () => {
+        dispatch({type: 'ADD_RULE'});
+    };
+
+    const submitRules = async () => {
+        for (let index = 0; index < state.rules.rules.length; index++) {
+            const logicRule = state.rules.rules[index];
+            const isNewRule = !logicRule.uuid;
+            const createOrUpdate = isNewRule ? post : put;
+            const endPoint = isNewRule ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${logicRule.uuid}`;
+
+            var formLogicResponse = await createOrUpdate(
+                endPoint,
+                csrftoken,
+                logicRule
+            );
+
+            if (!formLogicResponse.ok) {
+                throw new Error('An error occurred while saving the form logic.');
+            }
+
+            var ruleUuid = formLogicResponse.data.uuid;
+            if (isNewRule){
+                dispatch({
+                    type: 'CHANGED_RULE',
+                    payload: {name: 'uuid', value: ruleUuid, index: index}
+                });
+            }
+        }
+
+        if (state.rules.rulesToDelete.length) {
+            for (const ruleUuid of state.rules.rulesToDelete) {
+                // Rules that were added but are not saved in the backend yet don't have a UUID.
+                if (!ruleUuid) return;
+
+                var response = await apiDelete(`${LOGICS_ENDPOINT}/${ruleUuid}`, csrftoken);
+                if (!response.ok) {
+                    throw new Error('An error occurred while deleting logic rules.');
+                }
+            }
         }
     };
 
@@ -569,6 +752,16 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
             }
         }
+
+        // Update/create logic rules
+        try {
+            await submitRules();
+        } catch (e) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            window.scrollTo(0, 0);
+            return;
+        }
+
 
         // Save this new version of the form in the "form version control"
         try {
@@ -738,7 +931,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <Fieldset title="Logica">
-                        <FormLogic formUuid={state.form.uuid} formSteps={state.formSteps.data} csrftoken={csrftoken}/>
+                        <FormLogic
+                            rules={state.rules}
+                            onChange={onRuleChange}
+                            onDelete={onRuleDelete}
+                            onAdd={onRuleAdd}
+                        />
                     </Fieldset>
                 </TabPanel>
             </Tabs>
