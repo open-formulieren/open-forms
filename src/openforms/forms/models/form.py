@@ -213,28 +213,6 @@ class Form(models.Model):
     get_change_text = literal_getter("change_text", "form_change_text")
     get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
 
-    get_successful_submissions_removal_limit = literal_getter(
-        "successful_submissions_removal_limit", "successful_submissions_removal_limit"
-    )
-    get_successful_submissions_removal_method = literal_getter(
-        "successful_submissions_removal_method", "successful_submissions_removal_method"
-    )
-    get_incomplete_submissions_removal_limit = literal_getter(
-        "incomplete_submissions_removal_limit", "incomplete_submissions_removal_limit"
-    )
-    get_incomplete_submissions_removal_method = literal_getter(
-        "incomplete_submissions_removal_method", "incomplete_submissions_removal_method"
-    )
-    get_errored_submissions_removal_limit = literal_getter(
-        "errored_submissions_removal_limit", "errored_submissions_removal_limit"
-    )
-    get_errored_submissions_removal_method = literal_getter(
-        "errored_submissions_removal_method", "errored_submissions_removal_method"
-    )
-    get_all_submissions_removal_limit = literal_getter(
-        "all_submissions_removal_limit", "all_submissions_removal_limit"
-    )
-
     class Meta:
         verbose_name = _("form")
         verbose_name_plural = _("forms")
