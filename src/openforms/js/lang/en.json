@@ -344,6 +344,11 @@
     "description": "Form step slug label",
     "originalDefault": "Step slug"
   },
+  "ru7KD+": {
+    "defaultMessage": "Payment",
+    "description": "Payment tab title",
+    "originalDefault": "Payment"
+  },
   "tLL2x4": {
     "defaultMessage": "Change form",
     "description": "Change form page title",

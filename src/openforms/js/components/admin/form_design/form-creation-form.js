@@ -1,3 +1,4 @@
+import zip from 'lodash/zip';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -14,13 +15,21 @@ import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
-            REGISTRATION_BACKENDS_ENDPOINT, REGISTRATION_BACKEND_OPTIONS_ENDPOINT,
-            AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+import {
+    FORM_ENDPOINT,
+    FORM_DEFINITIONS_ENDPOINT,
+    ADMIN_PAGE,
+    REGISTRATION_BACKENDS_ENDPOINT,
+    REGISTRATION_BACKEND_OPTIONS_ENDPOINT,
+    AUTH_PLUGINS_ENDPOINT,
+    PREFILL_PLUGINS_ENDPOINT,
+    PAYMENT_PLUGINS_ENDPOINT,
+} from './constants';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
 import RegistrationFields from './RegistrationFields';
+import PaymentFields from './PaymentFields';
 import TextLiterals from './TextLiterals';
 
 const initialFormState = {
@@ -36,6 +45,8 @@ const initialFormState = {
         canSubmit: true,
         registrationBackend: '',
         registrationBackendOptions: {},
+        paymentBackend: '',
+        paymentBackendOptions: {},
     },
     literals: {
         beginText: {
@@ -75,6 +86,7 @@ const initialFormState = {
         data: {}
     },
     selectedAuthPlugins: [],
+    availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
 };
@@ -132,6 +144,11 @@ function reducer(draft, action) {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
             }
+            break;
+        }
+        case 'PLUGINS_LOADED': {
+            const {stateVar, data} = action.payload;
+            draft[stateVar] = data;
             break;
         }
         case 'FORM_DEFINITIONS_LOADED': {
@@ -442,6 +459,30 @@ StepsFieldSet.propTypes = {
 };
 
 
+
+class PluginLoadingError extends Error {
+    constructor(message, plugin, response) {
+        super(message);
+        this.plugin = plugin;
+        this.response = response;
+    }
+};
+
+
+// TODO: add error handling in the fetch wrappers to throw exceptions + add error
+// boundaries in the component tree.
+const loadPlugins = async (plugins=[]) => {
+    const promises = plugins.map(async (plugin) => {
+        const response = await get(plugin.endpoint);
+        if (!response.ok) {
+            throw new PluginLoadingError('Failed to load plugins', plugin, response);
+        }
+        return response.data;
+    });
+    const results = await Promise.all(promises);
+    return results;
+};
+
 /**
  * Component to render the form edit page.
  */
@@ -457,10 +498,28 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
-    useAsync(async () => {
+    // load all these plugin registries in parallel
+    const pluginsToLoad = [
+        {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
+    ];
+
+    const {loading} = useAsync(async () => {
         // The available prefill plugins should be loaded before the form definitions, because the requiresAuth field
         // is used to check if a form step needs an additional auth plugin (and to generate related warnings)
         await getPrefillPlugins(dispatch);
+
+        // load various module plugins & update the state
+        const pluginsData = await loadPlugins(pluginsToLoad);
+        for (const group of zip(pluginsToLoad, pluginsData) ) {
+            const [plugin, data] = group;
+            dispatch({
+                type: 'PLUGINS_LOADED',
+                payload: {
+                    stateVar: plugin.stateVar,
+                    data: data,
+                }
+            });
+        }
 
         const promises = [
             getFormData(formUuid, dispatch),
@@ -488,13 +547,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         dispatch({
             type: 'DELETE_STEP',
             payload: {index: index}
-        });
-    };
-
-    const onAddStep = (event) => {
-        event.preventDefault();
-        dispatch({
-            type: 'ADD_STEP',
         });
     };
 
@@ -703,6 +755,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     };
 
     const isAnyLoading = [
+        loading,
         state.formSteps.loading,
         state.availableAuthPlugins.loading,
         state.availableRegistrationBackends.loading,
@@ -746,6 +799,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    </Tab>
                 </TabList>
 
                 <TabPanel>
@@ -778,7 +834,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                     onDelete={onStepDelete}
                                     onReorder={onStepReorder}
                                     onReplace={onStepReplace}
-                                    onAdd={onAddStep}
+                                    onAdd={ (e) => e.preventDefault() && dispatch({type: 'ADD_STEP'}) }
                                     submitting={state.submitting}
                                     errors={state.errors.formSteps}
                                 />
@@ -824,6 +880,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <TextLiterals literals={state.literals} onChange={onFieldChange} />
+                </TabPanel>
+
+                <TabPanel>
+                    <PaymentFields
+                        backends={state.availablePaymentBackends}
+                        selectedBackend={state.form.paymentBackend}
+                        backendOptions={state.form.paymentBackendOptions}
+                        onChange={onFieldChange}
+                    />
                 </TabPanel>
             </Tabs>
 

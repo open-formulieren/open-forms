@@ -98,7 +98,6 @@ class FormSerializer(serializers.ModelSerializer):
 
     payment_backend = serializers.ChoiceField(
         choices=[],
-        write_only=True,
         required=False,
         default="",
     )
@@ -119,6 +118,7 @@ class FormSerializer(serializers.ModelSerializer):
             "login_options",
             "payment_required",
             "payment_backend",
+            "payment_backend_options",
             "payment_options",
             "literals",
             "product",
@@ -158,7 +158,6 @@ class FormExportSerializer(FormSerializer):
         del fields["login_options"]
         del fields["payment_options"]
         fields["authentication_backends"].write_only = False
-        fields["payment_backend"].write_only = False
         return fields
 
 
