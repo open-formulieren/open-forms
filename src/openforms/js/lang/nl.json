@@ -279,6 +279,11 @@
     "description": "Move up icon title",
     "originalDefault": "Move up"
   },
+  "cV72I+": {
+    "defaultMessage": "Product",
+    "description": "Form product label",
+    "originalDefault": "Product"
+  },
   "d45v2X": {
     "defaultMessage": "Exporteer dit formulier",
     "description": "Export form button title",
@@ -363,6 +368,11 @@
     "defaultMessage": "Formulier configureren",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "tsM2D7": {
+    "defaultMessage": "Product",
+    "description": "Product tab title",
+    "originalDefault": "Product"
   },
   "uBO/Al": {
     "defaultMessage": "Kies een stap om te bekijken of aan te passen.",

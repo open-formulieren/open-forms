@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
-from openforms.products.api.serializers import ProductSerializer
+from openforms.products.models import Product
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
@@ -95,6 +95,15 @@ class FormSerializer(serializers.ModelSerializer):
     )
     login_options = LoginOptionsReadOnlyField()
 
+    product = serializers.HyperlinkedRelatedField(
+        label=_("product"),
+        queryset=Product.objects.all(),
+        required=False,
+        allow_null=True,
+        view_name="api:product-detail",
+        lookup_field="uuid",
+        help_text=_("URL to the product in the Open Forms API"),
+    )
     payment_backend = serializers.ChoiceField(
         choices=[],
         required=False,

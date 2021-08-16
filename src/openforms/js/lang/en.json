@@ -279,6 +279,11 @@
     "description": "Move up icon title",
     "originalDefault": "Move up"
   },
+  "cV72I+": {
+    "defaultMessage": "Product",
+    "description": "Form product label",
+    "originalDefault": "Product"
+  },
   "d45v2X": {
     "defaultMessage": "Export this form",
     "description": "Export form button title",
@@ -363,6 +368,11 @@
     "defaultMessage": "Change form",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "tsM2D7": {
+    "defaultMessage": "Product",
+    "description": "Product tab title",
+    "originalDefault": "Product"
   },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
