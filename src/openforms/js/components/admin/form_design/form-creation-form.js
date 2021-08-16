@@ -594,7 +594,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         })
     };
 
-    if (loading) {
+    if (loading || state.submitting) {
         return (<Loader />);
     }
 
