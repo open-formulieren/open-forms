@@ -6,8 +6,6 @@
 #
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
     # via -r requirements/base.in
--e git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@806ba7a0448ecaae0c1271b4afa2f282601e8a6a#egg=mozilla-django-oidc-db
-    # via -r requirements/base.in
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via -r requirements/base.in
 amqp==2.6.1
@@ -194,6 +192,8 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
+mozilla-django-oidc-db==0.4.0
+    # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
 openpyxl==3.0.7
