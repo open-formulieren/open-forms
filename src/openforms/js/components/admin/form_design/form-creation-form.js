@@ -3,7 +3,7 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from "../../../utils/exception";
@@ -24,6 +24,7 @@ import {
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
 } from './constants';
+import {loadPlugins, PluginLoadingError} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -70,10 +71,7 @@ const initialFormState = {
     formDefinitions: [],
     availableRegistrationBackends: [],
     availableAuthPlugins: [],
-    availablePrefillPlugins: {
-        loading: true,
-        data: {}
-    },
+    availablePrefillPlugins: [],
     selectedAuthPlugins: [],
     availablePaymentBackends: [],
     stepsToDelete: [],
@@ -144,17 +142,6 @@ function reducer(draft, action) {
             draft.formSteps = {
                 loading: false,
                 data: action.payload,
-            };
-            break;
-        }
-        case 'PREFILL_PLUGINS_LOADED': {
-            var formattedPrefillPlugins = {};
-            for (const plugin of action.payload) {
-                formattedPrefillPlugins[plugin.id] = plugin;
-            }
-            draft.availablePrefillPlugins = {
-                loading: false,
-                data: formattedPrefillPlugins,
             };
             break;
         }
@@ -374,51 +361,6 @@ StepsFieldSet.propTypes = {
     submitting: PropTypes.bool,
 };
 
-
-
-class PluginLoadingError extends Error {
-    constructor(message, plugin, response) {
-        super(message);
-        this.plugin = plugin;
-        this.response = response;
-    }
-};
-
-
-// TODO: add error handling in the fetch wrappers to throw exceptions + add error
-// boundaries in the component tree.
-const loadPlugins = async (plugins=[]) => {
-    const promises = plugins.map(async (plugin) => {
-        let response = await get(plugin.endpoint);
-        if (!response.ok) {
-            throw new PluginLoadingError('Failed to load plugins', plugin, response);
-        }
-        let responseData = response.data;
-
-        // paginated or not?
-        const isPaginated = responseData.hasOwnProperty('results') && responseData.hasOwnProperty('count');
-        if (!isPaginated) {
-            return responseData;
-        }
-
-        // yep, resolve all pages
-        // TODO: check if we have endpoints that return stupid amounts of data and treat those
-        // differently/async to reduce the browser memory footprint
-        let allResults = [...responseData.results];
-        while (responseData.next) {
-            response = await get(responseData.next);
-            if (!response.ok) {
-                throw new PluginLoadingError('Failed to load plugins', plugin, response);
-            }
-            responseData = response.data;
-            allResults = [...allResults, ...responseData.results];
-        }
-        return allResults;
-    });
-    const results = await Promise.all(promises);
-    return results;
-};
-
 /**
  * Component to render the form edit page.
  */
@@ -440,13 +382,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
         {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
         {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
+        {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     ];
 
     const {loading} = useAsync(async () => {
-        // The available prefill plugins should be loaded before the form definitions, because the requiresAuth field
-        // is used to check if a form step needs an additional auth plugin (and to generate related warnings)
-        await getPrefillPlugins(dispatch);
-
         // load various module plugins & update the state
         const pluginsData = await loadPlugins(pluginsToLoad);
         for (const group of zip(pluginsToLoad, pluginsData) ) {
@@ -459,11 +398,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 }
             });
         }
-
-        const promises = [
-            getFormData(formUuid, dispatch),
-        ];
-        await Promise.all(promises);
+        await getFormData(formUuid, dispatch);
     }, []);
 
     /**
@@ -690,7 +625,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const isAnyLoading = [
         loading,
         state.formSteps.loading,
-        state.availablePrefillPlugins.loading,
     ].some( el => el );
 
     if (isAnyLoading) {

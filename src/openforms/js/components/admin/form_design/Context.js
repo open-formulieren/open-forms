@@ -4,7 +4,11 @@ import React from 'react';
 const FormDefinitionsContext = React.createContext([]);
 FormDefinitionsContext.displayName = 'FormDefinitionsContext';
 
-const PluginsContext = React.createContext({availablePlugins: {}, selectedPlugins: []});
+const PluginsContext = React.createContext({
+    availableAuthPlugins: [],
+    selectedAuthPlugins: [],
+    availablePrefillPlugins: [],
+});
 PluginsContext.displayName = 'PluginsContext';
 
 const TinyMceContext = React.createContext('');

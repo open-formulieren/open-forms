@@ -6,7 +6,7 @@ import {PluginsContext} from './Context';
 
 
 const PluginWarning = ({loginRequired, configuration}) => {
-    const {selectedAuthPlugins, availableAuthPlugins, availablePrefillPlugins} = useContext(PluginsContext);
+    const {availableAuthPlugins, selectedAuthPlugins, availablePrefillPlugins} = useContext(PluginsContext);
 
     let warnings = [];
 
@@ -19,42 +19,41 @@ const PluginWarning = ({loginRequired, configuration}) => {
             configuration.components.map(checkPrefillsAuth);
         }
 
-        if (configuration.prefill) {
-            if (configuration.prefill.plugin !== '') {
-                const requiredAuthAttribute = availablePrefillPlugins.data[configuration.prefill.plugin].requiresAuth;
+        if (!(configuration.prefill && Object.keys(configuration.prefill).length && configuration.prefill.plugin !== '' )) return;
 
-                if (!requiredAuthAttribute) return;
+        const prefillPlugin = availablePrefillPlugins.find(plugin => plugin.id === configuration.prefill.plugin);
+        const requiredAuthAttribute = prefillPlugin.requiresAuth;
 
-                // Iterate over the selected plugins and check if they provide the required Auth attribute
-                let pluginProvidesAttribute = false;
-                for (const pluginName of selectedAuthPlugins) {
+        if (!requiredAuthAttribute) return;
 
-                    const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
-                    if (!authPlugin) break;
+        // Iterate over the selected plugins and check if they provide the required Auth attribute
+        let pluginProvidesAttribute = false;
+        for (const pluginName of selectedAuthPlugins) {
 
-                    if ( authPlugin.providesAuth.includes(requiredAuthAttribute) ) {
-                        pluginProvidesAttribute = true;
-                        break;
-                    }
-                }
+            const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
+            if (!authPlugin) break;
 
-                if ( !pluginProvidesAttribute ) {
-                    const warning = (
-                        <FormattedMessage
-                            description="Prefill plugin requires unavailable auth attribute warning"
-                            defaultMessage={
-                                "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. \
-                                Please select an authentication plugin that provides this attribute."
-                            }
-                            values={{
-                                label: configuration.label,
-                                requiredAuthAttribute
-                            }}
-                        />
-                    );
-                    warnings.push(warning);
-                }
+            if ( authPlugin.providesAuth.includes(requiredAuthAttribute) ) {
+                pluginProvidesAttribute = true;
+                break;
             }
+        }
+
+        if ( !pluginProvidesAttribute ) {
+            const warning = (
+                <FormattedMessage
+                    description="Prefill plugin requires unavailable auth attribute warning"
+                    defaultMessage={
+                        "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. \
+                        Please select an authentication plugin that provides this attribute."
+                    }
+                    values={{
+                        label: configuration.label,
+                        requiredAuthAttribute
+                    }}
+                />
+            );
+            warnings.push(warning);
         }
     };
 
