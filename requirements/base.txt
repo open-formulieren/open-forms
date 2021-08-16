@@ -205,7 +205,8 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
-maykin-django-two-factor-auth[phonenumbers]==2.0.2
+#maykin-django-two-factor-auth[phonenumbers]==2.0.2
+git+https://github.com/maykinmedia/django-two-factor-auth/@task-334-fix-login-page-style#egg=django-two-factor-auth
     # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in
