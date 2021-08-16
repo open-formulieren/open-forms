@@ -298,9 +298,7 @@ class GlobalConfiguration(SingletonModel):
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
-        help_text=_(
-            "How successful submissions will be removed after the limit"
-        ),
+        help_text=_("How successful submissions will be removed after the limit"),
     )
     incomplete_submissions_removal_limit = models.PositiveIntegerField(
         _("incomplete submission removal limit"),
@@ -315,9 +313,7 @@ class GlobalConfiguration(SingletonModel):
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
-        help_text=_(
-            "How incomplete submissions will be removed after the limit"
-        ),
+        help_text=_("How incomplete submissions will be removed after the limit"),
     )
     errored_submissions_removal_limit = models.PositiveIntegerField(
         _("errored submission removal days limit"),
@@ -332,17 +328,13 @@ class GlobalConfiguration(SingletonModel):
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
-        help_text=_(
-            "How errored submissions will be removed after the limit of days"
-        ),
+        help_text=_("How errored submissions will be removed after the limit of days"),
     )
     all_submissions_removal_limit = models.PositiveIntegerField(
         _("errored submission removal days limit"),
         default=90,
         validators=[MinValueValidator(1)],
-        help_text=_(
-            "Amount of days when all submissions will be permanently deleted"
-        ),
+        help_text=_("Amount of days when all submissions will be permanently deleted"),
     )
 
     class Meta:

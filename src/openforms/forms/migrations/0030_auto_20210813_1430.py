@@ -7,43 +7,106 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0029_form_can_submit'),
+        ("forms", "0029_form_can_submit"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='all_submissions_removal_limit',
-            field=models.PositiveIntegerField(blank=True, help_text='Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.', null=True, validators=[django.core.validators.MinValueValidator(1)], verbose_name='errored submission removal days limit'),
+            model_name="form",
+            name="all_submissions_removal_limit",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="errored submission removal days limit",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='errored_submissions_removal_limit',
-            field=models.PositiveIntegerField(blank=True, help_text='Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration.', null=True, validators=[django.core.validators.MinValueValidator(1)], verbose_name='errored submission removal days limit'),
+            model_name="form",
+            name="errored_submissions_removal_limit",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="errored submission removal days limit",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='errored_submissions_removal_method',
-            field=models.CharField(blank=True, choices=[('delete_permanently', 'Data will be permanently deleted'), ('make_anonymous', 'Data will be modified in a way to make it anonymous')], help_text='How errored submissions of this form will be removed after the limit of days. Leave blank to use value in General Configuration.', max_length=50, null=True, verbose_name='registration backend status'),
+            model_name="form",
+            name="errored_submissions_removal_method",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("delete_permanently", "Data will be permanently deleted"),
+                    (
+                        "make_anonymous",
+                        "Data will be modified in a way to make it anonymous",
+                    ),
+                ],
+                help_text="How errored submissions of this form will be removed after the limit of days. Leave blank to use value in General Configuration.",
+                max_length=50,
+                null=True,
+                verbose_name="registration backend status",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='incomplete_submissions_removal_limit',
-            field=models.PositiveIntegerField(blank=True, help_text='Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.', null=True, validators=[django.core.validators.MinValueValidator(1)], verbose_name='incomplete submission removal limit'),
+            model_name="form",
+            name="incomplete_submissions_removal_limit",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="incomplete submission removal limit",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='incomplete_submissions_removal_method',
-            field=models.CharField(blank=True, choices=[('delete_permanently', 'Data will be permanently deleted'), ('make_anonymous', 'Data will be modified in a way to make it anonymous')], help_text='How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.', max_length=50, null=True, verbose_name='registration backend status'),
+            model_name="form",
+            name="incomplete_submissions_removal_method",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("delete_permanently", "Data will be permanently deleted"),
+                    (
+                        "make_anonymous",
+                        "Data will be modified in a way to make it anonymous",
+                    ),
+                ],
+                help_text="How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
+                max_length=50,
+                null=True,
+                verbose_name="registration backend status",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='successful_submissions_removal_limit',
-            field=models.PositiveIntegerField(blank=True, help_text='Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.', null=True, validators=[django.core.validators.MinValueValidator(1)], verbose_name='successful submission removal limit'),
+            model_name="form",
+            name="successful_submissions_removal_limit",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="successful submission removal limit",
+            ),
         ),
         migrations.AddField(
-            model_name='form',
-            name='successful_submissions_removal_method',
-            field=models.CharField(blank=True, choices=[('delete_permanently', 'Data will be permanently deleted'), ('make_anonymous', 'Data will be modified in a way to make it anonymous')], help_text='How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.', max_length=50, null=True, verbose_name='successful submissions removal method'),
+            model_name="form",
+            name="successful_submissions_removal_method",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("delete_permanently", "Data will be permanently deleted"),
+                    (
+                        "make_anonymous",
+                        "Data will be modified in a way to make it anonymous",
+                    ),
+                ],
+                help_text="How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
+                max_length=50,
+                null=True,
+                verbose_name="successful submissions removal method",
+            ),
         ),
     ]

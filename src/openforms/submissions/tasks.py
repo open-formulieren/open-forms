@@ -1,0 +1,63 @@
+import logging
+from datetime import timedelta
+
+from django.db.models import (
+    Case,
+    CharField,
+    DateTimeField,
+    DurationField,
+    ExpressionWrapper,
+    F,
+    IntegerField,
+    Value,
+    When,
+)
+from django.db.models.functions import ExtractDay
+from django.utils import timezone
+
+from ..celery import app
+from ..config.constants import RemovalMethods
+from ..config.models import GlobalConfiguration
+from .constants import RegistrationStatuses
+from .models import Submission
+
+logger = logging.getLogger(__name__)
+
+
+@app.task
+def delete_submissions():
+    logger.debug("Deleting submissions")
+
+    config = GlobalConfiguration.get_solo()
+
+    Submission.objects.annotate(
+        removal_method=Case(
+            When(
+                form__successful_submissions_removal_method=None,
+                then=Value(config.successful_submissions_removal_method),
+            ),
+            default=F("form__successful_submissions_removal_method"),
+            output_field=CharField(),
+        ),
+        removal_limit=Case(
+            When(
+                form__successful_submissions_removal_limit=None,
+                then=Value(config.successful_submissions_removal_limit),
+            ),
+            default=F("form__successful_submissions_removal_limit"),
+            output_field=IntegerField(),
+        ),
+        time_since_creation=ExpressionWrapper(
+            Value(timezone.now(), DateTimeField()) - F("created_on"),
+            output_field=DurationField(),
+        ),
+    ).filter(
+        registration_status=RegistrationStatuses.success,
+        removal_method=RemovalMethods.delete_permanently,
+        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+    ).delete()
+
+
+@app.task
+def make_sensitive_data_anonymous() -> None:
+    logger.debug("Making sensitive submission data anonymous")

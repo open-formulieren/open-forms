@@ -1,0 +1,46 @@
+from datetime import timedelta
+from unittest import TestCase
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+
+from openforms.config.constants import RemovalMethods
+from openforms.config.models import GlobalConfiguration
+from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.models import Submission
+from openforms.submissions.tasks import delete_submissions
+from openforms.submissions.tests.factories import SubmissionFactory
+
+
+class DeleteSubmissionsTask(TestCase):
+    def setUp(self) -> None:
+        Submission.objects.all().delete()
+
+    def test_successful_submissions_correctly_deleted(self):
+        config = GlobalConfiguration.get_solo()
+
+        # Not successful
+        SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
+        # Too recent
+        SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success, created_on=timezone.now()
+        )
+        # To be made anonymous
+        SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success,
+            form__successful_submissions_removal_method=RemovalMethods.make_anonymous,
+        )
+        submission_to_be_deleted = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success
+        )
+        # Passing created_on to the factory create method does not work
+        submission_to_be_deleted.created_on = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        submission_to_be_deleted.save()
+
+        delete_submissions()
+
+        self.assertEqual(Submission.objects.count(), 3)
+        with self.assertRaises(ObjectDoesNotExist):
+            submission_to_be_deleted.refresh_from_db()

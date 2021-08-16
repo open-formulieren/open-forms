@@ -545,6 +545,14 @@ CELERY_BEAT_SCHEDULE = {
             "BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60  # every minute
         ),
     },
+    "delete-submissions": {
+        "task": "openforms.submissions.tasks.delete_submissions",
+        "schedule": crontab(minute=0, hour=1),
+    },
+    "make-sensitive-data-anonymous": {
+        "task": "openforms.submissions.tasks.make_sensitive_data_anonymous",
+        "schedule": crontab(minute=0, hour=2),
+    },
 }
 
 CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
