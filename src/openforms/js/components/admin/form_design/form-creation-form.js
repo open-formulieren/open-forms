@@ -20,7 +20,6 @@ import {
     FORM_DEFINITIONS_ENDPOINT,
     ADMIN_PAGE,
     REGISTRATION_BACKENDS_ENDPOINT,
-    REGISTRATION_BACKEND_OPTIONS_ENDPOINT,
     AUTH_PLUGINS_ENDPOINT,
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
@@ -72,10 +71,6 @@ const initialFormState = {
     availableRegistrationBackends: {
         loading: true,
         data: []
-    },
-    registrationBackendOptionFormSchemas: {
-        loading: true,
-        data: {}
     },
     availableAuthPlugins: {
         loading: true,
@@ -171,16 +166,6 @@ function reducer(draft, action) {
             draft.availableRegistrationBackends = {
                 loading: false,
                 data: action.payload,
-            };
-            break;
-        }
-        case 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED': {
-            const data = Object.fromEntries(
-                action.payload.map( ({id, schema}) => [id, schema] )
-            );
-            draft.registrationBackendOptionFormSchemas = {
-                loading: false,
-                data,
             };
             break;
         }
@@ -398,18 +383,6 @@ const getRegistrationBackends = async (dispatch) => {
     }
 };
 
-const getRegistrationBackendOptions = async (dispatch) => {
-    try {
-        const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
-        dispatch({
-            type: 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
 const getAuthPlugins = async (dispatch) => {
     try {
         const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -525,7 +498,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             getFormData(formUuid, dispatch),
             getFormDefinitions(dispatch),
             getRegistrationBackends(dispatch),
-            getRegistrationBackendOptions(dispatch),
         ];
         await Promise.all(promises);
         // We want the data of all available plugins to be loaded after the form data has been loaded,
@@ -760,7 +732,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         state.availableAuthPlugins.loading,
         state.availableRegistrationBackends.loading,
         state.availablePrefillPlugins.loading,
-        state.registrationBackendOptionFormSchemas.loading,
     ].some( el => el );
 
     if (isAnyLoading) {
@@ -873,7 +844,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backends={state.availableRegistrationBackends.data}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
-                        backendOptionsForms={state.registrationBackendOptionFormSchemas.data}
                         onChange={onFieldChange}
                     />
                 </TabPanel>

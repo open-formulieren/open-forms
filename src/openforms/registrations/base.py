@@ -4,10 +4,16 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.utils.mixins import JsonSchemaSerializerMixin
+
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 SerializerCls = Type[serializers.Serializer]
+
+
+class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
+    pass
 
 
 class BasePlugin:
@@ -15,7 +21,7 @@ class BasePlugin:
     """
     Specify the human-readable label for the plugin.
     """
-    configuration_options: SerializerCls = None
+    configuration_options: SerializerCls = EmptyOptions
     """
     A serializer class describing the plugin-specific configuration options.
 

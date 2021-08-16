@@ -13,12 +13,13 @@ const RegistrationFields = ({
     backends=[],
     selectedBackend='',
     backendOptions={},
-    backendOptionsForms={},
     onChange,
 }) => {
     const intl = useIntl();
+
     const backendChoices = backends.map( backend => [backend.id, backend.label]);
-    const optionsFormSchema = backendOptionsForms[selectedBackend];
+    const backend = backends.find( backend => backend.id === selectedBackend );
+    const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
     const addAnotherMsg = intl.formatMessage({
         description: 'Button text to add extra item',
@@ -46,14 +47,14 @@ const RegistrationFields = ({
                     />
                 </Field>
             </FormRow>
-            {optionsFormSchema
+            {hasOptionsForm
                 ? (<FormRow>
                     <Field
                         name="form.registrationBackendOptions"
                         label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
                     >
                         <Form
-                            schema={optionsFormSchema}
+                            schema={backend.schema}
                             formData={backendOptions}
                             onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
                             children={true}
@@ -70,14 +71,14 @@ RegistrationFields.propTypes = {
     backends: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
+        schema: PropTypes.shape({
+            type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
+            properties: PropTypes.object,
+            required: PropTypes.arrayOf(PropTypes.string),
+        }),
     })),
     selectedBackend: PropTypes.string,
     backendOptions: PropTypes.object,
-    backendOptionsForms: PropTypes.objectOf(PropTypes.shape({
-        type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
-        properties: PropTypes.object,
-        required: PropTypes.arrayOf(PropTypes.string),
-    })),
     onChange: PropTypes.func.isRequired,
 };
 
