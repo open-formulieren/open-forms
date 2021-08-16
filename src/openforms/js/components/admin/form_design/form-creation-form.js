@@ -67,7 +67,7 @@ const initialFormState = {
         data: [],
     },
     errors: {},
-    formDefinitions: {},
+    formDefinitions: [],
     availableRegistrationBackends: {
         loading: true,
         data: []
@@ -144,15 +144,6 @@ function reducer(draft, action) {
         case 'PLUGINS_LOADED': {
             const {stateVar, data} = action.payload;
             draft[stateVar] = data;
-            break;
-        }
-        case 'FORM_DEFINITIONS_LOADED': {
-            const rawFormDefinitions = action.payload;
-            var formDefinitions = {};
-            for (const definition of rawFormDefinitions) {
-                formDefinitions[definition.url] = definition;
-            }
-            draft.formDefinitions = formDefinitions;
             break;
         }
         case 'FORM_STEPS_LOADED': {
@@ -236,7 +227,7 @@ function reducer(draft, action) {
                     isNew: false,
                 };
             } else {
-                const { configuration, name, slug } = draft.formDefinitions[formDefinitionUrl];
+                const { configuration, name, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
                 const { url } = draft.formSteps.data[index];
                 draft.formSteps.data[index] = {
                     configuration,
@@ -359,18 +350,6 @@ const getFormData = async (formUuid, dispatch) => {
     }
 };
 
-const getFormDefinitions = async (dispatch) => {
-    try {
-        const response = await get(FORM_DEFINITIONS_ENDPOINT);
-        dispatch({
-            type: 'FORM_DEFINITIONS_LOADED',
-            payload: response.data.results,
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
 const getRegistrationBackends = async (dispatch) => {
     try {
         const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
@@ -446,11 +425,31 @@ class PluginLoadingError extends Error {
 // boundaries in the component tree.
 const loadPlugins = async (plugins=[]) => {
     const promises = plugins.map(async (plugin) => {
-        const response = await get(plugin.endpoint);
+        let response = await get(plugin.endpoint);
         if (!response.ok) {
             throw new PluginLoadingError('Failed to load plugins', plugin, response);
         }
-        return response.data;
+        let responseData = response.data;
+
+        // paginated or not?
+        const isPaginated = responseData.hasOwnProperty('results') && responseData.hasOwnProperty('count');
+        if (!isPaginated) {
+            return responseData;
+        }
+
+        // yep, resolve all pages
+        // TODO: check if we have endpoints that return stupid amounts of data and treat those
+        // differently/async to reduce the browser memory footprint
+        let allResults = [...responseData.results];
+        while (responseData.next) {
+            response = await get(responseData.next);
+            if (!response.ok) {
+                throw new PluginLoadingError('Failed to load plugins', plugin, response);
+            }
+            responseData = response.data;
+            allResults = [...allResults, ...responseData.results];
+        }
+        return allResults;
     });
     const results = await Promise.all(promises);
     return results;
@@ -474,6 +473,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     // load all these plugin registries in parallel
     const pluginsToLoad = [
         {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
+        {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
     ];
 
     const {loading} = useAsync(async () => {
@@ -496,7 +496,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
         const promises = [
             getFormData(formUuid, dispatch),
-            getFormDefinitions(dispatch),
             getRegistrationBackends(dispatch),
         ];
         await Promise.all(promises);
@@ -805,7 +804,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                     onDelete={onStepDelete}
                                     onReorder={onStepReorder}
                                     onReplace={onStepReplace}
-                                    onAdd={ (e) => e.preventDefault() && dispatch({type: 'ADD_STEP'}) }
+                                    onAdd={ (e) => {
+                                        e.preventDefault();
+                                        dispatch({type: 'ADD_STEP'});
+                                    }}
                                     submitting={state.submitting}
                                     errors={state.errors.formSteps}
                                 />

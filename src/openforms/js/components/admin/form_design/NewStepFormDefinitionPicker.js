@@ -9,16 +9,16 @@ import FormRow from '../forms/FormRow';
 import Select from '../forms/Select';
 import SubmitRow from "../forms/SubmitRow";
 import { FormDefinitionsContext } from './Context';
-import { getFormDefinitionChoices } from './utils';
 
 
 const NewStepFormDefinitionPicker = ({ onReplace }) => {
     const intl = useIntl();
     const formDefinitions = useContext(FormDefinitionsContext);
-    const formDefinitionChoices = getFormDefinitionChoices(formDefinitions);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedFormDefinition, setSelectedFormDefinition] = useState('');
     const [validationErrors, setValidationErrors] = useState([]);
+
+    const formDefinitionChoices = formDefinitions.map(fd => [fd.url, fd.name]);
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -92,6 +92,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                             choices={formDefinitionChoices}
                             value={selectedFormDefinition}
                             onChange={onSelectChange}
+                            allowBlank
                         />
                     </Field>
                 </FormRow>
