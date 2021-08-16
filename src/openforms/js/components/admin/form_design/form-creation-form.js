@@ -287,56 +287,34 @@ const getFormData = async (formUuid, dispatch) => {
     }
 
     try {
-        const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
+        // do the requests in parallel
+        const requests = [
+            get(`${FORM_ENDPOINT}/${formUuid}`),
+            getFormStepsData(formUuid, dispatch),
+        ];
+        const [response, formStepsData] = await Promise.all(requests);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         }
-
-        // Set the loaded form data as state.
-        const { literals, ...form } = response.data;
-        dispatch({
-            type: 'FORM_LOADED',
-            payload: {
-                selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-                form: form,
-                literals: literals,
-            },
-        });
-        // Get the form definition data from the form steps
-        const formStepsData = await getFormStepsData(formUuid, dispatch);
-        dispatch({
-            type: 'FORM_STEPS_LOADED',
-            payload: formStepsData,
-        });
-    } catch (e) {
+    } catch (e) { // TODO: convert to ErrorBoundary
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
-};
 
-const getAuthPlugins = async (dispatch) => {
-    try {
-        const response = await get(AUTH_PLUGINS_ENDPOINT);
-        dispatch({
-            type: 'AUTH_PLUGINS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
+    // Set the loaded form data as state.
+    const { literals, ...form } = response.data;
+    dispatch({
+        type: 'FORM_LOADED',
+        payload: {
+            selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
+            form: form,
+            literals: literals,
+        },
+    });
+    dispatch({
+        type: 'FORM_STEPS_LOADED',
+        payload: formStepsData,
+    });
 };
-
-const getPrefillPlugins = async (dispatch) => {
-    try {
-        const response = await get(PREFILL_PLUGINS_ENDPOINT);
-        dispatch({
-            type: 'PREFILL_PLUGINS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
 
 const StepsFieldSet = ({ loading=true, submitting=false, loadingErrors, steps=[], ...props }) => {
     if (loadingErrors) {
