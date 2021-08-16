@@ -63,10 +63,7 @@ const initialFormState = {
         },
     },
     newForm: true,
-    formSteps: {
-        loading: true,
-        data: [],
-    },
+    formSteps: [],
     errors: {},
     formDefinitions: [],
     availableRegistrationBackends: [],
@@ -139,10 +136,7 @@ function reducer(draft, action) {
             break;
         }
         case 'FORM_STEPS_LOADED': {
-            draft.formSteps = {
-                loading: false,
-                data: action.payload,
-            };
+            draft.formSteps = action.payload;
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -159,31 +153,31 @@ function reducer(draft, action) {
          */
         case 'DELETE_STEP': {
             const {index} = action.payload;
-            draft.stepsToDelete.push(draft.formSteps.data[index].url);
+            draft.stepsToDelete.push(draft.formSteps[index].url);
 
-            const unchangedSteps = draft.formSteps.data.slice(0, index);
-            const updatedSteps = draft.formSteps.data.slice(index+1).map((step) => {
+            const unchangedSteps = draft.formSteps.slice(0, index);
+            const updatedSteps = draft.formSteps.slice(index+1).map((step) => {
                 step.index = step.index - 1;
                 return step;
             });
-            draft.formSteps.data = [...unchangedSteps, ...updatedSteps];
+            draft.formSteps = [...unchangedSteps, ...updatedSteps];
             break;
         }
         case 'ADD_STEP': {
-            const newIndex = draft.formSteps.data.length;
+            const newIndex = draft.formSteps.length;
             const emptyStep = {
                 ...newStepData,
                 index: newIndex,
                 name: `Stap ${newIndex + 1}`,
             };
-            draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
+            draft.formSteps = draft.formSteps.concat([emptyStep]);
             break;
         }
         case 'FORM_DEFINITION_CHOSEN': {
             const {index, formDefinitionUrl} = action.payload;
             if (!formDefinitionUrl) {
-                draft.formSteps.data[index] = {
-                    ...draft.formSteps.data[index],
+                draft.formSteps[index] = {
+                    ...draft.formSteps[index],
                     ...newStepData,
                     // if we're creating a new form definition, mark the step no longer as new since a decision
                     // was made (re-use one or create a new one)
@@ -191,8 +185,8 @@ function reducer(draft, action) {
                 };
             } else {
                 const { configuration, name, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
-                const { url } = draft.formSteps.data[index];
-                draft.formSteps.data[index] = {
+                const { url } = draft.formSteps[index];
+                draft.formSteps[index] = {
                     configuration,
                     formDefinition: formDefinitionUrl,
                     index,
@@ -217,29 +211,29 @@ function reducer(draft, action) {
         }
         case 'EDIT_STEP': {
             const {index, configuration} = action.payload;
-            // const currentConfiguration = original(draft.formSteps.data[index].configuration);
-            draft.formSteps.data[index].configuration = configuration;
+            // const currentConfiguration = original(draft.formSteps[index].configuration);
+            draft.formSteps[index].configuration = configuration;
             break;
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps.data[index][name] = value;
+            draft.formSteps[index][name] = value;
             break;
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps.data[index]['literals'][name]['value'] = value;
+            draft.formSteps[index]['literals'][name]['value'] = value;
             break;
         }
         case 'MOVE_UP_STEP': {
             const index = action.payload;
-            if (index <= 0 || index >= draft.formSteps.data.length) break;
+            if (index <= 0 || index >= draft.formSteps.length) break;
 
-            let updatedSteps = draft.formSteps.data.slice(0, index-1);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index], ...{index: index-1}}]);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index-1], ...{index: index}}]);
+            let updatedSteps = draft.formSteps.slice(0, index-1);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps[index], ...{index: index-1}}]);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps[index-1], ...{index: index}}]);
 
-            draft.formSteps.data = [...updatedSteps, ...draft.formSteps.data.slice(index+1)];
+            draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
             break;
         }
         /**
@@ -296,44 +290,38 @@ const getFormData = async (formUuid, dispatch) => {
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         }
+
+        // Set the loaded form data as state.
+        const { literals, ...form } = response.data;
+        dispatch({
+            type: 'FORM_LOADED',
+            payload: {
+                selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
+                form: form,
+                literals: literals,
+            },
+        });
+        dispatch({
+            type: 'FORM_STEPS_LOADED',
+            payload: formStepsData,
+        });
     } catch (e) { // TODO: convert to ErrorBoundary
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
-
-    // Set the loaded form data as state.
-    const { literals, ...form } = response.data;
-    dispatch({
-        type: 'FORM_LOADED',
-        payload: {
-            selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-            form: form,
-            literals: literals,
-        },
-    });
-    dispatch({
-        type: 'FORM_STEPS_LOADED',
-        payload: formStepsData,
-    });
 };
 
-const StepsFieldSet = ({ loading=true, submitting=false, loadingErrors, steps=[], ...props }) => {
+const StepsFieldSet = ({ submitting=false, loadingErrors, steps=[], ...props }) => {
     if (loadingErrors) {
         return (
             <div className="fetch-error">{loadingErrors}</div>
         );
     }
-
-    if (loading && !loadingErrors) {
-        return (<Loader />);
-    }
-
     return (
         <FormSteps steps={steps} submitting={submitting} {...props} />
     );
 };
 
 StepsFieldSet.propTypes = {
-    loading: PropTypes.bool.isRequired,
     loadingErrors: PropTypes.node,
     steps: PropTypes.arrayOf(PropTypes.object),
     submitting: PropTypes.bool,
@@ -498,8 +486,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         }
 
         // Update/create form definitions and then form steps
-        for ( let index = 0; index < state.formSteps.data.length; index++) {
-            const step = state.formSteps.data[index];
+        for ( let index = 0; index < state.formSteps.length; index++) {
+            const step = state.formSteps[index];
             try {
                 // First update/create the form definitions
                 const isNewFormDefinition = !!step.formDefinition;
@@ -552,7 +540,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
                 }
             } catch (e) {
-                let formStepsErrors = new Array(state.formSteps.data.length);
+                let formStepsErrors = new Array(state.formSteps.length);
                 formStepsErrors[index] = e.details;
                 dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
                 window.scrollTo(0, 0);
@@ -606,18 +594,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         })
     };
 
-    const isAnyLoading = [
-        loading,
-        state.formSteps.loading,
-    ].some( el => el );
-
-    if (isAnyLoading) {
+    if (loading) {
         return (<Loader />);
     }
 
     return (
         <>
-            <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />
+            <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
 
             <h1>
                 <FormattedMessage defaultMessage="Change form" description="Change form page title" />
@@ -673,8 +656,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 availablePrefillPlugins: state.availablePrefillPlugins
                             }}>
                                 <StepsFieldSet
-                                    steps={state.formSteps.data}
-                                    loading={state.formSteps.loading}
+                                    steps={state.formSteps}
                                     loadingErrors={state.errors.loadingErrors}
                                     onEdit={onStepEdit}
                                     onFieldChange={onStepFieldChange}
