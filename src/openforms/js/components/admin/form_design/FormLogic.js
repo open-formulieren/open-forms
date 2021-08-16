@@ -9,9 +9,8 @@ import {ActionSet} from "./logic/ActionSet";
 
 const EMPTY_RULE = {
     uuid: '',
-    formStep: '',
+    form: '',
     jsonLogicTrigger: '',
-    component: '',
     actions: [],
 };
 

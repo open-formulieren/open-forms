@@ -84,7 +84,7 @@ const initialFormState = {
         },
         rules: [],
         rulesToDelete: []
-    }
+    },
 };
 
 const newStepData = {
@@ -257,11 +257,17 @@ function reducer(draft, action) {
          * Form Logic rules actions
          */
         case 'LOADED_RULES': {
-            draft.rules.rules = action.payload;
+            draft.rules.rules = action.payload.length ? action.payload : [{
+                ...EMPTY_RULE,
+                form: draft.form.url
+            }];
             break;
         }
         case 'ADD_RULE': {
-            draft.rules.rules.push(EMPTY_RULE);
+            draft.rules.rules.push({
+                ...EMPTY_RULE,
+                form: draft.form.url
+            });
             break;
         }
         case 'CHANGED_RULE': {
@@ -429,7 +435,7 @@ const loadExistingRules = async (formUuid, dispatch) => {
         }
         dispatch({
             type: 'LOADED_RULES',
-            payload: rulesResponse.data.length ? rulesResponse.data : [EMPTY_RULE],
+            payload: rulesResponse.data,
         });
     } catch (e) {
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
@@ -456,7 +462,7 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
+const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) => {
     const intl = useIntl();
     const initialState = {
         ...initialFormState,
@@ -465,6 +471,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             uuid: formUuid,
         },
         newForm: !formUuid,
+        apiBaseUrl: apiBaseUrl,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -481,7 +488,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         const promises = [
             loadPlugins(pluginsToLoad),
             getFormData(formUuid, dispatch),
-            loadExistingRules(formUuid, dispatch),
         ];
         const [
             pluginsData,
@@ -498,6 +504,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 }
             });
         }
+
+        await loadExistingRules(formUuid, dispatch);
     }, []);
 
     /**

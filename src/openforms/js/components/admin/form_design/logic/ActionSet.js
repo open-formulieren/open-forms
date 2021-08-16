@@ -117,19 +117,19 @@ const ActionSet = ({name, actions, onChange}) => {
 
     // whenever we get a change in the actions, relay that back to the
     // parent component
-    const previousActions = usePrevious(state.actions);
+    const previousActions = usePrevious(actions);
     useEffect(
         () => {
             // if nothing changed, do not fire an update
-            if (previousActions && isEqual(previousActions, state.actions)) return;
+            if (!(previousActions && isEqual(previousActions, actions))) return;
             onChange({
                 target: {
                     name: name,
-                    value: state.actions.map((action, index) => convertActionToJson(action)),
+                    value: actions.map((action, index) => convertActionToJson(action)),
                 }
             });
         },
-        [state.actions]
+        [actions]
     );
 
     // Parse the actions (expressed in JSON) to the variables that can be handled in the state
