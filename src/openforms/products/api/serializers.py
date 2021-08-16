@@ -8,8 +8,17 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
         model = Product
         fields = (
             "url",
-            "id",
+            "uuid",
             "name",
             "url",
             "price",
         )
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "url": {
+                "view_name": "api:product-detail",
+                "lookup_field": "uuid",
+            },
+        }
