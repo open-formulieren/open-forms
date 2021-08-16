@@ -30,6 +30,7 @@ import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
 import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
+import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
 
 const initialFormState = {
@@ -45,6 +46,7 @@ const initialFormState = {
         canSubmit: true,
         registrationBackend: '',
         registrationBackendOptions: {},
+        product: null,
         paymentBackend: '',
         paymentBackendOptions: {},
     },
@@ -631,6 +633,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
                     <Tab>
+                        <FormattedMessage defaultMessage="Product" description="Product tab title" />
+                    </Tab>
+                    <Tab>
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
                     </Tab>
                 </TabList>
@@ -712,6 +717,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <TextLiterals literals={state.literals} onChange={onFieldChange} />
+                </TabPanel>
+
+                <TabPanel>
+                    <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
                 </TabPanel>
 
                 <TabPanel>

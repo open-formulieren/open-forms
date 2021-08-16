@@ -85,7 +85,6 @@ class FormLiteralsSerializer(serializers.Serializer):
 
 
 class FormSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
     authentication_backends = serializers.ListField(
