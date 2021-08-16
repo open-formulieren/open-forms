@@ -364,8 +364,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     ];
 
     const {loading} = useAsync(async () => {
+        const promises = [
+            loadPlugins(pluginsToLoad),
+            getFormData(formUuid, dispatch),
+        ];
+        const [
+            pluginsData,
+        ] = await Promise.all(promises);
+
         // load various module plugins & update the state
-        const pluginsData = await loadPlugins(pluginsToLoad);
         for (const group of zip(pluginsToLoad, pluginsData) ) {
             const [plugin, data] = group;
             dispatch({
@@ -376,7 +383,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 }
             });
         }
-        await getFormData(formUuid, dispatch);
     }, []);
 
     /**
