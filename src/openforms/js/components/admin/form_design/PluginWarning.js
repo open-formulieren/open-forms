@@ -13,7 +13,7 @@ const PluginWarning = ({loginRequired, configuration}) => {
     // Check if the components in this definition require a prefill.
     // If yes, check that the attribute needed by the prefill is provided by at least one auth plugin
     const checkPrefillsAuth = (configuration) => {
-        if (availableAuthPlugins.loading) return;
+        if (!availableAuthPlugins.length) return;
 
         if (configuration.components) {
             configuration.components.map(checkPrefillsAuth);
@@ -28,7 +28,10 @@ const PluginWarning = ({loginRequired, configuration}) => {
                 // Iterate over the selected plugins and check if they provide the required Auth attribute
                 let pluginProvidesAttribute = false;
                 for (const pluginName of selectedAuthPlugins) {
-                    const authPlugin = availableAuthPlugins.data[pluginName];
+
+                    const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
+                    if (!authPlugin) break;
+
                     if ( authPlugin.providesAuth.includes(requiredAuthAttribute) ) {
                         pluginProvidesAttribute = true;
                         break;

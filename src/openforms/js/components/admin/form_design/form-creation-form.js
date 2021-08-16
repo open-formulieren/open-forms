@@ -69,10 +69,7 @@ const initialFormState = {
     errors: {},
     formDefinitions: [],
     availableRegistrationBackends: [],
-    availableAuthPlugins: {
-        loading: true,
-        data: {}
-    },
+    availableAuthPlugins: [],
     availablePrefillPlugins: {
         loading: true,
         data: {}
@@ -147,17 +144,6 @@ function reducer(draft, action) {
             draft.formSteps = {
                 loading: false,
                 data: action.payload,
-            };
-            break;
-        }
-        case 'AUTH_PLUGINS_LOADED': {
-            var formattedAuthPlugins = {};
-            for (const plugin of action.payload) {
-                formattedAuthPlugins[plugin.id] = plugin;
-            }
-            draft.availableAuthPlugins = {
-                loading: false,
-                data: formattedAuthPlugins,
             };
             break;
         }
@@ -453,6 +439,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
         {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
         {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
+        {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     ];
 
     const {loading} = useAsync(async () => {
@@ -477,9 +464,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             getFormData(formUuid, dispatch),
         ];
         await Promise.all(promises);
-        // We want the data of all available plugins to be loaded after the form data has been loaded,
-        // so that once the checkboxes are rendered they are directly checked/unchecked
-        await getAuthPlugins(dispatch);
     }, []);
 
     /**
@@ -706,7 +690,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const isAnyLoading = [
         loading,
         state.formSteps.loading,
-        state.availableAuthPlugins.loading,
         state.availablePrefillPlugins.loading,
     ].some( el => el );
 
