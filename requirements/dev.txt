@@ -8,6 +8,10 @@
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+-e git+https://github.com/maykinmedia/django-two-factor-auth.git@task-334-fix-login-page-style#egg=maykin-django-two-factor-auth[phonenumbers]
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via
     #   -c requirements/ci.txt
@@ -144,7 +148,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-django-admin-index==1.4.0
+django-admin-index==1.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -467,10 +471,6 @@ markupsafe==1.1.1
     #   -r requirements/ci.txt
     #   jinja2
     #   sphinx
-maykin-django-two-factor-auth==2.0.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 mccabe==0.6.1
     # via
     #   -c requirements/ci.txt
@@ -508,10 +508,11 @@ pep8==1.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-phonenumbers==8.12.26
+phonenumbers==8.12.29
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
 pillow==8.2.0
     # via
     #   -c requirements/ci.txt
