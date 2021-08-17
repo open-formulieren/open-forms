@@ -34,7 +34,6 @@ const FormLogic = ({ rules, onChange, onDelete, onAdd }) => {
                 <Rule
                     key={i}
                     {...rule}
-                    components={rules.components}
                     onChange={onChange.bind(null, i)}
                     onDelete={onDelete.bind(null, i)}
                 />
@@ -46,9 +45,19 @@ const FormLogic = ({ rules, onChange, onDelete, onAdd }) => {
     );
 };
 
-// FormLogic.propTypes = {
-//     formSteps: PropTypes.arrayOf(PropTypes.object).isRequired,
-// };
+FormLogic.propTypes = {
+    rules: PropTypes.shape({
+        components: PropTypes.shape({
+            choices: PropTypes.array,
+            loading: PropTypes.bool,
+        }),
+        rules: PropTypes.array,
+        rulesToDelete: PropTypes.array,
+    }).isRequired,
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
+};
 
 
 const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
@@ -72,11 +81,11 @@ const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
 };
 
 
-// Rule.propTypes = {
-//     allComponents: PropTypes.object,
-//     logic: PropTypes.objects,
-//     component: PropTypes.string,
-//     actions: PropTypes.arrayOf(PropTypes.object),
-// };
+Rule.propTypes = {
+    jsonLogicTrigger: PropTypes.object,
+    actions: PropTypes.arrayOf(PropTypes.object),
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+};
 
 export {FormLogic, formatRuleComponentChoices, EMPTY_RULE};

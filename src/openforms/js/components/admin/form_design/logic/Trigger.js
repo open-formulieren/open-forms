@@ -60,6 +60,49 @@ const TRIGGER_FIELD_ORDER = [
     'operand',
 ];
 
+
+const parseJsonLogic = (logic) => {
+    // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
+    // with our own organization.
+    if (!logic) return {};
+
+    // reference for parsing: https://jsonlogic.com/
+    // a rule is always in the format {"operator": ["values" ...]} -> so grab the operator
+    const operator = jsonLogic.get_operator(logic);
+    let values = logic[operator];
+    if (! Array.isArray(values)) {
+        values = [values];
+    }
+
+    // first value should be the reference to the component
+    const component = values[0].var;
+
+    // check if we're using a literal value, or a component reference
+    const compareValue = values[1];
+    let operandType = '';
+    let operand = '';
+
+    if (jsonLogic.is_logic(compareValue)) {
+        const op = jsonLogic.get_operator(compareValue);
+        if (op === 'var') {
+            operandType = 'component';
+            operand = compareValue.var;
+        } else {
+            console.warn(`Unsupported operator: ${op}, can't derive operandType`);
+        }
+    } else if (compareValue != null) {
+        operandType = 'literal';
+        operand = compareValue;
+    }
+
+    return {
+        component,
+        operator,
+        operandType,
+        operand,
+    };
+};
+
 const reducer = (draft, action) => {
     switch(action.type) {
         case 'TRIGGER_CONFIGURATION_CHANGED': {
@@ -74,51 +117,6 @@ const reducer = (draft, action) => {
             }
             break;
         }
-        case 'PROCESS_JSON_LOGIC': {
-            // break down the json logic back into state that can be managed by components
-            // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
-            // with our own organization.
-            const logic = action.payload;
-            if (!logic) return;
-
-            // reference for parsing: https://jsonlogic.com/
-            // a rule is always in the format {"operator": ["values" ...]} -> so grab the operator
-            const operator = jsonLogic.get_operator(logic);
-            let values = logic[operator];
-            if (! Array.isArray(values)) {
-                values = [values];
-            }
-
-            // first value should be the reference to the component
-            const component = values[0].var;
-
-            // check if we're using a literal value, or a component reference
-            const compareValue = values[1];
-            let operandType = initialState.operandType;
-            let operand = initialState.operand;
-
-            if (jsonLogic.is_logic(compareValue)) {
-                const op = jsonLogic.get_operator(compareValue);
-                if (op === 'var') {
-                    operandType = 'component';
-                    operand = compareValue.var;
-                } else {
-                    console.warn(`Unsupported operator: ${op}, can't derive operandType`);
-                }
-            } else if (compareValue != null) {
-                operandType = 'literal';
-                operand = compareValue;
-            }
-
-            // update the state
-            Object.assign(draft, {
-                component,
-                operator,
-                operandType,
-                operand,
-            });
-            break;
-        }
         default: {
             throw new Error(`Unknown action type: ${action.type}`);
         }
@@ -126,18 +124,11 @@ const reducer = (draft, action) => {
 };
 
 const Trigger = ({ name, logic, onChange }) => {
+    // break down the json logic back into variables that can be managed by components state
+    const parsedLogic = parseJsonLogic(logic);
     // hooks
-    const [state, dispatch] = useImmerReducer(reducer, initialState);
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
     const allComponents = useContext(ComponentsContext);
-
-    // parse logic to build or update state
-    useEffect(
-        () => dispatch({
-            type: 'PROCESS_JSON_LOGIC',
-            payload: logic,
-        }),
-        [logic]
-    );
 
     // event handlers
     const onTriggerChange = (event) => {
@@ -273,6 +264,7 @@ const Trigger = ({ name, logic, onChange }) => {
 
 Trigger.propTypes = {
     name: PropTypes.string.isRequired,
+    logic: PropTypes.object,
     onChange: PropTypes.func.isRequired,
 };
 

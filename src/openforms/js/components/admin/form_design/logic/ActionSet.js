@@ -1,8 +1,10 @@
 import React, {useEffect} from 'react';
 import {Action} from './Action';
-import {useImmerReducer} from "use-immer";
-import usePrevious from "react-use/esm/usePrevious";
+import {useImmerReducer} from 'use-immer';
+import usePrevious from 'react-use/esm/usePrevious';
 import isEqual from 'lodash/isEqual';
+import PropTypes from "prop-types";
+import Trigger from "./Trigger";
 
 
 const emptyAction = {
@@ -35,6 +37,7 @@ const reducer = (draft, action) => {
         case 'ACTION_CHANGED': {
             const {name, value, index} = action.payload;
             draft.actions[index][name] = value;
+            console.log(index, name , value);
 
             // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
             const currentFieldIndex = ACTION_SELECTION_ORDER.indexOf(name);
@@ -42,39 +45,6 @@ const reducer = (draft, action) => {
             for (const name of nextFieldNames) {
                 draft.actions[index][name] = emptyAction[name];
             }
-            break;
-        }
-        case 'PROCESS_ACTIONS': {
-            let parsedActions = [];
-            for (const jsonAction of action.payload) {
-
-                let componentValueSource, componentLiteralValue, componentVariableValue;
-                if (jsonAction.action.value.var === undefined) {
-                    componentValueSource = 'literal';
-                    componentLiteralValue = jsonAction.action.value;
-                    componentVariableValue = '';
-                } else {
-                    if (!jsonAction.action.value.var.length) {
-                        componentValueSource = '';
-                    } else {
-                        componentValueSource = 'component';
-                    }
-                    componentLiteralValue = '';
-                    componentVariableValue = jsonAction.action.value.var;
-                }
-                if (!!jsonAction.action.source) componentValueSource = jsonAction.action.source;
-
-                parsedActions.push({
-                    componentToChange: jsonAction.component,
-                    actionType: jsonAction.action.type,
-                    componentValueSource: componentValueSource,
-                    componentProperty: jsonAction.action.property.value,
-                    componentLiteralValue: componentLiteralValue,
-                    componentVariableValue: componentVariableValue,
-                    componentPropertyValue: jsonAction.action.state,
-                });
-            }
-            draft.actions = parsedActions;
             break;
         }
         case 'ACTION_ADDED': {
@@ -112,33 +82,54 @@ const convertActionToJson = (action) => {
     };
 };
 
-const ActionSet = ({name, actions, onChange}) => {
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, actions: actions || []});
+const parseJsonAction = (jsonAction) => {
+    let componentValueSource, componentLiteralValue, componentVariableValue;
+    if (jsonAction.action.value.var === undefined) {
+        componentValueSource = 'literal';
+        componentLiteralValue = jsonAction.action.value;
+        componentVariableValue = '';
+    } else {
+        if (!jsonAction.action.value.var.length) {
+            componentValueSource = '';
+        } else {
+            componentValueSource = 'component';
+        }
+        componentLiteralValue = '';
+        componentVariableValue = jsonAction.action.value.var;
+    }
+    if (!!jsonAction.action.source) componentValueSource = jsonAction.action.source;
 
-    // whenever we get a change in the actions, relay that back to the
-    // parent component
-    const previousActions = usePrevious(actions);
+    return {
+        componentToChange: jsonAction.component,
+        actionType: jsonAction.action.type,
+        componentValueSource: componentValueSource,
+        componentProperty: jsonAction.action.property.value,
+        componentLiteralValue: componentLiteralValue,
+        componentVariableValue: componentVariableValue,
+        componentPropertyValue: jsonAction.action.state,
+    };
+};
+
+const ActionSet = ({name, actions, onChange}) => {
+    const [state, dispatch] = useImmerReducer(reducer, {
+        ...initialState,
+        actions: actions.map(action => parseJsonAction(action)) || []
+    });
+
+    const jsonActions = state.actions.map(action => convertActionToJson(action));
+    const previousJsonActions = usePrevious(jsonActions);
     useEffect(
         () => {
             // if nothing changed, do not fire an update
-            if (!(previousActions && isEqual(previousActions, actions))) return;
+            if (previousJsonActions && isEqual(previousJsonActions, jsonActions)) return;
             onChange({
                 target: {
                     name: name,
-                    value: actions.map((action, index) => convertActionToJson(action)),
+                    value: jsonActions,
                 }
             });
         },
-        [actions]
-    );
-
-    // Parse the actions (expressed in JSON) to the variables that can be handled in the state
-    useEffect(
-        () => dispatch({
-            type: 'PROCESS_ACTIONS',
-            payload: actions,
-        }),
-        [actions]
+        [jsonActions]
     );
 
     const onActionChange = (index, event) => {
@@ -175,6 +166,12 @@ const ActionSet = ({name, actions, onChange}) => {
             </button>
         </>
     );
+};
+
+ActionSet.propTypes = {
+    name: PropTypes.string.isRequired,
+    actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 export {ActionSet};
