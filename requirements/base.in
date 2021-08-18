@@ -37,7 +37,6 @@ mozilla-django-oidc-db
 # once transferred from isprojects to maykinmedia, we'll publish this to PyPI
 git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
-django-sniplates
 # WIP maykin-django-two-factor-auth[phonenumbers]
 # This commit is a commit on the branch task-334-fix-login-page-style, which is still undergoing some
 # tweaks

@@ -136,7 +136,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "digid_eherkenning",
-    "sniplates",
     "solo",
     "tinymce",
     "privates",
