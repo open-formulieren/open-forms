@@ -5,6 +5,7 @@ from typing import List
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -281,16 +282,18 @@ class Form(models.Model):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
 
+    @cached_property
     def has_sensitive_information(self):
         for form_step in self.formstep_set.select_related("form_definition"):
-            if form_step.form_definition.has_sensitive_information():
+            if form_step.form_definition.has_sensitive_information:
                 return True
         return False
 
-    def get_sensitive_fields(self):
+    @cached_property
+    def sensitive_fields(self):
         sensitive_fields = []
         for form_step in self.formstep_set.select_related("form_definition"):
-            sensitive_fields += form_step.form_definition.get_sensitive_fields()
+            sensitive_fields += form_step.form_definition.sensitive_fields
         return sensitive_fields
 
     @transaction.atomic

@@ -151,14 +151,14 @@ class Submission(models.Model):
         return bool(self.completed_on)
 
     def has_sensitive_information(self):
-        if self.bsn or self.kvk or self.form.has_sensitive_information():
+        if self.bsn or self.kvk or self.form.has_sensitive_information:
             return True
         return False
 
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""
-        sensitive_fields = self.form.get_sensitive_fields()
+        sensitive_fields = self.form.sensitive_fields
         for submission_step in self.submissionstep_set.all():
             for field in sensitive_fields:
                 if field in submission_step.data:
