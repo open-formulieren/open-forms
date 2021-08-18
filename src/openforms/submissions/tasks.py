@@ -137,6 +137,9 @@ def make_sensitive_data_anonymous() -> None:
 
     config = GlobalConfiguration.get_solo()
 
+    # TODO Need a way to mark submissions as being anonymized or prevent them
+    #   from being returned over and over
+
     successful_submissions = Submission.objects.annotate(
         removal_method=Case(
             When(
@@ -226,3 +229,6 @@ def make_sensitive_data_anonymous() -> None:
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
         has_sensitive_information=True
     ).delete()
+
+    for submission in successful_submissions + incomplete_submissions + errored_submissions:
+        submission.remove_sensitive_data()

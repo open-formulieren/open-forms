@@ -144,6 +144,15 @@ class FormDefinition(models.Model):
 
         return False
 
+    def get_sensitive_fields(self):
+        sensitive_fields = []
+
+        for component in self.configuration['components']:
+            if component['isSensitiveData']:
+                sensitive_fields.append(component['key'])
+
+        return sensitive_fields
+
     class Meta:
         verbose_name = _("Form definition")
         verbose_name_plural = _("Form definitions")

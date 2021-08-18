@@ -282,10 +282,16 @@ class Form(models.Model):
             yield from form_step.iter_components(recursive=recursive)
 
     def has_sensitive_information(self):
-        for formstep in self.formstep_set.all():
-            if formstep.form_definition.has_sensitive_information():
+        for form_step in self.formstep_set.select_related("form_definition"):
+            if form_step.form_definition.has_sensitive_information():
                 return True
         return False
+
+    def get_sensitive_fields(self):
+        sensitive_fields = []
+        for form_step in self.formstep_set.select_related("form_definition"):
+            sensitive_fields += form_step.form_definition.get_sensitive_fields()
+        return sensitive_fields
 
     @transaction.atomic
     def restore_old_version(self, form_version_uuid: str) -> None:

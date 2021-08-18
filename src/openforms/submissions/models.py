@@ -155,6 +155,17 @@ class Submission(models.Model):
             return True
         return False
 
+    def remove_sensitive_data(self):
+        self.bsn = ''
+        self.kvk = ''
+        sensitive_fields = self.form.get_sensitive_fields()
+        for submission_step in self.submissionstep_set.all():
+            for field in sensitive_fields:
+                if field in submission_step.data:
+                    submission_step.data[field] = ''
+                    submission_step.save()
+        self.save()
+
     def load_execution_state(self) -> SubmissionState:
         """
         Retrieve the current execution state of steps from the database.
