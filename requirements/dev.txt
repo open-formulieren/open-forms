@@ -4,14 +4,6 @@
 #
 #    ./bin/compile_dependencies.sh
 #
--e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
--e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 alabaster==0.7.12
     # via
     #   -c requirements/ci.txt
@@ -146,6 +138,10 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@02ac61c42f6dd2f229ba9f0f687fa1a4160511be#egg=digid_eherkenning
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-admin-index==1.5.0
     # via
     #   -c requirements/ci.txt
@@ -634,6 +630,10 @@ python-decouple==3.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 python-dotenv==0.14.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

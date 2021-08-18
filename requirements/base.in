@@ -4,6 +4,7 @@ celery-once
 defusedxml
 furl
 glom
+lxml
 Pillow  # handle images
 psycopg2  # database driver
 pytz  # handle timezones
@@ -32,8 +33,8 @@ django-solo
 django-tinymce
 django-yubin
 mozilla-django-oidc-db
--e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
--e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@02ac61c42f6dd2f229ba9f0f687fa1a4160511be#egg=digid_eherkenning
+git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
 # once transferred from isprojects to maykinmedia, we'll publish this to PyPI
 git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
@@ -46,7 +47,6 @@ git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa90880
 djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
-lxml
 
 # API schema generation (OpenAPI 3)
 drf-spectacular
