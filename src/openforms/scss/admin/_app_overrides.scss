@@ -104,4 +104,29 @@
   .field-description {
     color: #999; // same color as django forms.css
   }
+
+  select.form-control {
+    $properties:
+      display, width, font-size, font-weight, line-height, color,
+      background-clip, transition;
+
+    @each $property in $properties {
+      #{$property}: inherit;
+    }
+
+    // re-apply django admin styles
+    background-color: buttonface;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 6px;
+    margin-top: 0;
+
+    &:focus {
+      color: inherit;
+      background-color: buttonface;
+      border-color: #999;
+      box-shadow: none;
+      outline: initial;
+    }
+  }
 }

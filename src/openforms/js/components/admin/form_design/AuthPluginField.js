@@ -4,10 +4,9 @@ import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import {Checkbox} from '../forms/Inputs';
-import Loader from '../Loader';
 
-const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
-    const authCheckboxes = Object.entries(availableAuthPlugins).map(([pluginId, plugin]) => {
+const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
+    const authCheckboxes = availableAuthPlugins.map(plugin => {
         const providedAttributes = (
             <FormattedMessage
                 description="Auth plugin provided attributes suffix"
@@ -23,7 +22,7 @@ const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, on
         );
 
         return (
-            <li key={pluginId}>
+            <li key={plugin.id}>
                 <Checkbox
                     name={plugin.label}
                     value={plugin.id}
@@ -43,14 +42,13 @@ const AuthPluginField = ({loading, availableAuthPlugins, selectedAuthPlugins, on
             errors={errors}
             required
         >
-            {loading ? <Loader/> : <ul>{authCheckboxes}</ul>}
+            <ul>{authCheckboxes}</ul>
         </Field>
     );
 };
 
 AuthPluginField.propTypes = {
-    loading: PropTypes.bool.isRequired,
-    availableAuthPlugins: PropTypes.objectOf(PropTypes.shape({
+    availableAuthPlugins: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
         label: PropTypes.string,
         providesAuth: PropTypes.arrayOf(PropTypes.string)

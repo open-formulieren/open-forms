@@ -112,20 +112,6 @@ class ResponseTests(APITestCase):
             {
                 "id": "test",
                 "label": "Test",
-            }
-        ]
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), expected)
-
-    def test_plugin_configuration_options(self):
-        endpoint = reverse("api:plugins-configuration-options-retrieve")
-
-        response = self.client.get(endpoint)
-
-        expected = [
-            {
-                "id": "test",
                 "schema": {
                     "type": "object",
                     "properties": {

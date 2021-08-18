@@ -7,20 +7,23 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework import serializers
 
-from openforms.payments.base import BasePlugin
-from openforms.payments.constants import PaymentStatus, UserAction
-from openforms.payments.contrib.ogone.client import OgoneClient
-from openforms.payments.contrib.ogone.constants import OgoneStatus
-from openforms.payments.contrib.ogone.exceptions import InvalidSignature
-from openforms.payments.contrib.ogone.models import OgoneMerchant
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.registry import register
+from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.utils.mixins import JsonSchemaSerializerMixin
+
+from ...base import BasePlugin
+from ...constants import PaymentStatus, UserAction
+from ...contrib.ogone.client import OgoneClient
+from ...contrib.ogone.constants import OgoneStatus
+from ...contrib.ogone.exceptions import InvalidSignature
+from ...contrib.ogone.models import OgoneMerchant
+from ...models import SubmissionPayment
+from ...registry import register
 
 logger = logging.getLogger(__name__)
 
 
-class OgoneOptionsSerializer(serializers.Serializer):
-    merchant_id = serializers.PrimaryKeyRelatedField(
+class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    merchant_id = PrimaryKeyRelatedAsChoicesField(
         queryset=OgoneMerchant.objects.all(),
         required=True,
         help_text=_("Merchant to use"),

@@ -7,8 +7,16 @@ from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
 class PaymentPluginSerializer(PluginBaseSerializer):
-    # serializer for form builder
-    pass
+    """
+    Serialize the available plugins for the form builder.
+    """
+
+    # add the configuration form options
+    schema = serializers.JSONField(
+        source="configuration_options.display_as_jsonschema",
+        label=_("JSON schema"),
+        help_text=_("The generated JSON schema for the plugin options."),
+    )
 
 
 class PaymentOptionSerializer(serializers.Serializer):

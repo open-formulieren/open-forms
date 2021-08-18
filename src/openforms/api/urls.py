@@ -16,6 +16,7 @@ from openforms.forms.api.viewsets import (
     FormVersionViewSet,
     FormViewSet,
 )
+from openforms.products.api.viewsets import ProductViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
 # from .schema import schema_view
@@ -38,6 +39,9 @@ submissions_router = NestedSimpleRouter(router, r"submissions", lookup="submissi
 submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
 )
+
+# products
+router.register("products", ProductViewSet)
 
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),

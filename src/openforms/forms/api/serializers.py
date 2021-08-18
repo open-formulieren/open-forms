@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
-from openforms.products.api.serializers import ProductSerializer
+from openforms.products.models import Product
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
@@ -85,7 +85,6 @@ class FormLiteralsSerializer(serializers.Serializer):
 
 
 class FormSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
     authentication_backends = serializers.ListField(
@@ -96,9 +95,17 @@ class FormSerializer(serializers.ModelSerializer):
     )
     login_options = LoginOptionsReadOnlyField()
 
+    product = serializers.HyperlinkedRelatedField(
+        label=_("product"),
+        queryset=Product.objects.all(),
+        required=False,
+        allow_null=True,
+        view_name="api:product-detail",
+        lookup_field="uuid",
+        help_text=_("URL to the product in the Open Forms API"),
+    )
     payment_backend = serializers.ChoiceField(
         choices=[],
-        write_only=True,
         required=False,
         default="",
     )
@@ -119,6 +126,7 @@ class FormSerializer(serializers.ModelSerializer):
             "login_options",
             "payment_required",
             "payment_backend",
+            "payment_backend_options",
             "payment_options",
             "literals",
             "product",
@@ -158,7 +166,6 @@ class FormExportSerializer(FormSerializer):
         del fields["login_options"]
         del fields["payment_options"]
         fields["authentication_backends"].write_only = False
-        fields["payment_backend"].write_only = False
         return fields
 
 

@@ -1,11 +1,12 @@
+import zip from 'lodash/zip';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {FormException} from "../../../utils/exception";
+import {FormException} from '../../../utils/exception';
 import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
@@ -14,13 +15,22 @@ import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext} from './Context';
 import FormSteps from './FormSteps';
-import { FORM_ENDPOINT, FORM_DEFINITIONS_ENDPOINT, ADMIN_PAGE,
-            REGISTRATION_BACKENDS_ENDPOINT, REGISTRATION_BACKEND_OPTIONS_ENDPOINT,
-            AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT } from './constants';
+import {
+    FORM_ENDPOINT,
+    FORM_DEFINITIONS_ENDPOINT,
+    ADMIN_PAGE,
+    REGISTRATION_BACKENDS_ENDPOINT,
+    AUTH_PLUGINS_ENDPOINT,
+    PREFILL_PLUGINS_ENDPOINT,
+    PAYMENT_PLUGINS_ENDPOINT,
+} from './constants';
+import {loadPlugins, PluginLoadingError} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
 import RegistrationFields from './RegistrationFields';
+import PaymentFields from './PaymentFields';
+import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
 
 const initialFormState = {
@@ -36,6 +46,9 @@ const initialFormState = {
         canSubmit: true,
         registrationBackend: '',
         registrationBackendOptions: {},
+        product: null,
+        paymentBackend: '',
+        paymentBackendOptions: {},
     },
     literals: {
         beginText: {
@@ -52,29 +65,14 @@ const initialFormState = {
         },
     },
     newForm: true,
-    formSteps: {
-        loading: true,
-        data: [],
-    },
+    formSteps: [],
     errors: {},
-    formDefinitions: {},
-    availableRegistrationBackends: {
-        loading: true,
-        data: []
-    },
-    registrationBackendOptionFormSchemas: {
-        loading: true,
-        data: {}
-    },
-    availableAuthPlugins: {
-        loading: true,
-        data: {}
-    },
-    availablePrefillPlugins: {
-        loading: true,
-        data: {}
-    },
+    formDefinitions: [],
+    availableRegistrationBackends: [],
+    availableAuthPlugins: [],
+    availablePrefillPlugins: [],
     selectedAuthPlugins: [],
+    availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
 };
@@ -134,59 +132,13 @@ function reducer(draft, action) {
             }
             break;
         }
-        case 'FORM_DEFINITIONS_LOADED': {
-            const rawFormDefinitions = action.payload;
-            var formDefinitions = {};
-            for (const definition of rawFormDefinitions) {
-                formDefinitions[definition.url] = definition;
-            }
-            draft.formDefinitions = formDefinitions;
+        case 'PLUGINS_LOADED': {
+            const {stateVar, data} = action.payload;
+            draft[stateVar] = data;
             break;
         }
         case 'FORM_STEPS_LOADED': {
-            draft.formSteps = {
-                loading: false,
-                data: action.payload,
-            };
-            break;
-        }
-        case 'REGISTRATION_BACKENDS_LOADED': {
-            draft.availableRegistrationBackends = {
-                loading: false,
-                data: action.payload,
-            };
-            break;
-        }
-        case 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED': {
-            const data = Object.fromEntries(
-                action.payload.map( ({id, schema}) => [id, schema] )
-            );
-            draft.registrationBackendOptionFormSchemas = {
-                loading: false,
-                data,
-            };
-            break;
-        }
-        case 'AUTH_PLUGINS_LOADED': {
-            var formattedAuthPlugins = {};
-            for (const plugin of action.payload) {
-                formattedAuthPlugins[plugin.id] = plugin;
-            }
-            draft.availableAuthPlugins = {
-                loading: false,
-                data: formattedAuthPlugins,
-            };
-            break;
-        }
-        case 'PREFILL_PLUGINS_LOADED': {
-            var formattedPrefillPlugins = {};
-            for (const plugin of action.payload) {
-                formattedPrefillPlugins[plugin.id] = plugin;
-            }
-            draft.availablePrefillPlugins = {
-                loading: false,
-                data: formattedPrefillPlugins,
-            };
+            draft.formSteps = action.payload;
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -203,40 +155,40 @@ function reducer(draft, action) {
          */
         case 'DELETE_STEP': {
             const {index} = action.payload;
-            draft.stepsToDelete.push(draft.formSteps.data[index].url);
+            draft.stepsToDelete.push(draft.formSteps[index].url);
 
-            const unchangedSteps = draft.formSteps.data.slice(0, index);
-            const updatedSteps = draft.formSteps.data.slice(index+1).map((step) => {
+            const unchangedSteps = draft.formSteps.slice(0, index);
+            const updatedSteps = draft.formSteps.slice(index+1).map((step) => {
                 step.index = step.index - 1;
                 return step;
             });
-            draft.formSteps.data = [...unchangedSteps, ...updatedSteps];
+            draft.formSteps = [...unchangedSteps, ...updatedSteps];
             break;
         }
         case 'ADD_STEP': {
-            const newIndex = draft.formSteps.data.length;
+            const newIndex = draft.formSteps.length;
             const emptyStep = {
                 ...newStepData,
                 index: newIndex,
                 name: `Stap ${newIndex + 1}`,
             };
-            draft.formSteps.data = draft.formSteps.data.concat([emptyStep]);
+            draft.formSteps = draft.formSteps.concat([emptyStep]);
             break;
         }
         case 'FORM_DEFINITION_CHOSEN': {
             const {index, formDefinitionUrl} = action.payload;
             if (!formDefinitionUrl) {
-                draft.formSteps.data[index] = {
-                    ...draft.formSteps.data[index],
+                draft.formSteps[index] = {
+                    ...draft.formSteps[index],
                     ...newStepData,
                     // if we're creating a new form definition, mark the step no longer as new since a decision
                     // was made (re-use one or create a new one)
                     isNew: false,
                 };
             } else {
-                const { configuration, name, slug } = draft.formDefinitions[formDefinitionUrl];
-                const { url } = draft.formSteps.data[index];
-                draft.formSteps.data[index] = {
+                const { configuration, name, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
+                const { url } = draft.formSteps[index];
+                draft.formSteps[index] = {
                     configuration,
                     formDefinition: formDefinitionUrl,
                     index,
@@ -261,29 +213,29 @@ function reducer(draft, action) {
         }
         case 'EDIT_STEP': {
             const {index, configuration} = action.payload;
-            // const currentConfiguration = original(draft.formSteps.data[index].configuration);
-            draft.formSteps.data[index].configuration = configuration;
+            // const currentConfiguration = original(draft.formSteps[index].configuration);
+            draft.formSteps[index].configuration = configuration;
             break;
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps.data[index][name] = value;
+            draft.formSteps[index][name] = value;
             break;
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps.data[index]['literals'][name]['value'] = value;
+            draft.formSteps[index]['literals'][name]['value'] = value;
             break;
         }
         case 'MOVE_UP_STEP': {
             const index = action.payload;
-            if (index <= 0 || index >= draft.formSteps.data.length) break;
+            if (index <= 0 || index >= draft.formSteps.length) break;
 
-            let updatedSteps = draft.formSteps.data.slice(0, index-1);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index], ...{index: index-1}}]);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps.data[index-1], ...{index: index}}]);
+            let updatedSteps = draft.formSteps.slice(0, index-1);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps[index], ...{index: index-1}}]);
+            updatedSteps = updatedSteps.concat([{...draft.formSteps[index-1], ...{index: index}}]);
 
-            draft.formSteps.data = [...updatedSteps, ...draft.formSteps.data.slice(index+1)];
+            draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
             break;
         }
         /**
@@ -331,7 +283,12 @@ const getFormData = async (formUuid, dispatch) => {
     }
 
     try {
-        const response = await get(`${FORM_ENDPOINT}/${formUuid}`);
+        // do the requests in parallel
+        const requests = [
+            get(`${FORM_ENDPOINT}/${formUuid}`),
+            getFormStepsData(formUuid, dispatch),
+        ];
+        const [response, formStepsData] = await Promise.all(requests);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         }
@@ -346,101 +303,31 @@ const getFormData = async (formUuid, dispatch) => {
                 literals: literals,
             },
         });
-        // Get the form definition data from the form steps
-        const formStepsData = await getFormStepsData(formUuid, dispatch);
         dispatch({
             type: 'FORM_STEPS_LOADED',
             payload: formStepsData,
         });
-    } catch (e) {
+    } catch (e) { // TODO: convert to ErrorBoundary
         dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
     }
 };
 
-const getFormDefinitions = async (dispatch) => {
-    try {
-        const response = await get(FORM_DEFINITIONS_ENDPOINT);
-        dispatch({
-            type: 'FORM_DEFINITIONS_LOADED',
-            payload: response.data.results,
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
-const getRegistrationBackends = async (dispatch) => {
-    try {
-        const response = await get(REGISTRATION_BACKENDS_ENDPOINT);
-        dispatch({
-            type: 'REGISTRATION_BACKENDS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
-const getRegistrationBackendOptions = async (dispatch) => {
-    try {
-        const response = await get(REGISTRATION_BACKEND_OPTIONS_ENDPOINT);
-        dispatch({
-            type: 'REGISTRATION_BACKEND_OPTION_FORM_SCHEMAS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
-const getAuthPlugins = async (dispatch) => {
-    try {
-        const response = await get(AUTH_PLUGINS_ENDPOINT);
-        dispatch({
-            type: 'AUTH_PLUGINS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
-const getPrefillPlugins = async (dispatch) => {
-    try {
-        const response = await get(PREFILL_PLUGINS_ENDPOINT);
-        dispatch({
-            type: 'PREFILL_PLUGINS_LOADED',
-            payload: response.data
-        });
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-};
-
-
-const StepsFieldSet = ({ loading=true, submitting=false, loadingErrors, steps=[], ...props }) => {
+const StepsFieldSet = ({ submitting=false, loadingErrors, steps=[], ...props }) => {
     if (loadingErrors) {
         return (
             <div className="fetch-error">{loadingErrors}</div>
         );
     }
-
-    if (loading && !loadingErrors) {
-        return (<Loader />);
-    }
-
     return (
         <FormSteps steps={steps} submitting={submitting} {...props} />
     );
 };
 
 StepsFieldSet.propTypes = {
-    loading: PropTypes.bool.isRequired,
     loadingErrors: PropTypes.node,
     steps: PropTypes.arrayOf(PropTypes.object),
     submitting: PropTypes.bool,
 };
-
 
 /**
  * Component to render the form edit page.
@@ -457,21 +344,35 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
-    useAsync(async () => {
-        // The available prefill plugins should be loaded before the form definitions, because the requiresAuth field
-        // is used to check if a form step needs an additional auth plugin (and to generate related warnings)
-        await getPrefillPlugins(dispatch);
+    // load all these plugin registries in parallel
+    const pluginsToLoad = [
+        {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
+        {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
+        {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
+        {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
+        {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+    ];
 
+    const {loading} = useAsync(async () => {
         const promises = [
+            loadPlugins(pluginsToLoad),
             getFormData(formUuid, dispatch),
-            getFormDefinitions(dispatch),
-            getRegistrationBackends(dispatch),
-            getRegistrationBackendOptions(dispatch),
         ];
-        await Promise.all(promises);
-        // We want the data of all available plugins to be loaded after the form data has been loaded,
-        // so that once the checkboxes are rendered they are directly checked/unchecked
-        await getAuthPlugins(dispatch);
+        const [
+            pluginsData,
+        ] = await Promise.all(promises);
+
+        // load various module plugins & update the state
+        for (const group of zip(pluginsToLoad, pluginsData) ) {
+            const [plugin, data] = group;
+            dispatch({
+                type: 'PLUGINS_LOADED',
+                payload: {
+                    stateVar: plugin.stateVar,
+                    data: data,
+                }
+            });
+        }
     }, []);
 
     /**
@@ -488,13 +389,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         dispatch({
             type: 'DELETE_STEP',
             payload: {index: index}
-        });
-    };
-
-    const onAddStep = (event) => {
-        event.preventDefault();
-        dispatch({
-            type: 'ADD_STEP',
         });
     };
 
@@ -594,8 +488,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         }
 
         // Update/create form definitions and then form steps
-        for ( let index = 0; index < state.formSteps.data.length; index++) {
-            const step = state.formSteps.data[index];
+        for ( let index = 0; index < state.formSteps.length; index++) {
+            const step = state.formSteps[index];
             try {
                 // First update/create the form definitions
                 const isNewFormDefinition = !!step.formDefinition;
@@ -648,7 +542,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
                 }
             } catch (e) {
-                let formStepsErrors = new Array(state.formSteps.data.length);
+                let formStepsErrors = new Array(state.formSteps.length);
                 formStepsErrors[index] = e.details;
                 dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
                 window.scrollTo(0, 0);
@@ -702,21 +596,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         })
     };
 
-    const isAnyLoading = [
-        state.formSteps.loading,
-        state.availableAuthPlugins.loading,
-        state.availableRegistrationBackends.loading,
-        state.availablePrefillPlugins.loading,
-        state.registrationBackendOptionFormSchemas.loading,
-    ].some( el => el );
-
-    if (isAnyLoading) {
+    if (loading || state.submitting) {
         return (<Loader />);
     }
 
     return (
         <>
-            <FormObjectTools isLoading={isAnyLoading} historyUrl={formHistoryUrl} />
+            <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
 
             <h1>
                 <FormattedMessage defaultMessage="Change form" description="Change form page title" />
@@ -746,6 +632,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Product" description="Product tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    </Tab>
                 </TabList>
 
                 <TabPanel>
@@ -769,8 +661,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 availablePrefillPlugins: state.availablePrefillPlugins
                             }}>
                                 <StepsFieldSet
-                                    steps={state.formSteps.data}
-                                    loading={state.formSteps.loading}
+                                    steps={state.formSteps}
                                     loadingErrors={state.errors.loadingErrors}
                                     onEdit={onStepEdit}
                                     onFieldChange={onStepFieldChange}
@@ -778,7 +669,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                     onDelete={onStepDelete}
                                     onReorder={onStepReorder}
                                     onReplace={onStepReplace}
-                                    onAdd={onAddStep}
+                                    onAdd={ (e) => {
+                                        e.preventDefault();
+                                        dispatch({type: 'ADD_STEP'});
+                                    }}
                                     submitting={state.submitting}
                                     errors={state.errors.formSteps}
                                 />
@@ -814,16 +708,28 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <RegistrationFields
-                        backends={state.availableRegistrationBackends.data}
+                        backends={state.availableRegistrationBackends}
                         selectedBackend={state.form.registrationBackend}
                         backendOptions={state.form.registrationBackendOptions}
-                        backendOptionsForms={state.registrationBackendOptionFormSchemas.data}
                         onChange={onFieldChange}
                     />
                 </TabPanel>
 
                 <TabPanel>
                     <TextLiterals literals={state.literals} onChange={onFieldChange} />
+                </TabPanel>
+
+                <TabPanel>
+                    <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
+                </TabPanel>
+
+                <TabPanel>
+                    <PaymentFields
+                        backends={state.availablePaymentBackends}
+                        selectedBackend={state.form.paymentBackend}
+                        backendOptions={state.form.paymentBackendOptions}
+                        onChange={onFieldChange}
+                    />
                 </TabPanel>
             </Tabs>
 

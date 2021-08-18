@@ -227,6 +227,12 @@
       "value": "Gebruik bestaande formulierdefinitie"
     }
   ],
+  "GV8HnZ": [
+    {
+      "type": 0,
+      "value": "Select payment backend"
+    }
+  ],
   "GWkSOd": [
     {
       "type": 0,
@@ -319,6 +325,12 @@
       "value": "'Opslaan' tekst"
     }
   ],
+  "Qr2wnR": [
+    {
+      "type": 0,
+      "value": "Payment backend options"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -393,6 +405,12 @@
     {
       "type": 0,
       "value": "Omhoog"
+    }
+  ],
+  "cV72I+": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "d45v2X": [
@@ -489,10 +507,22 @@
       "value": "URL-deel"
     }
   ],
+  "ru7KD+": [
+    {
+      "type": 0,
+      "value": "Payment"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "tsM2D7": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "uBO/Al": [

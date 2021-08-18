@@ -223,6 +223,12 @@
       "value": "Use existing form definition"
     }
   ],
+  "GV8HnZ": [
+    {
+      "type": 0,
+      "value": "Select payment backend"
+    }
+  ],
   "GWkSOd": [
     {
       "type": 0,
@@ -315,6 +321,12 @@
       "value": "Save text"
     }
   ],
+  "Qr2wnR": [
+    {
+      "type": 0,
+      "value": "Payment backend options"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -389,6 +401,12 @@
     {
       "type": 0,
       "value": "Move up"
+    }
+  ],
+  "cV72I+": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "d45v2X": [
@@ -485,10 +503,22 @@
       "value": "Step slug"
     }
   ],
+  "ru7KD+": [
+    {
+      "type": 0,
+      "value": "Payment"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
       "value": "Change form"
+    }
+  ],
+  "tsM2D7": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "uBO/Al": [

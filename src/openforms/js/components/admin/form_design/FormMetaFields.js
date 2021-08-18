@@ -8,7 +8,7 @@ import {FormattedMessage} from 'react-intl';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import Select from "../forms/Select";
+import Select from '../forms/Select';
 import {TextInput, Checkbox} from '../forms/Inputs';
 import AuthPluginField from './AuthPluginField';
 
@@ -92,8 +92,7 @@ const FormMetaFields = ({
 
             <FormRow>
                 <AuthPluginField
-                    loading={availableAuthPlugins.loading}
-                    availableAuthPlugins={availableAuthPlugins.data}
+                    availableAuthPlugins={availableAuthPlugins}
                     selectedAuthPlugins={selectedAuthPlugins}
                     onChange={onAuthPluginChange}
                     errors={errors.authPlugins}
@@ -169,10 +168,11 @@ FormMetaFields.propTypes = {
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
-    availableAuthPlugins: PropTypes.shape({
-        loading: PropTypes.bool.isRequired,
-        data: PropTypes.object.isRequired,
-    }).isRequired,
+    availableAuthPlugins: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string,
+        label: PropTypes.string,
+        providesAuth: PropTypes.arrayOf(PropTypes.string)
+    })),
     selectedAuthPlugins: PropTypes.array.isRequired,
     onAuthPluginChange: PropTypes.func.isRequired,
 };

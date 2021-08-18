@@ -9,4 +9,7 @@ class UtilsConfig(AppConfig):
     def ready(self):
         from . import checks  # noqa
 
+        # register custom converters
+        from .api import drf_jsonschema  # noqa
+
         monkeypatch_cookie_consent()

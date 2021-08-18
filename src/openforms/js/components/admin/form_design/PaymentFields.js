@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
@@ -9,65 +9,61 @@ import Select from '../forms/Select';
 import Form from '@rjsf/core';
 
 
-const RegistrationFields = ({
+const PaymentFields = ({
     backends=[],
     selectedBackend='',
     backendOptions={},
-    onChange,
+    onChange
 }) => {
-    const intl = useIntl();
-
     const backendChoices = backends.map( backend => [backend.id, backend.label]);
     const backend = backends.find( backend => backend.id === selectedBackend );
     const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
-    const addAnotherMsg = intl.formatMessage({
-        description: 'Button text to add extra item',
-        defaultMessage: 'Add another',
-    });
-
     return (
-        <Fieldset style={{
-            '--of-add-another-text': `"${addAnotherMsg}"`
-        }}>
+        <Fieldset>
             <FormRow>
                 <Field
-                    name="form.registrationBackend"
-                    label={<FormattedMessage defaultMessage="Select registration backend" description="Registration backend label" />}
+                    name="form.paymentBackend"
+                    label={<FormattedMessage description="Payment backend label" defaultMessage="Select payment backend" />}
                 >
                     <Select
                         choices={backendChoices}
                         value={selectedBackend}
-                        onChange={(event) => {
+                        onChange={ (event) => {
                             onChange(event);
                             // Clear options when changing backend
-                            onChange({target: {name: 'form.registrationBackendOptions', value: {}}})
+                            onChange({target: {name: 'form.paymentBackendOptions', value: {}}})
                         }}
-                        allowBlank={true}
+                        allowBlank
                     />
                 </Field>
             </FormRow>
-            {hasOptionsForm
-                ? (<FormRow>
-                    <Field
-                        name="form.registrationBackendOptions"
-                        label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
-                    >
-                        <Form
-                            schema={backend.schema}
-                            formData={backendOptions}
-                            onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
-                            children={true}
-                        />
-                    </Field>
-                </FormRow> )
+
+            {
+                hasOptionsForm
+                ? (
+                    <FormRow>
+                        <Field
+                            name="form.paymentBackendOptions"
+                            label={<FormattedMessage description="Payment backend options label" defaultMessage="Payment backend options" />}
+                        >
+                            <Form
+                                schema={backend.schema}
+                                formData={backendOptions}
+                                onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
+                                children={true}
+                            />
+                        </Field>
+                    </FormRow>
+                )
                 : null
             }
+
         </Fieldset>
     );
 };
 
-RegistrationFields.propTypes = {
+PaymentFields.propTypes = {
     backends: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
@@ -83,4 +79,4 @@ RegistrationFields.propTypes = {
 };
 
 
-export default RegistrationFields;
+export default PaymentFields;

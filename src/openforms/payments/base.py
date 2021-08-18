@@ -4,9 +4,12 @@ from typing import TYPE_CHECKING, Mapping
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from openforms.payments.constants import PaymentRequestType
+from openforms.utils.mixins import JsonSchemaSerializerMixin
+
+from .constants import PaymentRequestType
 
 if TYPE_CHECKING:
     from openforms.forms.models import Form
@@ -27,6 +30,10 @@ class PaymentInfo:
     data: Mapping[str, str] = None
 
 
+class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
+    pass
+
+
 class BasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     """
@@ -34,7 +41,7 @@ class BasePlugin:
     """
     return_method = "GET"
     webhook_method = "POST"
-    configuration_options = None
+    configuration_options = EmptyOptions
 
     def __init__(self, identifier: str):
         self.identifier = identifier

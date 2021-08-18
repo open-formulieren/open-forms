@@ -149,6 +149,11 @@
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
   },
+  "GV8HnZ": {
+    "defaultMessage": "Select payment backend",
+    "description": "Payment backend label",
+    "originalDefault": "Select payment backend"
+  },
   "GWkSOd": {
     "defaultMessage": "If checked, the user can submit the form. Uncheck this for 'decision' trees.",
     "description": "Form canSubmit field help text",
@@ -219,6 +224,11 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "Qr2wnR": {
+    "defaultMessage": "Payment backend options",
+    "description": "Payment backend options label",
+    "originalDefault": "Payment backend options"
+  },
   "TCQic2": {
     "defaultMessage": "Confirm text",
     "description": "literals.confirmText form label",
@@ -268,6 +278,11 @@
     "defaultMessage": "Move up",
     "description": "Move up icon title",
     "originalDefault": "Move up"
+  },
+  "cV72I+": {
+    "defaultMessage": "Product",
+    "description": "Form product label",
+    "originalDefault": "Product"
   },
   "d45v2X": {
     "defaultMessage": "Export this form",
@@ -344,10 +359,20 @@
     "description": "Form step slug label",
     "originalDefault": "Step slug"
   },
+  "ru7KD+": {
+    "defaultMessage": "Payment",
+    "description": "Payment tab title",
+    "originalDefault": "Payment"
+  },
   "tLL2x4": {
     "defaultMessage": "Change form",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "tsM2D7": {
+    "defaultMessage": "Product",
+    "description": "Product tab title",
+    "originalDefault": "Product"
   },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
