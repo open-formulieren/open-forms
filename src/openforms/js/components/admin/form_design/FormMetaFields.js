@@ -8,7 +8,7 @@ import {FormattedMessage} from 'react-intl';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import Select from "../forms/Select";
+import Select from '../forms/Select';
 import {TextInput, Checkbox} from '../forms/Inputs';
 import AuthPluginField from './AuthPluginField';
 

@@ -5,8 +5,8 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import Select from "../forms/Select";
-import Form from "@rjsf/core";
+import Select from '../forms/Select';
+import Form from '@rjsf/core';
 
 
 const RegistrationFields = ({

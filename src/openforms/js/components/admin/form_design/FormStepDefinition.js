@@ -6,12 +6,12 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import FormIOBuilder from '../../formio_builder/builder';
-import {Checkbox, TextInput} from "../forms/Inputs";
-import Field from "../forms/Field";
-import FormRow from "../forms/FormRow";
+import {Checkbox, TextInput} from '../forms/Inputs';
+import Field from '../forms/Field';
+import FormRow from '../forms/FormRow';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
-import PluginWarning from "./PluginWarning";
+import PluginWarning from './PluginWarning';
 
 const emptyConfiguration = {
     display: 'form',

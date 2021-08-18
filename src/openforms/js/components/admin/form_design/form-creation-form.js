@@ -6,7 +6,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {FormException} from "../../../utils/exception";
+import {FormException} from '../../../utils/exception';
 import {apiDelete, get, post, put} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
