@@ -719,13 +719,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
                     <Tab>
-                        <FormattedMessage defaultMessage="Data Removal" description="Data removal tab title" />
-                    </Tab>
-                    <Tab>
                         <FormattedMessage defaultMessage="Product" description="Product tab title" />
                     </Tab>
                     <Tab>
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Data Removal" description="Data removal tab title" />
                     </Tab>
                     <Tab>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
