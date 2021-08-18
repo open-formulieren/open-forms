@@ -111,6 +111,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    # Admin auth
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "two_factor",
     # Optional applications.
     "ordered_model",
     "django_admin_index",
@@ -183,6 +188,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
     "mozilla_django_oidc_db.middleware.SessionRefresh",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -462,6 +468,11 @@ TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
 #
 ADMIN_INDEX_AUTO_CREATE_APP_GROUP = False
 
+ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
+    "openforms.utils.django_two_factor_auth.should_display_dropdown_menu"
+)
+
+
 #
 # DJANGO-AXES (4.0+)
 #
@@ -497,6 +508,12 @@ IPWARE_META_PRECEDENCE_ORDER = (
     "HTTP_VIA",
     "REMOTE_ADDR",
 )
+
+#
+# Maykin fork of DJANGO-TWO-FACTOR-AUTH
+#
+TWO_FACTOR_FORCE_OTP_ADMIN = config("TWO_FACTOR_FORCE_OTP_ADMIN", default=not DEBUG)
+TWO_FACTOR_PATCH_ADMIN = config("TWO_FACTOR_PATCH_ADMIN", default=True)
 
 #
 # CELERY - async task queue

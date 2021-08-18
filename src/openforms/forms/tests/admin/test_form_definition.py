@@ -1,4 +1,4 @@
-from django.http import HttpRequest
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,6 +13,7 @@ from openforms.forms.tests.factories import (
 )
 
 
+@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
 class TestFormDefinitionAdmin(WebTest):
     def setUp(self) -> None:
         super().setUp()
@@ -23,12 +24,12 @@ class TestFormDefinitionAdmin(WebTest):
             kwargs={"object_id": self.form.pk},
         )
         FormStepFactory.create(form=self.form, form_definition=self.form_definition)
-        self.user = SuperUserFactory.create()
-        self.client.force_login(self.user)
+        self.user = SuperUserFactory.create(app=self.app)
+        self.app.set_user(self.user)
 
     def test_used_in_forms_shown_in_list_response(self):
 
-        response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
+        response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
             f'<ul><li><a href="{self.form_url}">{self.form.name}</a></li></ul>',
@@ -39,7 +40,7 @@ class TestFormDefinitionAdmin(WebTest):
         form = FormFactory.create(name="<script>alert('foo')</script>")
         FormStepFactory.create(form=form, form_definition=self.form_definition)
 
-        response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
+        response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
             "&lt;script&gt;alert(&#39;foo&#39;)&lt;/script&gt;",
@@ -63,6 +64,7 @@ class TestFormDefinitionAdmin(WebTest):
         # Duplicate steps
         FormStepFactory.create(form=self.form, form_definition=second_form_definition)
         FormStepFactory.create(form=second_form, form_definition=second_form_definition)
+        self.client.force_login(user=self.user)
 
         response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
 

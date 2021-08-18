@@ -61,7 +61,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-django-admin-index==1.4.0
+django-admin-index==1.5.0
     # via -r requirements/base.in
 django-appconf==1.0.4
     # via
@@ -90,6 +90,8 @@ django-cors-headers==3.7.0
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
+django-formtools==2.3
+    # via maykin-django-two-factor-auth
 django-hijack-admin==2.1.10
     # via -r requirements/base.in
 django-hijack==2.1.10
@@ -100,6 +102,10 @@ django-ipware==3.0.1
     # via django-axes
 django-ordered-model==3.4.1
     # via django-admin-index
+django-otp==1.0.6
+    # via maykin-django-two-factor-auth
+django-phonenumber-field==5.2.0
+    # via maykin-django-two-factor-auth
 django-privates==1.2.1
     # via -r requirements/base.in
 django-redis==4.12.1
@@ -127,6 +133,9 @@ django==2.2.24
     #   django-cookie-consent
     #   django-cors-headers
     #   django-decorator-include
+    #   django-formtools
+    #   django-otp
+    #   django-phonenumber-field
     #   django-privates
     #   django-redis
     #   django-relativedelta
@@ -135,6 +144,7 @@ django==2.2.24
     #   drf-jsonschema
     #   drf-nested-routers
     #   drf-spectacular
+    #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -192,6 +202,8 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
+git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
+    # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
@@ -200,6 +212,8 @@ openpyxl==3.0.7
     # via tablib
 orderedmultidict==1.0.1
     # via furl
+phonenumbers==8.12.29
+    # via maykin-django-two-factor-auth
 pillow==8.2.0
     # via
     #   -r requirements/base.in
@@ -244,6 +258,8 @@ pyyaml==5.4.1
     #   gemma-zds-client
 pyzmail36==1.0.4
     # via django-yubin
+qrcode==6.1
+    # via maykin-django-two-factor-auth
 redis==3.5.3
     # via
     #   celery-once
@@ -275,6 +291,7 @@ six==1.15.0
     #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
+    #   qrcode
     #   requests-mock
 sqlparse==0.3.1
     # via django

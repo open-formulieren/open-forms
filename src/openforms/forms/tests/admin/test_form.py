@@ -18,7 +18,7 @@ from openforms.forms.tests.factories import (
 
 class FormAdminImportExportTests(WebTest):
     def setUp(self):
-        self.user = UserFactory.create(is_superuser=True, is_staff=True)
+        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_form_admin_export(self):
         form = FormFactory.create(authentication_backends=["demo"])
@@ -285,7 +285,7 @@ class FormAdminImportExportTests(WebTest):
 
 class FormAdminCopyTests(WebTest):
     def setUp(self):
-        self.user = UserFactory.create(is_superuser=True, is_staff=True)
+        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_form_admin_copy(self):
         form = FormFactory.create(authentication_backends=["demo"])
@@ -321,7 +321,7 @@ class FormAdminCopyTests(WebTest):
 class FormAdminActionsTests(WebTest):
     def setUp(self) -> None:
         self.form = FormFactory.create()
-        self.user = SuperUserFactory.create()
+        self.user = SuperUserFactory.create(app=self.app)
 
     def test_make_copies_action_makes_copy_of_a_form(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)

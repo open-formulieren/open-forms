@@ -146,7 +146,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-django-admin-index==1.4.0
+django-admin-index==1.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -201,6 +201,11 @@ django-decorator-include==3.0
     #   -r requirements/ci.txt
 django-extensions==3.0.7
     # via -r requirements/dev.in
+django-formtools==2.3
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
 django-hijack-admin==2.1.10
     # via
     #   -c requirements/ci.txt
@@ -224,6 +229,16 @@ django-ordered-model==3.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-admin-index
+django-otp==1.0.6
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
+django-phonenumber-field==5.2.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
 django-privates==1.2.1
     # via
     #   -c requirements/ci.txt
@@ -278,7 +293,10 @@ django==2.2.24
     #   django-cors-headers
     #   django-debug-toolbar
     #   django-decorator-include
+    #   django-formtools
     #   django-jenkins
+    #   django-otp
+    #   django-phonenumber-field
     #   django-privates
     #   django-redis
     #   django-relativedelta
@@ -289,6 +307,7 @@ django==2.2.24
     #   drf-jsonschema
     #   drf-nested-routers
     #   drf-spectacular
+    #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -461,6 +480,10 @@ markupsafe==1.1.1
     #   -r requirements/ci.txt
     #   jinja2
     #   sphinx
+git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 mccabe==0.6.1
     # via
     #   -c requirements/ci.txt
@@ -507,6 +530,11 @@ pep8==1.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+phonenumbers==8.12.29
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
 pillow==8.2.0
     # via
     #   -c requirements/ci.txt
@@ -630,6 +658,11 @@ pyzmail36==1.0.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
+qrcode==6.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   maykin-django-two-factor-auth
 recommonmark==0.7.1
     # via
     #   -c requirements/ci.txt
@@ -693,6 +726,7 @@ six==1.15.0
     #   orderedmultidict
     #   pyopenssl
     #   python-dateutil
+    #   qrcode
     #   requests-mock
     #   webtest
 smmap==4.0.0

@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -5,6 +6,7 @@ from django_webtest import WebTest
 from openforms.accounts.tests.factories import SuperUserFactory
 
 
+@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
 class FormVersionAdminImportExportTests(WebTest):
     def setUp(self):
         self.user = SuperUserFactory.create()

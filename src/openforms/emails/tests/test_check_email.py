@@ -158,6 +158,7 @@ class CheckEmailSettingsFunctionTests(TestCase):
             self.assertIsInstance(res.exception, socket.error)
 
 
+@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
 class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
     def test_requires_staff(self):
         url = reverse("admin_email_test")
@@ -168,19 +169,19 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
             self.assertRedirects(response, redirect_url)
 
         with self.subTest("user"):
-            user = UserFactory()
+            user = UserFactory(app=self.app)
             self.app.set_user(user)
             response = self.app.get(url, status=302)
             self.assertRedirects(response, redirect_url)
 
         with self.subTest("staff"):
-            user = StaffUserFactory()
+            user = StaffUserFactory(app=self.app)
             self.app.set_user(user)
             response = self.app.get(url, status=200)
 
     def test_run_check_pass(self):
         url = reverse("admin_email_test")
-        user = StaffUserFactory()
+        user = StaffUserFactory(app=self.app)
         self.app.set_user(user)
         response = self.app.get(url, status=200)
 
@@ -217,7 +218,7 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
             )
 
             url = reverse("admin_email_test")
-            user = StaffUserFactory()
+            user = StaffUserFactory(app=self.app)
             self.app.set_user(user)
             response = self.app.get(url, status=200)
 
