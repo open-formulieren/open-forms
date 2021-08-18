@@ -15,10 +15,10 @@ from tinymce.models import HTMLField
 from openforms.utils.fields import StringUUIDField
 
 from ...authentication.fields import AuthenticationBackendMultiSelectField
+from ...config.constants import RemovalMethods
 from ...payments.fields import PaymentBackendChoiceField
 from ...registrations.fields import RegistrationBackendChoiceField
 from .utils import literal_getter
-from ...config.constants import RemovalMethods
 
 
 class FormQuerySet(models.QuerySet):
