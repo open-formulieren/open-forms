@@ -6,8 +6,6 @@
 #
 -e git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@0cb1978e7d628e7923dbd30ff5dbae6dbcc87129#egg=digid_eherkenning
     # via -r requirements/base.in
--e git+https://github.com/maykinmedia/django-two-factor-auth.git@task-334-fix-login-page-style#egg=maykin-django-two-factor-auth[phonenumbers]
-    # via -r requirements/base.in
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via -r requirements/base.in
 amqp==2.6.1
@@ -207,8 +205,7 @@ lxml==4.6.3
     # via
     #   -r requirements/base.in
     #   xmlsec
-#maykin-django-two-factor-auth[phonenumbers]==2.0.2
-git+https://github.com/maykinmedia/django-two-factor-auth/@task-334-fix-login-page-style#egg=django-two-factor-auth
+git+https://github.com/maykinmedia/django-two-factor-auth.git@3aae2480c49f7ec9a8c7e73d99723430cb827a5c#egg=maykin-django-two-factor-auth[phonenumbers]
     # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in

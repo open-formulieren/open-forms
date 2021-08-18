@@ -8,10 +8,6 @@
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
--e git+https://github.com/maykinmedia/django-two-factor-auth.git@task-334-fix-login-page-style#egg=maykin-django-two-factor-auth[phonenumbers]
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 -e git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
     # via
     #   -c requirements/base.txt
@@ -408,6 +404,10 @@ markupsafe==1.1.1
     # via
     #   jinja2
     #   sphinx
+git+https://github.com/maykinmedia/django-two-factor-auth.git@3aae2480c49f7ec9a8c7e73d99723430cb827a5c#egg=maykin-django-two-factor-auth[phonenumbers]
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 mccabe==0.6.1
     # via flake8
 mozilla-django-oidc-db==0.4.0
