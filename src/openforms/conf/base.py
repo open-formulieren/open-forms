@@ -510,6 +510,11 @@ IPWARE_META_PRECEDENCE_ORDER = (
 )
 
 #
+# Maykin fork of DJANGO-TWO-FACTOR-AUTH
+#
+TWO_FACTOR_FORCE_OTP_ADMIN = config("TWO_FACTOR_FORCE_OTP_ADMIN", default=not DEBUG)
+
+#
 # CELERY - async task queue
 #
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
