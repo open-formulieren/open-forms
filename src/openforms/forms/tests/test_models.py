@@ -11,11 +11,24 @@ class FormTestCase(TestCase):
         self.form = FormFactory.create()
         self.form_def_1 = FormDefinitionFactory.create()
         self.form_def_2 = FormDefinitionFactory.create()
+        self.form_definition_with_sensitive_information = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "textFieldSensitive", "isSensitiveData": True},
+                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                ],
+            }
+        )
+        self.form_with_sensitive_information = FormFactory.create()
         self.form_step_1 = FormStepFactory.create(
             form=self.form, form_definition=self.form_def_1
         )
         self.form_step_2 = FormStepFactory.create(
             form=self.form, form_definition=self.form_def_2
+        )
+        self.form_step_with_sensitive_information = FormStepFactory.create(
+            form=self.form_with_sensitive_information,
+            form_definition=self.form_definition_with_sensitive_information,
         )
 
     def test_login_required(self):
@@ -146,6 +159,10 @@ class FormTestCase(TestCase):
 
             self.assertEqual(actual, expected)
 
+    def test_form_has_sensitive_information(self):
+        self.assertFalse(self.form.has_sensitive_information)
+        self.assertTrue(self.form_with_sensitive_information.has_sensitive_information)
+
 
 class FormQuerysetTestCase(TestCase):
     def test_queryset_live(self):
@@ -161,6 +178,14 @@ class FormQuerysetTestCase(TestCase):
 class FormDefinitionTestCase(TestCase):
     def setUp(self) -> None:
         self.form_definition = FormDefinitionFactory.create()
+        self.form_definition_with_sensitive_information = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "textFieldSensitive", "isSensitiveData": True},
+                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                ],
+            }
+        )
 
     def test_deleting_form_definition_fails_when_used_by_form(self):
         self.form_definition.delete()
@@ -227,3 +252,16 @@ class FormDefinitionTestCase(TestCase):
         self.assertIn("aaa", keys)
         self.assertNotIn("bbb", keys)
         self.assertIn("ccc", keys)
+
+    def test_form_definition_has_sensitive_information(self):
+        self.assertFalse(self.form_definition.has_sensitive_information)
+        self.assertTrue(
+            self.form_definition_with_sensitive_information.has_sensitive_information
+        )
+
+    def test_form_definition_sensitive_information_returns_correct_fields(self):
+        self.assertFalse(self.form_definition.sensitive_fields, [])
+        self.assertTrue(
+            self.form_definition_with_sensitive_information.sensitive_fields,
+            ["textFieldSensitive"],
+        )

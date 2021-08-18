@@ -150,6 +150,7 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
+    @property
     def has_sensitive_information(self):
         if self.bsn or self.kvk or self.form.has_sensitive_information:
             return True
@@ -158,9 +159,9 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""
-        sensitive_fields = self.form.sensitive_fields
         for submission_step in self.submissionstep_set.all():
-            for field in sensitive_fields:
+            for field in submission_step.form_step.form_definition.sensitive_fields:
+                # Double check the field is there in case the form definition changed
                 if field in submission_step.data:
                     submission_step.data[field] = ""
                     submission_step.save()

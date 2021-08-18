@@ -226,5 +226,5 @@ def make_sensitive_data_anonymous() -> None:
         + list(incomplete_submissions)
         + list(errored_submissions)
     ):
-        if submission.has_sensitive_information():
+        if submission.has_sensitive_information:
             submission.remove_sensitive_data()

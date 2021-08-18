@@ -141,7 +141,7 @@ class FormDefinition(models.Model):
     @cached_property
     def has_sensitive_information(self):
         for component in self.configuration["components"]:
-            if component["isSensitiveData"]:
+            if component.get("isSensitiveData"):
                 return True
 
         return False
@@ -151,7 +151,7 @@ class FormDefinition(models.Model):
         sensitive_fields = []
 
         for component in self.configuration["components"]:
-            if component["isSensitiveData"]:
+            if component.get("isSensitiveData"):
                 sensitive_fields.append(component["key"])
 
         return sensitive_fields
