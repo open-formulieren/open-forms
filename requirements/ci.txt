@@ -217,10 +217,6 @@ django-sendfile2==0.6.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-privates
-django-sniplates==0.7.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 django-solo==1.1.3
     # via
     #   -c requirements/base.txt
@@ -257,7 +253,6 @@ django==2.2.24
     #   django-redis
     #   django-relativedelta
     #   django-sendfile2
-    #   django-sniplates
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
@@ -404,7 +399,7 @@ markupsafe==1.1.1
     # via
     #   jinja2
     #   sphinx
-git+https://github.com/maykinmedia/django-two-factor-auth.git@3aae2480c49f7ec9a8c7e73d99723430cb827a5c#egg=maykin-django-two-factor-auth[phonenumbers]
+git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

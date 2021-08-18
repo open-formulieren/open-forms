@@ -1,4 +1,4 @@
-from django.http import HttpRequest
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,6 +13,7 @@ from openforms.forms.tests.factories import (
 )
 
 
+@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
 class TestFormDefinitionAdmin(WebTest):
     def setUp(self) -> None:
         super().setUp()
@@ -63,6 +64,7 @@ class TestFormDefinitionAdmin(WebTest):
         # Duplicate steps
         FormStepFactory.create(form=self.form, form_definition=second_form_definition)
         FormStepFactory.create(form=second_form, form_definition=second_form_definition)
+        self.client.force_login(user=self.user)
 
         response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
 

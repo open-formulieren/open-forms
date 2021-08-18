@@ -152,7 +152,11 @@ class FormUserSessionExpiryTests(APITestCase):
                 )
 
 
-@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
+@override_settings(
+    CACHES=SESSION_CACHES,
+    SESSION_CACHE_ALIAS="session",
+    TWO_FACTOR_PATCH_ADMIN=False,
+)
 class AdminSessionExpiryTests(APITestCase):
     @classmethod
     def setUpTestData(cls):

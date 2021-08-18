@@ -274,6 +274,7 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.original_name, "my-image.png")
         self.assertImageSize(attachment.content, 100, 100, "png")
 
+    @override_settings(TWO_FACTOR_PATCH_ADMIN=False)
     def test_attachment_retrieve_view_requires_permission(self):
         attachment = SubmissionFileAttachmentFactory.create()
         url = reverse(

@@ -22,6 +22,7 @@ LOGO_FILE = Path(settings.BASE_DIR) / "docs" / "logo.svg"
     CACHES=NOOP_CACHES,
     MEDIA_ROOT=tempfile.mkdtemp(),
     SESSION_ENGINE="django.contrib.sessions.backends.db",
+    TWO_FACTOR_PATCH_ADMIN=False,
 )
 class AdminTests(WebTest):
     @classmethod

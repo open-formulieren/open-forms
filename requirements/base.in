@@ -40,7 +40,7 @@ pyopenssl
 # WIP maykin-django-two-factor-auth[phonenumbers]
 # This commit is a commit on the branch task-334-fix-login-page-style, which is still undergoing some
 # tweaks
-git+https://github.com/maykinmedia/django-two-factor-auth.git@3aae2480c49f7ec9a8c7e73d99723430cb827a5c#egg=maykin-django-two-factor-auth[phonenumbers]
+git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
 
 # API libraries
 djangorestframework~=3.12.0
