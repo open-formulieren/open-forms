@@ -485,3 +485,127 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
                 "This is also not sensitive",
             )
+
+    def test_form_override_of_successful_submissions_have_sensitive_data_removed(self):
+        config = GlobalConfiguration.get_solo()
+
+        override_form = FormFactory.create(
+            successful_submissions_removal_method=RemovalMethods.make_anonymous,
+            successful_submissions_removal_limit=config.successful_submissions_removal_limit
+            + 7,
+        )
+
+        override_submission = SubmissionFactory.create(
+            form=override_form, registration_status=RegistrationStatuses.success
+        )
+
+        # Not successful
+        not_successful = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.failed, form=self.form
+        )
+        # Too recent
+        too_recent = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success, form=self.form
+        )
+
+        delete_submission = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success,
+            form__successful_submissions_removal_method=RemovalMethods.delete_permanently,
+        )
+        submission_to_be_anonymous = SubmissionFactory.create(
+            form=self.form, registration_status=RegistrationStatuses.success
+        )
+
+        # Passing created_on to the factory create method does not work
+        delete_submission.created_on = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        override_submission.created_on = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        submission_to_be_anonymous.created_on = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        delete_submission.save()
+        submission_to_be_anonymous.save()
+
+        for submission in [
+            not_successful,
+            too_recent,
+            delete_submission,
+            submission_to_be_anonymous,
+            override_submission,
+        ]:
+            SubmissionStepFactory.create(
+                data={
+                    "textFieldSensitive": "This is sensitive",
+                    "textFieldNotSensitive": "This is not sensitive",
+                },
+                form_step=self.step1,
+                submission=submission,
+            )
+            SubmissionStepFactory.create(
+                data={
+                    "textFieldSensitive2": "This is also sensitive",
+                    "textFieldNotSensitive2": "This is also not sensitive",
+                },
+                form_step=self.step2,
+                submission=submission,
+            )
+
+        make_sensitive_data_anonymous()
+
+        not_successful.refresh_from_db()
+        too_recent.refresh_from_db()
+        delete_submission.refresh_from_db()
+        submission_to_be_anonymous.refresh_from_db()
+
+        for submission in [
+            not_successful,
+            too_recent,
+            delete_submission,
+            override_submission,
+        ]:
+            with self.subTest(submission=submission):
+                self.assertEqual(
+                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    "This is sensitive",
+                )
+                self.assertEqual(
+                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    "This is not sensitive",
+                )
+                self.assertEqual(
+                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    "This is also sensitive",
+                )
+                self.assertEqual(
+                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    "This is also not sensitive",
+                )
+
+        with self.subTest(submission=submission_to_be_anonymous):
+            self.assertEqual(
+                submission_to_be_anonymous.submissionstep_set.first().data[
+                    "textFieldSensitive"
+                ],
+                "",
+            )
+            self.assertEqual(
+                submission_to_be_anonymous.submissionstep_set.first().data[
+                    "textFieldNotSensitive"
+                ],
+                "This is not sensitive",
+            )
+            self.assertEqual(
+                submission_to_be_anonymous.submissionstep_set.last().data[
+                    "textFieldSensitive2"
+                ],
+                "",
+            )
+            self.assertEqual(
+                submission_to_be_anonymous.submissionstep_set.last().data[
+                    "textFieldNotSensitive2"
+                ],
+                "This is also not sensitive",
+            )
