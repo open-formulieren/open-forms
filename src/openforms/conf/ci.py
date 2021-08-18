@@ -28,3 +28,6 @@ AXES_BEHIND_REVERSE_PROXY = False
 
 # Django privates
 SENDFILE_BACKEND = "django_sendfile.backends.development"
+
+# Two factor auth
+TWO_FACTOR_FORCE_OTP_ADMIN = False

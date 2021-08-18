@@ -206,6 +206,12 @@ Other settings
   logged in to the admin interface). Defaults to ``10000/hour``. Note that if throttling
   is disabled altogether, this configuration parameter has no effect.
 
+* ``TWO_FACTOR_FORCE_OTP_ADMIN``: Enforce 2 Factor Authentication in the admin or not.
+  Default ``True``. You'll probably want to disable this when using OIDC.
+
+* ``TWO_FACTOR_PATCH_ADMIN``: Whether to use the 2 Factor Authentication login flow for
+  the admin or not. Default ``True``. You'll probably want to disable this when using OIDC.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables

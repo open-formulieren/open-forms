@@ -400,7 +400,7 @@ AUTHENTICATION_BACKENDS = [
 SESSION_COOKIE_NAME = "openforms_sessionid"
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
-LOGIN_URL = reverse_lazy("two_factor:login")
+LOGIN_URL = reverse_lazy("admin:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 LOGOUT_REDIRECT_URL = reverse_lazy("admin:index")
 
@@ -513,6 +513,7 @@ IPWARE_META_PRECEDENCE_ORDER = (
 # Maykin fork of DJANGO-TWO-FACTOR-AUTH
 #
 TWO_FACTOR_FORCE_OTP_ADMIN = config("TWO_FACTOR_FORCE_OTP_ADMIN", default=not DEBUG)
+TWO_FACTOR_PATCH_ADMIN = config("TWO_FACTOR_PATCH_ADMIN", default=True)
 
 #
 # CELERY - async task queue
