@@ -12,7 +12,6 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.functions import ExtractDay
 from django.utils import timezone
 
 from ..celery import app
@@ -135,3 +134,95 @@ def delete_submissions():
 @app.task
 def make_sensitive_data_anonymous() -> None:
     logger.debug("Making sensitive submission data anonymous")
+
+    config = GlobalConfiguration.get_solo()
+
+    successful_submissions = Submission.objects.annotate(
+        removal_method=Case(
+            When(
+                form__successful_submissions_removal_method=None,
+                then=Value(config.successful_submissions_removal_method),
+            ),
+            default=F("form__successful_submissions_removal_method"),
+            output_field=CharField(),
+        ),
+        removal_limit=Case(
+            When(
+                form__successful_submissions_removal_limit=None,
+                then=Value(config.successful_submissions_removal_limit),
+            ),
+            default=F("form__successful_submissions_removal_limit"),
+            output_field=IntegerField(),
+        ),
+        time_since_creation=ExpressionWrapper(
+            Value(timezone.now(), DateTimeField()) - F("created_on"),
+            output_field=DurationField(),
+        ),
+        has_sensitive_information=F("has_sensitive_information")
+    ).filter(
+        registration_status=RegistrationStatuses.success,
+        removal_method=RemovalMethods.make_anonymous,
+        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        has_sensitive_information=True
+    ).delete()
+
+    incomplete_submissions = Submission.objects.annotate(
+        removal_method=Case(
+            When(
+                form__incomplete_submissions_removal_method=None,
+                then=Value(config.incomplete_submissions_removal_method),
+            ),
+            default=F("form__incomplete_submissions_removal_method"),
+            output_field=CharField(),
+        ),
+        removal_limit=Case(
+            When(
+                form__incomplete_submissions_removal_limit=None,
+                then=Value(config.incomplete_submissions_removal_limit),
+            ),
+            default=F("form__incomplete_submissions_removal_limit"),
+            output_field=IntegerField(),
+        ),
+        time_since_creation=ExpressionWrapper(
+            Value(timezone.now(), DateTimeField()) - F("created_on"),
+            output_field=DurationField(),
+        ),
+        has_sensitive_information=F("has_sensitive_information")
+    ).filter(
+        registration_status__in=[
+            RegistrationStatuses.pending,
+            RegistrationStatuses.in_progress,
+        ],
+        removal_method=RemovalMethods.make_anonymous,
+        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        has_sensitive_information=True
+    ).delete()
+
+    errored_submissions = Submission.objects.annotate(
+        removal_method=Case(
+            When(
+                form__errored_submissions_removal_method=None,
+                then=Value(config.errored_submissions_removal_method),
+            ),
+            default=F("form__errored_submissions_removal_method"),
+            output_field=CharField(),
+        ),
+        removal_limit=Case(
+            When(
+                form__errored_submissions_removal_limit=None,
+                then=Value(config.errored_submissions_removal_limit),
+            ),
+            default=F("form__errored_submissions_removal_limit"),
+            output_field=IntegerField(),
+        ),
+        time_since_creation=ExpressionWrapper(
+            Value(timezone.now(), DateTimeField()) - F("created_on"),
+            output_field=DurationField(),
+        ),
+        has_sensitive_information=F("has_sensitive_information")
+    ).filter(
+        registration_status=RegistrationStatuses.failed,
+        removal_method=RemovalMethods.make_anonymous,
+        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        has_sensitive_information=True
+    ).delete()

@@ -137,6 +137,13 @@ class FormDefinition(models.Model):
 
         return keys_for_email_confirmation
 
+    def has_sensitive_information(self):
+        for component in self.configuration['components']:
+            if component['isSensitiveData']:
+                return True
+
+        return False
+
     class Meta:
         verbose_name = _("Form definition")
         verbose_name_plural = _("Form definitions")

@@ -150,6 +150,11 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
+    def has_sensitive_information(self):
+        if self.bsn or self.kvk or self.form.has_sensitive_information():
+            return True
+        return False
+
     def load_execution_state(self) -> SubmissionState:
         """
         Retrieve the current execution state of steps from the database.
