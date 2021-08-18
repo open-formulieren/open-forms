@@ -138,8 +138,8 @@ class FormDefinition(models.Model):
         return keys_for_email_confirmation
 
     def has_sensitive_information(self):
-        for component in self.configuration['components']:
-            if component['isSensitiveData']:
+        for component in self.configuration["components"]:
+            if component["isSensitiveData"]:
                 return True
 
         return False
@@ -147,9 +147,9 @@ class FormDefinition(models.Model):
     def get_sensitive_fields(self):
         sensitive_fields = []
 
-        for component in self.configuration['components']:
-            if component['isSensitiveData']:
-                sensitive_fields.append(component['key'])
+        for component in self.configuration["components"]:
+            if component["isSensitiveData"]:
+                sensitive_fields.append(component["key"])
 
         return sensitive_fields
 

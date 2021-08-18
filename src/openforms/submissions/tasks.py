@@ -137,9 +137,6 @@ def make_sensitive_data_anonymous() -> None:
 
     config = GlobalConfiguration.get_solo()
 
-    # TODO Need a way to mark submissions as being anonymized or prevent them
-    #   from being returned over and over
-
     successful_submissions = Submission.objects.annotate(
         removal_method=Case(
             When(
@@ -161,13 +158,11 @@ def make_sensitive_data_anonymous() -> None:
             Value(timezone.now(), DateTimeField()) - F("created_on"),
             output_field=DurationField(),
         ),
-        has_sensitive_information=F("has_sensitive_information")
     ).filter(
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        has_sensitive_information=True
-    ).delete()
+    )
 
     incomplete_submissions = Submission.objects.annotate(
         removal_method=Case(
@@ -190,7 +185,6 @@ def make_sensitive_data_anonymous() -> None:
             Value(timezone.now(), DateTimeField()) - F("created_on"),
             output_field=DurationField(),
         ),
-        has_sensitive_information=F("has_sensitive_information")
     ).filter(
         registration_status__in=[
             RegistrationStatuses.pending,
@@ -198,8 +192,7 @@ def make_sensitive_data_anonymous() -> None:
         ],
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        has_sensitive_information=True
-    ).delete()
+    )
 
     errored_submissions = Submission.objects.annotate(
         removal_method=Case(
@@ -222,13 +215,16 @@ def make_sensitive_data_anonymous() -> None:
             Value(timezone.now(), DateTimeField()) - F("created_on"),
             output_field=DurationField(),
         ),
-        has_sensitive_information=F("has_sensitive_information")
     ).filter(
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        has_sensitive_information=True
-    ).delete()
+    )
 
-    for submission in successful_submissions + incomplete_submissions + errored_submissions:
-        submission.remove_sensitive_data()
+    for submission in (
+        list(successful_submissions)
+        + list(incomplete_submissions)
+        + list(errored_submissions)
+    ):
+        if submission.has_sensitive_information():
+            submission.remove_sensitive_data()
