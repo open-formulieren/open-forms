@@ -7,8 +7,6 @@ def _camelize_required(schema: dict):
     """
     Camelize the `required` field names, which are not picked up by drf camel case.
     """
-    # import bpdb; bpdb.set_trace()
-
     new = {**schema}
     # recurse
     for key, value in schema.items():
