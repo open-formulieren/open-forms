@@ -33,9 +33,8 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     }
                 >
                     <TextInput
-                        value={successfulSubmissionsRemovalLimit}
+                        value={successfulSubmissionsRemovalLimit || ''}
                         onChange={onChange}
-                        maxLength="50"
                         type="number"
                         min="1"/>
                 </Field>
@@ -59,7 +58,7 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     <Select
                         name='form.successfulSubmissionsRemovalMethod'
                         choices={removalMethods}
-                        value={successfulSubmissionsRemovalMethod}
+                        value={successfulSubmissionsRemovalMethod || ''}
                         onChange={onChange}
                         allowBlank={true}
                     />
@@ -82,9 +81,8 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     }
                 >
                     <TextInput
-                        value={incompleteSubmissionsRemovalLimit}
+                        value={incompleteSubmissionsRemovalLimit || ''}
                         onChange={onChange}
-                        maxLength="50"
                         type="number"
                         min="1"/>
                 </Field>
@@ -108,7 +106,7 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     <Select
                         name='form.incompleteSubmissionsRemovalMethod'
                         choices={removalMethods}
-                        value={incompleteSubmissionsRemovalMethod}
+                        value={incompleteSubmissionsRemovalMethod || ''}
                         onChange={onChange}
                         allowBlank={true}
                     />
@@ -131,9 +129,8 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     }
                 >
                     <TextInput
-                        value={erroredSubmissionsRemovalLimit}
+                        value={erroredSubmissionsRemovalLimit || ''}
                         onChange={onChange}
-                        maxLength="50"
                         type="number"
                         min="1"/>
                 </Field>
@@ -157,7 +154,7 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     <Select
                         name='form.erroredSubmissionsRemovalMethod'
                         choices={removalMethods}
-                        value={erroredSubmissionsRemovalMethod}
+                        value={erroredSubmissionsRemovalMethod || ''}
                         onChange={onChange}
                         allowBlank={true}
                     />
@@ -180,9 +177,8 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     }
                 >
                     <TextInput
-                        value={allSubmissionsRemovalLimit}
+                        value={allSubmissionsRemovalLimit || ''}
                         onChange={onChange}
-                        maxLength="50"
                         type="number"
                         min="1"/>
                 </Field>
