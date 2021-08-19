@@ -121,3 +121,6 @@ class StufBGConfigTests(TestCase):
                             f'Attributes "{subset}" produces an invalid StUF-BG. '
                             f"Error: {xmlschema.error_log.last_error.message}"
                         )
+                    for attribute in subset:
+                        with self.subTest(subset=subset, attribute=attribute):
+                            self.assertIn(attribute, data)

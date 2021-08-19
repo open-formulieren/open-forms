@@ -65,11 +65,11 @@
             <ns:scope>
                 <ns:object StUF:entiteittype="NPS">
                     <ns:inp.bsn xsi:nil="true"/>
-                    {% if voornaam %}
-                        <ns:voornamen xsi:nil="true"/>
-                    {% endif %}
                     {% if geslachtsnaam %}
                         <ns:geslachtsnaam xsi:nil="true"/>
+                    {% endif %}
+                    {% if voornamen %}
+                        <ns:voornamen xsi:nil="true"/>
                     {% endif %}
                     {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
                         <ns:verblijfsadres>
