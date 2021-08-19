@@ -19,8 +19,7 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..models import Form, FormDefinition, FormStep, FormVersion
-from ..models.form import FormLogic
+from ..models import Form, FormDefinition, FormLogic, FormStep, FormVersion
 from ..utils import export_form, form_to_json, import_form
 from .filters import FormLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
@@ -70,19 +69,19 @@ class FormStepViewSet(
 
 
 @extend_schema_view(
-    list=extend_schema(summary=_("List form logics")),
-    retrieve=extend_schema(summary=_("Retrieve form logic details")),
-    create=extend_schema(summary=_("Create a form logic")),
-    update=extend_schema(summary=_("Update all details of a form logic")),
-    partial_update=extend_schema(summary=_("Update some details of a form logic")),
-    destroy=extend_schema(summary=_("Delete a form logic")),
+    list=extend_schema(summary=_("List logic rules")),
+    retrieve=extend_schema(summary=_("Retrieve logic rule details")),
+    create=extend_schema(summary=_("Create a logic rule")),
+    update=extend_schema(summary=_("Update all details of a logic rule")),
+    partial_update=extend_schema(summary=_("Update some details of a logic rule")),
+    destroy=extend_schema(summary=_("Delete a logic rule")),
 )
 class FormLogicViewSet(
     viewsets.ModelViewSet,
 ):
     serializer_class = FormLogicSerializer
     queryset = FormLogic.objects.all()
-    permission_classes = [IsStaffOrReadOnly]
+    permission_classes = [permissions.IsAdminUser]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FormLogicFilter
     lookup_field = "uuid"

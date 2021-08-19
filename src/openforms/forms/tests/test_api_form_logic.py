@@ -1,9 +1,8 @@
-from django.http import HttpRequest
 from django.urls import reverse
 
 from furl import furl
 from rest_framework import status
-from rest_framework.test import APITestCase, force_authenticate
+from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.models.form import FormLogic
@@ -19,7 +18,7 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-    def test_list_form_logic(self):
+    def test_list_and_filter_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
         form1 = FormFactory.create()
         form2 = FormFactory.create()
@@ -31,7 +30,7 @@ class FormLogicAPITests(APITestCase):
             form=form2,
         )
 
-        force_authenticate(user)
+        self.client.force_authenticate(user)
         url = reverse("api:form-logics-list")
         url = furl(url).set({"form": form1.uuid}).url
         response = self.client.get(url)
@@ -45,7 +44,7 @@ class FormLogicAPITests(APITestCase):
     def test_create_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -80,9 +79,7 @@ class FormLogicAPITests(APITestCase):
             ],
         }
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
+        self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
         response = self.client.post(url, data=form_logic_data)
 
@@ -130,9 +127,7 @@ class FormLogicAPITests(APITestCase):
             },
         }
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
+        self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
         response = self.client.post(url, data=form_logic_data)
 
@@ -178,9 +173,7 @@ class FormLogicAPITests(APITestCase):
             ],
         )
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
+        self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-detail", kwargs={"uuid": logic.uuid})
         response = self.client.patch(
             url,
@@ -222,9 +215,7 @@ class FormLogicAPITests(APITestCase):
             ],
         )
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
+        self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-detail", kwargs={"uuid": logic.uuid})
         response = self.client.delete(url)
 
@@ -269,9 +260,7 @@ class FormLogicAPITests(APITestCase):
             ],
         }
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
+        self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
         response = self.client.post(url, data=form_logic_data)
 

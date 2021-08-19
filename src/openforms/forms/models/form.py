@@ -216,12 +216,11 @@ class Form(models.Model):
 
 
 class FormLogic(models.Model):
-    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     form = models.ForeignKey(
         to="forms.Form",
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
-        null=True,
     )
     json_logic_trigger = JSONField(
         verbose_name=_("JSON logic"),
@@ -229,5 +228,5 @@ class FormLogic(models.Model):
     )
     actions = JSONField(
         verbose_name=_("actions"),
-        help_text=_("What action to perform if the JSON logic evaluates to true."),
+        help_text=_("Which action(s) to perform if the JSON logic evaluates to true."),
     )

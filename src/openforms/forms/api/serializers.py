@@ -383,13 +383,6 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
 
 class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
-    form = serializers.HyperlinkedRelatedField(
-        queryset=Form.objects.all(),
-        view_name="api:form-detail",
-        lookup_field="uuid",
-        lookup_url_kwarg="uuid_or_slug",
-    )
-
     actions = LogicComponentActionSerializer(
         many=True,
         label=_("Actions"),
@@ -409,6 +402,11 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
+            },
+            "form": {
+                "view_name": "api:form-detail",
+                "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
             "json_logic_trigger": {
                 "help_text": _(
