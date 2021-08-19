@@ -1,0 +1,24 @@
+[
+    {
+        "actions":
+        [
+            {
+                "action":
+                {
+                    "type": "disable-next"
+                },
+                "component": "test"
+            }
+        ],
+        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "json_logic_trigger":
+        {
+            "==":
+            [
+                {"var": "test"},
+                1
+            ]
+        },
+        "uuid": "b92342be-05e0-4070-b2cc-1b88af472091"
+    }
+]

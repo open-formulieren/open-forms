@@ -9,12 +9,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-EXPORT_BLOB = {
-    "forms": '[{"uuid": "324cadce-a627-4e3f-b117-37ca232f16b2", "name": "Test Form 1", "login_required": false, "authentication_backends": ["digid-mock", "digid"], "product": null, "slug": "auth-plugins", "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "show_progress_indicator": true, "maintenance_mode": false, "active": true, "is_deleted": false}]',
-    "formSteps": '[{"uuid": "3ca01601-cd20-4746-bce5-baab47636823", "index": 0, "slug": "test-step-1", "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2"}]',
-    "formDefinitions": '[{"url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8", "name": "Test Definition 1", "slug": "test-definition-1", "configuration": {"test": "1"}}]',
-    "formLogic": '[{"uuid": "b92342be-05e0-4070-b2cc-1b88af472091", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "actions": [{"action": {"type": "disable-next"}, "component": "test"}], "json_logic_trigger": {"==": [1, 1]}}]',
-}
+from .utils import EXPORT_BLOB
 
 
 class RestoreVersionTest(TestCase):
@@ -49,7 +44,10 @@ class RestoreVersionTest(TestCase):
 
         self.assertEqual("Test Definition 1", restored_form_definition.name)
         self.assertEqual("test-definition-1", restored_form_definition.slug)
-        self.assertEqual({"test": "1"}, restored_form_definition.configuration)
+        self.assertEqual(
+            {"components": [{"test": "1", "key": "test"}]},
+            restored_form_definition.configuration,
+        )
 
     def test_form_definition_same_slug_different_configuration(self):
         """Test that restoring a form definition with a slug that matches the slug of another form definition
@@ -132,7 +130,8 @@ class RestoreVersionTest(TestCase):
         (and has the same configuration) links to the existing form definition.
         """
         form_definition = FormDefinitionFactory.create(
-            slug="test-definition-1", configuration={"test": "1"}
+            slug="test-definition-1",
+            configuration={"components": [{"test": "1", "key": "test"}]},
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)

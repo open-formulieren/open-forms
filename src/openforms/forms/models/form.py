@@ -1,14 +1,12 @@
-import json
 import uuid as _uuid
 from copy import deepcopy
 from typing import List
 
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import JSONField
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
-from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 

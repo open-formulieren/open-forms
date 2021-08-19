@@ -140,8 +140,20 @@ class FormLogicAPITests(APITestCase):
 
     def test_partial_update_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form1 = FormFactory.create()
-        form2 = FormFactory.create()
+        form1, form2 = FormFactory.create_batch(2)
+
+        for form in [form1, form2]:
+            FormStepFactory.create(
+                form=form,
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "step1_textfield1",
+                        }
+                    ]
+                },
+            )
 
         logic = FormLogicFactory.create(
             form=form1,
@@ -222,7 +234,7 @@ class FormLogicAPITests(APITestCase):
     def test_invalid_logic_trigger(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [

@@ -257,6 +257,7 @@ django==2.2.24
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
@@ -272,6 +273,7 @@ djangorestframework==3.12.4
     #   -r requirements/base.txt
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
 docutils==0.16
     # via
@@ -280,6 +282,10 @@ docutils==0.16
     #   sphinx-rtd-theme
     #   sphinx-tabs
 drf-nested-routers==0.93.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

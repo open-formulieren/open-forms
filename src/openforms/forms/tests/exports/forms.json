@@ -1,0 +1,19 @@
+[
+    {
+        "active": true,
+        "authentication_backends":
+        [
+            "digid-mock",
+            "digid"
+        ],
+        "is_deleted": false,
+        "login_required": false,
+        "maintenance_mode": false,
+        "name": "Test Form 1",
+        "product": null,
+        "show_progress_indicator": true,
+        "slug": "auth-plugins",
+        "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2"
+    }
+]

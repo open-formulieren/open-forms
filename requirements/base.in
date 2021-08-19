@@ -49,6 +49,8 @@ djangorestframework~=3.12.0
 drf-nested-routers
 djangorestframework-camel-case
 django-filter
+# master branch
+git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
 
 # API schema generation (OpenAPI 3)
 drf-spectacular

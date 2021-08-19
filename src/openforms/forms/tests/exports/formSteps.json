@@ -1,0 +1,9 @@
+[
+    {
+        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+        "index": 0,
+        "slug": "test-step-1",
+        "uuid": "3ca01601-cd20-4746-bce5-baab47636823"
+    }
+]

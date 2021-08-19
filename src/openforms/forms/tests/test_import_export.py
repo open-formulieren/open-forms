@@ -39,7 +39,9 @@ class ImportExportTests(TestCase):
             actions=[
                 {
                     "component": "test_component",
-                    "action": "test action",
+                    "action": {
+                        "type": "disable-next",
+                    },
                 }
             ],
         )
@@ -85,7 +87,9 @@ class ImportExportTests(TestCase):
             form_logic = json.loads(f.read("formLogic.json"))
             self.assertEqual(1, len(form_logic))
             self.assertEqual("test_component", form_logic[0]["actions"][0]["component"])
-            self.assertEqual("test action", form_logic[0]["actions"][0]["action"])
+            self.assertEqual(
+                {"type": "disable-next"}, form_logic[0]["actions"][0]["action"]
+            )
             self.assertIn(str(form.uuid), form_logic[0]["form"])
 
     def test_import(self):

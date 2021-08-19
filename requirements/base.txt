@@ -144,6 +144,7 @@ django==2.2.24
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
@@ -156,8 +157,11 @@ djangorestframework==3.12.4
     #   -r requirements/base.in
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
 drf-nested-routers==0.93.3
+    # via -r requirements/base.in
+git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
     # via -r requirements/base.in
 drf-spectacular==0.17.2
     # via -r requirements/base.in
