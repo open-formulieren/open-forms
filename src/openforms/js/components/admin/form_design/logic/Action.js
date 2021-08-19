@@ -1,14 +1,18 @@
 import React, {useContext} from 'react';
+import PropTypes from 'prop-types';
+import {useIntl} from 'react-intl';
+
 import Select from '../../forms/Select';
+import DeleteIcon from '../../DeleteIcon';
 import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
 import OperandTypeSelection from './OperandTypeSelection';
-import FAIcon from "../../FAIcon";
 
 
 const Action = ({action, onChange, onDelete}) => {
+    const intl = useIntl();
     const allComponents = useContext(ComponentsContext);
     const componentType = allComponents[action.componentToChange]?.type;
 
@@ -23,19 +27,20 @@ const Action = ({action, onChange, onDelete}) => {
         }
     };
 
-    const confirmDelete = (index) => {
-        if(window.confirm('Are you sure you want to delete this action?')){
-            onDelete(index);
-        }
-    };
-
-
     return (
         <div className="action">
             <div className="actions">
-                <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
+                <DeleteIcon
+                    onConfirm={onDelete}
+                    message={intl.formatMessage({
+                        description: 'Logic rule action deletion confirm message',
+                        defaultMessage: 'Are you sure you want to delete this action?',
+                    })}
+                />
             </div>
+
             Then,
+
             <div className="action-choices">
             <Select
                 name="actionType"

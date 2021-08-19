@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FormioUtils from 'formiojs/utils';
-import FAIcon from '../FAIcon';
+import {useIntl} from 'react-intl';
+
+import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
 import {ComponentsContext} from './logic/Context';
 import {ActionSet} from './logic/ActionSet';
@@ -45,20 +46,17 @@ FormLogic.propTypes = {
 
 
 const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
-    const confirmDelete = () => {
-        if(window.confirm('Are you sure you want to delete this rule?')){
-            onDelete();
-        }
-    };
-
+    const intl = useIntl();
+    const deleteConfirmMessage = intl.formatMessage({
+        description: 'Logic rule deletion confirm message',
+        defaultMessage: 'Are you sure you want to delete this rule?',
+    });
     return (
         <div className="logic-rule">
-
             <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
             <ActionSet name="actions" actions={actions} onChange={onChange} />
-
             <div className="actions">
-                <FAIcon icon="trash" extraClassname="icon icon--danger actions__action" title="Delete" onClick={confirmDelete} />
+                <DeleteIcon onConfirm={onDelete} message={deleteConfirmMessage} />
             </div>
         </div>
     );

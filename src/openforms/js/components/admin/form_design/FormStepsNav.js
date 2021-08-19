@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {useIntl, FormattedMessage} from 'react-intl';
+import {useIntl} from 'react-intl';
 
 import FAIcon from '../FAIcon';
+import DeleteIcon from '../DeleteIcon';
 
 
 const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }) => {
@@ -13,6 +14,14 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }
         'list__item--with-actions',
         {'list__item--active': active},
     );
+
+    const confirmDeleteMessage = intl.formatMessage({
+        description: 'Step delete confirmation',
+        defaultMessage: 'Are you sure you want to delete the step {step}?'
+    }, {
+        step: name,
+    });
+
     return (
         <li className={className}>
             <div className="actions actions--vertical">
@@ -33,11 +42,9 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }
                 {name}
             </button>
             <div className="actions">
-                <FAIcon
-                    icon="trash"
-                    extraClassname="icon icon--danger actions__action"
-                    title={intl.formatMessage({description: 'Delete step icon title', defaultMessage: 'Delete'})}
-                    onClick={onDelete}
+                <DeleteIcon
+                    message={confirmDeleteMessage}
+                    onConfirm={onDelete}
                 />
             </div>
         </li>
@@ -56,19 +63,6 @@ FormStepNavItem.propTypes = {
 const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDelete, onAdd }) => {
     const intl = useIntl();
 
-    const confirmDelete = (index) => {
-        const step = steps[index];
-        const message = intl.formatMessage({
-            description: 'Step delete confirmation',
-            defaultMessage: 'Are you sure you want to delete the step {step}?'
-        }, {
-            step: step.name,
-        });
-        if (window.confirm(message)) {
-            onDelete(index);
-        }
-    };
-
     const onStepAdd = (event) => {
         onAdd(event);
         onActivateStep(steps.length);
@@ -82,16 +76,17 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDele
                         <FormStepNavItem
                             key={index}
                             name={step.isNew
-                                ? (<FormattedMessage
-                                        description="form step label in nav"
-                                        defaultMessage="{name} [new]"
-                                        values={{name: step.name}} />)
+                                ? (intl.formatMessage({
+                                    description: 'form step label in nav',
+                                    defaultMessage: '{name} [new]'
+                                    }, {name: step.name})
+                                )
                                 : step.name
                             }
                             active={Boolean(active && step.index === steps.indexOf(active))}
                             onActivate={ () => onActivateStep(index) }
                             onReorder={onReorder.bind(null, index)}
-                            onDelete={confirmDelete.bind(null, index)}
+                            onDelete={onDelete.bind(null, index)}
                         />
                     ))
                 }
