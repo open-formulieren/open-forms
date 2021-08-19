@@ -5,7 +5,7 @@ import {useIntl} from 'react-intl';
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
 import {ComponentsContext} from './logic/Context';
-import {ActionSet} from './logic/ActionSet';
+import ActionSet from './logic/ActionSet';
 
 
 const EMPTY_RULE = {

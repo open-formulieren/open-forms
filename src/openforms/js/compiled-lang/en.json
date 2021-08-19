@@ -1,4 +1,10 @@
 {
+  "+8EnHh": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this action?"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -187,6 +193,12 @@
       "value": "Logics"
     }
   ],
+  "CN9j+L": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
   "CXKQZZ": [
     {
       "type": 0,
@@ -345,6 +357,12 @@
       "value": "ID"
     }
   ],
+  "TR5xSY": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this rule?"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
@@ -373,10 +391,10 @@
       "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
-  "Y5A1Tn": [
+  "YzLSHY": [
     {
       "type": 0,
-      "value": "Delete"
+      "value": "Are you sure you want to delete this?"
     }
   ],
   "ZICfus": [

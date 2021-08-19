@@ -1,4 +1,9 @@
 {
+  "+8EnHh": {
+    "defaultMessage": "Are you sure you want to delete this action?",
+    "description": "Logic rule action deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this action?"
+  },
   "+hAGg7": {
     "defaultMessage": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is",
     "description": "Form maintenance mode field help text",
@@ -118,6 +123,11 @@
     "defaultMessage": "Logica",
     "description": "Form logic tab title",
     "originalDefault": "Logics"
+  },
+  "CN9j+L": {
+    "defaultMessage": "Delete",
+    "description": "Delete icon title",
+    "originalDefault": "Delete"
   },
   "CXKQZZ": {
     "defaultMessage": "Bevestiging",
@@ -244,6 +254,11 @@
     "description": "Form ID field label",
     "originalDefault": "ID"
   },
+  "TR5xSY": {
+    "defaultMessage": "Are you sure you want to delete this rule?",
+    "description": "Logic rule deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this rule?"
+  },
   "TXwGu1": {
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
@@ -254,10 +269,10 @@
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
-  "Y5A1Tn": {
-    "defaultMessage": "Verwijderen",
-    "description": "Delete step icon title",
-    "originalDefault": "Delete"
+  "YzLSHY": {
+    "defaultMessage": "Are you sure you want to delete this?",
+    "description": "Default delete confirmation message",
+    "originalDefault": "Are you sure you want to delete this?"
   },
   "ZICfus": {
     "defaultMessage": "'Vorige' tekst",

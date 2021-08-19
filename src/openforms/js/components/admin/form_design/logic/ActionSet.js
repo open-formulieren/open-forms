@@ -174,4 +174,4 @@ ActionSet.propTypes = {
     onChange: PropTypes.func.isRequired,
 };
 
-export {ActionSet};
+export default ActionSet;
