@@ -68,6 +68,9 @@ class OgoneRequestParams:
     # or dynamic template page
     TP: str = ""  # fill here your template page
 
+    # added for responsive display of payment options
+    PMLISTTYPE: int = 2
+
     # post-payment redirection
     ACCEPTURL: str = ""  #
     DECLINEURL: str = ""  #
