@@ -305,10 +305,6 @@ class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class FormSearchSerializer(serializers.Serializer):
-    form = serializers.UUIDField()
-
-
 class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
     form = serializers.HyperlinkedRelatedField(
         queryset=Form.objects.all(),

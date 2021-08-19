@@ -30,7 +30,6 @@ from .serializers import (
     FormDefinitionSerializer,
     FormImportSerializer,
     FormLogicSerializer,
-    FormSearchSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVersionSerializer,
