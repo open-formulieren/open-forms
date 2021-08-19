@@ -17,8 +17,8 @@ class RegistrationStatuses(DjangoChoices):
 
 class RemovalMethods(DjangoChoices):
     delete_permanently = ChoiceItem(
-        "delete_permanently", _("Data will be permanently deleted")
+        "delete_permanently", _("Submissions will be deleted")
     )
     make_anonymous = ChoiceItem(
-        "make_anonymous", _("Data will be modified in a way to make it anonymous")
+        "make_anonymous", _("Sensitive data within the submissions will be deleted")
     )

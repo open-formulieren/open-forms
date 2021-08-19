@@ -10,9 +10,9 @@ from openforms.utils.json_logic import JsonLogicTest
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
-from ...submissions.constants import RemovalMethods
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
+from ...submissions.constants import RemovalMethods
 from ..constants import LogicActionTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion

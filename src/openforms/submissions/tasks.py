@@ -15,8 +15,8 @@ from django.db.models import (
 from django.utils import timezone
 
 from ..celery import app
-from ..submissions.constants import RemovalMethods
 from ..config.models import GlobalConfiguration
+from ..submissions.constants import RemovalMethods
 from .constants import RegistrationStatuses
 from .models import Submission
 

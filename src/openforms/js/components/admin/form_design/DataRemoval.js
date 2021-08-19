@@ -147,7 +147,7 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     helpText={
                         <FormattedMessage
                             description="form.erroredSubmissionsRemovalMethod help text"
-                            defaultMessage="How errored submissions of this form will be removed after the limit of days. Leave blank to use value in General Configuration."
+                            defaultMessage="How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
                         />
                     }
                 >

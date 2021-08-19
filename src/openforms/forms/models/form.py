@@ -14,9 +14,9 @@ from tinymce.models import HTMLField
 from openforms.utils.fields import StringUUIDField
 
 from ...authentication.fields import AuthenticationBackendMultiSelectField
-from ...submissions.constants import RemovalMethods
 from ...payments.fields import PaymentBackendChoiceField
 from ...registrations.fields import RegistrationBackendChoiceField
+from ...submissions.constants import RemovalMethods
 from .utils import literal_getter
 
 
@@ -191,7 +191,7 @@ class Form(models.Model):
         null=True,
         choices=RemovalMethods,
         help_text=_(
-            "How errored submissions of this form will be removed after the limit of days. "
+            "How errored submissions of this form will be removed after the limit. "
             "Leave blank to use value in General Configuration."
         ),
     )

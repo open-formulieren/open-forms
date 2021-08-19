@@ -328,7 +328,7 @@ class GlobalConfiguration(SingletonModel):
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
-        help_text=_("How errored submissions will be removed after the limit of days"),
+        help_text=_("How errored submissions will be removed after the"),
     )
     all_submissions_removal_limit = models.PositiveIntegerField(
         _("errored submission removal days limit"),
