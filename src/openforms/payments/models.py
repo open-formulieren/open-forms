@@ -100,7 +100,7 @@ class SubmissionPayment(models.Model):
     objects = SubmissionPaymentManager.from_queryset(SubmissionPaymentQuerySet)()
 
     def __str__(self):
-        return f"{self.uuid} {self.amount} '{self.get_status_display()}'"
+        return f"#{self.order_id} '{self.get_status_display()}' {self.amount}"
 
     @property
     def form(self):
