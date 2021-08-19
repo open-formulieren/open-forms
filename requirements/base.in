@@ -14,6 +14,7 @@ tablib[xlsx]
 xmltodict
 self-certifi
 weasyprint
+zeep
 
 # Framework libraries
 django < 3.0

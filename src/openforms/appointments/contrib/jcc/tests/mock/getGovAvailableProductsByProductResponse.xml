@@ -1,0 +1,16 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovAvailableProductsByProductResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <products xmlns="">
+            <productId>5</productId>
+            <productCode>RIJAAN</productCode>
+            <productDesc>Rijbewijs aanvraag (Drivers license)</productDesc>
+         </products>
+         <products xmlns="">
+            <productId>15</productId>
+            <productCode>UITTREKBS</productCode>
+            <productDesc>Uittreksel Burgerlijke Stand</productDesc>
+         </products>
+      </getGovAvailableProductsByProductResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

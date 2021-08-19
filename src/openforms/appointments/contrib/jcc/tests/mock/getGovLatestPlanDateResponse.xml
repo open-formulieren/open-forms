@@ -1,0 +1,7 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovLatestPlanDateResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <latestPlanDate xmlns="">2022-06-15</latestPlanDate>
+      </getGovLatestPlanDateResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
