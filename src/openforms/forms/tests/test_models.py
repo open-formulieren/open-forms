@@ -159,10 +159,6 @@ class FormTestCase(TestCase):
 
             self.assertEqual(actual, expected)
 
-    def test_form_has_sensitive_information(self):
-        self.assertFalse(self.form.has_sensitive_information)
-        self.assertTrue(self.form_with_sensitive_information.has_sensitive_information)
-
 
 class FormQuerysetTestCase(TestCase):
     def test_queryset_live(self):
@@ -252,12 +248,6 @@ class FormDefinitionTestCase(TestCase):
         self.assertIn("aaa", keys)
         self.assertNotIn("bbb", keys)
         self.assertIn("ccc", keys)
-
-    def test_form_definition_has_sensitive_information(self):
-        self.assertFalse(self.form_definition.has_sensitive_information)
-        self.assertTrue(
-            self.form_definition_with_sensitive_information.has_sensitive_information
-        )
 
     def test_form_definition_sensitive_information_returns_correct_fields(self):
         self.assertFalse(self.form_definition.sensitive_fields, [])

@@ -15,7 +15,7 @@ from django.db.models import (
 from django.utils import timezone
 
 from ..celery import app
-from ..config.constants import RemovalMethods
+from ..submissions.constants import RemovalMethods
 from ..config.models import GlobalConfiguration
 from .constants import RegistrationStatuses
 from .models import Submission
@@ -162,6 +162,7 @@ def make_sensitive_data_anonymous() -> None:
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        _is_cleaned=False,
     )
 
     incomplete_submissions = Submission.objects.annotate(
@@ -192,6 +193,7 @@ def make_sensitive_data_anonymous() -> None:
         ],
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        _is_cleaned=False,
     )
 
     errored_submissions = Submission.objects.annotate(
@@ -219,6 +221,7 @@ def make_sensitive_data_anonymous() -> None:
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.make_anonymous,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        _is_cleaned=False,
     )
 
     for submission in (
@@ -226,5 +229,4 @@ def make_sensitive_data_anonymous() -> None:
         + list(incomplete_submissions)
         + list(errored_submissions)
     ):
-        if submission.has_sensitive_information:
-            submission.remove_sensitive_data()
+        submission.remove_sensitive_data()

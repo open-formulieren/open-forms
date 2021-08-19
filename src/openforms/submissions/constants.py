@@ -13,3 +13,12 @@ class RegistrationStatuses(DjangoChoices):
     in_progress = ChoiceItem("in_progress", _("In Progress (not registered yet)"))
     success = ChoiceItem("success", _("Success"))
     failed = ChoiceItem("failed", _("Failed"))
+
+
+class RemovalMethods(DjangoChoices):
+    delete_permanently = ChoiceItem(
+        "delete_permanently", _("Data will be permanently deleted")
+    )
+    make_anonymous = ChoiceItem(
+        "make_anonymous", _("Data will be modified in a way to make it anonymous")
+    )

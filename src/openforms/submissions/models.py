@@ -158,14 +158,6 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
-    @property
-    def has_sensitive_information(self):
-        if self._is_cleaned:
-            return False
-        if self.bsn or self.kvk or self.form.has_sensitive_information:
-            return True
-        return False
-
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""

@@ -139,14 +139,6 @@ class FormDefinition(models.Model):
         return keys_for_email_confirmation
 
     @cached_property
-    def has_sensitive_information(self):
-        for component in self.configuration["components"]:
-            if component.get("isSensitiveData"):
-                return True
-
-        return False
-
-    @cached_property
     def sensitive_fields(self):
         sensitive_fields = []
 

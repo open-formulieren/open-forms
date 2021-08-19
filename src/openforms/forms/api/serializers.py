@@ -10,12 +10,12 @@ from openforms.utils.json_logic import JsonLogicTest
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
+from ...submissions.constants import RemovalMethods
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
 from ..constants import LogicActionTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
-from ...config.constants import RemovalMethods
 from ..models.form import FormLogic
 from .validators import JsonLogicValidator
 
@@ -181,9 +181,8 @@ class FormExportSerializer(FormSerializer):
     def get_fields(self):
         fields = super().get_fields()
         # for export we want to use the list of plugin-id's instead of detailed info objects
-        del fields["login_options"]
-        del fields["payment_options"]
-        del fields["removal_methods"]
+        for field in ["login_options", "payment_options", "removal_methods"]:
+            del fields[field]
         fields["authentication_backends"].write_only = False
         return fields
 

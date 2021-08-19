@@ -4,14 +4,13 @@ from unittest import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-from openforms.config.constants import RemovalMethods
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
 )
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.constants import RegistrationStatuses, RemovalMethods
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks import (
     delete_submissions,

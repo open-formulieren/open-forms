@@ -5,7 +5,6 @@ from typing import List
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -15,7 +14,7 @@ from tinymce.models import HTMLField
 from openforms.utils.fields import StringUUIDField
 
 from ...authentication.fields import AuthenticationBackendMultiSelectField
-from ...config.constants import RemovalMethods
+from ...submissions.constants import RemovalMethods
 from ...payments.fields import PaymentBackendChoiceField
 from ...registrations.fields import RegistrationBackendChoiceField
 from .utils import literal_getter
@@ -281,13 +280,6 @@ class Form(models.Model):
     def iter_components(self, recursive=True):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
-
-    @cached_property
-    def has_sensitive_information(self):
-        for form_step in self.formstep_set.select_related("form_definition"):
-            if form_step.form_definition.has_sensitive_information:
-                return True
-        return False
 
     @transaction.atomic
     def restore_old_version(self, form_version_uuid: str) -> None:
