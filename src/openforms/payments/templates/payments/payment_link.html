@@ -1,0 +1,17 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n static openforms %}
+
+
+{% block card %}
+    {% if form %}
+        <h2>{% trans "Payment required!" %}</h2>
+        <p>{{ object }}</p>
+        <p>{% trans "Total:" %} &euro; {{ object.form.product.price }}</p>
+        <form action="{{ url }}" method="{{ method }}">
+            {{ form }}
+            <input type="submit" value="{% trans "Start payment" %}">
+        </form>
+    {% else %}
+        {% trans "Thanks!" %}
+    {% endif %}
+{% endblock %}

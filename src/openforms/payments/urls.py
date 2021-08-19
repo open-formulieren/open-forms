@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import PaymentReturnView, PaymentStartView, PaymentWebhookView
+from .views import (
+    PaymentLinkView,
+    PaymentReturnView,
+    PaymentStartView,
+    PaymentWebhookView,
+)
 
 app_name = "payments"
 
@@ -19,5 +24,10 @@ urlpatterns = [
         "<slug:plugin_id>/webhook",
         PaymentWebhookView.as_view(),
         name="webhook",
+    ),
+    path(
+        "<uuid:uuid>/link",
+        PaymentLinkView.as_view(),
+        name="link",
     ),
 ]

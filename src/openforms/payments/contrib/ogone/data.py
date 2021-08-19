@@ -21,9 +21,12 @@ class OgoneFeedbackParams:
     @classmethod
     def from_dict(cls, value_dict):
         kws = dict()
-        for f in dataclasses.fields(cls):
-            if f.name in value_dict:
-                kws[f.name] = value_dict[f.name]
+        # convoluted but param-names are in-consistently cased
+        field_names = set(f.name for f in dataclasses.fields(cls))
+        for key, value in value_dict.items():
+            key = key.upper()
+            if key in field_names:
+                kws[key] = value
         return cls(**kws)
 
     def get_dict(self):
