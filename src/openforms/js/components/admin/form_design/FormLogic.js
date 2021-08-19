@@ -4,7 +4,7 @@ import FormioUtils from 'formiojs/utils';
 import FAIcon from '../FAIcon';
 import Trigger from './logic/Trigger';
 import {ComponentsContext} from './logic/Context';
-import {ActionSet} from "./logic/ActionSet";
+import {ActionSet} from './logic/ActionSet';
 
 
 const EMPTY_RULE = {
@@ -15,22 +15,10 @@ const EMPTY_RULE = {
 };
 
 
-const formatRuleComponentChoices = (formSteps, dispatch, eventType) => {
-    const allComponents = formSteps.map(
-        step => FormioUtils.flattenComponents(step.configuration.components || [], false)
-    ).reduce((acc, currentValue) => ({...acc, ...currentValue}), {});
-    dispatch({
-        type: eventType,
-        payload: allComponents,
-    });
-};
-
-
-const FormLogic = ({ rules, onChange, onDelete, onAdd }) => {
-
+const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, onAdd }) => {
     return (
-        <ComponentsContext.Provider value={rules.components.choices}>
-            {rules.rules.map((rule, i) => (
+        <ComponentsContext.Provider value={availableComponents}>
+            {logicRules.map((rule, i) => (
                 <Rule
                     key={i}
                     {...rule}
@@ -46,14 +34,10 @@ const FormLogic = ({ rules, onChange, onDelete, onAdd }) => {
 };
 
 FormLogic.propTypes = {
-    rules: PropTypes.shape({
-        components: PropTypes.shape({
-            choices: PropTypes.array,
-            loading: PropTypes.bool,
-        }),
-        rules: PropTypes.array,
-        rulesToDelete: PropTypes.array,
-    }).isRequired,
+    logicRules: PropTypes.arrayOf(PropTypes.object).isRequired,
+    availableComponents: PropTypes.objectOf(
+        PropTypes.object, // Formio component objects
+    ).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -61,9 +45,9 @@ FormLogic.propTypes = {
 
 
 const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
-    const confirmDelete = (index) => {
+    const confirmDelete = () => {
         if(window.confirm('Are you sure you want to delete this rule?')){
-            onDelete(index);
+            onDelete();
         }
     };
 
@@ -88,4 +72,4 @@ Rule.propTypes = {
     onDelete: PropTypes.func.isRequired,
 };
 
-export {FormLogic, formatRuleComponentChoices, EMPTY_RULE};
+export {FormLogic, EMPTY_RULE};
