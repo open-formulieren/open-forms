@@ -110,7 +110,9 @@ class TestSubmission(TestCase):
             "test1, test2",
         )
 
-    def test_submission_has_sensitive_information(self):
+    def test_submission_has_sensitive_information_returns_true_with_sensitive_information_in_form_definition(
+        self,
+    ):
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "components": [
@@ -133,6 +135,48 @@ class TestSubmission(TestCase):
         )
 
         self.assertTrue(submission.has_sensitive_information)
+
+    def test_submission_has_sensitive_information_returns_false_when_no_sensitive_information_in_form_definition(
+        self,
+    ):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                ],
+            }
+        )
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "textFieldNotSensitive": "this is not sensitive",
+            },
+            form_step=form_step,
+        )
+
+        self.assertFalse(submission.has_sensitive_information)
+
+    def test_submission_has_sensitive_information_returns_true_if_bsn_in_submission(
+        self,
+    ):
+        submission = SubmissionFactory.create(bsn="999990676")
+        self.assertTrue(submission.has_sensitive_information)
+
+    def test_submission_has_sensitive_information_returns_true_if_kvk_in_submission(
+        self,
+    ):
+        submission = SubmissionFactory.create(kvk="69599084")
+        self.assertTrue(submission.has_sensitive_information)
+
+    def test_submission_has_sensitive_information_returns_false_if_already_cleaned(
+        self,
+    ):
+        submission = SubmissionFactory.create(_is_cleaned=True)
+        self.assertFalse(submission.has_sensitive_information)
 
     def test_submission_remove_sensitive_data(self):
         form_definition = FormDefinitionFactory.create(
@@ -157,7 +201,9 @@ class TestSubmission(TestCase):
             form=form, form_definition=form_definition_2
         )
 
-        submission = SubmissionFactory.create(form=form)
+        submission = SubmissionFactory.create(
+            form=form, bsn="999990676", kvk="69599084"
+        )
         submission_step = SubmissionStepFactory.create(
             submission=submission,
             data={
@@ -177,6 +223,7 @@ class TestSubmission(TestCase):
 
         submission.remove_sensitive_data()
 
+        submission.refresh_from_db()
         submission_step.refresh_from_db()
         submission_step_2.refresh_from_db()
 
@@ -188,3 +235,6 @@ class TestSubmission(TestCase):
         self.assertEqual(
             submission_step_2.data["textFieldNotSensitive2"], "this is not sensitive"
         )
+        self.assertTrue(submission._is_cleaned)
+        self.assertEqual(submission.bsn, "")
+        self.assertEqual(submission.kvk, "")

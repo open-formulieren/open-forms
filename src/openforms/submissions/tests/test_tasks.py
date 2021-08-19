@@ -487,6 +487,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
                 "This is also not sensitive",
             )
+            self.assertTrue(submission_to_be_anonymous._is_cleaned)
 
     def test_form_override_of_successful_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -611,6 +612,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
                 "This is also not sensitive",
             )
+            self.assertTrue(submission_to_be_anonymous._is_cleaned)
 
     def test_certain_incomplete_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -743,6 +745,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     submission.submissionstep_set.last().data["textFieldNotSensitive2"],
                     "This is also not sensitive",
                 )
+                self.assertTrue(submission._is_cleaned)
 
     def test_form_override_of_certain_incomplete_submissions_have_sensitive_data_removed(
         self,
@@ -896,6 +899,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     submission.submissionstep_set.last().data["textFieldNotSensitive2"],
                     "This is also not sensitive",
                 )
+                self.assertTrue(submission._is_cleaned)
 
     def test_certain_errored_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -1001,6 +1005,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
                 "This is also not sensitive",
             )
+            self.assertTrue(submission_to_be_anonymous._is_cleaned)
 
     def test_form_override_of_errored_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -1125,3 +1130,4 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
                 "This is also not sensitive",
             )
+            self.assertTrue(submission_to_be_anonymous._is_cleaned)

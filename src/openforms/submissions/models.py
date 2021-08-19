@@ -131,6 +131,14 @@ class Submission(models.Model):
         ),
     )
 
+    _is_cleaned = models.BooleanField(
+        _("is cleaned"),
+        default=False,
+        help_text=_(
+            "Indicates whether sensitive data (if there was any) has been removed from this submission."
+        ),
+    )
+
     class Meta:
         verbose_name = _("Submission")
         verbose_name_plural = _("Submissions")
@@ -152,6 +160,8 @@ class Submission(models.Model):
 
     @property
     def has_sensitive_information(self):
+        if self._is_cleaned:
+            return False
         if self.bsn or self.kvk or self.form.has_sensitive_information:
             return True
         return False
@@ -165,6 +175,7 @@ class Submission(models.Model):
                 if field in submission_step.data:
                     submission_step.data[field] = ""
                     submission_step.save()
+        self._is_cleaned = True
         self.save()
 
     def load_execution_state(self) -> SubmissionState:
