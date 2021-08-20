@@ -1,4 +1,5 @@
-import {get} from '../../../utils/fetch';
+import {get, post, put, apiDelete} from '../../../utils/fetch';
+import {LOGICS_ENDPOINT} from './constants';
 
 class PluginLoadingError extends Error {
     constructor(message, plugin, response) {
@@ -43,4 +44,45 @@ const loadPlugins = async (plugins=[]) => {
     return results;
 };
 
+const saveLogicRules = async (csrftoken, logicRules, logicRulesToDelete) => {
+    const createdRules = [];
+
+    for (const logicRule of logicRules) {
+        const isNewRule = !logicRule.uuid;
+        const createOrUpdate = isNewRule ? post : put;
+        const endPoint = isNewRule ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${logicRule.uuid}`;
+
+        var formLogicResponse = await createOrUpdate(
+            endPoint,
+            csrftoken,
+            logicRule
+        );
+
+        if (!formLogicResponse.ok) {
+            throw new Error('An error occurred while saving the form logic.');
+        }
+
+        var ruleUuid = formLogicResponse.data.uuid;
+        if (isNewRule) {
+            createdRules.push({
+                uuid: ruleUuid,
+                index: logicRules.indexOf(logicRule)
+            });
+        }
+    }
+
+    // Rules that were added but are not saved in the backend yet don't have a UUID.
+    const uuidsToDelete = logicRulesToDelete.map(uuid => Boolean(uuid));
+
+    for (const ruleUuid of uuidsToDelete) {
+        const response = await apiDelete(`${LOGICS_ENDPOINT}/${ruleUuid}`, csrftoken);
+        if (!response.ok) {
+            throw new Error('An error occurred while deleting logic rules.');
+        }
+    }
+
+    return createdRules;
+};
+
 export { loadPlugins, PluginLoadingError };
+export { saveLogicRules };

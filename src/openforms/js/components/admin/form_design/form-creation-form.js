@@ -25,7 +25,7 @@ import {
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, PluginLoadingError} from './data';
+import {loadPlugins, PluginLoadingError, saveLogicRules} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -130,10 +130,6 @@ function reducer(draft, action) {
                 }
                 case 'literals': {
                     draft.literals[fieldName].value = value;
-                    break;
-                }
-                case 'rules': {
-                    draft.rules = value;
                     break;
                 }
                 default: {
@@ -275,6 +271,18 @@ function reducer(draft, action) {
             draft.logicRules = updatedRules;
             break;
         }
+        case 'RULES_SAVED': {
+            // set the generated UUID from the backend for created rules
+            const createdRules = action.payload;
+            for (const rule of createdRules) {
+                const {uuid, index} = rule;
+                draft.logicRules[index].uuid = uuid;
+            }
+
+            // clear the state of rules to delete, as they have been deleted
+            draft.logicRulesToDelete = [];
+            break;
+        }
         /**
          * Misc
          */
@@ -369,7 +377,7 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) => {
+const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const intl = useIntl();
     const initialState = {
         ...initialFormState,
@@ -378,7 +386,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) =>
             uuid: formUuid,
         },
         newForm: !formUuid,
-        apiBaseUrl: apiBaseUrl,
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -494,56 +501,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) =>
             type: 'CHANGED_RULE',
             payload: {name, value, index},
         });
-    };
-
-    const onRuleDelete = (index) => {
-        dispatch({
-            type: 'DELETED_RULE',
-            payload: {index: index}
-        });
-    };
-
-    const onRuleAdd = () => {
-        dispatch({type: 'ADD_RULE'});
-    };
-
-    // TODO - move to data.js and refactor to parallelize requests
-    const submitRules = async () => {
-        const {logicRules, logicRulesToDelete} = state;
-
-        for (const logicRule of logicRules) {
-            const isNewRule = !logicRule.uuid;
-            const createOrUpdate = isNewRule ? post : put;
-            const endPoint = isNewRule ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${logicRule.uuid}`;
-
-            var formLogicResponse = await createOrUpdate(
-                endPoint,
-                csrftoken,
-                logicRule
-            );
-
-            if (!formLogicResponse.ok) {
-                throw new Error('An error occurred while saving the form logic.');
-            }
-
-            var ruleUuid = formLogicResponse.data.uuid;
-            if (isNewRule){
-                dispatch({
-                    type: 'CHANGED_RULE',
-                    payload: {name: 'uuid', value: ruleUuid, index: logicRules.indexOf(logicRule)},
-                });
-            }
-        }
-
-        // Rules that were added but are not saved in the backend yet don't have a UUID.
-        const uuidsToDelete = logicRulesToDelete.map(uuid => Boolean(uuid));
-
-        for (const ruleUuid of uuidsToDelete) {
-            const response = await apiDelete(`${LOGICS_ENDPOINT}/${ruleUuid}`, csrftoken);
-            if (!response.ok) {
-                throw new Error('An error occurred while deleting logic rules.');
-            }
-        }
     };
 
     const onSubmit = async () => {
@@ -675,7 +632,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) =>
 
         // Update/create logic rules
         try {
-            await submitRules();
+            const {logicRules, logicRulesToDelete} = state;
+            const createdRules = await saveLogicRules(csrftoken, logicRules, logicRulesToDelete);
+            dispatch({
+                type: 'RULES_SAVED',
+                payload: createdRules,
+            });
         } catch (e) {
             dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
             window.scrollTo(0, 0);
@@ -855,8 +817,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl, apiBaseUrl }) =>
                             logicRules={state.logicRules}
                             availableComponents={getFormComponents(state.formSteps)}
                             onChange={onRuleChange}
-                            onDelete={onRuleDelete}
-                            onAdd={onRuleAdd}
+                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                            onAdd={() => dispatch({type: 'ADD_RULE'})}
                         />
                     </Fieldset>
                 </TabPanel>

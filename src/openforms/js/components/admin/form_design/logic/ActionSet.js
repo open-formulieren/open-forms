@@ -83,27 +83,34 @@ const convertActionToJson = (action) => {
 };
 
 const parseJsonAction = (jsonAction) => {
-    let componentValueSource, componentLiteralValue, componentVariableValue;
-    if (jsonAction.action.value.var === undefined) {
-        componentValueSource = 'literal';
-        componentLiteralValue = jsonAction.action.value;
-        componentVariableValue = '';
-    } else {
-        if (!jsonAction.action.value.var.length) {
-            componentValueSource = '';
+    let componentValueSource = '',
+        componentLiteralValue,
+        componentVariableValue;
+
+    const { value } = jsonAction.action;
+
+    if (value != null) {
+        const actionVar = value?.var;
+        if (actionVar == null) {
+            componentValueSource = 'literal';
+            componentLiteralValue = value;
+            componentVariableValue = '';
         } else {
-            componentValueSource = 'component';
+            if (actionVar.length) {
+                componentValueSource = 'component';
+            }
+            componentLiteralValue = '';
+            componentVariableValue = actionVar;
         }
-        componentLiteralValue = '';
-        componentVariableValue = jsonAction.action.value.var;
     }
+
     if (!!jsonAction.action.source) componentValueSource = jsonAction.action.source;
 
     return {
         componentToChange: jsonAction.component,
         actionType: jsonAction.action.type,
         componentValueSource: componentValueSource,
-        componentProperty: jsonAction.action.property.value,
+        componentProperty: jsonAction.action.property?.value,
         componentLiteralValue: componentLiteralValue,
         componentVariableValue: componentVariableValue,
         componentPropertyValue: jsonAction.action.state,

@@ -357,6 +357,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
     # TODO: validate that the component is present on the form
     component = serializers.CharField(
         required=False,  # validated against the action.type
+        allow_blank=True,
         label=_("FormIO component"),
         help_text=_(
             "Key of the FormIO component that the action applies to. This field is "
@@ -377,7 +378,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             and not component
         ):
             # raises validation error
-            self.fields["component"].fail("required")
+            self.fields["component"].fail("blank")
 
         return data
 
