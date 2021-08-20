@@ -36,7 +36,8 @@ class FormAdminImportExportTests(WebTest):
         zf = ZipFile(BytesIO(response.content))
 
         self.assertEqual(
-            zf.namelist(), ["forms.json", "formSteps.json", "formDefinitions.json"]
+            zf.namelist(),
+            ["forms.json", "formSteps.json", "formDefinitions.json", "formLogic.json"],
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -82,6 +83,9 @@ class FormAdminImportExportTests(WebTest):
                 f.write(b"[]")
 
             with zf.open("formDefinitions.json", "w") as f:
+                f.write(b"[]")
+
+            with zf.open("formLogic.json", "w") as f:
                 f.write(b"[]")
 
         response = self.app.get(reverse("admin:forms_import"), user=self.user)
@@ -239,6 +243,9 @@ class FormAdminImportExportTests(WebTest):
                         ]
                     ).encode("utf-8")
                 )
+
+            with zf.open("formLogic.json", "w") as f:
+                f.write(b"[]")
 
         response = self.app.get(reverse("admin:forms_import"), user=self.user)
 

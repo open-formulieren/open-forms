@@ -6,3 +6,4 @@ export const AUTH_PLUGINS_ENDPOINT = '/api/v1/authentication/plugins';
 export const PREFILL_PLUGINS_ENDPOINT = '/api/v1/prefill/plugins';
 export const PAYMENT_PLUGINS_ENDPOINT = '/api/v1/payment/plugins';
 export const PRODUCTS_ENDPOINT = '/api/v1/products';
+export const LOGICS_ENDPOINT = '/api/v1/logic-rules';

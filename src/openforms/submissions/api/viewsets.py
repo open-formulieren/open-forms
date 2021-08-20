@@ -22,6 +22,7 @@ from openforms.registrations.tasks import (
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
+from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionReport, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..tokens import token_generator
@@ -33,6 +34,7 @@ from ..utils import (
 )
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
+    FormDataSerializer,
     SubmissionCompletionSerializer,
     SubmissionSerializer,
     SubmissionStepSerializer,
@@ -281,3 +283,25 @@ class SubmissionStepViewSet(
 
         status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
         return Response(serializer.data, status=status_code)
+
+    @extend_schema(
+        description=_("Apply/check form logic"),
+        request=FormDataSerializer,
+    )
+    @action(detail=True, methods=["post"], url_path="_check_logic")
+    def logic_check(self, request, *args, **kwargs):
+        submission_step = self.get_object()
+
+        form_data_serializer = FormDataSerializer(data=request.data)
+        form_data_serializer.is_valid(raise_exception=True)
+
+        data = form_data_serializer.validated_data["data"]
+        if data:
+            # TODO: probably we should use a recursive merge here, in the event that
+            # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
+            # with keys bar and baz.
+            merged_data = {**submission_step.submission.data, **data}
+            evaluate_form_logic(submission_step, merged_data)
+
+        serializer = self.get_serializer(instance=submission_step)
+        return Response(serializer.data)

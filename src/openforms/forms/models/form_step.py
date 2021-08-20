@@ -1,13 +1,12 @@
 import uuid
 
 from django.db import models
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 
 from openforms.utils.fields import StringUUIDField
 
-from ...config.models import GlobalConfiguration
 from ..constants import AvailabilityOptions
 from .utils import literal_getter
 

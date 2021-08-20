@@ -1,5 +1,6 @@
 import json
 import zipfile
+from typing import List
 from uuid import uuid4
 
 from django.conf import settings
@@ -12,14 +13,16 @@ from .api import serializers as api_serializers
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
+    FormLogicSerializer,
     FormStepSerializer,
 )
-from .models import Form, FormDefinition, FormStep
+from .models import Form, FormDefinition, FormLogic, FormStep
 
 IMPORT_ORDER = {
     "formDefinitions": FormDefinition,
     "forms": Form,
     "formSteps": FormStep,
+    "formLogic": FormLogic,
 }
 
 
@@ -47,6 +50,8 @@ def form_to_json(form_id: int) -> dict:
         pk__in=form_steps.values_list("form_definition", flat=True)
     )
 
+    form_logic = FormLogic.objects.filter(form=form)
+
     request = _get_mock_request()
 
     forms = [FormExportSerializer(instance=form, context={"request": request}).data]
@@ -58,11 +63,15 @@ def form_to_json(form_id: int) -> dict:
     form_steps = FormStepSerializer(
         instance=form_steps, many=True, context={"request": request}
     ).data
+    form_logic = FormLogicSerializer(
+        instance=form_logic, many=True, context={"request": request}
+    ).data
 
     resources = {
         "forms": json.dumps(forms),
         "formSteps": json.dumps(form_steps),
         "formDefinitions": json.dumps(form_definitions),
+        "formLogic": json.dumps(form_logic),
     }
 
     return resources
@@ -78,77 +87,108 @@ def export_form(form_id, archive_name=None, response=None):
 
 
 @transaction.atomic
-def import_form(import_file):
+def import_form(import_file, existing_form_instance=None):
+    import_data = {}
+    with zipfile.ZipFile(import_file, "r") as zip_file:
+        for resource, model in IMPORT_ORDER.items():
+            if f"{resource}.json" in zip_file.namelist():
+                import_data[resource] = zip_file.read(f"{resource}.json").decode()
+
+    return import_form_data(import_data, existing_form_instance)
+
+
+def import_form_data(
+    import_data: dict, existing_form_instance: Form = None
+) -> List[FormDefinition]:
     uuid_mapping = {}
 
     request = _get_mock_request()
     created_form_definitions = []
 
     created_form = None
-    with zipfile.ZipFile(import_file, "r") as zip_file:
-        for resource, model in IMPORT_ORDER.items():
-            if f"{resource}.json" in zip_file.namelist():
-                data = zip_file.read(f"{resource}.json").decode()
 
-                for old, new in uuid_mapping.items():
-                    data = data.replace(old, new)
+    for resource, model in IMPORT_ORDER.items():
+        data = import_data[resource]
+        for old, new in uuid_mapping.items():
+            data = data.replace(old, new)
 
-                if resource == "formDefinitions":
-                    serializer = api_serializers.FormDefinitionSerializer
+        if resource == "formDefinitions":
+            serializer = api_serializers.FormDefinitionSerializer
+        elif resource == "forms":
+            serializer = api_serializers.FormSerializer
+        elif resource == "formSteps":
+            serializer = api_serializers.FormStepSerializer
+        elif resource == "formLogic":
+            serializer = api_serializers.FormLogicSerializer
+        else:
+            raise ValidationError("Unknown resource")
+
+        for entry in json.loads(data):
+            if "uuid" in entry:
+                old_uuid = entry["uuid"]
+                entry["uuid"] = str(uuid4())
+
+            if resource == "forms" and not existing_form_instance:
+                entry["active"] = False
+
+            if resource == "formSteps" and existing_form_instance:
+                FormStep.objects.filter(form=existing_form_instance).delete()
+
+            if resource == "formLogic" and existing_form_instance:
+                FormLogic.objects.filter(form=existing_form_instance).delete()
+
+            if resource == "forms" and existing_form_instance:
+                deserialized = serializer(
+                    data=entry,
+                    context={"request": request, "form": created_form},
+                    instance=existing_form_instance,
+                )
+            else:
+                deserialized = serializer(
+                    data=entry,
+                    context={"request": request, "form": created_form},
+                )
+
+            try:
+                deserialized.is_valid(raise_exception=True)
+                deserialized.save()
                 if resource == "forms":
-                    serializer = api_serializers.FormSerializer
-                if resource == "formSteps":
-                    serializer = api_serializers.FormStepSerializer
+                    created_form = deserialized.instance
 
-                for entry in json.loads(data):
-                    if "uuid" in entry:
-                        old_uuid = entry["uuid"]
-                        entry["uuid"] = str(uuid4())
-                        uuid_mapping[old_uuid] = entry["uuid"]
+                # The FormSerializer/FormStepSerializer/FormLogicSerializer have the uuid as a read only field.
+                # So the mapping between the old uuid and the new needs to be done after the instance is saved.
+                if hasattr(deserialized.instance, "uuid") and "uuid" in entry:
+                    uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            except ValidationError as e:
+                if (
+                    resource == "formDefinitions"
+                    and "slug" in e.detail
+                    and e.detail["slug"][0].code == "unique"
+                ):
+                    existing_fd = FormDefinition.objects.get(slug=entry["slug"])
+                    existing_fd_hash = existing_fd.get_hash()
+                    imported_fd_hash = FormDefinition(
+                        configuration=entry["configuration"]
+                    ).get_hash()
 
-                    if resource == "forms":
-                        entry["active"] = False
+                    if existing_fd_hash == imported_fd_hash:
+                        # The form definition that is being imported
+                        # is identical to the existing form definition
+                        # with the same slug, use existing instead
+                        # of creating new definition
+                        uuid_mapping[old_uuid] = existing_fd.uuid
+                    else:
+                        # The imported form definition configuration
+                        # is different, create a new form definition
+                        entry.pop("url")
+                        entry.pop("uuid")
+                        new_fd = FormDefinition(**entry)
+                        new_fd.save()
+                        uuid_mapping[old_uuid] = str(new_fd.uuid)
 
-                    deserialized = serializer(
-                        data=entry,
-                        context={"request": request, "form": created_form},
-                    )
-
-                    try:
-                        deserialized.is_valid(raise_exception=True)
-                        deserialized.save()
-                        if resource == "forms":
-                            created_form = deserialized.instance
-                    except ValidationError as e:
-                        if (
-                            resource == "formDefinitions"
-                            and "slug" in e.detail
-                            and e.detail["slug"][0].code == "unique"
-                        ):
-                            existing_fd = FormDefinition.objects.get(slug=entry["slug"])
-                            existing_fd_hash = existing_fd.get_hash()
-                            imported_fd_hash = FormDefinition(
-                                configuration=entry["configuration"]
-                            ).get_hash()
-
-                            if existing_fd_hash == imported_fd_hash:
-                                # The form definition that is being imported
-                                # is identical to the existing form definition
-                                # with the same slug, use existing instead
-                                # of creating new definition
-                                uuid_mapping[old_uuid] = existing_fd.uuid
-                            else:
-                                # The imported form definition configuration
-                                # is different, create a new form definition
-                                entry.pop("url")
-                                entry.pop("uuid")
-                                new_fd = FormDefinition(**entry)
-                                new_fd.save()
-                                uuid_mapping[old_uuid] = str(new_fd.uuid)
-
-                                created_form_definitions.append(new_fd.slug)
-                        else:
-                            raise e
+                        created_form_definitions.append(new_fd.slug)
+                else:
+                    raise e
     return created_form_definitions
 
 

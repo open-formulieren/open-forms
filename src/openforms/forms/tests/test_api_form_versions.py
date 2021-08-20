@@ -9,19 +9,15 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
 
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ...submissions.tests.form_logic.factories import FormLogicFactory
+from ..models import FormDefinition, FormLogic, FormStep, FormVersion
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVersionFactory,
 )
-
-EXPORT_BLOB = {
-    "forms": '[{"uuid": "324cadce-a627-4e3f-b117-37ca232f16b2", "name": "Test Form 1", "login_required": false, "authentication_backends": ["digid-mock", "digid"], "product": null, "slug": "auth-plugins", "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2", "show_progress_indicator": true, "maintenance_mode": false, "active": true, "is_deleted": false}]',
-    "formSteps": '[{"index": 0, "slug": "test-step-1", "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/3fc61825-1d2d-4db7-a93b-85b21426dc64"}]',
-    "formDefinitions": '[{"url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8", "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8", "name": "Test Definition 1", "slug": "test-definition-1", "configuration": {"test": "1"}}]',
-}
+from .utils import EXPORT_BLOB
 
 
 class FormVersionSaveAPITests(APITestCase):
@@ -135,6 +131,7 @@ class FormVersionRestoreAPITests(APITestCase):
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
+        FormLogicFactory.create(form=form)
 
         version = FormVersion.objects.create(
             form=form,
@@ -165,11 +162,16 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(2, FormDefinition.objects.all().count())
 
         form_steps = FormStep.objects.filter(form=form)
+        form_logic = FormLogic.objects.filter(form=form)
 
         self.assertEqual(1, form_steps.count())
+        self.assertEqual(1, form_logic.count())
 
         restored_form_definition = form_steps.get().form_definition
 
         self.assertEqual("Test Definition 1", restored_form_definition.name)
         self.assertEqual("test-definition-1", restored_form_definition.slug)
-        self.assertEqual({"test": "1"}, restored_form_definition.configuration)
+        self.assertEqual(
+            {"components": [{"key": "test", "test": "1"}]},
+            restored_form_definition.configuration,
+        )

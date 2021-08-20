@@ -23,8 +23,9 @@ import {
     AUTH_PLUGINS_ENDPOINT,
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
+    LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, PluginLoadingError} from './data';
+import {loadPlugins, PluginLoadingError, saveLogicRules} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -32,6 +33,8 @@ import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
+import {FormLogic, EMPTY_RULE} from './FormLogic';
+import {getFormComponents} from './utils';
 
 const initialFormState = {
     form: {
@@ -75,6 +78,8 @@ const initialFormState = {
     availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
+    logicRules: [],
+    logicRulesToDelete: [],
 };
 
 const newStepData = {
@@ -95,6 +100,7 @@ const newStepData = {
     },
     isNew: true,
 };
+
 
 function reducer(draft, action) {
     switch (action.type) {
@@ -239,6 +245,45 @@ function reducer(draft, action) {
             break;
         }
         /**
+         * Form Logic rules actions
+         */
+        case 'ADD_RULE': {
+            const {form: {url}} = draft;
+            draft.logicRules.push({
+                ...EMPTY_RULE,
+                form: url
+            });
+            break;
+        }
+        case 'CHANGED_RULE': {
+            const {index, name, value} = action.payload;
+            draft.logicRules[index][name] = value;
+            break;
+        }
+        case 'DELETED_RULE': {
+            const {index} = action.payload;
+            const ruleUuid = draft.logicRules[index].uuid;
+            draft.logicRulesToDelete.push(ruleUuid);
+
+            // delete object from state
+            const updatedRules = [...draft.logicRules];
+            updatedRules.splice(index, 1);
+            draft.logicRules = updatedRules;
+            break;
+        }
+        case 'RULES_SAVED': {
+            // set the generated UUID from the backend for created rules
+            const createdRules = action.payload;
+            for (const rule of createdRules) {
+                const {uuid, index} = rule;
+                draft.logicRules[index].uuid = uuid;
+            }
+
+            // clear the state of rules to delete, as they have been deleted
+            draft.logicRulesToDelete = [];
+            break;
+        }
+        /**
          * Misc
          */
         case 'SUBMIT_STARTED': {
@@ -353,8 +398,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     ];
 
+    // only load rules if we're dealing with an existing form rather than when we're creating
+    // a new form.
+    if (formUuid) {
+        pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
+    }
+
     const {loading} = useAsync(async () => {
         const promises = [
+            // TODO: this is a bad function name, refactor
             loadPlugins(pluginsToLoad),
             getFormData(formUuid, dispatch),
         ];
@@ -385,6 +437,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             payload: {name, value},
         });
     };
+
     const onStepDelete = (index) => {
         dispatch({
             type: 'DELETE_STEP',
@@ -440,6 +493,14 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 payload: index+1,
             });
         }
+    };
+
+    const onRuleChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'CHANGED_RULE',
+            payload: {name, value, index},
+        });
     };
 
     const onSubmit = async () => {
@@ -569,6 +630,22 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             }
         }
 
+        // Update/create logic rules
+        try {
+            const {logicRules, logicRulesToDelete} = state;
+            const createdRules = await saveLogicRules(csrftoken, logicRules, logicRulesToDelete);
+            dispatch({
+                type: 'RULES_SAVED',
+                payload: createdRules,
+            });
+        } catch (e) {
+            console.error(e);
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            window.scrollTo(0, 0);
+            return;
+        }
+
+
         // Save this new version of the form in the "form version control"
         try {
             var versionResponse = await post(
@@ -637,6 +714,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     </Tab>
                     <Tab>
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                 </TabList>
 
@@ -730,6 +810,18 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backendOptions={state.form.paymentBackendOptions}
                         onChange={onFieldChange}
                     />
+                </TabPanel>
+
+                <TabPanel>
+                    <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
+                        <FormLogic
+                            logicRules={state.logicRules}
+                            availableComponents={getFormComponents(state.formSteps)}
+                            onChange={onRuleChange}
+                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                            onAdd={() => dispatch({type: 'ADD_RULE'})}
+                        />
+                    </Fieldset>
                 </TabPanel>
             </Tabs>
 

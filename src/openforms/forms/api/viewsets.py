@@ -6,6 +6,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
+from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
@@ -18,14 +19,16 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models import Form, FormDefinition, FormLogic, FormStep, FormVersion
 from ..utils import export_form, form_to_json, import_form
+from .filters import FormLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
+    FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVersionSerializer,
@@ -63,6 +66,25 @@ class FormStepViewSet(
         context = super().get_serializer_context()
         context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         return context
+
+
+@extend_schema_view(
+    list=extend_schema(summary=_("List logic rules")),
+    retrieve=extend_schema(summary=_("Retrieve logic rule details")),
+    create=extend_schema(summary=_("Create a logic rule")),
+    update=extend_schema(summary=_("Update all details of a logic rule")),
+    partial_update=extend_schema(summary=_("Update some details of a logic rule")),
+    destroy=extend_schema(summary=_("Delete a logic rule")),
+)
+class FormLogicViewSet(
+    viewsets.ModelViewSet,
+):
+    serializer_class = FormLogicSerializer
+    queryset = FormLogic.objects.all()
+    permission_classes = [permissions.IsAdminUser]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FormLogicFilter
+    lookup_field = "uuid"
 
 
 @extend_schema_view(

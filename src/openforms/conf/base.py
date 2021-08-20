@@ -135,6 +135,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
+    "drf_polymorphic",
     "digid_eherkenning",
     "solo",
     "tinymce",
@@ -144,6 +145,7 @@ INSTALLED_APPS = [
     "stuf.stuf_bg",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
+    "django_filters",
     # Project applications.
     "openforms.accounts",
     "openforms.config",

@@ -197,6 +197,10 @@ django-decorator-include==3.0
     #   -r requirements/ci.txt
 django-extensions==3.0.7
     # via -r requirements/dev.in
+django-filter==2.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-formtools==2.3
     # via
     #   -c requirements/ci.txt
@@ -289,6 +293,7 @@ django==2.2.24
     #   django-cors-headers
     #   django-debug-toolbar
     #   django-decorator-include
+    #   django-filter
     #   django-formtools
     #   django-jenkins
     #   django-otp
@@ -302,6 +307,7 @@ django==2.2.24
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
@@ -317,6 +323,7 @@ djangorestframework==3.12.4
     #   -r requirements/ci.txt
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
 docutils==0.16
     # via
@@ -327,6 +334,10 @@ docutils==0.16
     #   sphinx-rtd-theme
     #   sphinx-tabs
 drf-nested-routers==0.93.3
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -443,6 +454,10 @@ josepy==1.8.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc
+git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 jsonschema==3.2.0
     # via
     #   -c requirements/ci.txt
@@ -721,6 +736,7 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
+    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict

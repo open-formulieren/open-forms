@@ -18,6 +18,14 @@ Input.propTypes = {
 
 const TextInput = (props) => (<Input type="text" {...props} />);
 
+const TextArea = ({name, rows=5, cols=10, ...extraProps}) => {
+    const prefix = useContext(PrefixContext);
+    name = prefix ? `${prefix}-${name}` : name;
+    return (
+        <textarea name={name} rows={rows} cols={cols} {...extraProps} />
+    );
+};
+
 const NumberInput = (props) => (<Input type="number" {...props} />);
 
 const Checkbox = ({ name, label, helpText, ...extraProps }) => {
@@ -44,4 +52,4 @@ Checkbox.propTypes = {
     helpText: PropTypes.node,
 };
 
-export { Input, TextInput, NumberInput, Checkbox };
+export { Input, TextInput, TextArea, NumberInput, Checkbox };

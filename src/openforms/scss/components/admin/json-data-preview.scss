@@ -1,0 +1,15 @@
+@import '../../vars';
+
+.json-data-preview {
+  display: block;
+
+  &__toggle {
+    font-weight: normal;
+  }
+
+  &__preview {
+    display: block;
+    background: #eee;
+    padding: 0.5em;
+  }
+}

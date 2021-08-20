@@ -66,6 +66,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "data": {
                     "some": "example data",
                 },
+                "available": True,
+                "completed": True,
+                "optional": False,
+                "canSubmit": True,
             },
         )
         self.assertEqual(submission_step.data, {"some": "example data"})
@@ -142,6 +146,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "data": {
                     "modified": "data",
                 },
+                "available": True,
+                "completed": True,
+                "optional": False,
+                "canSubmit": True,
             },
         )
         submission_step.refresh_from_db()

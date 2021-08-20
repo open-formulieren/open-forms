@@ -88,6 +88,8 @@ django-cors-headers==3.7.0
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
+django-filter==2.4.0
+    # via -r requirements/base.in
 django-formtools==2.3
     # via maykin-django-two-factor-auth
 django-hijack-admin==2.1.10
@@ -131,6 +133,7 @@ django==2.2.24
     #   django-cookie-consent
     #   django-cors-headers
     #   django-decorator-include
+    #   django-filter
     #   django-formtools
     #   django-otp
     #   django-phonenumber-field
@@ -141,6 +144,7 @@ django==2.2.24
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
@@ -153,8 +157,11 @@ djangorestframework==3.12.4
     #   -r requirements/base.in
     #   drf-jsonschema
     #   drf-nested-routers
+    #   drf-polymorphic
     #   drf-spectacular
 drf-nested-routers==0.93.3
+    # via -r requirements/base.in
+git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
     # via -r requirements/base.in
 drf-spectacular==0.17.2
     # via -r requirements/base.in
@@ -188,6 +195,8 @@ isodate==0.6.0
     # via python3-saml
 josepy==1.8.0
     # via mozilla-django-oidc
+git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
+    # via -r requirements/base.in
 jsonschema==3.2.0
     # via
     #   drf-jsonschema
@@ -286,6 +295,7 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
+    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict

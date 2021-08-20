@@ -1,4 +1,9 @@
 {
+  "+8EnHh": {
+    "defaultMessage": "Are you sure you want to delete this action?",
+    "description": "Logic rule action deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this action?"
+  },
   "+hAGg7": {
     "defaultMessage": "Users will not be able to start the form if it is in maintenance mode.",
     "description": "Form maintenance mode field help text",
@@ -114,6 +119,11 @@
     "description": "Form fields tab title",
     "originalDefault": "Form"
   },
+  "CN9j+L": {
+    "defaultMessage": "Delete",
+    "description": "Delete icon title",
+    "originalDefault": "Delete"
+  },
   "CXKQZZ": {
     "defaultMessage": "Confirmation",
     "description": "Form confirmation options tab title",
@@ -133,6 +143,11 @@
     "defaultMessage": "Move down",
     "description": "Move down icon title",
     "originalDefault": "Move down"
+  },
+  "DxGKNm": {
+    "defaultMessage": "Logic",
+    "description": "Logic fieldset title",
+    "originalDefault": "Logic"
   },
   "EtAvFF": {
     "defaultMessage": "Duplicate this form",
@@ -239,6 +254,11 @@
     "description": "Form ID field label",
     "originalDefault": "ID"
   },
+  "TR5xSY": {
+    "defaultMessage": "Are you sure you want to delete this rule?",
+    "description": "Logic rule deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this rule?"
+  },
   "TXwGu1": {
     "defaultMessage": "Slug",
     "description": "Form slug field label",
@@ -249,10 +269,15 @@
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
-  "Y5A1Tn": {
-    "defaultMessage": "Delete",
-    "description": "Delete step icon title",
-    "originalDefault": "Delete"
+  "WdVKZw": {
+    "defaultMessage": "Logic",
+    "description": "Form logic tab title",
+    "originalDefault": "Logic"
+  },
+  "YzLSHY": {
+    "defaultMessage": "Are you sure you want to delete this?",
+    "description": "Default delete confirmation message",
+    "originalDefault": "Are you sure you want to delete this?"
   },
   "ZICfus": {
     "defaultMessage": "Previous text",
@@ -328,6 +353,11 @@
     "defaultMessage": "Steps and fields",
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
+  },
+  "naInSZ": {
+    "defaultMessage": "Toggle DSL preview",
+    "description": "JSON data preview visibility toggle",
+    "originalDefault": "Toggle DSL preview"
   },
   "ow5AAO": {
     "defaultMessage": "The form is invalid. Please correct the errors below.",

@@ -1,4 +1,5 @@
-import {get} from '../../../utils/fetch';
+import {get, post, put, apiDelete} from '../../../utils/fetch';
+import {LOGICS_ENDPOINT} from './constants';
 
 class PluginLoadingError extends Error {
     constructor(message, plugin, response) {
@@ -43,4 +44,57 @@ const loadPlugins = async (plugins=[]) => {
     return results;
 };
 
+const saveLogicRules = async (csrftoken, logicRules, logicRulesToDelete) => {
+    // updating and creating rules
+    const updateOrCreatePromises = Promise.all(
+        logicRules.map(rule => {
+            const shouldCreate = !rule.uuid;
+            const createOrUpdate = shouldCreate ? post : put;
+            const endPoint = shouldCreate ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${rule.uuid}`;
+            return createOrUpdate(endPoint, csrftoken, rule);
+        })
+    );
+    // deleting rules
+    const deletePromises = Promise.all(
+        logicRulesToDelete
+        .filter( uuid => !!uuid )
+        .map( uuid => {
+            return apiDelete(`${LOGICS_ENDPOINT}/${uuid}`, csrftoken);
+        })
+    );
+
+
+    let updateOrCreateResponses, deleteResponses;
+    try {
+        [updateOrCreateResponses, deleteResponses] = await Promise.all([updateOrCreatePromises, deletePromises]);
+    } catch(e) {
+        console.error(e);
+        return;
+    }
+
+    // process the created rules
+    const createdRules = [];
+    updateOrCreateResponses.forEach( (response, index) => {
+        if (!response.ok) {
+            // TODO: include more information -> which rule was it etc.
+            throw new Error('An error occurred while saving the form logic.');
+        }
+        const rule = logicRules[index];
+        if (!rule.uuid) {
+            const uuid = response.data.uuid;
+            createdRules.push({uuid, index});
+        }
+    });
+
+    // process the deleted rules
+    deleteResponses.forEach(response => {
+        if (!response.ok) {
+            throw new Error('An error occurred while deleting logic rules.');
+        }
+    });
+
+    return createdRules;
+};
+
 export { loadPlugins, PluginLoadingError };
+export { saveLogicRules };

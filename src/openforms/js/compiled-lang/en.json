@@ -1,4 +1,10 @@
 {
+  "+8EnHh": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this action?"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -181,6 +187,12 @@
       "value": "Form"
     }
   ],
+  "CN9j+L": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
   "CXKQZZ": [
     {
       "type": 0,
@@ -203,6 +215,12 @@
     {
       "type": 0,
       "value": "Move down"
+    }
+  ],
+  "DxGKNm": [
+    {
+      "type": 0,
+      "value": "Logic"
     }
   ],
   "EtAvFF": [
@@ -339,6 +357,12 @@
       "value": "ID"
     }
   ],
+  "TR5xSY": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this rule?"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
@@ -367,10 +391,16 @@
       "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
-  "Y5A1Tn": [
+  "WdVKZw": [
     {
       "type": 0,
-      "value": "Delete"
+      "value": "Logic"
+    }
+  ],
+  "YzLSHY": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this?"
     }
   ],
   "ZICfus": [
@@ -465,6 +495,12 @@
     {
       "type": 0,
       "value": "Steps and fields"
+    }
+  ],
+  "naInSZ": [
+    {
+      "type": 0,
+      "value": "Toggle DSL preview"
     }
   ],
   "ow5AAO": [

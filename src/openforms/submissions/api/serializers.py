@@ -14,6 +14,7 @@ from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 
 from ...forms.validators import validate_not_maintainance_mode
+from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from .fields import NestedRelatedField
 
@@ -175,6 +176,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         read_only=True,
     )
 
+    optional = serializers.BooleanField(
+        source="form_step.optional",
+        read_only=True,
+    )
+
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
     }
@@ -186,6 +192,10 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "slug",
             "form_step",
             "data",
+            "available",
+            "completed",
+            "optional",
+            "can_submit",
         )
 
         extra_kwargs = {
@@ -195,6 +205,23 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 "allow_null": True,
             },
         }
+
+    def to_representation(self, instance):
+        # invoke the configured form logic to dynamically update the Formio.js configuration
+        evaluate_form_logic(instance, instance.submission.data)
+        return super().to_representation(instance)
+
+
+class FormDataSerializer(serializers.Serializer):
+    data = serializers.JSONField(
+        label=_("form data"),
+        required=False,
+        help_text=_(
+            "The Formio.js submission data object. This will be merged with the full "
+            "form submission data, including data from other steps, to evaluate the "
+            "configured form logic."
+        ),
+    )
 
 
 class SubmissionSuspensionSerializer(serializers.ModelSerializer):

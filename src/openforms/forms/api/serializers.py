@@ -1,17 +1,22 @@
 from django.utils.translation import ugettext_lazy as _
 
+from drf_polymorphic.serializers import PolymorphicSerializer
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.prefill import apply_prefill
 from openforms.products.models import Product
+from openforms.utils.json_logic import JsonLogicTest
 
 from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
+from ..constants import LogicActionTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models.form import FormLogic
+from .validators import JsonLogicValidator
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -262,6 +267,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormStep
         fields = (
+            "uuid",
             "index",
             "slug",
             "configuration",
@@ -276,6 +282,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "form_definition": {
                 "view_name": "api:formdefinition-detail",
                 "lookup_field": "uuid",
+            },
+            "uuid": {
+                "read_only": True,
             },
         }
 
@@ -297,3 +306,163 @@ class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
             "uuid",
             "created",
         )
+
+
+class ComponentPropertySerializer(serializers.Serializer):
+    value = serializers.CharField(
+        label=_("property key"),
+        help_text=_(
+            "The Formio component property to alter, identified by `component.key`"
+        ),
+    )
+
+
+class LogicPropertyActionSerializer(serializers.Serializer):
+    property = ComponentPropertySerializer()
+    state = serializers.JSONField(
+        label=_("value of the property"),
+        help_text=_(
+            "Valid JSON determining the new value of the specified property. For example: `true` or `false`."
+        ),
+    )
+
+
+class LogicValueActionSerializer(serializers.Serializer):
+    value = serializers.JSONField(
+        label=_("Value"),
+        help_text=_(
+            "A valid JsonLogic expression describing the value. This may refer to "
+            "(other) Formio components."
+        ),
+        validators=[JsonLogicValidator()],
+    )
+
+
+class LogicActionPolymorphicSerializer(PolymorphicSerializer):
+    type = serializers.ChoiceField(
+        choices=LogicActionTypes,
+        label=_("Type"),
+        help_text=_("Action type for this particular action"),
+    )
+
+    discriminator_field = "type"
+    serializer_mapping = {
+        LogicActionTypes.disable_next: serializers.Serializer,
+        LogicActionTypes.property: LogicPropertyActionSerializer,
+        LogicActionTypes.value: LogicValueActionSerializer,
+    }
+
+
+class LogicComponentActionSerializer(serializers.Serializer):
+    # TODO: validate that the component is present on the form
+    component = serializers.CharField(
+        required=False,  # validated against the action.type
+        allow_blank=True,
+        label=_("FormIO component"),
+        help_text=_(
+            "Key of the FormIO component that the action applies to. This field is "
+            "optional if the action type is `{action_type}`, otherwise required."
+        ).format(action_type=LogicActionTypes.disable_next),
+    )
+    action = LogicActionPolymorphicSerializer()
+
+    def validate(self, data: dict) -> dict:
+        """
+        Check that the component is supplied depending on the action type.
+        """
+        action_type = data.get("action", {}).get("type")
+        component = data.get("component")
+        if (
+            action_type
+            and action_type in LogicActionTypes.requires_component
+            and not component
+        ):
+            # raises validation error
+            self.fields["component"].fail("blank")
+
+        return data
+
+
+class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
+    actions = LogicComponentActionSerializer(
+        many=True,
+        label=_("Actions"),
+        help_text=_(
+            "Actions triggered when the trigger expression evaluates to 'truthy'."
+        ),
+    )
+
+    class Meta:
+        model = FormLogic
+        fields = (
+            "uuid",
+            "form",
+            "json_logic_trigger",
+            "actions",
+        )
+        extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+            },
+            "form": {
+                "view_name": "api:form-detail",
+                "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
+            },
+            "json_logic_trigger": {
+                "help_text": _(
+                    "The trigger expression to determine if the actions should execute "
+                    "or not. Note that this must be a valid JsonLogic expression, and "
+                    "the first operand must be a reference to a component in the form."
+                ),
+                "validators": [JsonLogicValidator()],
+            },
+        }
+
+    def validate_json_logic_trigger(self, trigger_logic: dict) -> dict:
+        """
+        Validate that the first operand of the trigger is a reference to a component.
+        """
+        # at first instance, we don't support nested logic. Once we do, this will need
+        # to be adapted so that we only check primitives.
+        logic_test = JsonLogicTest.from_expression(trigger_logic)
+
+        first_operand = logic_test.values[0]
+        if (
+            not isinstance(first_operand, JsonLogicTest)
+            or first_operand.operator != "var"
+        ):
+            raise serializers.ValidationError(
+                _('The first operand must be a `{"var": "<componentKey>"}` expression.')
+            )
+
+        return trigger_logic
+
+    def validate(self, data: dict) -> dict:
+        # test that the component is present in the form definition
+        form = data.get("form") or self.instance.form
+        trigger_logic = (
+            data.get("json_logic_trigger") or self.instance.json_logic_trigger
+        )
+
+        if form and trigger_logic:
+            logic_test = JsonLogicTest.from_expression(trigger_logic)
+            first_operand = logic_test.values[0]
+            needle = first_operand.values[0]
+            for component in form.iter_components(recursive=True):
+                if (key := component.get("key")) and key == needle:
+                    break
+            # executes if the break was not hit
+            else:
+                raise serializers.ValidationError(
+                    {
+                        "json_logic_trigger": serializers.ValidationError(
+                            _(
+                                "The specified component is not present in the form definition"
+                            ),
+                            code="invalid",
+                        )
+                    }
+                )
+
+        return data

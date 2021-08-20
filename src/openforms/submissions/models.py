@@ -301,6 +301,8 @@ class SubmissionStep(models.Model):
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
+    _can_submit = True  # can be modified by logic evaluations/checks
+
     class Meta:
         verbose_name = _("Submission step")
         verbose_name_plural = _("Submission steps")
@@ -343,6 +345,10 @@ class SubmissionStep(models.Model):
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
         return bool(self.pk and self.data is not None)
+
+    @property
+    def can_submit(self) -> bool:
+        return self._can_submit
 
 
 class SubmissionReport(models.Model):

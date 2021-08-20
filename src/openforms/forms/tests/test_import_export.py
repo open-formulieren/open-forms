@@ -7,7 +7,8 @@ from django.test import TestCase, override_settings
 
 from openforms.products.tests.factories import ProductFactory
 
-from ..models import Form, FormDefinition, FormStep
+from ...submissions.tests.form_logic.factories import FormLogicFactory
+from ..models import Form, FormDefinition, FormLogic, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 PATH = os.path.abspath(os.path.dirname(__file__))
@@ -33,12 +34,29 @@ class ImportExportTests(TestCase):
         form_step.form = form
         form_step.form_definition = form_definition
         form_step.save()
+        FormLogicFactory.create(
+            form=form,
+            actions=[
+                {
+                    "component": "test_component",
+                    "action": {
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
 
         call_command("export", form.pk, self.filepath)
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
-                f.namelist(), ["forms.json", "formSteps.json", "formDefinitions.json"]
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                ],
             )
 
             forms = json.loads(f.read("forms.json"))
@@ -66,6 +84,14 @@ class ImportExportTests(TestCase):
                 form_steps[0]["configuration"], form_definition.configuration
             )
 
+            form_logic = json.loads(f.read("formLogic.json"))
+            self.assertEqual(1, len(form_logic))
+            self.assertEqual("test_component", form_logic[0]["actions"][0]["component"])
+            self.assertEqual(
+                {"type": "disable-next"}, form_logic[0]["actions"][0]["action"]
+            )
+            self.assertIn(str(form.uuid), form_logic[0]["form"])
+
     def test_import(self):
         product = ProductFactory.create()
         form = FormFactory.create(
@@ -73,11 +99,13 @@ class ImportExportTests(TestCase):
         )
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_logic = FormLogicFactory.create(form=form)
 
-        form_pk, form_definition_pk, form_step_pk = (
+        form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
             form_definition.pk,
             form_step.pk,
+            form_logic.pk,
         )
 
         call_command("export", form.pk, self.filepath)
@@ -125,6 +153,13 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
+        form_logics = FormLogic.objects.all()
+        self.assertEqual(2, form_logics.count())
+        form_logic_2 = form_logics.last()
+        self.assertNotEqual(form_logic_2.pk, form_logic_pk)
+        self.assertNotEqual(form_logic_2.uuid, str(form_logic.uuid))
+        self.assertEqual(form_logic_2.form.pk, forms.last().pk)
+
     def test_import_no_backends(self):
         """
         explicitly test import/export of Form without backends as they use custom fields/choices
@@ -148,11 +183,13 @@ class ImportExportTests(TestCase):
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_logic = FormLogicFactory.create(form=form)
 
-        form_pk, form_definition_pk, form_step_pk = (
+        form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
             form_definition.pk,
             form_step.pk,
+            form_logic.pk,
         )
 
         call_command("export", form.pk, self.filepath)
@@ -195,16 +232,24 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
+        form_logics = FormLogic.objects.all()
+        form_logic_2 = form_logics.last()
+        self.assertEqual(form_logics.count(), 1)
+        self.assertEqual(form_logic_2.pk, form_logic_pk)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
+
     def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_logic = FormLogicFactory.create(form=form)
 
-        form_pk, form_definition_pk, form_step_pk = (
+        form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
             form_definition.pk,
             form_step.pk,
+            form_logic.pk,
         )
 
         call_command("export", form.pk, self.filepath)
@@ -246,16 +291,24 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
+        form_logics = FormLogic.objects.all()
+        form_logic_2 = form_logics.last()
+        self.assertEqual(form_logics.count(), 2)
+        self.assertNotEqual(form_logic_2.pk, form_logic_pk)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
+
     def test_import_form_definition_slug_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_logic = FormLogicFactory.create(form=form)
 
-        form_pk, form_definition_pk, form_step_pk = (
+        form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
             form_definition.pk,
             form_step.pk,
+            form_logic.pk,
         )
 
         call_command("export", form.pk, self.filepath)
@@ -300,3 +353,9 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
+
+        form_logics = FormLogic.objects.all()
+        form_logic_2 = form_logics.last()
+        self.assertEqual(form_logics.count(), 2)
+        self.assertNotEqual(form_logic_2.pk, form_logic_pk)
+        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
