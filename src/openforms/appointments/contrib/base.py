@@ -148,6 +148,15 @@ class BasePlugin:
         """
         raise NotImplementedError()
 
+    def delete_appointment(self, identifier: str) -> bool:
+        """
+        Delete an appointment.
+
+        @param identifier: A `str` that represents the unique identification of the appointment.
+        @return: `True` if succesful, `False` otherwise.
+        """
+        raise NotImplementedError()
+
     # cosmetics
 
     def get_label(self) -> str:

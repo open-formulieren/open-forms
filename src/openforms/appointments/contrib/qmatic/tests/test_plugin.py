@@ -110,3 +110,14 @@ class PluginTests(TestCase):
 
             result = self.plugin.create_appointment([product], location, day, client)
             self.assertEqual(result, "fa67a4692bb4c3fab9a0fbcc5511ff346ba4")
+
+    def test_delete_appointment(self):
+        identifier = "fa67a4692bb4c3fab9a0fbcc5511ff346ba4"
+
+        with requests_mock.mock() as m:
+            m.delete(
+                f"{self.api_root}appointments/{identifier}",
+            )
+
+            result = self.plugin.delete_appointment(identifier)
+            self.assertTrue(result)

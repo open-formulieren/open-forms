@@ -34,14 +34,16 @@ class Plugin(BasePlugin):
         products. The `current_products` argument is ignored.
         """
         try:
-            result = self.client.get(f"{self.api_root}services")
+            response = self.client.get(f"{self.api_root}services")
+            if response.status_code != 200:
+                raise Exception(response.text)
         except Exception as e:
             logger.exception(e)
             return []
 
         return [
             AppointmentProduct(entry["publicId"], entry["name"])
-            for entry in result.json()["serviceList"]
+            for entry in response.json()["serviceList"]
         ]
 
     def get_locations(self, products: list) -> list:
@@ -51,14 +53,16 @@ class Plugin(BasePlugin):
         product_id = products[0].identifier
 
         try:
-            result = self.client.get(f"{self.api_root}services/{product_id}/branches")
+            response = self.client.get(f"{self.api_root}services/{product_id}/branches")
+            if response.status_code != 200:
+                raise Exception(response.text)
         except Exception as e:
             logger.exception(e)
             return []
 
         return [
             AppointmentLocation(entry["publicId"], entry["name"])
-            for entry in result.json()["branchList"]
+            for entry in response.json()["branchList"]
         ]
 
     def get_dates(
@@ -78,15 +82,17 @@ class Plugin(BasePlugin):
         product_id = products[0].identifier
 
         try:
-            result = self.client.get(
+            response = self.client.get(
                 f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates"
             )
+            if response.status_code != 200:
+                raise Exception(response.text)
         except Exception as e:
             logger.exception(e)
             return []
 
         return [
-            datetime.fromisoformat(entry).date() for entry in result.json()["dates"]
+            datetime.fromisoformat(entry).date() for entry in response.json()["dates"]
         ]
 
     def get_times(
@@ -98,16 +104,18 @@ class Plugin(BasePlugin):
         product_id = products[0].identifier
 
         try:
-            result = self.client.get(
+            response = self.client.get(
                 f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates/{day}/times"
             )
+            if response.status_code != 200:
+                raise Exception(response.text)
         except Exception as e:
             logger.exception(e)
             return []
 
         return [
             datetime.combine(day, time.fromisoformat(entry))
-            for entry in result.json()["times"]
+            for entry in response.json()["times"]
         ]
 
     def create_appointment(
@@ -143,12 +151,25 @@ class Plugin(BasePlugin):
         }
 
         try:
-            result = self.client.post(
+            response = self.client.post(
                 f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates/{start_at.date()}/times/{start_at.strftime('%H:%M')}/book",
                 data,
             )
-            return result.json()["publicId"]
+            if response.status_code not in [200, 201]:
+                raise Exception(response.text)
+            return response.json()["publicId"]
 
         except Exception as e:
             logger.exception(e)
             raise
+
+    def delete_appointment(self, identifier: str) -> bool:
+        try:
+            response = self.client.delete(f"{self.api_root}appointments/{identifier}")
+            if response.status_code != 200:
+                raise Exception(response.text)
+        except Exception as e:
+            logger.exception(e)
+            return False
+
+        return True

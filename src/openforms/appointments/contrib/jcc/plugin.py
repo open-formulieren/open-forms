@@ -165,3 +165,19 @@ class Plugin(BasePlugin):
         except Exception as e:
             logger.exception(e)
             raise
+
+    def delete_appointment(self, identifier: str) -> bool:
+        try:
+            result = self.client.service.deleteGovAppointment(appID=identifier)
+
+            if result == 0:
+                return True
+            else:
+                raise Exception(
+                    "Could not delete appointment (updateStatus=%s)",
+                    result,
+                )
+
+        except Exception as e:
+            logger.exception(e)
+            return False

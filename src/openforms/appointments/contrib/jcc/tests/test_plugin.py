@@ -130,3 +130,15 @@ class PluginTests(TestCase):
                 [product], location, datetime(2021, 8, 23, 8, 0, 0), client
             )
             self.assertEqual(result, "1234567890")
+
+    def test_delete_appointment(self):
+        identifier = "1234567890"
+
+        with requests_mock.mock() as m:
+            m.post(
+                "http://example.com/soap11",
+                text=mock_response("deleteGovAppointmentResponse.xml"),
+            )
+
+            result = self.plugin.delete_appointment(identifier)
+            self.assertTrue(result)
