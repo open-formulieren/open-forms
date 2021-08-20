@@ -212,11 +212,11 @@ const Trigger = ({ name, logic, onChange }) => {
     return (
         <div className="logic-trigger">
             <div className="logic-trigger__editor">
-                <div className="logic-trigger__node-row">
-                    <div className="logic-trigger__node">
+                <div className="dsl-editor">
+                    <div className="dsl-editor__node">
                         <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
                     </div>
-                    <div className="logic-trigger__node">
+                    <div className="dsl-editor__node">
                         <ComponentSelection
                             name="component"
                             value={triggerComponent}
@@ -225,7 +225,7 @@ const Trigger = ({ name, logic, onChange }) => {
                     </div>
                     { triggerComponent
                         ? (
-                            <div className="logic-trigger__node">
+                            <div className="dsl-editor__node">
                                 <OperatorSelection
                                     name="operator"
                                     selectedComponent={triggerComponent}
@@ -238,7 +238,7 @@ const Trigger = ({ name, logic, onChange }) => {
                     }
                     { (triggerComponent && operator)
                         ? (
-                            <div className="logic-trigger__node">
+                            <div className="dsl-editor__node">
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
@@ -249,7 +249,7 @@ const Trigger = ({ name, logic, onChange }) => {
                         : null
                     }
                     { (triggerComponent && operator && operandType)
-                        ? <div className="logic-trigger__node">{valueInput}</div>
+                        ? <div className="dsl-editor__node">{valueInput}</div>
                         : null
                     }
                 </div>

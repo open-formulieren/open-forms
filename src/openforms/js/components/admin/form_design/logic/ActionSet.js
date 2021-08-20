@@ -1,6 +1,7 @@
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import Action from './Action';
 import {useOnChanged} from './hooks';
@@ -139,19 +140,26 @@ const ActionSet = ({name, actions, onChange}) => {
         });
     };
 
+    const firstActionPrefix = (<FormattedMessage description="First logic action prefix" defaultMessage="Then" />);
+    const extraActionPrefix = (<FormattedMessage description="Extra logic action prefix" defaultMessage="and" />);
     return (
         <>
             {state.actions.map((action, index) => (
                 <Action
                     key={index}
+                    prefixText={index === 0 ? firstActionPrefix : extraActionPrefix }
                     action={action}
                     onChange={onActionChange.bind(null, index)}
                     onDelete={() => dispatch({type: 'ACTION_DELETED', payload: {index}})}
                 />
             ))}
-            <button type="button" onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
-                Add action
-            </button>
+            <div className="button-container button-container--padded">
+                <button type="button" className="button button--plain" onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
+                    <span className="addlink">
+                        <FormattedMessage description="Add form logic rule action button" defaultMessage="Add action" />
+                    </span>
+                </button>
+            </div>
         </>
     );
 };

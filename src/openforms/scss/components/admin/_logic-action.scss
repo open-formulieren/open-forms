@@ -1,0 +1,22 @@
+.logic-action {
+  display: flex;
+  padding: 1em;
+
+  &__actions {
+    padding: 0.5em;
+    padding-top: 3px;
+    margin-right: 1em;
+  }
+
+  &__action {
+    width: calc(100% - 1em);
+  }
+
+  &__data-preview {
+    min-width: 400px;
+    max-width: 800px;
+    width: 100%;
+    padding-top: 7px;
+    flex-grow: 0;
+  }
+}

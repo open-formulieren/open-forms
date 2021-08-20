@@ -12,7 +12,7 @@ import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 
 
-const Action = ({action, onChange, onDelete}) => {
+const Action = ({prefixText, action, onChange, onDelete}) => {
     const intl = useIntl();
     const allComponents = useContext(ComponentsContext);
     const componentType = allComponents[action.componentToChange]?.type;
@@ -29,8 +29,9 @@ const Action = ({action, onChange, onDelete}) => {
     };
 
     return (
-        <div className="action">
-            <div className="actions">
+        <div className="logic-action">
+
+            <div className="logic-action__actions">
                 <DeleteIcon
                     onConfirm={onDelete}
                     message={intl.formatMessage({
@@ -40,82 +41,122 @@ const Action = ({action, onChange, onDelete}) => {
                 />
             </div>
 
-            Then,
+            <div className="logic-action__action">
+                <div className="dsl-editor">
+                    <div className="dsl-editor__node">{prefixText}</div>
 
-            <div className="action-choices">
-            <Select
-                name="actionType"
-                choices={ACTION_TYPES}
-                allowBlank
-                onChange={onChange}
-                value={action.actionType}
-            />
-            &nbsp;
-            {
-                ACTIONS_WITH_OPTIONS.includes(action.actionType) ?
-                    <ComponentSelection
-                        name="componentToChange"
-                        value={action.componentToChange}
-                        onChange={onChange}
-                    /> : null
-            }
-            {
-                action.actionType === 'property' ?
-                    <>
+                    <div className="dsl-editor__node">
                         <Select
-                            name="componentProperty"
-                            choices={MODIFIABLE_PROPERTIES}
+                            name="actionType"
+                            choices={ACTION_TYPES}
                             allowBlank
                             onChange={onChange}
-                            value={action.componentProperty}
+                            value={action.actionType}
                         />
-                        &nbsp;
-                        <Select
-                            name="componentPropertyValue"
-                            choices={PROPERTY_VALUES}
-                            allowBlank
-                            onChange={onChange}
-                            value={action.componentPropertyValue}
-                        />
-                    </> : null
-            }
-            {
-                // Used to pick whether the new value of a component will be a literal or a value from another component
-                action.actionType === 'value' ?
-                    <OperandTypeSelection
-                        name="componentValueSource"
-                        onChange={onChange}
-                        operandType={action.componentValueSource}
-                    /> : null
-            }
-            {
-                action.actionType === 'value' && action.componentValueSource === 'literal' ?
-                    <LiteralValueInput
-                        name="componentLiteralValue"
-                        componentType={componentType}
-                        value={action.componentLiteralValue}
-                        onChange={onChange}
-                    /> : null
-            }
-            {
-                action.actionType === 'value' && action.componentValueSource === 'component' ?
-                    <ComponentSelection
-                        name="componentVariableValue"
-                        value={action.componentVariableValue}
-                        onChange={event => {
-                            const fakeEvent = {target: {name: 'componentLiteralValue', value: ''}};
-                            onChange(fakeEvent);
-                            onChange(event);
-                        }}
-                        filter={(comp) => (comp.type === componentType)}
-                    /> : null
-            }
+                    </div>
+
+                    {
+                        ACTIONS_WITH_OPTIONS.includes(action.actionType)
+                        ? (
+                            <div className="dsl-editor__node">
+                                <ComponentSelection
+                                    name="componentToChange"
+                                    value={action.componentToChange}
+                                    onChange={onChange}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+                    {
+                        action.actionType === 'property'
+                        ? (
+                            <>
+                                <div className="dsl-editor__node">
+                                    <Select
+                                        name="componentProperty"
+                                        choices={MODIFIABLE_PROPERTIES}
+                                        allowBlank
+                                        onChange={onChange}
+                                        value={action.componentProperty}
+                                    />
+                                </div>
+                                <div className="dsl-editor__node">
+                                    <Select
+                                        name="componentPropertyValue"
+                                        choices={PROPERTY_VALUES}
+                                        allowBlank
+                                        onChange={onChange}
+                                        value={action.componentPropertyValue}
+                                    />
+                                </div>
+                            </>
+                        )
+                        : null
+                    }
+                    {
+                        // Used to pick whether the new value of a component will be a literal or a value from another component
+                        action.actionType === 'value'
+                        ? (
+                            <div className="dsl-editor__node">
+                                <OperandTypeSelection
+                                    name="componentValueSource"
+                                    onChange={onChange}
+                                    operandType={action.componentValueSource}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+                    {
+                        action.actionType === 'value' && action.componentValueSource === 'literal'
+                        ? (
+                            <div className="dsl-editor__node">
+                                <LiteralValueInput
+                                    name="componentLiteralValue"
+                                    componentType={componentType}
+                                    value={action.componentLiteralValue}
+                                    onChange={onChange}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+                    {
+                        action.actionType === 'value' && action.componentValueSource === 'component'
+                        ? (
+                            <div className="dsl-editor__node">
+                                <ComponentSelection
+                                    name="componentVariableValue"
+                                    value={action.componentVariableValue}
+                                    onChange={event => {
+                                        const fakeEvent = {target: {name: 'componentLiteralValue', value: ''}};
+                                        onChange(fakeEvent);
+                                        onChange(event);
+                                    }}
+                                    filter={(comp) => (comp.type === componentType)}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+
+                </div>
             </div>
 
-            <DataPreview data={jsonAction} />
+            <div className="logic-action__data-preview">
+                <DataPreview data={jsonAction} />
+            </div>
 
         </div>
     );
+};
+
+Action.propTypes = {
+    prefixText: PropTypes.node.isRequired,
+    action: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
 export default Action;

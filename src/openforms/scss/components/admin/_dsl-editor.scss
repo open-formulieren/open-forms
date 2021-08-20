@@ -1,0 +1,11 @@
+.dsl-editor {
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  &__node {
+    margin-right: 0.5em;
+  }
+
+}

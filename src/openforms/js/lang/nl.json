@@ -120,6 +120,11 @@
     "description": "Form active field label",
     "originalDefault": "Active"
   },
+  "9dLOs2": {
+    "defaultMessage": "and",
+    "description": "Extra logic action prefix",
+    "originalDefault": "and"
+  },
   "AUADgz": {
     "defaultMessage": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.changeText help text",
@@ -375,6 +380,11 @@
     "description": "Form definition module title",
     "originalDefault": "Form definition"
   },
+  "k34Vke": {
+    "defaultMessage": "Then",
+    "description": "First logic action prefix",
+    "originalDefault": "Then"
+  },
   "lj9cSw": {
     "defaultMessage": "is greater than or equal to",
     "originalDefault": "is greater than or equal to"
@@ -397,6 +407,11 @@
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
     "description": "Generic error message",
     "originalDefault": "The form is invalid. Please correct the errors below."
+  },
+  "p8LSwF": {
+    "defaultMessage": "Add action",
+    "description": "Add form logic rule action button",
+    "originalDefault": "Add action"
   },
   "pd8iHF": {
     "defaultMessage": "Inzenden mogelijk",
