@@ -1,0 +1,54 @@
+{
+    "notifications": [],
+    "branchList": [
+        {
+            "addressState": "Zuid Holland",
+            "phone": "071-4023344",
+            "addressCity": "Katwijk",
+            "fullTimeZone": "Europe/Amsterdam",
+            "timeZone": "Europe/Amsterdam",
+            "addressLine2": "Lageweg 35",
+            "addressLine1": null,
+            "updated": 1475589234069,
+            "created": 1475589234008,
+            "email": null,
+            "name": "Branch 1",
+            "publicId": "f364d92b7fa07a48c4ecc862de30c47",
+            "longitude": 4.436127618214371,
+            "branchPrefix": null,
+            "latitude": 52.202012993593705,
+            "addressCountry": "Netherlands",
+            "custom": null,
+            "addressZip": "2222 AG"
+        },
+        {
+            "addressState": "Zuid Holland",
+            "phone": "010-1122334",
+            "addressCity": "Katwijk",
+            "fullTimeZone": "Europe/Amsterdam",
+            "timeZone": "Europe/Amsterdam",
+            "addressLine2": "Straat 1",
+            "addressLine1": null,
+            "updated": 1475589234069,
+            "created": 1475589234008,
+            "email": null,
+            "name": "Branch 2",
+            "publicId": "f7d0e4e45558de30c4772e4f1cc862",
+            "longitude": 4.436127618214371,
+            "branchPrefix": null,
+            "latitude": 52.202012993593705,
+            "addressCountry": "Netherlands",
+            "custom": null,
+            "addressZip": "2222 ZZ"
+        }
+    ],
+    "meta": {
+        "start": "",
+        "end": "",
+        "totalResults": 2,
+        "offset": null,
+        "limit": null,
+        "fields": "",
+        "arguments": {}
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "serviceList": [
+        {
+            "additionalCustomerDuration": 5,
+            "duration": 10,
+            "updated": 1478589864948,
+            "created": 1478589859992,
+            "name": "Service 01",
+            "publicId": "54b3482204c11bedc8b0a7acbffa308",
+            "active": true,
+            "publicEnabled": true,
+            "custom": null
+        },
+        {
+            "additionalCustomerDuration": 0,
+            "duration": 5,
+            "updated": 1475589228781,
+            "created": 1475589228595,
+            "name": "Service 02",
+            "publicId": "1e0c3d34acb5a4ad0133b2927959e896d",
+            "active": true,
+            "publicEnabled": true,
+            "custom": null
+        }
+    ],
+    "notifications": [],
+    "meta": {
+        "start": "",
+        "end": "",
+        "totalResults": 2,
+        "offset": null,
+        "limit": null,
+        "fields": "",
+        "arguments": {}
+    }
+}
