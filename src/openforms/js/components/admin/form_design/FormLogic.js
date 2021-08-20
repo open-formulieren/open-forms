@@ -11,7 +11,7 @@ import ActionSet from './logic/ActionSet';
 const EMPTY_RULE = {
     uuid: '',
     form: '',
-    jsonLogicTrigger: '',
+    jsonLogicTrigger: {},
     actions: [],
 };
 

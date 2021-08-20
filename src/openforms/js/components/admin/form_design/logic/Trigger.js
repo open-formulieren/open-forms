@@ -64,7 +64,7 @@ const TRIGGER_FIELD_ORDER = [
 const parseJsonLogic = (logic) => {
     // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
     // with our own organization.
-    if (!logic) return {};
+    if (!logic || !Object.keys(logic).length) return {};
 
     // reference for parsing: https://jsonlogic.com/
     // a rule is always in the format {"operator": ["values" ...]} -> so grab the operator
