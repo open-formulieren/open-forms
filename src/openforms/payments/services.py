@@ -7,18 +7,24 @@ from openforms.submissions.models import Submission
 def update_submission_payment_registration(submission: Submission):
     # TODO wrap in celery task
     # TODO logging
-    if submission.registration_status != RegistrationStatuses.success:
+
+    try:
+        plugin = register[submission.form.registration_backend]
+    except KeyError:
         return
+
+    if plugin.register_before_payment:
+        if submission.registration_status != RegistrationStatuses.success:
+            return
+    else:
+        if submission.registration_status != RegistrationStatuses.pending:
+            return
+
     if not submission.registration_id:
         return
     if not submission.payment_required:
         return
     if submission.payment_registered:
-        return
-
-    try:
-        plugin = register[submission.form.registration_backend]
-    except KeyError:
         return
 
     # TODO support partial payments

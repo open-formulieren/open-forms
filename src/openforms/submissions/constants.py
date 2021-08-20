@@ -13,3 +13,4 @@ class RegistrationStatuses(DjangoChoices):
     in_progress = ChoiceItem("in_progress", _("In Progress (not registered yet)"))
     success = ChoiceItem("success", _("Success"))
     failed = ChoiceItem("failed", _("Failed"))
+    # waiting = ChoiceItem("waiting", _("Waiting (for payment)"))

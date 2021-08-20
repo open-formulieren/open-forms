@@ -35,6 +35,11 @@ class BasePlugin:
     specified serializer class.
     """
 
+    register_before_payment = False
+    """
+    Determine if we register the submission before payment is complete and later update it with update_payment_status()
+    """
+
     def __init__(self, identifier: str):
         self.identifier = identifier
 

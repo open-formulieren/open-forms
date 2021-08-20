@@ -14,6 +14,7 @@ from openforms.submissions.models import (
 )
 
 from ..celery import app
+from ..payments.services import update_submission_payment_registration
 from ..submissions.attachments import (
     cleanup_submission_temporary_uploaded_files,
     cleanup_unclaimed_temporary_uploaded_files,
@@ -141,3 +142,41 @@ def cleanup_unclaimed_temporary_files() -> None:
 def resize_submission_attachment(attachment_id: int, size: Tuple[int, int]) -> None:
     attachment = SubmissionFileAttachment.objects.get(id=attachment_id)
     resize_attachment(attachment, size)
+
+
+@app.task()
+def update_payment_registration(submission_id) -> None:
+    submission = Submission.objects.get(id=submission_id)
+    update_submission_payment_registration(submission)
+
+
+# @app.task()
+# def step_processing(submission_id) -> None:
+#     submission = Submission.objects.get(id=submission_id)
+#     form = submission.form
+#     backend = form.registration_backend
+#     registry = form._meta.get_field("registration_backend").registry
+#
+#     if not backend:
+#         logger.info("Form %s has no registration plugin configured, aborting", form)
+#         submission.registration_status = RegistrationStatuses.success
+#         submission.save(update_fields=["registration_status"])
+#         return
+#
+#     logger.debug("Looking up plugin with unique identifier '%s'", backend)
+#     plugin = registry[backend]
+#
+#     waiting_for_payment = submission.payment_required and not submission.payment_user_has_paid
+#     is_registered = bool(submission.registration_status == RegistrationStatuses.success)
+#
+#     if (plugin.register_before_payment or not waiting_for_payment) and not is_registered:
+#         register_submission.apply_async(args=[submission_id])
+#         return
+#
+#     if waiting_for_payment:
+#         # check timer to resend
+#         return
+#
+#     if not plugin.register_before_payment:
+#         pass
+

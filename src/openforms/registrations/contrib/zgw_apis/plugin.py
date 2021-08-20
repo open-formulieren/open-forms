@@ -21,7 +21,6 @@ from openforms.registrations.contrib.zgw_apis.service import (
     set_zaak_payment,
 )
 from openforms.registrations.registry import register
-from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.validators import validate_rsin
@@ -53,6 +52,7 @@ class ZaakOptionsSerializer(serializers.Serializer):
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
+    register_before_payment = True
 
     rol_mapping = {
         "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,

@@ -20,6 +20,7 @@ from .config import EmailOptionsSerializer
 class EmailRegistration(BasePlugin):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
+    register_before_payment = False
 
     def register_submission(
         self, submission: Submission, options: dict
