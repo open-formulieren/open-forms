@@ -1,7 +1,5 @@
 import logging
-from collections import OrderedDict
 from datetime import date, datetime, timedelta
-from typing import OrderedDict
 
 from zeep import Client
 
@@ -115,26 +113,6 @@ class Plugin(BasePlugin):
         except Exception as e:
             logger.exception(e)
             return []
-
-    def get_calendar(
-        self,
-        products: list,
-        location: AppointmentLocation,
-        start_at: date = None,
-        end_at: date = None,
-    ) -> OrderedDict:
-        days = self.get_dates(products, location, start_at, end_at)
-
-        result = OrderedDict()
-
-        try:
-            for day in days:
-                times = self.get_times(products, location, day)
-                result[day] = times
-        except Exception as e:
-            logger.exception(e)
-        finally:
-            return result
 
     def create_appointment(
         self,

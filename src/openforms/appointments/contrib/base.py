@@ -1,7 +1,7 @@
+import logging
 from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +12,9 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass()
@@ -109,7 +112,9 @@ class BasePlugin:
         """
         Retrieve a calendar.
 
-        WARNING: Depending on the implementation, this might pose a performance issue.
+        WARNING: This default implementation has significant performance issues.
+        You can override this function with a more efficient implementation if
+        the service supports it.
 
         @param products: List of `AppointmentProduct`, as obtained from `get_available_products`.
         @param location: An `AppointmentLocation`, as obtained from `get_locations`.
@@ -117,7 +122,18 @@ class BasePlugin:
         @param end_at: The end `date` to retrieve available dates for. Default: 14 days after `start_date`.
         @return: `OrderedDict` where each key represents a date and the values is a list of times.
         """
-        raise NotImplementedError()
+        days = self.get_dates(products, location, start_at, end_at)
+
+        result = OrderedDict()
+
+        try:
+            for day in days:
+                times = self.get_times(products, location, day)
+                result[day] = times
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            return result
 
     def create_appointment(
         self, products: list, location: AppointmentLocation, start_at: datetime = None
