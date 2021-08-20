@@ -118,4 +118,4 @@ const Action = ({action, onChange, onDelete}) => {
     );
 };
 
-export {Action};
+export default Action;

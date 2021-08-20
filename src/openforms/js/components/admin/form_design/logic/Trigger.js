@@ -1,7 +1,5 @@
-import isEqual from 'lodash/isEqual';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import usePrevious from 'react-use/esm/usePrevious';
 import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
@@ -14,6 +12,7 @@ import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
+import {useOnChanged} from './hooks';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -203,22 +202,11 @@ const Trigger = ({ name, logic, onChange }) => {
         ],
     };
 
-    const previousLogicFromState = usePrevious(jsonLogicFromState);
-
     // whenever we get a change in the jsonLogic definition, relay that back to the
     // parent component
-    useEffect(
-        () => {
-            // if nothing changed, do not fire an update
-            if (previousLogicFromState && isEqual(previousLogicFromState, jsonLogicFromState)) return;
-            onChange({
-                target: {
-                    name: name,
-                    value: jsonLogicFromState,
-                }
-            });
-        },
-        [jsonLogicFromState]
+    useOnChanged(
+        jsonLogicFromState,
+        () => onChange({target: {name, value: jsonLogicFromState}})
     );
 
     return (
