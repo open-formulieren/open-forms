@@ -45,41 +45,53 @@ const loadPlugins = async (plugins=[]) => {
 };
 
 const saveLogicRules = async (csrftoken, logicRules, logicRulesToDelete) => {
-    const createdRules = [];
+    // updating and creating rules
+    const updateOrCreatePromises = Promise.all(
+        logicRules.map(rule => {
+            const shouldCreate = !rule.uuid;
+            const createOrUpdate = shouldCreate ? post : put;
+            const endPoint = shouldCreate ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${rule.uuid}`;
+            return createOrUpdate(endPoint, csrftoken, rule);
+        })
+    );
+    // deleting rules
+    const deletePromises = Promise.all(
+        logicRulesToDelete
+        .filter( uuid => !!uuid )
+        .map( uuid => {
+            return apiDelete(`${LOGICS_ENDPOINT}/${uuid}`, csrftoken);
+        })
+    );
 
-    for (const logicRule of logicRules) {
-        const isNewRule = !logicRule.uuid;
-        const createOrUpdate = isNewRule ? post : put;
-        const endPoint = isNewRule ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${logicRule.uuid}`;
 
-        var formLogicResponse = await createOrUpdate(
-            endPoint,
-            csrftoken,
-            logicRule
-        );
-
-        if (!formLogicResponse.ok) {
-            throw new Error('An error occurred while saving the form logic.');
-        }
-
-        var ruleUuid = formLogicResponse.data.uuid;
-        if (isNewRule) {
-            createdRules.push({
-                uuid: ruleUuid,
-                index: logicRules.indexOf(logicRule)
-            });
-        }
+    let updateOrCreateResponses, deleteResponses;
+    try {
+        [updateOrCreateResponses, deleteResponses] = await Promise.all([updateOrCreatePromises, deletePromises]);
+    } catch(e) {
+        console.error(e);
+        return;
     }
 
-    // Rules that were added but are not saved in the backend yet don't have a UUID.
-    const uuidsToDelete = logicRulesToDelete.map(uuid => Boolean(uuid));
+    // process the created rules
+    const createdRules = [];
+    updateOrCreateResponses.forEach( (response, index) => {
+        if (!response.ok) {
+            // TODO: include more information -> which rule was it etc.
+            throw new Error('An error occurred while saving the form logic.');
+        }
+        const rule = logicRules[index];
+        if (!rule.uuid) {
+            const uuid = response.data.uuid;
+            createdRules.push({uuid, index});
+        }
+    });
 
-    for (const ruleUuid of uuidsToDelete) {
-        const response = await apiDelete(`${LOGICS_ENDPOINT}/${ruleUuid}`, csrftoken);
+    // process the deleted rules
+    deleteResponses.forEach(response => {
         if (!response.ok) {
             throw new Error('An error occurred while deleting logic rules.');
         }
-    }
+    });
 
     return createdRules;
 };

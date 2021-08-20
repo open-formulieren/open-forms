@@ -639,6 +639,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 payload: createdRules,
             });
         } catch (e) {
+            console.error(e);
             dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
             window.scrollTo(0, 0);
             return;
