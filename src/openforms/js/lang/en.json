@@ -9,6 +9,10 @@
     "description": "Form maintenance mode field help text",
     "originalDefault": "Users will not be able to start the form if it is in maintenance mode."
   },
+  "0CJ6q4": {
+    "defaultMessage": "is equal to",
+    "originalDefault": "is equal to"
+  },
   "0RXE97": {
     "defaultMessage": "Literals",
     "description": "Form literals tab title",
@@ -24,6 +28,10 @@
     "description": "Confirmation template label",
     "originalDefault": "Submission page content"
   },
+  "1Y4Vn4": {
+    "defaultMessage": "is not equal to",
+    "originalDefault": "is not equal to"
+  },
   "294MCM": {
     "defaultMessage": "Is deleted",
     "description": "Form deleted field label",
@@ -33,6 +41,10 @@
     "defaultMessage": "Registration backend options",
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
+  },
+  "3SK7Qq": {
+    "defaultMessage": "is less than or equal to",
+    "originalDefault": "is less than or equal to"
   },
   "3W3Px9": {
     "defaultMessage": "Add another",
@@ -58,6 +70,10 @@
     "defaultMessage": "This form step requires a login, but no authentication backend has been specified.",
     "description": "No authentication backend selected warning.",
     "originalDefault": "This form step requires a login, but no authentication backend has been specified."
+  },
+  "6ISjoQ": {
+    "defaultMessage": "in",
+    "originalDefault": "in"
   },
   "6PIG4q": {
     "defaultMessage": "Authentication",
@@ -324,6 +340,11 @@
     "description": "literals.beginText form label",
     "originalDefault": "Begin text"
   },
+  "ftzF/n": {
+    "defaultMessage": "When",
+    "description": "Logic trigger prefix",
+    "originalDefault": "When"
+  },
   "gGNIdG": {
     "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
     "description": "literals.previousText help text",
@@ -349,6 +370,10 @@
     "description": "Form definition module title",
     "originalDefault": "Form definition"
   },
+  "lj9cSw": {
+    "defaultMessage": "is greater than or equal to",
+    "originalDefault": "is greater than or equal to"
+  },
   "mOjKcm": {
     "defaultMessage": "Steps and fields",
     "description": "Form design tab title",
@@ -358,6 +383,10 @@
     "defaultMessage": "Toggle DSL preview",
     "description": "JSON data preview visibility toggle",
     "originalDefault": "Toggle DSL preview"
+  },
+  "o2ureI": {
+    "defaultMessage": "is less than",
+    "originalDefault": "is less than"
   },
   "ow5AAO": {
     "defaultMessage": "The form is invalid. Please correct the errors below.",
@@ -438,5 +467,9 @@
     "defaultMessage": "Select definition",
     "description": "select definition icon title",
     "originalDefault": "Select definition"
+  },
+  "zIBfw+": {
+    "defaultMessage": "is greater than",
+    "originalDefault": "is greater than"
   }
 }

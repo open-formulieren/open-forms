@@ -11,6 +11,12 @@
       "value": "Users will not be able to start the form if it is in maintenance mode."
     }
   ],
+  "0CJ6q4": [
+    {
+      "type": 0,
+      "value": "is equal to"
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -37,6 +43,12 @@
       "value": "Submission page content"
     }
   ],
+  "1Y4Vn4": [
+    {
+      "type": 0,
+      "value": "is not equal to"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -47,6 +59,12 @@
     {
       "type": 0,
       "value": "Registration backend options"
+    }
+  ],
+  "3SK7Qq": [
+    {
+      "type": 0,
+      "value": "is less than or equal to"
     }
   ],
   "3W3Px9": [
@@ -77,6 +95,12 @@
     {
       "type": 0,
       "value": "This form step requires a login, but no authentication backend has been specified."
+    }
+  ],
+  "6ISjoQ": [
+    {
+      "type": 0,
+      "value": "in"
     }
   ],
   "6PIG4q": [
@@ -457,6 +481,12 @@
       "value": "Begin text"
     }
   ],
+  "ftzF/n": [
+    {
+      "type": 0,
+      "value": "When"
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -491,6 +521,12 @@
       "value": "Form definition"
     }
   ],
+  "lj9cSw": [
+    {
+      "type": 0,
+      "value": "is greater than or equal to"
+    }
+  ],
   "mOjKcm": [
     {
       "type": 0,
@@ -501,6 +537,12 @@
     {
       "type": 0,
       "value": "Toggle DSL preview"
+    }
+  ],
+  "o2ureI": [
+    {
+      "type": 0,
+      "value": "is less than"
     }
   ],
   "ow5AAO": [
@@ -597,6 +639,12 @@
     {
       "type": 0,
       "value": "Select definition"
+    }
+  ],
+  "zIBfw+": [
+    {
+      "type": 0,
+      "value": "is greater than"
     }
   ]
 }

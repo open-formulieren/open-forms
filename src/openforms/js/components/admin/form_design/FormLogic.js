@@ -53,10 +53,13 @@ const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
     });
     return (
         <div className="logic-rule">
-            <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
-            <ActionSet name="actions" actions={actions} onChange={onChange} />
-            <div className="actions">
+            <div className="logic-rule__actions">
                 <DeleteIcon onConfirm={onDelete} message={deleteConfirmMessage} />
+            </div>
+
+            <div className="logic-rule__rule">
+                <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
+                <ActionSet name="actions" actions={actions} onChange={onChange} />
             </div>
         </div>
     );

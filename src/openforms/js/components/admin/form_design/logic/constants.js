@@ -1,16 +1,18 @@
+import {defineMessage} from 'react-intl';
+
 // TODO: these are the built in json logic operators, but it's possible to define
 // custom operators. See https://jsonlogic.com/operations.html
 // We start with a minimal supported set based on the user stories (and common sense).
 // The data structure is a mapping of the actual json logic operator as key and the
 // human readable label as value.
 const OPERATORS = {
-    '==': 'is equal to',
-    '!=': 'is not equal to',
-    '>': 'is greater than',
-    '>=': 'is greater than or equal to',
-    '<': 'is less than',
-    '<=': 'is less than or equal to',
-    'in': 'in', // array or string (!)
+    '==': defineMessage({'description': '== operator description', defaultMessage: 'is equal to'}),
+    '!=': defineMessage({'description': '!= operator description', defaultMessage: 'is not equal to'}),
+    '>': defineMessage({'description': '> operator description', defaultMessage: 'is greater than'}),
+    '>=': defineMessage({'description': '>= operator description', defaultMessage: 'is greater than or equal to'}),
+    '<': defineMessage({'description': '< operator description', defaultMessage: 'is less than'}),
+    '<=': defineMessage({'description': '<= operator description', defaultMessage: 'is less than or equal to'}),
+    'in': defineMessage({'description': 'in operator description', defaultMessage: 'in'}), // array or string (!}
 };
 
 

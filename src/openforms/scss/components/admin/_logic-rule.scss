@@ -1,0 +1,13 @@
+.logic-rule {
+  display: flex;
+
+  &__actions {
+    padding: 0.5em;
+    padding-top: calc(1em + 3px);
+    margin-right: 1em;
+  }
+
+  &__rule {
+    width: 100%;
+  }
+}

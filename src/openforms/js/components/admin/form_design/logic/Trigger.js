@@ -1,7 +1,8 @@
 import isEqual from 'lodash/isEqual';
 import React, {useContext, useEffect} from 'react';
-import usePrevious from 'react-use/esm/usePrevious';
 import PropTypes from 'prop-types';
+import usePrevious from 'react-use/esm/usePrevious';
+import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
 
@@ -16,13 +17,18 @@ import DataPreview from './DataPreview';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
+    const intl = useIntl();
     // check the component type, which is used to filter the possible choices
     const allComponents = useContext(ComponentsContext);
     const componentType = allComponents[selectedComponent]?.type;
 
     // only keep the relevant choices
     const allowedOperators = COMPONENT_TYPE_TO_OPERATORS[componentType] || [];
-    const choices = Object.entries(OPERATORS).filter(([operator]) => allowedOperators.includes(operator));
+    const choices = Object
+        .entries(OPERATORS)
+        .filter(([operator]) => allowedOperators.includes(operator))
+        .map( ([operator, msg]) => [operator, intl.formatMessage(msg)] )
+    ;
 
     if (!choices.length) {
         return null;
@@ -216,45 +222,54 @@ const Trigger = ({ name, logic, onChange }) => {
     );
 
     return (
-        <div style={{padding: '1em'}}>
-
-            When
-
-            <div>
-                <ComponentSelection
-                    name="component"
-                    value={triggerComponent}
-                    onChange={onTriggerChange}
-                />
-                &nbsp;
-                {
-                    triggerComponent ? (
-                        <OperatorSelection
-                            name="operator"
-                            selectedComponent={triggerComponent}
-                            operator={operator}
+        <div className="logic-trigger">
+            <div className="logic-trigger__editor">
+                <div className="logic-trigger__node-row">
+                    <div className="logic-trigger__node">
+                        <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
+                    </div>
+                    <div className="logic-trigger__node">
+                        <ComponentSelection
+                            name="component"
+                            value={triggerComponent}
                             onChange={onTriggerChange}
                         />
-                    )
-                    : null
-                }
-                &nbsp;
-                { (triggerComponent && operator)
-                    ? (<OperandTypeSelection
-                        name="operandType"
-                        operandType={operandType}
-                        onChange={onTriggerChange}
-                    /> )
-                    : null
-                }
-                &nbsp;
-                { (triggerComponent && operator && operandType)
-                    ? valueInput
-                    : null
-                }
+                    </div>
+                    { triggerComponent
+                        ? (
+                            <div className="logic-trigger__node">
+                                <OperatorSelection
+                                    name="operator"
+                                    selectedComponent={triggerComponent}
+                                    operator={operator}
+                                    onChange={onTriggerChange}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+                    { (triggerComponent && operator)
+                        ? (
+                            <div className="logic-trigger__node">
+                                <OperandTypeSelection
+                                    name="operandType"
+                                    operandType={operandType}
+                                    onChange={onTriggerChange}
+                                />
+                            </div>
+                        )
+                        : null
+                    }
+                    { (triggerComponent && operator && operandType)
+                        ? <div className="logic-trigger__node">{valueInput}</div>
+                        : null
+                    }
+                </div>
             </div>
 
-            <DataPreview data={jsonLogicFromState} />
+            <div className="logic-trigger__data-preview">
+                <DataPreview data={jsonLogicFromState} />
+            </div>
 
         </div>
     );

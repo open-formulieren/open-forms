@@ -11,6 +11,12 @@
       "value": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is"
     }
   ],
+  "0CJ6q4": [
+    {
+      "type": 0,
+      "value": "is equal to"
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -37,6 +43,12 @@
       "value": "Inhoud bevestigingspagina"
     }
   ],
+  "1Y4Vn4": [
+    {
+      "type": 0,
+      "value": "is not equal to"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -47,6 +59,12 @@
     {
       "type": 0,
       "value": "Opties"
+    }
+  ],
+  "3SK7Qq": [
+    {
+      "type": 0,
+      "value": "is less than or equal to"
     }
   ],
   "3W3Px9": [
@@ -77,6 +95,12 @@
     {
       "type": 0,
       "value": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier."
+    }
+  ],
+  "6ISjoQ": [
+    {
+      "type": 0,
+      "value": "in"
     }
   ],
   "6PIG4q": [
@@ -461,6 +485,12 @@
       "value": "'Start' tekst"
     }
   ],
+  "ftzF/n": [
+    {
+      "type": 0,
+      "value": "When"
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -495,6 +525,12 @@
       "value": "(Herbruikbare) stapgegevens"
     }
   ],
+  "lj9cSw": [
+    {
+      "type": 0,
+      "value": "is greater than or equal to"
+    }
+  ],
   "mOjKcm": [
     {
       "type": 0,
@@ -505,6 +541,12 @@
     {
       "type": 0,
       "value": "Toggle DSL preview"
+    }
+  ],
+  "o2ureI": [
+    {
+      "type": 0,
+      "value": "is less than"
     }
   ],
   "ow5AAO": [
@@ -601,6 +643,12 @@
     {
       "type": 0,
       "value": "Formulierdefinitie selecteren"
+    }
+  ],
+  "zIBfw+": [
+    {
+      "type": 0,
+      "value": "is greater than"
     }
   ]
 }
