@@ -4,7 +4,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Any, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
@@ -220,9 +220,11 @@ class Submission(models.Model):
         ):
             components = step.form_step.form_definition.configuration["components"]
             flattened_components = get_flattened_components(components)
-            component_key_to_type = dict()
-            for component in flattened_components:
-                component_key_to_type[component["key"]] = component["type"]
+            component_key_to_type = {
+                component["key"]: component["type"]
+                for component in flattened_components
+            }
+
             for key, value in step.data.items():
                 if key in merged_data:
                     logger.warning(
@@ -252,6 +254,30 @@ class Submission(models.Model):
                 merged_data[key] = value
 
         return merged_data
+
+    def get_printable_data(self) -> Dict[str, str]:
+        printable_data = dict()
+        attachment_data = self.get_merged_attachments()
+
+        for key, info in self.get_merged_data_with_component_type().items():
+            if info["type"] == "file":
+                files = attachment_data.get(key)
+                if files:
+                    printable_data[key] = _("attachment: %s") % (
+                        ", ".join(file.get_display_name() for file in files)
+                    )
+                else:
+                    printable_data[key] = _("attachment")
+            elif info["type"] == "selectboxes":
+                formatted_select_boxes = ", ".join(
+                    [label for label, selected in info["value"].items() if selected]
+                )
+                printable_data[key] = formatted_select_boxes
+            else:
+                # more here? like getComponentValue() in the SDK?
+                printable_data[key] = info["value"]
+
+        return printable_data
 
     data = property(get_merged_data)
     data_with_component_type = property(get_merged_data_with_component_type)
@@ -393,29 +419,14 @@ class SubmissionReport(models.Model):
 
     def generate_submission_report_pdf(self) -> None:
         form = self.submission.form
-
-        submission_data = dict()
-        attachment_data = self.submission.get_merged_attachments()
-
-        for key, info in self.submission.get_merged_data_with_component_type().items():
-            if info["type"] == "file":
-                files = attachment_data.get(key)
-                if files:
-                    submission_data[key] = _("attachment: %s") % (
-                        ", ".join(file.get_display_name() for file in files)
-                    )
-                else:
-                    submission_data[key] = _("attachment")
-            else:
-                # more here? like getComponentValue() in the SDK?
-                submission_data[key] = info["value"]
+        printable_data = self.submission.get_printable_data()
 
         html_report = render(
             request=None,
             template_name="report/submission_report.html",
             context={
                 "form": form,
-                "submission_data": submission_data,
+                "submission_data": printable_data,
                 "submission": self.submission,
             },
         ).content.decode("utf8")
