@@ -30,3 +30,11 @@
   }
 
 }
+
+.button-container {
+  display: inline-block;
+
+  &--padded {
+    padding: 1em;
+  }
+}

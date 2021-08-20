@@ -240,6 +240,11 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "PdaMqg": {
+    "defaultMessage": "Add rule",
+    "description": "Add form logic rule button",
+    "originalDefault": "Add rule"
+  },
   "PwUKIe": {
     "defaultMessage": "(provides {attrs})",
     "description": "Auth plugin provided attributes suffix",
