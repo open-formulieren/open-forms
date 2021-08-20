@@ -12,6 +12,7 @@ import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS } from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
+import DataPreview from './DataPreview';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -253,10 +254,7 @@ const Trigger = ({ name, logic, onChange }) => {
                 }
             </div>
 
-            jsonLogic:
-            <div style={{background: '#eee', border: 'dashed 1px #ccc', 'marginTop': '1em'}}>
-                <pre>{JSON.stringify(jsonLogicFromState, null, 2)}</pre>
-            </div>
+            <DataPreview data={jsonLogicFromState} />
 
         </div>
     );

@@ -501,6 +501,12 @@
       "value": "Stappen en velden"
     }
   ],
+  "naInSZ": [
+    {
+      "type": 0,
+      "value": "Toggle DSL preview"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,

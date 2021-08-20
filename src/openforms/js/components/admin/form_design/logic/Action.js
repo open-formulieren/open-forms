@@ -9,6 +9,7 @@ import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
 import OperandTypeSelection from './OperandTypeSelection';
+import DataPreview from './DataPreview';
 
 
 const Action = ({action, onChange, onDelete}) => {
@@ -110,10 +111,9 @@ const Action = ({action, onChange, onDelete}) => {
                     /> : null
             }
             </div>
-            Action:
-            <div style={{background: '#eee', border: 'dashed 1px #ccc', 'marginTop': '1em'}}>
-                <pre>{JSON.stringify(jsonAction, null, 2)}</pre>
-            </div>
+
+            <DataPreview data={jsonAction} />
+
         </div>
     );
 };

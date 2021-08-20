@@ -497,6 +497,12 @@
       "value": "Steps and fields"
     }
   ],
+  "naInSZ": [
+    {
+      "type": 0,
+      "value": "Toggle DSL preview"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,

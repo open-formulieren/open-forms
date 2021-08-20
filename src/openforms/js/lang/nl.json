@@ -354,6 +354,11 @@
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
   },
+  "naInSZ": {
+    "defaultMessage": "Toggle DSL preview",
+    "description": "JSON data preview visibility toggle",
+    "originalDefault": "Toggle DSL preview"
+  },
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
     "description": "Generic error message",
