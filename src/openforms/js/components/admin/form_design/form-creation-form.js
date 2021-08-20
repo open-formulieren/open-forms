@@ -715,7 +715,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
                     </Tab>
                     <Tab>
-                        <FormattedMessage defaultMessage="Logics" description="Form logic tab title" />
+                        <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                 </TabList>
 
@@ -812,7 +812,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title="Logica">
+                    <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
                         <FormLogic
                             logicRules={state.logicRules}
                             availableComponents={getFormComponents(state.formSteps)}

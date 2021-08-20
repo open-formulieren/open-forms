@@ -191,12 +191,6 @@
       "value": "Formulier"
     }
   ],
-  "Bbs/0a": [
-    {
-      "type": 0,
-      "value": "Logica"
-    }
-  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -225,6 +219,12 @@
     {
       "type": 0,
       "value": "Omlaag"
+    }
+  ],
+  "DxGKNm": [
+    {
+      "type": 0,
+      "value": "Logic"
     }
   ],
   "EtAvFF": [
@@ -393,6 +393,12 @@
     {
       "type": 0,
       "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
+    }
+  ],
+  "WdVKZw": [
+    {
+      "type": 0,
+      "value": "Logic"
     }
   ],
   "YzLSHY": [
