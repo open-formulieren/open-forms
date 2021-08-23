@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
@@ -14,6 +14,19 @@ import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import {useOnChanged} from './hooks';
+
+
+// Used when operandType is changed to 'today'. For the other operand types (literal, component),
+// a value/component has to be entered/selected, which then changes the 'operand' in the state.
+// Instead, this component automatically changes the 'operand' in the state the first time it's rendered.
+const Today = ({name, onChange}) => {
+    useEffect(() => {
+        const fakeEvent = {target: {name: name, value: {today: []} }};
+        onChange(fakeEvent);
+    }, []);
+
+    return null;
+};
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -81,7 +94,11 @@ const parseJsonLogic = (logic) => {
     }
 
     // first value should be the reference to the component
-    const component = values[0].var;
+    let component = values[0].var;
+    if (Array.isArray(component)) {
+        // Case where a default is defined
+        component = component[0];
+    }
 
     // check if we're using a literal value, or a component reference
     const compareValue = values[1];
@@ -93,6 +110,8 @@ const parseJsonLogic = (logic) => {
         if (op === 'var') {
             operandType = 'component';
             operand = compareValue.var;
+        } else if (op === 'today') {
+            operandType = 'today';
         } else {
             console.warn(`Unsupported operator: ${op}, can't derive operandType`);
         }
@@ -187,6 +206,13 @@ const Trigger = ({ name, logic, onChange }) => {
             compareValue = {"var": operand};
             break;
         }
+        case 'today': {
+            valueInput = (
+                <Today name="operand" onChange={onTriggerChange}/>
+            );
+            compareValue = {'today': []};
+            break;
+        }
         case '': { // nothing selected yet
             break;
         }
@@ -195,9 +221,14 @@ const Trigger = ({ name, logic, onChange }) => {
         }
     }
 
+    // Needed because the backend will try to check if the jsonLogic is valid. Since no data is passed, all dates of
+    // form {"date": {"var": "someComponent"}} will evaluate to None, and then comparing None and Dates gives errors.
+    // In this way we provide a default date that evaluates to the date of today.
+    let component = componentType === 'date' ? [triggerComponent, {'today': []}] : triggerComponent;
+
     const jsonLogicFromState = {
         [operator]: [
-            {var: triggerComponent},
+            {var: component},
             compareValue,
         ],
     };
@@ -242,6 +273,7 @@ const Trigger = ({ name, logic, onChange }) => {
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
+                                    componentType={componentType}
                                     onChange={onTriggerChange}
                                 />
                             </div>

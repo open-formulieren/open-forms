@@ -129,6 +129,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                 <OperandTypeSelection
                                     name="componentValueSource"
                                     onChange={onChange}
+                                    componentType={componentType}
                                     operandType={action.componentValueSource}
                                 />
                             </div>
