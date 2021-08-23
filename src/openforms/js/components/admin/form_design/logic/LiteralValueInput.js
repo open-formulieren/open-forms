@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {TextInput, NumberInput} from '../../forms/Inputs';
+import {TextInput, NumberInput, DateInput} from '../../forms/Inputs';
 
 const COMPONENT_TYPE_TO_INPUT_TYPE = {
     number: NumberInput,
     textfield: TextInput,
     iban: TextInput,
+    date: DateInput,
 };
 
 const LiteralValueInput = ({name, componentType, value='', onChange}) => {
@@ -31,7 +32,7 @@ const LiteralValueInput = ({name, componentType, value='', onChange}) => {
                 name: event.target.name,
                 value: value,
             }
-        })
+        });
     };
 
     return (

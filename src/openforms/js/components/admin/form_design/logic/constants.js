@@ -59,6 +59,14 @@ const COMPONENT_TYPE_TO_OPERATORS = {
         '!=',
         'in',
     ],
+    date: [
+        '==',
+        '!=',
+        '>',
+        '>=',
+        '<',
+        '<=',
+    ]
 };
 
 const ACTION_TYPES = [
