@@ -309,14 +309,14 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     incomplete_submissions_removal_method = models.CharField(
-        _("registration backend status"),
+        _("incomplete submissions removal method"),
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
         help_text=_("How incomplete submissions will be removed after the limit"),
     )
     errored_submissions_removal_limit = models.PositiveIntegerField(
-        _("errored submission removal days limit"),
+        _("errored submission removal limit"),
         default=30,
         validators=[MinValueValidator(1)],
         help_text=_(
@@ -324,14 +324,14 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     errored_submissions_removal_method = models.CharField(
-        _("registration backend status"),
+        _("errored submissions removal method"),
         max_length=50,
         choices=RemovalMethods,
         default=RemovalMethods.delete_permanently,
         help_text=_("How errored submissions will be removed after the"),
     )
     all_submissions_removal_limit = models.PositiveIntegerField(
-        _("errored submission removal days limit"),
+        _("all submissions removal limit"),
         default=90,
         validators=[MinValueValidator(1)],
         help_text=_("Amount of days when all submissions will be permanently deleted"),

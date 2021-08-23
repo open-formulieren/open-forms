@@ -164,7 +164,7 @@ class Form(models.Model):
         ),
     )
     incomplete_submissions_removal_method = models.CharField(
-        _("registration backend status"),
+        _("incomplete submissions removal method"),
         max_length=50,
         blank=True,
         null=True,
@@ -175,7 +175,7 @@ class Form(models.Model):
         ),
     )
     errored_submissions_removal_limit = models.PositiveIntegerField(
-        _("errored submission removal days limit"),
+        _("errored submission removal limit"),
         blank=True,
         null=True,
         validators=[MinValueValidator(1)],
@@ -185,7 +185,7 @@ class Form(models.Model):
         ),
     )
     errored_submissions_removal_method = models.CharField(
-        _("registration backend status"),
+        _("errored submission removal limit"),
         max_length=50,
         blank=True,
         null=True,
@@ -196,7 +196,7 @@ class Form(models.Model):
         ),
     )
     all_submissions_removal_limit = models.PositiveIntegerField(
-        _("errored submission removal days limit"),
+        _("all submissions removal limit"),
         blank=True,
         null=True,
         validators=[MinValueValidator(1)],
