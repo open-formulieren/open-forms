@@ -73,7 +73,7 @@ const APPOINTMENT = {
             label: 'Select product component for dates',
             key: 'productForDates',
             dataSrc: 'custom',
-            tooltip: 'Choose the product component and we wil prefill locations for that product in this component',
+            tooltip: 'Choose the product component and we wil prefill dates for that product in this component',
             valueProperty: 'value',
             data: {
                 custom(context) {
@@ -88,6 +88,54 @@ const APPOINTMENT = {
             key: 'locationForDates',
             dataSrc: 'custom',
             tooltip: 'Choose the location component and we wil prefill dates for the location and product in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'checkbox',
+            key: 'showTimes',
+            label: 'Show Times',
+            tooltip: 'Show times for a given product, location, and date'
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select product component for times',
+            key: 'productForTimes',
+            dataSrc: 'custom',
+            tooltip: 'Choose the product component and we wil prefill times for that product in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select location component for dates',
+            key: 'locationForTimes',
+            dataSrc: 'custom',
+            tooltip: 'Choose the location component and we wil prefill times for that location in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select location component for dates',
+            key: 'dateForTimes',
+            dataSrc: 'custom',
+            tooltip: 'Choose the date component and we wil prefill times for that date in this component',
             valueProperty: 'value',
             data: {
                 custom(context) {
