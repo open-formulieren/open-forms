@@ -97,6 +97,8 @@ COPY --from=backend-build /app/src/ /app/src/
 # copy frontend build statics
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 COPY --from=frontend-build /app/node_modules/formiojs/dist/fonts /app/node_modules/formiojs/dist/fonts
+# Include SDK files
+COPY --from=openformulieren/open-forms-sdk:latest /sdk /app/static/sdk
 
 # copy source code
 COPY ./src /app/src
