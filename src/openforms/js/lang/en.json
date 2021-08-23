@@ -9,6 +9,11 @@
     "description": "Form maintenance mode field help text",
     "originalDefault": "Users will not be able to start the form if it is in maintenance mode."
   },
+  "+peJTt": {
+    "defaultMessage": "is equal to",
+    "description": "\"==\" operator description",
+    "originalDefault": "is equal to"
+  },
   "0RXE97": {
     "defaultMessage": "Literals",
     "description": "Form literals tab title",
@@ -94,6 +99,11 @@
     "description": "Form step next text label",
     "originalDefault": "Next text"
   },
+  "7di6Fm": {
+    "defaultMessage": "is less than or equal to",
+    "description": "\"<=\" operator description",
+    "originalDefault": "is less than or equal to"
+  },
   "8LLxRg": {
     "defaultMessage": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration.",
     "description": "Form step save text field help text",
@@ -103,6 +113,16 @@
     "defaultMessage": "Active",
     "description": "Form active field label",
     "originalDefault": "Active"
+  },
+  "9dLOs2": {
+    "defaultMessage": "and",
+    "description": "Extra logic action prefix",
+    "originalDefault": "and"
+  },
+  "AFyQut": {
+    "defaultMessage": "is greater than",
+    "description": "\">\" operator description",
+    "originalDefault": "is greater than"
   },
   "AUADgz": {
     "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
@@ -134,6 +154,11 @@
     "description": "Form active field help text",
     "originalDefault": "Whether the form is active or not. Deactivated forms cannot be started."
   },
+  "CYtRRM": {
+    "defaultMessage": "value",
+    "description": "\"literal\" operand type",
+    "originalDefault": "value"
+  },
   "CiaAYL": {
     "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
     "description": "Auth plugin field help text",
@@ -153,6 +178,16 @@
     "defaultMessage": "Duplicate this form",
     "description": "Copy form button title",
     "originalDefault": "Duplicate this form"
+  },
+  "Ev+T9r": {
+    "defaultMessage": "in",
+    "description": "\"in\" operator description",
+    "originalDefault": "in"
+  },
+  "FceidS": {
+    "defaultMessage": "is not equal to",
+    "description": "\"!=\" operator description",
+    "originalDefault": "is not equal to"
   },
   "G2rpx2": {
     "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
@@ -199,6 +234,11 @@
     "description": "Form step next text field help text",
     "originalDefault": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
   },
+  "J5EZDj": {
+    "defaultMessage": "hidden",
+    "description": "component property \"hidden\" label",
+    "originalDefault": "hidden"
+  },
   "KIy7Wr": {
     "defaultMessage": "Name/title of the form",
     "description": "Form name field help text",
@@ -224,6 +264,16 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "OvqnXR": {
+    "defaultMessage": "Yes",
+    "description": "Component property boolean value \"true\"",
+    "originalDefault": "Yes"
+  },
+  "PdaMqg": {
+    "defaultMessage": "Add rule",
+    "description": "Add form logic rule button",
+    "originalDefault": "Add rule"
+  },
   "PwUKIe": {
     "defaultMessage": "(provides {attrs})",
     "description": "Auth plugin provided attributes suffix",
@@ -243,6 +293,11 @@
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
+  },
+  "SX2HTA": {
+    "defaultMessage": "change a property of a component.",
+    "description": "action type \"property\" label",
+    "originalDefault": "change a property of a component."
   },
   "TCQic2": {
     "defaultMessage": "Confirm text",
@@ -268,6 +323,16 @@
     "defaultMessage": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
+  },
+  "VV2TCH": {
+    "defaultMessage": "disable continuing to the next form step.",
+    "description": "action type \"disable-next\" label",
+    "originalDefault": "disable continuing to the next form step."
+  },
+  "VWJvZB": {
+    "defaultMessage": "required",
+    "description": "component property \"required\" label",
+    "originalDefault": "required"
   },
   "WdVKZw": {
     "defaultMessage": "Logic",
@@ -304,6 +369,11 @@
     "description": "Move up icon title",
     "originalDefault": "Move up"
   },
+  "cUVVbl": {
+    "defaultMessage": "is greater than or equal to",
+    "description": "\">=\" operator description",
+    "originalDefault": "is greater than or equal to"
+  },
   "cV72I+": {
     "defaultMessage": "Product",
     "description": "Form product label",
@@ -324,6 +394,11 @@
     "description": "literals.beginText form label",
     "originalDefault": "Begin text"
   },
+  "ftzF/n": {
+    "defaultMessage": "When",
+    "description": "Logic trigger prefix",
+    "originalDefault": "When"
+  },
   "gGNIdG": {
     "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
     "description": "literals.previousText help text",
@@ -339,6 +414,11 @@
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
   },
+  "iZESbd": {
+    "defaultMessage": "is less than",
+    "description": "\"<\" operator description",
+    "originalDefault": "is less than"
+  },
   "ixiVhj": {
     "defaultMessage": "{name} [new]",
     "description": "form step label in nav",
@@ -348,6 +428,26 @@
     "defaultMessage": "Form definition",
     "description": "Form definition module title",
     "originalDefault": "Form definition"
+  },
+  "jAraWj": {
+    "defaultMessage": "change the value of a component",
+    "description": "action type \"value\" label",
+    "originalDefault": "change the value of a component"
+  },
+  "jZIu+e": {
+    "defaultMessage": "No",
+    "description": "Component property boolean value \"false\"",
+    "originalDefault": "No"
+  },
+  "k34Vke": {
+    "defaultMessage": "Then",
+    "description": "First logic action prefix",
+    "originalDefault": "Then"
+  },
+  "kNOyt+": {
+    "defaultMessage": "disabled",
+    "description": "component property \"disabled\" label",
+    "originalDefault": "disabled"
   },
   "mOjKcm": {
     "defaultMessage": "Steps and fields",
@@ -363,6 +463,11 @@
     "defaultMessage": "The form is invalid. Please correct the errors below.",
     "description": "Generic error message",
     "originalDefault": "The form is invalid. Please correct the errors below."
+  },
+  "p8LSwF": {
+    "defaultMessage": "Add action",
+    "description": "Add form logic rule action button",
+    "originalDefault": "Add action"
   },
   "pd8iHF": {
     "defaultMessage": "Submit button enabled",
@@ -388,6 +493,11 @@
     "defaultMessage": "Step slug",
     "description": "Form step slug label",
     "originalDefault": "Step slug"
+  },
+  "r6Wa2m": {
+    "defaultMessage": "the field",
+    "description": "\"component\" operand type",
+    "originalDefault": "the field"
   },
   "ru7KD+": {
     "defaultMessage": "Payment",

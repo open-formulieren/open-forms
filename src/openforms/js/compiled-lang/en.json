@@ -11,6 +11,12 @@
       "value": "Users will not be able to start the form if it is in maintenance mode."
     }
   ],
+  "+peJTt": [
+    {
+      "type": 0,
+      "value": "is equal to"
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -157,6 +163,12 @@
       "value": "Next text"
     }
   ],
+  "7di6Fm": [
+    {
+      "type": 0,
+      "value": "is less than or equal to"
+    }
+  ],
   "8LLxRg": [
     {
       "type": 0,
@@ -167,6 +179,18 @@
     {
       "type": 0,
       "value": "Active"
+    }
+  ],
+  "9dLOs2": [
+    {
+      "type": 0,
+      "value": "and"
+    }
+  ],
+  "AFyQut": [
+    {
+      "type": 0,
+      "value": "is greater than"
     }
   ],
   "AUADgz": [
@@ -205,6 +229,12 @@
       "value": "Whether the form is active or not. Deactivated forms cannot be started."
     }
   ],
+  "CYtRRM": [
+    {
+      "type": 0,
+      "value": "value"
+    }
+  ],
   "CiaAYL": [
     {
       "type": 0,
@@ -227,6 +257,18 @@
     {
       "type": 0,
       "value": "Duplicate this form"
+    }
+  ],
+  "Ev+T9r": [
+    {
+      "type": 0,
+      "value": "in"
+    }
+  ],
+  "FceidS": [
+    {
+      "type": 0,
+      "value": "is not equal to"
     }
   ],
   "G2rpx2": [
@@ -283,6 +325,12 @@
       "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
     }
   ],
+  "J5EZDj": [
+    {
+      "type": 0,
+      "value": "hidden"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -311,6 +359,18 @@
     {
       "type": 0,
       "value": "Registration"
+    }
+  ],
+  "OvqnXR": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "PdaMqg": [
+    {
+      "type": 0,
+      "value": "Add rule"
     }
   ],
   "PwUKIe": [
@@ -343,6 +403,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "SX2HTA": [
+    {
+      "type": 0,
+      "value": "change a property of a component."
     }
   ],
   "TCQic2": [
@@ -391,6 +457,18 @@
       "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
+  "VV2TCH": [
+    {
+      "type": 0,
+      "value": "disable continuing to the next form step."
+    }
+  ],
+  "VWJvZB": [
+    {
+      "type": 0,
+      "value": "required"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -433,6 +511,12 @@
       "value": "Move up"
     }
   ],
+  "cUVVbl": [
+    {
+      "type": 0,
+      "value": "is greater than or equal to"
+    }
+  ],
   "cV72I+": [
     {
       "type": 0,
@@ -457,6 +541,12 @@
       "value": "Begin text"
     }
   ],
+  "ftzF/n": [
+    {
+      "type": 0,
+      "value": "When"
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -475,6 +565,12 @@
       "value": "Form design"
     }
   ],
+  "iZESbd": [
+    {
+      "type": 0,
+      "value": "is less than"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -489,6 +585,30 @@
     {
       "type": 0,
       "value": "Form definition"
+    }
+  ],
+  "jAraWj": [
+    {
+      "type": 0,
+      "value": "change the value of a component"
+    }
+  ],
+  "jZIu+e": [
+    {
+      "type": 0,
+      "value": "No"
+    }
+  ],
+  "k34Vke": [
+    {
+      "type": 0,
+      "value": "Then"
+    }
+  ],
+  "kNOyt+": [
+    {
+      "type": 0,
+      "value": "disabled"
     }
   ],
   "mOjKcm": [
@@ -507,6 +627,12 @@
     {
       "type": 0,
       "value": "The form is invalid. Please correct the errors below."
+    }
+  ],
+  "p8LSwF": [
+    {
+      "type": 0,
+      "value": "Add action"
     }
   ],
   "pd8iHF": [
@@ -537,6 +663,12 @@
     {
       "type": 0,
       "value": "Step slug"
+    }
+  ],
+  "r6Wa2m": [
+    {
+      "type": 0,
+      "value": "the field"
     }
   ],
   "ru7KD+": [

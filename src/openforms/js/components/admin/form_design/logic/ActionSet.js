@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
-import {Action} from './Action';
+import React from 'react';
 import {useImmerReducer} from 'use-immer';
-import usePrevious from 'react-use/esm/usePrevious';
-import isEqual from 'lodash/isEqual';
-import PropTypes from "prop-types";
-import Trigger from "./Trigger";
+import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
+
+import Action from './Action';
+import {useOnChanged} from './hooks';
 
 
 const emptyAction = {
@@ -37,7 +37,6 @@ const reducer = (draft, action) => {
         case 'ACTION_CHANGED': {
             const {name, value, index} = action.payload;
             draft.actions[index][name] = value;
-            console.log(index, name , value);
 
             // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
             const currentFieldIndex = ACTION_SELECTION_ORDER.indexOf(name);
@@ -124,19 +123,9 @@ const ActionSet = ({name, actions, onChange}) => {
     });
 
     const jsonActions = state.actions.map(action => convertActionToJson(action));
-    const previousJsonActions = usePrevious(jsonActions);
-    useEffect(
-        () => {
-            // if nothing changed, do not fire an update
-            if (previousJsonActions && isEqual(previousJsonActions, jsonActions)) return;
-            onChange({
-                target: {
-                    name: name,
-                    value: jsonActions,
-                }
-            });
-        },
-        [jsonActions]
+    useOnChanged(
+        jsonActions,
+        () => onChange({target: {name, value: jsonActions}}),
     );
 
     const onActionChange = (index, event) => {
@@ -151,26 +140,26 @@ const ActionSet = ({name, actions, onChange}) => {
         });
     };
 
-    const onActionDelete = (index) => {
-        dispatch({
-            type: 'ACTION_DELETED',
-            payload: {index: index}
-        });
-    };
-
+    const firstActionPrefix = (<FormattedMessage description="First logic action prefix" defaultMessage="Then" />);
+    const extraActionPrefix = (<FormattedMessage description="Extra logic action prefix" defaultMessage="and" />);
     return (
         <>
             {state.actions.map((action, index) => (
                 <Action
                     key={index}
+                    prefixText={index === 0 ? firstActionPrefix : extraActionPrefix }
                     action={action}
                     onChange={onActionChange.bind(null, index)}
-                    onDelete={onActionDelete.bind(null, index)}
+                    onDelete={() => dispatch({type: 'ACTION_DELETED', payload: {index}})}
                 />
             ))}
-            <button type="button" onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
-                Add action
-            </button>
+            <div className="button-container button-container--padded">
+                <button type="button" className="button button--plain" onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
+                    <span className="addlink">
+                        <FormattedMessage description="Add form logic rule action button" defaultMessage="Add action" />
+                    </span>
+                </button>
+            </div>
         </>
     );
 };

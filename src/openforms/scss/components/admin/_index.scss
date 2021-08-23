@@ -9,5 +9,11 @@
 @import './sdk-snippet';
 @import './json-data-preview';
 
+// Logic editor UI
+@import './dsl-editor';
+@import './logic-rule';
+@import './logic-trigger';
+@import './logic-action';
+
 // third party
 @import './ReactModal';

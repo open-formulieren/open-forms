@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {useIntl} from 'react-intl';
+import {useIntl, FormattedMessage} from 'react-intl';
 
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
@@ -27,9 +27,15 @@ const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, 
                     onDelete={onDelete.bind(null, i)}
                 />
             ))}
-            <button type="button" onClick={onAdd}>
-                Add rule
-            </button>
+
+            <div className="button-container button-container--padded">
+                <button type="button" className="button button--plain" onClick={onAdd}>
+                    <span className="addlink">
+                        <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
+                    </span>
+                </button>
+            </div>
+
         </ComponentsContext.Provider>
     );
 };
@@ -53,10 +59,13 @@ const Rule = ({jsonLogicTrigger, actions, onChange, onDelete}) => {
     });
     return (
         <div className="logic-rule">
-            <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
-            <ActionSet name="actions" actions={actions} onChange={onChange} />
-            <div className="actions">
+            <div className="logic-rule__actions">
                 <DeleteIcon onConfirm={onDelete} message={deleteConfirmMessage} />
+            </div>
+
+            <div className="logic-rule__rule">
+                <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />
+                <ActionSet name="actions" actions={actions} onChange={onChange} />
             </div>
         </div>
     );

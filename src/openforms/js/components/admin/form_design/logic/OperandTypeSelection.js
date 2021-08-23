@@ -1,16 +1,20 @@
 import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
+import {defineMessage, useIntl} from 'react-intl';
 
 import Select from '../../forms/Select';
 
 const OPERAND_TYPES = {
-    literal: 'value',
-    component: 'the field',
+    literal: defineMessage({description: '"literal" operand type', defaultMessage: 'value'}),
+    component: defineMessage({description: '"component" operand type', defaultMessage: 'the field'}),
 };
 
 
 const OperandTypeSelection = ({name, operandType, onChange}) => {
-    const choices = Object.entries(OPERAND_TYPES);
+    const intl = useIntl();
+    const choices = Object.entries(OPERAND_TYPES).map(
+        ([operandType, msg]) => [operandType, intl.formatMessage(msg)]
+    );
     return (
         <Select
             name={name}
