@@ -1,11 +1,20 @@
 .dsl-editor {
 
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
 
   &__node {
-    margin-right: 0.5em;
+    &:not(:last-child) {
+      margin-right: 0.5em;
+    }
+
+    // account for possibly long labels
+    select,
+    input {
+      max-width: 30em;
+    }
   }
 
 }
