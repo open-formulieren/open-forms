@@ -119,16 +119,17 @@ const MODIFIABLE_PROPERTIES = [
 ];
 
 
+// FIXME -> should be actual booleans in the JSON!
 const PROPERTY_VALUES = [
     [
-        true,
+        "true",
         defineMessage({
             description: 'Component property boolean value "true"',
             defaultMessage: 'Yes'
         })
     ],
     [
-        false,
+        "false",
         defineMessage({
             description: 'Component property boolean value "false"',
             defaultMessage: 'No'
