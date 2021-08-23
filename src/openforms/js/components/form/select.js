@@ -26,9 +26,6 @@ const values = [{
             type: 'textfield',
             allowCalculateOverride: true,
             calculateValue: {_camelCase: [{var: 'row.label'}]},
-            validate: {
-                required: true
-            }
         },
     ],
 }];
