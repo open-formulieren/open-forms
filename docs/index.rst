@@ -30,6 +30,7 @@ Getting Started
 To get you started, you might find some of these links relevant:
 
 * New to Open Forms? Have a look at the :ref:`introduction_index`
+* Want to make the most out of Open Forms? Read the :ref:`manual_index`.
 * Want to get started with Open Forms yourself? See :ref:`installation_index`.
 * Are you a developer? Head over to :ref:`developers_index`!
 
@@ -39,6 +40,7 @@ To get you started, you might find some of these links relevant:
    :hidden:
 
    introduction/index
+   manual/index
    installation/index
    configuration/index
    developers/index
