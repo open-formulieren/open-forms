@@ -22,3 +22,12 @@ class LocationInputSerializer(serializers.Serializer):
     product_id = serializers.CharField(
         label=_("product id"), help_text=_("Id of the product to get locations for")
     )
+
+
+class DateInputSerializer(serializers.Serializer):
+    product_id = serializers.CharField(
+        label=_("product id"), help_text=_("Id of the product to get dates for")
+    )
+    location_id = serializers.CharField(
+        label=_("location id"), help_text=_("Id of the location to get dates for")
+    )
