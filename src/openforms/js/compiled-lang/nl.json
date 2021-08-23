@@ -2,7 +2,7 @@
   "+8EnHh": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete this action?"
+      "value": "Ben je zeker dat je deze actie wil verwijderen?"
     }
   ],
   "+hAGg7": [
@@ -11,10 +11,10 @@
       "value": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is"
     }
   ],
-  "0CJ6q4": [
+  "+peJTt": [
     {
       "type": 0,
-      "value": "is equal to"
+      "value": "is gelijk aan"
     }
   ],
   "0RXE97": [
@@ -43,12 +43,6 @@
       "value": "Inhoud bevestigingspagina"
     }
   ],
-  "1Y4Vn4": [
-    {
-      "type": 0,
-      "value": "is not equal to"
-    }
-  ],
   "294MCM": [
     {
       "type": 0,
@@ -59,12 +53,6 @@
     {
       "type": 0,
       "value": "Opties"
-    }
-  ],
-  "3SK7Qq": [
-    {
-      "type": 0,
-      "value": "is less than or equal to"
     }
   ],
   "3W3Px9": [
@@ -95,12 +83,6 @@
     {
       "type": 0,
       "value": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier."
-    }
-  ],
-  "6ISjoQ": [
-    {
-      "type": 0,
-      "value": "in"
     }
   ],
   "6PIG4q": [
@@ -185,6 +167,12 @@
       "value": "'Volgende' tekst"
     }
   ],
+  "7di6Fm": [
+    {
+      "type": 0,
+      "value": "is kleiner dan of gelijk aan"
+    }
+  ],
   "8LLxRg": [
     {
       "type": 0,
@@ -200,7 +188,13 @@
   "9dLOs2": [
     {
       "type": 0,
-      "value": "and"
+      "value": "en"
+    }
+  ],
+  "AFyQut": [
+    {
+      "type": 0,
+      "value": "is groter dan"
     }
   ],
   "AUADgz": [
@@ -224,7 +218,7 @@
   "CN9j+L": [
     {
       "type": 0,
-      "value": "Delete"
+      "value": "Verwijderen"
     }
   ],
   "CXKQZZ": [
@@ -237,6 +231,12 @@
     {
       "type": 0,
       "value": "Indien het formulier gedeactiveerd is, dan kan het niet gestart worden."
+    }
+  ],
+  "CYtRRM": [
+    {
+      "type": 0,
+      "value": "de waarde"
     }
   ],
   "CiaAYL": [
@@ -254,13 +254,25 @@
   "DxGKNm": [
     {
       "type": 0,
-      "value": "Logic"
+      "value": "Logica"
     }
   ],
   "EtAvFF": [
     {
       "type": 0,
       "value": "Maak een kopie van dit formulier"
+    }
+  ],
+  "Ev+T9r": [
+    {
+      "type": 0,
+      "value": "in"
+    }
+  ],
+  "FceidS": [
+    {
+      "type": 0,
+      "value": "is verschillend van"
     }
   ],
   "G2rpx2": [
@@ -317,6 +329,12 @@
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "J5EZDj": [
+    {
+      "type": 0,
+      "value": "verborgen"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -347,10 +365,16 @@
       "value": "Registratie"
     }
   ],
+  "OvqnXR": [
+    {
+      "type": 0,
+      "value": "Ja"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
-      "value": "Add rule"
+      "value": "Regel toevoegen"
     }
   ],
   "PwUKIe": [
@@ -385,6 +409,12 @@
       "value": "Payment backend options"
     }
   ],
+  "SX2HTA": [
+    {
+      "type": 0,
+      "value": "wijzig een attribuut van een veld/component."
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -400,7 +430,7 @@
   "TR5xSY": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete this rule?"
+      "value": "Ben je zeker dat je deze regel wil verwijderen?"
     }
   ],
   "TXwGu1": [
@@ -431,10 +461,22 @@
       "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
     }
   ],
+  "VV2TCH": [
+    {
+      "type": 0,
+      "value": "blokkeer doorgaan naar de volgende stap."
+    }
+  ],
+  "VWJvZB": [
+    {
+      "type": 0,
+      "value": "verplicht"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
-      "value": "Logic"
+      "value": "Logica"
     }
   ],
   "YzLSHY": [
@@ -473,6 +515,12 @@
       "value": "Omhoog"
     }
   ],
+  "cUVVbl": [
+    {
+      "type": 0,
+      "value": "is groter dan of gelijk aan"
+    }
+  ],
   "cV72I+": [
     {
       "type": 0,
@@ -500,7 +548,7 @@
   "ftzF/n": [
     {
       "type": 0,
-      "value": "When"
+      "value": "Als"
     }
   ],
   "gGNIdG": [
@@ -521,6 +569,12 @@
       "value": "Formulierontwerp"
     }
   ],
+  "iZESbd": [
+    {
+      "type": 0,
+      "value": "is kleiner dan"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -537,16 +591,28 @@
       "value": "(Herbruikbare) stapgegevens"
     }
   ],
+  "jAraWj": [
+    {
+      "type": 0,
+      "value": "wijzig de waarde van een veld/component aan"
+    }
+  ],
+  "jZIu+e": [
+    {
+      "type": 0,
+      "value": "Nee"
+    }
+  ],
   "k34Vke": [
     {
       "type": 0,
-      "value": "Then"
+      "value": "Dan"
     }
   ],
-  "lj9cSw": [
+  "kNOyt+": [
     {
       "type": 0,
-      "value": "is greater than or equal to"
+      "value": "disabled"
     }
   ],
   "mOjKcm": [
@@ -558,13 +624,7 @@
   "naInSZ": [
     {
       "type": 0,
-      "value": "Toggle DSL preview"
-    }
-  ],
-  "o2ureI": [
-    {
-      "type": 0,
-      "value": "is less than"
+      "value": "Toon/verberg DSL preview"
     }
   ],
   "ow5AAO": [
@@ -576,7 +636,7 @@
   "p8LSwF": [
     {
       "type": 0,
-      "value": "Add action"
+      "value": "Voeg actie toe"
     }
   ],
   "pd8iHF": [
@@ -607,6 +667,12 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "r6Wa2m": [
+    {
+      "type": 0,
+      "value": "het veld"
     }
   ],
   "ru7KD+": [
@@ -667,12 +733,6 @@
     {
       "type": 0,
       "value": "Formulierdefinitie selecteren"
-    }
-  ],
-  "zIBfw+": [
-    {
-      "type": 0,
-      "value": "is greater than"
     }
   ]
 }

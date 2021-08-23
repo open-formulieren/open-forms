@@ -11,7 +11,7 @@
       "value": "Users will not be able to start the form if it is in maintenance mode."
     }
   ],
-  "0CJ6q4": [
+  "+peJTt": [
     {
       "type": 0,
       "value": "is equal to"
@@ -43,12 +43,6 @@
       "value": "Submission page content"
     }
   ],
-  "1Y4Vn4": [
-    {
-      "type": 0,
-      "value": "is not equal to"
-    }
-  ],
   "294MCM": [
     {
       "type": 0,
@@ -59,12 +53,6 @@
     {
       "type": 0,
       "value": "Registration backend options"
-    }
-  ],
-  "3SK7Qq": [
-    {
-      "type": 0,
-      "value": "is less than or equal to"
     }
   ],
   "3W3Px9": [
@@ -95,12 +83,6 @@
     {
       "type": 0,
       "value": "This form step requires a login, but no authentication backend has been specified."
-    }
-  ],
-  "6ISjoQ": [
-    {
-      "type": 0,
-      "value": "in"
     }
   ],
   "6PIG4q": [
@@ -181,6 +163,12 @@
       "value": "Next text"
     }
   ],
+  "7di6Fm": [
+    {
+      "type": 0,
+      "value": "is less than or equal to"
+    }
+  ],
   "8LLxRg": [
     {
       "type": 0,
@@ -197,6 +185,12 @@
     {
       "type": 0,
       "value": "and"
+    }
+  ],
+  "AFyQut": [
+    {
+      "type": 0,
+      "value": "is greater than"
     }
   ],
   "AUADgz": [
@@ -235,6 +229,12 @@
       "value": "Whether the form is active or not. Deactivated forms cannot be started."
     }
   ],
+  "CYtRRM": [
+    {
+      "type": 0,
+      "value": "value"
+    }
+  ],
   "CiaAYL": [
     {
       "type": 0,
@@ -257,6 +257,18 @@
     {
       "type": 0,
       "value": "Duplicate this form"
+    }
+  ],
+  "Ev+T9r": [
+    {
+      "type": 0,
+      "value": "in"
+    }
+  ],
+  "FceidS": [
+    {
+      "type": 0,
+      "value": "is not equal to"
     }
   ],
   "G2rpx2": [
@@ -313,6 +325,12 @@
       "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
     }
   ],
+  "J5EZDj": [
+    {
+      "type": 0,
+      "value": "hidden"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -341,6 +359,12 @@
     {
       "type": 0,
       "value": "Registration"
+    }
+  ],
+  "OvqnXR": [
+    {
+      "type": 0,
+      "value": "Yes"
     }
   ],
   "PdaMqg": [
@@ -379,6 +403,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "SX2HTA": [
+    {
+      "type": 0,
+      "value": "change a property of a component."
     }
   ],
   "TCQic2": [
@@ -427,6 +457,18 @@
       "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
+  "VV2TCH": [
+    {
+      "type": 0,
+      "value": "disable continuing to the next form step."
+    }
+  ],
+  "VWJvZB": [
+    {
+      "type": 0,
+      "value": "required"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -467,6 +509,12 @@
     {
       "type": 0,
       "value": "Move up"
+    }
+  ],
+  "cUVVbl": [
+    {
+      "type": 0,
+      "value": "is greater than or equal to"
     }
   ],
   "cV72I+": [
@@ -517,6 +565,12 @@
       "value": "Form design"
     }
   ],
+  "iZESbd": [
+    {
+      "type": 0,
+      "value": "is less than"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -533,16 +587,28 @@
       "value": "Form definition"
     }
   ],
+  "jAraWj": [
+    {
+      "type": 0,
+      "value": "change the value of a component"
+    }
+  ],
+  "jZIu+e": [
+    {
+      "type": 0,
+      "value": "No"
+    }
+  ],
   "k34Vke": [
     {
       "type": 0,
       "value": "Then"
     }
   ],
-  "lj9cSw": [
+  "kNOyt+": [
     {
       "type": 0,
-      "value": "is greater than or equal to"
+      "value": "disabled"
     }
   ],
   "mOjKcm": [
@@ -555,12 +621,6 @@
     {
       "type": 0,
       "value": "Toggle DSL preview"
-    }
-  ],
-  "o2ureI": [
-    {
-      "type": 0,
-      "value": "is less than"
     }
   ],
   "ow5AAO": [
@@ -603,6 +663,12 @@
     {
       "type": 0,
       "value": "Step slug"
+    }
+  ],
+  "r6Wa2m": [
+    {
+      "type": 0,
+      "value": "the field"
     }
   ],
   "ru7KD+": [
@@ -663,12 +729,6 @@
     {
       "type": 0,
       "value": "Select definition"
-    }
-  ],
-  "zIBfw+": [
-    {
-      "type": 0,
-      "value": "is greater than"
     }
   ]
 }

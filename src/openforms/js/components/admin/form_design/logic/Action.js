@@ -28,6 +28,11 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
         }
     };
 
+    // apply i18n to the constants choice labels
+    const actionTypeChoices = ACTION_TYPES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
+    const modifiablePropertyChoices = MODIFIABLE_PROPERTIES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
+    const propertyValueChoices = PROPERTY_VALUES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
+
     return (
         <div className="logic-action">
 
@@ -48,7 +53,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                     <div className="dsl-editor__node">
                         <Select
                             name="actionType"
-                            choices={ACTION_TYPES}
+                            choices={actionTypeChoices}
                             allowBlank
                             onChange={onChange}
                             value={action.actionType}
@@ -75,7 +80,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                 <div className="dsl-editor__node">
                                     <Select
                                         name="componentProperty"
-                                        choices={MODIFIABLE_PROPERTIES}
+                                        choices={modifiablePropertyChoices}
                                         allowBlank
                                         onChange={onChange}
                                         value={action.componentProperty}
@@ -84,7 +89,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                 <div className="dsl-editor__node">
                                     <Select
                                         name="componentPropertyValue"
-                                        choices={PROPERTY_VALUES}
+                                        choices={propertyValueChoices}
                                         allowBlank
                                         onChange={onChange}
                                         value={action.componentPropertyValue}
