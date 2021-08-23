@@ -9,3 +9,16 @@ class ProductSerializer(serializers.Serializer):
         label=_("identifier"), help_text=_("Product identifier")
     )
     name = serializers.CharField(label=_("name"), help_text=_("Product name"))
+
+
+class LocationSerializer(serializers.Serializer):
+    identifier = serializers.CharField(
+        label=_("identifier"), help_text=_("Location identifier")
+    )
+    name = serializers.CharField(label=_("name"), help_text=_("Product name"))
+
+
+class LocationInputSerializer(serializers.Serializer):
+    product_id = serializers.CharField(
+        label=_("product id"), help_text=_("Id of the product to get locations for")
+    )
