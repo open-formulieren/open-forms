@@ -1,5 +1,6 @@
-import {Formio} from 'formiojs';
+import {Formio, Utils} from 'formiojs';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from "./edit/tabs";
+import {getFullyQualifiedUrl} from "../../utils/urls";
 
 const Select = Formio.Components.components.select;
 
@@ -36,9 +37,29 @@ const APPOINTMENT = {
     components: [
         {
             type: 'checkbox',
-            key: 'showAppointments',
-            label: 'Show Appointments',
-            tooltip: 'Show appointments the user can book in this component'
+            key: 'showProducts',
+            label: 'Show Products',
+            tooltip: 'Show products the user can book in this component'
+        },
+        {
+            type: 'checkbox',
+            key: 'showLocations',
+            label: 'Show Locations',
+            tooltip: 'Show locations for a given product in this component'
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select product component',
+            key: 'productForLocations',
+            dataSrc: 'custom',
+            tooltip: 'Choose the product component and we wil prefill locations for that product in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
         }
     ]
 };
