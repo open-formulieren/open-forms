@@ -99,8 +99,80 @@ class DatesListTests(SubmissionsMixin, TestCase):
             ],
         )
 
-    def test_get_locations_returns_400_when_missing_query_params(self):
+    def test_get_dates_returns_400_when_missing_query_params(self):
         for query_param in ["", "?product_id=79", "?location_id=1"]:
+            with self.subTest(query_param=query_param):
+                response = self.client.get(self.endpoint)
+                self.assertEqual(response.status_code, 400)
+
+
+class TimesListTests(SubmissionsMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.create()
+
+    def setUp(self):
+        super().setUp()
+        self._add_submission_to_session(self.submission)
+        self.endpoint = reverse("api:jcc-times-list")
+        self.config = JccConfig.get_solo()
+        self.config.service = SoapServiceFactory.create(
+            url="https://afspraakacceptatie.horstaandemaas.nl/JCC/Horst%20aan%20de%20Maas/WARP/GGS2/GenericGuidanceSystem2.asmx?wsdl"
+        )
+        self.config.save()
+
+    def test_get_times_returns_all_times_for_a_give_location_product_and_date(self):
+        response = self.client.get(
+            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            [
+                "2021-08-23T17:00:00",
+                "2021-08-23T17:05:00",
+                "2021-08-23T17:10:00",
+                "2021-08-23T17:15:00",
+                "2021-08-23T17:20:00",
+                "2021-08-23T17:25:00",
+                "2021-08-23T17:30:00",
+                "2021-08-23T17:35:00",
+                "2021-08-23T17:40:00",
+                "2021-08-23T17:45:00",
+                "2021-08-23T17:50:00",
+                "2021-08-23T18:05:00",
+                "2021-08-23T18:10:00",
+                "2021-08-23T18:15:00",
+                "2021-08-23T18:20:00",
+                "2021-08-23T18:25:00",
+                "2021-08-23T18:30:00",
+                "2021-08-23T18:35:00",
+                "2021-08-23T18:40:00",
+                "2021-08-23T18:45:00",
+                "2021-08-23T18:50:00",
+                "2021-08-23T19:05:00",
+                "2021-08-23T19:10:00",
+                "2021-08-23T19:15:00",
+                "2021-08-23T19:20:00",
+                "2021-08-23T19:25:00",
+                "2021-08-23T19:30:00",
+                "2021-08-23T19:35:00",
+                "2021-08-23T19:40:00",
+                "2021-08-23T19:45:00",
+                "2021-08-23T19:50:00",
+            ],
+        )
+
+    def test_get_times_returns_400_when_missing_query_params(self):
+        for query_param in [
+            "",
+            "?product_id=79",
+            "?location_id=1",
+            "?location_id=1&date=2021-8-23",
+            "?product_id=1&date=2021-8-23",
+            "?product_id=1&location_id=1",
+        ]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 400)

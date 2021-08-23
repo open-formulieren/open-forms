@@ -39,7 +39,9 @@ class Plugin(BasePlugin):
 
     def __init__(self, url=None):
         wsdl = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "tests/mock/afspraakacceptatie.wsdl")
+            os.path.join(
+                os.path.dirname(__file__), "tests/mock/afspraakacceptatie.wsdl"
+            )
         )
 
         self.client = Client(wsdl)
