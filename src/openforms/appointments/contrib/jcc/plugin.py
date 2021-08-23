@@ -36,8 +36,11 @@ class Plugin(BasePlugin):
     Website: https://www.jccsoftware.nl/
     """
 
-    def __init__(self, url):
-        self.client = Client(url)
+    def __init__(self, url=None):
+        if url:
+            self.client = Client(url)
+        else:
+            self.client = None
 
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
