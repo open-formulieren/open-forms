@@ -50,10 +50,44 @@ const APPOINTMENT = {
         {
             type: 'select',
             input: true,
-            label: 'Select product component',
+            label: 'Select product component for locations',
             key: 'productForLocations',
             dataSrc: 'custom',
             tooltip: 'Choose the product component and we wil prefill locations for that product in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'checkbox',
+            key: 'showDates',
+            label: 'Show Dates',
+            tooltip: 'Show dates for a given product at a given location'
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select product component for dates',
+            key: 'productForDates',
+            dataSrc: 'custom',
+            tooltip: 'Choose the product component and we wil prefill locations for that product in this component',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    return Utils.getContextComponents(context);
+                }
+            }
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'Select location component for dates',
+            key: 'locationForDates',
+            dataSrc: 'custom',
+            tooltip: 'Choose the location component and we wil prefill dates for the location and product in this component',
             valueProperty: 'value',
             data: {
                 custom(context) {
