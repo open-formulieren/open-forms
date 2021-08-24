@@ -79,6 +79,12 @@
       "value": "Add step"
     }
   ],
+  "5uaKBM": [
+    {
+      "type": 0,
+      "value": "minus"
+    }
+  ],
   "5zieWh": [
     {
       "type": 0,
@@ -221,6 +227,12 @@
     {
       "type": 0,
       "value": "Form"
+    }
+  ],
+  "BrGg65": [
+    {
+      "type": 0,
+      "value": "plus"
     }
   ],
   "CN9j+L": [
@@ -631,6 +643,12 @@
       "value": "is less than"
     }
   ],
+  "inhTXo": [
+    {
+      "type": 0,
+      "value": "years"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -669,6 +687,12 @@
     {
       "type": 0,
       "value": "disabled"
+    }
+  ],
+  "mH3X/G": [
+    {
+      "type": 0,
+      "value": "today"
     }
   ],
   "mOjKcm": [
