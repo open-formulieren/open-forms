@@ -1,15 +1,22 @@
-import json
 import logging
 from datetime import date, datetime, time
+from typing import List, Optional
 
-from openforms.appointments.contrib.qmatic.models import QmaticConfig
+from requests.exceptions import RequestException
+from zds_client import ClientError
 
-from ..base import (
+from ...base import (
     AppointmentClient,
     AppointmentLocation,
     AppointmentProduct,
     BasePlugin,
 )
+from ...exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentException,
+)
+from .client import QmaticClient
 
 logger = logging.getLogger(__name__)
 
@@ -17,48 +24,52 @@ logger = logging.getLogger(__name__)
 class Plugin(BasePlugin):
     """
     Plugin for Qmatic Orchestra Calendar Public Appointment API (july 2017)
+
+    Website: https://www.qmatic.com/
     """
 
     def __init__(self):
-        config = QmaticConfig.get_solo()
-        if not config.service:
-            logger.warning("No service defined for Qmatic")
-            return
+        self.client = QmaticClient()
 
-        self.client = config.service.build_client()
-        self.api_root = config.service.api_root
-
-    def get_available_products(self, current_products: list = None) -> list:
+    def get_available_products(
+        self, current_products: Optional[List[AppointmentProduct]] = None
+    ) -> List[AppointmentProduct]:
         """
         NOTE: The API does not support making an appointment for multiple
         products. The `current_products` argument is ignored.
         """
         try:
-            response = self.client.get(f"{self.api_root}services")
-            if response.status_code != 200:
-                raise Exception(response.text)
-        except Exception as e:
-            logger.exception(e)
+            response = self.client.get("services")
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            logger.exception("Could not retrieve available products", exc_info=e)
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             AppointmentProduct(entry["publicId"], entry["name"])
             for entry in response.json()["serviceList"]
         ]
 
-    def get_locations(self, products: list) -> list:
-        if len(products) != 1:
-            return []
+    def get_locations(
+        self, products: List[AppointmentProduct]
+    ) -> List[AppointmentLocation]:
+        if len(products) > 1:
+            logger.warning("Attempt to retrieve locations for more than one product.")
 
         product_id = products[0].identifier
 
         try:
-            response = self.client.get(f"{self.api_root}services/{product_id}/branches")
-            if response.status_code != 200:
-                raise Exception(response.text)
-        except Exception as e:
-            logger.exception(e)
+            response = self.client.get(f"services/{product_id}/branches")
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve locations for product '%s'", product_id, exc_info=e
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             AppointmentLocation(entry["publicId"], entry["name"])
@@ -67,11 +78,11 @@ class Plugin(BasePlugin):
 
     def get_dates(
         self,
-        products: list,
+        products: List[AppointmentProduct],
         location: AppointmentLocation,
-        start_at: date = None,
-        end_at: date = None,
-    ) -> list:
+        start_at: Optional[date] = None,
+        end_at: Optional[date] = None,
+    ) -> List[date]:
         """
         NOTE: The API does not support getting dates between a start and end
         date. The `start_at` and `end_at` arguments are ingored.
@@ -83,21 +94,30 @@ class Plugin(BasePlugin):
 
         try:
             response = self.client.get(
-                f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates"
+                f"branches/{location.identifier}/services/{product_id}/dates"
             )
-            if response.status_code != 200:
-                raise Exception(response.text)
-        except Exception as e:
-            logger.exception(e)
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve dates for product '%s' at location '%s'",
+                product_id,
+                location,
+                exc_info=e,
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             datetime.fromisoformat(entry).date() for entry in response.json()["dates"]
         ]
 
     def get_times(
-        self, products: list, location: AppointmentLocation, day: date
-    ) -> list:
+        self,
+        products: List[AppointmentProduct],
+        location: AppointmentLocation,
+        day: date,
+    ) -> List[datetime]:
         if len(products) != 1:
             return []
 
@@ -105,13 +125,20 @@ class Plugin(BasePlugin):
 
         try:
             response = self.client.get(
-                f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates/{day}/times"
+                f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
             )
-            if response.status_code != 200:
-                raise Exception(response.text)
-        except Exception as e:
-            logger.exception(e)
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve times for product '%s' at location '%s' on %s",
+                product_id,
+                location,
+                day,
+                exc_info=e,
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             datetime.combine(day, time.fromisoformat(entry))
@@ -120,7 +147,7 @@ class Plugin(BasePlugin):
 
     def create_appointment(
         self,
-        products: list,
+        products: List[AppointmentProduct],
         location: AppointmentLocation,
         start_at: datetime,
         client: AppointmentClient,
@@ -152,24 +179,29 @@ class Plugin(BasePlugin):
 
         try:
             response = self.client.post(
-                f"{self.api_root}branches/{location.identifier}/services/{product_id}/dates/{start_at.date()}/times/{start_at.strftime('%H:%M')}/book",
+                f"branches/{location.identifier}/services/{product_id}/dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
                 data,
             )
-            if response.status_code not in [200, 201]:
-                raise Exception(response.text)
+            response.raise_for_status()
             return response.json()["publicId"]
-
+        except (ClientError, RequestException, KeyError) as e:
+            raise AppointmentCreateFailed(
+                "Could not create appointment for products '%s' at location '%s' starting at %s",
+                product_id,
+                location,
+                start_at,
+            )
         except Exception as e:
-            logger.exception(e)
-            raise
+            raise AppointmentException(e)
 
-    def delete_appointment(self, identifier: str) -> bool:
+    def delete_appointment(self, identifier: str) -> None:
         try:
-            response = self.client.delete(f"{self.api_root}appointments/{identifier}")
-            if response.status_code != 200:
-                raise Exception(response.text)
-        except Exception as e:
-            logger.exception(e)
-            return False
+            response = self.client.delete(f"appointments/{identifier}")
+            if response.status_code == 404:
+                raise AppointmentDeleteFailed(
+                    "Could not delete appointment",
+                )
 
-        return True
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            raise AppointmentDeleteFailed(e)

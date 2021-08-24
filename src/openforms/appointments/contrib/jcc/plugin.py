@@ -1,13 +1,21 @@
 import logging
 from datetime import date, datetime, timedelta
+from typing import List, Optional
 
+from requests.exceptions import RequestException
 from zeep import Client
+from zeep.exceptions import Error as ZeepError
 
-from ..base import (
+from ...base import (
     AppointmentClient,
     AppointmentLocation,
     AppointmentProduct,
     BasePlugin,
+)
+from ...exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentException,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,6 +28,8 @@ def squash_ids(lst):
 class Plugin(BasePlugin):
     """
     Plugin for JCC-Afspraken internetafsprakenadapter GGS2 (april 2020)
+
+    Website: https://www.jccsoftware.nl/
     """
 
     def __init__(self):
@@ -28,7 +38,9 @@ class Plugin(BasePlugin):
         #     "TODO: <from settings>"
         # )
 
-    def get_available_products(self, current_products: list = None) -> list:
+    def get_available_products(
+        self, current_products: Optional[List[AppointmentProduct]] = None
+    ) -> List[AppointmentProduct]:
         try:
             if current_products:
                 current_product_ids = squash_ids(current_products)
@@ -37,9 +49,11 @@ class Plugin(BasePlugin):
                 )
             else:
                 result = self.client.service.getGovAvailableProducts()
-        except Exception as e:
-            logger.exception(e)
+        except (ZeepError, RequestException) as e:
+            logger.exception("Could not retrieve available products", exc_info=e)
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             AppointmentProduct(
@@ -48,16 +62,24 @@ class Plugin(BasePlugin):
             for entry in result
         ]
 
-    def get_locations(self, products: list) -> list:
+    def get_locations(
+        self, products: List[AppointmentProduct]
+    ) -> List[AppointmentLocation]:
         product_ids = squash_ids(products)
 
         try:
             result = self.client.service.getGovLocationsForProduct(
                 productID=product_ids
             )
-        except Exception as e:
-            logger.exception(e)
+        except (ZeepError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve locations for products '%s'",
+                product_ids,
+                exc_info=e,
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
         return [
             AppointmentLocation(entry["locationID"], entry["locationDesc"])
@@ -66,17 +88,15 @@ class Plugin(BasePlugin):
 
     def get_dates(
         self,
-        products: list,
+        products: List[AppointmentProduct],
         location: AppointmentLocation,
-        start_at: date = None,
-        end_at: date = None,
-    ) -> list:
+        start_at: Optional[date] = None,
+        end_at: Optional[date] = None,
+    ) -> List[date]:
         product_ids = squash_ids(products)
 
-        if not start_at:
-            start_at = date.today()
-        if not end_at:
-            end_at = start_at + timedelta(days=14)
+        start_at = start_at or date.today()
+        end_at = end_at or (start_at + timedelta(days=14))
 
         try:
             max_end_date = self.client.service.getGovLatestPlanDate(
@@ -93,13 +113,25 @@ class Plugin(BasePlugin):
                 appDuration=0,
             )
             return days
-        except Exception as e:
-            logger.exception(e)
+        except (ZeepError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
+                product_ids,
+                location,
+                start_at,
+                end_at,
+                exc_info=e,
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
     def get_times(
-        self, products: list, location: AppointmentLocation, day: date
-    ) -> list:
+        self,
+        products: List[AppointmentProduct],
+        location: AppointmentLocation,
+        day: date,
+    ) -> List[datetime]:
         product_ids = squash_ids(products)
 
         try:
@@ -110,13 +142,21 @@ class Plugin(BasePlugin):
                 appDuration=0,
             )
             return times
-        except Exception as e:
-            logger.exception(e)
+        except (ZeepError, RequestException) as e:
+            logger.exception(
+                "Could not retrieve times for products '%s' at location '%s' on %s",
+                product_ids,
+                location,
+                day,
+                exc_info=e,
+            )
             return []
+        except Exception as e:
+            raise AppointmentException(e)
 
     def create_appointment(
         self,
-        products: list,
+        products: List[AppointmentProduct],
         location: AppointmentLocation,
         start_at: datetime,
         client: AppointmentClient,
@@ -157,27 +197,24 @@ class Plugin(BasePlugin):
             if result["updateStatus"] == 0:
                 return result["appID"]
             else:
-                raise Exception(
-                    "Could not create appointment (updateStatus=%s)",
+                raise AppointmentCreateFailed(
+                    "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
+                    product_ids,
+                    location,
+                    start_at,
                     result["updateStatus"],
                 )
+        except (ZeepError, RequestException, KeyError) as e:
+            raise AppointmentCreateFailed(e)
 
-        except Exception as e:
-            logger.exception(e)
-            raise
-
-    def delete_appointment(self, identifier: str) -> bool:
+    def delete_appointment(self, identifier: str) -> None:
         try:
             result = self.client.service.deleteGovAppointment(appID=identifier)
 
-            if result == 0:
-                return True
-            else:
-                raise Exception(
+            if result != 0:
+                raise AppointmentDeleteFailed(
                     "Could not delete appointment (updateStatus=%s)",
                     result,
                 )
-
-        except Exception as e:
-            logger.exception(e)
-            return False
+        except (ZeepError, RequestException, KeyError) as e:
+            raise AppointmentDeleteFailed(e)

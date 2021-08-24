@@ -153,7 +153,6 @@ INSTALLED_APPS = [
     "openforms.forms",
     "openforms.multidomain",
     "openforms.products",
-    "openforms.restapis",
     "openforms.ui",
     "openforms.utils",
     "openforms.submissions",

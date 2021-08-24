@@ -16,13 +16,15 @@ class QmaticConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "restapis.RestAPI",
+        "zgw_consumers.Service",
         verbose_name=_("Calendar API"),
         on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
         null=True,
         help_text=_(
-            "The Qmatic Orchestra Calendar Public Appointment API service. Example: https://example.com:8443/calendar-backend/public/api/v1/"
+            "The Qmatic Orchestra Calendar Public Appointment API service. "
+            "Example: https://example.com:8443/calendar-backend/public/api/v1/"
         ),
     )
 
