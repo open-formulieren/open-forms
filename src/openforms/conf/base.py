@@ -203,6 +203,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
+    "openforms.authentication.contrib.digid_oidc.apps.DigiDOIDCApp",
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
@@ -438,6 +439,7 @@ AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
+    "openforms.authentication.contrib.digid_oidc.backends.OIDCAuthenticationDigiDBackend",
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
 ]
 
