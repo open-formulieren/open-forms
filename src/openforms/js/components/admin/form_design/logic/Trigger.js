@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
@@ -14,19 +14,7 @@ import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import {useOnChanged} from './hooks';
-
-
-// Used when operandType is changed to 'today'. For the other operand types (literal, component),
-// a value/component has to be entered/selected, which then changes the 'operand' in the state.
-// Instead, this component automatically changes the 'operand' in the state the first time it's rendered.
-const Today = ({name, onChange}) => {
-    useEffect(() => {
-        const fakeEvent = {target: {name: name, value: {today: []} }};
-        onChange(fakeEvent);
-    }, []);
-
-    return null;
-};
+import Today from './Today';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -110,8 +98,9 @@ const parseJsonLogic = (logic) => {
         if (op === 'var') {
             operandType = 'component';
             operand = compareValue.var;
-        } else if (op === 'today') {
+        } else if (op === '+' || op === '-') {
             operandType = 'today';
+            operand = compareValue;
         } else {
             console.warn(`Unsupported operator: ${op}, can't derive operandType`);
         }
@@ -208,9 +197,23 @@ const Trigger = ({ name, logic, onChange }) => {
         }
         case 'today': {
             valueInput = (
-                <Today name="operand" onChange={onTriggerChange}/>
+                <Today
+                    name="operand"
+                    onChange={onTriggerChange}
+                    value={operand}
+                />
             );
-            compareValue = {'today': []};
+
+            let sign, years;
+            if (operand) {
+                sign = jsonLogic.get_operator(operand);
+                years = operand[sign][1]['years'];
+            } else {
+                sign = '+';
+                years = 0;
+            }
+            compareValue = {};
+            compareValue[sign] = [{today: []}, {years: years}];
             break;
         }
         case '': { // nothing selected yet

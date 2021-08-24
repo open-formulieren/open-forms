@@ -34,6 +34,14 @@ const OPERATORS = {
         description: '"in" operator description',
         defaultMessage: 'in'
     }), // array or string (!}
+    '+': defineMessage({
+        description: '"+" operator description',
+        defaultMessage: 'plus'
+    }),
+    '-': defineMessage({
+        description: '"-" operator description',
+        defaultMessage: 'minus'
+    }),
 };
 
 
