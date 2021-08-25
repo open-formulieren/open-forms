@@ -2,6 +2,20 @@ import {Formio} from 'react-formio';
 
 import {DEFAULT_TEXT_TABS, PREFILL} from './edit/tabs';
 
+const APPOINTMENT = {
+    key: 'appointment',
+    label: 'Appointment',
+    components: [
+        {
+            type: 'checkbox',
+            key: 'appointmentLastName',
+            label: 'Last Name for Appointment',
+            tooltip: 'The value filled into this component will be used as the last name for booking the appointment'
+        }
+    ]
+};
+
+
 
 class TextField extends Formio.Components.components.textfield {
 
@@ -11,6 +25,7 @@ class TextField extends Formio.Components.components.textfield {
             components: [
                 ...DEFAULT_TEXT_TABS.components,
                 PREFILL,
+                APPOINTMENT,
             ]
         };
         return {components: [tabs]};
