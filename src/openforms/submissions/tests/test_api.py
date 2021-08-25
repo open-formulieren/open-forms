@@ -47,3 +47,21 @@ class SubmissionAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
+
+
+class RemovalMethodsAPITests(APITestCase):
+    def test_get_removal_methods_returns_correct_removal_methods(self):
+        url = reverse("api:submissions:removal-methods")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            [
+                ["delete_permanently", "Submissions will be deleted"],
+                [
+                    "make_anonymous",
+                    "Sensitive data within the submissions will be deleted",
+                ],
+            ],
+        )

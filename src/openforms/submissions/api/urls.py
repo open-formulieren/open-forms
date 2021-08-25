@@ -3,6 +3,7 @@ from django.urls import path
 from openforms.submissions.api.views import (
     CheckReportStatusView,
     DownloadSubmissionReportView,
+    RemovalMethodsView,
     TemporaryFileUploadView,
     TemporaryFileView,
 )
@@ -30,4 +31,5 @@ urlpatterns = [
         TemporaryFileView.as_view(),
         name="temporary-file",
     ),
+    path("removal-methods", RemovalMethodsView.as_view(), name="removal-methods"),
 ]

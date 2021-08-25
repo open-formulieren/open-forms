@@ -24,6 +24,7 @@ import {
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
+    REMOVAL_METHODS_ENDPOINT,
 } from './constants';
 import {loadPlugins, PluginLoadingError, saveLogicRules} from './data';
 import TinyMCEEditor from './Editor';
@@ -60,7 +61,6 @@ const initialFormState = {
         erroredSubmissionsRemovalLimit: '',
         erroredSubmissionsRemovalMethod: '',
         allSubmissionsRemovalLimit: '',
-        removalMethods: [],
     },
     literals: {
         beginText: {
@@ -85,6 +85,7 @@ const initialFormState = {
     availablePrefillPlugins: [],
     selectedAuthPlugins: [],
     availablePaymentBackends: [],
+    availableRemovalMethods: [],
     stepsToDelete: [],
     submitting: false,
     logicRules: [],
@@ -405,6 +406,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
         {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
         {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+        {endpoint: REMOVAL_METHODS_ENDPOINT, stateVar: 'availableRemovalMethods'},
     ];
 
     // only load rules if we're dealing with an existing form rather than when we're creating
@@ -833,7 +835,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         erroredSubmissionsRemovalLimit={state.form.erroredSubmissionsRemovalLimit}
                         erroredSubmissionsRemovalMethod={state.form.erroredSubmissionsRemovalMethod}
                         allSubmissionsRemovalLimit={state.form.allSubmissionsRemovalLimit}
-                        removalMethods={state.form.removalMethods}
+                        removalMethods={state.availableRemovalMethods}
                         onChange={onFieldChange}
                     />
                 </TabPanel>

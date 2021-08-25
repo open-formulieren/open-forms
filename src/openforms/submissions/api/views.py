@@ -7,11 +7,15 @@ from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import status
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from ...utils.api.views import ListMixin
 from ..attachments import clean_mime_type
+from ..constants import RemovalMethods
 from ..models import SubmissionReport, TemporaryFileUpload
 from ..tokens import token_generator
 from ..utils import add_upload_to_session, remove_upload_from_session
@@ -176,3 +180,21 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
+
+
+@extend_schema(
+    summary=_("View removal methods"),
+)
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("Retrieve removal methods"),
+        description=_("Retrieve removal methods for removing submissions"),
+        responses={200: bytes},
+    ),
+)
+class RemovalMethodsView(APIView):
+
+    authentication_classes = ()
+
+    def get(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_200_OK, data=list(RemovalMethods))
