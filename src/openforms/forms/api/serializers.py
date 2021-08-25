@@ -12,7 +12,7 @@ from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
-from ..constants import LogicActionTypes
+from ..constants import LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
@@ -314,6 +314,11 @@ class ComponentPropertySerializer(serializers.Serializer):
         help_text=_(
             "The Formio component property to alter, identified by `component.key`"
         ),
+    )
+    type = serializers.ChoiceField(
+        label=_("type"),
+        help_text=_("The type of the value field"),
+        choices=PropertyTypes,
     )
 
 

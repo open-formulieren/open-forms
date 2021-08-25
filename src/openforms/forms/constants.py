@@ -16,3 +16,7 @@ class LogicActionTypes(DjangoChoices):
     value = ChoiceItem("value", _("Set the value of a component"))
 
     requires_component = {property, value}
+
+
+class PropertyTypes(DjangoChoices):
+    bool = ChoiceItem("bool", _("Boolean"))
