@@ -9,7 +9,7 @@ import {TextInput} from '../forms/Inputs';
 import Select from '../forms/Select';
 
 
-const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) => {
+const DataRemoval = ({ submissionsRemovalOptions, removalMethods=[], onChange }) => {
 
     const { successfulSubmissionsRemovalLimit='', successfulSubmissionsRemovalMethod='',
             incompleteSubmissionsRemovalLimit='', incompleteSubmissionsRemovalMethod='',
@@ -35,7 +35,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     }
                 >
                     <TextInput
-                        value={successfulSubmissionsRemovalLimit}
+                        value={successfulSubmissionsRemovalLimit || ""}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -60,7 +60,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     <Select
                         name="submissionsRemovalOptions.successfulSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={successfulSubmissionsRemovalMethod}
+                        value={successfulSubmissionsRemovalMethod || ""}
                         onChange={onChange}
                         allowBlank
                     />
@@ -83,7 +83,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     }
                 >
                     <TextInput
-                        value={incompleteSubmissionsRemovalLimit}
+                        value={incompleteSubmissionsRemovalLimit || ""}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -108,7 +108,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     <Select
                         name="submissionsRemovalOptions.incompleteSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={incompleteSubmissionsRemovalMethod}
+                        value={incompleteSubmissionsRemovalMethod || ""}
                         onChange={onChange}
                         allowBlank
                     />
@@ -131,7 +131,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     }
                 >
                     <TextInput
-                        value={erroredSubmissionsRemovalLimit}
+                        value={erroredSubmissionsRemovalLimit || ""}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -156,7 +156,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     <Select
                         name="submissionsRemovalOptions.erroredSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={erroredSubmissionsRemovalMethod}
+                        value={erroredSubmissionsRemovalMethod || ""}
                         onChange={onChange}
                         allowBlank
                     />
@@ -179,7 +179,7 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
                     }
                 >
                     <TextInput
-                        value={allSubmissionsRemovalLimit}
+                        value={allSubmissionsRemovalLimit || ""}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -190,16 +190,16 @@ const DataRemoval = ({ submissionsRemovalOptions, removalMethods, onChange }) =>
 };
 
 DataRemoval.propTypes = {
-    submissionsRemovalOptions: PropTypes.shape(PropTypes.shape({
-        successfulSubmissionsRemovalLimit: PropTypes.number,
+    submissionsRemovalOptions: PropTypes.shape({
+        successfulSubmissionsRemovalLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         successfulSubmissionsRemovalMethod: PropTypes.string,
-        incompleteSubmissionsRemovalLimit: PropTypes.number,
+        incompleteSubmissionsRemovalLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         incompleteSubmissionsRemovalMethod: PropTypes.string,
-        erroredSubmissionsRemovalLimit: PropTypes.number,
+        erroredSubmissionsRemovalLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         erroredSubmissionsRemovalMethod: PropTypes.string,
-        allSubmissionsRemovalLimit: PropTypes.number,
-    })),
-    removalMethods: PropTypes.arrayOf(PropTypes.array).isRequired,
+        allSubmissionsRemovalLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }).isRequired,
+    removalMethods: PropTypes.arrayOf(PropTypes.array),
     onChange: PropTypes.func.isRequired,
 };
 
