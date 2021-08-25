@@ -29,6 +29,11 @@
     "description": "Confirmation template label",
     "originalDefault": "Submission page content"
   },
+  "1fD+K4": {
+    "defaultMessage": "Incomplete Submissions Removal Method",
+    "description": "Incomplete Submissions Removal Method field label",
+    "originalDefault": "Incomplete Submissions Removal Method"
+  },
   "294MCM": {
     "defaultMessage": "Verwijderd",
     "description": "Form deleted field label",
@@ -119,6 +124,11 @@
     "description": "Extra logic action prefix",
     "originalDefault": "and"
   },
+  "9zJefY": {
+    "defaultMessage": "Errored Submissions Removal Limit",
+    "description": "Errored Submissions Removal Limit field label",
+    "originalDefault": "Errored Submissions Removal Limit"
+  },
   "AFyQut": {
     "defaultMessage": "is groter dan",
     "description": "\">\" operator description",
@@ -163,6 +173,11 @@
     "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
+  },
+  "Cm2Mjl": {
+    "defaultMessage": "Data Removal",
+    "description": "Data removal tab title",
+    "originalDefault": "Data Removal"
   },
   "DGpAyT": {
     "defaultMessage": "Omlaag",
@@ -209,6 +224,11 @@
     "description": "Form canSubmit field help text",
     "originalDefault": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
   },
+  "Gc7gu3": {
+    "defaultMessage": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
+    "description": "Incomplete Submissions Removal Method help text",
+    "originalDefault": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+  },
   "GfH2yX": {
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.confirmText help text",
@@ -219,10 +239,20 @@
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
   },
+  "HF0cSk": {
+    "defaultMessage": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+    "description": "Errored Submissions Removal Limit help text",
+    "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
   "HXE3Mm": {
     "defaultMessage": "URL-deel van het formulier.",
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
+  },
+  "I0bgsg": {
+    "defaultMessage": "Successful Submissions Removal Method field label",
+    "description": "Successful Submissions Removal Method",
+    "originalDefault": "Successful Submissions Removal Method field label"
   },
   "I3zyib": {
     "defaultMessage": "Selecteer formulierdefinitie",
@@ -238,6 +268,11 @@
     "defaultMessage": "verborgen",
     "description": "component property \"hidden\" label",
     "originalDefault": "hidden"
+  },
+  "JZRX+C": {
+    "defaultMessage": "Successful Submissions Removal Limit",
+    "description": "Successful Submissions Removal Limit field label",
+    "originalDefault": "Successful Submissions Removal Limit"
   },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
@@ -319,6 +354,11 @@
     "description": "Form slug field label",
     "originalDefault": "Slug"
   },
+  "UKTqb8": {
+    "defaultMessage": "All Submissions Removal Limit",
+    "description": "All Submissions Removal Limit field label",
+    "originalDefault": "All Submissions Removal Limit"
+  },
   "VQYmOD": {
     "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
@@ -369,6 +409,11 @@
     "description": "Move up icon title",
     "originalDefault": "Move up"
   },
+  "cDbGU2": {
+    "defaultMessage": "Incomplete Submissions Removal Limit",
+    "description": "Incomplete Submissions Removal Limit field label",
+    "originalDefault": "Incomplete Submissions Removal Limit"
+  },
   "cUVVbl": {
     "defaultMessage": "is groter dan of gelijk aan",
     "description": "\">=\" operator description",
@@ -393,6 +438,11 @@
     "defaultMessage": "'Start' tekst",
     "description": "literals.beginText form label",
     "originalDefault": "Begin text"
+  },
+  "f9Zr9D": {
+    "defaultMessage": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+    "description": "Incomplete Submissions Removal Limit help text",
+    "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "ftzF/n": {
     "defaultMessage": "Als",
@@ -459,10 +509,20 @@
     "description": "JSON data preview visibility toggle",
     "originalDefault": "Toggle DSL preview"
   },
+  "nkr7r0": {
+    "defaultMessage": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.",
+    "description": "All Submissions Removal Limit help text",
+    "originalDefault": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
+  },
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
     "description": "Generic error message",
     "originalDefault": "The form is invalid. Please correct the errors below."
+  },
+  "oxYXJX": {
+    "defaultMessage": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
+    "description": "Successful Submissions Removal Method help text",
+    "originalDefault": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
   "p8LSwF": {
     "defaultMessage": "Voeg actie toe",
@@ -483,6 +543,11 @@
     "defaultMessage": "Naam",
     "description": "Form step name label",
     "originalDefault": "Step name"
+  },
+  "qYZ81s": {
+    "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
+    "description": "Errored Submissions Removal Method help text",
+    "originalDefault": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
@@ -519,6 +584,11 @@
     "description": "No-active-step-selected notice",
     "originalDefault": "Select a step to view or modify."
   },
+  "uG5kOq": {
+    "defaultMessage": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
+    "description": "Successful Submissions Removal Limit help text",
+    "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
   "uleYj3": {
     "defaultMessage": "Geschiedenis",
     "description": "History link button",
@@ -533,6 +603,11 @@
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+  },
+  "wIaGgb": {
+    "defaultMessage": "Errored Submissions Removal Method",
+    "description": "Errored Submissions Removal Method field label",
+    "originalDefault": "Errored Submissions Removal Method"
   },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",

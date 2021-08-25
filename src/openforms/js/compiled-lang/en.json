@@ -43,6 +43,12 @@
       "value": "Submission page content"
     }
   ],
+  "1fD+K4": [
+    {
+      "type": 0,
+      "value": "Incomplete Submissions Removal Method"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -187,6 +193,12 @@
       "value": "and"
     }
   ],
+  "9zJefY": [
+    {
+      "type": 0,
+      "value": "Errored Submissions Removal Limit"
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -239,6 +251,12 @@
     {
       "type": 0,
       "value": "Select the allowed authentication plugins to log in at the start of the form."
+    }
+  ],
+  "Cm2Mjl": [
+    {
+      "type": 0,
+      "value": "Data Removal"
     }
   ],
   "DGpAyT": [
@@ -295,6 +313,12 @@
       "value": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
     }
   ],
+  "Gc7gu3": [
+    {
+      "type": 0,
+      "value": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+    }
+  ],
   "GfH2yX": [
     {
       "type": 0,
@@ -307,10 +331,22 @@
       "value": "Maintenance mode"
     }
   ],
+  "HF0cSk": [
+    {
+      "type": 0,
+      "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
   "HXE3Mm": [
     {
       "type": 0,
       "value": "Slug of the form, used in URLs"
+    }
+  ],
+  "I0bgsg": [
+    {
+      "type": 0,
+      "value": "Successful Submissions Removal Method field label"
     }
   ],
   "I3zyib": [
@@ -329,6 +365,12 @@
     {
       "type": 0,
       "value": "hidden"
+    }
+  ],
+  "JZRX+C": [
+    {
+      "type": 0,
+      "value": "Successful Submissions Removal Limit"
     }
   ],
   "KIy7Wr": [
@@ -435,6 +477,12 @@
       "value": "Slug"
     }
   ],
+  "UKTqb8": [
+    {
+      "type": 0,
+      "value": "All Submissions Removal Limit"
+    }
+  ],
   "VQYmOD": [
     {
       "type": 0,
@@ -511,6 +559,12 @@
       "value": "Move up"
     }
   ],
+  "cDbGU2": [
+    {
+      "type": 0,
+      "value": "Incomplete Submissions Removal Limit"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -539,6 +593,12 @@
     {
       "type": 0,
       "value": "Begin text"
+    }
+  ],
+  "f9Zr9D": [
+    {
+      "type": 0,
+      "value": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
   "ftzF/n": [
@@ -623,10 +683,22 @@
       "value": "Toggle DSL preview"
     }
   ],
+  "nkr7r0": [
+    {
+      "type": 0,
+      "value": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
       "value": "The form is invalid. Please correct the errors below."
+    }
+  ],
+  "oxYXJX": [
+    {
+      "type": 0,
+      "value": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
   "p8LSwF": [
@@ -651,6 +723,12 @@
     {
       "type": 0,
       "value": "Step name"
+    }
+  ],
+  "qYZ81s": [
+    {
+      "type": 0,
+      "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
   "qo1UbS": [
@@ -695,6 +773,12 @@
       "value": "Select a step to view or modify."
     }
   ],
+  "uG5kOq": [
+    {
+      "type": 0,
+      "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
   "uleYj3": [
     {
       "type": 0,
@@ -711,6 +795,12 @@
     {
       "type": 0,
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+    }
+  ],
+  "wIaGgb": [
+    {
+      "type": 0,
+      "value": "Errored Submissions Removal Method"
     }
   ],
   "xJBMaf": [
