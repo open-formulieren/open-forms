@@ -146,7 +146,6 @@ class Form(models.Model):
         _("successful submissions removal method"),
         max_length=50,
         blank=True,
-        null=True,
         choices=RemovalMethods,
         help_text=_(
             "How successful submissions of this form will be removed after the limit. "
@@ -167,7 +166,6 @@ class Form(models.Model):
         _("incomplete submissions removal method"),
         max_length=50,
         blank=True,
-        null=True,
         choices=RemovalMethods,
         help_text=_(
             "How incomplete submissions of this form will be removed after the limit. "
@@ -188,7 +186,6 @@ class Form(models.Model):
         _("errored submission removal limit"),
         max_length=50,
         blank=True,
-        null=True,
         choices=RemovalMethods,
         help_text=_(
             "How errored submissions of this form will be removed after the limit. "
