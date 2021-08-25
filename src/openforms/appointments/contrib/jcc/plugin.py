@@ -52,8 +52,8 @@ class Plugin(BasePlugin):
         except (ZeepError, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             AppointmentProduct(
@@ -78,8 +78,8 @@ class Plugin(BasePlugin):
                 exc_info=e,
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             AppointmentLocation(entry["locationID"], entry["locationDesc"])
@@ -123,8 +123,8 @@ class Plugin(BasePlugin):
                 exc_info=e,
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
     def get_times(
         self,
@@ -151,8 +151,8 @@ class Plugin(BasePlugin):
                 exc_info=e,
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
     def create_appointment(
         self,

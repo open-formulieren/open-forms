@@ -44,8 +44,8 @@ class Plugin(BasePlugin):
         except (ClientError, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             AppointmentProduct(entry["publicId"], entry["name"])
@@ -68,8 +68,8 @@ class Plugin(BasePlugin):
                 "Could not retrieve locations for product '%s'", product_id, exc_info=e
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             AppointmentLocation(entry["publicId"], entry["name"])
@@ -105,8 +105,8 @@ class Plugin(BasePlugin):
                 exc_info=e,
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             datetime.fromisoformat(entry).date() for entry in response.json()["dates"]
@@ -137,8 +137,8 @@ class Plugin(BasePlugin):
                 exc_info=e,
             )
             return []
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
         return [
             datetime.combine(day, time.fromisoformat(entry))
@@ -191,8 +191,8 @@ class Plugin(BasePlugin):
                 location,
                 start_at,
             )
-        except Exception as e:
-            raise AppointmentException(e)
+        except Exception as exc:
+            raise AppointmentException from exc
 
     def delete_appointment(self, identifier: str) -> None:
         try:
