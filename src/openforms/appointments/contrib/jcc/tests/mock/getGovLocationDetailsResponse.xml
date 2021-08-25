@@ -1,0 +1,13 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Body>
+      <getGovLocationDetailsResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <locaties xmlns="">
+            <locationDesc>Maykin Media</locationDesc>
+            <address>Straat 1</address>
+            <postalcode>1111 AA</postalcode>
+            <city>Stad</city>
+            <telephone>012-3456789</telephone>
+         </locaties>
+      </getGovLocationDetailsResponse>
+   </soap:Body>
+</soap:Envelope>

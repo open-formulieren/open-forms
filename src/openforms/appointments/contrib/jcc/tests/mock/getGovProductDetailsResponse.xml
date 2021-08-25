@@ -1,0 +1,11 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Body>
+      <getGovProductDetailsResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <out xmlns="">
+            <description>Paspoort aanvraag</description>
+            <appDuration>10</appDuration>
+            <requisites>PGJvZHk+PGgxPlRla3N0IG1ldCBIVE1MIG9wbWFhazwvaDE+PHA+VGVzdDwvcD48L2h0bWw+</requisites>
+         </out>
+      </getGovProductDetailsResponse>
+   </soap:Body>
+</soap:Envelope>

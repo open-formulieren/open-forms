@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -31,6 +32,9 @@ class AppointmentProduct:
 class AppointmentLocation:
     identifier: str
     name: str
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
 
     def __str__(self):
         return self.identifier
@@ -47,6 +51,23 @@ class AppointmentClient:
         return self.last_name
 
 
+@dataclass()
+class AppointmentDetails:
+    identifier: str
+    products: List[AppointmentProduct]
+    location: AppointmentLocation
+    start_at: datetime
+    end_at: Optional[datetime] = None
+    remarks: Optional[str] = None
+
+    # These are typically key/values-pairs where both the key and value are
+    # considered to be HTML-safe and suited to show to end users.
+    other: Optional[dict] = None
+
+    def __str__(self):
+        return self.identifier
+
+
 class BasePlugin:
     """
     Base Appointment plugin.
@@ -54,9 +75,6 @@ class BasePlugin:
 
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     configuration_options = EmptyOptions
-
-    def __init__(self, identifier: str):
-        self.identifier = identifier
 
     # override
 
@@ -180,7 +198,27 @@ class BasePlugin:
         """
         raise NotImplementedError()
 
+    def get_appointment_details(self, identifier: str) -> str:
+        """
+        Get appointment details.
+
+        :param identifier: A string that represents the unique identification of the appointment.
+        :returns: :class:`AppointmentDetails`.
+        """
+        raise NotImplementedError()
+
     # cosmetics
 
     def get_label(self) -> str:
         return self.verbose_name
+
+    def get_appointment_details_html(self, identifier: str) -> str:
+        """
+        Returns an HTML version of the appointment details that can be used in
+        a mail or webpage.
+        """
+        details = self.get_appointment_details(identifier)
+
+        return render_to_string(
+            "appointments/appointment_details.html", {"appointment": details}
+        )

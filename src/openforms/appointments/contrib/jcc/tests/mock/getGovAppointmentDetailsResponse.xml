@@ -1,0 +1,27 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <soap:Body>
+      <getGovAppointmentDetailsResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <appointment xmlns="">
+            <productID>1</productID>
+            <clientLastName>Doe</clientLastName>
+            <clientSex>M</clientSex>
+            <clientDateOfBirth>1980-01-01</clientDateOfBirth>
+            <clientInitials>John</clientInitials>
+            <clientAddress>Straat 1</clientAddress>
+            <clientPostalCode>1111 AA</clientPostalCode>
+            <clientCity>Stad</clientCity>
+            <clientCountry>Nederland</clientCountry>
+            <clientTel>06123456789</clientTel>
+            <clientMail>john.doe@example.com</clientMail>
+            <locationID>1</locationID>
+            <appStartTime>2021-08-30T15:00:00</appStartTime>
+            <appEndTime>2021-08-30T15:15:00</appEndTime>
+            <appointmentDesc>Dit is een testafspraak
+
+Bvd,
+John</appointmentDesc>
+            <isClientVerified>false</isClientVerified>
+         </appointment>
+      </getGovAppointmentDetailsResponse>
+   </soap:Body>
+</soap:Envelope>

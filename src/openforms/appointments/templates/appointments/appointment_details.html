@@ -1,0 +1,40 @@
+{% load i18n %}
+
+<table>
+    <tr>
+        <td>{% trans "Products" %}</td>
+        <td>
+            {% for product in appointment.products %}
+                {{ product.name }}{% if not forloop.last %}<br />{% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>{% trans "Location" %}</td>
+        <td>
+            {{ appointment.location.name }}<br />
+            {{ appointment.location.address }}<br />
+            {{ appointment.location.postalcode }} {{ appointment.location.city }}
+        </td>
+    </tr>
+    <tr>
+        <td>{% trans "Date and time" %}</td>
+        <td>
+            {{ appointment.start_at.date }}, {{ appointment.start_at.time }}{% if appointment.end_at %} - {{ appointment.end_at.time }}{% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>{% trans "Remarks" %}</td>
+        <td>
+            {{ appointment.remarks|linebreaksbr }}
+        </td>
+    </tr>
+    {% if appointment.other %}
+        {% for key, value in appointment.other.items %}
+            <tr>
+                <td>{{ key|safe }}</td>
+                <td>{{ value|safe }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+</table>
