@@ -64,11 +64,13 @@ class BasePlugin:
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:
         """
-        Retrieve all available products and services to create an appointment
-        for. You can pass `current_products` to only retrieve available
-        products in combination with the `current_products`.
+        Retrieve all available products and services to create an appointment for.
 
-        :param current_products: List of :class:`AppointmentProduct`, as obtained from another :meth:`get_available_products` call.
+        You can pass ``current_products`` to only retrieve available
+        products in combination with the ``current_products``.
+
+        :param current_products: List of :class:`AppointmentProduct`, as obtained from
+          another :meth:`get_available_products` call.
         :returns: List of :class:`AppointmentProduct`
         """
         raise NotImplementedError()
@@ -77,10 +79,10 @@ class BasePlugin:
         self, products: List[AppointmentProduct]
     ) -> List[AppointmentLocation]:
         """
-        Retrieve all available locations for given `products`.
+        Retrieve all available locations for given ``products``.
 
-        :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
-        :returns: List of :class:`AppointmentLocation`
+        :param products: List of :class:`AppointmentProduct`, as obtained from
+        :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`
         """
         raise NotImplementedError()
 
@@ -92,7 +94,7 @@ class BasePlugin:
         end_at: Optional[date] = None,
     ) -> List[date]:
         """
-        Retrieve all available dates for given `products` and `location`.
+        Retrieve all available dates for given ``products`` and ``location``.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
         :param location: An :class:`AppointmentLocation`, as obtained from :meth:`get_locations`.
@@ -109,7 +111,7 @@ class BasePlugin:
         day: date,
     ) -> List[datetime]:
         """
-        Retrieve all available times for given `products`, `location` and `day`.
+        Retrieve all available times for given ``products``, ``location`` and ``day``.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from `get_available_products`.
         :param location: An :class:`AppointmentLocation`, as obtained from `get_locations`.

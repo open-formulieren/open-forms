@@ -35,8 +35,10 @@ class Plugin(BasePlugin):
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:
         """
+        Retrieve all available products and services to create an appointment for.
+
         NOTE: The API does not support making an appointment for multiple
-        products. The `current_products` argument is ignored.
+        products. The ``current_products`` argument is ignored.
         """
         try:
             response = self.client.get("services")
@@ -84,6 +86,8 @@ class Plugin(BasePlugin):
         end_at: Optional[date] = None,
     ) -> List[date]:
         """
+        Retrieve all available dates for given ``products`` and ``location``.
+
         NOTE: The API does not support getting dates between a start and end
         date. The `start_at` and `end_at` arguments are ingored.
         """
