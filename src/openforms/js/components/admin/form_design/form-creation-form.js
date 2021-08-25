@@ -54,13 +54,7 @@ const initialFormState = {
         product: null,
         paymentBackend: '',
         paymentBackendOptions: {},
-        successfulSubmissionsRemovalLimit: '',
-        successfulSubmissionsRemovalMethod: '',
-        incompleteSubmissionsRemovalLimit: '',
-        incompleteSubmissionsRemovalMethod: '',
-        erroredSubmissionsRemovalLimit: '',
-        erroredSubmissionsRemovalMethod: '',
-        allSubmissionsRemovalLimit: '',
+        submissionsRemovalOptions: {},
     },
     literals: {
         beginText: {
@@ -142,6 +136,9 @@ function reducer(draft, action) {
                     draft.literals[fieldName].value = value;
                     break;
                 }
+                case 'submissionsRemovalOptions':
+                    draft.form.submissionsRemovalOptions[fieldName] = value;
+                    break;
                 default: {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
@@ -828,13 +825,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <DataRemoval
-                        successfulSubmissionsRemovalLimit={state.form.successfulSubmissionsRemovalLimit}
-                        successfulSubmissionsRemovalMethod={state.form.successfulSubmissionsRemovalMethod}
-                        incompleteSubmissionsRemovalLimit={state.form.incompleteSubmissionsRemovalLimit}
-                        incompleteSubmissionsRemovalMethod={state.form.incompleteSubmissionsRemovalMethod}
-                        erroredSubmissionsRemovalLimit={state.form.erroredSubmissionsRemovalLimit}
-                        erroredSubmissionsRemovalMethod={state.form.erroredSubmissionsRemovalMethod}
-                        allSubmissionsRemovalLimit={state.form.allSubmissionsRemovalLimit}
+                        submissionsRemovalOptions={state.form.submissionsRemovalOptions}
                         removalMethods={state.availableRemovalMethods}
                         onChange={onFieldChange}
                     />
