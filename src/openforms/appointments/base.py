@@ -82,7 +82,7 @@ class BasePlugin:
         Retrieve all available locations for given ``products``.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from
-        :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`
+          :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`
         """
         raise NotImplementedError()
 
