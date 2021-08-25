@@ -142,7 +142,7 @@ class FormDefinition(models.Model):
     def sensitive_fields(self):
         sensitive_fields = []
 
-        for component in self.configuration["components"]:
+        for component in self.iter_components(recursive=True):
             if component.get("isSensitiveData"):
                 sensitive_fields.append(component["key"])
 

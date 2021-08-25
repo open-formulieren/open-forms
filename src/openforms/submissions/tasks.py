@@ -2,21 +2,9 @@ import itertools
 import logging
 from datetime import timedelta
 
-from django.db.models import (
-    Case,
-    CharField,
-    DateTimeField,
-    DurationField,
-    ExpressionWrapper,
-    F,
-    IntegerField,
-    Value,
-    When,
-)
-from django.utils import timezone
+from django.db.models import F
 
 from ..celery import app
-from ..config.models import GlobalConfiguration
 from ..submissions.constants import RemovalMethods
 from .constants import RegistrationStatuses
 from .models import Submission
@@ -28,29 +16,9 @@ logger = logging.getLogger(__name__)
 def delete_submissions():
     logger.debug("Deleting submissions")
 
-    config = GlobalConfiguration.get_solo()
-
-    successful_submissions_to_delete = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__successful_submissions_removal_method="",
-                then=Value(config.successful_submissions_removal_method),
-            ),
-            default=F("form__successful_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__successful_submissions_removal_limit=None,
-                then=Value(config.successful_submissions_removal_limit),
-            ),
-            default=F("form__successful_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    successful_submissions_to_delete = Submission.objects.annotate_removal_fields(
+        "successful_submissions_removal_limit",
+        submission_removal_method="successful_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.delete_permanently,
@@ -61,27 +29,9 @@ def delete_submissions():
     )
     successful_submissions_to_delete.delete()
 
-    incomplete_submissions_to_delete = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__incomplete_submissions_removal_method="",
-                then=Value(config.incomplete_submissions_removal_method),
-            ),
-            default=F("form__incomplete_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__incomplete_submissions_removal_limit=None,
-                then=Value(config.incomplete_submissions_removal_limit),
-            ),
-            default=F("form__incomplete_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    incomplete_submissions_to_delete = Submission.objects.annotate_removal_fields(
+        "incomplete_submissions_removal_limit",
+        submission_removal_method="incomplete_submissions_removal_method",
     ).filter(
         registration_status__in=[
             RegistrationStatuses.pending,
@@ -95,27 +45,9 @@ def delete_submissions():
     )
     incomplete_submissions_to_delete.delete()
 
-    errored_submissions_to_delete = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__errored_submissions_removal_method="",
-                then=Value(config.errored_submissions_removal_method),
-            ),
-            default=F("form__errored_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__errored_submissions_removal_limit=None,
-                then=Value(config.errored_submissions_removal_limit),
-            ),
-            default=F("form__errored_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    errored_submissions_to_delete = Submission.objects.annotate_removal_fields(
+        "errored_submissions_removal_limit",
+        submission_removal_method="errored_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.delete_permanently,
@@ -127,19 +59,8 @@ def delete_submissions():
     )
     errored_submissions_to_delete.delete()
 
-    other_submissions_to_delete = Submission.objects.annotate(
-        removal_limit=Case(
-            When(
-                form__all_submissions_removal_limit=None,
-                then=Value(config.all_submissions_removal_limit),
-            ),
-            default=F("form__all_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    other_submissions_to_delete = Submission.objects.annotate_removal_fields(
+        "all_submissions_removal_limit"
     ).filter(
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
     )
@@ -154,29 +75,9 @@ def delete_submissions():
 def make_sensitive_data_anonymous() -> None:
     logger.debug("Making sensitive submission data anonymous")
 
-    config = GlobalConfiguration.get_solo()
-
-    successful_submissions = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__successful_submissions_removal_method="",
-                then=Value(config.successful_submissions_removal_method),
-            ),
-            default=F("form__successful_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__successful_submissions_removal_limit=None,
-                then=Value(config.successful_submissions_removal_limit),
-            ),
-            default=F("form__successful_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    successful_submissions = Submission.objects.annotate_removal_fields(
+        "successful_submissions_removal_limit",
+        submission_removal_method="successful_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.make_anonymous,
@@ -184,27 +85,9 @@ def make_sensitive_data_anonymous() -> None:
         _is_cleaned=False,
     )
 
-    incomplete_submissions = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__incomplete_submissions_removal_method="",
-                then=Value(config.incomplete_submissions_removal_method),
-            ),
-            default=F("form__incomplete_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__incomplete_submissions_removal_limit=None,
-                then=Value(config.incomplete_submissions_removal_limit),
-            ),
-            default=F("form__incomplete_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    incomplete_submissions = Submission.objects.annotate_removal_fields(
+        "incomplete_submissions_removal_limit",
+        submission_removal_method="incomplete_submissions_removal_method",
     ).filter(
         registration_status__in=[
             RegistrationStatuses.pending,
@@ -215,27 +98,9 @@ def make_sensitive_data_anonymous() -> None:
         _is_cleaned=False,
     )
 
-    errored_submissions = Submission.objects.annotate(
-        removal_method=Case(
-            When(
-                form__errored_submissions_removal_method="",
-                then=Value(config.errored_submissions_removal_method),
-            ),
-            default=F("form__errored_submissions_removal_method"),
-            output_field=CharField(),
-        ),
-        removal_limit=Case(
-            When(
-                form__errored_submissions_removal_limit=None,
-                then=Value(config.errored_submissions_removal_limit),
-            ),
-            default=F("form__errored_submissions_removal_limit"),
-            output_field=IntegerField(),
-        ),
-        time_since_creation=ExpressionWrapper(
-            Value(timezone.now(), DateTimeField()) - F("created_on"),
-            output_field=DurationField(),
-        ),
+    errored_submissions = Submission.objects.annotate_removal_fields(
+        "errored_submissions_removal_limit",
+        submission_removal_method="errored_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.make_anonymous,

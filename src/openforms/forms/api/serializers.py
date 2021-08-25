@@ -127,7 +127,9 @@ class FormSerializer(serializers.ModelSerializer):
     payment_options = PaymentOptionsReadOnlyField()
 
     literals = FormLiteralsSerializer(source="*", required=False)
-    submissions_removal_options = SubmissionsRemovalOptionsSerializer(source="*", required=False)
+    submissions_removal_options = SubmissionsRemovalOptionsSerializer(
+        source="*", required=False
+    )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
