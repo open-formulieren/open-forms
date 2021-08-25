@@ -1,0 +1,71 @@
+{
+    "services": [
+        {
+            "additionalCustomerDuration": 0,
+            "duration": 5,
+            "updated": 1475589228781,
+            "created": 1475589228595,
+            "name": "Product 1",
+            "publicId": "1e0c3d34acb5a4ad0133b2927959e896d844b",
+            "active": true,
+            "publicEnabled": true,
+            "custom": null
+        }
+    ],
+    "allDay": false,
+    "status": 20,
+    "resource": {
+        "name": "Resource 1"
+    },
+    "customers": [
+        {
+            "dateOfBirth": -2206400400000,
+            "addressState": "Zuid Holland",
+            "lastName": "Achternaam",
+            "phone": "06-11223344",
+            "addressCity": "Plaatsnaam",
+            "externalId": null,
+            "addressLine2": null,
+            "addressLine1": "Straatnaam 1",
+            "updated": null,
+            "created": 1478618058772,
+            "email": "test@test.com",
+            "name": "Voornaam Achternaam",
+            "publicId": "e2f2083f3222562e3f2b5e62a23fb",
+            "firstName": "Voornaam",
+            "addressCountry": "Nederland",
+            "custom": null,
+            "identificationNumber": "1234567890",
+            "addressZip": "1111AB"
+        }
+    ],
+    "blocking": false,
+    "title": "Online booking",
+    "start": "2016-11-10T11:30:00.000+0000",
+    "created": 1478618059555,
+    "updated": 1478618059623,
+    "publicId": "fa67a4692bb4c3fab9a0fbcc5511ff346ba4",
+    "branch": {
+        "addressState": null,
+        "phone": null,
+        "addressCity": "City",
+        "fullTimeZone": "Europe/Amsterdam",
+        "timeZone": "Europe/Amsterdam",
+        "addressLine2": "Street 1",
+        "addressLine1": "Branch 1",
+        "updated": 1475589234069,
+        "created": 1475589234008,
+        "email": null,
+        "name": "Branch 1",
+        "publicId": "f364d92b7fa07a48c4ecc862de30c475",
+        "longitude": null,
+        "branchPrefix": null,
+        "latitude": null,
+        "addressCountry": "Netherlands",
+        "custom": null,
+        "addressZip": "1111 AA"
+    },
+    "notes": "Geboekt via internet",
+    "end": "2016-11-10T11:35:00.000+0000",
+    "custom": null
+}

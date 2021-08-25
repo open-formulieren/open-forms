@@ -12,6 +12,7 @@ integrating with Open Forms.
 
    registration_plugins
    prefill_plugins
+   appointment_plugins
    manual_testing
    sdk/index
    profiling

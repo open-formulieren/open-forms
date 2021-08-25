@@ -1,0 +1,19 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovLocationsForProductResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <location xmlns="">
+            <locationID>1</locationID>
+            <locationDesc>Maykin Media</locationDesc>
+            <locationOpeningHours>
+               <day>4</day>
+               <fromTime1>2001-01-01T00:00:00</fromTime1>
+               <tillTime1>2001-01-02T00:00:00</tillTime1>
+               <fromTime2>0001-01-01T00:00:00</fromTime2>
+               <tillTime2>0001-01-01T00:00:00</tillTime2>
+               <fromTime3>0001-01-01T00:00:00</fromTime3>
+               <tillTime3>0001-01-01T00:00:00</tillTime3>
+            </locationOpeningHours>
+         </location>
+      </getGovLocationsForProductResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

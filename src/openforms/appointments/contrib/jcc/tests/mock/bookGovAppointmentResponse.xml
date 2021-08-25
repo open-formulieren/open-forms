@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+
+      <bookGovAppointmentResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <updateStatus xmlns="">0</updateStatus>
+         <appID xmlns="">1234567890</appID>
+      </bookGovAppointmentResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

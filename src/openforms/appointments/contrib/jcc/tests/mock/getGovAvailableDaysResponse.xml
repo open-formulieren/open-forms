@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovAvailableDaysResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <dates xmlns="">2021-08-19</dates>
+         <dates xmlns="">2021-08-20</dates>
+         <dates xmlns="">2021-08-23</dates>
+      </getGovAvailableDaysResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
