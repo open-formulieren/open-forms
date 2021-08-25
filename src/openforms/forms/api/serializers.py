@@ -89,14 +89,18 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
-class SubmissionsRemovalOptionsSerializer(serializers.Serializer):
-    successful_submissions_removal_limit = serializers.IntegerField(allow_null=True)
-    successful_submissions_removal_method = serializers.CharField(allow_blank=True)
-    incomplete_submissions_removal_limit = serializers.IntegerField(allow_null=True)
-    incomplete_submissions_removal_method = serializers.CharField(allow_blank=True)
-    errored_submissions_removal_limit = serializers.IntegerField(allow_null=True)
-    errored_submissions_removal_method = serializers.CharField(allow_blank=True)
-    all_submissions_removal_limit = serializers.IntegerField(allow_null=True)
+class SubmissionsRemovalOptionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Form
+        fields = (
+            "successful_submissions_removal_limit",
+            "successful_submissions_removal_method",
+            "incomplete_submissions_removal_limit",
+            "incomplete_submissions_removal_method",
+            "errored_submissions_removal_limit",
+            "errored_submissions_removal_method",
+            "all_submissions_removal_limit",
+        )
 
 
 class FormSerializer(serializers.ModelSerializer):
