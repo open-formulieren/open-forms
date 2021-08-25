@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
-from django.db import models
+from django.db import models, transaction
 from django.shortcuts import render
 from django.template import Context, Template
 from django.utils import timezone
@@ -158,6 +158,7 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
+    @transaction.atomic()
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""

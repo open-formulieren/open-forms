@@ -1,3 +1,4 @@
+import itertools
 import logging
 from datetime import timedelta
 
@@ -29,10 +30,10 @@ def delete_submissions():
 
     config = GlobalConfiguration.get_solo()
 
-    Submission.objects.annotate(
+    successful_submissions_to_delete = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__successful_submissions_removal_method=None,
+                form__successful_submissions_removal_method="",
                 then=Value(config.successful_submissions_removal_method),
             ),
             default=F("form__successful_submissions_removal_method"),
@@ -54,12 +55,16 @@ def delete_submissions():
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    ).delete()
+    )
+    logger.info(
+        "Deleting %s successful submissions", successful_submissions_to_delete.count()
+    )
+    successful_submissions_to_delete.delete()
 
-    Submission.objects.annotate(
+    incomplete_submissions_to_delete = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__incomplete_submissions_removal_method=None,
+                form__incomplete_submissions_removal_method="",
                 then=Value(config.incomplete_submissions_removal_method),
             ),
             default=F("form__incomplete_submissions_removal_method"),
@@ -84,12 +89,16 @@ def delete_submissions():
         ],
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    ).delete()
+    )
+    logger.info(
+        "Deleting %s incomplete submissions", incomplete_submissions_to_delete.count()
+    )
+    incomplete_submissions_to_delete.delete()
 
-    Submission.objects.annotate(
+    errored_submissions_to_delete = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__errored_submissions_removal_method=None,
+                form__errored_submissions_removal_method="",
                 then=Value(config.errored_submissions_removal_method),
             ),
             default=F("form__errored_submissions_removal_method"),
@@ -111,9 +120,14 @@ def delete_submissions():
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    ).delete()
+    )
 
-    Submission.objects.annotate(
+    logger.info(
+        "Deleting %s errored submissions", errored_submissions_to_delete.count()
+    )
+    errored_submissions_to_delete.delete()
+
+    other_submissions_to_delete = Submission.objects.annotate(
         removal_limit=Case(
             When(
                 form__all_submissions_removal_limit=None,
@@ -128,7 +142,12 @@ def delete_submissions():
         ),
     ).filter(
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    ).delete()
+    )
+    logger.info(
+        "Deleting %s other submissions regardless of registration",
+        other_submissions_to_delete.count(),
+    )
+    other_submissions_to_delete.delete()
 
 
 @app.task
@@ -140,7 +159,7 @@ def make_sensitive_data_anonymous() -> None:
     successful_submissions = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__successful_submissions_removal_method=None,
+                form__successful_submissions_removal_method="",
                 then=Value(config.successful_submissions_removal_method),
             ),
             default=F("form__successful_submissions_removal_method"),
@@ -168,7 +187,7 @@ def make_sensitive_data_anonymous() -> None:
     incomplete_submissions = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__incomplete_submissions_removal_method=None,
+                form__incomplete_submissions_removal_method="",
                 then=Value(config.incomplete_submissions_removal_method),
             ),
             default=F("form__incomplete_submissions_removal_method"),
@@ -199,7 +218,7 @@ def make_sensitive_data_anonymous() -> None:
     errored_submissions = Submission.objects.annotate(
         removal_method=Case(
             When(
-                form__errored_submissions_removal_method=None,
+                form__errored_submissions_removal_method="",
                 then=Value(config.errored_submissions_removal_method),
             ),
             default=F("form__errored_submissions_removal_method"),
@@ -224,9 +243,22 @@ def make_sensitive_data_anonymous() -> None:
         _is_cleaned=False,
     )
 
-    for submission in (
-        list(successful_submissions)
-        + list(incomplete_submissions)
-        + list(errored_submissions)
+    logger.info(
+        "Anonymizing %s successful submissions",
+        successful_submissions.count(),
+    )
+    logger.info(
+        "anonymizing %s incomplete submissions",
+        incomplete_submissions.count(),
+    )
+    logger.info(
+        "anonymizing %s errored submissions",
+        errored_submissions.count(),
+    )
+
+    for submission in itertools.chain(
+        successful_submissions.iterator(),
+        incomplete_submissions.iterator(),
+        errored_submissions.iterator(),
     ):
         submission.remove_sensitive_data()
