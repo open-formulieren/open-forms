@@ -74,3 +74,34 @@ class TestSubmission(TestCase):
                 "key5": {"type": "textfield", "value": "this is some inner text"},
             },
         )
+
+    def test_get_printable_data_with_selectboxes(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "testSelectBoxes",
+                        "type": "selectboxes",
+                        "values": [
+                            {"values": "test1", "label": "test1", "shortcut": ""},
+                            {"values": "test2", "label": "test2", "shortcut": ""},
+                            {"values": "test3", "label": "test3", "shortcut": ""},
+                        ],
+                    },
+                ],
+            }
+        )
+        submission = SubmissionFactory.create()
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
+            form_step=FormStepFactory.create(form_definition=form_definition),
+        )
+
+        printable_data = submission.get_printable_data()
+
+        self.assertEqual(
+            printable_data["testSelectBoxes"],
+            "test1, test2",
+        )
