@@ -94,32 +94,36 @@ const ACTIONS_WITH_OPTIONS = [
 ];
 
 
-const MODIFIABLE_PROPERTIES = [
-    [
-        'required',
-        defineMessage({
+const STRING_TO_TYPE = {
+    bool: (stringValue) => (stringValue === "true"),
+};
+
+
+const MODIFIABLE_PROPERTIES = {
+    'required': {
+        label: defineMessage({
             description: 'component property "required" label',
             defaultMessage: 'required'
-        })
-    ],
-    [
-        'hidden',
-        defineMessage({
+        }),
+        type: 'bool'
+    },
+    'hidden': {
+        label: defineMessage({
             description: 'component property "hidden" label',
             defaultMessage: 'hidden'
-        })
-    ],
-    [
-        'disabled',
-        defineMessage({
+        }),
+        type: 'bool'
+    },
+    'disabled': {
+        label: defineMessage({
             description: 'component property "disabled" label',
             defaultMessage: 'disabled'
-        })
-    ],
-];
+        }),
+        type: 'bool'
+    },
+};
 
 
-// FIXME -> should be actual booleans in the JSON!
 const PROPERTY_VALUES = [
     [
         "true",
@@ -145,4 +149,5 @@ export {
     ACTIONS_WITH_OPTIONS,
     MODIFIABLE_PROPERTIES,
     PROPERTY_VALUES,
+    STRING_TO_TYPE,
 };

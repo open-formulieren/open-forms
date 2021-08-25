@@ -4,7 +4,7 @@ import {useIntl} from 'react-intl';
 
 import Select from '../../forms/Select';
 import DeleteIcon from '../../DeleteIcon';
-import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES} from './constants';
+import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES, STRING_TO_TYPE} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
@@ -21,7 +21,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
         component: action.componentToChange,
         action: {
             type: action.actionType,
-            property: {value: action.componentProperty},
+            property: {value: action.componentProperty, type: action.componentPropertyType},
             // The data in 'value' needs to be valid jsonLogic
             value: action.componentLiteralValue || {var: action.componentVariableValue},
             state: action.componentPropertyValue,
@@ -30,7 +30,9 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
 
     // apply i18n to the constants choice labels
     const actionTypeChoices = ACTION_TYPES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
-    const modifiablePropertyChoices = MODIFIABLE_PROPERTIES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
+    const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(
+        ([key, info]) => [key, intl.formatMessage(info.label)]
+    );
     const propertyValueChoices = PROPERTY_VALUES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
 
     return (
@@ -82,7 +84,16 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                         name="componentProperty"
                                         choices={modifiablePropertyChoices}
                                         allowBlank
-                                        onChange={onChange}
+                                        onChange={(event) => {
+                                            const property = event.target.value;
+                                            onChange(event);
+                                            onChange({
+                                                target: {
+                                                    name: 'componentPropertyType',
+                                                    value: MODIFIABLE_PROPERTIES[property].type
+                                                }
+                                            });
+                                        }}
                                         value={action.componentProperty}
                                     />
                                 </div>
@@ -91,8 +102,17 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                         name="componentPropertyValue"
                                         choices={propertyValueChoices}
                                         allowBlank
-                                        onChange={onChange}
-                                        value={action.componentPropertyValue}
+                                        onChange={(event) => {
+                                            const propertyType = action.componentPropertyType;
+                                            const propertyValue = STRING_TO_TYPE[propertyType](event.target.value);
+                                            onChange({
+                                                target: {
+                                                    name: 'componentPropertyValue',
+                                                    value: propertyValue
+                                                }
+                                            })
+                                        }}
+                                        value={action.componentPropertyValue ? String(action.componentPropertyValue) : action.componentPropertyValue}
                                     />
                                 </div>
                             </>
