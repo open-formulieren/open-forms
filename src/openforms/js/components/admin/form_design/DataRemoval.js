@@ -6,13 +6,13 @@ import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import {TextInput} from '../forms/Inputs';
-import Select from "../forms/Select";
+import Select from '../forms/Select';
 
 
-const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsRemovalMethod,
-                         incompleteSubmissionsRemovalLimit, incompleteSubmissionsRemovalMethod,
-                         erroredSubmissionsRemovalLimit, erroredSubmissionsRemovalMethod,
-                         allSubmissionsRemovalLimit, removalMethods, onChange }) => {
+const DataRemoval = ({ successfulSubmissionsRemovalLimit='', successfulSubmissionsRemovalMethod='',
+                         incompleteSubmissionsRemovalLimit='', incompleteSubmissionsRemovalMethod='',
+                         erroredSubmissionsRemovalLimit='', erroredSubmissionsRemovalMethod='',
+                         allSubmissionsRemovalLimit='', removalMethods, onChange }) => {
 
     return (
         <Fieldset>
@@ -21,19 +21,19 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     name="form.successfulSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
-                                description="form.successfulSubmissionsRemovalLimit form label"
+                                description="Successful Submissions Removal Limit field label"
                                 defaultMessage="Successful Submissions Removal Limit"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.successfulSubmissionsRemovalLimit help text"
+                            description="Successful Submissions Removal Limit help text"
                             defaultMessage="Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <TextInput
-                        value={successfulSubmissionsRemovalLimit || ''}
+                        value={successfulSubmissionsRemovalLimit}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -44,23 +44,23 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     name="form.successfulSubmissionsRemovalMethod"
                     label={
                         <FormattedMessage
-                            defaultMessage="Successful Submissions Removal Method"
+                            defaultMessage="Successful Submissions Removal Method field label"
                             description="Successful Submissions Removal Method"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.successfulSubmissionsRemovalMethod help text"
+                            description="Successful Submissions Removal Method help text"
                             defaultMessage="How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <Select
-                        name='form.successfulSubmissionsRemovalMethod'
+                        name="form.successfulSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={successfulSubmissionsRemovalMethod || ''}
+                        value={successfulSubmissionsRemovalMethod}
                         onChange={onChange}
-                        allowBlank={true}
+                        allowBlank
                     />
                 </Field>
             </FormRow>
@@ -69,19 +69,19 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     name="form.incompleteSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
-                                description="form.incompleteSubmissionsRemovalLimit form label"
+                                description="Incomplete Submissions Removal Limit field label"
                                 defaultMessage="Incomplete Submissions Removal Limit"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.incompleteSubmissionsRemovalLimit help text"
+                            description="Incomplete Submissions Removal Limit help text"
                             defaultMessage="Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <TextInput
-                        value={incompleteSubmissionsRemovalLimit || ''}
+                        value={incompleteSubmissionsRemovalLimit}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -93,7 +93,7 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     label={
                         <FormattedMessage
                             defaultMessage="Incomplete Submissions Removal Method"
-                            description="Incomplete Submissions Removal Method"
+                            description="Incomplete Submissions Removal Method field label"
                         />
                     }
                     helpText={
@@ -104,11 +104,11 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     }
                 >
                     <Select
-                        name='form.incompleteSubmissionsRemovalMethod'
+                        name="form.incompleteSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={incompleteSubmissionsRemovalMethod || ''}
+                        value={incompleteSubmissionsRemovalMethod}
                         onChange={onChange}
-                        allowBlank={true}
+                        allowBlank
                     />
                 </Field>
             </FormRow>
@@ -117,19 +117,19 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     name="form.erroredSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
-                                description="form.erroredSubmissionsRemovalLimit form label"
+                                description="Errored Submissions Removal Limit field label"
                                 defaultMessage="Errored Submissions Removal Limit"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.erroredSubmissionsRemovalLimit help text"
+                            description="Errored Submissions Removal Limit help text"
                             defaultMessage="Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <TextInput
-                        value={erroredSubmissionsRemovalLimit || ''}
+                        value={erroredSubmissionsRemovalLimit}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -141,22 +141,22 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     label={
                         <FormattedMessage
                             defaultMessage="Errored Submissions Removal Method"
-                            description="Errored Submissions Removal Method"
+                            description="Errored Submissions Removal Method field label"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.erroredSubmissionsRemovalMethod help text"
+                            description="Errored Submissions Removal Method help text"
                             defaultMessage="How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <Select
-                        name='form.erroredSubmissionsRemovalMethod'
+                        name="form.erroredSubmissionsRemovalMethod"
                         choices={removalMethods}
-                        value={erroredSubmissionsRemovalMethod || ''}
+                        value={erroredSubmissionsRemovalMethod}
                         onChange={onChange}
-                        allowBlank={true}
+                        allowBlank
                     />
                 </Field>
             </FormRow>
@@ -165,19 +165,19 @@ const DataRemoval = ({ successfulSubmissionsRemovalLimit, successfulSubmissionsR
                     name="form.allSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
-                                description="form.allSubmissionsRemovalLimit form label"
+                                description="All Submissions Removal Limit field label"
                                 defaultMessage="All Submissions Removal Limit"
                         />
                     }
                     helpText={
                         <FormattedMessage
-                            description="form.allSubmissionsRemovalLimit help text"
+                            description="All Submissions Removal Limit help text"
                             defaultMessage="Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
                         />
                     }
                 >
                     <TextInput
-                        value={allSubmissionsRemovalLimit || ''}
+                        value={allSubmissionsRemovalLimit}
                         onChange={onChange}
                         type="number"
                         min="1"/>
@@ -195,7 +195,7 @@ DataRemoval.propTypes = {
     erroredSubmissionsRemovalLimit: PropTypes.number,
     erroredSubmissionsRemovalMethod: PropTypes.string,
     allSubmissionsRemovalLimit: PropTypes.number,
-    removalMethods: PropTypes.arrayOf(PropTypes.array),
+    removalMethods: PropTypes.arrayOf(PropTypes.array).isRequired,
     onChange: PropTypes.func.isRequired,
 };
 

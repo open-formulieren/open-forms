@@ -34,7 +34,7 @@ import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
-import DataRemoval from "./DataRemoval";
+import DataRemoval from './DataRemoval';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {getFormComponents} from './utils';
 
