@@ -9,4 +9,3 @@ Configuration
 
    ogone
    oidc
-   email
