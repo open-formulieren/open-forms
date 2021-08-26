@@ -70,6 +70,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     readonly_fields = [
         "created_on",
         "get_registration_backend",
+        "appointment_information",
     ]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 

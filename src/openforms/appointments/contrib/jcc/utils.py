@@ -41,7 +41,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         submission.save()
         return
 
-    product = AppointmentProduct(identifier=appointment_data["productID"], name="")
+    product = AppointmentProduct(identifier=str(appointment_data["productID"]), name="")
     location = AppointmentLocation(identifier=appointment_data["locationID"], name="")
     appointment_client = AppointmentClient(
         last_name=appointment_data["clientLastName"],
