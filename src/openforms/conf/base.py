@@ -172,7 +172,6 @@ INSTALLED_APPS = [
     "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
     "openforms.prefill.contrib.haalcentraal.apps.HaalCentraalApp",
-    "openforms.appointments.contrib.jcc.apps.JccApp",
     "openforms.authentication",
     "openforms.authentication.contrib.demo.apps.DemoApp",
     "openforms.authentication.contrib.outage.apps.DemoOutageApp",
