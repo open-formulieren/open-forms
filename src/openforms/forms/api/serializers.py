@@ -185,6 +185,7 @@ class FormSerializer(serializers.ModelSerializer):
 class FormExportSerializer(FormSerializer):
     def get_fields(self):
         fields = super().get_fields()
+        # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
         fields["authentication_backends"].write_only = False

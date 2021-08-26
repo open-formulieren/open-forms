@@ -194,7 +194,5 @@ class TemporaryFileView(DestroyAPIView):
 )
 class RemovalMethodsView(APIView):
 
-    authentication_classes = ()
-
     def get(self, request, *args, **kwargs):
         return Response(status=status.HTTP_200_OK, data=list(RemovalMethods))
