@@ -22,12 +22,10 @@ class PluginTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.plugin = Plugin()
-
         wsdl = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "mock/GenericGuidanceSystem2.wsdl")
         )
-        cls.plugin.client = Client(wsdl)
+        cls.plugin = Plugin(wsdl)
 
     @requests_mock.Mocker()
     def test_get_available_products(self, m):

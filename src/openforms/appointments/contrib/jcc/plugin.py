@@ -37,18 +37,8 @@ class Plugin(BasePlugin):
     Website: https://www.jccsoftware.nl/
     """
 
-    def __init__(self, url=None):
-        wsdl = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__), "tests/mock/afspraakacceptatie.wsdl"
-            )
-        )
-
+    def __init__(self, wsdl):
         self.client = Client(wsdl)
-        # if url:
-        #     self.client = Client(url)
-        # else:
-        #     self.client = None
 
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None

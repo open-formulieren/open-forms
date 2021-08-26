@@ -76,8 +76,6 @@ class BasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     configuration_options = EmptyOptions
 
-    # override
-
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:

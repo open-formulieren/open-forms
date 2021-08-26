@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.test import TestCase
 
 import requests_mock
@@ -15,6 +18,18 @@ from stuf.tests.factories import SoapServiceFactory
 
 
 class BookAppointmentForSubmissionTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        config = JccConfig.get_solo()
+        wsdl = os.path.abspath(
+            os.path.join(
+                settings.DJANGO_PROJECT_DIR,
+                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
+            )
+        )
+        config.service = SoapServiceFactory.create(url=wsdl)
+        config.save()
+
     def test_creating_appointment_with_no_appointment_information_does_nothing(self):
         submission = SubmissionFactory.create()
         book_appointment_for_submission(submission)
@@ -101,12 +116,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             form_step=FormStepFactory.create(form_definition=form_definition_2),
         )
 
-        self.config = JccConfig.get_solo()
-        self.config.service = SoapServiceFactory.create(url="")
-        self.config.save()
-
         m.post(
-            "https://afspraakacceptatie.horstaandemaas.nl/JCC/Horst%20aan%20de%20Maas/WARP/GGS2/GenericGuidanceSystem2.asmx",
+            "http://example.com/soap11",
             text=mock_response("bookGovAppointmentResponse.xml"),
         )
 
@@ -152,12 +163,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             form_step=FormStepFactory.create(form_definition=form_definition_2),
         )
 
-        self.config = JccConfig.get_solo()
-        self.config.service = SoapServiceFactory.create(url="")
-        self.config.save()
-
         m.post(
-            "https://afspraakacceptatie.horstaandemaas.nl/JCC/Horst%20aan%20de%20Maas/WARP/GGS2/GenericGuidanceSystem2.asmx",
+            "http://example.com/soap11",
             exc=AppointmentCreateFailed,
         )
 
