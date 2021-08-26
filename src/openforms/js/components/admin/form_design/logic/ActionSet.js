@@ -12,6 +12,7 @@ const emptyAction = {
     componentToChange: '',
     componentValueSource: '',
     componentProperty: '',
+    componentPropertyType: '',
     componentPropertyValue: '',
     componentVariableValue: '',
     componentLiteralValue: '',
@@ -26,6 +27,7 @@ const ACTION_SELECTION_ORDER = [
     'componentToChange',
     'componentValueSource',
     'componentProperty',
+    'componentPropertyType',
     'componentPropertyValue',
     'componentVariableValue',
     'componentLiteralValue',
@@ -64,19 +66,19 @@ const reducer = (draft, action) => {
 };
 
 const convertActionToJson = (action) => {
-        return {
-            component: action.componentToChange,
-            action: {
-                type: action.actionType,
-                property: {value: action.componentProperty},
-                // The data in 'value' needs to be valid jsonLogic
-                value: action.componentLiteralValue || {var: action.componentVariableValue},
-                state: action.componentPropertyValue,
-                // Selecting if the new component value should come from a literal or another component doesn't
-                // change anything in the JSON, only entering the literal or picking the component does.
-                // So, this 'source' attribute is here only to keep track of the value for the OperandTypeSelection
-                // dropdown, but is not used in the backend
-                source: action.componentValueSource
+    return {
+        component: action.componentToChange,
+        action: {
+            type: action.actionType,
+            property: {value: action.componentProperty, type: action.componentPropertyType},
+            // The data in 'value' needs to be valid jsonLogic
+            value: action.componentLiteralValue || {var: action.componentVariableValue},
+            state: action.componentPropertyValue,
+            // Selecting if the new component value should come from a literal or another component doesn't
+            // change anything in the JSON, only entering the literal or picking the component does.
+            // So, this 'source' attribute is here only to keep track of the value for the OperandTypeSelection
+            // dropdown, but is not used in the backend
+            source: action.componentValueSource
         }
     };
 };
@@ -113,6 +115,7 @@ const parseJsonAction = (jsonAction) => {
         componentLiteralValue: componentLiteralValue,
         componentVariableValue: componentVariableValue,
         componentPropertyValue: jsonAction.action.state,
+        componentPropertyType: jsonAction.action.property?.type,
     };
 };
 

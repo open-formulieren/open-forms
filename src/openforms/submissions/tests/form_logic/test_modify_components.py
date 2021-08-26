@@ -48,6 +48,7 @@ class ComponentModificationTests(TestCase):
                         "name": "Hide element",
                         "type": "property",
                         "property": {
+                            "type": "bool",
                             "value": "hidden",
                         },
                         "state": True,

@@ -70,9 +70,7 @@ class FormLogicAPITests(APITestCase):
                     "action": {
                         "name": "Hide element",
                         "type": "property",
-                        "property": {
-                            "value": "hidden",
-                        },
+                        "property": {"value": "hidden", "type": "bool"},
                         "state": True,
                     },
                 }
@@ -120,9 +118,7 @@ class FormLogicAPITests(APITestCase):
             "actions": {
                 "name": "Hide element",
                 "type": "property",
-                "property": {
-                    "value": "hidden",
-                },
+                "property": {"value": "hidden", "type": "bool"},
                 "state": True,
             },
         }
@@ -164,9 +160,7 @@ class FormLogicAPITests(APITestCase):
                     "action": {
                         "name": "Hide element",
                         "type": "property",
-                        "property": {
-                            "value": "hidden",
-                        },
+                        "property": {"value": "hidden", "type": "bool"},
                         "state": True,
                     },
                 }
@@ -206,9 +200,7 @@ class FormLogicAPITests(APITestCase):
                     "action": {
                         "name": "Hide element",
                         "type": "property",
-                        "property": {
-                            "value": "hidden",
-                        },
+                        "property": {"value": "hidden", "type": "bool"},
                         "state": True,
                     },
                 }
@@ -251,9 +243,7 @@ class FormLogicAPITests(APITestCase):
                     "action": {
                         "name": "Hide element",
                         "type": "property",
-                        "property": {
-                            "value": "hidden",
-                        },
+                        "property": {"value": "hidden", "type": "bool"},
                         "state": True,
                     },
                 }
