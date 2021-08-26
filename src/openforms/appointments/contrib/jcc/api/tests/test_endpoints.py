@@ -85,8 +85,6 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(
             response.json(),
             [
-                "2021-08-23",
-                "2021-08-24",
                 "2021-08-25",
                 "2021-08-26",
                 "2021-08-27",
