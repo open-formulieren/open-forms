@@ -82,7 +82,7 @@ const parseJsonLogic = (logic) => {
     }
 
     // first value should be the reference to the component
-    let component = values[0].var;
+    let component = values[0].date ? values[0].date.var : values[0].var;
     if (Array.isArray(component)) {
         // Case where a default is defined
         component = component[0];
@@ -224,14 +224,12 @@ const Trigger = ({ name, logic, onChange }) => {
         }
     }
 
-    // Needed because the backend will try to check if the jsonLogic is valid. Since no data is passed, all dates of
-    // form {"date": {"var": "someComponent"}} will evaluate to None, and then comparing None and Dates gives errors.
-    // In this way we provide a default date that evaluates to the date of today.
-    let component = componentType === 'date' ? [triggerComponent, {'today': []}] : triggerComponent;
+    const firstOperand = componentType === 'date' ?
+        {date: {var: triggerComponent}} : {var: triggerComponent};
 
     const jsonLogicFromState = {
         [operator]: [
-            {var: component},
+            firstOperand,
             compareValue,
         ],
     };
