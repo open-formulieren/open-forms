@@ -11,4 +11,8 @@ more technical configuration of Open Forms? Check out the
 .. toctree::
    :maxdepth: 3
 
+   getting_started
+   accounts
+   forms/index
+   submissions
    templates
