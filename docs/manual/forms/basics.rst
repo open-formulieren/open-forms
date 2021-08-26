@@ -117,3 +117,36 @@ In dit tabblad kunnen de formulier stappen worden geconfigureerd.
 * U kunt de **details** van een stap bekijken door op de stap naam te klikken.
 
 
+Het tabblad bestaat uit 2 secties: **(Herbruikbare) stapgegevens** en 
+**Velden**. Beide secties horen bij de huidige (rechts geselecteerde) formulier
+stap.
+
+**(Herbruikbare) stapgegevens**
+
+* **Naam**: Wordt als stap in stappen overzicht en bovenaan het formulier.
+* **URL-deel**: Dit is een deel van de URL die zichtbaar is in de navigatiebalk 
+  van de browser. Een *URL-deel* ``stap-1`` kan in de browser te zien 
+  zijn als ``https://klant.open-formulieren.nl/demo-formulier/stap-1``.
+* **Inloggen vereist**: Geeft aan of voor deze stap inloggen is vereist. Zodra 
+  een formulier één of meerdere stappen bevat waarvoor inloggen is vereist, dan
+  moet een *Inlogoptie* aangevinkt zijn onder het tabblad *Formulier*.
+
+**Velden**
+
+In deze sectie kunt u velden (ook wel componenten genoemd) naar de formulier 
+stap slepen en configureren. Kijk voor alle mogelijkheden naar het overzicht van
+:ref:`formulier velden <manual_form_fields>` en naar de 
+:ref:`voorbeelden <manual_examples>`.
+
+Bevestiging
+-----------
+
+In dit tabblad kan de bevestiging, die te zien is na het afronden van het 
+formulier, worden aangepast.
+
+In het veld **Bevestigingspagina tekst** kan een tekst worden opgemaakt die 
+wordt getoond na het versturen van het formulier. Indien dit veld leeg wordt 
+gelaten zal de globale **Bevestigingspagina tekst** gebruikt worden.
+
+U kunt in deze tekst variabelen gebruiken. Uitleg hierover vind u bij 
+:ref:`manual_templates`
