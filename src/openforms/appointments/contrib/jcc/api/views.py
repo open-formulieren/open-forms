@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 
-from openforms.appointments.contrib.jcc.plugin import AppointmentLocation, AppointmentProduct
 from openforms.appointments.contrib.jcc.api.tests.serializers import (
     DateInputSerializer,
     LocationInputSerializer,
@@ -14,6 +13,10 @@ from openforms.appointments.contrib.jcc.api.tests.serializers import (
     TimeInputSerializer,
 )
 from openforms.appointments.contrib.jcc.models import JccConfig
+from openforms.appointments.contrib.jcc.plugin import (
+    AppointmentLocation,
+    AppointmentProduct,
+)
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.utils.api.views import ListMixin
 
