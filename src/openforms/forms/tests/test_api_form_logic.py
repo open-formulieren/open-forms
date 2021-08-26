@@ -91,6 +91,96 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(form, form_logic.form)
 
+    def test_create_logic_with_dates(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "datetime",
+                        "key": "dateOfBirth",
+                    }
+                ]
+            },
+        )
+
+        form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "json_logic_trigger": {
+                ">": [
+                    {"date": {"var": "dateOfBirth"}},
+                    {"-": [{"today": []}, {"years": 18}]},
+                ]
+            },
+            "actions": [
+                {
+                    "component": "step1_textfield1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+    def test_create_logic_with_invalid_dates(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "datetime",
+                        "key": "dateOfBirth",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "someValue",
+                    },
+                ]
+            },
+        )
+
+        form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "json_logic_trigger": {
+                ">": [
+                    {"date": {"var": "dateOfBirth"}},
+                    {"var": ["someValue"]},
+                ]
+            },
+            "actions": [
+                {
+                    "component": "step1_textfield1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
     def test_actions_is_a_list(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
