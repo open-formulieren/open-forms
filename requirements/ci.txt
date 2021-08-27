@@ -385,10 +385,6 @@ josepy==1.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc
-git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 jsonschema==3.2.0
     # via
     #   -c requirements/base.txt
@@ -419,6 +415,10 @@ markupsafe==1.1.1
     #   jinja2
     #   sphinx
 git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+git+https://github.com/maykinmedia/json-logic-py.git@c5197246b65e8180c1d022c3fa79645b4394e51a#egg=maykin-json-logic-py
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -629,7 +629,6 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
-    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict
