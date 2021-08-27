@@ -80,7 +80,7 @@ urlpatterns = [
                 path("payment/", include("openforms.payments.api.urls")),
                 path(
                     "appointment/",
-                    include("openforms.appointments.contrib.jcc.api.urls"),
+                    include("openforms.appointments.api.urls"),
                 ),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),

@@ -21,7 +21,7 @@ class ProductsListTests(SubmissionsMixin, TestCase):
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:jcc-products-list")
+        self.endpoint = reverse("api:appointments-products-list")
         self.config = JccConfig.get_solo()
         wsdl = os.path.abspath(
             os.path.join(
@@ -57,7 +57,7 @@ class LocationsListTests(SubmissionsMixin, TestCase):
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:jcc-locations-list")
+        self.endpoint = reverse("api:appointments-locations-list")
         self.config = JccConfig.get_solo()
         wsdl = os.path.abspath(
             os.path.join(
@@ -93,7 +93,7 @@ class DatesListTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
-        cls.endpoint = reverse("api:jcc-dates-list")
+        cls.endpoint = reverse("api:appointments-dates-list")
         config = JccConfig.get_solo()
         wsdl = os.path.abspath(
             os.path.join(
@@ -141,7 +141,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:jcc-times-list")
+        self.endpoint = reverse("api:appointments-times-list")
         self.config = JccConfig.get_solo()
         wsdl = os.path.abspath(
             os.path.join(
