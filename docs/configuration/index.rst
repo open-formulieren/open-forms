@@ -7,5 +7,6 @@ Configuration
    :maxdepth: 1
    :caption: Further reading
 
+   bag
    ogone
    oidc

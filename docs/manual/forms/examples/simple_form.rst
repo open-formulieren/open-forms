@@ -1,31 +1,39 @@
-===========
-Voorbeelden
-===========
+.. _example_simple_form:
 
-Mijn eerste formulier
-=====================
+===================
+Eenvoudig formulier
+===================
 
 In dit voorbeeld maken we een formulier bestaande uit 2 stappen, waarbij de 
 gebruiker dient in te loggen met *DigiD simulatie*. Ingezonden formulieren
 worden opgeslagen in Open Formulieren zelf en niet doorgestuurd naar een 
 registratie systeem.
 
-.. image:: _assets/tutorial_1.png
+.. image:: _assets/simple_form_1.png
     :width: 24%
 
-.. image:: _assets/tutorial_2.png
+.. image:: _assets/simple_form_2.png
+    :width: 24%
+
+.. image:: _assets/simple_form_3.png
+    :width: 24%
+
+.. image:: _assets/simple_form_4.png
     :width: 24%
 
 
-.. image:: _assets/tutorial_3.png
-    :width: 24%
+.. note::
 
-.. image:: _assets/tutorial_4.png
-    :width: 24%
+    U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
+    in Open Formulieren.
 
+    Download: `simple_form.zip`_
+
+
+.. _`simple_form.zip`: assets/simple_form.zip
 
 Formulier maken
----------------
+===============
 
 1. Navigeer naar **Formulieren** > **Formulieren**.
 2. Klik op **Formulier toevoegen**
@@ -35,7 +43,7 @@ Formulier maken
     * **Inlogopties** > **DigiD simulatie**: *Aangevinkt*
 
     De andere gegevens staan standaard goed. Als het goed is is het **URL-deel**
-    automatisch ingevuld met *vraag-of-klacht*, op basis van het **Naam** veld.
+    automatisch ingevuld met *vraag-klacht*, op basis van het **Naam** veld.
 
 4. Klik op het tabblad **Stappen en velden**.
 5. Klik aan de linkerkant op **Stap toevoegen** en selecteer **Maak een nieuwe 

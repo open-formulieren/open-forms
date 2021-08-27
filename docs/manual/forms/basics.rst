@@ -18,7 +18,7 @@ U kunt vanaf deze pagina:
 
 * De lijst van formulieren sorteren en filteren
 * De details opvragen van een specifiek formulier
-* Een Formulier importeren
+* Een Formulier :ref:`importeren <manual_export_import>`
 * Een Nieuw formulier aanmaken
 * Bulk acties uitvoeren op formulieren
 

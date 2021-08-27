@@ -22,7 +22,7 @@ Om in te loggen met een lokaal account vult u uw **gebruikersnaam** en
 .. note::
     
     Als u nog geen *tweestapsauthenticatie* heeft ingesteld, zult u deze eerst 
-    moeten :ref:`instellen`.
+    moeten :ref:`instellen <instellen>`.
 
 U wordt gevraagd om een **Token**. Open uw *authenticator app* en vul het 
 bijbehorende token in. Klik op **Volgende** om de :ref:`beheeromgeving` te 
@@ -72,7 +72,6 @@ herstellen.
    admin**
 
 U bent nu in de :ref:`beheeromgeving`.
-
 
 
 Inloggen met organisatie account
