@@ -30,7 +30,7 @@ registratie systeem.
     Download: `simple_form.zip`_
 
 
-.. _`simple_form.zip`: assets/simple_form.zip
+.. _`simple_form.zip`: _assets/simple_form.zip
 
 Formulier maken
 ===============

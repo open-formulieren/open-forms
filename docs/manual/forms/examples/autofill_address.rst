@@ -17,7 +17,7 @@ In dit voorbeeld gaan we er van uit dat u een
     Download: `autofill_address.zip`_
 
 
-.. _`autofill_address.zip`: assets/autofill_address.zip
+.. _`autofill_address.zip`: _assets/autofill_address.zip
 
 Configuratie
 ============
