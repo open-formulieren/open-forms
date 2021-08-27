@@ -6,8 +6,9 @@ from django.urls import reverse
 
 import requests_mock
 
-from openforms.appointments.contrib.jcc.models import JccConfig
-from openforms.appointments.contrib.jcc.tests.utils import mock_response
+from openforms.appointments.contrib.qmatic.tests.factories import QmaticConfigFactory
+from openforms.appointments.contrib.qmatic.tests.test_plugin import mock_response
+from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
@@ -17,71 +18,73 @@ class ProductsListTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
+        cls.endpoint = reverse("api:appointments-products-list")
+
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.qmatic.models.QmaticConfig"
+        )
+        appointments_config.save()
+
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:appointments-products-list")
-        self.config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        self.config.service = SoapServiceFactory.create(url=wsdl)
-        self.config.save()
 
     @requests_mock.Mocker()
     def test_get_products_returns_all_products(self, m):
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovAvailableProductsResponse.xml"),
+        m.get(
+            f"{self.api_root}services",
+            text=mock_response("services.json"),
         )
 
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 3)
-        first_entry = response.json()[0]
-        self.assertEqual(first_entry["code"], "PASAAN")
-        self.assertEqual(first_entry["identifier"], "1")
-        self.assertEqual(first_entry["name"], "Paspoort aanvraag")
+        products = response.json()
+        self.assertEqual(len(products), 2)
+        self.assertEqual(products[0]["identifier"], "54b3482204c11bedc8b0a7acbffa308")
+        self.assertEqual(products[0]["code"], None)
+        self.assertEqual(products[0]["name"], "Service 01")
 
 
 class LocationsListTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
+        cls.endpoint = reverse("api:appointments-locations-list")
+
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.qmatic.models.QmaticConfig"
+        )
+        appointments_config.save()
+
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:appointments-locations-list")
-        self.config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        self.config.service = SoapServiceFactory.create(url=wsdl)
-        self.config.save()
 
     @requests_mock.Mocker()
     def test_get_locations_returns_all_locations_for_a_product(self, m):
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovLocationsForProductResponse.xml"),
+        m.get(
+            f"{self.api_root}services/54b3482204c11bedc8b0a7acbffa308/branches",
+            text=mock_response("branches.json"),
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=79")
+        response = self.client.get(
+            f"{self.endpoint}?product_id=54b3482204c11bedc8b0a7acbffa308"
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
-        location = response.json()[0]
-        self.assertEqual(location["identifier"], "1")
-        self.assertEqual(location["name"], "Maykin Media")
+        locations = response.json()
+        self.assertEqual(len(locations), 2)
+        self.assertEqual(locations[0]["identifier"], "f364d92b7fa07a48c4ecc862de30c47")
+        self.assertEqual(locations[0]["name"], "Branch 1")
 
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)
@@ -94,15 +97,15 @@ class DatesListTests(SubmissionsMixin, TestCase):
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-dates-list")
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
+
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.qmatic.models.QmaticConfig"
         )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        appointments_config.save()
+
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
@@ -110,20 +113,19 @@ class DatesListTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_dates_returns_all_dates_for_a_give_location_and_product(self, m):
-        m.post(
-            "http://example.com/soap11",
-            [
-                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
-                {"text": mock_response("getGovAvailableDaysResponse.xml")},
-            ],
+        m.get(
+            f"{self.api_root}branches/1/services/1/dates",
+            text=mock_response("dates.json"),
         )
 
         response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
 
         self.assertEqual(response.status_code, 200)
+        results = response.json()
+        self.assertEqual(len(results), 21)
         self.assertEqual(
-            response.json(),
-            ["2021-08-19", "2021-08-20", "2021-08-23"],
+            results[0],
+            "2016-11-08",
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
@@ -137,36 +139,36 @@ class TimesListTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
+        cls.endpoint = reverse("api:appointments-times-list")
+
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.qmatic.models.QmaticConfig"
+        )
+        appointments_config.save()
+
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
         self._add_submission_to_session(self.submission)
-        self.endpoint = reverse("api:appointments-times-list")
-        self.config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        self.config.service = SoapServiceFactory.create(url=wsdl)
-        self.config.save()
 
     @requests_mock.Mocker()
     def test_get_times_returns_all_times_for_a_give_location_product_and_date(self, m):
-
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        m.get(
+            f"{self.api_root}branches/1/services/1/dates/2016-12-06/times",
+            text=mock_response("times.json"),
         )
 
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 106)
-        self.assertEqual(response.json()[0], "2021-08-23T08:00:00")
+        results = response.json()
+        self.assertEqual(len(results), 16)
+        self.assertEqual(results[0], "2016-12-06T09:00:00")
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
