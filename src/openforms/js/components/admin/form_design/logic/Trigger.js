@@ -98,6 +98,9 @@ const parseJsonLogic = (logic) => {
         if (op === 'var') {
             operandType = 'component';
             operand = compareValue.var;
+        } else if (op === 'date') {
+            operandType = compareValue.date.var ? 'component' : 'literal';
+            operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
         } else if (op === '+' || op === '-') {
             operandType = 'today';
             operand = compareValue;
@@ -179,7 +182,11 @@ const Trigger = ({ name, logic, onChange }) => {
                     onChange={onTriggerChange}
                 />
             );
-            compareValue = operand;
+            if (componentType === 'date') {
+                compareValue = {date: operand};
+            } else {
+                compareValue = operand;
+            }
             break;
         }
         case 'component': {
@@ -192,7 +199,11 @@ const Trigger = ({ name, logic, onChange }) => {
                     filter={(comp) => (comp.type === componentType)}
                 />
             );
-            compareValue = {"var": operand};
+            if (componentType === 'date') {
+                compareValue = {date: {var: operand}};
+            } else {
+                compareValue = {var: operand};
+            }
             break;
         }
         case 'today': {
@@ -207,7 +218,7 @@ const Trigger = ({ name, logic, onChange }) => {
             let sign, years;
             if (operand) {
                 sign = jsonLogic.get_operator(operand);
-                years = operand[sign][1]['years'];
+                years = operand[sign][1]['years'] || 0;
             } else {
                 sign = '+';
                 years = 0;
