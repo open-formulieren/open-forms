@@ -1,1 +1,1 @@
-default_app_config = "openforms.appointments.contrib.jcc.apps.JCCAfsprakenPlugin"
+default_app_config = "openforms.appointments.contrib.jcc.apps.JccPlugin"
