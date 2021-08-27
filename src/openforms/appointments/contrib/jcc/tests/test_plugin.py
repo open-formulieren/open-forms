@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
-from zeep.client import Client
 
 from ....base import (
     AppointmentClient,
@@ -14,7 +13,14 @@ from ....base import (
     AppointmentProduct,
 )
 from ..plugin import Plugin
-from .utils import mock_response
+
+
+def mock_response(filename):
+    filepath = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "mock", filename)
+    )
+    with open(filepath, "r") as f:
+        return f.read()
 
 
 class PluginTests(TestCase):

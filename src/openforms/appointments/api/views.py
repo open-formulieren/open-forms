@@ -14,18 +14,9 @@ from openforms.appointments.api.tests.serializers import (
     TimeInputSerializer,
 )
 from openforms.appointments.base import AppointmentLocation, AppointmentProduct
-from openforms.appointments.models import AppointmentsConfig
+from openforms.appointments.utils import get_client
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.utils.api.views import ListMixin
-
-
-def get_client():
-    config_path = AppointmentsConfig.get_solo().config_path
-    if not config_path:
-        raise ValueError("No config_path is specified in AppointmentsConfig")
-    config_class = import_string(config_path)
-    client = config_class.get_solo().get_client()
-    return client
 
 
 @extend_schema_view(

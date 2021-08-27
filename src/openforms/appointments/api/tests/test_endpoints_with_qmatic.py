@@ -1,6 +1,3 @@
-import os
-
-from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
@@ -11,7 +8,6 @@ from openforms.appointments.contrib.qmatic.tests.test_plugin import mock_respons
 from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from stuf.tests.factories import SoapServiceFactory
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):

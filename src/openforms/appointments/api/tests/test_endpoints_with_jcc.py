@@ -7,7 +7,7 @@ from django.urls import reverse
 import requests_mock
 
 from openforms.appointments.contrib.jcc.models import JccConfig
-from openforms.appointments.contrib.jcc.tests.utils import mock_response
+from openforms.appointments.contrib.jcc.tests.test_plugin import mock_response
 from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin

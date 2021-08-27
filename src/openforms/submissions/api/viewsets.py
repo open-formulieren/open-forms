@@ -21,7 +21,7 @@ from openforms.registrations.tasks import (
 )
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...appointments.contrib.jcc.utils import book_appointment_for_submission
+from ...appointments.utils import book_appointment_for_submission
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionReport, SubmissionStep
