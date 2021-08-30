@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 import jsonLogic from 'json-logic-js';
 
@@ -56,6 +57,12 @@ const Today = ({name, value, onChange}) => {
             </div>
         </div>
     );
+};
+
+Today.propTypes = {
+    name: PropTypes.string.isRequired,
+    value: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 export default Today;
