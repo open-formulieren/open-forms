@@ -25,6 +25,7 @@ class RegisteredValidator:
     identifier: str
     verbose_name: str
     callable: ValidatorType
+    is_demo_plugin: bool = False
 
     def __call__(self, value):
         return self.callable(value)
@@ -52,7 +53,14 @@ class Registry(BaseRegistry):
         eg: a function or callable class (or instance thereof) that raises either a Django or DRF ValidationError
     """
 
-    def __call__(self, identifier: str, verbose_name: str, *args, **kwargs) -> Callable:
+    def __call__(
+        self,
+        identifier: str,
+        verbose_name: str,
+        is_demo_plugin: bool = False,
+        *args,
+        **kwargs,
+    ) -> Callable:
         def decorator(validator: Union[Type, ValidatorType]):
             if identifier in self._registry:
                 raise ValueError(
@@ -70,6 +78,7 @@ class Registry(BaseRegistry):
                 identifier=identifier,
                 verbose_name=verbose_name,
                 callable=call,
+                is_demo_plugin=is_demo_plugin,
             )
             return validator
 
