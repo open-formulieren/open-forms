@@ -151,6 +151,14 @@
                 "blacklist"
             ],
             [
+                "digid_oidc",
+                "openidconnectpublicconfig"
+            ],
+            [
+                "eherkenning_oidc",
+                "openidconnecteherkenningconfig"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
