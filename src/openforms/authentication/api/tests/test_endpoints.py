@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.config.models import GlobalConfiguration
 
 from ...base import BasePlugin
 from ...constants import AuthAttribute
@@ -26,10 +27,17 @@ class MultiAuthPlugin(BasePlugin):
     verbose_name = "MultiAuthPlugin"
 
 
+class DemoAuthPlugin(BasePlugin):
+    provides_auth = [AuthAttribute.bsn, AuthAttribute.kvk]
+    verbose_name = "DemoAuthPlugin"
+    is_demo_plugin = True
+
+
 register = Registry()
 register("plugin1")(NoAuthPlugin)
 register("plugin2")(SingleAuthPlugin)
 register("plugin3")(MultiAuthPlugin)
+register("plugin4")(DemoAuthPlugin)
 
 
 class AuthTests(APITestCase):
@@ -89,9 +97,12 @@ class ResponseTests(APITestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
+        config = GlobalConfiguration.get_solo()
+        config.enable_demo_plugins = False
+        config.save()
+
     def test_plugin_list(self):
         endpoint = reverse("api:authentication-plugin-list")
-
         response = self.client.get(endpoint)
 
         expected = [
@@ -111,6 +122,38 @@ class ResponseTests(APITestCase):
                 "providesAuth": ["bsn", "kvk"],
             },
         ]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected)
 
+    def test_demo_plugin_list(self):
+        config = GlobalConfiguration.get_solo()
+        config.enable_demo_plugins = True
+        config.save()
+
+        endpoint = reverse("api:authentication-plugin-list")
+        response = self.client.get(endpoint)
+
+        expected = [
+            {
+                "id": "plugin1",
+                "label": "NoAuthPlugin",
+                "providesAuth": [],
+            },
+            {
+                "id": "plugin2",
+                "label": "SingleAuthPlugin",
+                "providesAuth": ["bsn"],
+            },
+            {
+                "id": "plugin3",
+                "label": "MultiAuthPlugin",
+                "providesAuth": ["bsn", "kvk"],
+            },
+            {
+                "id": "plugin4",
+                "label": "DemoAuthPlugin",
+                "providesAuth": ["bsn", "kvk"],
+            },
+        ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
