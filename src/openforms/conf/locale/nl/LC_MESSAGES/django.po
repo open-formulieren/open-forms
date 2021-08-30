@@ -174,11 +174,11 @@ msgstr "Demo"
 
 #: openforms/authentication/contrib/demo/plugin.py:69
 msgid "Demo BSN"
-msgstr "Demo BSN"
+msgstr "Demo BSN (test)"
 
 #: openforms/authentication/contrib/demo/plugin.py:77
 msgid "Demo KvK number"
-msgstr "Demo KvK-nummer"
+msgstr "Demo KvK-nummer (test)"
 
 #: openforms/authentication/contrib/digid/apps.py:8
 msgid "DigiD authentication plugin"
@@ -2303,7 +2303,7 @@ msgstr "StUF-BG prefill plugin"
 
 #: openforms/prefill/contrib/stufbg/plugin.py:36
 msgid "StUF-BG"
-msgstr "StUF-bG"
+msgstr "StUF-BG"
 
 #: openforms/products/models/product.py:11
 #: openforms/submissions/api/serializers.py:263 stuf/models.py:62
