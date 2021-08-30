@@ -295,6 +295,12 @@
       "value": "in"
     }
   ],
+  "F+cPJR": [
+    {
+      "type": 0,
+      "value": "the array"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -371,6 +377,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+    }
+  ],
+  "IxTWbv": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this item?"
     }
   ],
   "J5EZDj": [
@@ -496,9 +508,15 @@
     }
   ],
   "UKTqb8": [
+      {
+          "type": 0,
+          "value": "All Submissions Removal Limit"
+      }
+  ],
+  "TjjvQL": [
     {
       "type": 0,
-      "value": "All Submissions Removal Limit"
+      "value": "days"
     }
   ],
   "VQYmOD": [
@@ -695,6 +713,18 @@
       "value": "disabled"
     }
   ],
+  "l2Wag+": [
+    {
+      "type": 0,
+      "value": "Mark the form step as not-applicable"
+    }
+  ],
+  "lcR5L6": [
+    {
+      "type": 0,
+      "value": "Add item"
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -711,6 +741,12 @@
     {
       "type": 0,
       "value": "Sensitive data within the submissions will be deleted"
+    }
+  ],
+  "mYYxJE": [
+    {
+      "type": 0,
+      "value": "months"
     }
   ],
   "naInSZ": [
