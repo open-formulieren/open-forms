@@ -9,23 +9,29 @@ import {NumberInput} from '../../forms/Inputs';
 import {getTranslatedChoices} from '../../../../utils/i18n';
 
 
+const EMTPTY_RELATIVE_DELTA = [0, 0, 0];
+
+
 const Today = ({name, value, onChange}) => {
     const sign = value ? jsonLogic.get_operator(value) : '+';
-    const years = value ? value[sign][1]['years'] : 0;
+    var rdelta = value && value[sign][1]?.rdelta ? value[sign][1].rdelta : EMTPTY_RELATIVE_DELTA;
+    if (rdelta.length < 3) {
+        rdelta = [...rdelta].concat(EMTPTY_RELATIVE_DELTA).slice(0, 3);
+    }
 
     const intl = useIntl();
     const operatorChoices = Object.entries(OPERATORS).filter(([operator]) => ['+', '-'].includes(operator));
 
     const onChangeSign = (event) => {
         const modifiedValue = {};
-        modifiedValue[event.target.value] = [{today: []}, {years: years}];
+        modifiedValue[event.target.value] = [{today: []}, {rdelta: rdelta}];
         const fakeEvent = {target: {name: name, value: modifiedValue}};
         onChange(fakeEvent);
     };
 
-    const onChangeYears = (event) => {
+    const onChangeRelativeDelta = (event) => {
         const modifiedValue = {};
-        modifiedValue[sign] = [{today: []}, {years: parseInt(event.target.value, 10)}];
+        modifiedValue[sign] = [{today: []}, {rdelta: event.target.value}];
         const fakeEvent = {target: {name: name, value: modifiedValue}};
         onChange(fakeEvent);
     };
@@ -43,8 +49,18 @@ const Today = ({name, value, onChange}) => {
             <div className="dsl-editor__node">
                 <NumberInput
                     name="years"
-                    value={years}
-                    onChange={onChangeYears}
+                    value={rdelta[0]}
+                    onChange={(event) => {
+                        const fakeEvent = {
+                            target: {
+                                value: [
+                                    parseInt(event.target.value, 10),
+                                    ...rdelta.slice(1, 3)
+                                ]
+                            }
+                        };
+                        onChangeRelativeDelta(fakeEvent);
+                    }}
                     min={0}
                 />
             </div>

@@ -215,16 +215,16 @@ const Trigger = ({ name, logic, onChange }) => {
                 />
             );
 
-            let sign, years;
+            let sign, relativeDelta;
             if (operand) {
                 sign = jsonLogic.get_operator(operand);
-                years = operand[sign][1]['years'] || 0;
+                relativeDelta = operand[sign][1].rdelta || [0, 0, 0];
             } else {
                 sign = '+';
-                years = 0;
+                relativeDelta = [0, 0, 0];
             }
             compareValue = {};
-            compareValue[sign] = [{today: []}, {years: years}];
+            compareValue[sign] = [{today: []}, {rdelta: relativeDelta}];
             break;
         }
         case '': { // nothing selected yet
