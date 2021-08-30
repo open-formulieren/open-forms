@@ -3,7 +3,7 @@
         "active": true,
         "authentication_backends":
         [
-            "digid-mock",
+            "eherkenning",
             "digid"
         ],
         "is_deleted": false,

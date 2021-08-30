@@ -21,7 +21,7 @@ class FormAdminImportExportTests(WebTest):
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_form_admin_export(self):
-        form = FormFactory.create(authentication_backends=["demo"])
+        form = FormFactory.create(authentication_backends=["digid"])
         response = self.app.get(
             reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
         )
@@ -43,7 +43,7 @@ class FormAdminImportExportTests(WebTest):
         forms = json.loads(zf.read("forms.json"))
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0]["uuid"], str(form.uuid))
-        self.assertEqual(forms[0]["authentication_backends"], ["demo"])
+        self.assertEqual(forms[0]["authentication_backends"], ["digid"])
 
         form_definitions = json.loads(zf.read("formDefinitions.json"))
         self.assertEqual(len(form_definitions), 0)
@@ -73,7 +73,7 @@ class FormAdminImportExportTests(WebTest):
                                 "name": "Form 000",
                                 "slug": "bed",
                                 "product": None,
-                                "authentication_backends": ["demo"],
+                                "authentication_backends": ["digid"],
                             }
                         ]
                     ).encode("utf-8")
@@ -108,7 +108,7 @@ class FormAdminImportExportTests(WebTest):
         form = Form.objects.get()
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
         self.assertEqual(form.name, "Form 000")
-        self.assertEqual(form.authentication_backends, ["demo"])
+        self.assertEqual(form.authentication_backends, ["digid"])
 
     def test_form_admin_import_staff_required(self):
         self.user.is_superuser = False
@@ -295,7 +295,7 @@ class FormAdminCopyTests(WebTest):
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_form_admin_copy(self):
-        form = FormFactory.create(authentication_backends=["demo"])
+        form = FormFactory.create(authentication_backends=["digid"])
         form_step = FormStepFactory.create(form=form)
         response = self.app.get(
             reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
@@ -315,7 +315,7 @@ class FormAdminCopyTests(WebTest):
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
         self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
-        self.assertEqual(copied_form.authentication_backends, ["demo"])
+        self.assertEqual(copied_form.authentication_backends, ["digid"])
 
         copied_form_step = FormStep.objects.last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
