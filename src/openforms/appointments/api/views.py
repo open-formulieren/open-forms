@@ -1,7 +1,8 @@
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
@@ -19,8 +20,8 @@ from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.utils.api.views import ListMixin
 
 
-@extend_schema_view(
-    get=extend_schema(summary=_("List available JCC products")),
+@extend_schema(
+    summary=_("List available products"),
 )
 class ProductsListView(ListMixin, APIView):
     """
@@ -36,8 +37,17 @@ class ProductsListView(ListMixin, APIView):
         return client.get_available_products()
 
 
-@extend_schema_view(
-    get=extend_schema(summary=_("List available JCC locations for a given product")),
+@extend_schema(
+    summary=_("List available locations for a given product"),
+    parameters=[
+        OpenApiParameter(
+            "product_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Id of the product"),
+            required=True,
+        ),
+    ],
 )
 class LocationsListView(ListMixin, APIView):
     """
@@ -60,10 +70,24 @@ class LocationsListView(ListMixin, APIView):
         return client.get_locations([product])
 
 
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("List available dates for a given location and product")
-    ),
+@extend_schema(
+    summary=_("List available dates for a given location and product"),
+    parameters=[
+        OpenApiParameter(
+            "product_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Id of the product"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "location_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Id of the location"),
+            required=True,
+        ),
+    ],
 )
 class DatesListView(APIView):
     """
@@ -88,10 +112,31 @@ class DatesListView(APIView):
         return Response(status=HTTP_200_OK, data=client.get_dates([product], location))
 
 
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("List available times for a given location, product, and date")
-    ),
+@extend_schema(
+    summary=_("List available times for a given location, product, and date"),
+    parameters=[
+        OpenApiParameter(
+            "product_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Id of the product"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "location_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Id of the location"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "date",
+            OpenApiTypes.DATE,
+            OpenApiParameter.QUERY,
+            description=_("The date"),
+            required=True,
+        ),
+    ],
 )
 class TimesListView(APIView):
     """

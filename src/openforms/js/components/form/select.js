@@ -1,6 +1,5 @@
 import {Formio, Utils} from 'formiojs';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from "./edit/tabs";
-import {getFullyQualifiedUrl} from "../../utils/urls";
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 const Select = Formio.Components.components.select;
 
@@ -30,6 +29,7 @@ const values = [{
         },
     ],
 }];
+
 
 const APPOINTMENT = {
     key: 'appointment',
@@ -170,5 +170,6 @@ class SelectField extends Select {
         return {components: [TABS]};
     }
 }
+
 
 export default SelectField;

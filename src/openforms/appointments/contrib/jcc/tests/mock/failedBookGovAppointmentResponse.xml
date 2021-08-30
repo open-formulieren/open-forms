@@ -2,8 +2,8 @@
    <soapenv:Body>
 
       <bookGovAppointmentResponse xmlns="http://www.genericCBS.org/GenericCBS/">
-         <updateStatus xmlns="">-1</updateStatus>
-         <appID xmlns="">1234567890</appID>
+         <updateStatus xmlns="">1</updateStatus>
+         <appID xmlns="" />
       </bookGovAppointmentResponse>
    </soapenv:Body>
 </soapenv:Envelope>
