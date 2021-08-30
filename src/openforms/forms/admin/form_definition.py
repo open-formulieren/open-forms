@@ -30,8 +30,16 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "used_in_forms")
+    list_display = ("name", "used_in_forms", "is_reusable")
     actions = ["overridden_delete_selected", "make_copies"]
+    list_filter = ["is_reusable"]
+    fields = [
+        "name",
+        "slug",
+        "login_required",
+        "is_reusable",
+        "configuration",
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)

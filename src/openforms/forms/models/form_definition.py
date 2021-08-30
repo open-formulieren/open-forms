@@ -41,6 +41,11 @@ class FormDefinition(models.Model):
         default=False,
         help_text="DigID Login required for form step",
     )
+    is_reusable = models.BooleanField(
+        _("is reusable"),
+        default=False,
+        help_text="Allow this definition to be re-used in multiple forms",
+    )
 
     def __str__(self):
         return self.name
