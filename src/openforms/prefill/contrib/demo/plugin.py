@@ -19,6 +19,7 @@ CALLBACKS = {
 @register("demo")
 class DemoPrefill(BasePlugin):
     verbose_name = _("Demo")
+    is_demo_plugin = True
 
     @staticmethod
     def get_available_attributes():
