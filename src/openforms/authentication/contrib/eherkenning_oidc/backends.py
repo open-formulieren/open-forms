@@ -48,7 +48,9 @@ class OIDCAuthenticationEHerkenningBackend(SoloConfigMixin, _OIDCAuthenticationB
             msg = "Claims verification failed"
             raise SuspiciousOperation(msg)
 
-        self.request.session[AuthAttribute.kvk] = payload[AuthAttribute.kvk]
+        self.request.session[AuthAttribute.kvk] = payload[
+            self.get_settings("kvk_claim_name")
+        ]
         user = AnonymousUser()
         user.is_active = True
         return user
@@ -57,9 +59,7 @@ class OIDCAuthenticationEHerkenningBackend(SoloConfigMixin, _OIDCAuthenticationB
         """Verify the provided claims to decide if authentication should be allowed."""
         logger.debug("OIDC claims received: %s", claims)
 
-        if AuthAttribute.kvk not in claims:
-            logger.error(
-                f"`{AuthAttribute.kvk}` not in OIDC claims, cannot proceed with authentication"
-            )
+        if self.get_settings("kvk_claim_name") not in claims:
+            logger.error("`kvk` not in OIDC claims, cannot proceed with authentication")
             return False
         return True
