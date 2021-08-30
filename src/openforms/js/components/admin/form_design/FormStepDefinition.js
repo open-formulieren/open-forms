@@ -31,7 +31,7 @@ const emptyConfiguration = {
  *
  */
 const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
-                                loginRequired=false, configuration=emptyConfiguration, onChange,
+                                loginRequired=false, isReusable=false, configuration=emptyConfiguration, onChange,
                                 onFieldChange, onLiteralFieldChange, errors, ...props }) => {
 
     const setSlug = () => {
@@ -126,6 +126,14 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         onChange={(e) => onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})}
                     />
                 </FormRow>
+                <FormRow>
+                    <Checkbox
+                        label={<FormattedMessage defaultMessage="Is reusable?" description="Form step is reusable label" />}
+                        name="isReusable"
+                        checked={isReusable}
+                        onChange={(e) => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
+                    />
+                </FormRow>
             </fieldset>
 
             <h2>Velden</h2>
@@ -146,6 +154,7 @@ FormStepDefinition.propTypes = {
     saveText: PropTypes.string,
     nextText: PropTypes.string,
     loginRequired: PropTypes.bool,
+    isReusable: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
