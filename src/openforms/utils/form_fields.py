@@ -35,6 +35,9 @@ class SVGOrImageField(ImageField):
     ]
 
     def to_python(self, data):
+        if not data:
+            return None
+
         # get the extension
         extension = get_extension(data)
 

@@ -87,3 +87,19 @@ class AdminTests(WebTest):
         self.assertEqual(response.status_code, 302)
         config = GlobalConfiguration.get_solo()
         self.assertEqual(config.logo, "logo/digid.png")
+
+    def test_upload_blank(self):
+        # fixes #581
+        config = GlobalConfiguration.get_solo()
+        config.logo = None
+        config.save()
+
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+
+        change_page = self.app.get(url)
+
+        response = change_page.form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        config = GlobalConfiguration.get_solo()
+        self.assertEqual(config.logo, "")
