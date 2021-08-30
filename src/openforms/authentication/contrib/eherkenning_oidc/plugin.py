@@ -11,6 +11,8 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
 
+from .models import OpenIDConnectEHerkenningConfig
+
 
 @register("eherkenning_oidc")
 class eHerkenningOIDCAuthentication(BasePlugin):
@@ -30,3 +32,8 @@ class eHerkenningOIDCAuthentication(BasePlugin):
             image_src=request.build_absolute_uri(static("img/eherkenning.svg")),
             href="https://www.eherkenning.nl/",
         )
+
+    @property
+    def is_enabled(self):
+        config = OpenIDConnectEHerkenningConfig.get_solo()
+        return config.enabled

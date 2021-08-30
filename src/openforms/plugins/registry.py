@@ -54,7 +54,8 @@ class BaseRegistry:
 
         for plugin in self:
             is_demo = getattr(plugin, "is_demo_plugin", False)
-            if is_demo and not with_demos:
+            is_enabled = getattr(plugin, "is_enabled", True)
+            if is_demo and not with_demos or not is_enabled:
                 continue
             else:
                 yield plugin

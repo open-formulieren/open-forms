@@ -81,6 +81,10 @@ class BasePlugin:
         else:
             return list(self.provides_auth)
 
+    @property
+    def is_enabled(self) -> bool:
+        return True
+
     # cosmetics
 
     def get_label(self) -> str:
