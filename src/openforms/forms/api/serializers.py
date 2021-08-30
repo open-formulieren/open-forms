@@ -218,6 +218,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "slug",
             "configuration",
             "login_required",
+            "is_reusable",
         )
         extra_kwargs = {
             "url": {
