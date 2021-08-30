@@ -1,5 +1,7 @@
 from typing import Type
 
+from django.db import OperationalError
+
 from openforms.config.models import GlobalConfiguration
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
@@ -44,7 +46,12 @@ class BaseRegistry:
         return key in self._registry
 
     def iter_enabled_plugins(self):
-        with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+        try:
+            with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+        except OperationalError:
+            # fix CI trying to access non-existing database to generate OAS
+            with_demos = False
+
         for plugin in self:
             is_demo = getattr(plugin, "is_demo_plugin", False)
             if is_demo and not with_demos:
