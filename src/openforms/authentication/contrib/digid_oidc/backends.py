@@ -48,7 +48,9 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
             msg = "Claims verification failed"
             raise SuspiciousOperation(msg)
 
-        self.request.session[AuthAttribute.bsn] = payload[AuthAttribute.bsn]
+        self.request.session[AuthAttribute.bsn] = payload[
+            self.get_settings("bsn_claim_name")
+        ]
         user = AnonymousUser()
         user.is_active = True
         return user
@@ -57,9 +59,7 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
         """Verify the provided claims to decide if authentication should be allowed."""
         logger.debug("OIDC claims received: %s", claims)
 
-        if AuthAttribute.bsn not in claims:
-            logger.error(
-                f"`{AuthAttribute.bsn}` not in OIDC claims, cannot proceed with authentication"
-            )
+        if self.get_settings("bsn_claim_name") not in claims:
+            logger.error("`bsn` not in OIDC claims, cannot proceed with authentication")
             return False
         return True
