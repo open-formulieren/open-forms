@@ -16,6 +16,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 from stuf.tests.factories import SoapServiceFactory
+
 from ..utils import create_base64_qrcode
 
 

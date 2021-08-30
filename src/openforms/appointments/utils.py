@@ -1,11 +1,10 @@
-from datetime import datetime
-
 import base64
 import io
-
-import qrcode
+from datetime import datetime
 
 from django.utils.module_loading import import_string
+
+import qrcode
 
 from openforms.appointments.base import (
     AppointmentClient,
