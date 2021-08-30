@@ -2,12 +2,15 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
+from django.utils.translation import gettext_lazy as _
+
 from requests.exceptions import RequestException
 from zeep import Client
 from zeep.exceptions import Error as ZeepError
 
 from ...base import (
     AppointmentClient,
+    AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
     BasePlugin,
@@ -17,6 +20,7 @@ from ...exceptions import (
     AppointmentDeleteFailed,
     AppointmentException,
 )
+from ...utils import create_base64_qrcode
 
 logger = logging.getLogger(__name__)
 
@@ -213,8 +217,55 @@ class Plugin(BasePlugin):
 
             if result != 0:
                 raise AppointmentDeleteFailed(
-                    "Could not delete appointment (updateStatus=%s)",
+                    "Could not delete appointment: %s (updateStatus=%s)",
+                    identifier,
                     result,
                 )
-        except (ZeepError, RequestException, KeyError) as e:
+        except (ZeepError, RequestException) as e:
             raise AppointmentDeleteFailed(e)
+
+    def get_appointment_details(self, identifier: str) -> str:
+        try:
+            # NOTE: The operation `getGovAppointmentExtendedDetails` seems
+            # missing. This would include the product descriptions but now we
+            # need to make an additional call to get those.
+            details = self.client.service.getGovAppointmentDetails(appID=identifier)
+            location = self.client.service.getGovLocationDetails(
+                locationID=details.locationID
+            )
+            qrcode = self.client.service.GetAppointmentQRCodeText(appID=identifier)
+
+            app_products = []
+            for pid in details.productID.split(","):
+                product = self.client.service.getGovProductDetails(productID=pid)
+
+                app_products.append(
+                    AppointmentProduct(identifier=pid, name=product.description)
+                )
+
+            qrcode_base64 = create_base64_qrcode(qrcode)
+
+            result = AppointmentDetails(
+                identifier=identifier,
+                products=app_products,
+                location=AppointmentLocation(
+                    identifier=details.locationID,
+                    name=location.locationDesc,
+                    address=location.address,
+                    postalcode=location.postalcode,  # Documentation says `postalCode`
+                    city=location.city,
+                ),
+                start_at=details.appStartTime,
+                end_at=details.appEndTime,
+                remarks=details.appointmentDesc,
+                other={
+                    _(
+                        "QR-code"
+                    ): f'<img src="data:image/png;base64, {qrcode_base64}" alt="{qrcode}" />'
+                },
+            )
+
+            return result
+
+        except (ZeepError, RequestException, AttributeError) as e:
+            raise AppointmentException(e)

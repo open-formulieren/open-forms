@@ -7,6 +7,7 @@ from zds_client import ClientError
 
 from ...base import (
     AppointmentClient,
+    AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
     BasePlugin,
@@ -203,9 +204,45 @@ class Plugin(BasePlugin):
             response = self.client.delete(f"appointments/{identifier}")
             if response.status_code == 404:
                 raise AppointmentDeleteFailed(
-                    "Could not delete appointment",
+                    "Could not delete appointment: %s", identifier
                 )
 
             response.raise_for_status()
         except (ClientError, RequestException) as e:
             raise AppointmentDeleteFailed(e)
+
+    def get_appointment_details(self, identifier: str) -> str:
+        try:
+            response = self.client.get(f"appointments/{identifier}")
+            response.raise_for_status()
+
+            details = response.json()["appointment"]
+
+            result = AppointmentDetails(
+                identifier=identifier,
+                products=[
+                    AppointmentProduct(identifier=entry["publicId"], name=entry["name"])
+                    for entry in details["services"]
+                ],
+                location=AppointmentLocation(
+                    identifier=details["branch"]["publicId"],
+                    name=details["branch"]["name"],
+                    address=" ".join(
+                        [
+                            details["branch"]["addressLine1"],
+                            details["branch"]["addressLine2"],
+                        ]
+                    ),
+                    postalcode=details["branch"]["addressZip"],
+                    city=details["branch"]["addressCity"],
+                ),
+                start_at=datetime.fromisoformat(details["start"]),
+                end_at=datetime.fromisoformat(details["end"]),
+                remarks=details["notes"],
+                other={},
+            )
+
+            return result
+
+        except (ClientError, RequestException, KeyError) as e:
+            raise AppointmentException(e)

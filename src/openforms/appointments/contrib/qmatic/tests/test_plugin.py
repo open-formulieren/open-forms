@@ -1,12 +1,17 @@
 import os
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from django.test import TestCase
 
 import requests_mock
 
-from ....base import AppointmentClient, AppointmentLocation, AppointmentProduct
+from ....base import (
+    AppointmentClient,
+    AppointmentDetails,
+    AppointmentLocation,
+    AppointmentProduct,
+)
 from ..plugin import Plugin
 from .factories import QmaticConfigFactory
 
@@ -167,3 +172,39 @@ class PluginTests(TestCase):
         result = self.plugin.delete_appointment(identifier)
 
         self.assertIsNone(result)
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details(self, m):
+        identifier = "d50517a0ae88cdbc495f7a32e011cb"
+
+        m.get(
+            f"{self.api_root}appointments/{identifier}",
+            text=mock_response("appointment.json"),
+        )
+
+        result = self.plugin.get_appointment_details(identifier)
+
+        self.assertEqual(type(result), AppointmentDetails)
+
+        self.assertEqual(len(result.products), 1)
+        self.assertEqual(result.identifier, identifier)
+
+        self.assertEqual(
+            result.products[0].identifier, "1e0c3d34acb5a4ad0133b2927959e8"
+        )
+        self.assertEqual(result.products[0].name, "Product 1")
+
+        self.assertEqual(result.location.identifier, "f364d92b7fa07a48c4ecc862de30")
+        self.assertEqual(result.location.name, "Branch 1")
+        self.assertEqual(result.location.address, "Branch 1 Street 1")
+        self.assertEqual(result.location.postalcode, "1111 AA")
+        self.assertEqual(result.location.city, "City")
+
+        self.assertEqual(
+            result.start_at, datetime(2016, 11, 10, 12, 30, tzinfo=timezone.utc)
+        )
+        self.assertEqual(
+            result.end_at, datetime(2016, 11, 10, 12, 35, tzinfo=timezone.utc)
+        )
+        self.assertEqual(result.remarks, "Geboekt via internet")
+        self.assertDictEqual(result.other, {})
