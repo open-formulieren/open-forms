@@ -362,6 +362,66 @@ class StepModificationTests(TestCase):
 
         self.assertFalse(submission_step_2.can_submit)
 
+    def test_step_not_applicable(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "<": [
+                    {"var": "age"},
+                    18,
+                ]
+            },
+            actions=[
+                {
+                    "component": "driverId",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"age": 16},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        self.assertTrue(submission_step_2.is_applicable)
+
+        evaluate_form_logic(submission_step_2, submission.data)
+
+        self.assertFalse(submission_step_2.is_applicable)
+
     def test_date_trigger(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
