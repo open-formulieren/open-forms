@@ -46,6 +46,12 @@ from .validation import CompletionValidationSerializer, validate_submission_comp
 logger = logging.getLogger(__name__)
 
 
+def book_appointment_for_submission(submission):
+    # TODO Remove Me!  Testing code until
+    #  https://github.com/open-formulieren/open-forms/pull/573 is merged
+    return None
+
+
 @extend_schema_view(
     list=extend_schema(
         summary=_("List active submissions"),
@@ -140,10 +146,14 @@ class SubmissionViewSet(
 
         transaction.on_commit(on_submission_commit)
 
-        book_appointment_for_submission(submission)
+        appointment_id = book_appointment_for_submission(submission)
 
         if hasattr(submission.form, "confirmation_email_template"):
-            transaction.on_commit(lambda: send_confirmation_email(submission))
+            transaction.on_commit(
+                lambda: send_confirmation_email(
+                    submission, appointment_id=appointment_id
+                )
+            )
 
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(

@@ -27,6 +27,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ...appointments.tests.test_base import TestPlugin
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionReport, SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -362,6 +363,86 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             set(message.to),
             {"single1@test.nl", "single2@test.nl", "many1@test.nl", "many2@test.nl"},
         )
+
+        delay_mock.assert_called_once_with(submission.id)
+
+        # Check that the submission report is created
+        submission_report = SubmissionReport.objects.get(submission=submission)
+        report_mock.assert_called_once_with(submission_report.id)
+
+    @patch(
+        "openforms.submissions.api.viewsets.book_appointment_for_submission",
+        return_value="123456789",
+    )
+    @patch("openforms.submissions.utils.BasePlugin", return_value=TestPlugin())
+    @patch("openforms.registrations.tasks.register_submission.si")
+    @patch("openforms.registrations.tasks.generate_submission_report.si")
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    def test_complete_submission_send_confirmation_email_with_appointment_details(
+        self, report_mock, delay_mock, plugin_mock, book_appointment_submission
+    ):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Confirmation mail",
+            content="Confirmation mail content",
+        )
+        def1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "email",
+                        "type": "email",
+                        "label": "Email",
+                        "confirmationRecipient": True,
+                    },
+                ],
+            }
+        )
+        step1 = FormStepFactory.create(form=form, form_definition=def1, optional=True)
+        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step1, data={"email": "test@test.nl"}
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertEqual(submission.completed_on, timezone.now())
+
+        # test that submission ID removed from session
+        submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
+        self.assertNotIn(str(submission.uuid), submissions_in_session)
+        self.assertEqual(submissions_in_session, [])
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Confirmation mail")
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["test@test.nl"])
+
+        # Check that the template is used
+        self.assertIn('<table border="0">', message.body)
+        self.assertIn("Confirmation mail content", message.body)
+        self.assertIn("Test product 1", message.body)
+        self.assertIn("Test product 2", message.body)
+        self.assertIn("Test location", message.body)
+        self.assertIn("1 januari 2021, 12:00 - 12:15", message.body)
+        self.assertIn("Remarks", message.body)
+        self.assertIn("Some", message.body)
+        self.assertIn("<h1>Data</h1>", message.body)
 
         delay_mock.assert_called_once_with(submission.id)
 
