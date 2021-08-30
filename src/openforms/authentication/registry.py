@@ -1,3 +1,5 @@
+import sys
+
 from typing import TYPE_CHECKING, List
 
 from django.http import HttpRequest
@@ -22,6 +24,12 @@ class Registry(BaseRegistry):
                 info = plugin.get_login_info(request, form)
                 options.append(info)
         return options
+
+    def get_choices(self):
+        # Include all options when generating schema
+        if len(sys.argv) > 1 and sys.argv[1] == "spectacular":
+            return [(p.identifier, p.get_label()) for p in self]
+        return [(p.identifier, p.get_label()) for p in self if p.is_enabled]
 
 
 # Sentinel to provide the default registry. You an easily instantiate another
