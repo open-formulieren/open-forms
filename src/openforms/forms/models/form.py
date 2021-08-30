@@ -17,6 +17,12 @@ from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
+from ...authentication.fields import AuthenticationBackendMultiSelectField
+from ...authentication.registry import register as authentication_register
+from ...payments.fields import PaymentBackendChoiceField
+from ...payments.registry import register as payment_register
+from ...registrations.fields import RegistrationBackendChoiceField
+from ...registrations.registry import register as registration_register
 from .utils import literal_getter
 
 
@@ -121,7 +127,7 @@ class Form(models.Model):
     )
 
     # life cycle management
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(_("active"), default=False)
     maintenance_mode = models.BooleanField(
         _("maintenance mode"),
         default=False,
@@ -222,6 +228,44 @@ class Form(models.Model):
 
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
+
+    def get_registration_backend_display(self):
+        choices = dict(registration_register.get_choices())
+        return choices.get(
+            self.registration_backend,
+            _("{backend} (invalid)").format(backend=self.registration_backend),
+        )
+
+    get_registration_backend_display.short_description = _("registration backend")
+
+    def get_payment_backend_display(self):
+        if not self.payment_backend:
+            return "-"
+
+        choices = dict(payment_register.get_choices())
+        return choices.get(
+            self.payment_backend,
+            _("{backend} (invalid)").format(backend=self.payment_backend),
+        )
+
+    get_payment_backend_display.short_description = _("payment backend")
+
+    def get_authentication_backends_display(self):
+        if not self.authentication_backends:
+            return "-"
+
+        choices = dict(authentication_register.get_choices())
+        return [
+            choices.get(
+                auth_backend,
+                _("{backend} (invalid)").format(backend=self.authentication_backends),
+            )
+            for auth_backend in self.authentication_backends
+        ]
+
+    get_authentication_backends_display.short_description = _(
+        "authentication backend(s)"
+    )
 
     @property
     def login_required(self) -> bool:
