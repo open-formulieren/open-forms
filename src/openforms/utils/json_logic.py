@@ -28,7 +28,7 @@ class JsonLogicTest:
             raise ValueError("Invalid jsonLogic expression given")
 
         operator = get_operator(expression)
-        values = get_values(expression, operator=operator)
+        values = expression[operator]
 
         # convert unary syntactic sugar to normalized format
         if not isinstance(values, (list, tuple)):
@@ -84,12 +84,6 @@ def get_operator(expression) -> str:
     return list(expression.keys())[0]
 
 
-def get_values(expression, operator=None) -> Union[list, str, int]:
-    if not operator:
-        operator = list(expression.keys())[0]
-    return expression[operator]
-
-
 def normalize_value(value: Union[dict, list, tuple, int, str]) -> JSONLogicValue:
     if not isinstance(value, (dict, list)):
         return value
@@ -111,7 +105,7 @@ def contains_dates(expression: Union[dict, list, int, str]) -> bool:
                 return True
         return False
     elif isinstance(expression, dict):
-        operator = list(expression.keys())[0]
+        operator = get_operator(expression)
         if operator in TIME_OPERATORS:
             return True
         else:
@@ -140,7 +134,7 @@ def uses_dates_consistently(expression: Union[dict, list, int, str]) -> bool:
         for expression_item in expression:
             contains_date_operands.append(uses_dates_consistently(expression_item))
     elif isinstance(expression, dict):
-        operator = list(expression.keys())[0]
+        operator = get_operator(expression)
         if operator in TIME_OPERATORS:
             return True
         else:
@@ -156,7 +150,7 @@ def uses_dates_consistently(expression: Union[dict, list, int, str]) -> bool:
 
 def contains_supported_operators(expression: Union[dict, list, int, str]) -> bool:
     if isinstance(expression, dict):
-        operator = list(expression.keys())[0]
+        operator = get_operator(expression)
         if operator not in list(operations.keys()) + ["var", "missing", "missing_some"]:
             return False
 
