@@ -7,6 +7,8 @@ import mozilla_django_oidc_db.settings as oidc_settings
 from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel, get_cache
 
+from openforms.authentication.constants import AuthAttribute
+
 from .settings import CUSTOM_OIDC_DB_PREFIX
 
 
@@ -14,7 +16,7 @@ def get_default_scopes():
     """
     Returns the default scopes to request for OpenID Connect logins
     """
-    return ["openid", "kvk"]
+    return ["openid", AuthAttribute.kvk]
 
 
 class OpenIDConnectEHerkenningConfig(SingletonModel):
@@ -28,6 +30,13 @@ class OpenIDConnectEHerkenningConfig(SingletonModel):
         help_text=_(
             "Indicates whether OpenID Connect for eHerkenning authentication is enabled"
         ),
+    )
+
+    kvk_claim_name = models.CharField(
+        _("KVK claim name"),
+        max_length=100,
+        help_text=_("The name of the claim in which the KVK of the user is stored"),
+        default=AuthAttribute.kvk,
     )
 
     oidc_rp_client_id = models.CharField(
