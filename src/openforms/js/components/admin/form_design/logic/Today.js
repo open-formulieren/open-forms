@@ -67,6 +67,49 @@ const Today = ({name, value, onChange}) => {
             <div className="dsl-editor__node">
                 <FormattedMessage description="Logic trigger number of years" defaultMessage="years" />
             </div>
+            <div className="dsl-editor__node">
+                <NumberInput
+                    name="months"
+                    value={rdelta[1]}
+                    onChange={(event) => {
+                        const fakeEvent = {
+                            target: {
+                                value: [
+                                    rdelta[0],
+                                    parseInt(event.target.value, 10),
+                                    rdelta[2]
+                                ]
+                            }
+                        };
+                        onChangeRelativeDelta(fakeEvent);
+                    }}
+                    min={0}
+                />
+            </div>
+            <div className="dsl-editor__node">
+                <FormattedMessage description="Logic trigger number of months" defaultMessage="months" />
+            </div>
+            <div className="dsl-editor__node">
+                <NumberInput
+                    name="days"
+                    value={rdelta[2]}
+                    onChange={(event) => {
+                        const fakeEvent = {
+                            target: {
+                                value: [
+                                    ...rdelta.slice(0, 2),
+                                    parseInt(event.target.value, 10)
+                                ]
+                            }
+                        };
+                        onChangeRelativeDelta(fakeEvent);
+                    }}
+                    min={0}
+                />
+            </div>
+            <div className="dsl-editor__node">
+                <FormattedMessage description="Logic trigger number of days" defaultMessage="days" />
+            </div>
         </div>
     );
 };
