@@ -275,6 +275,13 @@ class Submission(models.Model):
     def get_merged_appointment_data(self) -> dict:
         merged_appointment_data = dict()
         component_key_to_appointment_info = dict()
+        component_key_to_appointment_key = {
+            "showProducts": "productID",
+            "showLocations": "locationID",
+            "showTimes": "appStartTime",
+            "appointmentLastName": "clientLastName",
+            "appointmentBirthDate": "clientDateOfBirth",
+        }
 
         for step in self.submissionstep_set.exclude(data=None).select_related(
             "form_step"
@@ -282,20 +289,14 @@ class Submission(models.Model):
             components = step.form_step.form_definition.configuration["components"]
             flattened_components = get_flattened_components(components)
             for component in flattened_components:
-                if component.get("showProducts"):
-                    component_key_to_appointment_info["productID"] = component["key"]
-                if component.get("showLocations"):
-                    component_key_to_appointment_info["locationID"] = component["key"]
-                if component.get("showTimes"):
-                    component_key_to_appointment_info["appStartTime"] = component["key"]
-                if component.get("appointmentLastName"):
-                    component_key_to_appointment_info["clientLastName"] = component[
-                        "key"
-                    ]
-                if component.get("appointmentBirthDate"):
-                    component_key_to_appointment_info["clientDateOfBirth"] = component[
-                        "key"
-                    ]
+                for (
+                    component_key,
+                    appointment_key,
+                ) in component_key_to_appointment_key.items():
+                    if component.get(component_key):
+                        component_key_to_appointment_info[appointment_key] = component[
+                            "key"
+                        ]
 
         merged_data = self.get_merged_data()
 

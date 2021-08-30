@@ -50,9 +50,15 @@ def book_appointment_for_submission(submission: Submission) -> None:
     elif missing_appointment_information or not_filled_in_appointment_information:
         # Incomplete information to make an appointment
         if missing_appointment_information:
-            submission.appointment_information += f"Missing information in form: {', '.join(missing_appointment_information)}. "
+            submission.appointment_information += (
+                f"Missing information in form: "
+                f"{', '.join(missing_appointment_information)}. "
+            )
         if not_filled_in_appointment_information:
-            submission.appointment_information += f"Information not filled in by user: {', '.join(not_filled_in_appointment_information)}. "
+            submission.appointment_information += (
+                f"Information not filled in by user: "
+                f"{', '.join(not_filled_in_appointment_information)}. "
+            )
         submission.save()
         return
 
@@ -62,7 +68,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         last_name=appointment_data["clientLastName"],
         birthdate=appointment_data["clientDateOfBirth"],
     )
-    start_at = datetime.strptime("2021-08-25T17:00:00", "%Y-%m-%dT%H:%M:%S")
+    start_at = datetime.strptime(appointment_data["appStartTime"], "%Y-%m-%dT%H:%M:%S")
 
     try:
         client = get_client()
