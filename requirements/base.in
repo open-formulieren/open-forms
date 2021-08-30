@@ -4,7 +4,7 @@ celery-once
 defusedxml
 furl
 glom
-git+https://github.com/maykinmedia/json-logic-py.git@66e5530d4ee4bfb2d9d95c810c4c9e61ef67b558#egg=maykin-json-logic-py
+git+https://github.com/maykinmedia/json-logic-py.git@86ebe46f1a8661eed599ca424cf2b1859f9989a0#egg=maykin-json-logic-py
 lxml
 Pillow  # handle images
 psycopg2  # database driver
