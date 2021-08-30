@@ -37,7 +37,7 @@ const Today = ({name, value, onChange}) => {
     };
 
     return (
-        <div className="dsl-editor__node-group">
+        <>
             <div className="dsl-editor__node">
                 <Select
                     name="sign"
@@ -46,71 +46,77 @@ const Today = ({name, value, onChange}) => {
                     value={sign}
                 />
             </div>
-            <div className="dsl-editor__node">
-                <NumberInput
-                    name="years"
-                    value={rdelta[0]}
-                    onChange={(event) => {
-                        const fakeEvent = {
-                            target: {
-                                value: [
-                                    parseInt(event.target.value, 10),
-                                    ...rdelta.slice(1, 3)
-                                ]
-                            }
-                        };
-                        onChangeRelativeDelta(fakeEvent);
-                    }}
-                    min={0}
-                />
+            <div className="dsl-editor__node-group">
+                <div className="dsl-editor__node">
+                    <NumberInput
+                        name="years"
+                        value={rdelta[0]}
+                        onChange={(event) => {
+                            const fakeEvent = {
+                                target: {
+                                    value: [
+                                        parseInt(event.target.value, 10),
+                                        ...rdelta.slice(1, 3)
+                                    ]
+                                }
+                            };
+                            onChangeRelativeDelta(fakeEvent);
+                        }}
+                        min={0}
+                    />
+                </div>
+                <div className="dsl-editor__node">
+                    <FormattedMessage description="Logic trigger number of years" defaultMessage="years" />
+                </div>
             </div>
-            <div className="dsl-editor__node">
-                <FormattedMessage description="Logic trigger number of years" defaultMessage="years" />
+            <div className="dsl-editor__node-group">
+                <div className="dsl-editor__node">
+                    <NumberInput
+                        name="months"
+                        value={rdelta[1]}
+                        onChange={(event) => {
+                            const fakeEvent = {
+                                target: {
+                                    value: [
+                                        rdelta[0],
+                                        parseInt(event.target.value, 10),
+                                        rdelta[2]
+                                    ]
+                                }
+                            };
+                            onChangeRelativeDelta(fakeEvent);
+                        }}
+                        min={0}
+                    />
+                </div>
+                <div className="dsl-editor__node">
+                    <FormattedMessage description="Logic trigger number of months" defaultMessage="months" />
+                </div>
             </div>
-            <div className="dsl-editor__node">
-                <NumberInput
-                    name="months"
-                    value={rdelta[1]}
-                    onChange={(event) => {
-                        const fakeEvent = {
-                            target: {
-                                value: [
-                                    rdelta[0],
-                                    parseInt(event.target.value, 10),
-                                    rdelta[2]
-                                ]
-                            }
-                        };
-                        onChangeRelativeDelta(fakeEvent);
-                    }}
-                    min={0}
-                />
+            <div className="dsl-editor__node-group">
+                <div className="dsl-editor__node">
+                    <NumberInput
+                        name="days"
+                        value={rdelta[2]}
+                        onChange={(event) => {
+                            const fakeEvent = {
+                                target: {
+                                    value: [
+                                        ...rdelta.slice(0, 2),
+                                        parseInt(event.target.value, 10)
+                                    ]
+                                }
+                            };
+                            onChangeRelativeDelta(fakeEvent);
+                        }}
+                        min={0}
+                    />
+                </div>
+                <div className="dsl-editor__node">
+                    <FormattedMessage description="Logic trigger number of days" defaultMessage="days" />
+                </div>
             </div>
-            <div className="dsl-editor__node">
-                <FormattedMessage description="Logic trigger number of months" defaultMessage="months" />
-            </div>
-            <div className="dsl-editor__node">
-                <NumberInput
-                    name="days"
-                    value={rdelta[2]}
-                    onChange={(event) => {
-                        const fakeEvent = {
-                            target: {
-                                value: [
-                                    ...rdelta.slice(0, 2),
-                                    parseInt(event.target.value, 10)
-                                ]
-                            }
-                        };
-                        onChangeRelativeDelta(fakeEvent);
-                    }}
-                    min={0}
-                />
-            </div>
-            <div className="dsl-editor__node">
-                <FormattedMessage description="Logic trigger number of days" defaultMessage="days" />
-            </div>
-        </div>
+        </>
     );
 };
 
