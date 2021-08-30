@@ -15,7 +15,7 @@ class LocationSerializer(serializers.Serializer):
     identifier = serializers.CharField(
         label=_("identifier"), help_text=_("Location identifier")
     )
-    name = serializers.CharField(label=_("name"), help_text=_("Product name"))
+    name = serializers.CharField(label=_("name"), help_text=_("Location name"))
 
 
 class LocationInputSerializer(serializers.Serializer):

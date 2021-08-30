@@ -148,9 +148,9 @@ INSTALLED_APPS = [
     "django_filters",
     # Project applications.
     "openforms.accounts",
-    "openforms.appointments",
-    "openforms.appointments.contrib.jcc",
-    "openforms.appointments.contrib.qmatic",
+    "openforms.appointments.apps.AppointmentsAppConfig",
+    "openforms.appointments.contrib.jcc.apps.JccPlugin",
+    "openforms.appointments.contrib.qmatic.apps.QmaticPlugin",
     "openforms.config",
     "openforms.emails",
     "openforms.forms",
