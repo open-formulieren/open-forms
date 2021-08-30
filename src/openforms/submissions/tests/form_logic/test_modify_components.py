@@ -423,7 +423,7 @@ class StepModificationTests(TestCase):
             json_logic_trigger={
                 ">": [
                     {"date": {"var": "dateOfBirth"}},
-                    {"-": [{"today": []}, {"years": 18}]},
+                    {"-": [{"today": []}, {"rdelta": [18]}]},
                 ]
             },
             actions=[
