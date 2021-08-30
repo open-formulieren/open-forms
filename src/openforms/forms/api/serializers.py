@@ -378,6 +378,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         LogicActionTypes.disable_next: serializers.Serializer,
         LogicActionTypes.property: LogicPropertyActionSerializer,
         LogicActionTypes.value: LogicValueActionSerializer,
+        LogicActionTypes.step_not_applicable: serializers.Serializer,
     }
 
 

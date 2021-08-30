@@ -99,6 +99,13 @@ const ACTION_TYPES = [
             defaultMessage: 'change the value of a component'
         })
     ],
+    [
+        'step-not-applicable',
+        defineMessage({
+            description: 'action type "step-not-applicable" label',
+            defaultMessage: 'Mark the form step as not-applicable'
+        })
+    ]
 ];
 
 

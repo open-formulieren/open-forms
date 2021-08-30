@@ -58,6 +58,8 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str,
                     )
                 elif action_details["type"] == "disable-next":
                     step._can_submit = False
+                elif action_details["type"] == "step-not-applicable":
+                    step._is_applicable = False
 
     step._form_logic_evaluated = True
 
