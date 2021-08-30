@@ -156,6 +156,298 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
+    def test_change_component_to_hidden_if_text_contains(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fooBarBaz",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "fooBarBaz"},
+                    "foobarbaz",
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"fooBarBaz": "foo"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": False,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_change_component_to_hidden_if_array_contains(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "userEmail",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "userEmail"},
+                    ["test1@example.com", "test2@example.com"],
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"userEmail": "test1@example.com"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": False,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_dont_change_component_to_hidden_if_text_does_not_contain(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fooBarBaz",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "fooBarBaz"},
+                    "foobarbaz",
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"fooBarBaz": "hello"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": True,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_dont_change_component_to_hidden_if_array_does_not_contain(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "userEmail",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "userEmail"},
+                    ["test1@example.com", "test2@example.com"],
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"userEmail": "test3@example.com"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": True,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
     def test_extract_value(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
