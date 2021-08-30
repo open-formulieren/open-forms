@@ -25,4 +25,4 @@ class PaymentPluginListView(ListMixin, APIView):
     serializer_class = PaymentPluginSerializer
 
     def get_objects(self):
-        return list(register)
+        return list(register.iter_enabled_plugins())

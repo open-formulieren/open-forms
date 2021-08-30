@@ -42,6 +42,7 @@ class BasePlugin:
     return_method = "GET"
     webhook_method = "POST"
     configuration_options = EmptyOptions
+    is_demo_plugin = False
 
     def __init__(self, identifier: str):
         self.identifier = identifier
