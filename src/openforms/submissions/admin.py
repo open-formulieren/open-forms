@@ -19,6 +19,55 @@ from .models import (
 )
 
 
+class SubmissionTypeListFilter(admin.ListFilter):
+    title = _("type")
+    parameter_name = "type"
+
+    def __init__(self, request, params, model, model_admin):
+        super().__init__(request, params, model, model_admin)
+
+        self.request = request
+
+        if self.parameter_name in params:
+            value = params.pop(self.parameter_name)
+            self.used_parameters[self.parameter_name] = value
+
+    def show_all(self):
+        return self.used_parameters.get(self.parameter_name) == "__all__"
+
+    def has_output(self):
+        """
+        This needs to return ``True`` to work.
+        """
+        return True
+
+    def choices(self, changelist):
+        result = [
+            {
+                "selected": self.show_all(),
+                "query_string": changelist.get_query_string(
+                    {self.parameter_name: "__all__"}
+                ),
+                "display": _("All"),
+            },
+            {
+                "selected": not self.show_all(),
+                "query_string": changelist.get_query_string(
+                    remove=[self.parameter_name]
+                ),
+                "display": _("Submissions"),
+            },
+        ]
+        return result
+
+    def queryset(self, request, queryset):
+        if not self.show_all():
+            return queryset.exclude(completed_on=None)
+
+    def expected_parameters(self):
+        return [self.parameter_name]
+
+
 class SubmissionStepInline(admin.StackedInline):
     model = SubmissionStep
     extra = 0
@@ -61,7 +110,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "created_on",
         "completed_on",
     )
-    list_filter = ("form",)
+    list_filter = ("form", SubmissionTypeListFilter)
     search_fields = ("form__name",)
     inlines = [
         SubmissionStepInline,
