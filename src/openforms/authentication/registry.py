@@ -23,6 +23,9 @@ class Registry(BaseRegistry):
                 options.append(info)
         return options
 
+    def get_choices(self):
+        return [(p.identifier, p.get_label()) for p in self if p.is_enabled]
+
 
 # Sentinel to provide the default registry. You an easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.

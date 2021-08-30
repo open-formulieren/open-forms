@@ -11,6 +11,8 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
 
+from .models import OpenIDConnectPublicConfig
+
 
 @register("digid_oidc")
 class DigiDOIDCAuthentication(BasePlugin):
@@ -30,3 +32,8 @@ class DigiDOIDCAuthentication(BasePlugin):
             image_src=request.build_absolute_uri(static("img/digid-46x46.png")),
             href="https://www.digid.nl/",
         )
+
+    @property
+    def is_enabled(self):
+        config = OpenIDConnectPublicConfig.get_solo()
+        return config.enabled
