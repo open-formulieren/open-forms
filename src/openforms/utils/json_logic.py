@@ -24,9 +24,6 @@ class JsonLogicTest:
 
     @classmethod
     def from_expression(cls, expression: dict):
-        if not cls.is_valid(expression):
-            raise ValueError("Invalid jsonLogic expression given")
-
         operator = get_operator(expression)
         values = expression[operator]
 
