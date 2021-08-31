@@ -4,14 +4,24 @@ from typing import Optional
 
 from django.utils.translation import ugettext_lazy as _
 
+from zgw_consumers.models import Service
+
+# "Borrow" the functions from another plugin.
+from openforms.registrations.contrib.zgw_apis.service import (
+    create_attachment,
+    create_document,
+)
 from openforms.submissions.models import Submission, SubmissionReport
 
 from ...base import BasePlugin
 from ...registry import register
-from ..zgw_apis.models import ZgwConfig
-from ..zgw_apis.service import create_attachment, create_document
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
+
+
+def get_drc() -> Service:
+    config = ObjectsAPIConfig.get_solo()
+    return config.drc_service
 
 
 @register("objects_api")
@@ -34,7 +44,7 @@ class ObjectsAPIRegistration(BasePlugin):
             submission.form.name,
             submission_report,
             submission_report_options,
-            config=config,
+            get_drc=get_drc,
         )
 
         attachment_options = deepcopy(options)
@@ -44,7 +54,10 @@ class ObjectsAPIRegistration(BasePlugin):
         attachments = []
         for attachment in submission.attachments:
             attachment_document = create_attachment(
-                submission.form.name, attachment, attachment_options, config=config
+                submission.form.name,
+                attachment,
+                attachment_options,
+                get_drc=get_drc,
             )
             attachments.append(attachment_document["url"])
 

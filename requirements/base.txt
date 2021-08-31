@@ -183,9 +183,7 @@ flower==0.9.7
 furl==2.1.2
     # via -r requirements/base.in
 gemma-zds-client==1.0.1
-    # via
-    #   -r requirements/base.in
-    #   zgw-consumers
+    # via zgw-consumers
 glom==20.11.0
     # via -r requirements/base.in
 html5lib==1.1
