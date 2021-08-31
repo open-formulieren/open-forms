@@ -59,7 +59,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "name",
             "url",
             "form_step",
-            "available",
+            "is_applicable",
             "completed",
             "optional",
         )
@@ -192,7 +192,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "slug",
             "form_step",
             "data",
-            "available",
+            "is_applicable",
             "completed",
             "optional",
             "can_submit",

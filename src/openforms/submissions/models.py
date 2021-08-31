@@ -62,7 +62,7 @@ class SubmissionState:
         candidates = (
             step
             for step in self.submission_steps[offset:]
-            if not step.completed and step.available
+            if not step.completed and step.is_applicable
         )
         return next(candidates, None)
 
