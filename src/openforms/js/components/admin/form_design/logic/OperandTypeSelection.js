@@ -12,35 +12,15 @@ const OPERAND_TYPES = {
     array: defineMessage({description: '"array" operand type', defaultMessage: 'the array'}),
 };
 
-const COMPONENT_TYPE_TO_OPERAND_TYPE = {
-    number: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-    },
-    textfield: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-        array: OPERAND_TYPES.array,
-    },
-    iban: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-    },
-    date: {...OPERAND_TYPES},
-};
 
-
-const OperandTypeSelection = ({name, operandType, operator, componentType, onChange}) => {
+const OperandTypeSelection = ({name, operandType, onChange, filter}) => {
     const intl = useIntl();
-    const choices = Object.entries(COMPONENT_TYPE_TO_OPERAND_TYPE[componentType]).filter(
-        // we only want to compare with an array of values if the operator is 'in'
-        ([literalValueType, msg]) => {
-            if (operator === 'in') return true;
-            return operator !== 'in' && literalValueType !== 'array';
-        }
-    ).map(
+    let choices = Object.entries(OPERAND_TYPES).map(
         ([operandType, msg]) => [operandType, intl.formatMessage(msg)]
     );
+    if (filter) {
+        choices = choices.filter(filter);
+    }
     return (
         <Select
             name={name}
@@ -54,12 +34,11 @@ const OperandTypeSelection = ({name, operandType, operator, componentType, onCha
 
 OperandTypeSelection.propTypes = {
     name: PropTypes.string.isRequired,
-    operator: PropTypes.string,
     operandType: PropTypes.oneOf(
         [''].concat(Object.keys(OPERAND_TYPES))
     ).isRequired,
-    componentType: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    filter: PropTypes.func,
 };
 
 export default OperandTypeSelection;

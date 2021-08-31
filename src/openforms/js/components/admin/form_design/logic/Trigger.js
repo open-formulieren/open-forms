@@ -8,7 +8,7 @@ import {getTranslatedChoices} from '../../../../utils/i18n'
 import Select from '../../forms/Select';
 
 import {ComponentsContext} from './Context';
-import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS } from './constants';
+import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
@@ -311,9 +311,12 @@ const Trigger = ({ name, logic, onChange }) => {
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
-                                    operator={operator}
-                                    componentType={componentType}
                                     onChange={onTriggerChange}
+                                    filter={
+                                        ([choiceKey, choiceLabel]) => {
+                                            return COMPONENT_TYPE_TO_OPERAND_TYPE[componentType].includes(choiceKey);
+                                        }
+                                    }
                                 />
                             </div>
                         )

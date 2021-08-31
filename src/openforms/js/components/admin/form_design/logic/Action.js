@@ -133,8 +133,10 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                 <OperandTypeSelection
                                     name="componentValueSource"
                                     onChange={onChange}
-                                    componentType={componentType}
                                     operandType={action.componentValueSource}
+                                    filter={
+                                        ([choiceKey, choiceLabel]) => ['literal', 'component'].includes(choiceKey)
+                                    }
                                 />
                             </div>
                         )

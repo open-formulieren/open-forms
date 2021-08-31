@@ -116,6 +116,13 @@ const ACTIONS_WITH_OPTIONS = [
     'value'
 ];
 
+const COMPONENT_TYPE_TO_OPERAND_TYPE = {
+    number: ['literal', 'component'],
+    textfield: ['literal', 'component', 'array'],
+    iban: ['literal', 'component'],
+    date: ['literal', 'component', 'today'],
+};
+
 
 const STRING_TO_TYPE = {
     bool: (stringValue) => (stringValue === "true"),
@@ -209,5 +216,6 @@ export {
     ACTIONS_WITH_OPTIONS,
     MODIFIABLE_PROPERTIES,
     STRING_TO_TYPE,
-    TYPE_TO_STRING
+    TYPE_TO_STRING,
+    COMPONENT_TYPE_TO_OPERAND_TYPE,
 };

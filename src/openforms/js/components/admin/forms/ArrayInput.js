@@ -70,4 +70,13 @@ const ArrayInput = ({
 
 };
 
+ArrayInput.prototype = {
+    name: PropTypes.string.isRequired,
+    inputType: PropTypes.string.isRequired,
+    values: PropTypes.arrayOf(PropTypes.string),
+    onChange: PropTypes.func.isRequired,
+    deleteConfirmationMessage: PropTypes.node,
+    addButtonMessage: PropTypes.node,
+};
+
 export default ArrayInput;
