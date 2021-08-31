@@ -1,7 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
@@ -10,6 +12,7 @@ from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.utils.api.views import ListMixin
 
 from ..api.serializers import (
+    CancelAppointmentInputSerializer,
     DateInputSerializer,
     DateSerializer,
     LocationInputSerializer,
@@ -18,7 +21,15 @@ from ..api.serializers import (
     TimeInputSerializer,
     TimeSerializer,
 )
-from ..base import AppointmentLocation, AppointmentProduct
+from openforms.appointments.base import AppointmentLocation, AppointmentProduct
+from openforms.appointments.exceptions import (
+    AppointmentDeleteFailed,
+    CancelAppointmentFailed,
+)
+from openforms.appointments.utils import get_client
+from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
+from openforms.submissions.models import Submission
+from openforms.utils.api.views import ListMixin
 from ..utils import get_client
 
 
@@ -167,3 +178,54 @@ class TimesListView(ListMixin, APIView):
         client = get_client()
         times = client.get_times([product], location, serializer.validated_data["date"])
         return [{"time": time} for time in times]
+
+
+@extend_schema(
+    summary=_("Cancel an appointment"),
+    parameters=[
+        OpenApiParameter(
+            "identifier",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Appointment identifier"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "uuid",
+            OpenApiTypes.UUID,
+            OpenApiParameter.QUERY,
+            description=_("Submission UUID"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "email",
+            OpenApiTypes.EMAIL,
+            OpenApiParameter.QUERY,
+            description=_("Email given when making appointment"),
+            required=True,
+        ),
+    ],
+)
+class CancelAppointmentView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = CancelAppointmentInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            submission = Submission.objects.get(uuid=serializer.validated_data["uuid"])
+        except ObjectDoesNotExist:
+            raise CancelAppointmentFailed
+
+        emails = submission.get_email_confirmation_recipients(submission.data)
+
+        if serializer.validated_data["email"] not in emails:
+            raise PermissionDenied
+
+        client = get_client()
+
+        try:
+            client.delete_appointment(serializer.validated_data["identifier"])
+        except AppointmentDeleteFailed:
+            raise CancelAppointmentFailed
+
+        return Response(status=HTTP_200_OK)
