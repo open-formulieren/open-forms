@@ -8,7 +8,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
-from openforms.submissions.constants import RemovalMethods
+from openforms.data_removal.constants import RemovalMethods
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 

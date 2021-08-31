@@ -1,7 +1,7 @@
 from datetime import timedelta
-from unittest import TestCase
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.test import TestCase
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
@@ -10,21 +10,18 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
-from openforms.submissions.constants import RegistrationStatuses, RemovalMethods
+from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
-from openforms.submissions.tasks import (
-    delete_submissions,
-    make_sensitive_data_anonymous,
-)
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
 
+from ..constants import RemovalMethods
+from ..tasks import delete_submissions, make_sensitive_data_anonymous
+
 
 class DeleteSubmissionsTask(TestCase):
-    def setUp(self) -> None:
-        Submission.objects.all().delete()
 
     def test_successful_submissions_correctly_deleted(self):
         config = GlobalConfiguration.get_solo()
@@ -352,9 +349,10 @@ class DeleteSubmissionsTask(TestCase):
 
 
 class MakeSensitiveDataAnonymousTask(TestCase):
-    def setUp(self) -> None:
-        Submission.objects.all().delete()
-        self.form_definition = FormDefinitionFactory.create(
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.form_definition = FormDefinitionFactory.create(
             configuration={
                 "components": [
                     {"key": "textFieldSensitive", "isSensitiveData": True},
@@ -362,7 +360,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
             }
         )
-        self.form_definition_2 = FormDefinitionFactory.create(
+        cls.form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "components": [
                     {"key": "textFieldSensitive2", "isSensitiveData": True},
@@ -370,16 +368,16 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 ],
             }
         )
-        self.form = FormFactory.create(
+        cls.form = FormFactory.create(
             successful_submissions_removal_method=RemovalMethods.make_anonymous,
             incomplete_submissions_removal_method=RemovalMethods.make_anonymous,
             errored_submissions_removal_method=RemovalMethods.make_anonymous,
         )
-        self.step1 = FormStepFactory.create(
-            form=self.form, form_definition=self.form_definition
+        cls.step1 = FormStepFactory.create(
+            form=cls.form, form_definition=cls.form_definition
         )
-        self.step2 = FormStepFactory.create(
-            form=self.form, form_definition=self.form_definition_2
+        cls.step2 = FormStepFactory.create(
+            form=cls.form, form_definition=cls.form_definition_2
         )
 
     def test_certain_successful_submissions_have_sensitive_data_removed(self):

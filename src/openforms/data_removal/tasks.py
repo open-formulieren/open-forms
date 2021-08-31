@@ -4,10 +4,11 @@ from datetime import timedelta
 
 from django.db.models import F
 
-from ..celery import app
-from ..submissions.constants import RemovalMethods
-from .constants import RegistrationStatuses
-from .models import Submission
+from openforms.celery import app
+from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.models import Submission
+
+from .constants import RemovalMethods
 
 logger = logging.getLogger(__name__)
 

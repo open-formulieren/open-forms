@@ -11,12 +11,12 @@ from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
+from openforms.authentication.fields import AuthenticationBackendMultiSelectField
+from openforms.data_removal.constants import RemovalMethods
+from openforms.payments.fields import PaymentBackendChoiceField
+from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.utils.fields import StringUUIDField
 
-from ...authentication.fields import AuthenticationBackendMultiSelectField
-from ...payments.fields import PaymentBackendChoiceField
-from ...registrations.fields import RegistrationBackendChoiceField
-from ...submissions.constants import RemovalMethods
 from .utils import literal_getter
 
 

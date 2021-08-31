@@ -179,6 +179,7 @@ INSTALLED_APPS = [
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
+    "openforms.data_removal",
 ]
 
 MIDDLEWARE = [
@@ -546,11 +547,11 @@ CELERY_BEAT_SCHEDULE = {
         ),
     },
     "delete-submissions": {
-        "task": "openforms.submissions.tasks.delete_submissions",
+        "task": "openforms.data_removal.tasks.delete_submissions",
         "schedule": crontab(minute=0, hour=1),
     },
     "make-sensitive-data-anonymous": {
-        "task": "openforms.submissions.tasks.make_sensitive_data_anonymous",
+        "task": "openforms.data_removal.tasks.make_sensitive_data_anonymous",
         "schedule": crontab(minute=0, hour=2),
     },
 }
