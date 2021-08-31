@@ -20,6 +20,7 @@ from ..api.serializers import (
     ProductSerializer,
     TimeInputSerializer,
     TimeSerializer,
+    VerifyAppointmentInputSerializer,
 )
 from openforms.appointments.base import AppointmentLocation, AppointmentProduct
 from openforms.appointments.exceptions import (
@@ -181,6 +182,51 @@ class TimesListView(ListMixin, APIView):
 
 
 @extend_schema(
+    summary=_("Verify an appointment"),
+    description=_("Verify a valid appointment for the given input."),
+    parameters=[
+        OpenApiParameter(
+            "identifier",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("Appointment identifier"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "uuid",
+            OpenApiTypes.UUID,
+            OpenApiParameter.QUERY,
+            description=_("Submission UUID"),
+            required=True,
+        ),
+        OpenApiParameter(
+            "email",
+            OpenApiTypes.EMAIL,
+            OpenApiParameter.QUERY,
+            description=_("Email given when making appointment"),
+            required=True,
+        ),
+    ],
+)
+class VerifyAppointmentView(APIView):
+    def get(self, request, *args, **kwargs):
+        serializer = VerifyAppointmentInputSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            submission = Submission.objects.get(uuid=serializer.validated_data["uuid"])
+        except ObjectDoesNotExist:
+            raise CancelAppointmentFailed
+
+        emails = submission.get_email_confirmation_recipients(submission.data)
+
+        if serializer.validated_data["email"] not in emails:
+            raise PermissionDenied
+
+        return Response(status=HTTP_200_OK)
+
+
+@extend_schema(
     summary=_("Cancel an appointment"),
     parameters=[
         OpenApiParameter(
@@ -206,26 +252,15 @@ class TimesListView(ListMixin, APIView):
         ),
     ],
 )
-class CancelAppointmentView(APIView):
+class CancelAppointmentView(VerifyAppointmentView):
     def get(self, request, *args, **kwargs):
-        serializer = CancelAppointmentInputSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-
-        try:
-            submission = Submission.objects.get(uuid=serializer.validated_data["uuid"])
-        except ObjectDoesNotExist:
-            raise CancelAppointmentFailed
-
-        emails = submission.get_email_confirmation_recipients(submission.data)
-
-        if serializer.validated_data["email"] not in emails:
-            raise PermissionDenied
+        response = super().get(request, *args, **kwargs)
 
         client = get_client()
 
         try:
-            client.delete_appointment(serializer.validated_data["identifier"])
+            client.delete_appointment(request.query_params["identifier"])
         except AppointmentDeleteFailed:
             raise CancelAppointmentFailed
 
-        return Response(status=HTTP_200_OK)
+        return response

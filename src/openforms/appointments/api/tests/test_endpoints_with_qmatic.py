@@ -217,6 +217,119 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
+class VerifyAppointmentTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.create()
+        cls.endpoint = reverse("api:appointments-verify")
+
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.qmatic.models.QmaticConfig"
+        )
+        appointments_config.save()
+
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
+
+    def test_verify_appointment_fails_with_incorrect_email(self):
+        form = FormFactory.create(slug="a-form", name="A form")
+
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "email", "label": "Email", "confirmationRecipient": True},
+                ],
+            }
+        )
+
+        form_step = FormStepFactory.create(form=form, form_definition=form_def)
+
+        self.submission.form = form
+        self.submission.save()
+
+        SubmissionStepFactory.create(
+            submission=self.submission,
+            data={
+                "email": "maykin@media.nl",
+            },
+            form_step=form_step,
+        )
+
+        data = {
+            "identifier": "123456789",
+            "uuid": str(self.submission.uuid),
+            "email": "incorrect@email.nl",
+        }
+
+        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_verify_appointment_fails_with_incorrect_submission_uuid(self):
+        form = FormFactory.create(slug="a-form", name="A form")
+
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "email", "label": "Email", "confirmationRecipient": True},
+                ],
+            }
+        )
+
+        form_step = FormStepFactory.create(form=form, form_definition=form_def)
+
+        self.submission.form = form
+        self.submission.save()
+
+        SubmissionStepFactory.create(
+            submission=self.submission,
+            data={
+                "email": "maykin@media.nl",
+            },
+            form_step=form_step,
+        )
+
+        data = {
+            "identifier": "123456789",
+            "uuid": str(uuid.uuid4()),
+            "email": "incorrect@email.nl",
+        }
+
+        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_verifying_appointment_fails_with_missing_data(self):
+        data = {
+            "identifier": "123456789",
+            "uuid": str(uuid.uuid4()),
+            "email": "incorrect@email.nl",
+        }
+
+        key_combinations_to_remove = [
+            ["identifier", "uuid", "email"],
+            ["identifier", "uuid"],
+            ["identifier", "email"],
+            ["uuid", "email"],
+            ["identifier"],
+            ["email"],
+            ["uuid"],
+        ]
+
+        for keys_to_remove in key_combinations_to_remove:
+            with self.subTest(keys_to_remove=keys_to_remove):
+                request_data = copy.deepcopy(data)
+                for key in keys_to_remove:
+                    request_data.pop(key)
+                response = self.client.get(
+                    f"{self.endpoint}{get_query_params_from_dict(data)}"
+                )
+                self.assertEqual(response.status_code, 400)
+
+
 class CancelAppointmentTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -273,78 +386,6 @@ class CancelAppointmentTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @requests_mock.Mocker()
-    def test_cancel_appointment_fails_with_incorrect_email(self, m):
-        form = FormFactory.create(slug="a-form", name="A form")
-
-        form_def = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "email", "label": "Email", "confirmationRecipient": True},
-                ],
-            }
-        )
-
-        form_step = FormStepFactory.create(form=form, form_definition=form_def)
-
-        self.submission.form = form
-        self.submission.save()
-
-        SubmissionStepFactory.create(
-            submission=self.submission,
-            data={
-                "email": "maykin@media.nl",
-            },
-            form_step=form_step,
-        )
-
-        data = {
-            "identifier": "123456789",
-            "uuid": str(self.submission.uuid),
-            "email": "incorrect@email.nl",
-        }
-
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
-
-        self.assertEqual(response.status_code, 403)
-
-    @requests_mock.Mocker()
-    def test_cancel_appointment_fails_with_incorrect_submission_uuid(self, m):
-        form = FormFactory.create(slug="a-form", name="A form")
-
-        form_def = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "email", "label": "Email", "confirmationRecipient": True},
-                ],
-            }
-        )
-
-        form_step = FormStepFactory.create(form=form, form_definition=form_def)
-
-        self.submission.form = form
-        self.submission.save()
-
-        SubmissionStepFactory.create(
-            submission=self.submission,
-            data={
-                "email": "maykin@media.nl",
-            },
-            form_step=form_step,
-        )
-
-        data = {
-            "identifier": "123456789",
-            "uuid": str(uuid.uuid4()),
-            "email": "incorrect@email.nl",
-        }
-
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
-
-        self.assertEqual(response.status_code, 400)
-
-    @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
         form = FormFactory.create(slug="a-form", name="A form")
 
@@ -381,30 +422,3 @@ class CancelAppointmentTests(TestCase):
         response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
 
         self.assertEqual(response.status_code, 400)
-
-    def test_cancelling_appointment_fails_with_missing_data(self):
-        data = {
-            "identifier": "123456789",
-            "uuid": str(uuid.uuid4()),
-            "email": "incorrect@email.nl",
-        }
-
-        key_combinations_to_remove = [
-            ["identifier", "uuid", "email"],
-            ["identifier", "uuid"],
-            ["identifier", "email"],
-            ["uuid", "email"],
-            ["identifier"],
-            ["email"],
-            ["uuid"],
-        ]
-
-        for keys_to_remove in key_combinations_to_remove:
-            with self.subTest(keys_to_remove=keys_to_remove):
-                request_data = copy.deepcopy(data)
-                for key in keys_to_remove:
-                    request_data.pop(key)
-                response = self.client.get(
-                    f"{self.endpoint}{get_query_params_from_dict(data)}"
-                )
-                self.assertEqual(response.status_code, 400)

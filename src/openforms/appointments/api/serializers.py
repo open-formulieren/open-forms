@@ -51,7 +51,7 @@ class TimeSerializer(serializers.Serializer):
     time = serializers.DateTimeField(label=_("time"))
 
 
-class CancelAppointmentInputSerializer(serializers.Serializer):
+class VerifyAppointmentInputSerializer(serializers.Serializer):
     identifier = serializers.CharField(
         label=_("identifier"), help_text=_("Identifier of the appointment")
     )

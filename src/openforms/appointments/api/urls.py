@@ -6,6 +6,7 @@ from .views import (
     LocationsListView,
     ProductsListView,
     TimesListView,
+    VerifyAppointmentView,
 )
 
 urlpatterns = [
@@ -13,5 +14,6 @@ urlpatterns = [
     path("locations", LocationsListView.as_view(), name="appointments-locations-list"),
     path("dates", DatesListView.as_view(), name="appointments-dates-list"),
     path("times", TimesListView.as_view(), name="appointments-times-list"),
+    path("verify", VerifyAppointmentView.as_view(), name="appointments-verify"),
     path("cancel", CancelAppointmentView.as_view(), name="appointments-cancel"),
 ]
