@@ -18,7 +18,7 @@ class ObjectsAPIConfig(SingletonModel):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         null=True,
-        related_name="objects_objects_config",
+        related_name="+",
     )
     drc_service = models.OneToOneField(
         "zgw_consumers.Service",
@@ -26,7 +26,7 @@ class ObjectsAPIConfig(SingletonModel):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
         null=True,
-        related_name="objects_drc_config",
+        related_name="+",
     )
 
     # Overridable defaults
