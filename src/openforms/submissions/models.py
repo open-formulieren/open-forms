@@ -9,17 +9,6 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
-from django.db.models import (
-    Case,
-    CharField,
-    DateTimeField,
-    DurationField,
-    ExpressionWrapper,
-    F,
-    IntegerField,
-    Value,
-    When,
-)
 from django.shortcuts import render
 from django.template import Context, Template
 from django.utils import timezone
@@ -40,6 +29,7 @@ from ..contrib.kvk.validators import validate_kvk
 from ..payments.constants import PaymentStatus
 from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
+from .query import SubmissionQuerySet
 
 logger = logging.getLogger(__name__)
 
@@ -86,41 +76,6 @@ def get_default_bsn() -> str:
 def get_default_kvk() -> str:
     config = GlobalConfiguration.get_solo()
     return config.default_test_kvk if config.default_test_kvk else ""
-
-
-class SubmissionCustomQuerySet(models.QuerySet):
-    def annotate_removal_fields(
-        self, submission_removal_limit, submission_removal_method=None
-    ):
-        config = GlobalConfiguration.get_solo()
-        annotation = self.annotate(
-            removal_limit=Case(
-                When(
-                    **{f"form__{submission_removal_limit}": None},
-                    then=Value(getattr(config, submission_removal_limit)),
-                ),
-                default=F(f"form__{submission_removal_limit}"),
-                output_field=IntegerField(),
-            ),
-            time_since_creation=ExpressionWrapper(
-                Value(timezone.now(), DateTimeField()) - F("created_on"),
-                output_field=DurationField(),
-            ),
-        )
-
-        if submission_removal_method:
-            annotation = annotation.annotate(
-                removal_method=Case(
-                    When(
-                        **{f"form__{submission_removal_method}": ""},
-                        then=Value(getattr(config, submission_removal_method)),
-                    ),
-                    default=F(f"form__{submission_removal_method}"),
-                    output_field=CharField(),
-                ),
-            )
-
-        return annotation
 
 
 class Submission(models.Model):
@@ -185,7 +140,7 @@ class Submission(models.Model):
         ),
     )
 
-    objects = SubmissionCustomQuerySet.as_manager()
+    objects = SubmissionQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Submission")

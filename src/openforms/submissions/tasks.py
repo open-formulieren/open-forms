@@ -18,7 +18,7 @@ def delete_submissions():
 
     successful_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "successful_submissions_removal_limit",
-        submission_removal_method="successful_submissions_removal_method",
+        method_field="successful_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.delete_permanently,
@@ -31,7 +31,7 @@ def delete_submissions():
 
     incomplete_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "incomplete_submissions_removal_limit",
-        submission_removal_method="incomplete_submissions_removal_method",
+        method_field="incomplete_submissions_removal_method",
     ).filter(
         registration_status__in=[
             RegistrationStatuses.pending,
@@ -47,7 +47,7 @@ def delete_submissions():
 
     errored_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "errored_submissions_removal_limit",
-        submission_removal_method="errored_submissions_removal_method",
+        method_field="errored_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.delete_permanently,
@@ -77,7 +77,7 @@ def make_sensitive_data_anonymous() -> None:
 
     successful_submissions = Submission.objects.annotate_removal_fields(
         "successful_submissions_removal_limit",
-        submission_removal_method="successful_submissions_removal_method",
+        method_field="successful_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.success,
         removal_method=RemovalMethods.make_anonymous,
@@ -87,7 +87,7 @@ def make_sensitive_data_anonymous() -> None:
 
     incomplete_submissions = Submission.objects.annotate_removal_fields(
         "incomplete_submissions_removal_limit",
-        submission_removal_method="incomplete_submissions_removal_method",
+        method_field="incomplete_submissions_removal_method",
     ).filter(
         registration_status__in=[
             RegistrationStatuses.pending,
@@ -100,7 +100,7 @@ def make_sensitive_data_anonymous() -> None:
 
     errored_submissions = Submission.objects.annotate_removal_fields(
         "errored_submissions_removal_limit",
-        submission_removal_method="errored_submissions_removal_method",
+        method_field="errored_submissions_removal_method",
     ).filter(
         registration_status=RegistrationStatuses.failed,
         removal_method=RemovalMethods.make_anonymous,
