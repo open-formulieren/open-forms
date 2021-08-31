@@ -89,6 +89,20 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
+class SubmissionsRemovalOptionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Form
+        fields = (
+            "successful_submissions_removal_limit",
+            "successful_submissions_removal_method",
+            "incomplete_submissions_removal_limit",
+            "incomplete_submissions_removal_method",
+            "errored_submissions_removal_limit",
+            "errored_submissions_removal_method",
+            "all_submissions_removal_limit",
+        )
+
+
 class FormSerializer(serializers.ModelSerializer):
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
@@ -117,6 +131,9 @@ class FormSerializer(serializers.ModelSerializer):
     payment_options = PaymentOptionsReadOnlyField()
 
     literals = FormLiteralsSerializer(source="*", required=False)
+    submissions_removal_options = SubmissionsRemovalOptionsSerializer(
+        source="*", required=False
+    )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
@@ -144,6 +161,7 @@ class FormSerializer(serializers.ModelSerializer):
             "is_deleted",
             "submission_confirmation_template",
             "can_submit",
+            "submissions_removal_options",
         )
         extra_kwargs = {
             "uuid": {

@@ -33,6 +33,7 @@ import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
+import DataRemoval from './DataRemoval';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {getFormComponents} from './utils';
 
@@ -52,6 +53,7 @@ const initialFormState = {
         product: null,
         paymentBackend: '',
         paymentBackendOptions: {},
+        submissionsRemovalOptions: {},
     },
     literals: {
         beginText: {
@@ -132,6 +134,9 @@ function reducer(draft, action) {
                     draft.literals[fieldName].value = value;
                     break;
                 }
+                case 'submissionsRemovalOptions':
+                    draft.form.submissionsRemovalOptions[fieldName] = value;
+                    break;
                 default: {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
@@ -716,6 +721,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
                     </Tab>
                     <Tab>
+                        <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
+                    </Tab>
+                    <Tab>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                 </TabList>
@@ -808,6 +816,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         backends={state.availablePaymentBackends}
                         selectedBackend={state.form.paymentBackend}
                         backendOptions={state.form.paymentBackendOptions}
+                        onChange={onFieldChange}
+                    />
+                </TabPanel>
+
+                <TabPanel>
+                    <DataRemoval
+                        submissionsRemovalOptions={state.form.submissionsRemovalOptions}
                         onChange={onFieldChange}
                     />
                 </TabPanel>

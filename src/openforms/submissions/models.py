@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
-from django.db import models
+from django.db import models, transaction
 from django.shortcuts import render
 from django.template import Context, Template
 from django.utils import timezone
@@ -29,6 +29,7 @@ from ..contrib.kvk.validators import validate_kvk
 from ..payments.constants import PaymentStatus
 from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
+from .query import SubmissionQuerySet
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,16 @@ class Submission(models.Model):
         ),
     )
 
+    _is_cleaned = models.BooleanField(
+        _("is cleaned"),
+        default=False,
+        help_text=_(
+            "Indicates whether sensitive data (if there was any) has been removed from this submission."
+        ),
+    )
+
+    objects = SubmissionQuerySet.as_manager()
+
     class Meta:
         verbose_name = _("Submission")
         verbose_name_plural = _("Submissions")
@@ -149,6 +160,20 @@ class Submission(models.Model):
     @property
     def is_completed(self):
         return bool(self.completed_on)
+
+    @transaction.atomic()
+    def remove_sensitive_data(self):
+        self.bsn = ""
+        self.kvk = ""
+        for submission_step in self.submissionstep_set.select_related(
+            "form_step", "form_step__form_definition"
+        ).select_for_update():
+            fields = submission_step.form_step.form_definition.sensitive_fields
+            removed_data = {key: "" for key in fields}
+            submission_step.data.update(removed_data)
+            submission_step.save()
+        self._is_cleaned = True
+        self.save()
 
     def load_execution_state(self) -> SubmissionState:
         """

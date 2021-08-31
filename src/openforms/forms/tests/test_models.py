@@ -227,3 +227,18 @@ class FormDefinitionTestCase(TestCase):
         self.assertIn("aaa", keys)
         self.assertNotIn("bbb", keys)
         self.assertIn("ccc", keys)
+
+    def test_form_definition_sensitive_information_returns_correct_fields(self):
+        self.form_definition_with_sensitive_information = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "textFieldSensitive", "isSensitiveData": True},
+                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                ],
+            }
+        )
+        self.assertEqual(self.form_definition.sensitive_fields, [])
+        self.assertEqual(
+            self.form_definition_with_sensitive_information.sensitive_fields,
+            ["textFieldSensitive"],
+        )

@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
+import {getTranslatedChoices} from '../../../../utils/i18n'
 import Select from '../../forms/Select';
 import DeleteIcon from '../../DeleteIcon';
 import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES, STRING_TO_TYPE} from './constants';
@@ -29,11 +30,12 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
     };
 
     // apply i18n to the constants choice labels
-    const actionTypeChoices = ACTION_TYPES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
-    const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(
-        ([key, info]) => [key, intl.formatMessage(info.label)]
+    const actionTypeChoices = getTranslatedChoices(intl, ACTION_TYPES);
+    const modifiablePropertyChoices = getTranslatedChoices(
+        intl,
+        Object.entries(MODIFIABLE_PROPERTIES).map( ([key, info]) => [key, info.label] )
     );
-    const propertyValueChoices = PROPERTY_VALUES.map( ([value, msg]) => [value, intl.formatMessage(msg)] );
+    const propertyValueChoices = getTranslatedChoices(intl, PROPERTY_VALUES);
 
     return (
         <div className="logic-action">

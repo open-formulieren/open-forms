@@ -10,6 +10,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -136,6 +137,16 @@ class FormDefinition(models.Model):
                 keys_for_email_confirmation.append(component["key"])
 
         return keys_for_email_confirmation
+
+    @cached_property
+    def sensitive_fields(self):
+        sensitive_fields = []
+
+        for component in self.iter_components(recursive=True):
+            if component.get("isSensitiveData"):
+                sensitive_fields.append(component["key"])
+
+        return sensitive_fields
 
     class Meta:
         verbose_name = _("Form definition")

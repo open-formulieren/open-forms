@@ -37,6 +37,12 @@ const BASIC = {
             label: 'Hidden',
             tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
         },
+        {
+            type: 'checkbox',
+            key: 'isSensitiveData',
+            label: 'Is Sensitive Data',
+            tooltip: 'The data entered in this component will be removed in accordance with the privacy settings.'
+        },
     ]
 };
 

@@ -83,6 +83,20 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Data removal"),
+            {
+                "fields": (
+                    "successful_submissions_removal_limit",
+                    "successful_submissions_removal_method",
+                    "incomplete_submissions_removal_limit",
+                    "incomplete_submissions_removal_method",
+                    "errored_submissions_removal_limit",
+                    "errored_submissions_removal_method",
+                    "all_submissions_removal_limit",
+                ),
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),

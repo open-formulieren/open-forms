@@ -43,6 +43,12 @@
       "value": "Inhoud bevestigingspagina"
     }
   ],
+  "1fD+K4": [
+    {
+      "type": 0,
+      "value": "Incomplete Submissions Removal Method"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -191,6 +197,12 @@
       "value": "en"
     }
   ],
+  "9zJefY": [
+    {
+      "type": 0,
+      "value": "Errored Submissions Removal Limit"
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -299,6 +311,12 @@
       "value": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren."
     }
   ],
+  "Gc7gu3": [
+    {
+      "type": 0,
+      "value": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+    }
+  ],
   "GfH2yX": [
     {
       "type": 0,
@@ -311,10 +329,22 @@
       "value": "Onderhoudsmodus"
     }
   ],
+  "HF0cSk": [
+    {
+      "type": 0,
+      "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
   "HXE3Mm": [
     {
       "type": 0,
       "value": "URL-deel van het formulier."
+    }
+  ],
+  "I0bgsg": [
+    {
+      "type": 0,
+      "value": "Successful Submissions Removal Method field label"
     }
   ],
   "I3zyib": [
@@ -333,6 +363,12 @@
     {
       "type": 0,
       "value": "verborgen"
+    }
+  ],
+  "JZRX+C": [
+    {
+      "type": 0,
+      "value": "Successful Submissions Removal Limit"
     }
   ],
   "KIy7Wr": [
@@ -409,6 +445,12 @@
       "value": "Payment backend options"
     }
   ],
+  "S6eF5o": [
+    {
+      "type": 0,
+      "value": "Data removal"
+    }
+  ],
   "SX2HTA": [
     {
       "type": 0,
@@ -437,6 +479,12 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "UKTqb8": [
+    {
+      "type": 0,
+      "value": "All Submissions Removal Limit"
     }
   ],
   "VQYmOD": [
@@ -515,6 +563,12 @@
       "value": "Omhoog"
     }
   ],
+  "cDbGU2": [
+    {
+      "type": 0,
+      "value": "Incomplete Submissions Removal Limit"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -543,6 +597,12 @@
     {
       "type": 0,
       "value": "'Start' tekst"
+    }
+  ],
+  "f9Zr9D": [
+    {
+      "type": 0,
+      "value": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
   "ftzF/n": [
@@ -621,16 +681,34 @@
       "value": "Stappen en velden"
     }
   ],
+  "nMLlnT": [
+    {
+      "type": 0,
+      "value": "Sensitive data within the submissions will be deleted"
+    }
+  ],
   "naInSZ": [
     {
       "type": 0,
       "value": "Toon/verberg DSL preview"
     }
   ],
+  "nkr7r0": [
+    {
+      "type": 0,
+      "value": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
       "value": "De gegevens zijn ongeldig. Los de problemen hieronder op."
+    }
+  ],
+  "oxYXJX": [
+    {
+      "type": 0,
+      "value": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
   "p8LSwF": [
@@ -655,6 +733,18 @@
     {
       "type": 0,
       "value": "Naam"
+    }
+  ],
+  "q88tuu": [
+    {
+      "type": 0,
+      "value": "Submissions will be deleted"
+    }
+  ],
+  "qYZ81s": [
+    {
+      "type": 0,
+      "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
   "qo1UbS": [
@@ -699,6 +789,12 @@
       "value": "Kies een stap om te bekijken of aan te passen."
     }
   ],
+  "uG5kOq": [
+    {
+      "type": 0,
+      "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
   "uleYj3": [
     {
       "type": 0,
@@ -715,6 +811,12 @@
     {
       "type": 0,
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "wIaGgb": [
+    {
+      "type": 0,
+      "value": "Errored Submissions Removal Method"
     }
   ],
   "xJBMaf": [

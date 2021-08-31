@@ -4,6 +4,7 @@ import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
 
+import {getTranslatedChoices} from '../../../../utils/i18n'
 import Select from '../../forms/Select';
 
 import {ComponentsContext} from './Context';
@@ -26,7 +27,6 @@ const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
     const choices = Object
         .entries(OPERATORS)
         .filter(([operator]) => allowedOperators.includes(operator))
-        .map( ([operator, msg]) => [operator, intl.formatMessage(msg)] )
     ;
 
     if (!choices.length) {
@@ -36,7 +36,7 @@ const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
     return (
         <Select
             name={name}
-            choices={choices}
+            choices={getTranslatedChoices(intl, choices)}
             allowBlank
             onChange={onChange}
             value={operator}

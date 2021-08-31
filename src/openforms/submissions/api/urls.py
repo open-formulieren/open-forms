@@ -1,6 +1,6 @@
 from django.urls import path
 
-from openforms.submissions.api.views import (
+from .views import (
     CheckReportStatusView,
     DownloadSubmissionReportView,
     TemporaryFileUploadView,
