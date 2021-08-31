@@ -253,12 +253,6 @@
       "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
-  "Cm2Mjl": [
-    {
-      "type": 0,
-      "value": "Data Removal"
-    }
-  ],
   "DGpAyT": [
     {
       "type": 0,
@@ -445,6 +439,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "S6eF5o": [
+    {
+      "type": 0,
+      "value": "Data removal"
     }
   ],
   "SX2HTA": [
@@ -677,6 +677,12 @@
       "value": "Steps and fields"
     }
   ],
+  "nMLlnT": [
+    {
+      "type": 0,
+      "value": "Sensitive data within the submissions will be deleted"
+    }
+  ],
   "naInSZ": [
     {
       "type": 0,
@@ -723,6 +729,12 @@
     {
       "type": 0,
       "value": "Step name"
+    }
+  ],
+  "q88tuu": [
+    {
+      "type": 0,
+      "value": "Submissions will be deleted"
     }
   ],
   "qYZ81s": [

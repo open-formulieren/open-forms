@@ -174,11 +174,6 @@
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
-  "Cm2Mjl": {
-    "defaultMessage": "Data Removal",
-    "description": "Data removal tab title",
-    "originalDefault": "Data Removal"
-  },
   "DGpAyT": {
     "defaultMessage": "Omlaag",
     "description": "Move down icon title",
@@ -328,6 +323,11 @@
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
+  },
+  "S6eF5o": {
+    "defaultMessage": "Data removal",
+    "description": "Data removal tab title",
+    "originalDefault": "Data removal"
   },
   "SX2HTA": {
     "defaultMessage": "wijzig een attribuut van een veld/component.",
@@ -504,6 +504,11 @@
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
   },
+  "nMLlnT": {
+    "defaultMessage": "Sensitive data within the submissions will be deleted",
+    "description": "make_anonymous removal method label",
+    "originalDefault": "Sensitive data within the submissions will be deleted"
+  },
   "naInSZ": {
     "defaultMessage": "Toon/verberg DSL preview",
     "description": "JSON data preview visibility toggle",
@@ -543,6 +548,11 @@
     "defaultMessage": "Naam",
     "description": "Form step name label",
     "originalDefault": "Step name"
+  },
+  "q88tuu": {
+    "defaultMessage": "Submissions will be deleted",
+    "description": "delete_permanently removal method label",
+    "originalDefault": "Submissions will be deleted"
   },
   "qYZ81s": {
     "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
