@@ -2,10 +2,11 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 
-class ObjectsAPIOptionsSerializer(serializers.Serializer):
+class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     objecttype = serializers.URLField(
         label=_("Objecttype"),
         help_text=_(
