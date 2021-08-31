@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage, useIntl, defineMessage} from 'react-intl';
 
+import {getTranslatedChoices} from '../../../utils/i18n'
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -9,7 +10,27 @@ import {TextInput} from '../forms/Inputs';
 import Select from '../forms/Select';
 
 
-const DataRemoval = ({ submissionsRemovalOptions, removalMethods=[], onChange }) => {
+const REMOVAL_METHODS = [
+    [
+        'delete_permanently',
+        defineMessage({
+            description: 'delete_permanently removal method label',
+            defaultMessage: 'Submissions will be deleted',
+        })
+    ],
+    [
+        'make_anonymous',
+        defineMessage({
+            description: 'make_anonymous removal method label',
+            defaultMessage: 'Sensitive data within the submissions will be deleted',
+        })
+    ],
+];
+
+
+const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
+    const intl = useIntl();
+    const removalMethods = getTranslatedChoices(intl, REMOVAL_METHODS);
 
     const { successfulSubmissionsRemovalLimit='', successfulSubmissionsRemovalMethod='',
             incompleteSubmissionsRemovalLimit='', incompleteSubmissionsRemovalMethod='',
@@ -199,7 +220,6 @@ DataRemoval.propTypes = {
         erroredSubmissionsRemovalMethod: PropTypes.string,
         allSubmissionsRemovalLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     }).isRequired,
-    removalMethods: PropTypes.arrayOf(PropTypes.array),
     onChange: PropTypes.func.isRequired,
 };
 
