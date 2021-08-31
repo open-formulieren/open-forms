@@ -34,11 +34,18 @@ def create_zaak(options: dict) -> dict:
     return zaak
 
 
-def create_document(
-    name: str, submission_report: SubmissionReport, options: dict
-) -> dict:
+def default_get_drc() -> Service:
     config = ZgwConfig.get_solo()
-    client = config.drc_service.build_client()
+    return config.drc_service
+
+
+def create_document(
+    name: str,
+    submission_report: SubmissionReport,
+    options: dict,
+    get_drc=default_get_drc,
+) -> dict:
+    client = get_drc().build_client()
     today = date.today().isoformat()
 
     submission_report.content.seek(0)
@@ -65,10 +72,12 @@ def create_document(
 
 
 def create_attachment(
-    name: str, submission_attachment: SubmissionFileAttachment, options: dict
+    name: str,
+    submission_attachment: SubmissionFileAttachment,
+    options: dict,
+    get_drc=default_get_drc,
 ) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.drc_service.build_client()
+    client = get_drc().build_client()
     today = date.today().isoformat()
 
     submission_attachment.content.seek(0)

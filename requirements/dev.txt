@@ -395,7 +395,7 @@ furl==2.1.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-gemma-zds-client==1.0.0
+gemma-zds-client==1.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
