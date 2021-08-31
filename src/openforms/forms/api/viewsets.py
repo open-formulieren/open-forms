@@ -338,7 +338,7 @@ class FormViewSet(viewsets.ModelViewSet):
                 name="uuid",
                 location=OpenApiParameter.PATH,
                 type=str,
-                description=_("The uuid of the form version"),
+                description=_("The UUID of the form version"),
             ),
         ],
         responses={status.HTTP_204_NO_CONTENT: ""},

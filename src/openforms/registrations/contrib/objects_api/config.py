@@ -8,7 +8,7 @@ from openforms.utils.validators import validate_rsin
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     objecttype = serializers.URLField(
-        label=_("Objecttype"),
+        label=_("objecttype"),
         help_text=_(
             "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
             "The objecttype should have the following three attributes: "
@@ -19,17 +19,17 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
     )
     objecttype_version = serializers.IntegerField(
-        label=_("Objecttype version"),
+        label=_("objecttype version"),
         help_text=_("Version of the objecttype in the Objecttypes API"),
         required=False,
     )
     productaanvraag_type = serializers.CharField(
-        label=_("Productaanvraag type"),
+        label=_("productaanvraag type"),
         help_text=_("The type of ProductAanvraag"),
         required=False,
     )
     informatieobjecttype_submission_report = serializers.URLField(
-        label=_("Submission report informatieobjecttype"),
+        label=_("submission report informatieobjecttype"),
         help_text=_(
             "URL that points to the Informatieobjecttype in the Documenten API "
             "to be used for the submission report"
@@ -37,7 +37,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
     )
     informatieobjecttype_attachment = serializers.URLField(
-        label=_("Attachment informatieobjecttype"),
+        label=_("attachment informatieobjecttype"),
         help_text=_(
             "URL that points to the Informatieobjecttype in the Documenten API "
             "to be used for the submission attachments"
@@ -45,7 +45,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
     )
     organisatie_rsin = serializers.CharField(
-        label=_("Organisation RSIN"),
+        label=_("organisation RSIN"),
         required=False,
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT"),

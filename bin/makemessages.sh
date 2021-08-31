@@ -1,8 +1,9 @@
 #!/bin/bash
 cd src/
 
-# Some constants are generated and can be ignored.
+echo "Extracting messages for Python code..."
 
+# Some constants are generated and can be ignored.
 python manage.py makemessages \
 --all \
 --ignore="test_*" \
@@ -12,3 +13,10 @@ python manage.py makemessages \
 --ignore="openforms/registrations/constants.py"
 
 cd ..
+
+echo "Extracting messages for Javascript code..."
+
+npm run makemessages
+
+echo "Make sure to run 'npm run compilemessages' when done translating."
+echo "Done."

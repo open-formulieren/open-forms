@@ -25,7 +25,7 @@
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
   "1GyseX": {
-    "defaultMessage": "Inhoud bevestigingspagina",
+    "defaultMessage": "Bevestigingspagina tekst",
     "description": "Confirmation template label",
     "originalDefault": "Submission page content"
   },

@@ -36,7 +36,7 @@ def detect_formiojs_configuration_snake_case(
     if config_now != camelized_config:
         error_msg = (
             "FormDefinition with ID %d appears to contain snake_case keys in its "
-            "formiojs configuration. This is known to cause issues with the prefill "
+            "Form.io configuration. This is known to cause issues with the prefill "
             "module."
         )
         error_msg_args = (form_definition_id,)

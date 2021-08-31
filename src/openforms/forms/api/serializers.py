@@ -330,7 +330,7 @@ class ComponentPropertySerializer(serializers.Serializer):
     value = serializers.CharField(
         label=_("property key"),
         help_text=_(
-            "The Formio component property to alter, identified by `component.key`"
+            "The Form.io component property to alter, identified by `component.key`"
         ),
     )
     type = serializers.ChoiceField(
@@ -355,7 +355,7 @@ class LogicValueActionSerializer(serializers.Serializer):
         label=_("Value"),
         help_text=_(
             "A valid JsonLogic expression describing the value. This may refer to "
-            "(other) Formio components."
+            "(other) Form.io components."
         ),
         validators=[JsonLogicValidator()],
     )
@@ -381,9 +381,9 @@ class LogicComponentActionSerializer(serializers.Serializer):
     component = serializers.CharField(
         required=False,  # validated against the action.type
         allow_blank=True,
-        label=_("FormIO component"),
+        label=_("Form.io component"),
         help_text=_(
-            "Key of the FormIO component that the action applies to. This field is "
+            "Key of the Form.io component that the action applies to. This field is "
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
     )

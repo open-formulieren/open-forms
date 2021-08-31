@@ -51,7 +51,7 @@ class ZgwConfig(SingletonModel):
         help_text=_("Default URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
     )
     organisatie_rsin = models.CharField(
-        _("organisatie RSIN"),
+        _("organisation RSIN"),
         max_length=9,
         blank=True,
         validators=[validate_rsin],

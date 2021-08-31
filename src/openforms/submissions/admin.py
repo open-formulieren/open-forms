@@ -129,7 +129,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
 
-    get_registration_backend.short_description = _("Registration Backend")
+    get_registration_backend.short_description = _("Registration backend")
 
     def get_appointment_status(self, obj):
         try:
@@ -137,7 +137,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         except AppointmentInfo.DoesNotExist:
             return ""
 
-    get_appointment_status.short_description = _("Appointment Status")
+    get_appointment_status.short_description = _("Appointment status")
 
     def get_appointment_id(self, obj):
         try:
@@ -154,7 +154,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             return ""
 
     get_appointment_error_information.short_description = _(
-        "Appointment Error Information"
+        "Appointment error information"
     )
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
