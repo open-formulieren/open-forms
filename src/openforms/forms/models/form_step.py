@@ -33,16 +33,6 @@ class FormStep(OrderedModel):
             "validation purposes."
         ),
     )
-    availability_strategy = models.CharField(
-        _("availability"),
-        max_length=50,
-        choices=AvailabilityOptions,
-        default=AvailabilityOptions.always,
-        help_text=_(
-            "Availability strategy to use. A step must be available before it can be "
-            "filled out. Note that this is not validated (yet) during step submission."
-        ),
-    )
 
     previous_text = models.CharField(
         _("step previous text"),

@@ -76,7 +76,6 @@
         "form": 1,
         "form_definition": 1,
         "optional": false,
-        "availability_strategy": "always"
     }
 },
 {
@@ -88,7 +87,6 @@
         "form": 2,
         "form_definition": 2,
         "optional": false,
-        "availability_strategy": "always"
     }
 },
 {
@@ -100,7 +98,6 @@
         "form": 2,
         "form_definition": 3,
         "optional": false,
-        "availability_strategy": "after_previous_step"
     }
 },
 {
@@ -112,7 +109,6 @@
         "form": 2,
         "form_definition": 4,
         "optional": true,
-        "availability_strategy": "always"
     }
 },
 {
