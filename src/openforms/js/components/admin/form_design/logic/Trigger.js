@@ -314,6 +314,7 @@ const Trigger = ({ name, logic, onChange }) => {
                                     onChange={onTriggerChange}
                                     filter={
                                         ([choiceKey, choiceLabel]) => {
+                                            if (!componentType) return true;
                                             return COMPONENT_TYPE_TO_OPERAND_TYPE[componentType].includes(choiceKey);
                                         }
                                     }
