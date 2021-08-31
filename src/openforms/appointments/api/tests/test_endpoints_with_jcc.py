@@ -22,7 +22,6 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.utils.helpers import get_query_params_from_dict
 from stuf.tests.factories import SoapServiceFactory
 
 from ...contrib.jcc.models import JccConfig
@@ -298,7 +297,7 @@ class VerifyAppointmentTests(TestCase):
             "email": "maykin@media.nl",
         }
 
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+        response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 200)
 
@@ -333,7 +332,7 @@ class VerifyAppointmentTests(TestCase):
             "email": "incorrect@email.nl",
         }
 
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+        response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 403)
 
@@ -368,7 +367,7 @@ class VerifyAppointmentTests(TestCase):
             "email": "incorrect@email.nl",
         }
 
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+        response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 400)
 
@@ -394,9 +393,7 @@ class VerifyAppointmentTests(TestCase):
                 request_data = copy.deepcopy(data)
                 for key in keys_to_remove:
                     request_data.pop(key)
-                response = self.client.get(
-                    f"{self.endpoint}{get_query_params_from_dict(data)}"
-                )
+                response = self.client.post(self.endpoint, data=data)
                 self.assertEqual(response.status_code, 400)
 
 
@@ -459,7 +456,7 @@ class CancelAppointmentTests(TestCase):
             "email": "maykin@media.nl",
         }
 
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+        response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 200)
 
@@ -500,6 +497,6 @@ class CancelAppointmentTests(TestCase):
             "email": "maykin@media.nl",
         }
 
-        response = self.client.get(f"{self.endpoint}{get_query_params_from_dict(data)}")
+        response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 400)

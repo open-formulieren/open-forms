@@ -209,8 +209,8 @@ class TimesListView(ListMixin, APIView):
     ],
 )
 class VerifyAppointmentView(APIView):
-    def get(self, request, *args, **kwargs):
-        serializer = VerifyAppointmentInputSerializer(data=request.query_params)
+    def post(self, request, *args, **kwargs):
+        serializer = VerifyAppointmentInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -253,13 +253,13 @@ class VerifyAppointmentView(APIView):
     ],
 )
 class CancelAppointmentView(VerifyAppointmentView):
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
 
         client = get_client()
 
         try:
-            client.delete_appointment(request.query_params["identifier"])
+            client.delete_appointment(request.data["identifier"])
         except AppointmentDeleteFailed:
             raise CancelAppointmentFailed
 
