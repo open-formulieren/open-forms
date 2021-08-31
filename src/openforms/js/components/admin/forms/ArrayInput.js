@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from '../DeleteIcon';
 import {useOnChanged} from '../form_design/logic/hooks';
@@ -11,9 +11,12 @@ const ArrayInput = ({
     inputType,
     values=[],
     onChange,
-    deleteConfirmationMessage='',
+    deleteConfirmationMessage,
+    addButtonMessage,
     ...extraProps
 }) => {
+    const intl = useIntl();
+
     const [inputs, setInputs] = useState([...values]);
 
     const onAdd = (event) => {
@@ -35,21 +38,34 @@ const ArrayInput = ({
     useOnChanged(inputs, () => onChange(inputs));
 
     return (
-        <>
+        <div className="array-input">
             {inputs.map((value, index) => (
-                <div key={index}>
-                    <div className="logic-rule__actions">
-                        <DeleteIcon onConfirm={onDelete.bind(null, index)} message={deleteConfirmationMessage} />
+                <div key={index} className="array-input__item">
+                    <div className="array-input__actions">
+                        <DeleteIcon
+                            onConfirm={onDelete.bind(null, index)}
+                            message={deleteConfirmationMessage || intl.formatMessage({
+                                description: "Confirmation message to delete an item from a multi-value input",
+                                defaultMessage: "Are you sure you want to delete this item?"
+                            })}
+                            icon="times"
+                        />
                     </div>
-                    <input type={inputType} value={value} onChange={onInputChange.bind(null, index)} {...extraProps}/>
+                    <input
+                        type={inputType}
+                        value={value}
+                        onChange={onInputChange.bind(null, index)}
+                        {...extraProps}
+                    />
                 </div>
             ))}
             <button type="button" className="button button--plain" onClick={onAdd}>
-                <span className="addlink">
-                    <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
-                </span>
+                { addButtonMessage ||
+                    <span className="addlink">
+                        <FormattedMessage description="Add item to multi-input field" defaultMessage="Add item" />
+                    </span>}
             </button>
-        </>
+        </div>
     )
 
 };
