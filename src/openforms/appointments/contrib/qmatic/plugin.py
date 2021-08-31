@@ -2,7 +2,7 @@ import logging
 from datetime import date, datetime, time
 from typing import List, Optional
 
-from requests.exceptions import RequestException
+from requests.exceptions import HTTPError, RequestException
 from zds_client import ClientError
 
 from ...base import (
@@ -20,6 +20,17 @@ from ...exceptions import (
 from .client import QmaticClient
 
 logger = logging.getLogger(__name__)
+
+
+def raise_for_status(response):
+    if response.status_code == 400:
+        error_code = response.headers["ERROR_CODE"]
+        error_msg = response.headers["ERROR_MESSAGE"]
+        raise HTTPError(
+            f"400 Client Error: {error_msg} ({error_code}) for url: {response.url}"
+        )
+    else:
+        response.raise_for_status()
 
 
 class Plugin(BasePlugin):
@@ -43,7 +54,7 @@ class Plugin(BasePlugin):
         """
         try:
             response = self.client.get("services")
-            response.raise_for_status()
+            raise_for_status(response)
         except (ClientError, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
             return []
@@ -65,7 +76,7 @@ class Plugin(BasePlugin):
 
         try:
             response = self.client.get(f"services/{product_id}/branches")
-            response.raise_for_status()
+            raise_for_status(response)
         except (ClientError, RequestException) as e:
             logger.exception(
                 "Could not retrieve locations for product '%s'", product_id, exc_info=e
@@ -101,7 +112,7 @@ class Plugin(BasePlugin):
             response = self.client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates"
             )
-            response.raise_for_status()
+            raise_for_status(response)
         except (ClientError, RequestException) as e:
             logger.exception(
                 "Could not retrieve dates for product '%s' at location '%s'",
@@ -132,7 +143,7 @@ class Plugin(BasePlugin):
             response = self.client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
             )
-            response.raise_for_status()
+            raise_for_status(response)
         except (ClientError, RequestException) as e:
             logger.exception(
                 "Could not retrieve times for product '%s' at location '%s' on %s",
@@ -187,7 +198,7 @@ class Plugin(BasePlugin):
                 f"branches/{location.identifier}/services/{product_id}/dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
                 data,
             )
-            response.raise_for_status()
+            raise_for_status(response)
             return response.json()["publicId"]
         except (ClientError, RequestException, KeyError) as e:
             raise AppointmentCreateFailed(
@@ -207,14 +218,14 @@ class Plugin(BasePlugin):
                     "Could not delete appointment: %s", identifier
                 )
 
-            response.raise_for_status()
+            raise_for_status(response)
         except (ClientError, RequestException) as e:
             raise AppointmentDeleteFailed(e)
 
     def get_appointment_details(self, identifier: str) -> str:
         try:
             response = self.client.get(f"appointments/{identifier}")
-            response.raise_for_status()
+            raise_for_status(response)
 
             details = response.json()["appointment"]
 
