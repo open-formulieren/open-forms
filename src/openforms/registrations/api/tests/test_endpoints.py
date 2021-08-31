@@ -147,3 +147,14 @@ class ResponseTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
+
+
+class ListPluginsTests(APITestCase):
+    def test_list_plugins(self):
+        user = UserFactory.create(is_staff=True)
+        self.client.force_authenticate(user=user)
+        endpoint = reverse("api:registrations-plugin-list")
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
