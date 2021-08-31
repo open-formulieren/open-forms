@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 
-from openforms.appointments.api.tests.serializers import (
+from openforms.appointments.api.serializers import (
     DateInputSerializer,
     LocationInputSerializer,
     LocationSerializer,
