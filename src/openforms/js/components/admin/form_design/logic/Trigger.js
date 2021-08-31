@@ -15,6 +15,7 @@ import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import {useOnChanged} from './hooks';
 import Today from './Today';
+import ArrayInput from '../../forms/ArrayInput';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -95,20 +96,32 @@ const parseJsonLogic = (logic) => {
 
     if (jsonLogic.is_logic(compareValue)) {
         const op = jsonLogic.get_operator(compareValue);
-        if (op === 'var') {
-            operandType = 'component';
-            operand = compareValue.var;
-        } else if (op === 'date') {
-            operandType = compareValue.date.var ? 'component' : 'literal';
-            operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
-        } else if (op === '+' || op === '-') {
-            operandType = 'today';
-            operand = compareValue;
-        } else {
-            console.warn(`Unsupported operator: ${op}, can't derive operandType`);
+        switch (op) {
+            case 'var': {
+                operandType = 'component';
+                operand = compareValue.var;
+                break;
+            }
+            case 'date': {
+                operandType = compareValue.date.var ? 'component' : 'literal';
+                operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
+                break;
+            }
+            case '+':
+            case '-': {
+                operandType = 'today';
+                operand = compareValue;
+                break;
+            }
+            default:
+                console.warn(`Unsupported operator: ${op}, can't derive operandType`);
         }
     } else if (compareValue != null) {
-        operandType = 'literal';
+        if (Array.isArray(compareValue)) {
+            operandType = 'array';
+        } else {
+            operandType = 'literal';
+        }
         operand = compareValue;
     }
 
@@ -227,6 +240,19 @@ const Trigger = ({ name, logic, onChange }) => {
             compareValue[sign] = [{today: []}, {rdelta: relativeDelta}];
             break;
         }
+        case 'array': {
+            valueInput = <ArrayInput
+                name="operand"
+                inputType="text"
+                values={operand}
+                onChange={(value) => {
+                    const fakeEvent = {target: {name: "operand", value: value}};
+                    onTriggerChange(fakeEvent);
+                }}
+            />;
+            compareValue = operand;
+            break;
+        }
         case '': { // nothing selected yet
             break;
         }
@@ -285,6 +311,7 @@ const Trigger = ({ name, logic, onChange }) => {
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
+                                    operator={operator}
                                     componentType={componentType}
                                     onChange={onTriggerChange}
                                 />
