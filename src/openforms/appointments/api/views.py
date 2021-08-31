@@ -207,8 +207,8 @@ class TimesListView(ListMixin, APIView):
     ],
 )
 class CancelAppointmentView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = CancelAppointmentInputSerializer(data=request.data)
+    def get(self, request, *args, **kwargs):
+        serializer = CancelAppointmentInputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
         try:
