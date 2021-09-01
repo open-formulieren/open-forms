@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
@@ -219,4 +220,14 @@ class BasePlugin:
 
         return render_to_string(
             "appointments/appointment_details.html", {"appointment": details}
+        )
+
+    def get_appointment_links_html(self, identifier: str, submission_uuid: str) -> str:
+
+        cancel_url = f"{settings.SDK_BASE_URL}/afspraak-annuleren?identifier={identifier}&uuid={submission_uuid}"
+        change_url = f"{settings.SDK_BASE_URL}/afspraak-wijzigen?identifier={identifier}&uuid={submission_uuid}"
+
+        return render_to_string(
+            "appointments/appointment_links.html",
+            {"cancel_url": cancel_url, "change_url": change_url},
         )

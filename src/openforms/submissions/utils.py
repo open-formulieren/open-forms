@@ -71,7 +71,7 @@ def remove_submission_uploads_from_session(
         remove_upload_from_session(attachment.temporary_file, session)
 
 
-def send_confirmation_email(submission: Submission):
+def send_confirmation_email(submission: Submission, appointment_identifier: str):
     email_template = submission.form.confirmation_email_template
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)

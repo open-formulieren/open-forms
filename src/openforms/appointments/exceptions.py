@@ -30,6 +30,12 @@ class AppointmentUpdateFailed(AppointmentInteractionFailed):
     pass
 
 
+class VerifyAppointmentFailed(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _("Unable to verify appointment.")
+    default_code = "verify_appointment_failed"
+
+
 class CancelAppointmentFailed(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _("Unable to cancel appointment.")

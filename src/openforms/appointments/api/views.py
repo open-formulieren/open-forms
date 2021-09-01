@@ -26,6 +26,7 @@ from openforms.appointments.base import AppointmentLocation, AppointmentProduct
 from openforms.appointments.exceptions import (
     AppointmentDeleteFailed,
     CancelAppointmentFailed,
+    VerifyAppointmentFailed,
 )
 from openforms.appointments.utils import get_client
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
@@ -216,7 +217,7 @@ class VerifyAppointmentView(APIView):
         try:
             submission = Submission.objects.get(uuid=serializer.validated_data["uuid"])
         except ObjectDoesNotExist:
-            raise CancelAppointmentFailed
+            raise VerifyAppointmentFailed
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
