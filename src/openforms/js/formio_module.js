@@ -6,9 +6,9 @@ import TimeField from './components/form/time';
 import SignatureField from './components/form/signature';
 import PhoneNumberField from './components/form/phoneNumber';
 import BsnField from './components/form/bsn';
-import PostcodeField from "./components/form/postcode";
-import FileField from "./components/form/file";
-import SelectField from "./components/form/select";
+import PostcodeField from './components/form/postcode';
+import FileField from './components/form/file';
+import SelectField from './components/form/select';
 
 const FormIOModule = {
   components: {

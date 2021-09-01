@@ -37,13 +37,13 @@ const APPOINTMENT = {
     components: [
         {
             type: 'checkbox',
-            key: 'showProducts',
+            key: 'appointments.showProducts',
             label: 'Show Products',
             tooltip: 'Show products the user can book in this component'
         },
         {
             type: 'checkbox',
-            key: 'showLocations',
+            key: 'appointments.showLocations',
             label: 'Show Locations',
             tooltip: 'Show locations for a given product in this component'
         },
@@ -51,7 +51,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select product component for locations',
-            key: 'productForLocations',
+            key: 'appointments.productForLocations',
             dataSrc: 'custom',
             tooltip: 'Choose the product component and we wil prefill locations for that product in this component',
             valueProperty: 'value',
@@ -63,7 +63,7 @@ const APPOINTMENT = {
         },
         {
             type: 'checkbox',
-            key: 'showDates',
+            key: 'appointments.showDates',
             label: 'Show Dates',
             tooltip: 'Show dates for a given product at a given location'
         },
@@ -71,7 +71,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select product component for dates',
-            key: 'productForDates',
+            key: 'appointments.productForDates',
             dataSrc: 'custom',
             tooltip: 'Choose the product component and we wil prefill dates for that product in this component',
             valueProperty: 'value',
@@ -85,7 +85,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select location component for dates',
-            key: 'locationForDates',
+            key: 'appointments.locationForDates',
             dataSrc: 'custom',
             tooltip: 'Choose the location component and we wil prefill dates for the location and product in this component',
             valueProperty: 'value',
@@ -105,7 +105,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select product component for times',
-            key: 'productForTimes',
+            key: 'appointments.productForTimes',
             dataSrc: 'custom',
             tooltip: 'Choose the product component and we wil prefill times for that product in this component',
             valueProperty: 'value',
@@ -119,7 +119,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select location component for dates',
-            key: 'locationForTimes',
+            key: 'appointments.locationForTimes',
             dataSrc: 'custom',
             tooltip: 'Choose the location component and we wil prefill times for that location in this component',
             valueProperty: 'value',
@@ -133,7 +133,7 @@ const APPOINTMENT = {
             type: 'select',
             input: true,
             label: 'Select location component for dates',
-            key: 'dateForTimes',
+            key: 'appointments.dateForTimes',
             dataSrc: 'custom',
             tooltip: 'Choose the date component and we wil prefill times for that date in this component',
             valueProperty: 'value',

@@ -6,14 +6,11 @@ from django.utils.module_loading import import_string
 
 import qrcode
 
-from openforms.appointments.base import (
-    AppointmentClient,
-    AppointmentLocation,
-    AppointmentProduct,
-)
-from openforms.appointments.exceptions import AppointmentCreateFailed
-from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.models import Submission
+
+from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
+from .exceptions import AppointmentCreateFailed
+from .models import AppointmentsConfig
 
 
 def get_client():

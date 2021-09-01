@@ -8,7 +8,7 @@ from stuf.managers import ConfigManager
 
 class JccConfig(SingletonModel):
     """
-    global configuration and defaults
+    Global configuration and defaults
     """
 
     service = models.OneToOneField(
