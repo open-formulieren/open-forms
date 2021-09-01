@@ -272,7 +272,7 @@ class Submission(models.Model):
 
         return merged_data
 
-    def get_merged_appointment_data(self) -> dict:
+    def get_merged_appointment_data(self) -> Dict[str, str]:
         merged_appointment_data = dict()
         component_key_to_appointment_info = dict()
         component_key_to_appointment_key = {
@@ -283,20 +283,15 @@ class Submission(models.Model):
             "appointmentBirthDate": "clientDateOfBirth",
         }
 
-        for step in self.submissionstep_set.exclude(data=None).select_related(
-            "form_step"
-        ):
-            components = step.form_step.form_definition.configuration["components"]
-            flattened_components = get_flattened_components(components)
-            for component in flattened_components:
-                for (
-                    component_key,
-                    appointment_key,
-                ) in component_key_to_appointment_key.items():
-                    if component.get(component_key):
-                        component_key_to_appointment_info[appointment_key] = component[
-                            "key"
-                        ]
+        for component in self.form.iter_components(recursive=True):
+            for (
+                component_key,
+                appointment_key,
+            ) in component_key_to_appointment_key.items():
+                if component.get(component_key):
+                    component_key_to_appointment_info[appointment_key] = component[
+                        "key"
+                    ]
 
         merged_data = self.get_merged_data()
 
