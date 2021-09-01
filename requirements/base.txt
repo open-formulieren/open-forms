@@ -215,7 +215,7 @@ lxml==4.6.3
     #   zeep
 git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
     # via -r requirements/base.in
-git+https://github.com/maykinmedia/json-logic-py.git@c5197246b65e8180c1d022c3fa79645b4394e51a#egg=maykin-json-logic-py
+git+https://github.com/maykinmedia/json-logic-py.git@66e5530d4ee4bfb2d9d95c810c4c9e61ef67b558#egg=maykin-json-logic-py
     # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in
