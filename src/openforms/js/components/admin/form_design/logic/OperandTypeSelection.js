@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../../utils/i18n'
+import {getTranslatedChoices} from '../../../../utils/i18n';
 import Select from '../../forms/Select';
 
 const OPERAND_TYPES = {
@@ -30,13 +30,11 @@ const COMPONENT_TYPE_TO_OPERAND_TYPE = {
 
 const OperandTypeSelection = ({name, operandType, componentType, onChange}) => {
     const intl = useIntl();
-    const choices = Object.entries(COMPONENT_TYPE_TO_OPERAND_TYPE[componentType]).map(
-        ([operandType, msg]) => [operandType, intl.formatMessage(msg)]
-    );
+    const choices = Object.entries(COMPONENT_TYPE_TO_OPERAND_TYPE[componentType]);
     return (
         <Select
             name={name}
-            choices={choices}
+            choices={getTranslatedChoices(intl, choices)}
             allowBlank
             onChange={onChange}
             value={operandType}

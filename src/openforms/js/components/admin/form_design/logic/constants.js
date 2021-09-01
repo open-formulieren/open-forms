@@ -112,50 +112,87 @@ const ACTIONS_WITH_OPTIONS = [
 
 const STRING_TO_TYPE = {
     bool: (stringValue) => (stringValue === "true"),
+    json: (stringValue) => (JSON.parse(stringValue)),
+};
+
+const TYPE_TO_STRING = {
+    bool: (typedValue) => String(typedValue),
+    json: (typedValue) => JSON.stringify(typedValue),
 };
 
 
 const MODIFIABLE_PROPERTIES = {
-    'required': {
+    'validate': {
         label: defineMessage({
             description: 'component property "required" label',
             defaultMessage: 'required'
         }),
-        type: 'bool'
+        type: 'json',
+        options: [
+            [
+                JSON.stringify({required: true}),
+                defineMessage({
+                    description: 'Component property boolean value "true"',
+                    defaultMessage: 'Yes'
+                })
+            ],
+            [
+                JSON.stringify({required: false}),
+                defineMessage({
+                    description: 'Component property boolean value "false"',
+                    defaultMessage: 'No'
+                })
+            ]
+        ]
     },
     'hidden': {
         label: defineMessage({
             description: 'component property "hidden" label',
             defaultMessage: 'hidden'
         }),
-        type: 'bool'
+        type: 'bool',
+        options: [
+            [
+                true,
+                defineMessage({
+                    description: 'Component property boolean value "true"',
+                    defaultMessage: 'Yes'
+                })
+            ],
+            [
+                false,
+                defineMessage({
+                    description: 'Component property boolean value "false"',
+                    defaultMessage: 'No'
+                })
+            ]
+        ],
     },
     'disabled': {
         label: defineMessage({
             description: 'component property "disabled" label',
             defaultMessage: 'disabled'
         }),
-        type: 'bool'
+        type: 'bool',
+        options: [
+            [
+                true,
+                defineMessage({
+                    description: 'Component property boolean value "true"',
+                    defaultMessage: 'Yes'
+                })
+            ],
+            [
+                false,
+                defineMessage({
+                    description: 'Component property boolean value "false"',
+                    defaultMessage: 'No'
+                })
+            ]
+        ],
     },
 };
 
-
-const PROPERTY_VALUES = [
-    [
-        "true",
-        defineMessage({
-            description: 'Component property boolean value "true"',
-            defaultMessage: 'Yes'
-        })
-    ],
-    [
-        "false",
-        defineMessage({
-            description: 'Component property boolean value "false"',
-            defaultMessage: 'No'
-        })
-    ],
-];
 
 
 export {
@@ -164,6 +201,6 @@ export {
     ACTION_TYPES,
     ACTIONS_WITH_OPTIONS,
     MODIFIABLE_PROPERTIES,
-    PROPERTY_VALUES,
     STRING_TO_TYPE,
+    TYPE_TO_STRING
 };

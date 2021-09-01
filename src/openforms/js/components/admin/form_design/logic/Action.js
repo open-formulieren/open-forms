@@ -2,10 +2,10 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../../utils/i18n'
+import {getTranslatedChoices} from '../../../../utils/i18n';
 import Select from '../../forms/Select';
 import DeleteIcon from '../../DeleteIcon';
-import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, PROPERTY_VALUES, STRING_TO_TYPE} from './constants';
+import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, STRING_TO_TYPE, TYPE_TO_STRING} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
@@ -35,7 +35,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
         intl,
         Object.entries(MODIFIABLE_PROPERTIES).map( ([key, info]) => [key, info.label] )
     );
-    const propertyValueChoices = getTranslatedChoices(intl, PROPERTY_VALUES);
+
+    console.log(action.componentProperty);
 
     return (
         <div className="logic-action">
@@ -80,46 +81,51 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                     {
                         action.actionType === 'property'
                         ? (
-                            <>
-                                <div className="dsl-editor__node">
-                                    <Select
-                                        name="componentProperty"
-                                        choices={modifiablePropertyChoices}
-                                        allowBlank
-                                        onChange={(event) => {
-                                            const property = event.target.value;
-                                            onChange(event);
-                                            onChange({
-                                                target: {
-                                                    name: 'componentPropertyType',
-                                                    value: MODIFIABLE_PROPERTIES[property].type
-                                                }
-                                            });
-                                        }}
-                                        value={action.componentProperty}
-                                    />
-                                </div>
-                                <div className="dsl-editor__node">
-                                    <Select
-                                        name="componentPropertyValue"
-                                        choices={propertyValueChoices}
-                                        allowBlank
-                                        onChange={(event) => {
-                                            const propertyType = action.componentPropertyType;
-                                            const propertyValue = STRING_TO_TYPE[propertyType](event.target.value);
-                                            onChange({
-                                                target: {
-                                                    name: 'componentPropertyValue',
-                                                    value: propertyValue
-                                                }
-                                            })
-                                        }}
-                                        value={action.componentPropertyValue ? String(action.componentPropertyValue) : action.componentPropertyValue}
-                                    />
-                                </div>
-                            </>
-                        )
-                        : null
+                            <div className="dsl-editor__node">
+                                <Select
+                                    name="componentProperty"
+                                    choices={modifiablePropertyChoices}
+                                    allowBlank
+                                    onChange={(event) => {
+                                        const property = event.target.value;
+                                        onChange(event);
+                                        onChange({
+                                            target: {
+                                                name: 'componentPropertyType',
+                                                value: MODIFIABLE_PROPERTIES[property].type
+                                            }
+                                        });
+                                    }}
+                                    value={action.componentProperty}
+                                />
+                            </div> ) : null
+                        }
+                    {
+                        action.actionType === 'property' && action.componentProperty ?
+                        (
+                            <div className="dsl-editor__node">
+                                <Select
+                                    name="componentPropertyValue"
+                                    choices={getTranslatedChoices(intl, MODIFIABLE_PROPERTIES[action.componentProperty].options)}
+                                    allowBlank
+                                    onChange={(event) => {
+                                        const propertyType = action.componentPropertyType;
+                                        const propertyValue = STRING_TO_TYPE[propertyType](event.target.value);
+                                        onChange({
+                                            target: {
+                                                name: 'componentPropertyValue',
+                                                value: propertyValue
+                                            }
+                                        })
+                                    }}
+                                    value={
+                                        action.componentPropertyValue ?
+                                            TYPE_TO_STRING[action.componentPropertyType](action.componentPropertyValue)
+                                            : action.componentPropertyValue
+                                    }
+                                />
+                            </div>
+                        ) : null
                     }
                     {
                         // Used to pick whether the new value of a component will be a literal or a value from another component

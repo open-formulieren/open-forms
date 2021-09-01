@@ -20,3 +20,4 @@ class LogicActionTypes(DjangoChoices):
 
 class PropertyTypes(DjangoChoices):
     bool = ChoiceItem("bool", _("Boolean"))
+    json = ChoiceItem("json", _("JSON"))
