@@ -3,11 +3,12 @@ from django.urls import reverse
 
 import requests_mock
 
-from openforms.appointments.contrib.qmatic.tests.factories import QmaticConfigFactory
-from openforms.appointments.contrib.qmatic.tests.test_plugin import mock_response
-from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+
+from ...contrib.qmatic.tests.factories import QmaticConfigFactory
+from ...contrib.qmatic.tests.test_plugin import mock_response
+from ...models import AppointmentsConfig
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):
@@ -25,12 +26,9 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
 
-    def setUp(self):
-        super().setUp()
-        self._add_submission_to_session(self.submission)
-
     @requests_mock.Mocker()
     def test_get_products_returns_all_products(self, m):
+        self._add_submission_to_session(self.submission)
         m.get(
             f"{self.api_root}services",
             text=mock_response("services.json"),
@@ -44,6 +42,10 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(products[0]["identifier"], "54b3482204c11bedc8b0a7acbffa308")
         self.assertEqual(products[0]["code"], None)
         self.assertEqual(products[0]["name"], "Service 01")
+
+    def test_get_products_returns_403_when_no_active_sessions(self):
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
 
 
 class LocationsListTests(SubmissionsMixin, TestCase):
@@ -87,6 +89,13 @@ class LocationsListTests(SubmissionsMixin, TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    def test_get_locations_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(
+            f"{self.endpoint}?product_id=54b3482204c11bedc8b0a7acbffa308"
+        )
+        self.assertEqual(response.status_code, 403)
+
 
 class DatesListTests(SubmissionsMixin, TestCase):
     @classmethod
@@ -125,10 +134,15 @@ class DatesListTests(SubmissionsMixin, TestCase):
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
-        for query_param in ["", "?product_id=79", "?location_id=1"]:
+        for query_param in [{}, {"product_id": 79}, {"location_id": 1}]:
             with self.subTest(query_param=query_param):
-                response = self.client.get(self.endpoint)
+                response = self.client.get(self.endpoint, query_param)
                 self.assertEqual(response.status_code, 400)
+
+    def test_get_dates_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        self.assertEqual(response.status_code, 403)
 
 
 class TimesListTests(SubmissionsMixin, TestCase):
@@ -168,13 +182,20 @@ class TimesListTests(SubmissionsMixin, TestCase):
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
-            "",
-            "?product_id=79",
-            "?location_id=1",
-            "?location_id=1&date=2021-8-23",
-            "?product_id=1&date=2021-8-23",
-            "?product_id=1&location_id=1",
+            {},
+            {"product_id": 79},
+            {"location_id": 1},
+            {"location_id": 1, "date": 2021 - 8 - 23},
+            {"product_id": 1, "date": 2021 - 8 - 23},
+            {"product_id": 1, "location_id": 1},
         ]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 400)
+
+    def test_get_times_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(
+            f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
+        )
+        self.assertEqual(response.status_code, 403)

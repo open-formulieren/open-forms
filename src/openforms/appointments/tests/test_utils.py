@@ -5,19 +5,22 @@ from django.test import TestCase
 
 import requests_mock
 
-from openforms.appointments.contrib.jcc.models import JccConfig
-from openforms.appointments.contrib.jcc.tests.test_plugin import mock_response
-from openforms.appointments.exceptions import AppointmentCreateFailed
-from openforms.appointments.models import AppointmentsConfig
-from openforms.appointments.utils import book_appointment_for_submission
-from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
 from stuf.tests.factories import SoapServiceFactory
 
-from ..utils import create_base64_qrcode
+from ..contrib.jcc.models import JccConfig
+from ..contrib.jcc.tests.test_plugin import mock_response
+from ..exceptions import AppointmentCreateFailed
+from ..models import AppointmentsConfig
+from ..utils import book_appointment_for_submission, create_base64_qrcode
 
 
 class BookAppointmentForSubmissionTest(TestCase):
@@ -48,6 +51,7 @@ class BookAppointmentForSubmissionTest(TestCase):
     def test_creating_appointment_with_missing_or_not_filled_in_appointment_information_adds_error_message(
         self,
     ):
+        form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -66,11 +70,17 @@ class BookAppointmentForSubmissionTest(TestCase):
                 ],
             }
         )
-        submission = SubmissionFactory.create()
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             data={"product": "79", "time": "2021-08-25T17:00:00"},
-            form_step=FormStepFactory.create(form_definition=form_definition_1),
+            form_step=form_step_1,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -78,7 +88,7 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "lastName": "Maykin",
                 "birthDate": "",
             },
-            form_step=FormStepFactory.create(form_definition=form_definition_2),
+            form_step=form_step_2,
         )
         book_appointment_for_submission(submission)
         submission.refresh_from_db()
@@ -91,6 +101,7 @@ class BookAppointmentForSubmissionTest(TestCase):
     def test_creating_appointment_properly_creates_appointment_and_adds_appointment_information(
         self, m
     ):
+        form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -110,11 +121,17 @@ class BookAppointmentForSubmissionTest(TestCase):
                 ],
             }
         )
-        submission = SubmissionFactory.create()
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             data={"product": "79", "location": "1", "time": "2021-08-25T17:00:00"},
-            form_step=FormStepFactory.create(form_definition=form_definition_1),
+            form_step=form_step_1,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -122,7 +139,7 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "lastName": "Maykin",
                 "birthDate": "1990-08-01",
             },
-            form_step=FormStepFactory.create(form_definition=form_definition_2),
+            form_step=form_step_2,
         )
 
         m.post(
@@ -138,6 +155,7 @@ class BookAppointmentForSubmissionTest(TestCase):
 
     @requests_mock.Mocker()
     def test_failed_creating_appointment_adds_error_message_to_submission(self, m):
+        form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -157,11 +175,17 @@ class BookAppointmentForSubmissionTest(TestCase):
                 ],
             }
         )
-        submission = SubmissionFactory.create()
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             data={"product": "79", "location": "1", "time": "2021-08-25T17:00:00"},
-            form_step=FormStepFactory.create(form_definition=form_definition_1),
+            form_step=form_step_1,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -169,7 +193,7 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "lastName": "Maykin",
                 "birthDate": "1990-08-01",
             },
-            form_step=FormStepFactory.create(form_definition=form_definition_2),
+            form_step=form_step_2,
         )
 
         m.post(

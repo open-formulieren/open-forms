@@ -172,6 +172,7 @@ class TestSubmission(TestCase):
         self.assertEqual(submission.kvk, "")
 
     def test_get_merged_appointment_data(self):
+        form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -192,11 +193,17 @@ class TestSubmission(TestCase):
                 ],
             }
         )
-        submission = SubmissionFactory.create()
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             data={"product": "79", "location": "1", "time": "2021-08-25T17:00:00"},
-            form_step=FormStepFactory.create(form_definition=form_definition_1),
+            form_step=form_step_1,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -205,7 +212,7 @@ class TestSubmission(TestCase):
                 "birthDate": "1990-08-01",
                 "randomAttribute": "This is some random stuff",
             },
-            form_step=FormStepFactory.create(form_definition=form_definition_2),
+            form_step=form_step_2,
         )
 
         self.assertEqual(

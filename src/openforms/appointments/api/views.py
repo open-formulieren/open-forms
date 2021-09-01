@@ -6,17 +6,18 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 
-from openforms.appointments.api.serializers import (
+from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
+from openforms.utils.api.views import ListMixin
+
+from ..api.serializers import (
     DateInputSerializer,
     LocationInputSerializer,
     LocationSerializer,
     ProductSerializer,
     TimeInputSerializer,
 )
-from openforms.appointments.base import AppointmentLocation, AppointmentProduct
-from openforms.appointments.utils import get_client
-from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
-from openforms.utils.api.views import ListMixin
+from ..base import AppointmentLocation, AppointmentProduct
+from ..utils import get_client
 
 
 @extend_schema(

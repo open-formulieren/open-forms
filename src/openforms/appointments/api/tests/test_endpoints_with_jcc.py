@@ -6,12 +6,13 @@ from django.urls import reverse
 
 import requests_mock
 
-from openforms.appointments.contrib.jcc.models import JccConfig
-from openforms.appointments.contrib.jcc.tests.test_plugin import mock_response
-from openforms.appointments.models import AppointmentsConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
+
+from ...contrib.jcc.models import JccConfig
+from ...contrib.jcc.tests.test_plugin import mock_response
+from ...models import AppointmentsConfig
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):
@@ -36,12 +37,9 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         config.service = SoapServiceFactory.create(url=wsdl)
         config.save()
 
-    def setUp(self):
-        super().setUp()
-        self._add_submission_to_session(self.submission)
-
     @requests_mock.Mocker()
     def test_get_products_returns_all_products(self, m):
+        self._add_submission_to_session(self.submission)
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAvailableProductsResponse.xml"),
@@ -55,6 +53,10 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(first_entry["code"], "PASAAN")
         self.assertEqual(first_entry["identifier"], "1")
         self.assertEqual(first_entry["name"], "Paspoort aanvraag")
+
+    def test_get_products_returns_403_when_no_active_sessions(self):
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
 
 
 class LocationsListTests(SubmissionsMixin, TestCase):
@@ -103,6 +105,11 @@ class LocationsListTests(SubmissionsMixin, TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    def test_get_locations_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        self.assertEqual(response.status_code, 403)
+
 
 class DatesListTests(SubmissionsMixin, TestCase):
     @classmethod
@@ -149,10 +156,15 @@ class DatesListTests(SubmissionsMixin, TestCase):
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
-        for query_param in ["", "?product_id=79", "?location_id=1"]:
+        for query_param in [{}, {"product_id": 79}, {"location_id": 1}]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 400)
+
+    def test_get_dates_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        self.assertEqual(response.status_code, 403)
 
 
 class TimesListTests(SubmissionsMixin, TestCase):
@@ -199,13 +211,20 @@ class TimesListTests(SubmissionsMixin, TestCase):
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
-            "",
-            "?product_id=79",
-            "?location_id=1",
-            "?location_id=1&date=2021-8-23",
-            "?product_id=1&date=2021-8-23",
-            "?product_id=1&location_id=1",
+            {},
+            {"product_id": 79},
+            {"location_id": 1},
+            {"location_id": 1, "date": 2021 - 8 - 23},
+            {"product_id": 1, "date": 2021 - 8 - 23},
+            {"product_id": 1, "location_id": 1},
         ]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 400)
+
+    def test_get_times_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+        response = self.client.get(
+            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+        )
+        self.assertEqual(response.status_code, 403)
