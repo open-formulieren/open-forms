@@ -36,6 +36,8 @@ class ProductsListView(ListMixin, APIView):
         return client.get_available_products()
 
 
+# The serializer + @extend_schema approach for querystring params is not ideal, the
+# issue to refactor this is here: https://github.com/open-formulieren/open-forms/issues/611
 @extend_schema(
     summary=_("List available locations for a given product"),
     parameters=[
