@@ -224,8 +224,17 @@ class BasePlugin:
 
     def get_appointment_links_html(self, identifier: str, submission_uuid: str) -> str:
 
-        cancel_url = f"{settings.SDK_BASE_URL}/afspraak-annuleren?identifier={identifier}&uuid={submission_uuid}"
-        change_url = f"{settings.SDK_BASE_URL}/afspraak-wijzigen?identifier={identifier}&uuid={submission_uuid}"
+        details = self.get_appointment_details(identifier)
+        time = details.start_at.strftime("%-d+%B+om+%H.%M")
+
+        cancel_url = (
+            f"{settings.SDK_BASE_URL}/afspraak-annuleren"
+            f"?identifier={identifier}&uuid={submission_uuid}&time={time}"
+        )
+        change_url = (
+            f"{settings.SDK_BASE_URL}/afspraak-wijzigen"
+            f"?identifier={identifier}&uuid={submission_uuid}&time={time}"
+        )
 
         return render_to_string(
             "appointments/appointment_links.html",

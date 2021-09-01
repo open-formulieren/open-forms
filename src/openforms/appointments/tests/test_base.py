@@ -55,11 +55,11 @@ class BasePluginTests(TestCase):
 
         self.assertIn(
             f'<a href="{settings.SDK_BASE_URL}/afspraak-annuleren'
-            f'?identifier={identifier}&amp;uuid={submission_uuid}">',
+            f'?identifier={identifier}&amp;uuid={submission_uuid}&amp;time=1+January+om+12.00">',
             result,
         )
         self.assertIn(
             f'<a href="{settings.SDK_BASE_URL}/afspraak-wijzigen'
-            f'?identifier={identifier}&amp;uuid={submission_uuid}">',
+            f'?identifier={identifier}&amp;uuid={submission_uuid}&amp;time=1+January+om+12.00">',
             result,
         )
