@@ -448,7 +448,6 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
         """
         # at first instance, we don't support nested logic. Once we do, this will need
         # to be adapted so that we only check primitives.
-        JsonLogicTest.is_valid(trigger_logic, raise_exception=True)
         logic_test = JsonLogicTest.from_expression(trigger_logic)
 
         first_operand = logic_test.values[0]
