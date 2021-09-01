@@ -354,7 +354,7 @@ def parse_soap_error_text(response):
 
     message = response.text
     if response.headers.get("content-type", "").startswith("text/html"):
-        message = response.status
+        message = response.status_code
     else:
         try:
             xml = df_fromstring(response.text.encode("utf8"))
