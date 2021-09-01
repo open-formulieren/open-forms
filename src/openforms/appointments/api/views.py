@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, OpenApiResponse
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
@@ -185,6 +185,13 @@ class TimesListView(ListMixin, APIView):
 @extend_schema(
     summary=_("Verify an appointment"),
     description=_("Verify a valid appointment for the given input."),
+    responses={
+        204: None,
+        400: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to cancel appointment with given data."),
+        ),
+    },
     parameters=[
         OpenApiParameter(
             "identifier",
@@ -232,6 +239,13 @@ class VerifyAppointmentView(APIView):
 
 @extend_schema(
     summary=_("Cancel an appointment"),
+    responses={
+        204: None,
+        400: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to cancel appointment with given data."),
+        ),
+    },
     parameters=[
         OpenApiParameter(
             "identifier",
