@@ -6,6 +6,7 @@ import jsonLogic from 'json-logic-js';
 import {OPERATORS} from './constants';
 import Select from '../../forms/Select';
 import {NumberInput} from '../../forms/Inputs';
+import {getTranslatedChoices} from '../../../../utils/i18n';
 
 
 const Today = ({name, value, onChange}) => {
@@ -13,12 +14,7 @@ const Today = ({name, value, onChange}) => {
     const years = value ? value[sign][1]['years'] : 0;
 
     const intl = useIntl();
-
-    const operatorChoices = Object
-        .entries(OPERATORS)
-        .filter(([operator]) => ['+', '-'].includes(operator))
-        .map( ([operator, msg]) => [operator, intl.formatMessage(msg)] )
-    ;
+    const operatorChoices = Object.entries(OPERATORS).filter(([operator]) => ['+', '-'].includes(operator));
 
     const onChangeSign = (event) => {
         const modifiedValue = {};
@@ -39,7 +35,7 @@ const Today = ({name, value, onChange}) => {
             <div className="dsl-editor__node">
                 <Select
                     name="sign"
-                    choices={operatorChoices}
+                    choices={getTranslatedChoices(intl, operatorChoices)}
                     onChange={onChangeSign}
                     value={sign}
                 />

@@ -36,8 +36,6 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
         Object.entries(MODIFIABLE_PROPERTIES).map( ([key, info]) => [key, info.label] )
     );
 
-    console.log(action.componentProperty);
-
     return (
         <div className="logic-action">
 
@@ -101,8 +99,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                             </div> ) : null
                         }
                     {
-                        action.actionType === 'property' && action.componentProperty ?
-                        (
+                        action.actionType === 'property' && action.componentProperty
+                        ? (
                             <div className="dsl-editor__node">
                                 <Select
                                     name="componentPropertyValue"
@@ -124,8 +122,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                             : action.componentPropertyValue
                                     }
                                 />
-                            </div>
-                        ) : null
+                            </div>)
+                        : null
                     }
                     {
                         // Used to pick whether the new value of a component will be a literal or a value from another component

@@ -1,7 +1,5 @@
 from django.test import SimpleTestCase
 
-from json_logic import jsonLogic
-
 from ..json_logic import JsonLogicTest
 
 
