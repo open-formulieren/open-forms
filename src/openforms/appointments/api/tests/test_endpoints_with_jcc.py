@@ -299,7 +299,7 @@ class VerifyAppointmentTests(TestCase):
 
         response = self.client.post(self.endpoint, data=data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
 
     def test_verify_appointment_fails_with_incorrect_email(self):
         form = FormFactory.create(slug="a-form", name="A form")
@@ -458,7 +458,7 @@ class CancelAppointmentTests(TestCase):
 
         response = self.client.post(self.endpoint, data=data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):

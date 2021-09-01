@@ -1,11 +1,7 @@
 {% load i18n %}
 
-<table>
-    <tr>
-        <td>{% trans "Change or cancel appointment" %}</td>
-        <td>
-            <a href="{{ cancel_url }}">{% trans "I want to cancel my appointment" %}</a>
-            <a href="{{ change_url }}">{% trans "I want to change my appointment" %}</a>
-        </td>
-    </tr>
-</table>
+<h4>{% trans "Change or cancel appointment" %}</h4>
+<ul>
+    <li><a href="{{ cancel_url }}">{% trans "I want to cancel my appointment" %}</a></li>
+    <li><a href="{{ change_url }}">{% trans "I want to change my appointment" %}</a></li>
+</ul>

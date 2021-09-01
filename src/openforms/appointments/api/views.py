@@ -5,7 +5,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
@@ -210,6 +210,9 @@ class TimesListView(ListMixin, APIView):
     ],
 )
 class VerifyAppointmentView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+
     def post(self, request, *args, **kwargs):
         serializer = VerifyAppointmentInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -224,7 +227,7 @@ class VerifyAppointmentView(APIView):
         if serializer.validated_data["email"] not in emails:
             raise PermissionDenied
 
-        return Response(status=HTTP_200_OK)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 @extend_schema(
@@ -254,6 +257,9 @@ class VerifyAppointmentView(APIView):
     ],
 )
 class CancelAppointmentView(VerifyAppointmentView):
+    authentication_classes = ()
+    permission_classes = ()
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
