@@ -4,6 +4,7 @@
 Continuous integration settings module.
 """
 import os
+import warnings
 
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
@@ -31,3 +32,11 @@ SENDFILE_BACKEND = "django_sendfile.backends.development"
 
 # Two factor auth
 TWO_FACTOR_FORCE_OTP_ADMIN = False
+
+# THOU SHALT NOT USE NAIVE DATETIMES
+warnings.filterwarnings(
+    "error",
+    r"DateTimeField .* received a naive datetime",
+    RuntimeWarning,
+    r"django\.db\.models\.fields",
+)
