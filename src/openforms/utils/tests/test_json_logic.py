@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
 
+from json_logic import jsonLogic
+
 from ..json_logic import JsonLogicTest
 
 
@@ -41,60 +43,3 @@ class JSONLogicUtilsTests(SimpleTestCase):
         self.assertEqual(nested_2_operand_1.operator, "var")
         self.assertEqual(nested_2_operand_1.values, ["foo"])
         self.assertEqual(nested_2_operand_2, 1)
-
-    def test_validation(self):
-        valid_expressions = [
-            {
-                ">": [
-                    {"date": {"var": "dateOfBirth"}},
-                    {"-": [{"today": []}, {"years": 18}]},
-                ]
-            },
-            {"+": [{"var": "someNumber"}, 5]},
-            {"var": ["bah", "defaultValue"]},
-            {"date": "2020-10-01"},
-            {
-                ">": [
-                    {"var": "dateOfBirth"},
-                    {"-": [5, 10]},
-                ]
-            },
-            {
-                "+": [
-                    {"var": ["test", 5]},
-                    {"-": [{"var": "test2"}, {"/": [5, 6]}]},
-                ]
-            },
-        ]
-
-        invalid_expressions = [
-            [{"var": "hello"}],
-            {
-                ">": [
-                    {"date": {"var": "dateOfBirth"}},
-                    {"var": ["someValue"]},
-                ]
-            },
-            {"+": [{"date": "someDate"}, 5]},
-            {"unsupportedOp": [{"date": "2020-01-01"}, {"years": 5}]},
-            {
-                "+": [
-                    {"var": ["test", 5]},
-                    {"-": [{"var": "test2"}, {"unsupportedOp": [5, 6]}]},
-                ]
-            },
-            {
-                ">": [
-                    {"date": {"var": "dateOfBirth"}},
-                    {"+": [{"var": "someNonDate"}, 5]},
-                ]
-            },
-        ]
-
-        for expression in valid_expressions:
-            with self.subTest(msg=f"{str(expression)} => valid"):
-                self.assertTrue(JsonLogicTest.is_valid(expression))
-
-        for expression in invalid_expressions:
-            with self.subTest(msg=f"{str(expression)} => invalid"):
-                self.assertFalse(JsonLogicTest.is_valid(expression))

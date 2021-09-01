@@ -83,6 +83,79 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
+    def test_change_component_to_required(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "validate": {"required": False},
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "name"},
+                    "john",
+                ]
+            },
+            actions=[
+                {
+                    "component": "surname",
+                    "action": {
+                        "name": "Make required",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "validate",
+                        },
+                        "state": {"required": True},
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"name": "john"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "surname",
+                    "validate": {"required": True},
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
     def test_extract_value(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -143,6 +216,85 @@ class ComponentModificationTests(TestCase):
                     "key": "step2_textfield1",
                     "hidden": False,
                     "value": "some value",
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_evaluate_logic_with_empty_data(self):
+        """
+        When the SDK first loads a form, it does an evaluation of the logic with an empty dict of data.
+        In subsequent evaluations of the logic, the dict with the data may still not contain all the values,
+        since they haven't been filled in yet.
+        """
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "validate": {"required": False},
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "name"},
+                    "john",
+                ]
+            },
+            actions=[
+                {
+                    "component": "surname",
+                    "action": {
+                        "name": "Make required",
+                        "type": "property",
+                        "property": {
+                            "type": "json",
+                            "value": "validate",
+                        },
+                        "state": {"required": True},
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={},  # Empty data!
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(submission_step_2, submission.data)
+
+        # Expect configuration unchanged
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "surname",
+                    "validate": {"required": False},
                 }
             ]
         }
