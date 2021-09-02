@@ -40,7 +40,7 @@ git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd
 # once transferred from isprojects to maykinmedia, we'll publish this to PyPI
 git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
-maykin-django-two-factor-auth[phonenumbers]==2.0.3
+maykin-django-two-factor-auth[phonenumbers]
 
 # API libraries
 djangorestframework~=3.12.0
