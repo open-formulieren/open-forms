@@ -177,9 +177,9 @@ class TestSubmission(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "showProducts": True},
-                    {"key": "location", "showLocations": True},
-                    {"key": "time", "showTimes": True},
+                    {"key": "product", "appointments.showProducts": True},
+                    {"key": "location", "appointments.showLocations": True},
+                    {"key": "time", "appointments.showTimes": True},
                 ],
             }
         )
@@ -187,9 +187,12 @@ class TestSubmission(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointmentLastName": True},
-                    {"key": "birthDate", "appointmentBirthDate": True},
-                    {"key": "randomAttribute", "appointmentBirthDate": False},
+                    {"key": "lastName", "appointments.appointmentLastName": True},
+                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
+                    {
+                        "key": "randomAttribute",
+                        "appointments.appointmentBirthDate": False,
+                    },
                 ],
             }
         )

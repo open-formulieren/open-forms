@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
+from openforms.appointments.admin import AppointmentInfoInline
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
@@ -64,13 +65,13 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_filter = ("form",)
     search_fields = ("form__name",)
     inlines = [
+        AppointmentInfoInline,
         SubmissionStepInline,
         SubmissionPaymentInline,
     ]
     readonly_fields = [
         "created_on",
         "get_registration_backend",
-        "appointment_information",
     ]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 

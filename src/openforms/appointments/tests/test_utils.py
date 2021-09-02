@@ -16,10 +16,11 @@ from openforms.submissions.tests.factories import (
 )
 from stuf.tests.factories import SoapServiceFactory
 
+from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.models import JccConfig
 from ..contrib.jcc.tests.test_plugin import mock_response
 from ..exceptions import AppointmentCreateFailed
-from ..models import AppointmentsConfig
+from ..models import AppointmentInfo, AppointmentsConfig
 from ..utils import book_appointment_for_submission, create_base64_qrcode
 
 
@@ -46,7 +47,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         submission = SubmissionFactory.create()
         book_appointment_for_submission(submission)
         submission.refresh_from_db()
-        self.assertEqual(submission.appointment_information, "")
+        self.assertFalse(AppointmentInfo.objects.exists())
 
     def test_creating_appointment_with_missing_or_not_filled_in_appointment_information_adds_error_message(
         self,
@@ -56,8 +57,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "showProducts": True},
-                    {"key": "time", "showTimes": True},
+                    {"key": "product", "appointments.showProducts": True},
+                    {"key": "time", "appointments.showTimes": True},
                 ],
             }
         )
@@ -65,8 +66,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointmentLastName": True},
-                    {"key": "birthDate", "appointmentBirthDate": True},
+                    {"key": "lastName", "appointments.appointmentLastName": True},
+                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
                 ],
             }
         )
@@ -91,10 +92,12 @@ class BookAppointmentForSubmissionTest(TestCase):
             form_step=form_step_2,
         )
         book_appointment_for_submission(submission)
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.appointment_information,
-            "Missing information in form: locationID. Information not filled in by user: clientDateOfBirth. ",
+        self.assertTrue(
+            AppointmentInfo.objects.filter(
+                submission=submission,
+                status=AppointmentDetailsStatus.missing_info,
+                error_information="Missing information in form: locationID. Information not filled in by user: clientDateOfBirth. ",
+            ).exists()
         )
 
     @requests_mock.Mocker()
@@ -106,9 +109,9 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "showProducts": True},
-                    {"key": "location", "showLocations": True},
-                    {"key": "time", "showTimes": True},
+                    {"key": "product", "appointments.showProducts": True},
+                    {"key": "location", "appointments.showLocations": True},
+                    {"key": "time", "appointments.showTimes": True},
                 ],
             }
         )
@@ -116,8 +119,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointmentLastName": True},
-                    {"key": "birthDate", "appointmentBirthDate": True},
+                    {"key": "lastName", "appointments.appointmentLastName": True},
+                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
                 ],
             }
         )
@@ -148,9 +151,12 @@ class BookAppointmentForSubmissionTest(TestCase):
         )
 
         book_appointment_for_submission(submission)
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.appointment_information, "Appointment Id: 1234567890"
+        self.assertTrue(
+            AppointmentInfo.objects.filter(
+                appointment_id="1234567890",
+                submission=submission,
+                status=AppointmentDetailsStatus.success,
+            ).exists()
         )
 
     @requests_mock.Mocker()
@@ -160,9 +166,9 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "showProducts": True},
-                    {"key": "location", "showLocations": True},
-                    {"key": "time", "showTimes": True},
+                    {"key": "product", "appointments.showProducts": True},
+                    {"key": "location", "appointments.showLocations": True},
+                    {"key": "time", "appointments.showTimes": True},
                 ],
             }
         )
@@ -170,8 +176,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointmentLastName": True},
-                    {"key": "birthDate", "appointmentBirthDate": True},
+                    {"key": "lastName", "appointments.appointmentLastName": True},
+                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
                 ],
             }
         )
@@ -202,9 +208,12 @@ class BookAppointmentForSubmissionTest(TestCase):
         )
 
         book_appointment_for_submission(submission)
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.appointment_information, "Failed to make appointment"
+        self.assertTrue(
+            AppointmentInfo.objects.filter(
+                error_information="Failed to make appointment",
+                submission=submission,
+                status=AppointmentDetailsStatus.failed,
+            ).exists()
         )
 
 

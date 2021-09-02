@@ -9,8 +9,9 @@ import qrcode
 from openforms.submissions.models import Submission
 
 from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
+from .constants import AppointmentDetailsStatus
 from .exceptions import AppointmentCreateFailed
-from .models import AppointmentsConfig
+from .models import AppointmentInfo, AppointmentsConfig
 
 
 def get_client():
@@ -46,24 +47,31 @@ def book_appointment_for_submission(submission: Submission) -> None:
         return
     elif missing_appointment_information or not_filled_in_appointment_information:
         # Incomplete information to make an appointment
+        error_information = ""
         if missing_appointment_information:
-            submission.appointment_information += (
+            error_information += (
                 f"Missing information in form: "
                 f"{', '.join(missing_appointment_information)}. "
             )
         if not_filled_in_appointment_information:
-            submission.appointment_information += (
+            error_information += (
                 f"Information not filled in by user: "
                 f"{', '.join(not_filled_in_appointment_information)}. "
             )
-        submission.save()
+        AppointmentInfo.objects.create(
+            status=AppointmentDetailsStatus.missing_info,
+            error_information=error_information,
+            submission=submission,
+        )
         return
 
     product = AppointmentProduct(identifier=str(appointment_data["productID"]), name="")
     location = AppointmentLocation(identifier=appointment_data["locationID"], name="")
     appointment_client = AppointmentClient(
         last_name=appointment_data["clientLastName"],
-        birthdate=appointment_data["clientDateOfBirth"],
+        birthdate=datetime.strptime(
+            appointment_data["clientDateOfBirth"], "%Y-%m-%d"
+        ).date(),
     )
     start_at = datetime.strptime(appointment_data["appStartTime"], "%Y-%m-%dT%H:%M:%S")
 
@@ -73,10 +81,17 @@ def book_appointment_for_submission(submission: Submission) -> None:
             [product], location, start_at, appointment_client
         )
         submission.appointment_information = f"Appointment Id: {appointment_id}"
+        AppointmentInfo.objects.create(
+            status=AppointmentDetailsStatus.success,
+            appointment_id=appointment_id,
+            submission=submission,
+        )
     except AppointmentCreateFailed as e:
-        submission.appointment_information = "Failed to make appointment"
-    finally:
-        submission.save()
+        AppointmentInfo.objects.create(
+            status=AppointmentDetailsStatus.failed,
+            error_information="Failed to make appointment",
+            submission=submission,
+        )
 
 
 def create_base64_qrcode(text):

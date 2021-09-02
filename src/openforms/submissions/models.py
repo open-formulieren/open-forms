@@ -132,13 +132,6 @@ class Submission(models.Model):
         ),
     )
 
-    appointment_information = models.CharField(
-        _("Appointment Information"),
-        max_length=1000,
-        blank=True,
-        help_text=_("Any information regarding the booking of an appointment"),
-    )
-
     _is_cleaned = models.BooleanField(
         _("is cleaned"),
         default=False,
