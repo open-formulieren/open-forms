@@ -140,6 +140,17 @@ class Submission(models.Model):
         ),
     )
 
+    # tracking async execution state
+    on_completion_task_id = models.CharField(
+        _("on completion task ID"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "Celery task ID of the on_completion workflow. Use this to inspect the "
+            "state of the async jobs."
+        ),
+    )
+
     objects = SubmissionQuerySet.as_manager()
 
     class Meta:
