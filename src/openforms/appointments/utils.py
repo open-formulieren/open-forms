@@ -73,7 +73,9 @@ def book_appointment_for_submission(submission: Submission) -> None:
             appointment_data["clientDateOfBirth"], "%Y-%m-%d"
         ).date(),
     )
-    start_at = datetime.strptime(appointment_data["appStartTime"], "%Y-%m-%dT%H:%M:%S")
+    start_at = datetime.strptime(
+        appointment_data["appStartTime"][:-6], "%Y-%m-%dT%H:%M:%S"
+    )
 
     try:
         client = get_client()
