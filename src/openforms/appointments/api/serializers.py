@@ -33,6 +33,10 @@ class DateInputSerializer(serializers.Serializer):
     )
 
 
+class DateSerializer(serializers.Serializer):
+    date = serializers.DateField(label=_("date"))
+
+
 class TimeInputSerializer(serializers.Serializer):
     product_id = serializers.CharField(
         label=_("product id"), help_text=_("Id of the product to get times for")
@@ -41,3 +45,7 @@ class TimeInputSerializer(serializers.Serializer):
         label=_("location id"), help_text=_("Id of the location to get times for")
     )
     date = serializers.DateField(label=_("date"), help_text=_("Date to get times for"))
+
+
+class TimeSerializer(serializers.Serializer):
+    time = serializers.DateTimeField(label=_("time"))

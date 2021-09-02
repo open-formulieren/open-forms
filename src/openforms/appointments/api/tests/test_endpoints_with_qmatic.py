@@ -130,7 +130,7 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(len(results), 21)
         self.assertEqual(
             results[0],
-            "2016-11-08",
+            {"date": "2016-11-08"},
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
@@ -178,7 +178,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         results = response.json()
         self.assertEqual(len(results), 16)
-        self.assertEqual(results[0], "2016-12-06T09:00:00")
+        self.assertEqual(results[0], {"time": "2016-12-06T09:00:00+01:00"})
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [

@@ -97,7 +97,7 @@ const APPOINTMENT = {
         },
         {
             type: 'checkbox',
-            key: 'showTimes',
+            key: 'appointments.showTimes',
             label: 'Show Times',
             tooltip: 'Show times for a given product, location, and date'
         },
@@ -118,7 +118,7 @@ const APPOINTMENT = {
         {
             type: 'select',
             input: true,
-            label: 'Select location component for dates',
+            label: 'Select location component for times',
             key: 'appointments.locationForTimes',
             dataSrc: 'custom',
             tooltip: 'Choose the location component and we wil prefill times for that location in this component',
@@ -132,7 +132,7 @@ const APPOINTMENT = {
         {
             type: 'select',
             input: true,
-            label: 'Select location component for dates',
+            label: 'Select date component for times',
             key: 'appointments.dateForTimes',
             dataSrc: 'custom',
             tooltip: 'Choose the date component and we wil prefill times for that date in this component',

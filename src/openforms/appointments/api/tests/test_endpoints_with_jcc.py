@@ -152,7 +152,7 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            ["2021-08-19", "2021-08-20", "2021-08-23"],
+            [{"date": "2021-08-19"}, {"date": "2021-08-20"}, {"date": "2021-08-23"}],
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
@@ -207,7 +207,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 106)
-        self.assertEqual(response.json()[0], "2021-08-23T08:00:00")
+        self.assertEqual(response.json()[0], {"time": "2021-08-23T08:00:00+02:00"})
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [

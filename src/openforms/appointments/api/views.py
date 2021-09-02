@@ -11,10 +11,12 @@ from openforms.utils.api.views import ListMixin
 
 from ..api.serializers import (
     DateInputSerializer,
+    DateSerializer,
     LocationInputSerializer,
     LocationSerializer,
     ProductSerializer,
     TimeInputSerializer,
+    TimeSerializer,
 )
 from ..base import AppointmentLocation, AppointmentProduct
 from ..utils import get_client
@@ -91,16 +93,17 @@ class LocationsListView(ListMixin, APIView):
         ),
     ],
 )
-class DatesListView(APIView):
+class DatesListView(ListMixin, APIView):
     """
     List all locations for a given product.
     """
 
     authentication_classes = ()
     permission_classes = [AnyActiveSubmissionPermission]
+    serializer_class = DateSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = DateInputSerializer(data=request.query_params)
+    def get_objects(self):
+        serializer = DateInputSerializer(data=self.request.query_params)
         serializer.is_valid(raise_exception=True)
 
         product = AppointmentProduct(
@@ -111,7 +114,8 @@ class DatesListView(APIView):
         )
 
         client = get_client()
-        return Response(status=HTTP_200_OK, data=client.get_dates([product], location))
+        dates = client.get_dates([product], location)
+        return [{"date": date} for date in dates]
 
 
 @extend_schema(
@@ -140,16 +144,17 @@ class DatesListView(APIView):
         ),
     ],
 )
-class TimesListView(APIView):
+class TimesListView(ListMixin, APIView):
     """
     List all locations for a given product.
     """
 
     authentication_classes = ()
     permission_classes = [AnyActiveSubmissionPermission]
+    serializer_class = TimeSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = TimeInputSerializer(data=request.query_params)
+    def get_objects(self):
+        serializer = TimeInputSerializer(data=self.request.query_params)
         serializer.is_valid(raise_exception=True)
 
         product = AppointmentProduct(
@@ -160,9 +165,5 @@ class TimesListView(APIView):
         )
 
         client = get_client()
-        return Response(
-            status=HTTP_200_OK,
-            data=client.get_times(
-                [product], location, serializer.validated_data["date"]
-            ),
-        )
+        times = client.get_times([product], location, serializer.validated_data["date"])
+        return [{"time": time} for time in times]

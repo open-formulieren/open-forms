@@ -276,11 +276,11 @@ class Submission(models.Model):
         merged_appointment_data = dict()
         component_key_to_appointment_info = dict()
         component_key_to_appointment_key = {
-            "showProducts": "productID",
-            "showLocations": "locationID",
-            "showTimes": "appStartTime",
-            "appointmentLastName": "clientLastName",
-            "appointmentBirthDate": "clientDateOfBirth",
+            "appointments.showProducts": "productID",
+            "appointments.showLocations": "locationID",
+            "appointments.showTimes": "appStartTime",
+            "appointments.appointmentLastName": "clientLastName",
+            "appointments.appointmentBirthDate": "clientDateOfBirth",
         }
 
         for component in self.form.iter_components(recursive=True):
