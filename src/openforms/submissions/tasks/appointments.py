@@ -5,9 +5,9 @@ from openforms.appointments.service import (
     register_appointment,
 )
 from openforms.celery import app
+from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..models import Submission
-from .utils import maybe_retry_in_workflow
 
 __all__ = [
     "maybe_register_appointment",
