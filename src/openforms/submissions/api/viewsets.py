@@ -14,11 +14,6 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.registrations.tasks import (
-    cleanup_temporary_files_for,
-    generate_submission_report,
-    register_submission,
-)
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ...appointments.utils import book_appointment_for_submission
@@ -26,12 +21,12 @@ from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionReport, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
+from ..tasks import on_completion
 from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
-    send_confirmation_email,
 )
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
@@ -122,47 +117,31 @@ class SubmissionViewSet(
         remove_submission_from_session(submission, self.request.session)
         remove_submission_uploads_from_session(submission, self.request.session)
 
-        submission_report = SubmissionReport.objects.create(
-            title=_("%(title)s: Submission report") % {"title": submission.form.name},
-            submission=submission,
-        )
-
-        def on_submission_commit():
-            # The submission report needs to already have been generated before it can be attached to the zaak
-            # that is created in the registration
-            chain = generate_submission_report.si(
-                submission_report.id
-            ) | register_submission.si(submission.id)
-            chain.delay()
-
-            # this can run any time because they have been claimed earlier
-            cleanup_temporary_files_for.delay(submission.id)
-
-        transaction.on_commit(on_submission_commit)
+        # after committing the database transaction where the submissions completion is
+        # stored, start processing the completion.
+        transaction.on_commit(lambda: on_completion(submission.id))
 
         book_appointment_for_submission(submission)
 
-        if hasattr(submission.form, "confirmation_email_template"):
-            transaction.on_commit(lambda: send_confirmation_email(submission))
+        # token = token_generator.make_token(submission_report)
+        # download_report_url = reverse(
+        #     "api:submissions:download-submission",
+        #     kwargs={"report_id": submission_report.id, "token": token},
+        # )
+        # report_status_url = reverse(
+        #     "api:submissions:submission-report-status",
+        #     kwargs={"report_id": submission_report.id, "token": token},
+        # )
 
-        token = token_generator.make_token(submission_report)
-        download_report_url = reverse(
-            "api:submissions:download-submission",
-            kwargs={"report_id": submission_report.id, "token": token},
-        )
-        report_status_url = reverse(
-            "api:submissions:submission-report-status",
-            kwargs={"report_id": submission_report.id, "token": token},
-        )
-
-        serializer = SubmissionCompletionSerializer(
-            instance={
-                "download_url": request.build_absolute_uri(download_report_url),
-                "report_status_url": request.build_absolute_uri(report_status_url),
-                "confirmation_page_content": submission.render_confirmation_page(),
-            },
-        )
-        return Response(serializer.data)
+        # serializer = SubmissionCompletionSerializer(
+        #     instance={
+        #         "download_url": request.build_absolute_uri(download_report_url),
+        #         "report_status_url": request.build_absolute_uri(report_status_url),
+        #         "confirmation_page_content": submission.render_confirmation_page(),
+        #     },
+        # )
+        # return Response(serializer.data)
+        return Response({"status_url": "#TODO"})
 
     @extend_schema(
         summary=_("Suspend a submission"),

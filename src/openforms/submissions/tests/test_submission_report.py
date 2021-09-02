@@ -11,14 +11,12 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from openforms.forms.tests.factories import FormFactory
-from openforms.registrations.tasks import generate_submission_report
-from openforms.submissions.models import SubmissionReport
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionReportFactory,
-)
-from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.submissions.tokens import token_generator
+
+from ..models import SubmissionReport
+from ..tasks import generate_submission_report
+from ..tokens import token_generator
+from .factories import SubmissionFactory, SubmissionReportFactory
+from .mixins import SubmissionsMixin
 
 
 @temp_private_root()
