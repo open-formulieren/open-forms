@@ -57,8 +57,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "appointments.showProducts": True},
-                    {"key": "time", "appointments.showTimes": True},
+                    {"key": "product", "appointmentsShowProducts": True},
+                    {"key": "time", "appointmentsShowTimes": True},
                 ],
             }
         )
@@ -66,8 +66,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointments.appointmentLastName": True},
-                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
+                    {"key": "lastName", "appointmentsLastName": True},
+                    {"key": "birthDate", "appointmentsBirthDate": True},
                 ],
             }
         )
@@ -109,9 +109,9 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "appointments.showProducts": True},
-                    {"key": "location", "appointments.showLocations": True},
-                    {"key": "time", "appointments.showTimes": True},
+                    {"key": "product", "appointmentsShowProducts": True},
+                    {"key": "location", "appointmentsShowLocations": True},
+                    {"key": "time", "appointmentsShowTimes": True},
                 ],
             }
         )
@@ -119,8 +119,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointments.appointmentLastName": True},
-                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
+                    {"key": "lastName", "appointmentsLastName": True},
+                    {"key": "birthDate", "appointmentsBirthDate": True},
                 ],
             }
         )
@@ -166,9 +166,9 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "appointments.showProducts": True},
-                    {"key": "location", "appointments.showLocations": True},
-                    {"key": "time", "appointments.showTimes": True},
+                    {"key": "product", "appointmentsShowProducts": True},
+                    {"key": "location", "appointmentsShowLocations": True},
+                    {"key": "time", "appointmentsShowTimes": True},
                 ],
             }
         )
@@ -176,8 +176,8 @@ class BookAppointmentForSubmissionTest(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointments.appointmentLastName": True},
-                    {"key": "birthDate", "appointments.appointmentBirthDate": True},
+                    {"key": "lastName", "appointmentsLastName": True},
+                    {"key": "birthDate", "appointmentsBirthDate": True},
                 ],
             }
         )

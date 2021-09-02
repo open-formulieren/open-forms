@@ -9,7 +9,7 @@ const APPOINTMENT = {
     components: [
         {
             type: 'checkbox',
-            key: 'appointments.appointmentBirthDate',
+            key: 'appointmentsBirthDate',
             label: 'Birth Date for Appointment',
             tooltip: 'The value filled into this component will be used as the birth date for booking the appointment'
         }

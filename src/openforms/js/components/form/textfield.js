@@ -8,7 +8,7 @@ const APPOINTMENT = {
     components: [
         {
             type: 'checkbox',
-            key: 'appointments.appointmentLastName',
+            key: 'appointmentsLastName',
             label: 'Last Name for Appointment',
             tooltip: 'The value filled into this component will be used as the last name for booking the appointment'
         }
