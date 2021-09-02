@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils import timezone
 
 from django_webtest import WebTest
 
@@ -28,7 +29,9 @@ class TestSubmissionAdmin(WebTest):
         )
         step = FormStepFactory.create(form_definition=form_definition)
         cls.submission_1 = SubmissionFactory.create(form=step.form)
-        submission_2 = SubmissionFactory.create(form=step.form)
+        submission_2 = SubmissionFactory.create(
+            form=step.form, completed_on=timezone.now()
+        )
         cls.submission_step_1 = SubmissionStepFactory.create(
             submission=cls.submission_1,
             form_step=step,
@@ -126,7 +129,7 @@ class TestSubmissionAdmin(WebTest):
 
     def test_exporting_multiple_forms_fails(self):
         step = FormStepFactory.create()
-        SubmissionFactory.create(form=step.form)
+        SubmissionFactory.create(form=step.form, completed_on=timezone.now())
 
         response = self.app.get(
             reverse("admin:submissions_submission_changelist"), user=self.user
@@ -152,10 +155,11 @@ class TestSubmissionAdmin(WebTest):
     @patch("openforms.registrations.tasks.register_submission.delay")
     def test_resend_submissions_only_resends_failed_submissions(self, task_mock):
         failed = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.failed
+            registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
         )
         not_failed = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.pending
+            registration_status=RegistrationStatuses.pending,
+            completed_on=timezone.now(),
         )
 
         response = self.app.get(

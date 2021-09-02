@@ -51,8 +51,9 @@ class FormAdmin(
         "name",
         "active",
         "maintenance_mode",
-        "registration_backend",
-        "registration_backend_options",
+        "get_authentication_backends_display",
+        "get_payment_backend_display",
+        "get_registration_backend_display",
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
