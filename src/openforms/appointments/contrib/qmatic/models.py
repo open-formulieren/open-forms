@@ -30,5 +30,10 @@ class QmaticConfig(SingletonModel):
 
     objects = QmaticConfigManager()
 
+    def get_client(self):
+        from .plugin import Plugin
+
+        return Plugin()
+
     class Meta:
         verbose_name = _("Qmatic configuration")

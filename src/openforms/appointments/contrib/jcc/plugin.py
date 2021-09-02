@@ -36,11 +36,8 @@ class Plugin(BasePlugin):
     Website: https://www.jccsoftware.nl/
     """
 
-    def __init__(self):
-        self.client = None
-        # self.client = Client(
-        #     "TODO: <from settings>"
-        # )
+    def __init__(self, wsdl):
+        self.client = Client(wsdl)
 
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None

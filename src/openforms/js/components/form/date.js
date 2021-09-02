@@ -1,7 +1,20 @@
 import {Formio} from "formiojs";
-import {defineCommonEditFormTabs} from "./abstract";
+import DEFAULT_TABS, {BASIC, ADVANCED, REGISTRATION, VALIDATION} from "./edit/tabs";
 
 const DateTimeField = Formio.Components.components.datetime;
+
+const APPOINTMENT = {
+    key: 'appointment',
+    label: 'Appointment',
+    components: [
+        {
+            type: 'checkbox',
+            key: 'appointmentsBirthDate',
+            label: 'Birth Date for Appointment',
+            tooltip: 'The value filled into this component will be used as the birth date for booking the appointment'
+        }
+    ]
+};
 
 
 class DateField extends DateTimeField {
@@ -26,6 +39,20 @@ class DateField extends DateTimeField {
         };
     }
 
+    static editForm() {
+        const TABS = {
+            ...DEFAULT_TABS,
+            components: [
+                BASIC,
+                ADVANCED,
+                VALIDATION,
+                REGISTRATION,
+                APPOINTMENT
+            ]
+        };
+        return {components: [TABS]};
+    }
+
     get suffix() {
       // Don't show an icon
       return null;
@@ -36,7 +63,5 @@ class DateField extends DateTimeField {
     }
 
 }
-
-defineCommonEditFormTabs(DateField);
 
 export default DateField;

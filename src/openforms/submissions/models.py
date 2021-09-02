@@ -265,6 +265,36 @@ class Submission(models.Model):
 
         return merged_data
 
+    def get_merged_appointment_data(self) -> Dict[str, str]:
+        merged_appointment_data = dict()
+        component_key_to_appointment_info = dict()
+        component_key_to_appointment_key = {
+            "appointmentsShowProducts": "productID",
+            "appointmentsShowLocations": "locationID",
+            "appointmentsShowTimes": "appStartTime",
+            "appointmentsLastName": "clientLastName",
+            "appointmentsBirthDate": "clientDateOfBirth",
+        }
+
+        for component in self.form.iter_components(recursive=True):
+            for (
+                component_key,
+                appointment_key,
+            ) in component_key_to_appointment_key.items():
+                if component.get(component_key):
+                    component_key_to_appointment_info[appointment_key] = component[
+                        "key"
+                    ]
+
+        merged_data = self.get_merged_data()
+
+        for key in component_key_to_appointment_info.keys():
+            merged_appointment_data[key] = merged_data[
+                component_key_to_appointment_info[key]
+            ]
+
+        return merged_appointment_data
+
     def get_merged_data(self) -> dict:
         merged_data = dict()
 

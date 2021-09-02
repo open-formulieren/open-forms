@@ -170,3 +170,61 @@ class TestSubmission(TestCase):
         self.assertTrue(submission._is_cleaned)
         self.assertEqual(submission.bsn, "")
         self.assertEqual(submission.kvk, "")
+
+    def test_get_merged_appointment_data(self):
+        form = FormFactory.create()
+        form_definition_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "product", "appointmentsShowProducts": True},
+                    {"key": "location", "appointmentsShowLocations": True},
+                    {"key": "time", "appointmentsShowTimes": True},
+                ],
+            }
+        )
+        form_definition_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "lastName", "appointmentsLastName": True},
+                    {"key": "birthDate", "appointmentsBirthDate": True},
+                    {
+                        "key": "randomAttribute",
+                        "appointmentsBirthDate": False,
+                    },
+                ],
+            }
+        )
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"product": "79", "location": "1", "time": "2021-08-25T17:00:00"},
+            form_step=form_step_1,
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "lastName": "Maykin",
+                "birthDate": "1990-08-01",
+                "randomAttribute": "This is some random stuff",
+            },
+            form_step=form_step_2,
+        )
+
+        self.assertEqual(
+            submission.get_merged_appointment_data(),
+            {
+                "productID": "79",
+                "locationID": "1",
+                "appStartTime": "2021-08-25T17:00:00",
+                "clientLastName": "Maykin",
+                "clientDateOfBirth": "1990-08-01",
+            },
+        )
