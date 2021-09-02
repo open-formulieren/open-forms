@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 @app.task(bind=True)
 def generate_submission_report(task, submission_id: int) -> None:
-    logger.info("Generating submission report for submission %d", submission_id)
+    logger.debug("Generating submission report for submission %d", submission_id)
     submission = Submission.objects.get(id=submission_id)
 
-    # idempotency: check if there already is a report
+    # idempotency: check if there already is a report!
     try:
         submission_report = submission.report
     except SubmissionReport.DoesNotExist:
@@ -25,4 +25,9 @@ def generate_submission_report(task, submission_id: int) -> None:
             submission=submission,
             task_id=task.request.id,
         )
+    # idempotency: check if there already is a report PDF!
+    if submission_report.content:
+        logger.debug("Submission report PDF was already generated, skipping...")
+        return
+
     submission_report.generate_submission_report_pdf()

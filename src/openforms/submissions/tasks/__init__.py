@@ -44,19 +44,23 @@ def on_completion(submission_id: int) -> str:
         register_appointment_task,
         # The submission report needs to already have been generated before it can be
         # attached in the registration backend.
-        # generate_report_task,
-        # register_submission_task,
-        # obtain_submission_reference_task,
-        # update_appointment_task,
-        # TODO: initiate payment
-        # finalize_completion_task,
+        generate_report_task,
+        register_submission_task,
+        obtain_submission_reference_task,
+        update_appointment_task,
+        # TODO: initiate payment -> this should probably just generate the link?
+        # we schedule the finalization so that the ``async_result`` below is marked
+        # as done, which is the "signal" to show the confirmation page. Actual payment
+        # flow & confirmation e-mail follow later.
+        finalize_completion_task,
     )
 
     # this can run any time because they have been claimed earlier
-    # cleanup_temporary_files_for.delay(submission_id)
+    cleanup_temporary_files_for.delay(submission_id)
 
     async_result: AsyncResult = on_completion_chain.delay()
-    # NOTE - this is "risky" since we're running outside of the transaction!
+    # NOTE - this is "risky" since we're running outside of the transaction (this code
+    # should run in transaction.on_commit)!
     Submission.objects.filter(id=submission_id).update(
         on_completion_task_id=async_result.id
     )
