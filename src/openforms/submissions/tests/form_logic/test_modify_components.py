@@ -688,7 +688,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "component": "driverId",
+                    "form_step": str(step2.uuid),
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
