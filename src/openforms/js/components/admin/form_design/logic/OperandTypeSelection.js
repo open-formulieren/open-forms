@@ -15,16 +15,12 @@ const OPERAND_TYPES = {
 
 const OperandTypeSelection = ({name, operandType, onChange, filter}) => {
     const intl = useIntl();
-    let choices = Object.entries(OPERAND_TYPES).map(
-        ([operandType, msg]) => [operandType, intl.formatMessage(msg)]
-    );
-    if (filter) {
-        choices = choices.filter(filter);
-    }
+    const choices = getTranslatedChoices(intl, OPERAND_TYPES);
+
     return (
         <Select
             name={name}
-            choices={getTranslatedChoices(intl, choices)}
+            choices={filter ? choices.filter(filter) : choices}
             allowBlank
             onChange={onChange}
             value={operandType}

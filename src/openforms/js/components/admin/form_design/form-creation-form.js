@@ -13,7 +13,7 @@ import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
-import {FormDefinitionsContext, PluginsContext} from './Context';
+import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
@@ -830,13 +830,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
-                        <FormLogic
-                            logicRules={state.logicRules}
-                            availableComponents={getFormComponents(state.formSteps)}
-                            onChange={onRuleChange}
-                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                            onAdd={() => dispatch({type: 'ADD_RULE'})}
-                        />
+                        <FormStepsContext.Provider value={state.formSteps}>
+                            <FormLogic
+                                logicRules={state.logicRules}
+                                availableComponents={getFormComponents(state.formSteps)}
+                                onChange={onRuleChange}
+                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                                onAdd={() => dispatch({type: 'ADD_RULE'})}
+                            />
+                        </FormStepsContext.Provider>
                     </Fieldset>
                 </TabPanel>
             </Tabs>

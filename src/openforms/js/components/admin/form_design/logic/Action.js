@@ -11,6 +11,7 @@ import LiteralValueInput from './LiteralValueInput';
 import {ComponentsContext} from './Context';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
+import StepSelection from './StepSelection';
 
 
 const Action = ({prefixText, action, onChange, onDelete}) => {
@@ -19,6 +20,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
     const componentType = allComponents[action.componentToChange]?.type;
 
     const jsonAction = {
+        formStep: action.stepToChange,
         component: action.componentToChange,
         action: {
             type: action.actionType,
@@ -173,6 +175,17 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                             </div>
                         )
                         : null
+                    }
+                    {
+                        action.actionType === 'step-not-applicable' ? (
+                            <div className="dsl-editor__node">
+                                <StepSelection
+                                    name="stepToChange"
+                                    value={action.stepToChange}
+                                    onChange={onChange}
+                                />
+                            </div>
+                        ) : null
                     }
 
                 </div>

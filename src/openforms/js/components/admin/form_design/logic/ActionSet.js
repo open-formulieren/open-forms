@@ -9,6 +9,7 @@ import {useOnChanged} from './hooks';
 
 const emptyAction = {
     actionType: '',
+    stepToChange: '',
     componentToChange: '',
     componentValueSource: '',
     componentProperty: '',
@@ -24,6 +25,7 @@ const initialState = {
 
 const ACTION_SELECTION_ORDER = [
     'actionType',
+    'stepToChange',
     'componentToChange',
     'componentValueSource',
     'componentProperty',
@@ -68,6 +70,7 @@ const reducer = (draft, action) => {
 const convertActionToJson = (action) => {
     return {
         component: action.componentToChange,
+        formStep: action.stepToChange,
         action: {
             type: action.actionType,
             property: {value: action.componentProperty, type: action.componentPropertyType},
@@ -116,6 +119,7 @@ const parseJsonAction = (jsonAction) => {
         componentVariableValue: componentVariableValue,
         componentPropertyValue: jsonAction.action.state,
         componentPropertyType: jsonAction.action.property?.type,
+        stepToChange: jsonAction.formStep,
     };
 };
 
