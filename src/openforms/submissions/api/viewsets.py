@@ -31,7 +31,6 @@ from ..utils import (
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
     FormDataSerializer,
-    SubmissionCompletionSerializer,
     SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
     SubmissionStepSerializer,

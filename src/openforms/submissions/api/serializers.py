@@ -125,29 +125,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class SubmissionCompletionSerializer(serializers.Serializer):
-    download_url = serializers.URLField(
-        label=_("Report download url"),
-        read_only=True,
-        help_text=_(
-            "The URL where the PDF report with submission data can be downloaded from."
-        ),
-    )
-    report_status_url = serializers.URLField(
-        label=_("Report status url"),
-        read_only=True,
-        help_text=_(
-            "The endpoint where the PDF report generation status can be checked."
-        ),
-    )
-    # TODO: apply HTML sanitation here with bleach
-    confirmation_page_content = serializers.CharField(
-        label=_("Confirmation page content"),
-        read_only=True,
-        help_text=_("Body text of the confirmation page. May contain HTML!"),
-    )
-
-
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     configuration = serializers.SerializerMethodField()
 
