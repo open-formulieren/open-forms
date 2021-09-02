@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
-from openforms.appointments.admin import AppointmentInfoInline
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
@@ -65,13 +64,15 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_filter = ("form",)
     search_fields = ("form__name",)
     inlines = [
-        AppointmentInfoInline,
         SubmissionStepInline,
         SubmissionPaymentInline,
     ]
     readonly_fields = [
         "created_on",
         "get_registration_backend",
+        "get_appointment_status",
+        "get_appointment_id",
+        "get_appointment_error_information",
     ]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 
@@ -79,6 +80,23 @@ class SubmissionAdmin(admin.ModelAdmin):
         return obj.form.registration_backend
 
     get_registration_backend.short_description = _("Registration Backend")
+
+    def get_appointment_status(self, obj):
+        return obj.appointment_info.status if obj.appointment_info else ""
+
+    get_appointment_status.short_description = _("Appointment Status")
+
+    def get_appointment_id(self, obj):
+        return obj.appointment_info.appointment_id if obj.appointment_info else ""
+
+    get_appointment_id.short_description = _("Appointment Id")
+
+    def get_appointment_error_information(self, obj):
+        return obj.appointment_info.error_information if obj.appointment_info else ""
+
+    get_appointment_error_information.short_description = _(
+        "Appointment Error Information"
+    )
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)

@@ -8,8 +8,3 @@ from .models import AppointmentInfo, AppointmentsConfig
 @admin.register(AppointmentsConfig)
 class AppointmentsConfigAdmin(SingletonModelAdmin):
     pass
-
-
-class AppointmentInfoInline(admin.StackedInline):
-    model = AppointmentInfo
-    extra = 0

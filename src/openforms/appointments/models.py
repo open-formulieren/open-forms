@@ -23,7 +23,7 @@ class AppointmentInfo(models.Model):
         max_length=50,
     )
     appointment_id = models.CharField(
-        _("status"),
+        _("appointment id"),
         max_length=50,
         blank=True,
     )
