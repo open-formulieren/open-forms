@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
+from openforms.appointments.utils import book_appointment_for_submission
 from openforms.registrations.tasks import (
     cleanup_temporary_files_for,
     generate_submission_report,
@@ -21,7 +22,6 @@ from openforms.registrations.tasks import (
 )
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...appointments.utils import book_appointment_for_submission
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionReport, SubmissionStep
@@ -44,12 +44,6 @@ from .serializers import (
 from .validation import CompletionValidationSerializer, validate_submission_completion
 
 logger = logging.getLogger(__name__)
-
-
-def book_appointment_for_submission(submission):
-    # TODO Remove Me!  Testing code until
-    #  https://github.com/open-formulieren/open-forms/pull/573 is merged
-    return None
 
 
 @extend_schema_view(
@@ -146,14 +140,10 @@ class SubmissionViewSet(
 
         transaction.on_commit(on_submission_commit)
 
-        appointment_id = book_appointment_for_submission(submission)
+        book_appointment_for_submission(submission)
 
         if hasattr(submission.form, "confirmation_email_template"):
-            transaction.on_commit(
-                lambda: send_confirmation_email(
-                    submission, appointment_id=appointment_id
-                )
-            )
+            transaction.on_commit(lambda: send_confirmation_email(submission))
 
         token = token_generator.make_token(submission_report)
         download_report_url = reverse(

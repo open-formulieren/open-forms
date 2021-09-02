@@ -5,7 +5,9 @@ from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.mail import send_mail
 
-from ..appointments.base import BasePlugin
+from openforms.appointments.utils import get_client
+
+from ..appointments.models import AppointmentInfo
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 
@@ -69,7 +71,7 @@ def remove_submission_uploads_from_session(
         remove_upload_from_session(attachment.temporary_file, session)
 
 
-def send_confirmation_email(submission: Submission, appointment_id=None):
+def send_confirmation_email(submission: Submission):
     email_template = submission.form.confirmation_email_template
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)
@@ -83,9 +85,13 @@ def send_confirmation_email(submission: Submission, appointment_id=None):
 
     content = email_template.render(submission)
 
-    if appointment_id:
-        # TODO Replace BasePlugin once https://github.com/open-formulieren/open-forms/pull/573 is merged
-        content += BasePlugin().get_appointment_details_html(appointment_id)
+    try:
+        client = get_client()
+        content += client.get_appointment_details_html(
+            submission.appointment_info.appointment_id
+        )
+    except (AppointmentInfo.DoesNotExist, ValueError):
+        pass
 
     send_mail(
         email_template.subject,

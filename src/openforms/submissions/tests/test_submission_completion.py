@@ -20,6 +20,9 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.appointments.tests.test_base import TestPlugin
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -27,7 +30,6 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ...appointments.tests.test_base import TestPlugin
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionReport, SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -374,7 +376,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         "openforms.submissions.api.viewsets.book_appointment_for_submission",
         return_value="123456789",
     )
-    @patch("openforms.submissions.utils.BasePlugin", return_value=TestPlugin())
+    @patch("openforms.submissions.utils.get_client", return_value=TestPlugin())
     @patch("openforms.registrations.tasks.register_submission.si")
     @patch("openforms.registrations.tasks.generate_submission_report.si")
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
@@ -411,6 +413,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             submission=submission, form_step=step2, data={"foo": "bar"}
         )
         self._add_submission_to_session(submission)
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.success,
+            appointment_id="123456789",
+            submission=submission,
+        )
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
         with capture_on_commit_callbacks(execute=True):
@@ -433,7 +440,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["test@test.nl"])
 
-        # Check that the template is used
+        # Check that appointment information is in email
         self.assertIn('<table border="0">', message.body)
         self.assertIn("Confirmation mail content", message.body)
         self.assertIn("Test product 1", message.body)
