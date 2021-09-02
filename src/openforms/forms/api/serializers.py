@@ -393,6 +393,15 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
     )
+    form_step = serializers.CharField(
+        required=False,  # validated against the action.type
+        allow_blank=True,
+        label=_("form step"),
+        help_text=_(
+            "The form step that will be affected by the action. This field is "
+            "optional if the action type is `{action_type}`, otherwise required."
+        ).format(action_type=LogicActionTypes.step_not_applicable),
+    )
     action = LogicActionPolymorphicSerializer()
 
     def validate(self, data: dict) -> dict:
@@ -401,6 +410,8 @@ class LogicComponentActionSerializer(serializers.Serializer):
         """
         action_type = data.get("action", {}).get("type")
         component = data.get("component")
+        form_step = data.get("form_step")
+
         if (
             action_type
             and action_type in LogicActionTypes.requires_component
@@ -408,6 +419,14 @@ class LogicComponentActionSerializer(serializers.Serializer):
         ):
             # raises validation error
             self.fields["component"].fail("blank")
+
+        if (
+            action_type
+            and action_type in LogicActionTypes.step_not_applicable
+            and not form_step
+        ):
+            # raises validation error
+            self.fields["form_step"].fail("blank")
 
         return data
 
