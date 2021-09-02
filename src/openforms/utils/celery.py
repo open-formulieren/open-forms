@@ -34,7 +34,7 @@ def maybe_retry_in_workflow(
     can track the total actual execution time and compare that to the configured
     timeout.
     """
-    should_retry = should_retry or default_should_retry()
+    should_retry = should_retry or default_should_retry
 
     def decorator(task):
         @wraps(task.run)
