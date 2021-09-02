@@ -441,6 +441,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(message.to, ["test@test.nl"])
 
         # Check that appointment information is in email
+        self.assertIn("Confirmation mail content", message.body)
         self.assertIn('<table border="0">', message.body)
         self.assertIn("Confirmation mail content", message.body)
         self.assertIn("Test product 1", message.body)
