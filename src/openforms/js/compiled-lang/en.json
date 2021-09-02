@@ -507,16 +507,16 @@
       "value": "Slug"
     }
   ],
-  "UKTqb8": [
-      {
-          "type": 0,
-          "value": "All Submissions Removal Limit"
-      }
-  ],
   "TjjvQL": [
     {
       "type": 0,
       "value": "days"
+    }
+  ],
+  "UKTqb8": [
+    {
+      "type": 0,
+      "value": "All Submissions Removal Limit"
     }
   ],
   "VQYmOD": [
@@ -737,16 +737,16 @@
       "value": "Steps and fields"
     }
   ],
-  "nMLlnT": [
-    {
-      "type": 0,
-      "value": "Sensitive data within the submissions will be deleted"
-    }
-  ],
   "mYYxJE": [
     {
       "type": 0,
       "value": "months"
+    }
+  ],
+  "nMLlnT": [
+    {
+      "type": 0,
+      "value": "Sensitive data within the submissions will be deleted"
     }
   ],
   "naInSZ": [

@@ -379,15 +379,15 @@
     "description": "Form slug field label",
     "originalDefault": "Slug"
   },
-  "UKTqb8": {
-      "defaultMessage": "All Submissions Removal Limit",
-      "description": "All Submissions Removal Limit field label",
-      "originalDefault": "All Submissions Removal Limit"
-  },
   "TjjvQL": {
     "defaultMessage": "days",
     "description": "Logic trigger number of days",
     "originalDefault": "days"
+  },
+  "UKTqb8": {
+    "defaultMessage": "All Submissions Removal Limit",
+    "description": "All Submissions Removal Limit field label",
+    "originalDefault": "All Submissions Removal Limit"
   },
   "VQYmOD": {
     "defaultMessage": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute.",
@@ -554,17 +554,15 @@
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
   },
-<<<<<<< HEAD
-  "nMLlnT": {
-    "defaultMessage": "Sensitive data within the submissions will be deleted",
-    "description": "make_anonymous removal method label",
-    "originalDefault": "Sensitive data within the submissions will be deleted"
-=======
   "mYYxJE": {
     "defaultMessage": "months",
     "description": "Logic trigger number of months",
     "originalDefault": "months"
->>>>>>> 161b1d36... :dizzy: [#183] Compiled translation messages
+  },
+  "nMLlnT": {
+    "defaultMessage": "Sensitive data within the submissions will be deleted",
+    "description": "make_anonymous removal method label",
+    "originalDefault": "Sensitive data within the submissions will be deleted"
   },
   "naInSZ": {
     "defaultMessage": "Toggle DSL preview",
