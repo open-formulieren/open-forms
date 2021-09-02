@@ -8,6 +8,7 @@ from privates.views import PrivateMediaView
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
+from ..appointments.models import AppointmentInfo
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (
@@ -82,17 +83,26 @@ class SubmissionAdmin(admin.ModelAdmin):
     get_registration_backend.short_description = _("Registration Backend")
 
     def get_appointment_status(self, obj):
-        return obj.appointment_info.status if obj.appointment_info else ""
+        try:
+            return obj.appointment_info.status
+        except AppointmentInfo.DoesNotExist:
+            return ""
 
     get_appointment_status.short_description = _("Appointment Status")
 
     def get_appointment_id(self, obj):
-        return obj.appointment_info.appointment_id if obj.appointment_info else ""
+        try:
+            return obj.appointment_info.appointment_id
+        except AppointmentInfo.DoesNotExist:
+            return ""
 
     get_appointment_id.short_description = _("Appointment Id")
 
     def get_appointment_error_information(self, obj):
-        return obj.appointment_info.error_information if obj.appointment_info else ""
+        try:
+            return obj.appointment_info.error_information
+        except AppointmentInfo.DoesNotExist:
+            return ""
 
     get_appointment_error_information.short_description = _(
         "Appointment Error Information"
