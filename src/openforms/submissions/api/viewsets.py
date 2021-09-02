@@ -92,7 +92,7 @@ class SubmissionViewSet(
         summary=_("Complete a submission"),
         request=None,
         responses={
-            200: SubmissionCompletionSerializer,
+            204: None,
             400: CompletionValidationSerializer,
         },
     )
@@ -104,17 +104,27 @@ class SubmissionViewSet(
 
         Submission completion requires that all required steps are completed.
 
-        Once a submission is completed, it's removed from the session. This means it's
-        no longer possible to change or read the submission data (including individual
-        steps).
+        Note that the processing of the submission runs in the background, and you
+        should periodically check the submission status endpoint to check the state.
+        Background processing makes sure that:
 
-        The submission is persisted to the configured backend.
+        * potential appointments are registered
+        * a report PDF is generated
+        * the submission is persisted to the configured backend
+        * payment is initiated if relevant
+
+        Once a submission is done processing, it's scheduled to be removed from the
+        session. This means it's no longer possible to change or read the submission
+        data (including individual steps).
+
+        TODO: give some leeway? add endpoint to trigger cleanup immediately?
         """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
         submission.completed_on = timezone.now()
 
         submission.save()
+        # TODO: implement in celery tasks in cleanup (see ./tasks/__init__.py)
         # remove_submission_from_session(submission, self.request.session)
         # remove_submission_uploads_from_session(submission, self.request.session)
 
@@ -122,27 +132,9 @@ class SubmissionViewSet(
         # stored, start processing the completion.
         transaction.on_commit(lambda: on_completion(submission.id))
 
+        # TODO: move this
         book_appointment_for_submission(submission)
-
-        # token = token_generator.make_token(submission_report)
-        # download_report_url = reverse(
-        #     "api:submissions:download-submission",
-        #     kwargs={"report_id": submission_report.id, "token": token},
-        # )
-        # report_status_url = reverse(
-        #     "api:submissions:submission-report-status",
-        #     kwargs={"report_id": submission_report.id, "token": token},
-        # )
-
-        # serializer = SubmissionCompletionSerializer(
-        #     instance={
-        #         "download_url": request.build_absolute_uri(download_report_url),
-        #         "report_status_url": request.build_absolute_uri(report_status_url),
-        #         "confirmation_page_content": submission.render_confirmation_page(),
-        #     },
-        # )
-        # return Response(serializer.data)
-        return Response({"status_url": "#TODO"})
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
         summary=_("Get the submission processing status"),
@@ -165,7 +157,7 @@ class SubmissionViewSet(
         information on the status of this async processing.
         """
         submission = self.get_object()
-        status = SubmissionProcessingStatus(submission)
+        status = SubmissionProcessingStatus(request, submission)
         serializer = SubmissionProcessingStatusSerializer(instance=status)
         return Response(serializer.data)
 
