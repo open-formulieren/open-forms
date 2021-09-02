@@ -25,33 +25,33 @@ class RetrieveReportBaseView(GenericAPIView):
     lookup_url_kwarg = "report_id"
 
 
-@extend_schema(
-    summary=_("Get PDF report generation status"),
-    description=_(
-        "On submission completion, a PDF report is generated with the submitted form "
-        "data. This is done in a background job. You can use this endpoint to check "
-        "the status of this PDF generation. The endpoint requires a token which is "
-        "tied to the submission from the session. Once the PDF is downloaded, this "
-        "token is invalidated. The token also automatically expires after "
-        "{expire_days} day(s)."
-    ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
-)
-class CheckReportStatusView(RetrieveReportBaseView):
-    authentication_classes = ()
-    serializer_class = ReportStatusSerializer
+# @extend_schema(
+#     summary=_("Get PDF report generation status"),
+#     description=_(
+#         "On submission completion, a PDF report is generated with the submitted form "
+#         "data. This is done in a background job. You can use this endpoint to check "
+#         "the status of this PDF generation. The endpoint requires a token which is "
+#         "tied to the submission from the session. Once the PDF is downloaded, this "
+#         "token is invalidated. The token also automatically expires after "
+#         "{expire_days} day(s)."
+#     ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
+# )
+# class CheckReportStatusView(RetrieveReportBaseView):
+#     authentication_classes = ()
+#     serializer_class = ReportStatusSerializer
 
-    def get(self, request, report_id: int, token: str, *args, **kwargs):
-        submission_report = self.get_object()
+#     def get(self, request, report_id: int, token: str, *args, **kwargs):
+#         submission_report = self.get_object()
 
-        # Check that the token is valid
-        valid = token_generator.check_token(submission_report, token)
-        if not valid:
-            raise PermissionDenied
+#         # Check that the token is valid
+#         valid = token_generator.check_token(submission_report, token)
+#         if not valid:
+#             raise PermissionDenied
 
-        # Check if the celery task finished creating the report
-        async_result = submission_report.get_celery_task()
-        serializer = self.serializer_class(instance=async_result)
-        return Response(serializer.data)
+#         # Check if the celery task finished creating the report
+#         async_result = submission_report.get_celery_task()
+#         serializer = self.serializer_class(instance=async_result)
+#         return Response(serializer.data)
 
 
 @extend_schema(

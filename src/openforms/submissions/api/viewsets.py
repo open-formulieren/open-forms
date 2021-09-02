@@ -1,7 +1,7 @@
 import logging
 
+from django.conf import settings
 from django.db import transaction
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -19,10 +19,10 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from ...appointments.utils import book_appointment_for_submission
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
-from ..models import Submission, SubmissionReport, SubmissionStep
+from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
+from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
-from ..tokens import token_generator
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
@@ -32,6 +32,7 @@ from .permissions import ActiveSubmissionPermission
 from .serializers import (
     FormDataSerializer,
     SubmissionCompletionSerializer,
+    SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
     SubmissionStepSerializer,
     SubmissionSuspensionSerializer,
@@ -114,8 +115,8 @@ class SubmissionViewSet(
         submission.completed_on = timezone.now()
 
         submission.save()
-        remove_submission_from_session(submission, self.request.session)
-        remove_submission_uploads_from_session(submission, self.request.session)
+        # remove_submission_from_session(submission, self.request.session)
+        # remove_submission_uploads_from_session(submission, self.request.session)
 
         # after committing the database transaction where the submissions completion is
         # stored, start processing the completion.
@@ -142,6 +143,31 @@ class SubmissionViewSet(
         # )
         # return Response(serializer.data)
         return Response({"status_url": "#TODO"})
+
+    @extend_schema(
+        summary=_("Get the submission processing status"),
+        request=None,
+        responses={
+            200: SubmissionProcessingStatusSerializer,
+            # TODO: 403, 401, 429
+        },
+    )
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=() if settings.DEBUG else (ActiveSubmissionPermission,),
+    )  # FIXME: remove permission classes here for debug
+    def status(self, request, *args, **kwargs):
+        """
+        Obtain the current submission processing status, after completing it.
+
+        The submission is processed asynchronously. Poll this endpoint to receive
+        information on the status of this async processing.
+        """
+        submission = self.get_object()
+        status = SubmissionProcessingStatus(submission)
+        serializer = SubmissionProcessingStatusSerializer(instance=status)
+        return Response(serializer.data)
 
     @extend_schema(
         summary=_("Suspend a submission"),

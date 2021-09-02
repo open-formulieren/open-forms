@@ -6,6 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import celery.states
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -319,3 +320,50 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             kwargs={"uuid": instance.uuid},
             request=request,
         )
+
+
+class SubmissionProcessingStatusSerializer(serializers.Serializer):
+    state = serializers.ChoiceField(
+        label=_("background task state"),
+        choices=celery.states.ALL_STATES,
+        default=celery.states.PENDING,
+        help_text=_(
+            "The async task state, managed by the async task queue. More detailed "
+            "information is available once the state is a completion state. \n\n"
+            "Ready states are: {ready_states}"
+        ).format(ready_states=", ".join(celery.states.READY_STATES)),
+    )
+    # error states
+    processing_aborted = serializers.BooleanField(
+        label=_("processing aborted?"),
+        default=False,
+        help_text=_(
+            "Whether the processing was aborted and requires the user to return to "
+            "the form, possibly correcting/changing some data."
+        ),
+    )
+    error_message = serializers.CharField(
+        label=_("Error information"),
+        required=False,
+        help_text=_(
+            "Error feedback in case the processing did not complete successfully."
+        ),
+    )
+
+    # success states
+    # TODO: apply HTML sanitation here with bleach
+    confirmation_page_content = serializers.CharField(
+        label=_("Confirmation page content"),
+        required=False,
+        help_text=_("Body text of the confirmation page. May contain HTML!"),
+    )
+    report_download_url = serializers.URLField(
+        label=_("Report download URL"),
+        required=False,
+        help_text=_("Download URL for the generated PDF report."),
+    )
+    payment_url = serializers.URLField(
+        label=_("Payment URL"),
+        required=False,
+        help_text=_("URL to the payment provider"),
+    )
