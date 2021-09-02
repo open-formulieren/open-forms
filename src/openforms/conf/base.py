@@ -556,6 +556,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.data_removal.tasks.make_sensitive_data_anonymous",
         "schedule": crontab(minute=0, hour=2),
     },
+    "cleanup-unclaimed-temp-files": {
+        "task": "openforms.submissions.tasks.cleanup_unclaimed_temporary_files",
+        "schedule": crontab(minute=30, hour=3),
+    },
 }
 
 CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
