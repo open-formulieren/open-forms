@@ -1,4 +1,5 @@
-import {Formio, Utils} from 'formiojs';
+import {Formio} from 'formiojs';
+import {getContextComponentsWithType} from '../../utils/helpers';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 const Select = Formio.Components.components.select;
@@ -57,7 +58,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         },
@@ -77,7 +78,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         },
@@ -91,7 +92,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         },
@@ -111,7 +112,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         },
@@ -125,7 +126,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         },
@@ -139,7 +140,7 @@ const APPOINTMENT = {
             valueProperty: 'value',
             data: {
                 custom(context) {
-                    return Utils.getContextComponents(context);
+                    return getContextComponentsWithType(context, 'select');
                 }
             }
         }

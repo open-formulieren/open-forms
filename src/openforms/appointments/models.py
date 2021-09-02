@@ -35,6 +35,10 @@ class AppointmentInfo(models.Model):
     submission = models.OneToOneField(
         "submissions.Submission",
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="appointment_info",
         help_text=_("The submission that made the appointment"),
     )
+
+    class Meta:
+        verbose_name = _("Appointment information")
+        verbose_name_plural = _("Appointment information")
