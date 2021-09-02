@@ -190,7 +190,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
             {"product_id": 1, "location_id": 1},
         ]:
             with self.subTest(query_param=query_param):
-                response = self.client.get(self.endpoint)
+                response = self.client.get(self.endpoint, query_param)
                 self.assertEqual(response.status_code, 400)
 
     def test_get_times_returns_403_when_no_active_sessions(self):
