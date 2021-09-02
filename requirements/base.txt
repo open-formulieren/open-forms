@@ -215,7 +215,7 @@ lxml==4.6.3
     #   -r requirements/base.in
     #   xmlsec
     #   zeep
-git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
+maykin-django-two-factor-auth[phonenumbers]==2.0.3
     # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in

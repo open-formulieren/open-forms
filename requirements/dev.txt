@@ -499,7 +499,7 @@ markupsafe==1.1.1
     #   -r requirements/ci.txt
     #   jinja2
     #   sphinx
-git+https://github.com/maykinmedia/django-two-factor-auth.git@549bef1586eaa9088058352889e0747889090bba#egg=maykin-django-two-factor-auth[phonenumbers]
+maykin-django-two-factor-auth[phonenumbers]==2.0.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
