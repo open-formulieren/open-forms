@@ -10,9 +10,8 @@ integrating with Open Forms.
 .. toctree::
    :maxdepth: 3
 
-   registration_plugins
-   prefill_plugins
-   appointment_plugins
+   submissions
+   plugins/index
    manual_testing
    sdk/index
    profiling
