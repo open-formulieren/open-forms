@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
+from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..celery import app
 from .exceptions import RegistrationFailed
@@ -15,9 +16,13 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task(
-    autoretry_For=(RegistrationFailed,),
+@maybe_retry_in_workflow(
     retry_backoff=True,
+    timeout=10,
+    retry_for=(RegistrationFailed,),
+)
+@app.task(
+    autoretry_for=(RegistrationFailed,),
     max_retries=settings.SUBMISSION_REGISTRATION_MAX_RETRIES,
 )
 def register_submission(submission_id: int) -> Optional[dict]:
