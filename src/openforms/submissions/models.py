@@ -27,7 +27,6 @@ from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from ..payments.constants import PaymentStatus
-from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
 from .query import SubmissionQuerySet
 
