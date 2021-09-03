@@ -85,13 +85,12 @@ def send_confirmation_email(submission: Submission):
 
     content = email_template.render(submission)
 
-    try:
+    if hasattr(submission, "appointment_info"):
         client = get_client()
         content += client.get_appointment_details_html(
             submission.appointment_info.appointment_id
         )
-    except (AppointmentInfo.DoesNotExist, ValueError):
-        pass
+        content += client.get_appointment_links_html(submission)
 
     send_mail(
         email_template.subject,

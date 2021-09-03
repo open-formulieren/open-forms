@@ -222,7 +222,7 @@ class VerifyCancelAppointmentLinkView(APIView):
             # Displayed to user in SDK
             time = submission.appointment_info.start_time.strftime("%-d+%B+om+%H.%M")
         else:
-            time = ''
+            time = ""
 
         return HttpResponseRedirect(
             redirect_to=f"{config.sdk_website}/afspraak-annuleren?time={time}"
