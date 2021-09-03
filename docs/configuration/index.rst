@@ -10,3 +10,4 @@ Configuration
    bag
    ogone
    oidc
+   registration/stufzds
