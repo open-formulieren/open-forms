@@ -1,8 +1,10 @@
 from datetime import datetime
+from unittest.mock import patch
 
-from django.conf import settings
 from django.test import TestCase
+from django.urls import reverse
 
+from ...submissions.tests.factories import SubmissionFactory
 from ..base import (
     AppointmentDetails,
     AppointmentLocation,
@@ -47,19 +49,21 @@ class BasePluginTests(TestCase):
         self.assertIn("Some", result)
         self.assertIn("<h1>Data</h1>", result)
 
-    def test_get_appointment_links_html(self):
-        identifier = "1234567890"
-        submission_uuid = "13ef9ec2-36f4-4041-b82d-1dffb4cb55fc"
+    @patch("openforms.appointments.base.submission_appointment_token_generator")
+    def test_get_appointment_links_html(self, token_generator_mock):
+        submission = SubmissionFactory.create()
+        fake_token = "fake-token"
 
-        result = self.plugin.get_appointment_links_html(identifier, submission_uuid)
+        token_generator_mock.make_token.return_value = fake_token
 
-        self.assertIn(
-            f'<a href="{settings.SDK_BASE_URL}/afspraak-annuleren'
-            f'?identifier={identifier}&amp;uuid={submission_uuid}&amp;time=1+January+om+12.00">',
-            result,
+        result = self.plugin.get_appointment_links_html(submission)
+
+        cancel_url = reverse(
+            "api:appointments-verify-cancel-appointment-link",
+            kwargs={"token": fake_token, "submission_id": submission.id},
         )
+
         self.assertIn(
-            f'<a href="{settings.SDK_BASE_URL}/afspraak-wijzigen'
-            f'?identifier={identifier}&amp;uuid={submission_uuid}&amp;time=1+January+om+12.00">',
+            cancel_url,
             result,
         )

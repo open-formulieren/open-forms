@@ -3,13 +3,16 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from django.conf import settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.submissions.models import Submission
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+
+from .tokens import submission_appointment_token_generator
 
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -222,21 +225,15 @@ class BasePlugin:
             "appointments/appointment_details.html", {"appointment": details}
         )
 
-    def get_appointment_links_html(self, identifier: str, submission_uuid: str) -> str:
+    def get_appointment_links_html(self, submission: Submission) -> str:
 
-        details = self.get_appointment_details(identifier)
-        time = details.start_at.strftime("%-d+%B+om+%H.%M")
-
-        cancel_url = (
-            f"{settings.SDK_BASE_URL}/afspraak-annuleren"
-            f"?identifier={identifier}&uuid={submission_uuid}&time={time}"
-        )
-        change_url = (
-            f"{settings.SDK_BASE_URL}/afspraak-wijzigen"
-            f"?identifier={identifier}&uuid={submission_uuid}&time={time}"
+        token = submission_appointment_token_generator.make_token(submission)
+        cancel_url = reverse(
+            "api:appointments-verify-cancel-appointment-link",
+            kwargs={"token": token, "submission_id": submission.id},
         )
 
         return render_to_string(
             "appointments/appointment_links.html",
-            {"cancel_url": cancel_url, "change_url": change_url},
+            {"cancel_url": cancel_url},
         )
