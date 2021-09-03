@@ -5,13 +5,28 @@ Configuration
 
 .. toctree::
    :maxdepth: 1
-   :caption: Further reading
+   :caption: Authentication plugins
+
+   oidc
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Prefill plugins
 
    bag
-   ogone
-   oidc
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Registration plugins
+
    registration/objects
    registration/stufzds
    registration/zgw
    registration/email
    registration/local
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Payment plugins
+
+   ogone
