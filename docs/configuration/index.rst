@@ -11,3 +11,4 @@ Configuration
    ogone
    oidc
    registration/stufzds
+   registration/zgw
