@@ -47,7 +47,7 @@ class BasePluginTests(TestCase):
         self.assertIn("Some", result)
         self.assertIn("<h1>Data</h1>", result)
 
-    def get_appointment_links_html(self):
+    def test_get_appointment_links_html(self):
         identifier = "1234567890"
         submission_uuid = "13ef9ec2-36f4-4041-b82d-1dffb4cb55fc"
 
