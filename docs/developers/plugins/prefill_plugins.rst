@@ -22,30 +22,6 @@ prefill option for a form field.
 
 You can find an example implementation in :mod:`openforms.prefill.contrib.demo`.
 
-Registration
-------------
-
-Plugins are implemented as Django apps / Python packages. The
-``openforms.prefill.contrib.demo`` plugin acts as an example.
-
-1. Create the python package in ``openforms.prefill.contrib.<vendor>``
-2. Ensure you have an AppConfig_ defined in this package, e.g.:
-
-   .. code-block:: python
-
-       class MyPlugin(AppConfig):
-           name = "openforms.prefill.contrib.<vendor>"
-           verbose_name = "My <vendor> plugin"
-
-           def ready(self):
-               from . import plugin  # noqa
-
-   It's important to import the plugin as part of the ``ready`` hook of the ``AppConfig``,
-   as this ensures that the plugin is added to the registry.
-
-3. Add the application to ``settings.INSTALLED_APPS``, this will cause the ``AppConfig``
-   to be loaded.
-
 Implementation
 --------------
 
@@ -61,7 +37,7 @@ There are two relevant public methods:
     the actual implementation of the prefill functionality. This is invoked inside the
     request-response cycle of certain API endpoints.
 
-Public python API
+Public Python API
 =================
 
 **Plugin base class**
@@ -73,5 +49,3 @@ Public python API
 
 .. automodule:: openforms.prefill
    :members:
-
-.. _AppConfig: https://docs.djangoproject.com/en/2.2/ref/applications/
