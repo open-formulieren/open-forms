@@ -54,7 +54,7 @@ jobs:
           black --check src/openforms docs
 
   migrations:
-    name: Check for model changes not present in the migrations
+    name: Check for model changes not present in the migrations or default_admin_index fixture
     runs-on: ubuntu-latest
 
     services:
@@ -82,6 +82,17 @@ jobs:
       - name: Run manage.py makemigrations --check --dry-run
         run: |
           src/manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SECRET_KEY: dummy
+          DB_USER: postgres
+          DB_NAME: postgres
+          DB_PASSWORD: ''
+      - name: Load default_admin_index fixture and run manage.py check_admin_index
+        run: |
+          src/manage.py migrate
+          src/manage.py loaddata default_admin_index
+          src/manage.py check_admin_index
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
