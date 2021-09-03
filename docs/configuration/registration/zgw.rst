@@ -1,8 +1,8 @@
 .. _configuration_registration_zgw:
 
-=======================
-ZGW API's configuration
-=======================
+=========
+ZGW API's
+=========
 
 The ZGW (Zaak Gericht Werken) API's are a suite of REST based Zaak services. Open Forms can be
 configured to access these API's to register form submissions.

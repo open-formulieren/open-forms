@@ -1,8 +1,8 @@
 .. _configuration_registration_objects:
 
-==========================
-Objecten API configuration
-==========================
+============
+Objecten API
+============
 
 The Objecten API is a suite of REST based object registration services. Open Forms can be
 configured to access these API's to register form submissions.

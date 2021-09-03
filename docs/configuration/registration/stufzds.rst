@@ -1,8 +1,8 @@
 .. _configuration_registration_stufzds:
 
-======================
-StUF-ZDS configuration
-======================
+========
+StUF-ZDS
+========
 
 The StUF-ZDS (StUF Zaak- en Documentservices) is a SOAP based Zaak and Documents backend. Open Forms can be
 configured to access this API to register form submissions.
