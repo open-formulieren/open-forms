@@ -160,7 +160,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
         extra_context = {
-            "data": submission.data_with_component_type,
+            "data": submission.get_ordered_data_with_component_type(),
             "attachments": submission.get_merged_attachments(),
             "image_components": IMAGE_COMPONENTS,
         }
