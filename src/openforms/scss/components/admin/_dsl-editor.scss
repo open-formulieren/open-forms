@@ -10,6 +10,8 @@
       margin-right: 0.5em;
     }
 
+    margin-bottom: 0.5em;
+
     // account for possibly long labels
     select,
     input {
@@ -17,4 +19,8 @@
     }
   }
 
+  &__node-group {
+    display: flex;
+    align-items: center;
+  }
 }

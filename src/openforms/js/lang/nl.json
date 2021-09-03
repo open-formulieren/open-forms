@@ -59,6 +59,11 @@
     "description": "add step button",
     "originalDefault": "Add step"
   },
+  "5uaKBM": {
+    "defaultMessage": "minus",
+    "description": "\"-\" operator description",
+    "originalDefault": "minus"
+  },
   "5zieWh": {
     "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
     "description": "Form step name field help text",
@@ -148,6 +153,11 @@
     "defaultMessage": "Formulier",
     "description": "Form fields tab title",
     "originalDefault": "Form"
+  },
+  "BrGg65": {
+    "defaultMessage": "plus",
+    "description": "\"+\" operator description",
+    "originalDefault": "plus"
   },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
@@ -469,6 +479,11 @@
     "description": "\"<\" operator description",
     "originalDefault": "is less than"
   },
+  "inhTXo": {
+    "defaultMessage": "years",
+    "description": "Logic trigger number of years",
+    "originalDefault": "years"
+  },
   "ixiVhj": {
     "defaultMessage": "{name} [nieuw]",
     "description": "form step label in nav",
@@ -498,6 +513,11 @@
     "defaultMessage": "disabled",
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
+  },
+  "mH3X/G": {
+    "defaultMessage": "today",
+    "description": "\"today\" operand type",
+    "originalDefault": "today"
   },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",

@@ -14,6 +14,7 @@ import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import {useOnChanged} from './hooks';
+import Today from './Today';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -81,7 +82,11 @@ const parseJsonLogic = (logic) => {
     }
 
     // first value should be the reference to the component
-    const component = values[0].var;
+    let component = values[0].date ? values[0].date.var : values[0].var;
+    if (Array.isArray(component)) {
+        // Case where a default is defined
+        component = component[0];
+    }
 
     // check if we're using a literal value, or a component reference
     const compareValue = values[1];
@@ -93,6 +98,12 @@ const parseJsonLogic = (logic) => {
         if (op === 'var') {
             operandType = 'component';
             operand = compareValue.var;
+        } else if (op === 'date') {
+            operandType = compareValue.date.var ? 'component' : 'literal';
+            operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
+        } else if (op === '+' || op === '-') {
+            operandType = 'today';
+            operand = compareValue;
         } else {
             console.warn(`Unsupported operator: ${op}, can't derive operandType`);
         }
@@ -171,7 +182,11 @@ const Trigger = ({ name, logic, onChange }) => {
                     onChange={onTriggerChange}
                 />
             );
-            compareValue = operand;
+            if (componentType === 'date') {
+                compareValue = {date: operand};
+            } else {
+                compareValue = operand;
+            }
             break;
         }
         case 'component': {
@@ -184,7 +199,32 @@ const Trigger = ({ name, logic, onChange }) => {
                     filter={(comp) => (comp.type === componentType)}
                 />
             );
-            compareValue = {"var": operand};
+            if (componentType === 'date') {
+                compareValue = {date: {var: operand}};
+            } else {
+                compareValue = {var: operand};
+            }
+            break;
+        }
+        case 'today': {
+            valueInput = (
+                <Today
+                    name="operand"
+                    onChange={onTriggerChange}
+                    value={operand}
+                />
+            );
+
+            let sign, years;
+            if (operand) {
+                sign = jsonLogic.get_operator(operand);
+                years = operand[sign][1]['years'] || 0;
+            } else {
+                sign = '+';
+                years = 0;
+            }
+            compareValue = {};
+            compareValue[sign] = [{today: []}, {years: years}];
             break;
         }
         case '': { // nothing selected yet
@@ -195,9 +235,12 @@ const Trigger = ({ name, logic, onChange }) => {
         }
     }
 
+    const firstOperand = componentType === 'date' ?
+        {date: {var: triggerComponent}} : {var: triggerComponent};
+
     const jsonLogicFromState = {
         [operator]: [
-            {var: triggerComponent},
+            firstOperand,
             compareValue,
         ],
     };
@@ -242,6 +285,7 @@ const Trigger = ({ name, logic, onChange }) => {
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
+                                    componentType={componentType}
                                     onChange={onTriggerChange}
                                 />
                             </div>

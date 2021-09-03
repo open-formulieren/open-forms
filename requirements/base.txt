@@ -200,8 +200,6 @@ isodate==0.6.0
     #   zeep
 josepy==1.8.0
     # via mozilla-django-oidc
-git+https://github.com/nadirizr/json-logic-py.git@5fda9125eab4178f8f81c7779291940e31e87bab#egg=json_logic
-    # via -r requirements/base.in
 jsonschema==3.2.0
     # via
     #   drf-jsonschema
@@ -216,6 +214,8 @@ lxml==4.6.3
     #   xmlsec
     #   zeep
 maykin-django-two-factor-auth[phonenumbers]==2.0.3
+    # via -r requirements/base.in
+git+https://github.com/maykinmedia/json-logic-py.git@66e5530d4ee4bfb2d9d95c810c4c9e61ef67b558#egg=maykin-json-logic-py
     # via -r requirements/base.in
 mozilla-django-oidc-db==0.4.0
     # via -r requirements/base.in
@@ -311,7 +311,6 @@ six==1.15.0
     #   furl
     #   html5lib
     #   isodate
-    #   json-logic
     #   jsonschema
     #   mozilla-django-oidc
     #   orderedmultidict
