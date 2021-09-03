@@ -208,7 +208,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
-        evaluate_form_logic(instance, instance.submission.data)
+        evaluate_form_logic(instance.submission, instance, instance.submission.data)
         return super().to_representation(instance)
 
 

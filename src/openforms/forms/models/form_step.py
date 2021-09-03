@@ -7,7 +7,6 @@ from ordered_model.models import OrderedModel
 
 from openforms.utils.fields import StringUUIDField
 
-from ..constants import AvailabilityOptions
 from .utils import literal_getter
 
 

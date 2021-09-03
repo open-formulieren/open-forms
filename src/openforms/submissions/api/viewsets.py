@@ -6,7 +6,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+    inline_serializer,
+)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -288,8 +293,18 @@ class SubmissionStepViewSet(
         return Response(serializer.data, status=status_code)
 
     @extend_schema(
-        description=_("Apply/check form logic"),
+        summary=_("Apply/check form logic"),
+        description=_("Apply/check the logic rules specified on the form."),
         request=FormDataSerializer,
+        responses={
+            200: inline_serializer(
+                "SubmissionStateLogicSerializer",
+                {
+                    "submission": SubmissionSerializer(),
+                    "step": SubmissionStepSerializer(),
+                },
+            )
+        },
     )
     @action(detail=True, methods=["post"], url_path="_check_logic")
     def logic_check(self, request, *args, **kwargs):
@@ -304,7 +319,18 @@ class SubmissionStepViewSet(
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
             merged_data = {**submission_step.submission.data, **data}
-            evaluate_form_logic(submission_step, merged_data)
+            evaluate_form_logic(
+                submission_step.submission, submission_step, merged_data
+            )
 
-        serializer = self.get_serializer(instance=submission_step)
-        return Response(serializer.data)
+        submission_serializer = SubmissionSerializer(
+            instance=submission_step.submission, context={"request": request}
+        )
+        submission_step_serializer = self.get_serializer(instance=submission_step)
+
+        return Response(
+            {
+                "submission": submission_serializer.data,
+                "step": submission_step_serializer.data,
+            }
+        )

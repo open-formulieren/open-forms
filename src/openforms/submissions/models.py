@@ -20,7 +20,6 @@ from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
-from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
@@ -44,7 +43,7 @@ class SubmissionState:
 
         The next step is the step:
         - after the last submitted step
-        - that is available
+        - that is applicable
 
         It does not consider "skipped" steps.
 
@@ -65,6 +64,16 @@ class SubmissionState:
             if not step.completed and step.is_applicable
         )
         return next(candidates, None)
+
+    def get_submission_step(self, form_step_uuid: str) -> "SubmissionStep":
+        return next(
+            (
+                step
+                for step in self.submission_steps
+                if step.form_step.uuid == form_step_uuid
+            ),
+            None,
+        )
 
 
 def _get_config_field(field: str) -> str:
