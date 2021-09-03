@@ -52,6 +52,8 @@ Common settings
 * ``SDK_BASE_URL``: URL for the retrieving Open Forms SDK files.
   Defaults to ``https://open-forms.test.maykin.opengem.nl/sdk``.
 
+.. _email-settings:
+
 Email settings
 --------------
 

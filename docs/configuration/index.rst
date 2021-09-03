@@ -13,3 +13,5 @@ Configuration
    registration/objects
    registration/stufzds
    registration/zgw
+   registration/email
+   registration/local
