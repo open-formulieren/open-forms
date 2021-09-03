@@ -31,6 +31,12 @@ class AppointmentInfo(models.Model):
         _("error information"),
         blank=True,
     )
+    start_time = models.DateTimeField(
+        _("start time"),
+        blank=True,
+        null=True,
+        help_text=_("Start time of the appointment"),
+    )
 
     submission = models.OneToOneField(
         "submissions.Submission",

@@ -86,7 +86,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         ).date(),
     )
     start_at = datetime.strptime(
-        appointment_data["appStartTime"][:-6], "%Y-%m-%dT%H:%M:%S"
+        appointment_data["appStartTime"], "%Y-%m-%dT%H:%M:%S%z"
     )
 
     try:
@@ -98,6 +98,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             status=AppointmentDetailsStatus.success,
             appointment_id=appointment_id,
             submission=submission,
+            start_time=start_at,
         )
     except AppointmentCreateFailed as e:
         AppointmentInfo.objects.create(
