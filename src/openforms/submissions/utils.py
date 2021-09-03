@@ -5,6 +5,9 @@ from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.mail import send_mail
 
+from openforms.appointments.models import AppointmentInfo
+from openforms.appointments.utils import get_client
+
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 
@@ -81,6 +84,14 @@ def send_confirmation_email(submission: Submission):
         return
 
     content = email_template.render(submission)
+
+    try:
+        client = get_client()
+        content += client.get_appointment_details_html(
+            submission.appointment_info.appointment_id
+        )
+    except (AppointmentInfo.DoesNotExist, ValueError):
+        pass
 
     send_mail(
         email_template.subject,

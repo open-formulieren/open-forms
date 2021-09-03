@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
+from openforms.appointments.utils import book_appointment_for_submission
 from openforms.registrations.tasks import (
     cleanup_temporary_files_for,
     generate_submission_report,
@@ -21,7 +22,6 @@ from openforms.registrations.tasks import (
 )
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...appointments.utils import book_appointment_for_submission
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionReport, SubmissionStep
