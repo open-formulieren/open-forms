@@ -8,11 +8,11 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
+from openforms.api.serializers import ExceptionSerializer
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.models import Submission
 from openforms.utils.api.views import ListMixin
 
-from ...api.serializers import ExceptionSerializer
 from ..api.serializers import (
     DateInputSerializer,
     DateSerializer,
