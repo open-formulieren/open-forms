@@ -38,4 +38,4 @@ configured to access this API to register form submissions.
 9. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
 10. Click **Save**
 
-The StUF-ZDS configuration is now completed.
+The StUF-ZDS configuration is now completed and can be selected as registration backend in the form builder.

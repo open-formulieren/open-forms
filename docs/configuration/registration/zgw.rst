@@ -20,19 +20,19 @@ configured to access these API's to register form submissions.
    a. Click **Service toevoegen**.
    b. Fill out the form for each of the three components:
 
-      - **Label**: *For example:* ``Zaken``, ``Documenten`` or ``Zaaktypen``
-      - **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
-      - **API root url**: The root of this API, *for example* ``https://test.openzaak.nl/zaken/api/v1/``
+      * **Label**: *For example:* ``Zaken``, ``Documenten`` or ``Zaaktypen``
+      * **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
+      * **API root url**: The root of this API, *for example* ``https://test.openzaak.nl/zaken/api/v1/``
 
-      - **Client ID**: Fill the value provided by the backend service *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
-      - **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
-      - **Authorization type**: Select the option: ``ZGW client_id + secret``
-      - **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
+      * **Client ID**: Fill the value provided by the backend service *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
+      * **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
+      * **Authorization type**: Select the option: ``ZGW client_id + secret``
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
         *for example:* ``https://test.openzaak.nl/zaken/api/v1/schema/openapi.yaml``
 
-      - **NLX**: Support for NLX can be selected here if enabled in the installation
-      - **User ID**: Audit trail user ID, usually same as the Client ID
-      - **User representation**: *For example:* ``Open Zaak``
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+      * **User ID**: Audit trail user ID, usually same as the Client ID
+      * **User representation**: *For example:* ``Open Forms``
 
    c. Click **Opslaan** and repeat to create configuration for the other components.
 
@@ -53,6 +53,6 @@ configured to access these API's to register form submissions.
 
 7. Click **Opslaan**
 
-The ZGW API's configuration is now completed.
+The ZGW API's configuration is now completed and can be selected as registration backend in the form builder.
 
 

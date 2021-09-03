@@ -10,5 +10,6 @@ Configuration
    bag
    ogone
    oidc
+   registration/objects
    registration/stufzds
    registration/zgw
