@@ -1,4 +1,4 @@
-.. _configuration_ogone:
+.. _configuration_payment_ogone:
 
 ==============
 Ingenico Ogone

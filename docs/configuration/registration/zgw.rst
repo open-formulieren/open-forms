@@ -9,7 +9,7 @@ configured to access these API's to register form submissions.
 
 
 1. In Open Forms, navigate to: **Configuration** > **Services**
-2. Here we need to configure credentials for three related ZGW API's.
+2. Here we need to configure credentials for three related ZGW API's:
 
     - Zaakregistratiecomponent (ZRC)
     - Documentregistratiecomponent (DRC)
@@ -40,9 +40,9 @@ configured to access these API's to register form submissions.
 3. Navigate to **Configuration** > **ZGW API"s configuration**
 4. Enter the following details:
 
-   * **Zaken API:**: Select the Zaakregistratiecomponent (ZRC) service created above
-   * **Documenten API:**: Select the Documentregistratiecomponent (DRC) service created above
-   * **Catalogi API:**: Select the Zaaktypecatalogus (ZTC) service created above
+   * **Zaken API**: Select the Zaakregistratiecomponent (ZRC) service created above
+   * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
+   * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
 
 5. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
 6. Continue entering the following details:

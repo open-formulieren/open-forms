@@ -8,7 +8,7 @@ The Objecten API is a suite of REST based object registration services. Open For
 configured to access these API's to register form submissions.
 
 1. In Open Forms, navigate to: **Configuration** > **Services**
-2. Here we need to configure credentials for two related API's.
+2. Here we need to configure credentials for two related API's:
 
     - Objecten API (ORC)
     - Documentregistratiecomponent (DRC)
@@ -38,7 +38,7 @@ configured to access these API's to register form submissions.
 
    * **Objects API**: Select the Objecten API (ORC) service created above
    * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
-   * **Objecttype:**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API
+   * **Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API
    * **Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API
    * **Productaanvraag type**: Fill in the type of ProductAanvraag
    * **Submission report informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report in the Catalogi API
