@@ -1,11 +1,12 @@
 from django.utils.translation import ugettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.utils.api.views import ListMixin
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
@@ -14,35 +15,20 @@ from openforms.validations.api.serializers import (
 from openforms.validations.registry import register
 
 
-class ValidatorsListView(APIView):
+@extend_schema_view(
+    get=extend_schema(summary=_("List available validation plugins")),
+)
+class ValidatorsListView(ListMixin, APIView):
     """
     List all prefill plugins that have been registered.
     """
-
-    register = register
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = ValidationPluginSerializer
 
     def get_objects(self):
-        return self.register
-
-    def get_serializer(self, **kwargs):
-        return self.serializer_class(
-            many=True,
-            context={"request": self.request, "view": self},
-            **kwargs,
-        )
-
-    @extend_schema(
-        operation_id="validation_plugin_list",
-        summary=_("List available validation plugins"),
-    )
-    def get(self, request, *args, **kwargs):
-        objects = self.get_objects()
-        serializer = self.get_serializer(instance=objects)
-        return Response(serializer.data)
+        return list(register.iter_enabled_plugins())
 
 
 class ValidationView(APIView):
@@ -50,7 +36,6 @@ class ValidationView(APIView):
     Validate a value using given validator
     """
 
-    register = register
     authentication_classes = ()
 
     @extend_schema(
@@ -75,7 +60,5 @@ class ValidationView(APIView):
         serializer = ValidationInputSerializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
 
-        result = self.register.validate(
-            self.kwargs["validator"], serializer.data["value"]
-        )
+        result = register.validate(self.kwargs["validator"], serializer.data["value"])
         return Response(ValidationResultSerializer(result).data)

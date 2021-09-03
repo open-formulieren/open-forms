@@ -1,5 +1,8 @@
 from typing import Type
 
+from django.db import OperationalError
+
+from openforms.config.models import GlobalConfiguration
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
 
@@ -42,8 +45,22 @@ class BaseRegistry:
     def __contains__(self, key: str):
         return key in self._registry
 
+    def iter_enabled_plugins(self):
+        try:
+            with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+        except OperationalError:
+            # fix CI trying to access non-existing database to generate OAS
+            with_demos = False
+
+        for plugin in self:
+            is_demo = getattr(plugin, "is_demo_plugin", False)
+            if is_demo and not with_demos:
+                continue
+            else:
+                yield plugin
+
     def items(self):
         return iter(self._registry.items())
 
     def get_choices(self):
-        return [(p.identifier, p.get_label()) for p in self]
+        return [(p.identifier, p.get_label()) for p in self.iter_enabled_plugins()]

@@ -14,6 +14,7 @@ from .config import DemoOptionsSerializer
 class DemoRegistration(BasePlugin):
     verbose_name = _("Demo - print to console")
     configuration_options = DemoOptionsSerializer
+    is_demo_plugin = True
 
     def register_submission(self, submission: Submission, options: dict) -> None:
         print(submission)
@@ -24,6 +25,7 @@ class DemoRegistration(BasePlugin):
 class DemoFailRegistration(BasePlugin):
     verbose_name = _("Demo - fail registration")
     configuration_options = DemoOptionsSerializer
+    is_demo_plugin = True
 
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")

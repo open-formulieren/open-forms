@@ -41,6 +41,8 @@ class BasePlugin:
     specified serializer class.
     """
 
+    is_demo_plugin = False
+
     def __init__(self, identifier: str):
         self.identifier = identifier
 

@@ -12,7 +12,7 @@ class Registry(BaseRegistry):
 
     def get_options(self, request: HttpRequest, form=None) -> List["LoginInfo"]:
         options = list()
-        plugins = form.authentication_backends if form else self._registry
+        plugins = form.authentication_backends if form else self.iter_enabled_plugins()
         for plugin_id in plugins:
             if plugin_id in self._registry:
                 plugin = self._registry[plugin_id]

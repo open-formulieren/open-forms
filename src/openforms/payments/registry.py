@@ -21,7 +21,7 @@ class Registry(BaseRegistry):
     def get_options(self, request: HttpRequest, form=None) -> List["APIInfo"]:
         options = list()
         # TODO clean this up as we support multiple backends on the form
-        plugins = [form.payment_backend] if form else self._registry
+        plugins = [form.payment_backend] if form else self.iter_enabled_plugins()
         for plugin_id in plugins:
             if plugin_id in self._registry:
                 plugin = self._registry[plugin_id]

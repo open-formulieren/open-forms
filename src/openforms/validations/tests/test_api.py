@@ -1,14 +1,13 @@
-from unittest import expectedFailure
+from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.validations.api.serializers import ValidationInputSerializer
-from openforms.validations.api.views import ValidationView, ValidatorsListView
 from openforms.validations.registry import Registry
 from openforms.validations.tests.test_registry import (
     DjangoValidator,
@@ -26,15 +25,17 @@ class ValidationsAPITests(APITestCase):
         register("django", verbose_name="Django Test Validator")(DjangoValidator)
         register("drf", verbose_name="DRF Test Validator")(DRFValidator)
         register("func", verbose_name="Django function Validator")(function_validator)
+        register("demo", verbose_name="Demo function", is_demo_plugin=True)(
+            function_validator
+        )
 
-        # setup cleanup
-        def cleanup(*args):
-            ValidatorsListView.register, ValidationView.register = args
+        patcher = patch("openforms.validations.api.views.register", new=register)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
-        self.addCleanup(cleanup, ValidatorsListView.register, ValidationView.register)
-
-        ValidatorsListView.register = register
-        ValidationView.register = register
+        config = GlobalConfiguration.get_solo()
+        config.enable_demo_plugins = False
+        config.save()
 
     def test_auth_required(self):
         self.client.logout()

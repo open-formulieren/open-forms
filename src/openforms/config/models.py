@@ -256,6 +256,11 @@ class GlobalConfiguration(SingletonModel):
             "If enabled, the admin page to create forms will use the new React page."
         ),
     )
+    enable_demo_plugins = models.BooleanField(
+        _("enable demo plugins"),
+        default=False,
+        help_text=_("If enabled, the admin allows selection of demo backend plugins."),
+    )
 
     default_test_bsn = models.CharField(
         _("default test BSN"),
