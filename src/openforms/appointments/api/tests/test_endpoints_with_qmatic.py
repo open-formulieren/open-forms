@@ -7,9 +7,6 @@ from django.urls import reverse
 import requests_mock
 from zds_client import ClientError
 
-from openforms.appointments.contrib.qmatic.tests.factories import QmaticConfigFactory
-from openforms.appointments.contrib.qmatic.tests.test_plugin import mock_response
-from openforms.appointments.models import AppointmentsConfig
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,

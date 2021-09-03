@@ -9,9 +9,6 @@ from django.urls import reverse
 import requests_mock
 from zeep.exceptions import Error as ZeepError
 
-from openforms.appointments.contrib.jcc.models import JccConfig
-from openforms.appointments.contrib.jcc.tests.test_plugin import mock_response
-from openforms.appointments.models import AppointmentsConfig
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,

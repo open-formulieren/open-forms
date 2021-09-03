@@ -2,17 +2,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, OpenApiResponse
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
+from openforms.submissions.models import Submission
 from openforms.utils.api.views import ListMixin
 
+from ...api.serializers import ExceptionSerializer
 from ..api.serializers import (
-    CancelAppointmentInputSerializer,
     DateInputSerializer,
     DateSerializer,
     LocationInputSerializer,
@@ -22,16 +23,12 @@ from ..api.serializers import (
     TimeSerializer,
     VerifyAppointmentInputSerializer,
 )
-from openforms.appointments.base import AppointmentLocation, AppointmentProduct
-from openforms.appointments.exceptions import (
+from ..base import AppointmentLocation, AppointmentProduct
+from ..exceptions import (
     AppointmentDeleteFailed,
     CancelAppointmentFailed,
     VerifyAppointmentFailed,
 )
-from openforms.appointments.utils import get_client
-from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
-from openforms.submissions.models import Submission
-from openforms.utils.api.views import ListMixin
 from ..utils import get_client
 
 
