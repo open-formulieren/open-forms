@@ -35,7 +35,7 @@ RETURN_ACTION_PARAM = "action"
 
 @register("ogone-legacy")
 class OgoneLegacyPaymentPlugin(BasePlugin):
-    verbose_name = _("Ogone Legacy")
+    verbose_name = _("Ogone legacy")
     configuration_options = OgoneOptionsSerializer
 
     def start_payment(self, request, payment: SubmissionPayment):

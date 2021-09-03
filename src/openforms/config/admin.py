@@ -12,7 +12,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (
-            _("E-mail security configuration"),
+            _("Email security configuration"),
             {
                 "fields": ("email_template_netloc_allowlist",),
             },

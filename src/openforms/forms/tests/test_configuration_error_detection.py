@@ -36,7 +36,7 @@ class SnakeCaseDetectionTests(TestCase):
 
         msg = (
             f"FormDefinition with ID {fd.id} appears to contain snake_case keys in "
-            "its formiojs configuration. This is known to cause issues with the "
+            "its Form.io configuration. This is known to cause issues with the "
             "prefill module."
         )
         capture.check(

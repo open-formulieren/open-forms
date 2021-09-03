@@ -33,8 +33,8 @@ class FormDefinition(models.Model):
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
     configuration = JSONField(
-        _("Formio.js configuration"),
-        help_text=_("The form definition as Formio.js JSON schema"),
+        _("Form.io configuration"),
+        help_text=_("The form definition as Form.io JSON schema"),
     )
     login_required = models.BooleanField(
         _("login required"),

@@ -35,13 +35,13 @@ class OgoneMerchant(models.Model):
     )
 
     endpoint_preset = models.URLField(
-        _("Preset Endpoint"),
+        _("Preset endpoint"),
         choices=OgoneEndpoints.choices,
         default=OgoneEndpoints.test,
         help_text=_("Select a common preset endpoint"),
     )
     endpoint_custom = models.URLField(
-        _("Custom Endpoint"),
+        _("Custom endpoint"),
         blank=True,
         help_text=_("Optionally override the preset endpoint"),
     )
@@ -55,7 +55,7 @@ class OgoneMerchant(models.Model):
         if not self.endpoint_custom and not self.endpoint_preset:
             raise ValidationError(
                 _("Specify either '{preset}' or '{custom}'").format(
-                    preset=_("Preset Endpoint"), custom=_("Custom Endpoint")
+                    preset=_("Preset endpoint"), custom=_("Custom endpoint")
                 )
             )
 
