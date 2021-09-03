@@ -67,14 +67,21 @@ class SubmissionState:
         return next(candidates, None)
 
 
+def _get_config_field(field: str) -> str:
+    # workaround for when this function is called during migrations and the table
+    # hasn't fully migrated yet
+    qs = GlobalConfiguration.objects.values_list(field, flat=True)
+    return qs.first()
+
+
 def get_default_bsn() -> str:
-    config = GlobalConfiguration.get_solo()
-    return config.default_test_bsn if config.default_test_bsn else ""
+    default_test_bsn = _get_config_field("default_test_bsn")
+    return default_test_bsn or ""
 
 
 def get_default_kvk() -> str:
-    config = GlobalConfiguration.get_solo()
-    return config.default_test_kvk if config.default_test_kvk else ""
+    default_test_kvk = _get_config_field("default_test_kvk")
+    return default_test_kvk or ""
 
 
 class Submission(models.Model):

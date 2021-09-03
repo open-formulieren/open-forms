@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("submissions", "0016_auto_20210521_1352"),
-        ("config", "0021_auto_20210823_0909"),
+        ("config", "0008_globalconfiguration_default_test_kvk"),
     ]
 
     operations = [
