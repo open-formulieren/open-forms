@@ -218,6 +218,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "slug",
             "configuration",
             "login_required",
+            "is_reusable",
         )
         extra_kwargs = {
             "url": {
@@ -267,6 +268,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     login_required = serializers.BooleanField(
         source="form_definition.login_required", read_only=True
     )
+    is_reusable = serializers.BooleanField(
+        source="form_definition.is_reusable", read_only=True
+    )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
@@ -293,6 +297,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "login_required",
+            "is_reusable",
             "literals",
         )
 

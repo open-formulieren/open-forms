@@ -114,6 +114,11 @@
     "description": "\"<=\" operator description",
     "originalDefault": "is less than or equal to"
   },
+  "89fqYz": {
+    "defaultMessage": "Is herbruikbaar?",
+    "description": "Form step is reusable label",
+    "originalDefault": "Is reusable?"
+  },
   "8LLxRg": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Form step save text field help text",

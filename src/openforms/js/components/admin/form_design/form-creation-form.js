@@ -570,6 +570,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         slug: step.slug,
                         configuration: step.configuration,
                         loginRequired: step.loginRequired,
+                        isReusable: step.isReusable,
                     }
                 )
                 if (!definitionResponse.ok) {

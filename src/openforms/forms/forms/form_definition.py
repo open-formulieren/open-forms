@@ -14,8 +14,11 @@ class FormDefinitionForm(forms.ModelForm):
     class Meta:
         model = FormDefinition
         fields = (
+            "uuid",
             "name",
             "slug",
             "login_required",
+            "is_reusable",
             "configuration",
         )
+        widgets = {"uuid": forms.TextInput(attrs={"readonly": True})}

@@ -114,6 +114,11 @@
     "description": "\"<=\" operator description",
     "originalDefault": "is less than or equal to"
   },
+  "89fqYz": {
+    "defaultMessage": "Is reusable?",
+    "description": "Form step is reusable label",
+    "originalDefault": "Is reusable?"
+  },
   "8LLxRg": {
     "defaultMessage": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration.",
     "description": "Form step save text field help text",
