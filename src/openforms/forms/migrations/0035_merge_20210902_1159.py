@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0034_auto_20210825_1336"),
+        ("forms", "0035_auto_20210902_1238"),
         ("forms", "0034_formdefinition_is_reusable"),
     ]
 
