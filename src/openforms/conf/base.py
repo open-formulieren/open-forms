@@ -191,7 +191,7 @@ MIDDLEWARE = [
     # 'django.middleware.locale.LocaleMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
     "mozilla_django_oidc_db.middleware.SessionRefresh",

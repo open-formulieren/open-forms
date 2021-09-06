@@ -185,7 +185,7 @@ class TimesListView(ListMixin, APIView):
 
 
 @extend_schema(
-    summary=_("Cancel an appointment"),
+    summary=_("Verify the appointment cancel link."),
     responses={
         302: None,
         403: OpenApiResponse(
@@ -236,6 +236,10 @@ class VerifyCancelAppointmentLinkView(APIView):
         400: OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Unable to cancel appointment with given data."),
+        ),
+        403: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to verify ownership of the appointment."),
         ),
     },
     parameters=[
