@@ -33,12 +33,6 @@ def register_appointment(submission: Submission) -> None:
       database with the relevant context/information - the exception just signals the
       failure to the caller so that it can retry if needed.
     """
-    # TODO: implement, see PR #573
+    from .utils import book_appointment_for_submission
 
-    # DEBUGGING - simulate some time passing by external API calls
-    import time
-
-    time.sleep(2)
-
-    # SIMULATE failure
-    raise AppointmentRegistrationFailed("Missing information.", should_retry=True)
+    book_appointment_for_submission(submission)
