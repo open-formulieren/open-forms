@@ -44,14 +44,15 @@ const loadPlugins = async (plugins=[]) => {
     return results;
 };
 
-const saveLogicRules = async (csrftoken, logicRules, logicRulesToDelete) => {
+const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
     // updating and creating rules
     const updateOrCreatePromises = Promise.all(
         logicRules.map(rule => {
             const shouldCreate = !rule.uuid;
             const createOrUpdate = shouldCreate ? post : put;
             const endPoint = shouldCreate ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${rule.uuid}`;
-            return createOrUpdate(endPoint, csrftoken, rule);
+
+            return createOrUpdate(endPoint, csrftoken, rule.form ? rule : {...rule, form: formUrl});
         })
     );
     // deleting rules

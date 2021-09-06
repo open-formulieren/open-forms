@@ -25,7 +25,7 @@ import {
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, PluginLoadingError, saveLogicRules} from './data';
+import {loadPlugins, saveLogicRules} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -545,6 +545,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 throw new Error('An error occurred while saving the form.');
             }
             var formUuid = formResponse.data.uuid;
+            var formUrl = formResponse.data.url;
             dispatch({type: 'FORM_CREATED', payload: formResponse.data});
 
         } catch (e) {
@@ -639,7 +640,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         // Update/create logic rules
         try {
             const {logicRules, logicRulesToDelete} = state;
-            const createdRules = await saveLogicRules(csrftoken, logicRules, logicRulesToDelete);
+            const createdRules = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
             dispatch({
                 type: 'RULES_SAVED',
                 payload: createdRules,
