@@ -47,6 +47,22 @@ TIME_FORMAT = "%H%M%S"
 DATETIME_FORMAT = "%Y%m%d%H%M%S"
 
 
+class PaymentStatus:
+    """
+    via: stuf-dms/Zaak_DocumentServices_1_1_02/zkn0310/entiteiten/zkn0310_simpleTypes.xsd
+
+    <enumeration value="N.v.t."/>
+    <enumeration value="(Nog) niet"/>
+    <enumeration value="Gedeeltelijk"/>
+    <enumeration value="Geheel"/>
+    """
+
+    NVT = "N.v.t."
+    NOT_YET = "(Nog) niet"
+    PARTIAL = "Gedeeltelijk"
+    FULL = "Geheel"
+
+
 def fmt_soap_datetime(d):
     return d.strftime(DATETIME_FORMAT)
 
@@ -199,13 +215,18 @@ class StufZDSClient:
 
         return zaak_identificatie
 
-    def create_zaak(self, zaak_identificatie, zaak_data, extra_data):
+    def create_zaak(
+        self, zaak_identificatie, zaak_data, extra_data, payment_required=False
+    ):
         template = "stuf_zds/soap/creeerZaak.xml"
         context = self._get_request_base_context()
         context.update(
             {
                 "zaak_identificatie": zaak_identificatie,
                 "extra": extra_data,
+                "betalings_indicatie": PaymentStatus.NOT_YET
+                if payment_required
+                else PaymentStatus.NVT,
             }
         )
         context.update(zaak_data)
@@ -217,6 +238,32 @@ class StufZDSClient:
         )
 
         return None
+
+    def partial_update_zaak(self, zaak_identificatie: str, zaak_data: dict) -> dict:
+        template = "stuf_zds/soap/updateZaak.xml"
+        context = self._get_request_base_context()
+        context.update(
+            {
+                "zaak_identificatie": zaak_identificatie,
+            }
+        )
+        context.update(zaak_data)
+        response, xml = self._make_request(
+            template,
+            context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+            soap_action="updateZaak_Lk01",
+        )
+        return None
+
+    def set_zaak_payment(self, zaak_identificatie: str, partial: bool = False) -> dict:
+        data = {
+            "betalingsindicatie": PaymentStatus.PARTIAL
+            if partial
+            else PaymentStatus.FULL,
+            "laatsteBetaaldatum": fmt_soap_date(timezone.now()),
+        }
+        return self.partial_update_zaak(zaak_identificatie, data)
 
     def create_document_identificatie(self):
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"

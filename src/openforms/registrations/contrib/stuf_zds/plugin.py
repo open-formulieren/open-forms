@@ -148,3 +148,9 @@ class StufZDSRegistration(BasePlugin):
             "document": doc_id,
         }
         return zaak_id, result
+
+    def update_payment_status(self, submission: "Submission"):
+        config = StufZDSConfig.get_solo()
+        client = config.get_client(submission.form.registration_backend_options)
+
+        client.set_zaak_payment(submission.registration_id)
