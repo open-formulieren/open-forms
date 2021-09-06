@@ -27,9 +27,9 @@ def get_client():
 def book_appointment_for_submission(submission: Submission) -> None:
     try:
         # Delete the previous appointment info if there is one since
-        #   it will cause and error creating the new one
-        # Since this will be called multiple times on a failure it's
-        #   possible this will exist
+        #   since a new one will be created
+        # This function will be called multiple times on a failure so
+        #   this is the case a previous appointment_info may exist
         submission.appointment_info.delete()
     except AppointmentInfo.DoesNotExist:
         pass
@@ -97,7 +97,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             appointment_id=appointment_id,
             submission=submission,
         )
-    except AppointmentCreateFailed as e:
+    except AppointmentCreateFailed:
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.failed,
             error_information="Failed to make appointment",
