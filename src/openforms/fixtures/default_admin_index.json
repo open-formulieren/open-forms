@@ -13,6 +13,30 @@
             [
                 "auth",
                 "group"
+            ],
+            [
+                "authtoken",
+                "token"
+            ],
+            [
+                "authtoken",
+                "tokenproxy"
+            ],
+            [
+                "mozilla_django_oidc_db",
+                "openidconnectconfig"
+            ],
+            [
+                "otp_static",
+                "staticdevice"
+            ],
+            [
+                "otp_totp",
+                "totpdevice"
+            ],
+            [
+                "two_factor",
+                "phonedevice"
             ]
         ]
     }
@@ -95,12 +119,8 @@
                 "appgroup"
             ],
             [
-                "authtoken",
-                "token"
-            ],
-            [
-                "authtoken",
-                "tokenproxy"
+                "appointments",
+                "appointmentsconfig"
             ],
             [
                 "bag",
@@ -127,12 +147,12 @@
                 "blacklist"
             ],
             [
-                "kvk",
-                "kvkconfig"
+                "jcc",
+                "jccconfig"
             ],
             [
-                "mozilla_django_oidc_db",
-                "openidconnectconfig"
+                "kvk",
+                "kvkconfig"
             ],
             [
                 "multidomain",
@@ -145,6 +165,10 @@
             [
                 "prefill_haalcentraal",
                 "haalcentraalconfig"
+            ],
+            [
+                "qmatic",
+                "qmaticconfig"
             ],
             [
                 "registrations_objects_api",
