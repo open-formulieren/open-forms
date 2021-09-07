@@ -1,4 +1,3 @@
-from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,9 +10,10 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
+from openforms.tests.utils import disable_2fa
 
 
-@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
+@disable_2fa
 class TestFormDefinitionAdmin(WebTest):
     def setUp(self) -> None:
         super().setUp()
