@@ -27,7 +27,7 @@ class EHerkenningAuthentication(BasePlugin):
         )
         return_url = f"{auth_return_url}?next={form_url}"
 
-        auth_return_params = {"next": return_url}
+        auth_return_params = {"next": return_url, "attr_consuming_service_index": "1"}
         url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
 
