@@ -97,7 +97,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             appointment_id=appointment_id,
             submission=submission,
         )
-    except AppointmentCreateFailed:
+    except AppointmentCreateFailed as e:
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.failed,
             error_information="Failed to make appointment",
@@ -105,7 +105,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         )
         raise AppointmentRegistrationFailed(
             "Unable to create appointment", should_retry=True
-        )
+        ) from e
 
 
 def create_base64_qrcode(text):
