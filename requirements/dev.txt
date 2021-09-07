@@ -139,7 +139,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@02ac61c42f6dd2f229ba9f0f687fa1a4160511be#egg=digid_eherkenning
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@b3e4c79f58f7ec48955abf162282fe082d28fc1a#egg=digid_eherkenning
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -663,7 +663,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
+git+https://github.com/maykinmedia/python3-saml.git@b10428a518321a1e0e1bcf8220e5a9b96d815d69#egg=python3_saml
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
