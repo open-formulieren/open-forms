@@ -1,10 +1,6 @@
 import logging
 
 from openforms.celery import app
-from openforms.registrations.service import (
-    NoSubmissionReference,
-    extract_submission_reference,
-)
 from openforms.registrations.tasks import register_submission
 
 from ..models import Submission
@@ -23,6 +19,12 @@ def obtain_submission_reference(submission_id: int) -> str:
     is possible that the backend registration failed or does not generate a reference
     (read: case number), in which case we need to generate a unique reference ourselves.
     """
+    # circular import dependency
+    from openforms.registrations.service import (
+        NoSubmissionReference,
+        extract_submission_reference,
+    )
+
     submission = Submission.objects.get(id=submission_id)
     try:
         reference = extract_submission_reference(submission)

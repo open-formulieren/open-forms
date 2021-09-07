@@ -34,6 +34,9 @@ def register_submission(submission_id: int) -> Optional[dict]:
         # so if the submission has already succeed we just return
         return
 
+    if not submission.completed_on:
+        raise RegistrationFailed("Submission should be completed first")
+
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
     submission.save(update_fields=["last_register_date", "registration_status"])

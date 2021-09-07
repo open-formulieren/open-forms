@@ -1,15 +1,12 @@
 import logging
 
+from ..exceptions import NoSubmissionReference
 from .constants import RegistrationStatuses
 from .models import Submission
 
 __all__ = ["NoSubmissionReference", "extract_submission_reference"]
 
 logger = logging.getLogger(__name__)
-
-
-class NoSubmissionReference(Exception):
-    pass
 
 
 def extract_submission_reference(submission: Submission) -> str:
