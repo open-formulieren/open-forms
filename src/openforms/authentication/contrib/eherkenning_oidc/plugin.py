@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.db import OperationalError
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
@@ -35,5 +36,8 @@ class eHerkenningOIDCAuthentication(BasePlugin):
 
     @property
     def is_enabled(self):
-        config = OpenIDConnectEHerkenningConfig.get_solo()
-        return config.enabled
+        try:
+            config = OpenIDConnectEHerkenningConfig.get_solo()
+            return config.enabled
+        except OperationalError:
+            return False
