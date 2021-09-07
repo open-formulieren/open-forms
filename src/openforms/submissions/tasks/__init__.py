@@ -2,6 +2,7 @@ from celery import chain
 from celery.result import AsyncResult
 
 from openforms.celery import app
+from openforms.registrations.tasks import register_submission
 
 from ..models import Submission
 from .appointments import *  # noqa
@@ -19,8 +20,6 @@ def on_completion(submission_id: int) -> str:
     This SHOULD be invoked as a transaction.on_commit(...) handler, therefore it should
     not execute any extra queries in the process this function is running in.
     """
-    from openforms.registrations.tasks import register_submission
-
     # use immutable signatures so that the result of previous tasks is not passed
     # in as an argument to chained tasks
     register_appointment_task = maybe_register_appointment.si(submission_id)
@@ -45,6 +44,7 @@ def on_completion(submission_id: int) -> str:
         # The submission report needs to already have been generated before it can be
         # attached in the registration backend.
         generate_report_task,
+        # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
         obtain_submission_reference_task,
         update_appointment_task,
