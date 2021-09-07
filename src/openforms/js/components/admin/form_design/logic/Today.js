@@ -9,14 +9,14 @@ import {NumberInput} from '../../forms/Inputs';
 import {getTranslatedChoices} from '../../../../utils/i18n';
 
 
-const EMTPTY_RELATIVE_DELTA = [0, 0, 0];
+const EMPTY_RELATIVE_DELTA = [0, 0, 0];
 
 
 const Today = ({name, value, onChange}) => {
     const sign = value ? jsonLogic.get_operator(value) : '+';
-    var rdelta = value && value[sign][1]?.rdelta ? value[sign][1].rdelta : EMTPTY_RELATIVE_DELTA;
+    var rdelta = value && value[sign][1]?.rdelta ? value[sign][1].rdelta : EMPTY_RELATIVE_DELTA;
     if (rdelta.length < 3) {
-        rdelta = [...rdelta].concat(EMTPTY_RELATIVE_DELTA).slice(0, 3);
+        rdelta = [...rdelta, ...Array(3-rdelta.length).fill(0)];
     }
 
     const intl = useIntl();

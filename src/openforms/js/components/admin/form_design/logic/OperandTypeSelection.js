@@ -12,15 +12,17 @@ const OPERAND_TYPES = {
     array: defineMessage({description: '"array" operand type', defaultMessage: 'the array'}),
 };
 
+const allowAny = () => true;
 
-const OperandTypeSelection = ({name, operandType, onChange, filter}) => {
+
+const OperandTypeSelection = ({name, operandType, onChange, filter=allowAny}) => {
     const intl = useIntl();
     const choices = getTranslatedChoices(intl, OPERAND_TYPES);
 
     return (
         <Select
             name={name}
-            choices={filter ? choices.filter(filter) : choices}
+            choices={choices.filter(filter)}
             allowBlank
             onChange={onChange}
             value={operandType}

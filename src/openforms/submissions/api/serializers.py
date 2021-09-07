@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -319,3 +320,14 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             kwargs={"uuid": instance.uuid},
             request=request,
         )
+
+
+class SubmissionStateLogicSerializer(serializers.Serializer):
+    submission = SubmissionSerializer()
+    step = SubmissionStepSerializer()
+
+
+@dataclass
+class SubmissionStateLogic:
+    submission: Submission
+    step: SubmissionStep

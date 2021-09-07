@@ -12,6 +12,7 @@ from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
+from ...submissions.api.fields import URLRelatedField
 from ..constants import LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
@@ -393,14 +394,18 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
     )
-    form_step = serializers.CharField(
+    form_step = URLRelatedField(
         required=False,  # validated against the action.type
-        allow_blank=True,
+        queryset=FormStep.objects,
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
         label=_("form step"),
         help_text=_(
             "The form step that will be affected by the action. This field is "
-            "optional if the action type is `{action_type}`, otherwise required."
-        ).format(action_type=LogicActionTypes.step_not_applicable),
+            "optional if the action type is `%(action_type)s`, otherwise required."
+        )
+        % {"action_type": LogicActionTypes.step_not_applicable},
     )
     action = LogicActionPolymorphicSerializer()
 

@@ -65,7 +65,7 @@ class SubmissionState:
         )
         return next(candidates, None)
 
-    def get_submission_step(self, form_step_uuid: str) -> "SubmissionStep":
+    def get_submission_step(self, form_step_uuid: str) -> Optional["SubmissionStep"]:
         return next(
             (
                 step
