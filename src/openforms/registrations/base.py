@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 from django.utils.translation import gettext_lazy as _
 
@@ -52,7 +52,15 @@ class BasePlugin(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_reference_from_result(self, result) -> str:
+    def get_reference_from_result(self, result: Any) -> str:
+        """
+        Extract the public submission reference from the result data.
+
+        This method must return a string to be saved on the submission model.
+
+        :arg result: The result of the backend_feedback_serializer if provided, otherwise
+          the raw underlying JSONField datastructure.
+        """
         raise NotImplementedError()
 
     def get_label(self):
