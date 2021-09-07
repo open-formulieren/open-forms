@@ -131,7 +131,6 @@ class AuthenticationStep2Tests(TestCase):
                 "Destination": "https://test-digid.nl/saml/idp/request_authentication",
                 "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
                 "AssertionConsumerServiceURL": "https://test-sp.nl/digid/acs/",
-                "AttributeConsumingServiceIndex": "1",
             },
         )
 

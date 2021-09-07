@@ -56,36 +56,40 @@ EHERKENNING = {
         "data",
         "test.certificate",
     ),
-    "attribute_consuming_service_index": "1",
-    "service_loa": "urn:etoegang:core:assurance-class:loa3",
+    "services": [
+        {
+            "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
+            "attribute_consuming_service_index": "1",
+            "service_name": {
+                "nl": "Test",
+                "en": "Test",
+            },
+            "service_description": {
+                "nl": "Test",
+                "en": "Test",
+            },
+            "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
+            "service_url": "https://test-sp.nl",
+            "service_loa": "urn:etoegang:core:assurance-class:loa3",
+            "entity_concerned_types_allowed": [
+                {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:RSIN"},
+                {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+                {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
+            ],
+            "requested_attributes": [
+                "urn:etoegang:1.11:attribute-represented:KvKnr",
+            ],
+            "privacy_policy_url": {
+                "nl": "https://test-sp.nl/privacy_policy",
+            },
+            "herkenningsmakelaars_id": "00000002222222222000",
+        }
+    ],
     "oin": "00000001111111111000",
-    "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
-    "service_name": {
-        "nl": "Test",
-        "en": "Test",
-    },
-    "service_description": {
-        "nl": "Test",
-        "en": "Test",
-    },
-    "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
-    "service_url": "https://test-sp.nl",
     "organisation_name": {
         "nl": "Test Organisation",
         "en": "Test Organisation",
     },
-    "entity_concerned_types_allowed": [
-        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:RSIN"},
-        {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
-        {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
-    ],
-    "requested_attributes": [
-        "urn:etoegang:1.11:attribute-represented:KvKnr",
-    ],
-    "privacy_policy_url": {
-        "nl": "https://test-sp.nl/privacy_policy",
-    },
-    "herkenningsmakelaars_id": "00000002222222222000",
 }
 
 
@@ -113,7 +117,7 @@ class AuthenticationStep2Tests(TestCase):
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
         self.assertEqual(
-            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param})}",
+            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param, 'attr_consuming_service_index': '1'})}",
             response.url,
         )
 
@@ -133,8 +137,9 @@ class AuthenticationStep2Tests(TestCase):
         )
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}"
+        login_url = furl(login_url).set({"next": form_url})
 
-        response = self.client.get(f"{login_url}?next={form_url}", follow=True)
+        response = self.client.get(login_url.url, follow=True)
 
         return_url = reverse(
             "authentication:return",
@@ -161,7 +166,7 @@ class AuthenticationStep2Tests(TestCase):
                 "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
                 "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
                 "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
-                "AttributeConsumingServiceIndex": "1",
+                "AttributeConsumingServiceIndex": "1",  # Comes from the settings
             },
         )
 
