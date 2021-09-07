@@ -4,8 +4,10 @@ from django_webtest import WebTest
 from rest_framework.serializers import Serializer
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
+from openforms.tests.utils import disable_2fa
 
 from ...registrations.base import BasePlugin
 from ..models import Form
@@ -28,10 +30,16 @@ class Plugin(BasePlugin):
         pass
 
 
+@disable_2fa
 class FormAdminTests(WebTest):
-    def setUp(self):
-        super().setUp()
-        self.superuser = SuperUserFactory.create(app=self.app)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.superuser = SuperUserFactory.create()
+
+        config = GlobalConfiguration.get_solo()
+        config.enable_react_form = False
+        config.save()
 
     def test_valid_plugins_listed(self):
         url = reverse("admin:forms_form_add")

@@ -11,18 +11,18 @@ from webtest import Upload
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormFactory
-from openforms.tests.utils import NOOP_CACHES
+from openforms.tests.utils import NOOP_CACHES, disable_2fa
 
 from ..models import GlobalConfiguration
 
 LOGO_FILE = Path(settings.BASE_DIR) / "docs" / "logo.svg"
 
 
+@disable_2fa
 @override_settings(
     CACHES=NOOP_CACHES,
     MEDIA_ROOT=tempfile.mkdtemp(),
     SESSION_ENGINE="django.contrib.sessions.backends.db",
-    TWO_FACTOR_PATCH_ADMIN=False,
 )
 class AdminTests(WebTest):
     @classmethod
