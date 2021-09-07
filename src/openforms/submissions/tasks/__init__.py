@@ -2,7 +2,6 @@ from celery import chain
 from celery.result import AsyncResult
 
 from openforms.celery import app
-from openforms.registrations.tasks import register_submission
 
 from ..models import Submission
 from .appointments import *  # noqa

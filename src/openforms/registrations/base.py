@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Type
 
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +17,7 @@ class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
 
 
-class BasePlugin:
+class BasePlugin(ABC):
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     """
     Specify the human-readable label for the plugin.
@@ -44,9 +45,14 @@ class BasePlugin:
     def __init__(self, identifier: str):
         self.identifier = identifier
 
+    @abstractmethod
     def register_submission(
         self, submission: "Submission", options: dict
     ) -> Optional[dict]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_reference_from_result(self, result) -> str:
         raise NotImplementedError()
 
     def get_label(self):
