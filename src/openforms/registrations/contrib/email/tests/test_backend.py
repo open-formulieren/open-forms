@@ -5,32 +5,31 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-import requests_mock
-
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
 )
-from openforms.registrations.contrib.email.plugin import EmailRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
 
+from ....service import NoSubmissionReference, extract_submission_reference
+from ..plugin import EmailRegistration
 
-@requests_mock.Mocker()
+
 class EmailBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create()
+        cls.form = FormFactory.create(registration_backend="email")
         cls.fd = FormDefinitionFactory.create()
         cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    def test_submission_with_email_backend(self, m):
+    def test_submission_with_email_backend(self):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
@@ -92,7 +91,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.attachments[1][2], "text/bar")
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    def test_submission_with_email_backend_strip_out_urls(self, m):
+    def test_submission_with_email_backend_strip_out_urls(self):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
@@ -135,7 +134,7 @@ class EmailBackendTests(TestCase):
         self.assertNotIn("https://someurl.com", message.body)
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    def test_submission_with_email_backend_keep_allowed_urls(self, m):
+    def test_submission_with_email_backend_keep_allowed_urls(self):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["https://allowed.com"]
         config.save()
@@ -180,3 +179,14 @@ class EmailBackendTests(TestCase):
             message.body,
         )
         self.assertNotIn("https://allowed.com", message.body)
+
+    def test_no_reference_can_be_extracted(self):
+        submission = SubmissionFactory.create(
+            form=self.form,
+            completed=True,
+            registration_success=True,
+            registration_result="irrelevant",
+        )
+
+        with self.assertRaises(NoSubmissionReference):
+            extract_submission_reference(submission)

@@ -7,15 +7,14 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
-from openforms.registrations.constants import RegistrationAttribute
-from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 
-from ...zgw_apis.tests.factories import ZgwConfigFactory
-from ..models import ObjectsAPIConfig
+from ....constants import RegistrationAttribute
+from ....service import NoSubmissionReference, extract_submission_reference
+from ..plugin import ObjectsAPIRegistration
 from .factories import ObjectsAPIConfigFactory
 
 
@@ -564,3 +563,14 @@ class ObjectsAPIBackendTests(TestCase):
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertDictEqual(object_create_body, expected_object_body)
+
+    def test_no_reference_can_be_extracted(self, m):
+        submission = SubmissionFactory.create(
+            form__registration_backend="objects_api",
+            completed=True,
+            registration_success=True,
+            registration_result="irrelevant",
+        )
+
+        with self.assertRaises(NoSubmissionReference):
+            extract_submission_reference(submission)

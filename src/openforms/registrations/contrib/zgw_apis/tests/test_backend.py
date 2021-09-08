@@ -5,13 +5,14 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
-from openforms.registrations.constants import RegistrationAttribute
-from openforms.registrations.contrib.zgw_apis.plugin import ZGWRegistration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 
+from ....constants import RegistrationAttribute
+from ....service import extract_submission_reference
+from ..plugin import ZGWRegistration
 from .factories import ZgwConfigFactory
 
 
@@ -303,3 +304,21 @@ class ZGWBackendTests(TestCase):
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
         )
+
+    def test_no_reference_can_be_extracted(self, m):
+        result = {
+            "zaak": {
+                "url": "https://zaken.nl/api/v1/zaken/1",
+                "identificatie": "abcd1234",
+            }
+        }
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            completed=True,
+            registration_success=True,
+            registration_result=result,
+        )
+
+        reference = extract_submission_reference(submission)
+
+        self.assertEqual("abcd1234", reference)

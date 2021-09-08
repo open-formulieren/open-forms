@@ -11,14 +11,6 @@ from lxml.etree import ElementTree
 from privates.test import temp_private_root
 from requests import RequestException
 
-from openforms.registrations.constants import RegistrationAttribute
-from openforms.registrations.contrib.stuf_zds.client import StufZDSClient, nsmap
-from openforms.registrations.contrib.stuf_zds.models import StufZDSConfig
-from openforms.registrations.contrib.stuf_zds.plugin import (
-    PartialDate,
-    StufZDSRegistration,
-)
-from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -26,6 +18,13 @@ from openforms.submissions.tests.factories import (
 )
 from stuf.constants import SOAPVersion
 from stuf.tests.factories import SoapServiceFactory
+
+from ....constants import RegistrationAttribute
+from ....exceptions import RegistrationFailed
+from ....service import extract_submission_reference
+from ..client import StufZDSClient, nsmap
+from ..models import StufZDSConfig
+from ..plugin import PartialDate, StufZDSRegistration
 
 
 def load_mock(name, context=None):
@@ -695,3 +694,15 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:formaat": "application/msword",
             },
         )
+
+    def test_no_reference_can_be_extracted(self, m):
+        submission = SubmissionFactory.create(
+            form__registration_backend="stuf-zds-create-zaak",
+            completed=True,
+            registration_success=True,
+            registration_result={"zaak": "abcd1234"},
+        )
+
+        reference = extract_submission_reference(submission)
+
+        self.assertEqual("abcd1234", reference)
