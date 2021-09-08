@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
-@transaction.atomic
 def obtain_submission_reference(submission_id: int) -> str:
     """
     Obtain a unique reference to be communicated to the end user.
@@ -49,8 +48,9 @@ def obtain_submission_reference(submission_id: int) -> str:
         )
         reference = generate_unique_submission_reference()
 
-    submission.public_registration_reference = reference
-    submission.save(update_fields=["public_registration_reference"])
+    with transaction.atomic():
+        submission.public_registration_reference = reference
+        submission.save(update_fields=["public_registration_reference"])
     return reference
 
 
