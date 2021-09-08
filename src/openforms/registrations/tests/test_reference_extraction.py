@@ -10,10 +10,27 @@ from ..service import NoSubmissionReference, extract_submission_reference
 
 class GenericReferenceExtractionTests(TestCase):
     def test_submission_not_completed(self):
-        raise NotImplementedError
+        submission = SubmissionFactory.build(completed=False)
+
+        with self.assertRaises(NoSubmissionReference):
+            extract_submission_reference(submission)
 
     def test_submission_registration_not_completed(self):
-        raise NotImplementedError
+        submissions = [
+            SubmissionFactory.build(registration_failed=True),
+            SubmissionFactory.build(registration_pending=True),
+            SubmissionFactory.build(registration_in_progress=True),
+        ]
+
+        for submission in submissions:
+            with self.subTest(registration_status=submission.registration_status):
+                with self.assertRaises(NoSubmissionReference):
+                    extract_submission_reference(submission)
 
     def test_submission_registered_but_no_registration_result(self):
-        raise NotImplementedError
+        submission = SubmissionFactory.build(
+            registration_success=True, registration_result={}
+        )
+
+        with self.assertRaises(NoSubmissionReference):
+            extract_submission_reference(submission)
