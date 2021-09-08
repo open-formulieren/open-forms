@@ -1,6 +1,8 @@
 """
 Test the submission reference extraction behaviour, independent from the plugin.
 """
+from dataclasses import dataclass
+
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -11,8 +13,9 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..base import BasePlugin
 from ..registry import Registry
 from ..service import NoSubmissionReference, extract_submission_reference
-from .factories import ReferenceHolderFactory
 from .utils import patch_registry
+
+# Set up a registry with plugins for the tests
 
 register = Registry()
 
@@ -20,18 +23,43 @@ model_field = Form._meta.get_field("registration_backend")
 
 
 @register("plugin1")
-class Plugin(BasePlugin):
+class Plugin1(BasePlugin):
     configuration_options = serializers.Serializer
 
     def register_submission(self, submission, options):
         pass
 
     def get_reference_from_result(self, result) -> str:
-        reference_holder = ReferenceHolderFactory.create()
-        return reference_holder.reference
+        return result.get("reference")
 
 
-class GenericReferenceExtractionTests(TestCase):
+@dataclass
+class Result:
+    some_id: str
+    reference: int
+
+
+class ResultSerializer(serializers.Serializer):
+    some_id = serializers.CharField()
+    reference = serializers.IntegerField()
+
+
+@register("plugin2")
+class Plugin2(BasePlugin):
+    configuration_options = serializers.Serializer
+    backend_feedback_serializer = ResultSerializer
+
+    def register_submission(self, submission, options):
+        pass
+
+    def get_reference_from_result(self, result: dict) -> str:
+        return str(result["reference"])
+
+
+# Define the actual test cases
+
+
+class NoExtractableSubmissionReferenceTests(TestCase):
     def test_submission_without_registration_backend(self):
         submission = SubmissionFactory.create(form__registration_backend="")
 
@@ -76,3 +104,29 @@ class GenericReferenceExtractionTests(TestCase):
         with patch_registry(model_field, register):
             with self.assertRaises(NoSubmissionReference):
                 extract_submission_reference(submission)
+
+
+class ExtractableSubmissionReferenceTests(TestCase):
+    def test_completed_submission_without_result_serializer(self):
+        submission = SubmissionFactory.create(
+            registration_success=True,
+            registration_result={"reference": "some-unique-reference"},
+            form__registration_backend="plugin1",
+        )
+
+        with patch_registry(model_field, register):
+            reference = extract_submission_reference(submission)
+
+        self.assertEqual(reference, "some-unique-reference")
+
+    def test_completed_submission_with_result_serializer(self):
+        submission = SubmissionFactory.create(
+            registration_success=True,
+            registration_result={"reference": 101, "some_id": "some-id"},
+            form__registration_backend="plugin2",
+        )
+
+        with patch_registry(model_field, register):
+            reference = extract_submission_reference(submission)
+
+        self.assertEqual(reference, "101")
