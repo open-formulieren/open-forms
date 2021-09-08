@@ -10,7 +10,7 @@ from openforms.submissions.models import Submission
 
 class SubmissionAppointmentTokenGenerator:
     """
-    Strategy object used to generate and check tokens for submission.
+    Strategy object used to generate and check tokens for submission appointments.
     Implementation adapted from
     :class:`from django.contrib.auth.tokens.PasswordResetTokenGenerator`
     """
@@ -23,9 +23,6 @@ class SubmissionAppointmentTokenGenerator:
         Return a token that can be used to verify ownership of a submission.
         """
         return self._make_token_with_timestamp(submission, self._num_days(date.today()))
-
-    def get_expiry_days(self, submission):
-        return (submission.appointment_info.start_time - timezone.now()).days
 
     def check_token(self, submission: Submission, token: str) -> bool:
         """
@@ -51,7 +48,7 @@ class SubmissionAppointmentTokenGenerator:
         if not constant_time_compare(valid_token, token):
             return False
 
-        expiry_days = self.get_expiry_days(submission)
+        expiry_days = (submission.appointment_info.start_time - timezone.now()).days
 
         # Check the timestamp is within limit. Timestamps are rounded to
         # midnight (server time) providing a resolution of only 1 day. If a
@@ -81,6 +78,7 @@ class SubmissionAppointmentTokenGenerator:
             str(submission.id),
             str(submission.uuid),
             str(submission.appointment_info.status),
+            str(submission.appointment_info.start_time),
         ]
         return "".join(submission_bits) + str(timestamp)
 

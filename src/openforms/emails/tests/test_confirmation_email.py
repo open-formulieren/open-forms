@@ -214,6 +214,10 @@ class ConfirmationEmailTests(TestCase):
 
     @patch("openforms.emails.templatetags.appointments.get_client")
     def test_get_appointment_links(self, get_client_mock):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["fake.nl"]
+        config.save()
+
         get_client_mock.return_value.get_appointment_links.return_value = {
             "cancel_url": "http://fake.nl/api/v1/base64-submission-uuid/token/verify/"
         }
@@ -226,12 +230,14 @@ class ConfirmationEmailTests(TestCase):
         email = ConfirmationEmailTemplate(
             content="""
         {% get_appointment_links as links %}
-        <a href="{{ links.cancel_url|urlencode }}">annuleren</a>
+        {{ links.cancel_url|urlize }}
         """
         )
         rendered_content = email.render(submission)
 
-        self.assertIn(
-            '<a href="http%3A//fake.nl/api/v1/base64-submission-uuid/token/verify/">annuleren</a>',
+        self.assertInHTML(
+            '<a href="http://fake.nl/api/v1/base64-submission-uuid/token/verify/" rel="nofollow">'
+            "http://fake.nl/api/v1/base64-submission-uuid/token/verify/"
+            "</a>",
             rendered_content,
         )

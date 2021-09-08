@@ -55,7 +55,8 @@ class VerifyCancelAppointmentLinkView(RedirectView):
 
         config = GlobalConfiguration.get_solo()
 
-        # Displayed to user in SDK
-        time = submission.appointment_info.start_time.isoformat()
-
-        return f"{config.cancel_appointment_page}?time={time}&submission_uuid={str(submission_uuid)}"
+        return (
+            f"{config.cancel_appointment_page}"
+            f"?time={submission.appointment_info.start_time.isoformat()}"
+            f"&submission_uuid={str(submission_uuid)}"
+        )

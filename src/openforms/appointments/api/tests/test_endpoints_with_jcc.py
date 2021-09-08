@@ -19,6 +19,7 @@ from openforms.submissions.tests.factories import (
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
 
+from ...constants import AppointmentDetailsStatus
 from ...contrib.jcc.models import JccConfig
 from ...contrib.jcc.tests.test_plugin import mock_response
 from ...models import AppointmentsConfig
@@ -266,7 +267,7 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         config.save()
 
     @requests_mock.Mocker()
-    def test_cancel_appointment_deletes_the_appointment(self, m):
+    def test_cancel_appointment_cancels_the_appointment(self, m):
         self._add_submission_to_session(self.submission)
         AppointmentInfoFactory.create(submission=self.submission)
         form = FormFactory.create(slug="a-form", name="A form")
@@ -305,6 +306,10 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 204)
+        self.submission.refresh_from_db()
+        self.assertEqual(
+            self.submission.appointment_info.status, AppointmentDetailsStatus.cancelled
+        )
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):

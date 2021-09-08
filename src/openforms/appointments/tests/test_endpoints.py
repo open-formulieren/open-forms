@@ -58,7 +58,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             response, expected_redirect_url, fetch_redirect_response=False
         )
 
-    def test_404_response_with_unfound_submission(self):
+    def test_403_response_with_unfound_submission(self):
         endpoint = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={

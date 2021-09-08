@@ -7,9 +7,9 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
-from ..appointments.models import AppointmentInfo
 from .utils import sanitize_content
 
 

@@ -18,6 +18,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
+from ...constants import AppointmentDetailsStatus
 from ...contrib.qmatic.tests.factories import QmaticConfigFactory
 from ...contrib.qmatic.tests.test_plugin import mock_response
 from ...models import AppointmentsConfig
@@ -276,6 +277,10 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         response = self.client.post(self.endpoint, data=data)
 
         self.assertEqual(response.status_code, 204)
+        self.submission.refresh_from_db()
+        self.assertEqual(
+            self.submission.appointment_info.status, AppointmentDetailsStatus.cancelled
+        )
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):

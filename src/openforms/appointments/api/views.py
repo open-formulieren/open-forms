@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
@@ -193,11 +193,11 @@ class TimesListView(ListMixin, APIView):
         ),
         502: OpenApiResponse(
             response=ExceptionSerializer,
-            description=_("Unable to cancel appointment with given data."),
+            description=_("Unable to cancel appointment."),
         ),
     },
 )
-class CancelAppointmentView(RetrieveAPIView):
+class CancelAppointmentView(GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "submission_uuid"
     queryset = Submission.objects.all()
