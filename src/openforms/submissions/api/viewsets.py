@@ -22,7 +22,11 @@ from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
-from ..utils import add_submmission_to_session
+from ..utils import (
+    add_submmission_to_session,
+    remove_submission_from_session,
+    remove_submission_uploads_from_session,
+)
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
     FormDataSerializer,
@@ -112,15 +116,20 @@ class SubmissionViewSet(
         data (including individual steps).
 
         TODO: give some leeway? add endpoint to trigger cleanup immediately?
+        TODO: emit a status URL with time-based token (Salted HMAC, from token generator)
+        that the frontend can poll without needing the submission in the session.
+        TODO: if appointment registration fails, the submission ID must be added back
+        to the session so the user can return to the first step(s) in the UI.
         """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
-        submission.completed_on = timezone.now()
 
+        submission.completed_on = timezone.now()
         submission.save()
+
         # TODO: implement in celery tasks in cleanup (see ./tasks/__init__.py)
-        # remove_submission_from_session(submission, self.request.session)
-        # remove_submission_uploads_from_session(submission, self.request.session)
+        remove_submission_from_session(submission, self.request.session)
+        remove_submission_uploads_from_session(submission, self.request.session)
 
         # after committing the database transaction where the submissions completion is
         # stored, start processing the completion.
