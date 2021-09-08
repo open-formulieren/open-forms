@@ -33,15 +33,6 @@ class BasePlugin(ABC):
     plugin is called.
     """
 
-    backend_feedback_serializer: Optional[SerializerCls] = None
-    """
-    A serializer class describing the plugin-specific backend feedback data.
-
-    Plugins often interact with other backend systems that send response data. For
-    debugging/troubleshooting purposes, this data can be stored as JSON using the
-    specified serializer class.
-    """
-
     is_demo_plugin = False
 
     def __init__(self, identifier: str):
@@ -60,8 +51,7 @@ class BasePlugin(ABC):
 
         This method must return a string to be saved on the submission model.
 
-        :arg result: The result of the backend_feedback_serializer if provided, otherwise
-          the raw underlying JSONField datastructure.
+        :arg result: the raw underlying JSONField datastructure.
         """
         raise NotImplementedError()
 

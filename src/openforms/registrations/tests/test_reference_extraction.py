@@ -1,8 +1,6 @@
 """
 Test the submission reference extraction behaviour, independent from the plugin.
 """
-from dataclasses import dataclass
-
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -33,21 +31,9 @@ class Plugin1(BasePlugin):
         return result.get("reference")
 
 
-@dataclass
-class Result:
-    some_id: str
-    reference: int
-
-
-class ResultSerializer(serializers.Serializer):
-    some_id = serializers.CharField()
-    reference = serializers.IntegerField()
-
-
 @register("plugin2")
 class Plugin2(BasePlugin):
     configuration_options = serializers.Serializer
-    backend_feedback_serializer = ResultSerializer
 
     def register_submission(self, submission, options):
         pass
@@ -119,14 +105,13 @@ class ExtractableSubmissionReferenceTests(TestCase):
 
         self.assertEqual(reference, "some-unique-reference")
 
-    def test_completed_submission_with_result_serializer(self):
+    def test_completed_but_extraction_errors(self):
         submission = SubmissionFactory.create(
             registration_success=True,
-            registration_result={"reference": 101, "some_id": "some-id"},
+            registration_result={"foo": "bar"},
             form__registration_backend="plugin2",
         )
 
         with patch_registry(model_field, register):
-            reference = extract_submission_reference(submission)
-
-        self.assertEqual(reference, "101")
+            with self.assertRaises(NoSubmissionReference):
+                extract_submission_reference(submission)

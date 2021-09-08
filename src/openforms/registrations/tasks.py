@@ -78,21 +78,9 @@ def register_submission(submission_id: int) -> Optional[dict]:
         raise
     else:
         status = RegistrationStatuses.success
-        if plugin.backend_feedback_serializer:
-            logger.debug(
-                "Serializing the callback result with '%r'",
-                plugin.backend_feedback_serializer,
-            )
-            result_serializer = plugin.backend_feedback_serializer(instance=result)
-            result_data = result_serializer.data
-        else:
-            logger.debug(
-                "No result serializer specified, assuming raw result can be serialized as JSON"
-            )
-            result_data = result
 
     submission.registration_status = status
-    submission.registration_result = result_data
+    submission.registration_result = result
     submission.save(
         update_fields=[
             "registration_status",

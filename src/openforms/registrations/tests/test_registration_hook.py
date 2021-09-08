@@ -89,37 +89,6 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @freeze_time("2021-08-04T12:00:00+02:00")
-    def test_plugin_with_custom_result_serializer(self):
-        register = Registry()
-
-        result_uuid = uuid.uuid4()
-
-        # register the callback, including the assertions
-        @register("callback")
-        class Plugin(BasePlugin):
-            verbose_name = "Assertion callback"
-            configuration_options = OptionsSerializer
-            backend_feedback_serializer = ResultSerializer
-
-            def register_submission(self, submission, options):
-                return {"external_id": result_uuid}
-
-        # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
-        with patch_registry(model_field, register):
-            register_submission(self.submission.id)
-
-        self.submission.refresh_from_db()
-        self.assertEqual(
-            self.submission.registration_status, RegistrationStatuses.success
-        )
-        self.assertEqual(
-            self.submission.registration_result,
-            {"external_id": str(result_uuid)},
-        )
-        self.assertEqual(self.submission.last_register_date, timezone.now())
-
-    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration(self):
         register = Registry()
 

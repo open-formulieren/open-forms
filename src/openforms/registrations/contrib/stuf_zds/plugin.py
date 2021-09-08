@@ -156,8 +156,7 @@ class StufZDSRegistration(BasePlugin):
 
         This method must return a string to be saved on the submission model.
 
-        :arg result: The result of the backend_feedback_serializer if provided, otherwise
-          the raw underlying JSONField datastructure.
+        :arg result: the raw underlying JSONField datastructure.
 
         .. warning::
 

@@ -36,21 +36,8 @@ def extract_submission_reference(submission: Submission) -> str:
 
     # figure out which plugin to call for extraction
     plugin = registry[backend]
-    if plugin.backend_feedback_serializer:
-        logger.debug(
-            "Serializing the callback result with '%r'",
-            plugin.backend_feedback_serializer,
-        )
-        result_serializer = plugin.backend_feedback_serializer(data=result)
-        result_serializer.is_valid(raise_exception=True)
-        result_data = result_serializer.validated_data
-    else:
-        logger.debug(
-            "No result serializer specified, assuming raw result can be serialized as JSON"
-        )
-        result_data = result
 
     try:
-        return plugin.get_reference_from_result(result_data)
+        return plugin.get_reference_from_result(result)
     except Exception as exc:
         raise NoSubmissionReference("Extraction failed") from exc
