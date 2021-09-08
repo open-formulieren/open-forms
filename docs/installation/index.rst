@@ -11,5 +11,4 @@ Installation
    quickstart
    deployment
    self_signed
-   configuration
    form_hosting

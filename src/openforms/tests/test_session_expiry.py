@@ -22,7 +22,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..accounts.tests.factories import SuperUserFactory
-from .utils import NOOP_CACHES
+from .utils import NOOP_CACHES, disable_2fa
 
 SESSION_CACHES = deepcopy(NOOP_CACHES)
 SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
@@ -152,10 +152,10 @@ class FormUserSessionExpiryTests(APITestCase):
                 )
 
 
+@disable_2fa
 @override_settings(
     CACHES=SESSION_CACHES,
     SESSION_CACHE_ALIAS="session",
-    TWO_FACTOR_PATCH_ADMIN=False,
 )
 class AdminSessionExpiryTests(APITestCase):
     @classmethod

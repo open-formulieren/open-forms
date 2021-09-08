@@ -8,7 +8,7 @@ from .constants import AppointmentDetailsStatus, AppointmentsConfigPaths
 
 class AppointmentsConfig(SingletonModel):
     config_path = models.CharField(
-        _("config path"),
+        _("appointment plugin"),
         choices=AppointmentsConfigPaths,
         max_length=255,
         blank=True,
@@ -23,7 +23,7 @@ class AppointmentInfo(models.Model):
         max_length=50,
     )
     appointment_id = models.CharField(
-        _("appointment id"),
+        _("appointment ID"),
         max_length=50,
         blank=True,
     )

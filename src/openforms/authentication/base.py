@@ -31,6 +31,7 @@ class BasePlugin:
     """
     provides_auth = None
     return_method = "GET"
+    is_demo_plugin = False
 
     def __init__(self, identifier: str):
         self.identifier = identifier

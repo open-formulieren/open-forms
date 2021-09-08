@@ -12,6 +12,7 @@ class OutageAuthentication(BasePlugin):
     """
 
     verbose_name = _("Demo Outage")
+    is_demo_plugin = True
 
     def start_login(self, request, form, form_url):
         raise Exception("simulated backend failure")

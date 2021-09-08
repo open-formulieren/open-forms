@@ -195,7 +195,7 @@ class FormDataSerializer(serializers.Serializer):
         label=_("form data"),
         required=False,
         help_text=_(
-            "The Formio.js submission data object. This will be merged with the full "
+            "The Form.io submission data object. This will be merged with the full "
             "form submission data, including data from other steps, to evaluate the "
             "configured form logic."
         ),

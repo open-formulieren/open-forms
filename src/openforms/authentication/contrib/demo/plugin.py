@@ -41,6 +41,7 @@ class DemoBaseAuthentication(BasePlugin):
     return_method = "POST"
     form_class: type = NotImplemented
     auth_attribute: str = NotImplemented
+    is_demo_plugin = True
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str

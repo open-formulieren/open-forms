@@ -218,6 +218,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "slug",
             "configuration",
             "login_required",
+            "is_reusable",
         )
         extra_kwargs = {
             "url": {
@@ -267,6 +268,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     login_required = serializers.BooleanField(
         source="form_definition.login_required", read_only=True
     )
+    is_reusable = serializers.BooleanField(
+        source="form_definition.is_reusable", read_only=True
+    )
     name = serializers.CharField(source="form_definition.name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
@@ -293,6 +297,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "login_required",
+            "is_reusable",
             "literals",
         )
 
@@ -330,7 +335,7 @@ class ComponentPropertySerializer(serializers.Serializer):
     value = serializers.CharField(
         label=_("property key"),
         help_text=_(
-            "The Formio component property to alter, identified by `component.key`"
+            "The Form.io component property to alter, identified by `component.key`"
         ),
     )
     type = serializers.ChoiceField(
@@ -355,7 +360,7 @@ class LogicValueActionSerializer(serializers.Serializer):
         label=_("Value"),
         help_text=_(
             "A valid JsonLogic expression describing the value. This may refer to "
-            "(other) Formio components."
+            "(other) Form.io components."
         ),
         validators=[JsonLogicValidator()],
     )
@@ -381,9 +386,9 @@ class LogicComponentActionSerializer(serializers.Serializer):
     component = serializers.CharField(
         required=False,  # validated against the action.type
         allow_blank=True,
-        label=_("FormIO component"),
+        label=_("Form.io component"),
         help_text=_(
-            "Key of the FormIO component that the action applies to. This field is "
+            "Key of the Form.io component that the action applies to. This field is "
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
     )
@@ -451,9 +456,13 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
         logic_test = JsonLogicTest.from_expression(trigger_logic)
 
         first_operand = logic_test.values[0]
-        if (
-            not isinstance(first_operand, JsonLogicTest)
-            or first_operand.operator != "var"
+        is_date_operand = (
+            first_operand.operator == "date"
+            and isinstance(first_operand.values[0], JsonLogicTest)
+            and first_operand.values[0].operator == "var"
+        )
+        if not isinstance(first_operand, JsonLogicTest) or (
+            first_operand.operator != "var" and not is_date_operand
         ):
             raise serializers.ValidationError(
                 _('The first operand must be a `{"var": "<componentKey>"}` expression.')
@@ -471,7 +480,14 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
         if form and trigger_logic:
             logic_test = JsonLogicTest.from_expression(trigger_logic)
             first_operand = logic_test.values[0]
-            needle = first_operand.values[0]
+            if (
+                first_operand.operator == "date"
+                and isinstance(first_operand.values[0], JsonLogicTest)
+                and first_operand.values[0].operator == "var"
+            ):
+                needle = first_operand.values[0].values[0]
+            else:
+                needle = first_operand.values[0]
             for component in form.iter_components(recursive=True):
                 if (key := component.get("key")) and key == needle:
                     break

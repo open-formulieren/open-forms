@@ -14,6 +14,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.emails.connection_check import LabelValue, check_email_backend
+from openforms.tests.utils import disable_2fa
 from openforms.utils.tests.webtest_base import WebTestPyQueryMixin
 
 
@@ -158,7 +159,7 @@ class CheckEmailSettingsFunctionTests(TestCase):
             self.assertIsInstance(res.exception, socket.error)
 
 
-@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
+@disable_2fa
 class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
     def test_requires_staff(self):
         url = reverse("admin_email_test")

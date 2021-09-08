@@ -2,6 +2,7 @@ import json
 from io import BytesIO
 from zipfile import ZipFile
 
+from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -14,24 +15,25 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
+from openforms.tests.utils import disable_2fa
 
 
+@disable_2fa
 class FormAdminImportExportTests(WebTest):
-    def setUp(self):
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_form_admin_export(self):
-        form = FormFactory.create(authentication_backends=["demo"])
-        response = self.app.get(
-            reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
-        )
+        self.client.force_login(self.user)
+        form = FormFactory.create(authentication_backends=["digid"])
+        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
+
+        response = self.client.post(admin_url, data={"_export": "Export"})
 
         self.assertEqual(response.status_code, 200)
-
-        response = response.form.submit("_export")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, "application/zip")
+        self.assertEqual(response["content-type"], "application/zip")
 
         zf = ZipFile(BytesIO(response.content))
 
@@ -43,7 +45,7 @@ class FormAdminImportExportTests(WebTest):
         forms = json.loads(zf.read("forms.json"))
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0]["uuid"], str(form.uuid))
-        self.assertEqual(forms[0]["authentication_backends"], ["demo"])
+        self.assertEqual(forms[0]["authentication_backends"], ["digid"])
 
         form_definitions = json.loads(zf.read("formDefinitions.json"))
         self.assertEqual(len(form_definitions), 0)
@@ -73,7 +75,7 @@ class FormAdminImportExportTests(WebTest):
                                 "name": "Form 000",
                                 "slug": "bed",
                                 "product": None,
-                                "authentication_backends": ["demo"],
+                                "authentication_backends": ["digid"],
                             }
                         ]
                     ).encode("utf-8")
@@ -108,7 +110,7 @@ class FormAdminImportExportTests(WebTest):
         form = Form.objects.get()
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
         self.assertEqual(form.name, "Form 000")
-        self.assertEqual(form.authentication_backends, ["demo"])
+        self.assertEqual(form.authentication_backends, ["digid"])
 
     def test_form_admin_import_staff_required(self):
         self.user.is_superuser = False
@@ -290,32 +292,25 @@ class FormAdminImportExportTests(WebTest):
         self.assertEqual(form_definition.slug, "testform-2")
 
 
-class FormAdminCopyTests(WebTest):
-    def setUp(self):
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
-
+@disable_2fa
+class FormAdminCopyTests(TestCase):
     def test_form_admin_copy(self):
-        form = FormFactory.create(authentication_backends=["demo"])
+        user = UserFactory.create(is_superuser=True, is_staff=True)
+        self.client.force_login(user)
+        form = FormFactory.create(authentication_backends=["digid"])
         form_step = FormStepFactory.create(form=form)
-        response = self.app.get(
-            reverse("admin:forms_form_change", args=(form.pk,)), user=self.user
-        )
+        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
 
-        self.assertEqual(response.status_code, 200)
-
-        response = response.form.submit("_copy")
+        # React UI renders this input, so simulate it in a raw POST call
+        response = self.client.post(admin_url, data={"_copy": "Copy"})
 
         copied_form = Form.objects.get(slug=_("{slug}-copy").format(slug=form.slug))
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            reverse("admin:forms_form_change", args=(copied_form.pk,)),
-        )
+        new_admin_url = reverse("admin:forms_form_change", args=(copied_form.pk,))
+        self.assertRedirects(response, new_admin_url, fetch_redirect_response=False)
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
         self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
-        self.assertEqual(copied_form.authentication_backends, ["demo"])
+        self.assertEqual(copied_form.authentication_backends, ["digid"])
 
         copied_form_step = FormStep.objects.last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
@@ -325,6 +320,7 @@ class FormAdminCopyTests(WebTest):
         self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
 
 
+@disable_2fa
 class FormAdminActionsTests(WebTest):
     def setUp(self) -> None:
         self.form = FormFactory.create()

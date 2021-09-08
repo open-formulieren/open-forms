@@ -50,7 +50,9 @@ class ObjectsAPIConfig(SingletonModel):
     )
     productaanvraag_type = models.CharField(
         _("Productaanvraag type"),
-        help_text=_("The type of ProductAanvraag"),
+        help_text=_(
+            "Description of the 'ProductAanvraag' type. This value is saved in the 'type' attribute of the 'ProductAanvraag'."
+        ),
         blank=True,
         max_length=255,
     )

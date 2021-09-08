@@ -1,12 +1,12 @@
-from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.tests.utils import disable_2fa
 
 
-@override_settings(TWO_FACTOR_PATCH_ADMIN=False)
+@disable_2fa
 class FormVersionAdminImportExportTests(WebTest):
     def setUp(self):
         self.user = SuperUserFactory.create()

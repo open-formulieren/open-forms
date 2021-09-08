@@ -10,6 +10,6 @@ IMAGE_COMPONENTS = ["signature"]
 
 class RegistrationStatuses(DjangoChoices):
     pending = ChoiceItem("pending", _("Pending (not registered yet)"))
-    in_progress = ChoiceItem("in_progress", _("In Progress (not registered yet)"))
+    in_progress = ChoiceItem("in_progress", _("In progress (not registered yet)"))
     success = ChoiceItem("success", _("Success"))
     failed = ChoiceItem("failed", _("Failed"))

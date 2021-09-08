@@ -16,18 +16,13 @@ from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...appointments.utils import book_appointment_for_submission
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
-from ..utils import (
-    add_submmission_to_session,
-    remove_submission_from_session,
-    remove_submission_uploads_from_session,
-)
+from ..utils import add_submmission_to_session
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
     FormDataSerializer,
@@ -131,8 +126,6 @@ class SubmissionViewSet(
         # stored, start processing the completion.
         transaction.on_commit(lambda: on_completion(submission.id))
 
-        # TODO: move this
-        book_appointment_for_submission(submission)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(

@@ -12,7 +12,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (
-            _("E-mail security configuration"),
+            _("Email security configuration"),
             {
                 "fields": ("email_template_netloc_allowlist",),
             },
@@ -103,6 +103,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": (
                     "display_sdk_information",
                     "enable_react_form",
+                    "enable_demo_plugins",
                     "default_test_bsn",
                     "default_test_kvk",
                     "allow_empty_initiator",

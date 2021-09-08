@@ -31,7 +31,7 @@ WORKDIR /app
 RUN mkdir /app/src
 
 # Ensure we use the latest version of pip
-RUN pip install pip setuptools -U
+RUN pip install pip 'setuptools<58.0' -U
 COPY ./requirements /app/requirements
 RUN pip install -r requirements/production.txt
 

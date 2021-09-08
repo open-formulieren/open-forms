@@ -27,7 +27,7 @@ class PluginListView(ListMixin, APIView):
     serializer_class = PrefillPluginSerializer
 
     def get_objects(self):
-        return list(register)
+        return list(register.iter_enabled_plugins())
 
 
 @extend_schema_view(

@@ -25,7 +25,7 @@
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
   "1GyseX": {
-    "defaultMessage": "Inhoud bevestigingspagina",
+    "defaultMessage": "Bevestigingspagina tekst",
     "description": "Confirmation template label",
     "originalDefault": "Submission page content"
   },
@@ -58,6 +58,11 @@
     "defaultMessage": "Stap toevoegen",
     "description": "add step button",
     "originalDefault": "Add step"
+  },
+  "5uaKBM": {
+    "defaultMessage": "minus",
+    "description": "\"-\" operator description",
+    "originalDefault": "minus"
   },
   "5zieWh": {
     "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
@@ -109,6 +114,11 @@
     "description": "\"<=\" operator description",
     "originalDefault": "is less than or equal to"
   },
+  "89fqYz": {
+    "defaultMessage": "Is herbruikbaar?",
+    "description": "Form step is reusable label",
+    "originalDefault": "Is reusable?"
+  },
   "8LLxRg": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Form step save text field help text",
@@ -148,6 +158,11 @@
     "defaultMessage": "Formulier",
     "description": "Form fields tab title",
     "originalDefault": "Form"
+  },
+  "BrGg65": {
+    "defaultMessage": "plus",
+    "description": "\"+\" operator description",
+    "originalDefault": "plus"
   },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
@@ -469,6 +484,11 @@
     "description": "\"<\" operator description",
     "originalDefault": "is less than"
   },
+  "inhTXo": {
+    "defaultMessage": "years",
+    "description": "Logic trigger number of years",
+    "originalDefault": "years"
+  },
   "ixiVhj": {
     "defaultMessage": "{name} [nieuw]",
     "description": "form step label in nav",
@@ -498,6 +518,11 @@
     "defaultMessage": "disabled",
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
+  },
+  "mH3X/G": {
+    "defaultMessage": "today",
+    "description": "\"today\" operand type",
+    "originalDefault": "today"
   },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",

@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
@@ -31,6 +31,7 @@ from openforms.submissions.utils import (
     remove_from_session_list,
     remove_upload_from_session,
 )
+from openforms.tests.utils import disable_2fa
 
 
 @temp_private_root()
@@ -211,7 +212,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         # expect the unclaimed & older uploads to be deleted
         self.assertEqual(actual, [keep_1, keep_2, keep_3])
 
-    @override_settings(TWO_FACTOR_PATCH_ADMIN=False)
+    @disable_2fa
     def test_upload_retrieve_requires_permission(self):
         upload = TemporaryFileUploadFactory.create()
         url = reverse(

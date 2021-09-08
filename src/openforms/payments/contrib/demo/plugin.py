@@ -9,6 +9,7 @@ from openforms.payments.registry import register
 @register("demo")
 class DemoPayment(BasePlugin):
     verbose_name = _("Demo")
+    is_demo_plugin = True
 
     def start_payment(self, request, payment):
         url = self.get_return_url(request, payment)

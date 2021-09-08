@@ -95,7 +95,9 @@ class ImportExportTests(TestCase):
     def test_import(self):
         product = ProductFactory.create()
         form = FormFactory.create(
-            product=product, authentication_backends=["demo"], payment_backend="demo"
+            product=product,
+            authentication_backends=["digid"],
+            payment_backend="ogone-legacy",
         )
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -129,8 +131,8 @@ class ImportExportTests(TestCase):
         self.assertEqual(forms.last().name, form.name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
-        self.assertEqual(forms.last().authentication_backends, ["demo"])
-        self.assertEqual(forms.last().payment_backend, "demo")
+        self.assertEqual(forms.last().authentication_backends, ["digid"])
+        self.assertEqual(forms.last().payment_backend, "ogone-legacy")
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()

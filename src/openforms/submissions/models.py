@@ -1,7 +1,7 @@
 import logging
 import os.path
 import uuid
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple
@@ -27,7 +27,6 @@ from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from ..payments.constants import PaymentStatus
-from ..utils.helpers import get_flattened_components
 from .constants import RegistrationStatuses
 from .query import SubmissionQuerySet
 
@@ -68,14 +67,21 @@ class SubmissionState:
         return next(candidates, None)
 
 
+def _get_config_field(field: str) -> str:
+    # workaround for when this function is called during migrations and the table
+    # hasn't fully migrated yet
+    qs = GlobalConfiguration.objects.values_list(field, flat=True)
+    return qs.first()
+
+
 def get_default_bsn() -> str:
-    config = GlobalConfiguration.get_solo()
-    return config.default_test_bsn if config.default_test_bsn else ""
+    default_test_bsn = _get_config_field("default_test_bsn")
+    return default_test_bsn or ""
 
 
 def get_default_kvk() -> str:
-    config = GlobalConfiguration.get_solo()
-    return config.default_test_kvk if config.default_test_kvk else ""
+    default_test_kvk = _get_config_field("default_test_kvk")
+    return default_test_kvk or ""
 
 
 class Submission(models.Model):
@@ -267,33 +273,28 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
 
-    def get_merged_data_with_component_type(self) -> dict:
-        merged_data = dict()
+    def get_ordered_data_with_component_type(self) -> OrderedDict:
+        ordered_data = OrderedDict()
+        merged_data = self.get_merged_data()
 
-        for step in self.submissionstep_set.exclude(data=None).select_related(
-            "form_step"
-        ):
-            components = step.form_step.form_definition.configuration["components"]
-            flattened_components = get_flattened_components(components)
-            component_key_to_type = {
-                component["key"]: component["type"]
-                for component in flattened_components
-            }
-
-            for key, value in step.data.items():
-                if key in merged_data:
-                    logger.warning(
-                        "%s was previously in merged_data and will be overwritten by %s",
-                        key,
-                        value,
-                    )
-
-                merged_data[key] = {
-                    "type": component_key_to_type.get(key, "unknown component"),
-                    "value": value,
+        # first collect data we have in the same order the components are defined in the form
+        for component in self.form.iter_components(recursive=True):
+            key = component["key"]
+            if key in merged_data:
+                ordered_data[key] = {
+                    "type": component["type"],
+                    "value": merged_data[key],
                 }
 
-        return merged_data
+        # now append remaining data that doesn't have a matching component
+        for key, value in merged_data.items():
+            if key not in ordered_data:
+                ordered_data[key] = {
+                    "type": "unknown component",
+                    "value": merged_data[key],
+                }
+
+        return ordered_data
 
     def get_merged_appointment_data(self) -> Dict[str, str]:
         merged_appointment_data = dict()
@@ -341,10 +342,10 @@ class Submission(models.Model):
         return merged_data
 
     def get_printable_data(self) -> Dict[str, str]:
-        printable_data = dict()
+        printable_data = OrderedDict()
         attachment_data = self.get_merged_attachments()
 
-        for key, info in self.get_merged_data_with_component_type().items():
+        for key, info in self.get_ordered_data_with_component_type().items():
             if info["type"] == "file":
                 files = attachment_data.get(key)
                 if files:
@@ -365,7 +366,6 @@ class Submission(models.Model):
         return printable_data
 
     data = property(get_merged_data)
-    data_with_component_type = property(get_merged_data_with_component_type)
 
     def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
         return SubmissionFileAttachment.objects.for_submission(self)

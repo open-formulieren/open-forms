@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 
 from openforms.forms.tests.factories import (
@@ -31,7 +33,7 @@ class TestSubmission(TestCase):
             {"key1": "value1", "key2": "value-a", "key3": "value-b"},
         )
 
-    def test_get_merged_data_with_component_types(self):
+    def test_get_ordered_data_with_component_type(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -50,34 +52,42 @@ class TestSubmission(TestCase):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
             submission=submission,
-            data={"key": "this is some text", "key2": "this is text in a text area"},
-            form_step=FormStepFactory.create(form_definition=form_definition),
+            data={"key3": True, "key2": "this is text in a text area"},
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "key2": "this is other text in a text area",
-                "key3": True,
                 "key5": "this is some inner text",
+                "key": "this is some text",
+                "key2": "this is other text in a text area",
             },
-            form_step=FormStepFactory.create(form_definition=form_definition),
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
         SubmissionStepFactory.create(
-            submission=submission, form_step=FormStepFactory.create()
+            submission=submission,
+            form_step=FormStepFactory.create(form=submission.form),
         )
-
-        self.assertEqual(
-            submission.get_merged_data_with_component_type(),
-            {
-                "key": {"type": "textfield", "value": "this is some text"},
-                "key2": {
-                    "type": "textarea",
-                    "value": "this is other text in a text area",
-                },
-                "key3": {"type": "checkbox", "value": True},
-                "key5": {"type": "textfield", "value": "this is some inner text"},
-            },
+        actual = submission.get_ordered_data_with_component_type()
+        expected = OrderedDict(
+            [
+                ("key", {"type": "textfield", "value": "this is some text"}),
+                (
+                    "key2",
+                    {
+                        "type": "textarea",
+                        "value": "this is other text in a text area",
+                    },
+                ),
+                ("key3", {"type": "checkbox", "value": True}),
+                ("key5", {"type": "textfield", "value": "this is some inner text"}),
+            ]
         )
+        self.assertEqual(actual, expected)
 
     def test_get_printable_data_with_selectboxes(self):
         form_definition = FormDefinitionFactory.create(
@@ -100,9 +110,21 @@ class TestSubmission(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
-            form_step=FormStepFactory.create(form_definition=form_definition),
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
 
+        ordered = submission.get_ordered_data_with_component_type()
+        self.assertEqual(
+            ordered,
+            {
+                "testSelectBoxes": {
+                    "type": "selectboxes",
+                    "value": {"test1": True, "test2": True, "test3": False},
+                }
+            },
+        )
         printable_data = submission.get_printable_data()
 
         self.assertEqual(
