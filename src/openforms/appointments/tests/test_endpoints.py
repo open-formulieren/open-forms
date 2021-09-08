@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.http import urlsafe_base64_encode
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
@@ -37,9 +36,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "mocked",
-                "base64_submission_uuid": urlsafe_base64_encode(
-                    str(submission.uuid).encode()
-                ),
+                "submission_uuid": submission.uuid,
             },
         )
 
@@ -63,9 +60,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "mocked",
-                "base64_submission_uuid": urlsafe_base64_encode(
-                    str(uuid.uuid4()).encode()
-                ),
+                "submission_uuid": uuid.uuid4(),
             },
         )
 
@@ -84,9 +79,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "bad",
-                "base64_submission_uuid": urlsafe_base64_encode(
-                    str(submission.uuid).encode()
-                ),
+                "submission_uuid": submission.uuid,
             },
         )
 

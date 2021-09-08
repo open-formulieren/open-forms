@@ -269,8 +269,6 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         )
 
         data = {
-            "identifier": "123456789",
-            "uuid": str(self.submission.uuid),
             "email": "maykin@media.nl",
         }
 
@@ -312,8 +310,6 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         m.delete(f"{self.api_root}appointments/123456789", exc=ClientError)
 
         data = {
-            "identifier": "123456789",
-            "uuid": str(self.submission.uuid),
             "email": "maykin@media.nl",
         }
 

@@ -6,7 +6,6 @@ from typing import Dict, List, Optional
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -231,15 +230,13 @@ class BasePlugin:
 
         token = submission_appointment_token_generator.make_token(submission)
 
-        cancel_uri = reverse(
+        cancel_path = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": token,
-                "base64_submission_uuid": urlsafe_base64_encode(
-                    str(submission.uuid).encode()
-                ),
+                "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = f"{settings.BASE_URL}{cancel_uri}"
+        cancel_url = f"{settings.BASE_URL}{cancel_path}"
 
         return {"cancel_url": cancel_url}

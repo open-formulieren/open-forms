@@ -4,7 +4,6 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.http import urlsafe_base64_encode
 
 from ...submissions.tests.factories import SubmissionFactory
 from ..base import (
@@ -60,15 +59,13 @@ class BasePluginTests(TestCase):
 
         result = self.plugin.get_appointment_links(submission)
 
-        cancel_uri = reverse(
+        cancel_path = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": fake_token,
-                "base64_submission_uuid": urlsafe_base64_encode(
-                    str(submission.uuid).encode()
-                ),
+                "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = f"{settings.BASE_URL}{cancel_uri}"
+        cancel_url = f"{settings.BASE_URL}{cancel_path}"
 
         self.assertEqual({"cancel_url": cancel_url}, result)

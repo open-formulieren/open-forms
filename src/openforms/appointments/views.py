@@ -32,11 +32,7 @@ class VerifyCancelAppointmentLinkView(RedirectView):
     permission_classes = ()
     authentication_classes = ()
 
-    def get_redirect_url(
-        self, base64_submission_uuid: int, token: str, *args, **kwargs
-    ):
-        submission_uuid = urlsafe_base64_decode(base64_submission_uuid).decode()
-
+    def get_redirect_url(self, submission_uuid: int, token: str, *args, **kwargs):
         try:
             submission = Submission.objects.get(uuid=submission_uuid)
         except ObjectDoesNotExist:
