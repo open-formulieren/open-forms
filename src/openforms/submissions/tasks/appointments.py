@@ -2,6 +2,7 @@ import logging
 
 from openforms.appointments.service import (
     AppointmentRegistrationFailed,
+    AppointmentUpdateFailed,
     register_appointment,
 )
 from openforms.celery import app
@@ -55,7 +56,12 @@ def maybe_register_appointment(task, submission_id: int) -> None:
     register_appointment(submission)
 
 
-@app.task(bind=True)
+@maybe_retry_in_workflow(
+    retry_backoff=True,
+    timeout=10,
+    retry_for=(AppointmentUpdateFailed,),
+)
+@app.task(bind=True, max_retries=3)
 def maybe_update_appointment(task, submission_id: int) -> None:
     """
     Check the submission state and update the appointment with the internal reference.

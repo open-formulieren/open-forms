@@ -7,13 +7,25 @@ outside of this app.
 """
 from openforms.submissions.models import Submission
 
-__all__ = ["AppointmentRegistrationFailed", "register_appointment"]
+__all__ = [
+    "AppointmentRegistrationFailed",
+    "AppointmentUpdateFailed",
+    "register_appointment",
+]
 
 
-class AppointmentRegistrationFailed(Exception):
+class AppointmentInteractionFailed(Exception):
     def __init__(self, *args, **kwargs):
         self.should_retry = kwargs.pop("should_retry", False)
         super().__init__(*args, **kwargs)
+
+
+class AppointmentRegistrationFailed(AppointmentInteractionFailed):
+    pass
+
+
+class AppointmentUpdateFailed(AppointmentInteractionFailed):
+    pass
 
 
 def register_appointment(submission: Submission) -> None:
