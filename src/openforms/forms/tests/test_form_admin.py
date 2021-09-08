@@ -29,6 +29,9 @@ class Plugin(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
+    def get_reference_from_result(self, result) -> str:
+        return "foo"
+
 
 @disable_2fa
 class FormAdminTests(WebTest):
