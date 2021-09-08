@@ -1,6 +1,6 @@
 import logging
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils.crypto import get_random_string
 
 from openforms.celery import app
@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
+@transaction.atomic
 def obtain_submission_reference(submission_id: int) -> str:
     """
     Obtain a unique reference to be communicated to the end user.
@@ -22,12 +23,6 @@ def obtain_submission_reference(submission_id: int) -> str:
     is possible that the backend registration failed or does not generate a reference
     (read: case number), in which case we need to generate a unique reference ourselves.
     """
-    # circular import dependency
-    from openforms.registrations.service import (
-        NoSubmissionReference,
-        extract_submission_reference,
-    )
-
     submission = Submission.objects.get(id=submission_id)
     # idempotency - do not run this again if there already is a reference!
     if submission.public_registration_reference:
@@ -37,20 +32,57 @@ def obtain_submission_reference(submission_id: int) -> str:
         )
         return
 
+    # race-condition detection. There's no reason/logic after the number 5 other than
+    # gut feeling.
+    MAX_NUM_ATTEMPTS = 5
+    race_condition_suspected, save_attempts = False, 0
+
+    while (
+        race_condition_suspected or save_attempts == 0
+    ) and save_attempts < MAX_NUM_ATTEMPTS:
+        try:
+            with transaction.atomic():
+                reference = get_reference_for_submission(submission)
+                submission.public_registration_reference = reference
+                submission.save(update_fields=["public_registration_reference"])
+        except IntegrityError as error:
+            race_condition_suspected = True
+            logger.warning(
+                "Likely race condition being handled for submission %d, did %d save attempts.",
+                submission_id,
+                save_attempts + 1,
+                exc_info=error,
+            )
+            save_attempts += 1
+            # if we're about to leave the loop, re-raise the original exception
+            if save_attempts >= MAX_NUM_ATTEMPTS:
+                raise
+        else:
+            return reference
+    # should never reach this
+    raise RuntimeError(  # noqa
+        "Unexpected code-path! Either the reference should have been saved successfully, "
+        "or the error should have been re-raised."
+    )
+
+
+def get_reference_for_submission(submission: Submission) -> str:
+    # Circular import
+    from openforms.registrations.service import (
+        NoSubmissionReference,
+        extract_submission_reference,
+    )
+
     try:
         reference = extract_submission_reference(submission)
     except NoSubmissionReference as exc:
         logger.info(
             "Could not get the reference from the registration result for submission %d, "
             "generating one instead",
-            submission_id,
+            submission.id,
             exc_info=exc,
         )
         reference = generate_unique_submission_reference()
-
-    with transaction.atomic():
-        submission.public_registration_reference = reference
-        submission.save(update_fields=["public_registration_reference"])
     return reference
 
 
