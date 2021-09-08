@@ -30,6 +30,14 @@ def obtain_submission_reference(submission_id: int) -> str:
     )
 
     submission = Submission.objects.get(id=submission_id)
+    # idempotency - do not run this again if there already is a reference!
+    if submission.public_registration_reference:
+        logger.info(
+            "Submission %d already had a public registration reference, aborting.",
+            submission_id,
+        )
+        return
+
     try:
         reference = extract_submission_reference(submission)
     except NoSubmissionReference as exc:
