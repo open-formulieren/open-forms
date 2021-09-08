@@ -32,7 +32,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         completed = factory.Trait(
             completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
             created_on=factory.LazyAttribute(
-                lambda s: s.completed - timedelta(hours=4)
+                lambda s: s.completed_on - timedelta(hours=4)
             ),
         )
         registration_failed = factory.Trait(

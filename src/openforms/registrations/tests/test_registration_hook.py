@@ -1,7 +1,6 @@
 """
 Test the registration hook on submissions.
 """
-import uuid
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -46,6 +45,7 @@ class RegistrationHookTests(TestCase):
         )
 
         cls.submission = SubmissionFactory.create(
+            completed=True,
             form__registration_backend="callback",
             form__registration_backend_options={
                 "string": "some-option",
@@ -72,6 +72,9 @@ class RegistrationHookTests(TestCase):
                 test_closure.assertEqual(options["service"], test_closure.service)
 
                 return {"result": "ok"}
+
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -102,6 +105,9 @@ class RegistrationHookTests(TestCase):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
 
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
@@ -130,6 +136,9 @@ class RegistrationHookTests(TestCase):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
 
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
 
@@ -155,7 +164,9 @@ class RegistrationHookTests(TestCase):
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
-            form__registration_backend="", form__registration_backend_options={}
+            completed=True,
+            form__registration_backend="",
+            form__registration_backend_options={},
         )
 
         # call the hook for the submission, while patching the model field registry

@@ -14,10 +14,22 @@ class Plugin(BasePlugin):
     verbose_name = "some human readable label"
     configuration_options = OptionsSerializer
 
+    def register_submission(self, submission, options):
+        pass
+
+    def get_reference_from_result(self, result: dict) -> None:
+        pass
+
 
 class NoConfigPlugin(BasePlugin):
     verbose_name = "some human readable label"
     configuration_options = None
+
+    def register_submission(self, submission, options):
+        pass
+
+    def get_reference_from_result(self, result: dict) -> None:
+        pass
 
 
 class RegistryTests(SimpleTestCase):

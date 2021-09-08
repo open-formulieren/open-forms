@@ -43,7 +43,7 @@ def maybe_retry_in_workflow(
             logger.debug(
                 "Task %s (%s) timeout relevant: %s",
                 task.request.id,
-                task.request.task,
+                getattr(task.request, "task", "<task not in context!>"),
                 has_timeout,
             )
 
@@ -52,14 +52,18 @@ def maybe_retry_in_workflow(
                 0 if retries == 0 else getattr(task.request, "total_runtime", 0)
             )
 
-            do_retry, err = False, None
+            # check if the task was invoked via celery scheduling, or if it's called
+            # directly (in unit tests, for example)
+            called_via_celery = task.request.id is not None
+
+            do_retry, err = called_via_celery, None
             start = time.time()
             try:
                 return task._orig_run(*args, **kwargs)
             except retry_for as exc:
                 if not should_retry(exc, task):
                     raise
-                do_retry, err = True, exc
+                do_retry, err = called_via_celery, exc
             finally:
                 end = time.time()
 
@@ -110,7 +114,8 @@ def maybe_retry_in_workflow(
                     },
                 )
 
-        task._orig_run, task.run = task.run, run
+        if not hasattr(task, "_orig_run"):
+            task._orig_run, task.run = task.run, run
 
         return task
 
