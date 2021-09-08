@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..tests.factories import AppointmentInfoFactory
+from .factories import AppointmentInfoFactory
 
 
 class TestRelationBetweenAppointmentInfoAndSubmissions(TestCase):

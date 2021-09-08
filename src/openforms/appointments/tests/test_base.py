@@ -1,8 +1,10 @@
 from datetime import datetime
 from unittest.mock import patch
 
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
 
 from ...submissions.tests.factories import SubmissionFactory
 from ..base import (
@@ -50,20 +52,23 @@ class BasePluginTests(TestCase):
         self.assertIn("<h1>Data</h1>", result)
 
     @patch("openforms.appointments.base.submission_appointment_token_generator")
-    def test_get_appointment_links_html(self, token_generator_mock):
+    def test_get_appointment_links(self, token_generator_mock):
         submission = SubmissionFactory.create()
         fake_token = "fake-token"
 
         token_generator_mock.make_token.return_value = fake_token
 
-        result = self.plugin.get_appointment_links_html(submission)
+        result = self.plugin.get_appointment_links(submission)
 
-        cancel_url = reverse(
+        cancel_uri = reverse(
             "api:appointments-verify-cancel-appointment-link",
-            kwargs={"token": fake_token, "submission_id": submission.id},
+            kwargs={
+                "token": fake_token,
+                "base64_submission_uuid": urlsafe_base64_encode(
+                    str(submission.uuid).encode()
+                ),
+            },
         )
+        cancel_url = f"{settings.BASE_URL}{cancel_uri}"
 
-        self.assertIn(
-            cancel_url,
-            result,
-        )
+        self.assertEqual({"cancel_url": cancel_url}, result)

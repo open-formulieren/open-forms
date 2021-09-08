@@ -15,9 +15,13 @@ urlpatterns = [
     path("dates", DatesListView.as_view(), name="appointments-dates-list"),
     path("times", TimesListView.as_view(), name="appointments-times-list"),
     path(
-        "<int:submission_id>/<str:token>/verify",
+        "<str:base64_submission_uuid>/<str:token>/verify",
         VerifyCancelAppointmentLinkView.as_view(),
         name="appointments-verify-cancel-appointment-link",
     ),
-    path("cancel", CancelAppointmentView.as_view(), name="appointments-cancel"),
+    path(
+        "<str:submission_uuid>/cancel",
+        CancelAppointmentView.as_view(),
+        name="appointments-cancel",
+    ),
 ]

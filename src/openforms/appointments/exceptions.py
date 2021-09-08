@@ -31,6 +31,6 @@ class AppointmentUpdateFailed(AppointmentInteractionFailed):
 
 
 class CancelAppointmentFailed(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_502_BAD_GATEWAY
     default_detail = _("Unable to cancel appointment.")
     default_code = "cancel_appointment_failed"

@@ -3,8 +3,10 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -225,15 +227,19 @@ class BasePlugin:
             "appointments/appointment_details.html", {"appointment": details}
         )
 
-    def get_appointment_links_html(self, submission: Submission) -> str:
+    def get_appointment_links(self, submission: Submission) -> Dict[str, str]:
 
         token = submission_appointment_token_generator.make_token(submission)
-        cancel_url = reverse(
-            "api:appointments-verify-cancel-appointment-link",
-            kwargs={"token": token, "submission_id": submission.id},
-        )
 
-        return render_to_string(
-            "appointments/appointment_links.html",
-            {"cancel_url": cancel_url},
+        cancel_uri = reverse(
+            "api:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": token,
+                "base64_submission_uuid": urlsafe_base64_encode(
+                    str(submission.uuid).encode()
+                ),
+            },
         )
+        cancel_url = f"{settings.BASE_URL}{cancel_uri}"
+
+        return {"cancel_url": cancel_url}

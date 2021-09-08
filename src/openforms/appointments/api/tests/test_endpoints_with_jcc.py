@@ -244,7 +244,10 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
-        cls.endpoint = reverse("api:appointments-cancel")
+        cls.endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": str(cls.submission.uuid)},
+        )
 
         appointments_config = AppointmentsConfig.get_solo()
         appointments_config.config_path = (
@@ -341,7 +344,7 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
 
         response = self.client.post(self.endpoint, data=data)
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 502)
 
     def test_cancel_appointment_returns_403_when_no_appointment_is_in_session(self):
         data = {

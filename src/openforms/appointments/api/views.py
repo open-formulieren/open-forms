@@ -1,12 +1,15 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseRedirect
+import logging
+
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import RedirectView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
@@ -15,7 +18,6 @@ from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
 )
-from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.models import Submission
 from openforms.submissions.utils import add_submmission_to_session
 from openforms.utils.api.views import ListMixin
@@ -35,6 +37,8 @@ from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
 from ..models import AppointmentInfo
 from ..tokens import submission_appointment_token_generator
 from ..utils import get_client
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(
@@ -198,35 +202,38 @@ class TimesListView(ListMixin, APIView):
         ),
     },
 )
-class VerifyCancelAppointmentLinkView(APIView):
+class VerifyCancelAppointmentLinkView(RedirectView):
 
     permission_classes = ()
     authentication_classes = ()
 
-    def get(self, request, submission_id: int, token: str, *args, **kwargs):
+    def get_redirect_url(
+        self, base64_submission_uuid: int, token: str, *args, **kwargs
+    ):
+        submission_uuid = urlsafe_base64_decode(base64_submission_uuid).decode()
+
         try:
-            submission = Submission.objects.get(id=submission_id)
+            submission = Submission.objects.get(uuid=submission_uuid)
         except ObjectDoesNotExist:
-            raise Http404(f"Could not find submission with id: {submission_id}")
+            logger.debug(
+                "Called endpoint with an invalid submission uuid: %s", submission_uuid
+            )
+            raise PermissionDenied("Cancel url is not valid")
 
         # Check that the token is valid
         valid = submission_appointment_token_generator.check_token(submission, token)
         if not valid:
-            raise PermissionDenied
+            logger.debug("Called endpoint with an invalid token: %s", token)
+            raise PermissionDenied("Cancel url is not valid")
 
         add_submmission_to_session(submission, self.request.session)
 
         config = GlobalConfiguration.get_solo()
 
-        if submission.appointment_info.start_time:
-            # Displayed to user in SDK
-            time = submission.appointment_info.start_time.strftime("%-d+%B+om+%H.%M")
-        else:
-            time = ""
+        # Displayed to user in SDK
+        time = submission.appointment_info.start_time.isoformat()
 
-        return HttpResponseRedirect(
-            redirect_to=f"{config.sdk_website}/afspraak-annuleren?time={time}"
-        )
+        return f"{config.cancel_appointment_page}?time={time}&submission_uuid={str(submission_uuid)}"
 
 
 @extend_schema(
@@ -242,40 +249,19 @@ class VerifyCancelAppointmentLinkView(APIView):
             description=_("Unable to verify ownership of the appointment."),
         ),
     },
-    parameters=[
-        OpenApiParameter(
-            "identifier",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("Appointment identifier"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "uuid",
-            OpenApiTypes.UUID,
-            OpenApiParameter.QUERY,
-            description=_("Submission UUID"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "email",
-            OpenApiTypes.EMAIL,
-            OpenApiParameter.QUERY,
-            description=_("Email given when making appointment"),
-            required=True,
-        ),
-    ],
 )
-class CancelAppointmentView(APIView):
+class CancelAppointmentView(RetrieveAPIView):
+    lookup_field = "uuid"
+    lookup_url_kwarg = "submission_uuid"
+    queryset = Submission.objects.all()
     authentication_classes = ()
     permission_classes = [ActiveSubmissionPermission]
 
     def post(self, request, *args, **kwargs):
+        submission = self.get_object()
+
         serializer = CancelAppointmentInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        submission_uuid = self.request.session[SUBMISSIONS_SESSION_KEY][0]
-        submission = Submission.objects.get(uuid=submission_uuid)
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
@@ -286,6 +272,7 @@ class CancelAppointmentView(APIView):
 
         try:
             client.delete_appointment(submission.appointment_info.appointment_id)
+            submission.appointment_info.cancel()
         except (AppointmentDeleteFailed, AppointmentInfo.DoesNotExist):
             raise CancelAppointmentFailed
 

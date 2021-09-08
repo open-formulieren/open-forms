@@ -45,6 +45,10 @@ class AppointmentInfo(models.Model):
         help_text=_("The submission that made the appointment"),
     )
 
+    def cancel(self):
+        self.status = AppointmentDetailsStatus.cancelled
+        self.save()
+
     class Meta:
         verbose_name = _("Appointment information")
         verbose_name_plural = _("Appointment information")
