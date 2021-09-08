@@ -1,5 +1,8 @@
 import logging
 
+from django.db import transaction
+from django.utils.crypto import get_random_string
+
 from openforms.celery import app
 from openforms.registrations.tasks import register_submission
 
@@ -11,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
+@transaction.atomic
 def obtain_submission_reference(submission_id: int) -> str:
     """
     Obtain a unique reference to be communicated to the end user.
@@ -42,5 +46,33 @@ def obtain_submission_reference(submission_id: int) -> str:
     return reference
 
 
+def get_random_reference() -> str:
+    # 36 characters with length 6 -> 36^6 possible combinations.
+    # that's roughly 2.1 billion combinations before we run out of options.
+    # Also note that submissions are pruned after a (configurable) number of days, so
+    # used references do become available again after that time.
+    random_string = get_random_string(
+        length=6, allowed_chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    )
+    return f"OF-{random_string}"
+
+
 def generate_unique_submission_reference() -> str:
-    raise NotImplementedError("TODO")
+    """
+    Generate a random but unique reference.
+    """
+    MAX_ATTEMPTS = 100  # ensure we have finite loops (while is evil)
+    iterations = 0
+
+    for _ in range(MAX_ATTEMPTS):
+        iterations += 1
+        reference = get_random_reference()
+        exists = Submission.objects.filter(
+            public_registration_reference=reference
+        ).exists()
+        if exists is False:
+            return reference
+
+    # loop ran all the way to the end without finding unused reference
+    # (otherwise it would have returned)
+    raise RuntimeError(f"Could not get a unused reference after {iterations} attempts!")
