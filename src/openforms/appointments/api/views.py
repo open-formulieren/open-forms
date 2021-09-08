@@ -1,25 +1,21 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import RedirectView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
-from openforms.config.models import GlobalConfiguration
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
 )
 from openforms.submissions.models import Submission
-from openforms.submissions.utils import add_submmission_to_session
 from openforms.utils.api.views import ListMixin
 
 from ..api.serializers import (
@@ -35,7 +31,6 @@ from ..api.serializers import (
 from ..base import AppointmentLocation, AppointmentProduct
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
 from ..models import AppointmentInfo
-from ..tokens import submission_appointment_token_generator
 from ..utils import get_client
 
 logger = logging.getLogger(__name__)
@@ -189,64 +184,16 @@ class TimesListView(ListMixin, APIView):
 
 
 @extend_schema(
-    summary=_("Verify the appointment cancel link."),
-    responses={
-        302: None,
-        403: OpenApiResponse(
-            response=ExceptionSerializer,
-            description=_("Unable to verify token."),
-        ),
-        404: OpenApiResponse(
-            response=ExceptionSerializer,
-            description=_("Unable to find submission."),
-        ),
-    },
-)
-class VerifyCancelAppointmentLinkView(RedirectView):
-
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get_redirect_url(
-        self, base64_submission_uuid: int, token: str, *args, **kwargs
-    ):
-        submission_uuid = urlsafe_base64_decode(base64_submission_uuid).decode()
-
-        try:
-            submission = Submission.objects.get(uuid=submission_uuid)
-        except ObjectDoesNotExist:
-            logger.debug(
-                "Called endpoint with an invalid submission uuid: %s", submission_uuid
-            )
-            raise PermissionDenied("Cancel url is not valid")
-
-        # Check that the token is valid
-        valid = submission_appointment_token_generator.check_token(submission, token)
-        if not valid:
-            logger.debug("Called endpoint with an invalid token: %s", token)
-            raise PermissionDenied("Cancel url is not valid")
-
-        add_submmission_to_session(submission, self.request.session)
-
-        config = GlobalConfiguration.get_solo()
-
-        # Displayed to user in SDK
-        time = submission.appointment_info.start_time.isoformat()
-
-        return f"{config.cancel_appointment_page}?time={time}&submission_uuid={str(submission_uuid)}"
-
-
-@extend_schema(
     summary=_("Cancel an appointment"),
     responses={
         204: None,
-        400: OpenApiResponse(
-            response=ExceptionSerializer,
-            description=_("Unable to cancel appointment with given data."),
-        ),
         403: OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Unable to verify ownership of the appointment."),
+        ),
+        502: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to cancel appointment with given data."),
         ),
     },
 )

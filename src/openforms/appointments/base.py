@@ -232,7 +232,7 @@ class BasePlugin:
         token = submission_appointment_token_generator.make_token(submission)
 
         cancel_uri = reverse(
-            "api:appointments-verify-cancel-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": token,
                 "base64_submission_uuid": urlsafe_base64_encode(

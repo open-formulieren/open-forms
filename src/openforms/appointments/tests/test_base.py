@@ -61,7 +61,7 @@ class BasePluginTests(TestCase):
         result = self.plugin.get_appointment_links(submission)
 
         cancel_uri = reverse(
-            "api:appointments-verify-cancel-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": fake_token,
                 "base64_submission_uuid": urlsafe_base64_encode(

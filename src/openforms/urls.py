@@ -50,6 +50,10 @@ urlpatterns = [
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
     path("api/", include("openforms.api.urls", namespace="api")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
+    path(
+        "appointments/",
+        include("openforms.appointments.urls", namespace="appointments"),
+    ),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("payment/", include("openforms.payments.urls", namespace="payments")),
     # NOTE: we dont use the User creation feature so don't enable all the mock views

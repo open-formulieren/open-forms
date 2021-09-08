@@ -10,7 +10,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...tests.factories import AppointmentInfoFactory
+from .factories import AppointmentInfoFactory
 
 
 class VerifyCancelAppointmentLinkViewTests(TestCase):
@@ -21,7 +21,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         config.save()
 
     @patch(
-        "openforms.appointments.api.views.submission_appointment_token_generator.check_token",
+        "openforms.appointments.views.submission_appointment_token_generator.check_token",
         return_value=True,
     )
     def test_good_token_and_submission_redirect_and_add_submission_to_session(
@@ -34,7 +34,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         )
 
         endpoint = reverse(
-            "api:appointments-verify-cancel-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "mocked",
                 "base64_submission_uuid": urlsafe_base64_encode(
@@ -60,7 +60,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 
     def test_404_response_with_unfound_submission(self):
         endpoint = reverse(
-            "api:appointments-verify-cancel-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "mocked",
                 "base64_submission_uuid": urlsafe_base64_encode(
@@ -74,14 +74,14 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     @patch(
-        "openforms.appointments.api.views.submission_appointment_token_generator.check_token",
+        "openforms.appointments.views.submission_appointment_token_generator.check_token",
         return_value=False,
     )
     def test_403_response_with_bad_token(self, check_token_mock):
         submission = SubmissionFactory.create()
 
         endpoint = reverse(
-            "api:appointments-verify-cancel-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": "bad",
                 "base64_submission_uuid": urlsafe_base64_encode(
