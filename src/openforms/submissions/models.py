@@ -111,7 +111,6 @@ class Submission(models.Model):
         blank=True,
         validators=(validate_kvk,),
     )
-    current_step = models.PositiveIntegerField(_("current step"), default=0)
 
     # interaction with registration backend
     registration_result = JSONField(

@@ -1,5 +1,8 @@
 import copy
+from datetime import timedelta
 from typing import List
+
+from django.utils import timezone
 
 import factory
 
@@ -9,6 +12,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ..constants import RegistrationStatuses
 from ..models import (
     Submission,
     SubmissionFileAttachment,
@@ -23,6 +27,30 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Submission
+
+    class Params:
+        completed = factory.Trait(
+            completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            created_on=factory.LazyAttribute(
+                lambda s: s.completed - timedelta(hours=4)
+            ),
+        )
+        registration_failed = factory.Trait(
+            last_register_date=factory.LazyFunction(timezone.now),
+            registration_status=RegistrationStatuses.failed,
+        )
+        registration_success = factory.Trait(
+            last_register_date=factory.LazyFunction(timezone.now),
+            registration_status=RegistrationStatuses.success,
+        )
+        registration_pending = factory.Trait(
+            last_register_date=None,
+            registration_status=RegistrationStatuses.pending,
+        )
+        registration_in_progress = factory.Trait(
+            last_register_date=factory.LazyFunction(timezone.now),
+            registration_status=RegistrationStatuses.in_progress,
+        )
 
     @classmethod
     def from_components(

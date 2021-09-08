@@ -6,10 +6,9 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.utils import timezone
 
-from celery.exceptions import Retry
 from freezegun import freeze_time
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes

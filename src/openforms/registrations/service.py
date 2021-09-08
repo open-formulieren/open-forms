@@ -1,8 +1,9 @@
 import logging
 
-from ..exceptions import NoSubmissionReference
-from .constants import RegistrationStatuses
-from .models import Submission
+from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.models import Submission
+
+from .exceptions import NoSubmissionReference
 
 __all__ = ["NoSubmissionReference", "extract_submission_reference"]
 
