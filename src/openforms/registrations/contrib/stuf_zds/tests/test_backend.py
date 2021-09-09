@@ -6,6 +6,7 @@ from django.template import loader
 from django.test import TestCase
 
 import requests_mock
+from freezegun import freeze_time
 from lxml import etree
 from lxml.etree import ElementTree
 from privates.test import temp_private_root
@@ -22,7 +23,7 @@ from stuf.tests.factories import SoapServiceFactory
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
 from ....service import extract_submission_reference
-from ..client import StufZDSClient, nsmap
+from ..client import PaymentStatus, StufZDSClient, nsmap
 from ..models import StufZDSConfig
 from ..plugin import PartialDate, StufZDSRegistration
 
@@ -201,6 +202,7 @@ class StufZDSHelperTests(StufTestBase):
         self.assertEqual("J", actual.indicator)
 
 
+@freeze_time("2021-10-11 11:23:00")
 @temp_private_root()
 @requests_mock.Mocker()
 class StufZDSClientTests(StufTestBase):
@@ -336,7 +338,7 @@ class StufZDSClientTests(StufTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.create_zaak("foo", {"bsn": "111222333"}, {})
+        self.client.create_zaak("foo", {"bsn": "111222333"}, {}, payment_required=True)
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -349,9 +351,34 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo",
                 "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:betalingsIndicatie": PaymentStatus.NOT_YET,
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+            },
+        )
+
+    def test_set_zaak_payment(self, m):
+        m.post(
+            self.service.url,
+            content=load_mock("creeerZaak.xml"),  # reuse?
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        self.client.set_zaak_payment("foo", partial=True)
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zkn:zakLk01")
+        self.assertStuurgegevens(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo",
+                "//zkn:object/zkn:betalingsIndicatie": PaymentStatus.PARTIAL,
+                "//zkn:object/zkn:laatsteBetaaldatum": "20211011",
             },
         )
 

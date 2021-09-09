@@ -165,3 +165,9 @@ class StufZDSRegistration(BasePlugin):
             this may cause problems!
         """
         return result["zaak"]
+
+    def update_payment_status(self, submission: "Submission"):
+        config = StufZDSConfig.get_solo()
+        client = config.get_client(submission.form.registration_backend_options)
+
+        client.set_zaak_payment(submission.registration_result["zaak"])
