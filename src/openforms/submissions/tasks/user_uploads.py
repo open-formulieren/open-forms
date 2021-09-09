@@ -14,7 +14,7 @@ from ..models import Submission, SubmissionFileAttachment
 
 __all__ = [
     "cleanup_temporary_files_for",
-    "cleanup_unclaimed_temporary_uploaded_files",
+    "cleanup_unclaimed_temporary_files",
     "resize_submission_attachment",
 ]
 
