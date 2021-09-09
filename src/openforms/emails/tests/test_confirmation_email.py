@@ -219,7 +219,7 @@ class ConfirmationEmailTests(TestCase):
         config.save()
 
         get_client_mock.return_value.get_appointment_links.return_value = {
-            "cancel_url": "http://fake.nl/api/v1/base64-submission-uuid/token/verify/"
+            "cancel_url": "http://fake.nl/api/v1/submission-uuid/token/verify/"
         }
         submission = SubmissionFactory.create()
         AppointmentInfoFactory.create(
@@ -236,8 +236,8 @@ class ConfirmationEmailTests(TestCase):
         rendered_content = email.render(submission)
 
         self.assertInHTML(
-            '<a href="http://fake.nl/api/v1/base64-submission-uuid/token/verify/" rel="nofollow">'
-            "http://fake.nl/api/v1/base64-submission-uuid/token/verify/"
+            '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
+            "http://fake.nl/api/v1/submission-uuid/token/verify/"
             "</a>",
             rendered_content,
         )
