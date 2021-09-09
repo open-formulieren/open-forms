@@ -95,3 +95,15 @@ class NestedSubmissionRelatedField(NestedHyperlinkedRelatedField):
             kwargs.update({instance_lookup_kwarg: lookup_value})
 
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
+
+
+class URLRelatedField(NestedHyperlinkedRelatedField):
+    """This field still checks that the URL refers to a valid model in the database, but does not
+    convert the URL to an actual object."""
+
+    def to_internal_value(self, data):
+        super().to_internal_value(data)
+        return data
+
+    def get_url(self, obj, view_name, request, format):
+        return obj

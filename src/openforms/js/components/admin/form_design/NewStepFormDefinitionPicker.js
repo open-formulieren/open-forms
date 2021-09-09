@@ -7,7 +7,7 @@ import FormModal from '../FormModal';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Select from '../forms/Select';
-import SubmitRow from "../forms/SubmitRow";
+import SubmitRow from '../forms/SubmitRow';
 import { FormDefinitionsContext } from './Context';
 
 

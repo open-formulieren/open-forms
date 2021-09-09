@@ -5,7 +5,7 @@ import {useIntl} from 'react-intl';
 import FAIcon from './FAIcon';
 
 
-const DeleteIcon = ({ onConfirm, message }) => {
+const DeleteIcon = ({ onConfirm, message, icon='trash' }) => {
     const intl = useIntl();
     const defaultMessage = intl.formatMessage({
         description: 'Default delete confirmation message',
@@ -26,7 +26,7 @@ const DeleteIcon = ({ onConfirm, message }) => {
 
     return (
         <FAIcon
-            icon="trash"
+            icon={icon}
             extraClassname="icon icon--danger actions__action"
             title={iconTitle}
             onClick={onClick}
@@ -37,6 +37,7 @@ const DeleteIcon = ({ onConfirm, message }) => {
 DeleteIcon.propTypes = {
     onConfirm: PropTypes.func.isRequired,
     message: PropTypes.string,
+    icon: PropTypes.string,
 };
 
 

@@ -1,11 +1,15 @@
 from django.test import TestCase
 
 from freezegun import freeze_time
+from rest_framework import status
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
+from ..mixins import SubmissionsMixin
 from .factories import FormLogicFactory
 
 
@@ -70,7 +74,9 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(submission_step_2, submission.data)
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
 
         expected = {
             "components": [
@@ -143,7 +149,9 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(submission_step_2, submission.data)
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
 
         expected = {
             "components": [
@@ -151,6 +159,306 @@ class ComponentModificationTests(TestCase):
                     "type": "textfield",
                     "key": "surname",
                     "validate": {"required": True},
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_change_component_to_hidden_if_text_contains(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fooBarBaz",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "fooBarBaz"},
+                    "foobarbaz",
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"fooBarBaz": "foo"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": False,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_change_component_to_hidden_if_array_contains(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "userEmail",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "userEmail"},
+                    ["test1@example.com", "test2@example.com"],
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"userEmail": "test1@example.com"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": False,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_dont_change_component_to_hidden_if_text_does_not_contain(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fooBarBaz",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "fooBarBaz"},
+                    "foobarbaz",
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"fooBarBaz": "hello"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": True,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+    def test_dont_change_component_to_hidden_if_array_does_not_contain(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "userEmail",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "userEmail"},
+                    ["test1@example.com", "test2@example.com"],
+                ]
+            },
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Make element visible",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"userEmail": "test3@example.com"},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": True,
                 }
             ]
         }
@@ -207,7 +515,9 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(submission_step_2, submission.data)
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
 
         expected = {
             "components": [
@@ -286,7 +596,9 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(submission_step_2, submission.data)
+        configuration = evaluate_form_logic(
+            submission, submission_step_2, submission.data
+        )
 
         # Expect configuration unchanged
         expected = {
@@ -358,9 +670,73 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step_2.can_submit)
 
-        evaluate_form_logic(submission_step_2, submission.data)
+        evaluate_form_logic(submission, submission_step_2, submission.data)
 
         self.assertFalse(submission_step_2.can_submit)
+
+    def test_step_not_applicable(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "<": [
+                    {"var": "age"},
+                    18,
+                ]
+            },
+            actions=[
+                {
+                    "form_step": str(step2.uuid),
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step_1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"age": 16},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        self.assertTrue(submission_step_2.is_applicable)
+
+        evaluate_form_logic(submission, submission_step_1, submission.data)
+        submission_state = submission.load_execution_state()
+        updated_step_2 = submission_state.get_submission_step(
+            form_step_uuid=str(step2.uuid)
+        )
+
+        self.assertFalse(updated_step_2.is_applicable)
 
     def test_date_trigger(self):
         form = FormFactory.create()
@@ -401,7 +777,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -423,7 +799,7 @@ class StepModificationTests(TestCase):
             json_logic_trigger={
                 ">": [
                     {"date": {"var": "dateOfBirth"}},
-                    {"-": [{"today": []}, {"years": 18}]},
+                    {"-": [{"today": []}, {"rdelta": [18]}]},
                 ]
             },
             actions=[
@@ -445,6 +821,72 @@ class StepModificationTests(TestCase):
         self.assertTrue(submission_step.can_submit)
 
         with freeze_time("2020-01-01"):
-            evaluate_form_logic(submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertFalse(submission_step.can_submit)
+
+
+class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
+    def test_response_contains_submission(self):
+        form = FormFactory.create()
+        form_step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                    }
+                ]
+            },
+        )
+        form_step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driving",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                ">": [
+                    {"date": {"var": "dateOfBirth"}},
+                    {"-": [{"today": []}, {"rdelta": [18]}]},
+                ]
+            },
+            actions=[
+                {
+                    "form_step": str(form_step2.uuid),
+                    "action": {
+                        "name": "Make step not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step1,
+            data={"dateOfBirth": "2003-01-01"},
+        )
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step1.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        with freeze_time("2015-10-10"):
+            response = self.client.post(
+                endpoint, {"data": submission.get_merged_data()}
+            )
+
+        submission_details = response.json()
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertFalse(submission_details["submission"]["steps"][1]["isApplicable"])

@@ -66,7 +66,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "data": {
                     "some": "example data",
                 },
-                "available": True,
+                "isApplicable": True,
                 "completed": True,
                 "optional": False,
                 "canSubmit": True,
@@ -146,7 +146,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "data": {
                     "modified": "data",
                 },
-                "available": True,
+                "isApplicable": True,
                 "completed": True,
                 "optional": False,
                 "canSubmit": True,

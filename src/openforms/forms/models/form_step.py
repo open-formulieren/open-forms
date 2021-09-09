@@ -7,7 +7,6 @@ from ordered_model.models import OrderedModel
 
 from openforms.utils.fields import StringUUIDField
 
-from ..constants import AvailabilityOptions
 from .utils import literal_getter
 
 
@@ -31,16 +30,6 @@ class FormStep(OrderedModel):
             "Designates whether this step is an optional step in the form. "
             "Currently used for form-rendering purposes, this is not (yet) used for "
             "validation purposes."
-        ),
-    )
-    availability_strategy = models.CharField(
-        _("availability"),
-        max_length=50,
-        choices=AvailabilityOptions,
-        default=AvailabilityOptions.always,
-        help_text=_(
-            "Availability strategy to use. A step must be available before it can be "
-            "filled out. Note that this is not validated (yet) during step submission."
         ),
     )
 

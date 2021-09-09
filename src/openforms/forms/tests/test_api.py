@@ -1528,9 +1528,6 @@ class ImportExportAPITests(APITestCase):
 
         self.assertNotEqual(imported_form_step.pk, form_step1.pk)
         self.assertNotEqual(imported_form_step.uuid, str(form_step1.uuid))
-        self.assertEqual(
-            imported_form_step.availability_strategy, form_step1.availability_strategy
-        )
         self.assertEqual(imported_form_step.form.pk, imported_form.pk)
         self.assertEqual(
             imported_form_step.form_definition.pk, imported_form_definition.pk
@@ -1698,9 +1695,6 @@ class CopyFormAPITests(APITestCase):
 
         self.assertNotEqual(copied_form_step.pk, form_step.pk)
         self.assertNotEqual(copied_form_step.uuid, str(form_step.uuid))
-        self.assertEqual(
-            copied_form_step.availability_strategy, form_step.availability_strategy
-        )
         self.assertEqual(copied_form_step.form.pk, copied_form.pk)
         self.assertEqual(copied_form_step.optional, form_step.optional)
         self.assertEqual(copied_form_step.order, form_step.order)
