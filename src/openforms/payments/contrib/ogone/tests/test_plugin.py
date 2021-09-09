@@ -32,7 +32,7 @@ class OgoneTests(TestCase):
         )
 
         self.assertEqual(submission.payment_required, True)
-        self.assertEqual(submission.payment_completed, False)
+        self.assertEqual(submission.payment_user_has_paid, False)
 
         plugin = register["ogone-legacy"]
 
@@ -110,4 +110,4 @@ class OgoneTests(TestCase):
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
 
-        self.assertEqual(submission.payment_completed, True)
+        self.assertEqual(submission.payment_user_has_paid, True)

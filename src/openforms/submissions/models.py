@@ -401,8 +401,16 @@ class Submission(models.Model):
         return self.form.payment_required
 
     @property
-    def payment_completed(self):
-        return self.payments.filter(status=PaymentStatus.completed).exists()
+    def payment_user_has_paid(self):
+        # TODO support partial payments
+        return self.payments.filter(
+            status__in=(PaymentStatus.registered, PaymentStatus.completed)
+        ).exists()
+
+    @property
+    def payment_registered(self):
+        # TODO support partial payments
+        return self.payments.filter(status=PaymentStatus.registered).exists()
 
 
 class SubmissionStep(models.Model):

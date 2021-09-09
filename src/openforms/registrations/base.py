@@ -55,5 +55,8 @@ class BasePlugin(ABC):
         """
         raise NotImplementedError()
 
+    def update_payment_status(self, submission: "Submission"):
+        raise NotImplementedError()
+
     def get_label(self):
         return self.verbose_name

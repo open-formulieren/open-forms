@@ -96,7 +96,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         return submission
 
     @staticmethod
-    def from_data(data_dict, **kwargs: dict):
+    def from_data(data_dict: dict, **kwargs):
         components = [
             {
                 "key": key,

@@ -18,6 +18,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     create_status,
     create_zaak,
     relate_document,
+    set_zaak_payment,
 )
 from openforms.registrations.registry import register
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
@@ -77,7 +78,7 @@ class ZGWRegistration(BasePlugin):
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
 
-        zaak = create_zaak(options)
+        zaak = create_zaak(options, payment_required=submission.payment_required)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         document = create_document(submission.form.name, submission_report, options)
@@ -121,3 +122,6 @@ class ZGWRegistration(BasePlugin):
         # https://raw.githubusercontent.com/vng-Realisatie/zaken-api/1.0.0/src/openapi.yaml#operation/zaak_create
         zaak = result["zaak"]
         return zaak["identificatie"]
+
+    def update_payment_status(self, submission: "Submission"):
+        set_zaak_payment(submission.registration_result["zaak"]["url"])

@@ -1,16 +1,17 @@
+from decimal import Decimal
+from unittest.mock import patch
 from urllib.parse import quote
 
 from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
-from rest_framework.reverse import reverse
-
 from ...forms.tests.factories import FormStepFactory
 from ...plugins.constants import UNIQUE_ID_MAX_LENGTH
+from ...submissions.tests.factories import SubmissionFactory
 from ..base import BasePlugin, PaymentInfo
+from ..models import SubmissionPayment
 from ..registry import Registry
-from ..views import PaymentReturnView, PaymentStartView, PaymentWebhookView
 from .factories import SubmissionPaymentFactory
 
 
@@ -43,8 +44,6 @@ class FailingPlugin(BasePlugin):
 
 
 class RegistryTests(TestCase):
-    maxDiff = 1024
-
     def test_register_function(self):
         register = Registry()
 
@@ -87,7 +86,6 @@ class RegistryTests(TestCase):
     def test_get_options(self):
         register = Registry()
         register("plugin1")(Plugin)
-        plugin = register["plugin1"]
 
         factory = RequestFactory()
         request = factory.get("/xyz")
@@ -106,83 +104,39 @@ class RegistryTests(TestCase):
         self.assertEqual(option.identifier, "plugin1")
         self.assertEqual(option.label, "some human readable label")
 
-    def test_urls(self):
-        register = Registry()
-        register("plugin1")(Plugin)
-        plugin = register["plugin1"]
 
-        payment = SubmissionPaymentFactory.for_backend("plugin1")
-        submission = payment.submission
-
-        # we need an arbitrary request
-        factory = RequestFactory()
-        request = factory.get("/foo")
-
-        # check the start url
-        url = plugin.get_start_url(request, submission)
-        self.assertRegex(url, r"^http://")
-        self.assertEqual(
-            url,
-            reverse(
-                "payments:start",
-                request=request,
-                kwargs={"uuid": submission.uuid, "plugin_id": "plugin1"},
-            ),
-        )
-
-        # check the return url
-        url = plugin.get_return_url(request, payment)
-        self.assertRegex(url, r"^http://")
-        self.assertEqual(
-            url,
-            reverse(
-                "payments:return",
-                request=request,
-                kwargs={"uuid": payment.uuid},
-            ),
-        )
-        # check the webhook url
-        url = plugin.get_webhook_url(request)
-        self.assertRegex(url, r"^http://")
-        self.assertEqual(
-            url,
-            reverse(
-                "payments:webhook",
-                request=request,
-                kwargs={"plugin_id": "plugin1"},
-            ),
-        )
-
+class ViewsTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
-    def test_views(self):
+    @patch("openforms.payments.views.update_submission_payment_registration")
+    def test_views(self, update_payments_mock):
         register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
+        bad_plugin = Plugin("bad_plugin")
 
-        payment = SubmissionPaymentFactory.for_backend(
-            "plugin1", form_url="http://foo.bar"
-        )
-        submission = payment.submission
-
-        # we need an arbitrary request
-        factory = RequestFactory()
-        init_request = factory.get("/foo")
+        base_request = RequestFactory().get("/foo")
 
         next_url_enc = quote("http://foo.bar")
         bad_url_enc = quote("http://buzz.bazz")
 
-        # check the start view
-        url = plugin.get_start_url(init_request, payment)
+        registry_mock = patch("openforms.payments.views.register", new=register)
+        registry_mock.start()
+        self.addCleanup(registry_mock.stop)
 
-        start_view = PaymentStartView.as_view(register=register)
+        submission = SubmissionFactory.create(
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="plugin1",
+        )
+        self.assertTrue(submission.payment_required)
+
+        # check the start url
+        url = plugin.get_start_url(base_request, submission)
+        self.assertRegex(url, r"^http://")
 
         with self.subTest("start ok"):
-            request = factory.post(f"{url}?next={next_url_enc}")
-            response = start_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
-            )
+            response = self.client.post(f"{url}?next={next_url_enc}")
             self.assertEqual(
                 response.data,
                 {
@@ -193,88 +147,83 @@ class RegistryTests(TestCase):
             )
             self.assertEqual(response.status_code, 200)
 
+            # keep this
+            payment = SubmissionPayment.objects.get()
+
         with self.subTest("start missing next"):
-            request = factory.post(url)
-            response = start_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
-            )
-            response.render()
+            response = self.client.post(url)
             self.assertEqual(response.data["detail"], "missing 'next' parameter")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad plugin"):
-            request = factory.post(f"{url}?next={next_url_enc}")
-            response = start_view(request, uuid=submission.uuid, plugin_id="bad_plugin")
-            response.render()
+            bad_url = bad_plugin.get_start_url(base_request, submission)
+            response = self.client.post(f"{bad_url}?next={next_url_enc}")
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
 
         with self.subTest("start bad redirect"):
-            request = factory.post(f"{url}?next={bad_url_enc}")
-            response = start_view(
-                request, uuid=submission.uuid, plugin_id=plugin.identifier
-            )
-            response.render()
+            response = self.client.post(f"{url}?next={bad_url_enc}")
             self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
         # check the return view
-        url = plugin.get_return_url(request, payment)
-
-        return_view = PaymentReturnView.as_view(register=register)
+        url = plugin.get_return_url(base_request, payment)
+        self.assertRegex(url, r"^http://")
 
         with self.subTest("return ok"):
-            request = factory.get(url)
-            response = return_view(request, uuid=payment.uuid)
+            update_payments_mock.reset_mock()
+
+            response = self.client.get(url)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
+            update_payments_mock.assert_called_once_with(submission)
+
         with self.subTest("return bad method"):
-            request = factory.post(url)
-            response = return_view(request, uuid=payment.uuid)
+            response = self.client.post(url)
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
 
         with self.subTest("return bad plugin"):
-            request = factory.get(url)
-            payment_bad = SubmissionPaymentFactory.for_backend(
+            bad_payment = SubmissionPaymentFactory.for_backend(
                 "bad_plugin", form_url="http://foo.bar"
             )
-            response = return_view(request, uuid=payment_bad.uuid)
-            response.render()
+            bad_url = bad_plugin.get_return_url(base_request, bad_payment)
+            response = self.client.get(bad_url)
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
 
         with self.subTest("return bad redirect"):
-            request = factory.get(url)
-            payment_bad = SubmissionPaymentFactory.for_backend(
+            bad_payment = SubmissionPaymentFactory.for_backend(
                 "plugin1", form_url="http://buzz.bazz"
             )
-            response = return_view(request, uuid=payment_bad.uuid)
-            response.render()
+            bad_url = bad_plugin.get_return_url(base_request, bad_payment)
+            response = self.client.get(bad_url)
             self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
         # check the webhook view
-        url = plugin.get_webhook_url(request)
+        url = plugin.get_webhook_url(base_request)
+        self.assertRegex(url, r"^http://")
 
-        webhook_view = PaymentWebhookView.as_view(register=register)
+        with self.subTest("webhook ok"), patch.object(
+            plugin, "handle_webhook", return_value=payment
+        ):
+            update_payments_mock.reset_mock()
 
-        with self.subTest("webhook ok"):
-            request = factory.post(url)
-            response = webhook_view(request, plugin_id=plugin.identifier)
+            response = self.client.post(url)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 200)
 
+            update_payments_mock.assert_called_once_with(submission)
+
         with self.subTest("webhook bad method"):
-            request = factory.get(url)
-            response = webhook_view(request, plugin_id=plugin.identifier)
+            response = self.client.get(url)
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "POST")
 
         with self.subTest("webhook bad plugin"):
-            request = factory.get(url)
-            response = webhook_view(request, plugin_id="bad_plugin")
-            response.render()
+            bad_url = bad_plugin.get_webhook_url(base_request)
+            response = self.client.get(bad_url)
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
