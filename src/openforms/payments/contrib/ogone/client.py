@@ -8,7 +8,7 @@ from openforms.payments.contrib.ogone.data import (
 )
 from openforms.payments.contrib.ogone.exceptions import InvalidSignature
 from openforms.payments.contrib.ogone.models import OgoneMerchant
-from openforms.payments.contrib.ogone.signing import calculate_shasign
+from openforms.payments.contrib.ogone.signing import calculate_sha_in, calculate_sha_out
 
 
 class OgoneClient:
@@ -52,7 +52,7 @@ class OgoneClient:
 
         # collect and sign
         data = params.get_dict()
-        data["SHASIGN"] = calculate_shasign(
+        data["SHASIGN"] = calculate_sha_in(
             data, self.merchant.sha_in_passphrase, self.merchant.hash_algorithm
         )
 
@@ -66,7 +66,7 @@ class OgoneClient:
 
     def get_validated_params(self, value_dict) -> OgoneFeedbackParams:
         params = OgoneFeedbackParams.from_dict(value_dict)
-        sign = calculate_shasign(
+        sign = calculate_sha_out(
             params.get_dict(),
             self.merchant.sha_out_passphrase,
             self.merchant.hash_algorithm,

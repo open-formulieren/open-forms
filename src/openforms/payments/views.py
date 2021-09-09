@@ -1,7 +1,11 @@
 import logging
 
+from django import forms
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
+from django.views.generic import DetailView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -322,3 +326,42 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if hasattr(self, "_plugin"):
             response["Allow"] = self._plugin.webhook_method
         return response
+
+
+def hidden_form_for_data(data_dict):
+    members = {
+        key: forms.CharField(initial=value, widget=forms.HiddenInput)
+        for key, value in data_dict.items()
+    }
+    return type("MyForm", (forms.Form,), members)
+
+
+@method_decorator([never_cache], name="dispatch")
+class PaymentLinkView(DetailView):
+    template_name = "payments/payment_link.html"
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
+    queryset = Submission.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        submission = self.get_object()
+        if not submission.payment_user_has_paid:
+            plugin_id = submission.form.payment_backend
+            plugin = register[plugin_id]
+            payment = SubmissionPayment.objects.create_for(
+                submission,
+                plugin_id,
+                submission.form.payment_backend_options,
+                submission.form.product.price,
+                self.request.build_absolute_uri(),
+            )
+
+            info = plugin.start_payment(self.request, payment)
+
+            context["url"] = info.url
+            context["method"] = info.type.upper()
+            context["form"] = hidden_form_for_data(info.data)
+
+        return context
