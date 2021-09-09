@@ -83,7 +83,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
-            data={"product": "79", "time": "2021-08-25T17:00:00"},
+            data={"product": "79-Paspoort", "time": "2021-08-25T17:00:00"},
             form_step=form_step_1,
         )
         SubmissionStepFactory.create(
@@ -146,8 +146,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79",
-                "location": "1",
+                "product": "79-Paspoort",
+                "location": "1-Amsterdam",
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
@@ -207,8 +207,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79",
-                "location": "1",
+                "product": "79-Paspoort",
+                "location": "1-Amsterdam",
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
