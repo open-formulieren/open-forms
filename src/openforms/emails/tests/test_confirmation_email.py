@@ -4,6 +4,9 @@ from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
 
+from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.appointments.tests.test_base import TestPlugin
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import (
