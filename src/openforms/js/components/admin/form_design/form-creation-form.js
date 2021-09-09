@@ -26,6 +26,7 @@ import {
     LOGICS_ENDPOINT,
 } from './constants';
 import {loadPlugins, saveLogicRules} from './data';
+import Appointments from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -728,6 +729,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Appointments" description="Appointments logic tab title" />
+                    </Tab>
                 </TabList>
 
                 <TabPanel>
@@ -841,6 +845,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                             />
                         </FormStepsContext.Provider>
                     </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                    <Appointments/>
                 </TabPanel>
             </Tabs>
 
