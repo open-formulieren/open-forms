@@ -305,7 +305,7 @@ class ZGWBackendTests(TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
         )
 
-    def test_no_reference_can_be_extracted(self, m):
+    def test_reference_can_be_extracted(self, m):
         result = {
             "zaak": {
                 "url": "https://zaken.nl/api/v1/zaken/1",

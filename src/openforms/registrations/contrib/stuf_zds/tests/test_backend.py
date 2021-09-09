@@ -695,7 +695,7 @@ class StufZDSPluginTests(StufTestBase):
             },
         )
 
-    def test_no_reference_can_be_extracted(self, m):
+    def test_reference_can_be_extracted(self, m):
         submission = SubmissionFactory.create(
             form__registration_backend="stuf-zds-create-zaak",
             completed=True,
