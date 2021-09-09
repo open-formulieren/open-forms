@@ -52,6 +52,12 @@
                 <td>{{ value }}</td>
             </tr>
         {% endfor %}
+        {% if submission.payment_required and submission.form.product.price %}
+            <tr>
+                <td class="table-cell-key">{% trans "Total payment required" %}</td>
+                <td>&euro; {{ submission.form.product.price }}</td>
+            </tr>
+        {% endif %}
     </table>
 
     <h2 class="help">{% trans "Need help?" %}</h2>
