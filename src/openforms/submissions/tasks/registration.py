@@ -91,6 +91,7 @@ def get_random_reference() -> str:
     # that's roughly 2.1 billion combinations before we run out of options.
     # Also note that submissions are pruned after a (configurable) number of days, so
     # used references do become available again after that time.
+    # TODO: maybe include date param?
     random_string = get_random_string(
         length=6, allowed_chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     )

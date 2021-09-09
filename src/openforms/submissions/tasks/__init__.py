@@ -42,6 +42,7 @@ def on_completion(submission_id: int) -> str:
         register_appointment_task,
         # The submission report needs to already have been generated before it can be
         # attached in the registration backend.
+        # TODO: can be in parallel with register_appointment_task and if that fails -> delete the report again
         generate_report_task,
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
