@@ -6,7 +6,6 @@ from openforms.celery import app
 from ..models import Submission
 from .appointments import *  # noqa
 from .emails import *  # noqa
-from .payments import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
@@ -48,7 +47,6 @@ def on_completion(submission_id: int) -> str:
         register_submission_task,
         obtain_submission_reference_task,
         update_appointment_task,
-        # TODO: initiate payment -> this should probably just generate the link?
         # we schedule the finalization so that the ``async_result`` below is marked
         # as done, which is the "signal" to show the confirmation page. Actual payment
         # flow & confirmation e-mail follow later.

@@ -18,9 +18,6 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-TIMEOUT = 10  # in seconds
-
-
 class AppointmentRegistrationAborted(Exception):
     pass
 

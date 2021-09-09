@@ -148,8 +148,8 @@ class SubmissionViewSet(
     @action(
         detail=True,
         methods=["get"],
-        permission_classes=() if settings.DEBUG else (ActiveSubmissionPermission,),
-    )  # FIXME: remove permission classes here for debug
+        permission_classes=(ActiveSubmissionPermission,),
+    )
     def status(self, request, *args, **kwargs):
         """
         Obtain the current submission processing status, after completing it.
