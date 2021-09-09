@@ -13,7 +13,7 @@ import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import SubmitRow from '../forms/SubmitRow';
 import Loader from '../Loader';
-import {FormDefinitionsContext, PluginsContext} from './Context';
+import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
@@ -25,7 +25,7 @@ import {
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, PluginLoadingError, saveLogicRules} from './data';
+import {loadPlugins, saveLogicRules} from './data';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -545,6 +545,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 throw new Error('An error occurred while saving the form.');
             }
             var formUuid = formResponse.data.uuid;
+            var formUrl = formResponse.data.url;
             dispatch({type: 'FORM_CREATED', payload: formResponse.data});
 
         } catch (e) {
@@ -639,7 +640,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         // Update/create logic rules
         try {
             const {logicRules, logicRulesToDelete} = state;
-            const createdRules = await saveLogicRules(csrftoken, logicRules, logicRulesToDelete);
+            const createdRules = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
             dispatch({
                 type: 'RULES_SAVED',
                 payload: createdRules,
@@ -830,13 +831,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
-                        <FormLogic
-                            logicRules={state.logicRules}
-                            availableComponents={getFormComponents(state.formSteps)}
-                            onChange={onRuleChange}
-                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                            onAdd={() => dispatch({type: 'ADD_RULE'})}
-                        />
+                        <FormStepsContext.Provider value={state.formSteps}>
+                            <FormLogic
+                                logicRules={state.logicRules}
+                                availableComponents={getFormComponents(state.formSteps)}
+                                onChange={onRuleChange}
+                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                                onAdd={() => dispatch({type: 'ADD_RULE'})}
+                            />
+                        </FormStepsContext.Provider>
                     </Fieldset>
                 </TabPanel>
             </Tabs>

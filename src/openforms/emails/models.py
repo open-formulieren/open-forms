@@ -28,7 +28,7 @@ class ConfirmationEmailTemplate(models.Model):
         verbose_name=_("form"),
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         related_name="confirmation_email_template",
         help_text=_("The form for which this confirmation email template will be used"),
     )

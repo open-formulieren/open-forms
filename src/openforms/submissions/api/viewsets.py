@@ -32,6 +32,8 @@ from .serializers import (
     FormDataSerializer,
     SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
+    SubmissionStateLogic,
+    SubmissionStateLogicSerializer,
     SubmissionStepSerializer,
     SubmissionSuspensionSerializer,
 )
@@ -286,8 +288,10 @@ class SubmissionStepViewSet(
         return Response(serializer.data, status=status_code)
 
     @extend_schema(
-        description=_("Apply/check form logic"),
+        summary=_("Apply/check form logic"),
+        description=_("Apply/check the logic rules specified on the form."),
         request=FormDataSerializer,
+        responses={200: SubmissionStateLogicSerializer},
     )
     @action(detail=True, methods=["post"], url_path="_check_logic")
     def logic_check(self, request, *args, **kwargs):
@@ -302,7 +306,14 @@ class SubmissionStepViewSet(
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
             merged_data = {**submission_step.submission.data, **data}
-            evaluate_form_logic(submission_step, merged_data)
+            evaluate_form_logic(
+                submission_step.submission, submission_step, merged_data
+            )
 
-        serializer = self.get_serializer(instance=submission_step)
-        return Response(serializer.data)
+        submission_state_logic_serializer = SubmissionStateLogicSerializer(
+            instance=SubmissionStateLogic(
+                submission=submission_step.submission, step=submission_step
+            ),
+            context={"request": request},
+        )
+        return Response(submission_state_logic_serializer.data)

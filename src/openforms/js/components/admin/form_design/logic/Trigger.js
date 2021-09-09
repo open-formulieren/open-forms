@@ -8,13 +8,14 @@ import {getTranslatedChoices} from '../../../../utils/i18n'
 import Select from '../../forms/Select';
 
 import {ComponentsContext} from './Context';
-import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS } from './constants';
+import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
 import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import {useOnChanged} from './hooks';
 import Today from './Today';
+import ArrayInput from '../../forms/ArrayInput';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -95,20 +96,32 @@ const parseJsonLogic = (logic) => {
 
     if (jsonLogic.is_logic(compareValue)) {
         const op = jsonLogic.get_operator(compareValue);
-        if (op === 'var') {
-            operandType = 'component';
-            operand = compareValue.var;
-        } else if (op === 'date') {
-            operandType = compareValue.date.var ? 'component' : 'literal';
-            operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
-        } else if (op === '+' || op === '-') {
-            operandType = 'today';
-            operand = compareValue;
-        } else {
-            console.warn(`Unsupported operator: ${op}, can't derive operandType`);
+        switch (op) {
+            case 'var': {
+                operandType = 'component';
+                operand = compareValue.var;
+                break;
+            }
+            case 'date': {
+                operandType = compareValue.date.var ? 'component' : 'literal';
+                operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
+                break;
+            }
+            case '+':
+            case '-': {
+                operandType = 'today';
+                operand = compareValue;
+                break;
+            }
+            default:
+                console.warn(`Unsupported operator: ${op}, can't derive operandType`);
         }
     } else if (compareValue != null) {
-        operandType = 'literal';
+        if (Array.isArray(compareValue)) {
+            operandType = 'array';
+        } else {
+            operandType = 'literal';
+        }
         operand = compareValue;
     }
 
@@ -215,16 +228,29 @@ const Trigger = ({ name, logic, onChange }) => {
                 />
             );
 
-            let sign, years;
+            let sign, relativeDelta;
             if (operand) {
                 sign = jsonLogic.get_operator(operand);
-                years = operand[sign][1]['years'] || 0;
+                relativeDelta = operand[sign][1].rdelta || [0, 0, 0];
             } else {
                 sign = '+';
-                years = 0;
+                relativeDelta = [0, 0, 0];
             }
             compareValue = {};
-            compareValue[sign] = [{today: []}, {years: years}];
+            compareValue[sign] = [{today: []}, {rdelta: relativeDelta}];
+            break;
+        }
+        case 'array': {
+            valueInput = <ArrayInput
+                name="operand"
+                inputType="text"
+                values={operand}
+                onChange={(value) => {
+                    const fakeEvent = {target: {name: "operand", value: value}};
+                    onTriggerChange(fakeEvent);
+                }}
+            />;
+            compareValue = operand;
             break;
         }
         case '': { // nothing selected yet
@@ -285,8 +311,13 @@ const Trigger = ({ name, logic, onChange }) => {
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
-                                    componentType={componentType}
                                     onChange={onTriggerChange}
+                                    filter={
+                                        ([choiceKey, choiceLabel]) => {
+                                            if (!componentType) return true;
+                                            return COMPONENT_TYPE_TO_OPERAND_TYPE[componentType].includes(choiceKey);
+                                        }
+                                    }
                                 />
                             </div>
                         )

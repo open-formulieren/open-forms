@@ -99,6 +99,13 @@ const ACTION_TYPES = [
             defaultMessage: 'change the value of a component'
         })
     ],
+    [
+        'step-not-applicable',
+        defineMessage({
+            description: 'action type "step-not-applicable" label',
+            defaultMessage: 'Mark the form step as not-applicable'
+        })
+    ]
 ];
 
 
@@ -108,6 +115,13 @@ const ACTIONS_WITH_OPTIONS = [
     'property',
     'value'
 ];
+
+const COMPONENT_TYPE_TO_OPERAND_TYPE = {
+    number: ['literal', 'component'],
+    textfield: ['literal', 'component', 'array'],
+    iban: ['literal', 'component'],
+    date: ['literal', 'component', 'today'],
+};
 
 
 const STRING_TO_TYPE = {
@@ -202,5 +216,6 @@ export {
     ACTIONS_WITH_OPTIONS,
     MODIFIABLE_PROPERTIES,
     STRING_TO_TYPE,
-    TYPE_TO_STRING
+    TYPE_TO_STRING,
+    COMPONENT_TYPE_TO_OPERAND_TYPE,
 };

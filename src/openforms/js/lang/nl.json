@@ -209,6 +209,11 @@
     "description": "\"in\" operator description",
     "originalDefault": "in"
   },
+  "F+cPJR": {
+    "defaultMessage": "the array",
+    "description": "\"array\" operand type",
+    "originalDefault": "the array"
+  },
   "FceidS": {
     "defaultMessage": "is verschillend van",
     "description": "\"!=\" operator description",
@@ -273,6 +278,11 @@
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Form step next text field help text",
     "originalDefault": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+  },
+  "IxTWbv": {
+    "defaultMessage": "Are you sure you want to delete this item?",
+    "description": "Confirmation message to delete an item from a multi-value input",
+    "originalDefault": "Are you sure you want to delete this item?"
   },
   "J5EZDj": {
     "defaultMessage": "verborgen",
@@ -368,6 +378,11 @@
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "TjjvQL": {
+    "defaultMessage": "days",
+    "description": "Logic trigger number of days",
+    "originalDefault": "days"
   },
   "UKTqb8": {
     "defaultMessage": "All Submissions Removal Limit",
@@ -519,6 +534,16 @@
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
   },
+  "l2Wag+": {
+    "defaultMessage": "Mark the form step as not-applicable",
+    "description": "action type \"step-not-applicable\" label",
+    "originalDefault": "Mark the form step as not-applicable"
+  },
+  "lcR5L6": {
+    "defaultMessage": "Add item",
+    "description": "Add item to multi-input field",
+    "originalDefault": "Add item"
+  },
   "mH3X/G": {
     "defaultMessage": "today",
     "description": "\"today\" operand type",
@@ -528,6 +553,11 @@
     "defaultMessage": "Stappen en velden",
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
+  },
+  "mYYxJE": {
+    "defaultMessage": "months",
+    "description": "Logic trigger number of months",
+    "originalDefault": "months"
   },
   "nMLlnT": {
     "defaultMessage": "Sensitive data within the submissions will be deleted",

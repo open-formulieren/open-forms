@@ -4,7 +4,7 @@ from json_logic import jsonLogic
 
 from ..forms.models.form import FormLogic
 from ..prefill import JSONObject
-from .models import SubmissionStep
+from .models import Submission, SubmissionStep
 
 
 def set_property_value(
@@ -25,7 +25,9 @@ def set_property_value(
     return configuration
 
 
-def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str, Any]:
+def evaluate_form_logic(
+    submission: Submission, step: SubmissionStep, data: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
     """
@@ -38,6 +40,8 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str,
         return configuration
 
     rules = FormLogic.objects.filter(form=step.form_step.form)
+    submission_state = submission.load_execution_state()
+
     for rule in rules:
         if jsonLogic(rule.json_logic_trigger, data):
             for action in rule.actions:
@@ -58,6 +62,11 @@ def evaluate_form_logic(step: SubmissionStep, data: Dict[str, Any]) -> Dict[str,
                     )
                 elif action_details["type"] == "disable-next":
                     step._can_submit = False
+                elif action_details["type"] == "step-not-applicable":
+                    submission_step_to_modify = submission_state.get_submission_step(
+                        form_step_uuid=action["form_step"]
+                    )
+                    submission_step_to_modify._is_applicable = False
 
     step._form_logic_evaluated = True
 

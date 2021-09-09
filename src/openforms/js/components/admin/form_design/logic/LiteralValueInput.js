@@ -10,7 +10,7 @@ const COMPONENT_TYPE_TO_INPUT_TYPE = {
     date: DateInput,
 };
 
-const LiteralValueInput = ({name, componentType, value='', onChange}) => {
+const LiteralValueInput = ({name, componentType, value='', onChange, ...extraProps}) => {
     const InputComponent = COMPONENT_TYPE_TO_INPUT_TYPE[componentType] || TextInput;
 
     const onInputChange = (event) => {
@@ -40,6 +40,7 @@ const LiteralValueInput = ({name, componentType, value='', onChange}) => {
             name={name}
             value={value}
             onChange={onInputChange}
+            {...extraProps}
         />
     );
 };

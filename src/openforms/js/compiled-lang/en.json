@@ -295,6 +295,12 @@
       "value": "in"
     }
   ],
+  "F+cPJR": [
+    {
+      "type": 0,
+      "value": "the array"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -371,6 +377,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+    }
+  ],
+  "IxTWbv": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this item?"
     }
   ],
   "J5EZDj": [
@@ -493,6 +505,12 @@
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "TjjvQL": [
+    {
+      "type": 0,
+      "value": "days"
     }
   ],
   "UKTqb8": [
@@ -695,6 +713,18 @@
       "value": "disabled"
     }
   ],
+  "l2Wag+": [
+    {
+      "type": 0,
+      "value": "Mark the form step as not-applicable"
+    }
+  ],
+  "lcR5L6": [
+    {
+      "type": 0,
+      "value": "Add item"
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -705,6 +735,12 @@
     {
       "type": 0,
       "value": "Steps and fields"
+    }
+  ],
+  "mYYxJE": [
+    {
+      "type": 0,
+      "value": "months"
     }
   ],
   "nMLlnT": [

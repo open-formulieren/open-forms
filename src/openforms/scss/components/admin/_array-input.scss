@@ -1,0 +1,13 @@
+.array-input {
+  &__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+  }
+
+  &__actions {
+    &:not(:last-child) {
+      margin-right: 0.5em;
+    }
+  }
+}

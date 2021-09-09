@@ -12,6 +12,7 @@ from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
+from ...submissions.api.fields import URLRelatedField
 from ..constants import LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
@@ -378,6 +379,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         LogicActionTypes.disable_next: serializers.Serializer,
         LogicActionTypes.property: LogicPropertyActionSerializer,
         LogicActionTypes.value: LogicValueActionSerializer,
+        LogicActionTypes.step_not_applicable: serializers.Serializer,
     }
 
 
@@ -392,6 +394,19 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
     )
+    form_step = URLRelatedField(
+        required=False,  # validated against the action.type
+        queryset=FormStep.objects,
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        label=_("form step"),
+        help_text=_(
+            "The form step that will be affected by the action. This field is "
+            "optional if the action type is `%(action_type)s`, otherwise required."
+        )
+        % {"action_type": LogicActionTypes.step_not_applicable},
+    )
     action = LogicActionPolymorphicSerializer()
 
     def validate(self, data: dict) -> dict:
@@ -400,6 +415,8 @@ class LogicComponentActionSerializer(serializers.Serializer):
         """
         action_type = data.get("action", {}).get("type")
         component = data.get("component")
+        form_step = data.get("form_step")
+
         if (
             action_type
             and action_type in LogicActionTypes.requires_component
@@ -407,6 +424,14 @@ class LogicComponentActionSerializer(serializers.Serializer):
         ):
             # raises validation error
             self.fields["component"].fail("blank")
+
+        if (
+            action_type
+            and action_type in LogicActionTypes.step_not_applicable
+            and not form_step
+        ):
+            # raises validation error
+            self.fields["form_step"].fail("blank")
 
         return data
 

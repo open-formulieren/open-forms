@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -60,7 +61,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "name",
             "url",
             "form_step",
-            "available",
+            "is_applicable",
             "completed",
             "optional",
         )
@@ -170,7 +171,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "slug",
             "form_step",
             "data",
-            "available",
+            "is_applicable",
             "completed",
             "optional",
             "can_submit",
@@ -186,7 +187,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
-        evaluate_form_logic(instance, instance.submission.data)
+        evaluate_form_logic(instance.submission, instance, instance.submission.data)
         return super().to_representation(instance)
 
 
@@ -297,6 +298,17 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             kwargs={"uuid": instance.uuid},
             request=request,
         )
+
+
+class SubmissionStateLogicSerializer(serializers.Serializer):
+    submission = SubmissionSerializer()
+    step = SubmissionStepSerializer()
+
+
+@dataclass
+class SubmissionStateLogic:
+    submission: Submission
+    step: SubmissionStep
 
 
 class SubmissionProcessingStatusSerializer(serializers.Serializer):

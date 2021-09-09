@@ -79,7 +79,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
                     "id": str(self.step.uuid),
                     "url": f"http://testserver{submission_step_path}",
                     "formStep": f"http://testserver{form_step_path}",
-                    "available": True,
+                    "isApplicable": True,
                     "completed": False,
                     "optional": False,
                     "name": "Select product",

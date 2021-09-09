@@ -8,33 +8,21 @@ import Select from '../../forms/Select';
 const OPERAND_TYPES = {
     literal: defineMessage({description: '"literal" operand type', defaultMessage: 'value'}),
     component: defineMessage({description: '"component" operand type', defaultMessage: 'the field'}),
-    today: defineMessage({description: '"today" operand type', defaultMessage: 'today'})
+    today: defineMessage({description: '"today" operand type', defaultMessage: 'today'}),
+    array: defineMessage({description: '"array" operand type', defaultMessage: 'the array'}),
 };
 
-const COMPONENT_TYPE_TO_OPERAND_TYPE = {
-    number: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-    },
-    textfield: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-    },
-    iban: {
-        literal: OPERAND_TYPES.literal,
-        component: OPERAND_TYPES.component,
-    },
-    date: {...OPERAND_TYPES},
-};
+const allowAny = () => true;
 
 
-const OperandTypeSelection = ({name, operandType, componentType, onChange}) => {
+const OperandTypeSelection = ({name, operandType, onChange, filter=allowAny}) => {
     const intl = useIntl();
-    const choices = Object.entries(COMPONENT_TYPE_TO_OPERAND_TYPE[componentType]);
+    const choices = getTranslatedChoices(intl, OPERAND_TYPES);
+
     return (
         <Select
             name={name}
-            choices={getTranslatedChoices(intl, choices)}
+            choices={choices.filter(filter)}
             allowBlank
             onChange={onChange}
             value={operandType}
@@ -47,8 +35,8 @@ OperandTypeSelection.propTypes = {
     operandType: PropTypes.oneOf(
         [''].concat(Object.keys(OPERAND_TYPES))
     ).isRequired,
-    componentType: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    filter: PropTypes.func,
 };
 
 export default OperandTypeSelection;

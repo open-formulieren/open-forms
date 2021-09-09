@@ -299,6 +299,12 @@
       "value": "in"
     }
   ],
+  "F+cPJR": [
+    {
+      "type": 0,
+      "value": "the array"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -375,6 +381,12 @@
     {
       "type": 0,
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "IxTWbv": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this item?"
     }
   ],
   "J5EZDj": [
@@ -497,6 +509,12 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "TjjvQL": [
+    {
+      "type": 0,
+      "value": "days"
     }
   ],
   "UKTqb8": [
@@ -699,6 +717,18 @@
       "value": "disabled"
     }
   ],
+  "l2Wag+": [
+    {
+      "type": 0,
+      "value": "Mark the form step as not-applicable"
+    }
+  ],
+  "lcR5L6": [
+    {
+      "type": 0,
+      "value": "Add item"
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -709,6 +739,12 @@
     {
       "type": 0,
       "value": "Stappen en velden"
+    }
+  ],
+  "mYYxJE": [
+    {
+      "type": 0,
+      "value": "months"
     }
   ],
   "nMLlnT": [

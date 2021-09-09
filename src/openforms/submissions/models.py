@@ -20,7 +20,6 @@ from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
-from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.models import FormStep
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
@@ -44,7 +43,7 @@ class SubmissionState:
 
         The next step is the step:
         - after the last submitted step
-        - that is available
+        - that is applicable
 
         It does not consider "skipped" steps.
 
@@ -62,9 +61,19 @@ class SubmissionState:
         candidates = (
             step
             for step in self.submission_steps[offset:]
-            if not step.completed and step.available
+            if not step.completed and step.is_applicable
         )
         return next(candidates, None)
+
+    def get_submission_step(self, form_step_uuid: str) -> Optional["SubmissionStep"]:
+        return next(
+            (
+                step
+                for step in self.submission_steps
+                if step.form_step.uuid == form_step_uuid
+            ),
+            None,
+        )
 
 
 def _get_config_field(field: str) -> str:
@@ -412,7 +421,9 @@ class SubmissionStep(models.Model):
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
-    _can_submit = True  # can be modified by logic evaluations/checks
+    # can be modified by logic evaluations/checks
+    _can_submit = True
+    _is_applicable = True
 
     class Meta:
         verbose_name = _("Submission step")
@@ -421,34 +432,6 @@ class SubmissionStep(models.Model):
 
     def __str__(self):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
-
-    @property
-    def available(self) -> bool:
-        strat = self.form_step.availability_strategy
-        if strat == AvailabilityOptions.always:
-            return True
-
-        elif strat == AvailabilityOptions.after_previous_step:
-            submission_state = self.submission.load_execution_state()
-            index = submission_state.form_steps.index(self.form_step)
-            if index == 0:  # there is no previous step...
-                logger.warning(
-                    "First step is misconfigured, should always be available. Form step: %d",
-                    self.form_step_id,
-                )
-                return False
-
-            # check if the previous available step was completed
-            candidates = [
-                step
-                for step in submission_state.submission_steps[:index]
-                if step.available
-            ]
-            if candidates and candidates[-1].completed:
-                return True
-            return False
-        else:
-            raise NotImplementedError(f"Unknown strategy: {strat}")
 
     @property
     def completed(self) -> bool:
@@ -460,6 +443,10 @@ class SubmissionStep(models.Model):
     @property
     def can_submit(self) -> bool:
         return self._can_submit
+
+    @property
+    def is_applicable(self) -> bool:
+        return self._is_applicable
 
 
 class SubmissionReport(models.Model):
