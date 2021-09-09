@@ -848,7 +848,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Appointments/>
+                    <Appointments
+                        availableComponents={getFormComponents(state.formSteps)}
+                    />
                 </TabPanel>
             </Tabs>
 
