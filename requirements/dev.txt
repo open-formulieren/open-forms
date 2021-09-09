@@ -549,7 +549,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==8.2.0
+pillow==8.3.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
