@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 @maybe_retry_in_workflow(
-    retry_backoff=True,
     timeout=10,
     retry_for=(RegistrationFailed,),
 )

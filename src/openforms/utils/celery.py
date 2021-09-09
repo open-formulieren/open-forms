@@ -17,9 +17,9 @@ def default_should_retry(exception: Exception, task: Task) -> bool:
 
 def maybe_retry_in_workflow(
     timeout: Union[float, int] = 10,  # in seconds
-    retry_backoff: bool = True,  # exponential backoff
-    should_retry: Optional[Callable[[Exception, Task], bool]] = None,
+    retry_backoff: Union[bool, int] = True,  # exponential backoff (factor)
     retry_for: Tuple[ExceptionCls] = (Exception,),
+    should_retry: Optional[Callable[[Exception, Task], bool]] = None,
 ):
     """
     Decorate a celery task with conditional retry-behaviour.
@@ -59,7 +59,7 @@ def maybe_retry_in_workflow(
             do_retry, err = called_via_celery, None
             start = time.time()
             try:
-                return task._orig_run(*args, **kwargs)
+                return task._of_orig_run(*args, **kwargs)
             except retry_for as exc:
                 if not should_retry(exc, task):
                     raise
@@ -69,14 +69,16 @@ def maybe_retry_in_workflow(
 
             # an exception of some kind happened and we *may* have to retry
             if not do_retry:
-                logger.debug("No retry is needed, existing.")
+                logger.debug("No retry is needed, exiting.")
+                if err and task.request.called_directly:
+                    raise err
                 return
 
             total_runtime += end - start
             logger.debug("Total accumulated runtime: %f", total_runtime)
 
             countdown = get_exponential_backoff_interval(
-                factor=1,
+                factor=retry_backoff,
                 retries=retries,
                 maximum=timeout
                 if has_timeout
@@ -114,8 +116,8 @@ def maybe_retry_in_workflow(
                     },
                 )
 
-        if not hasattr(task, "_orig_run"):
-            task._orig_run, task.run = task.run, run
+        if not hasattr(task, "_of_orig_run"):  # noqa
+            task._of_orig_run, task.run = task.run, run
 
         return task
 

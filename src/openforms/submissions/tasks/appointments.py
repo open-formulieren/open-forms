@@ -31,7 +31,6 @@ def should_retry_appointment_registration(exception, task) -> bool:
 
 
 @maybe_retry_in_workflow(
-    retry_backoff=True,
     timeout=10,
     retry_for=(AppointmentRegistrationFailed,),
     should_retry=should_retry_appointment_registration,
@@ -54,7 +53,6 @@ def maybe_register_appointment(task, submission_id: int) -> None:
 
 
 @maybe_retry_in_workflow(
-    retry_backoff=True,
     timeout=10,
     retry_for=(AppointmentUpdateFailed,),
 )
