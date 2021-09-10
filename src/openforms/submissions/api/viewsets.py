@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -113,11 +112,13 @@ class SubmissionViewSet(
         * the submission is persisted to the configured backend
         * payment is initiated if relevant
 
-        Once a submission is done processing, it's scheduled to be removed from the
-        session. This means it's no longer possible to change or read the submission
-        data (including individual steps).
+        Once a submission is completed, it's removed from the submission and time-stamped
+        HMAC token URLs are used for subsequent process flow. This means it's no longer
+        possible to change or read the submission data (including individual steps).
+        This guarantees that the submission is removed from the session without having
+        to rely on the client being able to make another call. IF it is detected in the
+        status endpoint that a retry is needed, the ID is added back to the session.
 
-        TODO: give some leeway? add endpoint to trigger cleanup immediately?
         TODO: emit a status URL with time-based token (Salted HMAC, from token generator)
         that the frontend can poll without needing the submission in the session.
         TODO: if appointment registration fails, the submission ID must be added back

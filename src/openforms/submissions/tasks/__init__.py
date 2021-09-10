@@ -77,5 +77,3 @@ def finalize_completion(task, submission_id: int) -> None:
     """
     send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
     send_confirmation_email_task.delay()
-
-    # TODO: clean up session data

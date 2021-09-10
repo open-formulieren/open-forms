@@ -47,7 +47,7 @@ def maybe_register_appointment(task, submission_id: int) -> None:
     be stored in the database. If appointment registration fails, this feedback
     should find its way back to the end-user.
     """
-    logger.info("Registering appointment for submission %d", submission_id)
+    logger.info("Registering appointment for submission %d (if needed!)", submission_id)
     submission = Submission.objects.get(id=submission_id)
     register_appointment(submission)
 
@@ -69,5 +69,5 @@ def maybe_update_appointment(task, submission_id: int) -> None:
     attempted and after the "final" reference was obtained.
     """
     submission = Submission.objects.get(id=submission_id)
-    logger.info("Updating appointment for submission %d", submission_id)
+    logger.info("Updating appointment for submission %d (if needed!)", submission_id)
     pass  # TODO: implement!
