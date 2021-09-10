@@ -16,3 +16,4 @@ integrating with Open Forms.
    sdk/index
    profiling
    i18n
+   tokens
