@@ -78,10 +78,12 @@ def book_appointment_for_submission(submission: Submission) -> None:
         )
 
     product = AppointmentProduct(
-        identifier=appointment_data["productIDAndName"].split("-", 1)[0], name=""
+        identifier=appointment_data["productIDAndName"]["identifier"],
+        name=appointment_data["productIDAndName"]["name"],
     )
     location = AppointmentLocation(
-        identifier=appointment_data["locationIDAndName"].split("-", 1)[0], name=""
+        identifier=appointment_data["locationIDAndName"]["identifier"],
+        name=appointment_data["locationIDAndName"]["name"],
     )
     appointment_client = AppointmentClient(
         last_name=appointment_data["clientLastName"],

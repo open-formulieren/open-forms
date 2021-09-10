@@ -146,8 +146,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79-Paspoort",
-                "location": "1-Amsterdam",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
@@ -207,8 +207,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79-Paspoort",
-                "location": "1-Amsterdam",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
