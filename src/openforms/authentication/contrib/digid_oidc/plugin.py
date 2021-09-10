@@ -1,9 +1,11 @@
 from typing import Optional
+from urllib.parse import urlencode
 
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from rest_framework.reverse import reverse
 
 from openforms.authentication.base import BasePlugin, LoginLogo
@@ -23,6 +25,11 @@ class DigiDOIDCAuthentication(BasePlugin):
                 "digid_oidc:oidc_authentication_init",
             )
         )
+
+    def logout(self, request: HttpRequest):
+        params = urlencode({"id_token_hint": request.session["oidc_id_token"]})
+        logout_endpoint = OpenIDConnectPublicConfig.get_solo().oidc_op_logout_endpoint
+        requests.get(f"{logout_endpoint}?{params}")
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(
