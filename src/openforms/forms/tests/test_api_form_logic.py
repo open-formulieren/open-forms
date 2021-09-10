@@ -348,3 +348,44 @@ class FormLogicAPITests(APITestCase):
         self.assertEqual(
             "jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
         )
+
+    def test_create_rule_with_empty_formstep(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                    },
+                ]
+            },
+        )
+
+        form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "json_logic_trigger": {"==": [{"var": "name"}, "John"]},
+            "actions": [
+                {
+                    "formStep": "",
+                    "component": "surname",
+                    "action": {
+                        "type": "value",
+                        "property": {},
+                        "value": {"var": "name"},
+                    },
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
