@@ -104,4 +104,7 @@ class SubmissionReportTokenGenerator:
         return (dt - date(2001, 1, 1)).days
 
 
-token_generator = SubmissionReportTokenGenerator()
+submission_report_token_generator = SubmissionReportTokenGenerator()
+
+# deprecated - just keeping it around to not break imports
+token_generator = submission_report_token_generator

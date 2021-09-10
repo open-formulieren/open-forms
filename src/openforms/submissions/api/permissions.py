@@ -2,7 +2,10 @@ from rest_framework import permissions
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
+from openforms.api.permissions import TimestampedTokenPermission
+
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from ..tokens import submission_report_token_generator
 
 
 class AnyActiveSubmissionPermission(permissions.BasePermission):
@@ -66,3 +69,7 @@ class OwnsTemporaryUploadPermission(permissions.BasePermission):
         if not active_uploads:
             return queryset.none()
         return queryset.filter(uuid__in=active_uploads)
+
+
+class DownloadSubmissionReportPermission(TimestampedTokenPermission):
+    token_generator = submission_report_token_generator
