@@ -2,8 +2,10 @@ from typing import List
 
 from django.conf import settings
 
-from openforms.submissions.models import SubmissionReport
+from openforms.submissions.models import Submission, SubmissionReport
 from openforms.tokens import BaseTokenGenerator
+
+__all__ = ["submission_status_token_generator", "submission_report_token_generator"]
 
 
 class SubmissionReportTokenGenerator(BaseTokenGenerator):
@@ -27,4 +29,28 @@ class SubmissionReportTokenGenerator(BaseTokenGenerator):
         return submission_report_bits
 
 
+class SubmissionStatusTokenGenerator(BaseTokenGenerator):
+    key_salt = "openforms.submissions.tokens.SubmissionStatusTokenGenerator"
+    # pin to the minimum of 1 day - the SDK should not be polling for longer than
+    # about a minute anyway.
+    token_timeout_days = 1
+
+    def get_hash_value_parts(self, submission: Submission) -> List[str]:
+        """
+        Obtain the attribute values that mutate to invalidate the token.
+
+        Technically this token is not single-use, as the status endpoint using this
+        token is polled until processing has completed. However, if the on-completation
+        chain was re-started (for example), the token is invalidated since it no longer
+        represents the current state of execution.
+        """
+        attributes = [
+            "completed_on",
+            "suspended_on",
+            "on_completion_task_id",
+        ]
+        return [str(getattr(submission, attr)) for attr in attributes]
+
+
 submission_report_token_generator = SubmissionReportTokenGenerator()
+submission_status_token_generator = SubmissionStatusTokenGenerator()

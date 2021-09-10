@@ -5,7 +5,10 @@ from rest_framework.views import APIView
 from openforms.api.permissions import TimestampedTokenPermission
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
-from ..tokens import submission_report_token_generator
+from ..tokens import (
+    submission_report_token_generator,
+    submission_status_token_generator,
+)
 
 
 class AnyActiveSubmissionPermission(permissions.BasePermission):
@@ -73,3 +76,7 @@ class OwnsTemporaryUploadPermission(permissions.BasePermission):
 
 class DownloadSubmissionReportPermission(TimestampedTokenPermission):
     token_generator = submission_report_token_generator
+
+
+class SubmissionStatusPermission(TimestampedTokenPermission):
+    token_generator = submission_status_token_generator

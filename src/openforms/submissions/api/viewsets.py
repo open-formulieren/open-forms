@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
+from openforms.api.serializers import ExceptionSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
@@ -26,7 +27,7 @@ from ..utils import (
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
-from .permissions import ActiveSubmissionPermission
+from .permissions import ActiveSubmissionPermission, SubmissionStatusPermission
 from .serializers import (
     FormDataSerializer,
     SubmissionProcessingStatusSerializer,
@@ -145,13 +146,15 @@ class SubmissionViewSet(
         request=None,
         responses={
             200: SubmissionProcessingStatusSerializer,
-            # TODO: 403, 401, 429
+            403: ExceptionSerializer,
+            429: ExceptionSerializer,
         },
     )
     @action(
         detail=True,
         methods=["get"],
-        permission_classes=(ActiveSubmissionPermission,),
+        url_path=r"(?P<token>[a-z0-9]{1,3}-[\w]{20})/status",
+        permission_classes=(SubmissionStatusPermission,),
     )
     def status(self, request, *args, **kwargs):
         """
