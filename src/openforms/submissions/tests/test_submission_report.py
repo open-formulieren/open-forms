@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
@@ -17,7 +18,7 @@ from .factories import SubmissionFactory, SubmissionReportFactory
 
 @temp_private_root()
 @override_settings(SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS=2)
-class DownloadSubmissionReportTests(TestCase):
+class DownloadSubmissionReportTests(APITestCase):
     def test_valid_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
         token = submission_report_token_generator.make_token(report)

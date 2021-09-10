@@ -31,12 +31,15 @@ class SubmissionProcessingStatus:
     @property
     def status(self) -> str:
         result = self.get_async_result()
-        is_ready = result.state in states.READY_STATES
+        is_ready = result is not None and result.state in states.READY_STATES
         return ProcessingStatuses.done if is_ready else ProcessingStatuses.in_progress
 
     @property
     def result(self) -> str:
         result = self.get_async_result()
+        if result is None or result.state in states.UNREADY_STATES:
+            return ""
+
         if result.state == states.SUCCESS:
             return ProcessingResults.success
         if result.state in (states.REVOKED, states.REJECTED):
@@ -61,7 +64,7 @@ class SubmissionProcessingStatus:
     @property
     def confirmation_page_content(self) -> str:
         result = self.get_async_result()
-        if not result.state == states.SUCCESS:
+        if result is None or result.state != states.SUCCESS:
             return ""
         return self.submission.render_confirmation_page()
 
@@ -69,7 +72,7 @@ class SubmissionProcessingStatus:
     def report_download_url(self) -> str:
         result = self.get_async_result()
         # only return a download URL if the entire chain succeeded
-        if not result.state == states.SUCCESS:
+        if result is None or result.state != states.SUCCESS:
             return ""
         report = self.submission.report
         token = submission_report_token_generator.make_token(report)
