@@ -11,7 +11,7 @@ from rest_framework.reverse import reverse
 
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
-from ..tokens import token_generator
+from ..tokens import submission_report_token_generator
 from .factories import SubmissionFactory, SubmissionReportFactory
 
 
@@ -20,7 +20,7 @@ from .factories import SubmissionFactory, SubmissionReportFactory
 class DownloadSubmissionReportTests(TestCase):
     def test_valid_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
-        token = token_generator.make_token(report)
+        token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
             "api:submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
@@ -33,7 +33,7 @@ class DownloadSubmissionReportTests(TestCase):
 
     def test_expired_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
-        token = token_generator.make_token(report)
+        token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
             "api:submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
@@ -46,7 +46,7 @@ class DownloadSubmissionReportTests(TestCase):
 
     def test_token_invalidated_by_earlier_download(self):
         report = SubmissionReportFactory.create(submission__completed=True)
-        token = token_generator.make_token(report)
+        token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
             "api:submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},

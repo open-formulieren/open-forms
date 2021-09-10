@@ -105,6 +105,3 @@ class SubmissionReportTokenGenerator:
 
 
 submission_report_token_generator = SubmissionReportTokenGenerator()
-
-# deprecated - just keeping it around to not break imports
-token_generator = submission_report_token_generator

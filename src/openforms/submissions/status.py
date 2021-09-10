@@ -14,7 +14,7 @@ from openforms.appointments.models import AppointmentInfo
 
 from .constants import ProcessingResults, ProcessingStatuses
 from .models import Submission
-from .tokens import token_generator
+from .tokens import submission_report_token_generator
 
 
 @dataclass
@@ -72,7 +72,7 @@ class SubmissionProcessingStatus:
         if not result.state == states.SUCCESS:
             return ""
         report = self.submission.report
-        token = token_generator.make_token(report)
+        token = submission_report_token_generator.make_token(report)
         download_url = reverse(
             "api:submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
