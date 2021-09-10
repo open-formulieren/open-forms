@@ -4,6 +4,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import Form
 
 from ..models import OpenIDConnectPublicConfig
@@ -41,6 +42,15 @@ class DigiDOIDCFormAdminTests(WebTest):
 
         self.user = SuperUserFactory.create(app=self.app)
         self.app.set_user(self.user)
+
+        global_config = GlobalConfiguration.get_solo()
+        global_config.enable_react_form = False
+        global_config.save()
+
+        def _cleanup():
+            GlobalConfiguration.get_solo().delete()
+
+        self.addCleanup(_cleanup)
 
     def test_digid_oidc_enabled(self):
         response = self.app.get(reverse("admin:forms_form_add"))
