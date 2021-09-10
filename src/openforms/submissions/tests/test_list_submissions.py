@@ -27,7 +27,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
         # ensure there is a form definition
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(
-            form=cls.form, form_definition__name="Select product"
+            form=cls.form, form_definition__public_name="Select product"
         )
 
     def test_list_own_submissions(self):

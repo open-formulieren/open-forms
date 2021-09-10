@@ -15,7 +15,8 @@ class FormDefinitionForm(forms.ModelForm):
         model = FormDefinition
         fields = (
             "uuid",
-            "name",
+            "public_name",
+            "internal_name",
             "slug",
             "login_required",
             "is_reusable",

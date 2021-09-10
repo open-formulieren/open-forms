@@ -169,7 +169,8 @@ class FormVersionRestoreAPITests(APITestCase):
 
         restored_form_definition = form_steps.get().form_definition
 
-        self.assertEqual("Test Definition 1", restored_form_definition.name)
+        self.assertEqual("Test Definition 1", restored_form_definition.public_name)
+        self.assertEqual("Test Internal 1", restored_form_definition.internal_name)
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
             {"components": [{"key": "test", "test": "1"}]},

@@ -11,7 +11,7 @@ from ..models import FormDefinition, FormStep
 
 def delete_selected(modeladmin, request, queryset):
     actively_used = queryset.filter(formstep__isnull=False)
-    for name in actively_used.values_list("name", flat=True):
+    for name in actively_used.values_list("internal_name", flat=True):
         messages.error(
             request,
             _(
@@ -29,8 +29,8 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 @admin.register(FormDefinition)
 class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
-    prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "used_in_forms", "is_reusable")
+    prepopulated_fields = {"slug": ("public_name",)}
+    list_display = ("public_name", "internal_name", "used_in_forms", "is_reusable")
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
 

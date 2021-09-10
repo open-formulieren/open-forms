@@ -84,7 +84,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         configuration = {"components": components}
 
         form_definition = FormDefinitionFactory.create(
-            name=f"definition-{key}", configuration=configuration
+            public_name=f"definition-{key}", configuration=configuration
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         SubmissionStepFactory.create(

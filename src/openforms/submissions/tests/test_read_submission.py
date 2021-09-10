@@ -25,7 +25,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         # ensure there is a form definition
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(
-            form=cls.form, form_definition__name="Select product"
+            form=cls.form, form_definition__public_name="Select product"
         )
         cls.submission = SubmissionFactory.create(form=cls.form)
         cls.endpoint = reverse(

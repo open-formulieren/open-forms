@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     id = serializers.UUIDField(source="form_step.uuid")
-    name = serializers.CharField(source="form_step.form_definition.name")
+    name = serializers.CharField(source="form_step.form_definition.public_name")
 
     url = NestedRelatedField(
         view_name="api:submission-steps-detail",

@@ -28,9 +28,25 @@ class FormDefinition(models.Model):
     """
 
     uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    name = models.CharField(_("name"), max_length=50)
+    public_name = models.CharField(
+        _("public name"),
+        max_length=50,
+        help_text=_("Visible to end-user. Can be overridden per form-step."),
+    )
+    internal_name = models.CharField(
+        _("internal name"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "Optional alternate name for internal identification, not visible to end-users"
+        ),
+    )
     slug = AutoSlugField(
-        _("slug"), max_length=100, populate_from="name", editable=True, unique=True
+        _("slug"),
+        max_length=100,
+        populate_from="public_name",
+        editable=True,
+        unique=True,
     )
     configuration = JSONField(
         _("Form.io configuration"),
@@ -48,7 +64,7 @@ class FormDefinition(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.management_name
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -72,7 +88,8 @@ class FormDefinition(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = uuid.uuid4()
-        copy.name = _("{name} (copy)").format(name=self.name)
+        copy.public_name = _("{name} (copy)").format(name=self.public_name)
+        copy.internal_name = _("{name} (copy)").format(name=self.internal_name)
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.save()
         return copy
@@ -92,7 +109,7 @@ class FormDefinition(models.Model):
                 formstep__form_definition=self,
             )
             .distinct()
-            .order_by("name")
+            .order_by("public_name")
         )
 
     def get_hash(self):
@@ -152,6 +169,10 @@ class FormDefinition(models.Model):
                 sensitive_fields.append(component["key"])
 
         return sensitive_fields
+
+    @property
+    def management_name(self):
+        return self.internal_name or self.public_name
 
     class Meta:
         verbose_name = _("Form definition")

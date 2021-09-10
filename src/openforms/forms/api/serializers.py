@@ -54,7 +54,9 @@ class FormStepLiteralsSerializer(serializers.Serializer):
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
-    form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    form_definition = serializers.SlugRelatedField(
+        read_only=True, slug_field="public_name"
+    )
     index = serializers.IntegerField(source="order")
     slug = serializers.SlugField(source="form_definition.slug")
     literals = FormStepLiteralsSerializer(source="*", required=False)
@@ -215,7 +217,8 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "url",
             "uuid",
-            "name",
+            "public_name",
+            "internal_name",
             "slug",
             "configuration",
             "login_required",
@@ -272,7 +275,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     is_reusable = serializers.BooleanField(
         source="form_definition.is_reusable", read_only=True
     )
-    name = serializers.CharField(source="form_definition.name", read_only=True)
+    name = serializers.CharField(source="form_definition.public_name", read_only=True)
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(

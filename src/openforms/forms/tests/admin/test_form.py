@@ -211,7 +211,8 @@ class FormAdminImportExportTests(WebTest):
                             {
                                 "url": "http://testserver/api/v1/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
                                 "uuid": "78a18366-f9c0-47f2-8fd6-a6c31920440e",
-                                "name": "testform",
+                                "public_name": "testform public",
+                                "internal_name": "testform internal",
                                 "slug": "testform",
                                 "configuration": {
                                     "components": [
@@ -288,7 +289,8 @@ class FormAdminImportExportTests(WebTest):
         self.assertNotEqual(
             form_definition.uuid, "b8315e1d-3134-476f-8786-7661d8237c51"
         )
-        self.assertEqual(form_definition.name, "testform")
+        self.assertEqual(form_definition.public_name, "testform public")
+        self.assertEqual(form_definition.internal_name, "testform internal")
         self.assertEqual(form_definition.slug, "testform-2")
 
 

@@ -7,7 +7,8 @@
                 "key": "test"
             }]
         },
-        "name": "Test Definition 1",
+        "public_name": "Test Definition 1",
+        "internal_name": "Test Internal 1",
         "slug": "test-definition-1",
         "url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
         "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8"

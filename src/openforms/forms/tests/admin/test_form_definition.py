@@ -94,7 +94,12 @@ class TestFormDefinitionAdmin(WebTest):
         self.assertEqual(FormDefinition.objects.count(), 2)
         copied_form = FormDefinition.objects.exclude(pk=self.form_definition.pk).first()
         self.assertEqual(
-            copied_form.name, _("{name} (copy)").format(name=self.form_definition.name)
+            copied_form.public_name,
+            _("{name} (copy)").format(name=self.form_definition.public_name),
+        )
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=self.form_definition.internal_name),
         )
         self.assertEqual(
             copied_form.slug, _("{slug}-copy").format(slug=self.form_definition.slug)

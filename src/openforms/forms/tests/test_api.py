@@ -1208,7 +1208,7 @@ class FormDefinitionsAPITests(APITestCase):
 
     def test_non_staff_user_cant_update(self):
         definition = FormDefinitionFactory.create(
-            name="test form definition",
+            public_name="test form definition",
             slug="test-form-definition",
             configuration={
                 "display": "form",
@@ -1220,7 +1220,7 @@ class FormDefinitionsAPITests(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "name": "Updated name",
+                "public_name": "Updated name",
                 "slug": "updated-slug",
                 "configuration": {
                     "display": "form",
@@ -1249,7 +1249,7 @@ class FormDefinitionsAPITests(APITestCase):
 
     def test_non_staff_user_cant_delete(self):
         definition = FormDefinitionFactory.create(
-            name="test form definition",
+            public_name="test form definition",
             slug="test-form-definition",
             configuration={
                 "display": "form",
@@ -1267,7 +1267,7 @@ class FormDefinitionsAPITests(APITestCase):
         self.client.force_login(staff_user)
 
         definition = FormDefinitionFactory.create(
-            name="test form definition",
+            public_name="test form definition",
             slug="test-form-definition",
             login_required=False,
             configuration={
@@ -1280,7 +1280,8 @@ class FormDefinitionsAPITests(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "name": "Updated name",
+                "public_name": "Updated public_name",
+                "internal_name": "Updated internal_name",
                 "slug": "updated-slug",
                 "configuration": {
                     "display": "form",
@@ -1294,7 +1295,8 @@ class FormDefinitionsAPITests(APITestCase):
 
         definition.refresh_from_db()
 
-        self.assertEqual("Updated name", definition.name)
+        self.assertEqual("Updated public_name", definition.public_name)
+        self.assertEqual("Updated internal_name", definition.internal_name)
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
@@ -1307,7 +1309,8 @@ class FormDefinitionsAPITests(APITestCase):
         response = self.client.post(
             url,
             data={
-                "name": "Name",
+                "public_name": "Name public",
+                "internal_name": "Name internal",
                 "slug": "a-slug",
                 "configuration": {
                     "display": "form",
@@ -1320,7 +1323,8 @@ class FormDefinitionsAPITests(APITestCase):
 
         definition = FormDefinition.objects.get()
 
-        self.assertEqual("Name", definition.name)
+        self.assertEqual("Name public", definition.public_name)
+        self.assertEqual("Name internal", definition.internal_name)
         self.assertEqual("a-slug", definition.slug)
         self.assertEqual(
             [{"label": "New field"}], definition.configuration["components"]
@@ -1334,7 +1338,7 @@ class FormDefinitionsAPITests(APITestCase):
         response = self.client.post(
             url,
             data={
-                "name": "Name",
+                "public_name": "Name",
                 "slug": "a-slug",
                 "configuration": {
                     "someCamelCase": "field",
@@ -1352,7 +1356,7 @@ class FormDefinitionsAPITests(APITestCase):
         self.client.force_login(staff_user)
 
         definition = FormDefinitionFactory.create(
-            name="test form definition",
+            public_name="test form definition",
             slug="test-form-definition",
             configuration={
                 "display": "form",
@@ -1411,7 +1415,12 @@ class ImportExportAPITests(APITestCase):
         form_definitions = json.loads(zf.read("formDefinitions.json"))
         self.assertEqual(len(form_definitions), 1)
         self.assertEqual(form_definitions[0]["uuid"], str(form_definition.uuid))
-        self.assertEqual(form_definitions[0]["name"], form_definition.name)
+        self.assertEqual(
+            form_definitions[0]["public_name"], form_definition.public_name
+        )
+        self.assertEqual(
+            form_definitions[0]["internal_name"], form_definition.internal_name
+        )
         self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
         self.assertEqual(
             form_definitions[0]["configuration"],
@@ -1523,7 +1532,12 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(
             imported_form_definition.login_required, form_definition1.login_required
         )
-        self.assertEqual(imported_form_definition.name, form_definition1.name)
+        self.assertEqual(
+            imported_form_definition.public_name, form_definition1.public_name
+        )
+        self.assertEqual(
+            imported_form_definition.internal_name, form_definition1.internal_name
+        )
         self.assertEqual(imported_form_definition.slug, form_definition1.slug)
 
         self.assertNotEqual(imported_form_step.pk, form_step1.pk)
@@ -1673,7 +1687,7 @@ class CopyFormAPITests(APITestCase):
         )
         self.assertEqual(
             response.json()["steps"][0]["formDefinition"],
-            copied_form_step.form_definition.name,
+            copied_form_step.form_definition.public_name,
         )
 
         self.assertEqual(Form.objects.count(), 2)

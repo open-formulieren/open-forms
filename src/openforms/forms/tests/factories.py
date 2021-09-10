@@ -21,7 +21,7 @@ class FormFactory(factory.django.DjangoModelFactory):
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
+    public_name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
 
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False

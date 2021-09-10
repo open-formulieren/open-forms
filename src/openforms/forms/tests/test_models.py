@@ -177,19 +177,23 @@ class FormDefinitionTestCase(TestCase):
 
     def test_copying_a_form_definition_makes_correct_copies(self):
         form_definition_1 = FormDefinitionFactory.create(
-            slug="a-form-definition", name="A form definition"
+            slug="a-form-definition", public_name="A form definition"
         )
 
-        form2 = form_definition_1.copy()
-        form3 = form_definition_1.copy()
+        form_definition_2 = form_definition_1.copy()
+        form_definition_3 = form_definition_1.copy()
 
-        self.assertEqual(form2.slug, _("{slug}-copy").format(slug="a-form-definition"))
         self.assertEqual(
-            form2.name, _("{name} (copy)").format(name="A form definition")
+            form_definition_2.slug, _("{slug}-copy").format(slug="a-form-definition")
         )
-        self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(
-            form3.name, _("{name} (copy)").format(name="A form definition")
+            form_definition_2.public_name,
+            _("{name} (copy)").format(name="A form definition"),
+        )
+        self.assertEqual(form_definition_3.slug, f"{form_definition_2.slug}-2")
+        self.assertEqual(
+            form_definition_3.public_name,
+            _("{name} (copy)").format(name="A form definition"),
         )
 
     def test_get_keys_for_email_summary(self):
