@@ -41,11 +41,11 @@ const reducer = (draft, action) => {
 };
 
 
-const Appointments = ({ availableComponents={} }) => {
+const Appointments = ({ availableComponents={}, onChange }) => {
 
     const [state, dispatch] = useImmerReducer(reducer, {...initialState});
 
-    const onChange = (event) => {
+    const onFieldChange = (event) => {
         const {name, value} = event.target;
         dispatch({
             type: 'APPOINTMENTS_CONFIGURATION_CHANGED',
@@ -54,6 +54,7 @@ const Appointments = ({ availableComponents={} }) => {
                 value
             },
         });
+        onChange(name, value);
     };
 
     // rendering logic
@@ -74,7 +75,7 @@ const Appointments = ({ availableComponents={} }) => {
                         <ComponentSelection
                             name="component"
                             value={products}
-                            onChange={onChange}
+                            onChange={onFieldChange}
                             filter={(comp) => (comp.type === 'select')}
                         />
                     </Field>

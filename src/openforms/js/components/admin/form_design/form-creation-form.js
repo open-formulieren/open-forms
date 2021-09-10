@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import zip from 'lodash/zip';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
@@ -83,6 +84,7 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
+    appointments: {},
 };
 
 const newStepData = {
@@ -248,6 +250,11 @@ function reducer(draft, action) {
             updatedSteps = updatedSteps.concat([{...draft.formSteps[index-1], ...{index: index}}]);
 
             draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
+            break;
+        }
+        case 'APPOINTMENTS_CHANGED': {
+            const { name, value } = action.payload;
+            draft.appointments[name] = value;
             break;
         }
         /**
@@ -509,6 +516,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         });
     };
 
+    const onAppointmentsChange = (name, value) => {
+        dispatch({
+            type: 'APPOINTMENTS_CHANGED',
+            payload: {name, value},
+        });
+    };
+
     const onSubmit = async () => {
         dispatch({type: 'SUBMIT_STARTED'});
 
@@ -564,13 +578,27 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
                 const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
 
+                // TODO Hack because step.configuration is not extensible
+                //   Should figure out a way to change this without doing a deep clone
+                const configuration = cloneDeep(step.configuration);
+
+                configuration.components.map(component => {
+                    if (component.key === state.appointments.products) {
+                        console.log('before setting property');
+                        component.appointmentsShowProducts = true;
+                        console.log('after setting property');
+                    }
+                });
+
+                debugger;
+
                 var definitionResponse = await definitionCreateOrUpdate(
                     definitionEndpoint,
                     csrftoken,
                     {
                         name: step.name,
                         slug: step.slug,
-                        configuration: step.configuration,
+                        configuration,
                         loginRequired: step.loginRequired,
                         isReusable: step.isReusable,
                     }
@@ -611,6 +639,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
                 }
             } catch (e) {
+                debugger;
                 let formStepsErrors = new Array(state.formSteps.length);
                 formStepsErrors[index] = e.details;
                 dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
@@ -850,6 +879,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 <TabPanel>
                     <Appointments
                         availableComponents={getFormComponents(state.formSteps)}
+                        onChange={onAppointmentsChange}
                     />
                 </TabPanel>
             </Tabs>
