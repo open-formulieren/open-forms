@@ -25,7 +25,8 @@ class EmailRegistration(BasePlugin):
         submitted_data = submission.get_merged_data()
 
         template = _("Submission details for {} (submitted on {})").format(
-            submission.form.name, submission.completed_on.strftime("%H:%M:%S %d-%m-%Y")
+            submission.form.public_name,
+            submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
         )
 
         template += """
@@ -47,7 +48,7 @@ class EmailRegistration(BasePlugin):
 
         send_mail_plus(
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.public_name, submission.uuid
             ),
             content,
             settings.DEFAULT_FROM_EMAIL,

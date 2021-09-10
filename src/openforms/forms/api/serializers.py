@@ -143,7 +143,8 @@ class FormSerializer(serializers.ModelSerializer):
         model = Form
         fields = (
             "uuid",
-            "name",
+            "public_name",
+            "internal_name",
             "login_required",
             "registration_backend",
             "registration_backend_options",
@@ -238,7 +239,8 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "url",
             "uuid",
-            "name",
+            "public_name",
+            "internal_name",
             "active",
         )
         extra_kwargs = {

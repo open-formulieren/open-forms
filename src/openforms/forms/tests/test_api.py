@@ -132,7 +132,8 @@ class FormsAPITests(APITestCase):
         self.user.save()
         url = reverse("api:form-list")
         data = {
-            "name": "Test Post Form",
+            "public_name": "Test Post Form",
+            "internal_name": "Test Post Internal",
             "slug": "test-post-form",
             "authentication_backends": ["digid"],
         }
@@ -141,7 +142,8 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.count(), 1)
         form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.public_name, "Test Post Form")
+        self.assertEqual(form.internal_name, "Test Post Internal")
         self.assertEqual(form.slug, "test-post-form")
 
     @patch(
@@ -170,7 +172,7 @@ class FormsAPITests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "name",
+                        "name": "publicName",
                         "code": "required",
                         "reason": _("This field is required."),
                     },
@@ -201,25 +203,25 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "name": "Test Patch Form",
+            "publicName": "Test Patch Form",
         }
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
-        self.assertEqual(form.name, "Test Patch Form")
+        self.assertEqual(form.public_name, "Test Patch Form")
 
     def test_partial_update_of_form_unsuccessful_without_authorization(self):
         form = FormFactory.create()
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "name": "Test Patch Form",
+            "publicName": "Test Patch Form",
         }
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
-        self.assertNotEqual(form.name, "Test Patch Form")
+        self.assertNotEqual(form.public_name, "Test Patch Form")
 
     def test_partial_update_of_form_unsuccessful_when_form_cannot_be_found(self):
         self.user.is_staff = True
@@ -227,7 +229,7 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": uuid.uuid4()})
         data = {
-            "name": "Test Patch Form",
+            "publicName": "Test Patch Form",
         }
         response = self.client.patch(url, data=data)
 
@@ -240,14 +242,16 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "name": "Test Put Form",
+            "public_name": "Test Put Form",
+            "internal_name": "Test Put Internal",
             "slug": "test-put-form",
         }
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
-        self.assertEqual(form.name, "Test Put Form")
+        self.assertEqual(form.public_name, "Test Put Form")
+        self.assertEqual(form.internal_name, "Test Put Internal")
         self.assertEqual(form.slug, "test-put-form")
 
     def test_maintenance_mode_value_returned_through_api(self):
@@ -399,7 +403,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
         url = reverse("api:form-list")
         data = {
-            "name": "Test Post Form",
+            "publicName": "Test Post Form",
             "slug": "test-post-form",
             "maintenanceMode": True,
         }
@@ -408,7 +412,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.count(), 1)
         form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.public_name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
         self.assertEqual(form.maintenance_mode, True)
 
@@ -417,7 +421,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
         url = reverse("api:form-list")
         data = {
-            "name": "Test Post Form",
+            "publicName": "Test Post Form",
             "slug": "test-post-form",
             "literals": {
                 "beginText": {"value": "Different Begin Text"},
@@ -431,7 +435,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.count(), 1)
         form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.public_name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
         self.assertEqual(form.begin_text, "Different Begin Text")
         self.assertEqual(form.previous_text, "Different Previous Text")
@@ -504,7 +508,7 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "name": "Test Put Form",
+            "publicName": "Test Put Form",
         }
         response = self.client.put(url, data=data)
 
@@ -532,14 +536,14 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create()
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "name": "Test Post Form",
+            "publicName": "Test Post Form",
             "slug": "test-post-form",
         }
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         form.refresh_from_db()
-        self.assertNotEqual(form.name, "Test Put Form")
+        self.assertNotEqual(form.public_name, "Test Put Form")
         self.assertNotEqual(form.slug, "test-put-form")
 
     @patch(
@@ -568,7 +572,7 @@ class FormsAPITests(APITestCase):
                 "instance": f"urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "name",
+                        "name": "publicName",
                         "code": "required",
                         "reason": _("This field is required."),
                     },
@@ -587,7 +591,7 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": uuid.uuid4()})
         data = {
-            "name": "Test Post Form",
+            "publicName": "Test Post Form",
             "slug": "test-post-form",
         }
         response = self.client.put(url, data=data)
@@ -1407,7 +1411,8 @@ class ImportExportAPITests(APITestCase):
         forms = json.loads(zf.read("forms.json"))
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0]["uuid"], str(form.uuid))
-        self.assertEqual(forms[0]["name"], form.name)
+        self.assertEqual(forms[0]["public_name"], form.public_name)
+        self.assertEqual(forms[0]["internal_name"], form.internal_name)
         self.assertEqual(forms[0]["slug"], form.slug)
         self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
         self.assertIsNone(forms[0]["product"])
@@ -1520,7 +1525,8 @@ class ImportExportAPITests(APITestCase):
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
         self.assertEqual(imported_form.registration_backend, form1.registration_backend)
-        self.assertEqual(imported_form.name, form1.name)
+        self.assertEqual(imported_form.public_name, form1.public_name)
+        self.assertEqual(imported_form.internal_name, form1.internal_name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, form1.slug)
 
@@ -1678,7 +1684,8 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
         self.assertEqual(response.json()["uuid"], str(copied_form.uuid))
-        self.assertEqual(response.json()["name"], copied_form.name)
+        self.assertEqual(response.json()["publicName"], copied_form.public_name)
+        self.assertEqual(response.json()["internalName"], copied_form.internal_name)
         self.assertEqual(response.json()["loginRequired"], copied_form.login_required)
         self.assertEqual(response.json()["product"], copied_form.product)
         self.assertEqual(response.json()["slug"], copied_form.slug)
@@ -1703,7 +1710,13 @@ class CopyFormAPITests(APITestCase):
         self.assertNotEqual(copied_form.uuid, str(form.uuid))
         self.assertEqual(copied_form.active, form.active)
         self.assertEqual(copied_form.registration_backend, form.registration_backend)
-        self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
+        self.assertEqual(
+            copied_form.public_name, _("{name} (copy)").format(name=form.public_name)
+        )
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=form.internal_name),
+        )
         self.assertIsNone(copied_form.product)
         self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=form.slug))
 
@@ -1727,7 +1740,8 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
         self.assertEqual(
-            response.json()["name"], _("{name} (copy)").format(name=form.name)
+            response.json()["publicName"],
+            _("{name} (copy)").format(name=form.public_name),
         )
         self.assertEqual(
             response.json()["slug"], _("{slug}-copy").format(slug=form.slug)
@@ -1741,7 +1755,8 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
         self.assertEqual(
-            response.json()["name"], _("{name} (copy)").format(name=form.name)
+            response.json()["publicName"],
+            _("{name} (copy)").format(name=form.public_name),
         )
         self.assertEqual(response.json()["slug"], "{}-2".format(copy_form_slug))
 
@@ -1751,7 +1766,8 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Location"))
         self.assertEqual(
-            response.json()["name"], _("{name} (copy)").format(name=form.name)
+            response.json()["publicName"],
+            _("{name} (copy)").format(name=form.public_name),
         )
         self.assertEqual(response.json()["slug"], "{}-3".format(copy_form_slug))
 

@@ -72,7 +72,7 @@ class FormAdminImportExportTests(WebTest):
                         [
                             {
                                 "uuid": "b8315e1d-3134-476f-8786-7661d8237c51",
-                                "name": "Form 000",
+                                "public_name": "Form 000",
                                 "slug": "bed",
                                 "product": None,
                                 "authentication_backends": ["digid"],
@@ -109,7 +109,8 @@ class FormAdminImportExportTests(WebTest):
 
         form = Form.objects.get()
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
-        self.assertEqual(form.name, "Form 000")
+        self.assertEqual(form.public_name, "Form 000")
+        self.assertEqual(form.internal_name, "")
         self.assertEqual(form.authentication_backends, ["digid"])
 
     def test_form_admin_import_staff_required(self):
@@ -186,7 +187,7 @@ class FormAdminImportExportTests(WebTest):
                         [
                             {
                                 "uuid": "2a231070-89c9-45dc-9ff8-ffd80ef15343",
-                                "name": "testform",
+                                "public_name": "testform",
                                 "login_required": False,
                                 "product": None,
                                 "slug": "testform_old",
@@ -281,7 +282,7 @@ class FormAdminImportExportTests(WebTest):
 
         form = Form.objects.last()
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
-        self.assertEqual(form.name, "testform")
+        self.assertEqual(form.public_name, "testform")
 
         self.assertEqual(FormDefinition.objects.count(), 2)
 
@@ -311,7 +312,13 @@ class FormAdminCopyTests(TestCase):
         self.assertRedirects(response, new_admin_url, fetch_redirect_response=False)
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
-        self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
+        self.assertEqual(
+            copied_form.public_name, _("{name} (copy)").format(name=form.public_name)
+        )
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=form.internal_name),
+        )
         self.assertEqual(copied_form.authentication_backends, ["digid"])
 
         copied_form_step = FormStep.objects.last()
@@ -339,7 +346,12 @@ class FormAdminActionsTests(WebTest):
         self.assertEqual(Form.objects.count(), 2)
         copied_form = Form.objects.exclude(pk=self.form.pk).first()
         self.assertEqual(
-            copied_form.name, _("{name} (copy)").format(name=self.form.name)
+            copied_form.public_name,
+            _("{name} (copy)").format(name=self.form.public_name),
+        )
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=self.form.internal_name),
         )
         self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=self.form.slug))
 

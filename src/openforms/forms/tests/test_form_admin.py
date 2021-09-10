@@ -66,7 +66,7 @@ class FormAdminTests(WebTest):
         with patch_registry(model_field, register):
             add_page = self.app.get(url, user=self.superuser)
 
-            add_page.form["name"] = "test form"
+            add_page.form["public_name"] = "test form"
             add_page.form["slug"] = "test-form"
             add_page.form["registration_backend"].select("plugin")
 
@@ -82,7 +82,7 @@ class FormAdminTests(WebTest):
         url = reverse("admin:forms_form_add")
         add_page = self.app.get(url, user=self.superuser)
 
-        add_page.form["name"] = "test form"
+        add_page.form["public_name"] = "test form"
         add_page.form["slug"] = "test-form"
 
         body = {

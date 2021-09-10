@@ -68,7 +68,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
                         "admin:forms_form_change",
                         kwargs={"object_id": form.pk},
                     ),
-                    form.name,
+                    form.management_name,
                 )
                 for form in forms
             ),

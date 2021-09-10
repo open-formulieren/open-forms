@@ -555,7 +555,7 @@ class StufZDSPluginTests(StufTestBase):
                     "key": "extra",
                 },
             ],
-            form__name="my-form",
+            form__public_name="my-form",
             bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",

@@ -41,9 +41,25 @@ class Form(models.Model):
     """
 
     uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
-    name = models.CharField(_("name"), max_length=50)
+    public_name = models.CharField(
+        _("public name"),
+        max_length=50,
+        help_text=_("Visible to end-user."),
+    )
+    internal_name = models.CharField(
+        _("internal name"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "Optional alternate name for internal identification, not visible to end-users"
+        ),
+    )
     slug = AutoSlugField(
-        _("slug"), max_length=100, populate_from="name", editable=True, unique=True
+        _("slug"),
+        max_length=100,
+        populate_from="public_name",
+        editable=True,
+        unique=True,
     )
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
@@ -221,7 +237,7 @@ class Form(models.Model):
         verbose_name_plural = _("forms")
 
     def __str__(self):
-        return self.name
+        return self.management_name
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
@@ -297,7 +313,8 @@ class Form(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = _uuid.uuid4()
-        copy.name = _("{name} (copy)").format(name=self.name)
+        copy.public_name = _("{name} (copy)").format(name=self.public_name)
+        copy.internal_name = _("{name} (copy)").format(name=self.internal_name)
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = None
         copy.save()
@@ -331,6 +348,10 @@ class Form(models.Model):
         old_version_data = form_version.export_blob
 
         import_form_data(old_version_data, form_version.form)
+
+    @property
+    def management_name(self):
+        return self.internal_name or self.public_name
 
 
 class FormLogic(models.Model):

@@ -7,7 +7,7 @@ from ..utils import form_to_json
 
 
 class FormFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "Form %03d" % n)
+    public_name = factory.Sequence(lambda n: "Form %03d" % n)
     slug = factory.Faker("word")
     active = True
     product = factory.SubFactory(ProductFactory)

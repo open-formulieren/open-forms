@@ -32,12 +32,12 @@ class TestFormDefinitionAdmin(WebTest):
         response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
-            f'<ul><li><a href="{self.form_url}">{self.form.name}</a></li></ul>',
+            f'<ul><li><a href="{self.form_url}">{self.form.management_name}</a></li></ul>',
             str(response.content),
         )
 
     def test_used_in_forms_when_form_has_user_input_properly_escaped(self):
-        form = FormFactory.create(name="<script>alert('foo')</script>")
+        form = FormFactory.create(public_name="<script>alert('foo')</script>")
         FormStepFactory.create(form=form, form_definition=self.form_definition)
 
         response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
@@ -69,12 +69,12 @@ class TestFormDefinitionAdmin(WebTest):
         response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
-            f'<li><a href="{self.form_url}">{self.form.name}</a></li>',
+            f'<li><a href="{self.form_url}">{self.form.management_name}</a></li>',
             str(response.content),
             count=2,
         )
         self.assertInHTML(
-            f'<li><a href="{second_form_url}">{second_form.name}</a></li>',
+            f'<li><a href="{second_form_url}">{second_form.management_name}</a></li>',
             str(response.content),
             count=2,
         )

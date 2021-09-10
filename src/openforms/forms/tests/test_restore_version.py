@@ -19,7 +19,7 @@ class RestoreVersionTest(TestCase):
             internal_name="Test internal",
             configuration={"test": "2"},
         )
-        form = FormFactory.create(name="Test Form 2")
+        form = FormFactory.create(public_name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
 
         version = FormVersion.objects.create(
@@ -35,7 +35,8 @@ class RestoreVersionTest(TestCase):
         form.refresh_from_db()
 
         self.assertEqual(1, FormVersion.objects.all().count())
-        self.assertEqual("Test Form 1", form.name)
+        self.assertEqual("Test Form 1", form.public_name)
+        self.assertEqual("Test Internal 1", form.internal_name)
         self.assertEqual(2, FormDefinition.objects.all().count())
 
         form_steps = FormStep.objects.filter(form=form)
@@ -59,7 +60,7 @@ class RestoreVersionTest(TestCase):
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-1", configuration={"test": "2"}
         )
-        form = FormFactory.create(name="Test Form 2")
+        form = FormFactory.create(public_name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
 
         version = FormVersion.objects.create(
@@ -89,7 +90,7 @@ class RestoreVersionTest(TestCase):
             slug="test-definition-1",
             configuration={"test": "2"},
         )
-        form = FormFactory.create(name="Test Form 2")
+        form = FormFactory.create(public_name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
 
         version = FormVersion.objects.create(
@@ -113,7 +114,7 @@ class RestoreVersionTest(TestCase):
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-2", configuration={"test": "2"}
         )
-        form = FormFactory.create(name="Test Form 2")
+        form = FormFactory.create(public_name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
 
         version = FormVersion.objects.create(
@@ -136,7 +137,7 @@ class RestoreVersionTest(TestCase):
             slug="test-definition-1",
             configuration={"components": [{"test": "1", "key": "test"}]},
         )
-        form = FormFactory.create(name="Test Form 2")
+        form = FormFactory.create(public_name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
 
         version = FormVersion.objects.create(

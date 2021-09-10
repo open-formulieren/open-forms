@@ -80,7 +80,9 @@ class ZGWRegistration(BasePlugin):
         zaak = create_zaak(options)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
-        document = create_document(submission.form.name, submission_report, options)
+        document = create_document(
+            submission.form.public_name, submission_report, options
+        )
         relate_document(zaak["url"], document["url"])
 
         rol_data = apply_data_mapping(
@@ -92,7 +94,9 @@ class ZGWRegistration(BasePlugin):
         status = create_status(zaak)
 
         for attachment in submission.attachments:
-            attachment = create_attachment(submission.form.name, attachment, options)
+            attachment = create_attachment(
+                submission.form.public_name, attachment, options
+            )
             relate_document(zaak["url"], attachment["url"])
 
         result = {

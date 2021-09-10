@@ -80,12 +80,12 @@ class SubmissionFactoryTests(TestCase):
                     "key": "bar",
                 },
             ],
-            form__name="MyForm",
+            form__public_name="MyForm",
             bsn="111222333",
         )
 
         self.assertEqual(submission.bsn, "111222333")
-        self.assertEqual(submission.form.name, "MyForm")
+        self.assertEqual(submission.form.public_name, "MyForm")
 
     def test_from_data__simple(self):
         submission = SubmissionFactory.from_data(
@@ -108,7 +108,7 @@ class SubmissionFactoryTests(TestCase):
                 "foo": 1,
                 "bar": 2,
             },
-            form__name="MyForm",
+            form__public_name="MyForm",
             bsn="111222333",
         )
 
@@ -118,5 +118,5 @@ class SubmissionFactoryTests(TestCase):
             "bar": 2,
         }
         self.assertEqual(actual, expected)
-        self.assertEqual(submission.form.name, "MyForm")
+        self.assertEqual(submission.form.public_name, "MyForm")
         self.assertEqual(submission.bsn, "111222333")

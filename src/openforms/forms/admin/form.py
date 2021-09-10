@@ -47,7 +47,8 @@ class FormAdmin(
     admin.ModelAdmin,
 ):
     list_display = (
-        "name",
+        "public_name",
+        "internal_name",
         "active",
         "maintenance_mode",
         "get_authentication_backends_display",
@@ -55,7 +56,7 @@ class FormAdmin(
         "get_registration_backend_display",
     )
     inlines = (FormStepInline,)
-    prepopulated_fields = {"slug": ("name",)}
+    prepopulated_fields = {"slug": ("public_name",)}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
     list_filter = ("active", "maintenance_mode")
 

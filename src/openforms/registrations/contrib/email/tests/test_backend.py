@@ -64,7 +64,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.public_name, submission.uuid
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -74,7 +74,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.public_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -117,7 +117,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.public_name, submission.uuid
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -127,7 +127,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.public_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -164,7 +164,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.public_name, submission.uuid
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -174,7 +174,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.public_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )

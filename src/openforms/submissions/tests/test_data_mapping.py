@@ -47,7 +47,7 @@ class MappingTests(TestCase):
             ),
             # form and submission fields
             "bsn": FieldConf(submission_field="bsn"),
-            "form.name": FieldConf(form_field="name"),
+            "form.name": FieldConf(form_field="public_name"),
         }
 
         expected = {
@@ -92,7 +92,7 @@ class MappingTests(TestCase):
                 "geslachtsnaam": "Bar",
                 "geslacht": "v",
             },
-            form__name="Foo Form",
+            form__public_name="Foo Form",
             bsn="111222333",
         )
 
@@ -203,7 +203,7 @@ class MappingTests(TestCase):
     def test_use_model_kwargs(self):
         mapping = {
             "persoon.voornaam": "xyz_voornaam",
-            "form": FieldConf(form_field="name"),
+            "form": FieldConf(form_field="public_name"),
             "bsn": FieldConf(submission_field="bsn"),
         }
         submission = SubmissionFactory.from_components(
@@ -211,7 +211,7 @@ class MappingTests(TestCase):
                 {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
             ],
             submitted_data={"voornaam": "Foo"},
-            form__name="BarForm",
+            form__public_name="BarForm",
             bsn="111222333",
         )
         actual = apply_data_mapping(submission, mapping, "mapping_attr")
