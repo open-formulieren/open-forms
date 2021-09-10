@@ -86,7 +86,9 @@ class DownloadSubmissionReportTests(TestCase):
 
     @patch("celery.app.task.Task.request")
     def test_report_generation(self, mock_request):
-        submission = SubmissionFactory.create(completed=True, form__name="Test Form")
+        submission = SubmissionFactory.create(
+            completed=True, form__public_name="Test Form"
+        )
         mock_request.id = "some-id"
 
         generate_submission_report(submission.id)

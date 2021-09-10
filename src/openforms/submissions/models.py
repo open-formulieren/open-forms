@@ -514,7 +514,7 @@ class SubmissionReport(models.Model):
 
         self.content = ContentFile(
             content=pdf_report,
-            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+            name=f"{form.public_name}.pdf",  # Takes care of replacing spaces with underscores
         )
         self.save()
 

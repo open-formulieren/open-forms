@@ -11,7 +11,9 @@ from .factories import SubmissionFactory
 @temp_private_root()
 class SubmissionReportGenerationTests(TestCase):
     def test_submission_report_metadata(self):
-        submission = SubmissionFactory.create(completed=True, form__name="Test Form")
+        submission = SubmissionFactory.create(
+            completed=True, form__public_name="Test Form"
+        )
 
         generate_submission_report.request.id = "some-id"
         generate_submission_report.run(submission.id)
