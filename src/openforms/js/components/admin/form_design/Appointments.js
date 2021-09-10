@@ -23,8 +23,7 @@ const Appointments = ({ availableComponents={} }) => {
                             name="component"
                             value=""
                             onChange={() => console.log('I changed')}
-                            // Use below to filter on specific
-                            // filter={(comp) => (comp.type === componentType)}
+                            filter={(comp) => (comp.type === 'select')}
                         />
                     </Field>
                 </FormRow>
