@@ -1,5 +1,8 @@
 from typing import Any, Dict
 
+from django.urls import resolve
+
+from furl import furl
 from json_logic import jsonLogic
 
 from ..forms.models.form import FormLogic
@@ -63,8 +66,11 @@ def evaluate_form_logic(
                 elif action_details["type"] == "disable-next":
                     step._can_submit = False
                 elif action_details["type"] == "step-not-applicable":
+                    step_to_modify_uuid = resolve(
+                        furl(action["form_step"]).pathstr
+                    ).kwargs["uuid"]
                     submission_step_to_modify = submission_state.get_submission_step(
-                        form_step_uuid=action["form_step"]
+                        form_step_uuid=step_to_modify_uuid
                     )
                     submission_step_to_modify._is_applicable = False
 
