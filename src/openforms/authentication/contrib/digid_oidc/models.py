@@ -97,6 +97,12 @@ class OpenIDConnectPublicConfig(SingletonModel):
         max_length=1000,
         help_text=_("URL of your OpenID Connect provider userinfo endpoint"),
     )
+    oidc_op_logout_endpoint = models.URLField(
+        _("Logout endpoint"),
+        max_length=1000,
+        help_text=_("URL of your OpenID Connect provider logout endpoint"),
+        blank=True,
+    )
     oidc_rp_idp_sign_key = models.CharField(
         _("Sign key"),
         max_length=1000,
