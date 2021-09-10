@@ -12,6 +12,7 @@ from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
 from .constants import AppointmentDetailsStatus
 from .exceptions import AppointmentCreateFailed
 from .models import AppointmentInfo, AppointmentsConfig
+from .service import AppointmentRegistrationFailed
 
 
 def get_client():
@@ -24,6 +25,15 @@ def get_client():
 
 
 def book_appointment_for_submission(submission: Submission) -> None:
+    try:
+        # Delete the previous appointment info if there is one since
+        #   since a new one will be created
+        # This function will be called multiple times on a failure so
+        #   this is the case a previous appointment_info may exist
+        submission.appointment_info.delete()
+    except AppointmentInfo.DoesNotExist:
+        pass
+
     appointment_data = submission.get_merged_appointment_data()
     expected_information = [
         "productID",
@@ -82,7 +92,6 @@ def book_appointment_for_submission(submission: Submission) -> None:
         appointment_id = client.create_appointment(
             [product], location, start_at, appointment_client
         )
-        submission.appointment_information = f"Appointment Id: {appointment_id}"
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.success,
             appointment_id=appointment_id,
@@ -94,6 +103,9 @@ def book_appointment_for_submission(submission: Submission) -> None:
             error_information="Failed to make appointment",
             submission=submission,
         )
+        raise AppointmentRegistrationFailed(
+            "Unable to create appointment", should_retry=True
+        ) from e
 
 
 def create_base64_qrcode(text):

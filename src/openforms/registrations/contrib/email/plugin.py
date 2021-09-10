@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import NoReturn
 
 from django.conf import settings
 from django.template import Context, Template
@@ -11,7 +11,7 @@ from openforms.submissions.models import Submission
 from openforms.utils.email import send_mail_plus
 
 from ...base import BasePlugin
-from ...exceptions import RegistrationFailed
+from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .config import EmailOptionsSerializer
 
@@ -21,14 +21,8 @@ class EmailRegistration(BasePlugin):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
-    def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    def register_submission(self, submission: Submission, options: dict) -> None:
         submitted_data = submission.get_merged_data()
-
-        # TODO move check to shared code
-        if not submission.completed_on:
-            raise RegistrationFailed("Submission should be completed first")
 
         template = _("Submission details for {} (submitted on {})").format(
             submission.form.name, submission.completed_on.strftime("%H:%M:%S %d-%m-%Y")
@@ -62,3 +56,6 @@ class EmailRegistration(BasePlugin):
             html_message=content,
             attachments=attachments,
         )
+
+    def get_reference_from_result(self, result: None) -> NoReturn:
+        raise NoSubmissionReference("Email plugin does not emit a reference")

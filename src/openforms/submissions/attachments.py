@@ -70,7 +70,7 @@ def append_file_num_postfix(
 
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     # circular import
-    from openforms.registrations.tasks import resize_submission_attachment
+    from .tasks import resize_submission_attachment
 
     components = list(submission_step.form_step.iter_components(recursive=True))
 

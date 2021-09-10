@@ -1,15 +1,13 @@
 """
 Test the registration hook on submissions.
 """
-import uuid
 from datetime import timedelta
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.utils import timezone
 
-from celery.exceptions import Retry
 from freezegun import freeze_time
 from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -47,6 +45,7 @@ class RegistrationHookTests(TestCase):
         )
 
         cls.submission = SubmissionFactory.create(
+            completed=True,
             form__registration_backend="callback",
             form__registration_backend_options={
                 "string": "some-option",
@@ -74,6 +73,9 @@ class RegistrationHookTests(TestCase):
 
                 return {"result": "ok"}
 
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
@@ -90,37 +92,6 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
     @freeze_time("2021-08-04T12:00:00+02:00")
-    def test_plugin_with_custom_result_serializer(self):
-        register = Registry()
-
-        result_uuid = uuid.uuid4()
-
-        # register the callback, including the assertions
-        @register("callback")
-        class Plugin(BasePlugin):
-            verbose_name = "Assertion callback"
-            configuration_options = OptionsSerializer
-            backend_feedback_serializer = ResultSerializer
-
-            def register_submission(self, submission, options):
-                return {"external_id": result_uuid}
-
-        # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
-        with patch_registry(model_field, register):
-            register_submission(self.submission.id)
-
-        self.submission.refresh_from_db()
-        self.assertEqual(
-            self.submission.registration_status, RegistrationStatuses.success
-        )
-        self.assertEqual(
-            self.submission.registration_result,
-            {"external_id": str(result_uuid)},
-        )
-        self.assertEqual(self.submission.last_register_date, timezone.now())
-
-    @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration(self):
         register = Registry()
 
@@ -133,6 +104,9 @@ class RegistrationHookTests(TestCase):
             def register_submission(self, submission, options):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
+
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
@@ -162,6 +136,9 @@ class RegistrationHookTests(TestCase):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
 
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
 
@@ -187,7 +164,9 @@ class RegistrationHookTests(TestCase):
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
-            form__registration_backend="", form__registration_backend_options={}
+            completed=True,
+            form__registration_backend="",
+            form__registration_backend_options={},
         )
 
         # call the hook for the submission, while patching the model field registry

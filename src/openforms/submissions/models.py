@@ -126,7 +126,6 @@ class Submission(models.Model):
         blank=True,
         validators=(validate_kvk,),
     )
-    current_step = models.PositiveIntegerField(_("current step"), default=0)
 
     # interaction with registration backend
     registration_result = JSONField(
@@ -146,6 +145,19 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
+    public_registration_reference = models.CharField(
+        _("public registration reference"),
+        max_length=100,
+        blank=True,
+        help_text=_(
+            "The registration reference communicated to the end-user completing the form. "
+            "This reference is intended to be unique and the reference the end-user uses "
+            "to communicate with the service desk. It should be extracted from the "
+            "registration result where possible, and otherwise generated to be unique. "
+            "Note that this reference is displayed to the end-user and used as payment "
+            "reference!"
+        ),
+    )
 
     _is_cleaned = models.BooleanField(
         _("is cleaned"),
@@ -155,11 +167,29 @@ class Submission(models.Model):
         ),
     )
 
+    # tracking async execution state
+    on_completion_task_id = models.CharField(
+        _("on completion task ID"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "Celery task ID of the on_completion workflow. Use this to inspect the "
+            "state of the async jobs."
+        ),
+    )
+
     objects = SubmissionQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Submission")
         verbose_name_plural = _("Submissions")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("public_registration_reference",),
+                name="unique_public_registration_reference",
+                condition=~models.Q(public_registration_reference=""),
+            )
+        ]
 
     def __str__(self):
         return _("{pk} - started on {started}").format(

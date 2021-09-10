@@ -1,32 +1,27 @@
 import logging
 import traceback
 from datetime import timedelta
-from typing import Optional, Tuple
+from typing import Optional
 
 from django.conf import settings
 from django.utils import timezone
 
 from openforms.submissions.constants import RegistrationStatuses
-from openforms.submissions.models import (
-    Submission,
-    SubmissionFileAttachment,
-    SubmissionReport,
-)
+from openforms.submissions.models import Submission
+from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..celery import app
-from ..submissions.attachments import (
-    cleanup_submission_temporary_uploaded_files,
-    cleanup_unclaimed_temporary_uploaded_files,
-    resize_attachment,
-)
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
 
 
+@maybe_retry_in_workflow(
+    timeout=10,
+    retry_for=(RegistrationFailed,),
+)
 @app.task(
-    autoretry_For=(RegistrationFailed,),
-    retry_backoff=True,
+    autoretry_for=(RegistrationFailed,),
     max_retries=settings.SUBMISSION_REGISTRATION_MAX_RETRIES,
 )
 def register_submission(submission_id: int) -> Optional[dict]:
@@ -37,6 +32,9 @@ def register_submission(submission_id: int) -> Optional[dict]:
         #  (eg.  A user runs the admin action and the celery beat task runs)
         # so if the submission has already succeed we just return
         return
+
+    if not submission.completed_on:
+        raise RegistrationFailed("Submission should be completed first")
 
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
@@ -79,21 +77,9 @@ def register_submission(submission_id: int) -> Optional[dict]:
         raise
     else:
         status = RegistrationStatuses.success
-        if plugin.backend_feedback_serializer:
-            logger.debug(
-                "Serializing the callback result with '%r'",
-                plugin.backend_feedback_serializer,
-            )
-            result_serializer = plugin.backend_feedback_serializer(instance=result)
-            result_data = result_serializer.data
-        else:
-            logger.debug(
-                "No result serializer specified, assuming raw result can be serialized as JSON"
-            )
-            result_data = result
 
     submission.registration_status = status
-    submission.registration_result = result_data
+    submission.registration_result = result
     submission.save(
         update_fields=[
             "registration_status",
@@ -112,30 +98,3 @@ def resend_submissions():
         completed_on__gte=resend_time_limit,
     ):
         register_submission.delay(submission.id)
-
-
-@app.task(bind=True)
-def generate_submission_report(task, submission_report_id: int) -> None:
-    submission_report = SubmissionReport.objects.get(id=submission_report_id)
-    submission_report.generate_submission_report_pdf()
-
-    submission_report.task_id = task.request.id
-    submission_report.save()
-
-
-@app.task()
-def cleanup_temporary_files_for(submission_id: int) -> None:
-    submission = Submission.objects.get(id=submission_id)
-    cleanup_submission_temporary_uploaded_files(submission)
-
-
-@app.task()
-def cleanup_unclaimed_temporary_files() -> None:
-    days = settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS
-    cleanup_unclaimed_temporary_uploaded_files(timedelta(days=days))
-
-
-@app.task()
-def resize_submission_attachment(attachment_id: int, size: Tuple[int, int]) -> None:
-    attachment = SubmissionFileAttachment.objects.get(id=attachment_id)
-    resize_attachment(attachment, size)

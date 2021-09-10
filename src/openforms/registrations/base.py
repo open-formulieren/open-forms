@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Optional, Type
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 from django.utils.translation import gettext_lazy as _
 
@@ -16,7 +17,7 @@ class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
 
 
-class BasePlugin:
+class BasePlugin(ABC):
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     """
     Specify the human-readable label for the plugin.
@@ -32,23 +33,26 @@ class BasePlugin:
     plugin is called.
     """
 
-    backend_feedback_serializer: Optional[SerializerCls] = None
-    """
-    A serializer class describing the plugin-specific backend feedback data.
-
-    Plugins often interact with other backend systems that send response data. For
-    debugging/troubleshooting purposes, this data can be stored as JSON using the
-    specified serializer class.
-    """
-
     is_demo_plugin = False
 
     def __init__(self, identifier: str):
         self.identifier = identifier
 
+    @abstractmethod
     def register_submission(
         self, submission: "Submission", options: dict
     ) -> Optional[dict]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_reference_from_result(self, result: Any) -> str:
+        """
+        Extract the public submission reference from the result data.
+
+        This method must return a string to be saved on the submission model.
+
+        :arg result: the raw underlying JSONField datastructure.
+        """
         raise NotImplementedError()
 
     def get_label(self):

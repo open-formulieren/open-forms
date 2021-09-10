@@ -21,7 +21,9 @@ from ..contrib.jcc.models import JccConfig
 from ..contrib.jcc.tests.test_plugin import mock_response
 from ..exceptions import AppointmentCreateFailed
 from ..models import AppointmentInfo, AppointmentsConfig
+from ..service import AppointmentRegistrationFailed
 from ..utils import book_appointment_for_submission, create_base64_qrcode
+from .factories import AppointmentInfoFactory
 
 
 class BookAppointmentForSubmissionTest(TestCase):
@@ -215,7 +217,9 @@ class BookAppointmentForSubmissionTest(TestCase):
             exc=AppointmentCreateFailed,
         )
 
-        book_appointment_for_submission(submission)
+        with self.assertRaises(AppointmentRegistrationFailed):
+            book_appointment_for_submission(submission)
+
         self.assertTrue(
             AppointmentInfo.objects.filter(
                 error_information="Failed to make appointment",
@@ -223,6 +227,71 @@ class BookAppointmentForSubmissionTest(TestCase):
                 status=AppointmentDetailsStatus.failed,
             ).exists()
         )
+
+    @requests_mock.Mocker()
+    def test_failed_creating_appointment_when_submission_previously_failed(self, m):
+        form = FormFactory.create()
+        form_definition_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "product", "appointmentsShowProducts": True},
+                    {"key": "location", "appointmentsShowLocations": True},
+                    {"key": "time", "appointmentsShowTimes": True},
+                ],
+            }
+        )
+        form_definition_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "lastName", "appointmentsLastName": True},
+                    {"key": "birthDate", "appointmentsBirthDate": True},
+                ],
+            }
+        )
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(form=form)
+        first_appointment_info = AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.failed,
+            error_information="Failed to make appointment",
+            submission=submission,
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "product": "79",
+                "location": "1",
+                "time": "2021-08-25T17:00:00+02:00",
+            },
+            form_step=form_step_1,
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "lastName": "Maykin",
+                "birthDate": "1990-08-01",
+            },
+            form_step=form_step_2,
+        )
+
+        m.post(
+            "http://example.com/soap11",
+            exc=AppointmentCreateFailed,
+        )
+
+        with self.assertRaises(AppointmentRegistrationFailed):
+            book_appointment_for_submission(submission)
+
+        submission.refresh_from_db()
+        second_appointment_info = submission.appointment_info
+
+        self.assertNotEqual(first_appointment_info.pk, second_appointment_info.pk)
 
 
 class UtilsTests(TestCase):

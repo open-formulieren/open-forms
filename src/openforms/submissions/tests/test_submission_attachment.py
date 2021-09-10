@@ -65,7 +65,7 @@ class SubmissionAttachmentTest(TestCase):
         actual = resolve_uploads_from_data(components, data)
         self.assertEqual(actual, {"my_file": (components[1], [upload])})
 
-    @patch("openforms.registrations.tasks.resize_submission_attachment.delay")
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_uploads_to_submission_step(self, resize_mock):
         upload = TemporaryFileUploadFactory.create(file_name="my-image.jpg")
         data = {
@@ -131,7 +131,7 @@ class SubmissionAttachmentTest(TestCase):
         # verify the new FileField has its own content
         self.assertEqual(attachment.content.read(), b"content")
 
-    @patch("openforms.registrations.tasks.resize_submission_attachment.delay")
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step(self, resize_mock):
         upload_1 = TemporaryFileUploadFactory.create(file_name="my-image-1.jpg")
         upload_2 = TemporaryFileUploadFactory.create(file_name="my-image-2.jpg")

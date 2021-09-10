@@ -1,6 +1,6 @@
 from copy import deepcopy
 from datetime import date
-from typing import Optional
+from typing import Any, Dict, NoReturn
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,6 +14,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
 from openforms.submissions.models import Submission, SubmissionReport
 
 from ...base import BasePlugin
+from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
@@ -31,7 +32,7 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    ) -> Dict[str, Any]:
         config = ObjectsAPIConfig.get_solo()
         config.apply_defaults_to(options)
 
@@ -81,3 +82,6 @@ class ObjectsAPIRegistration(BasePlugin):
             },
         )
         return created_object
+
+    def get_reference_from_result(self, result: None) -> NoReturn:
+        raise NoSubmissionReference("Object API plugin does not emit a reference")

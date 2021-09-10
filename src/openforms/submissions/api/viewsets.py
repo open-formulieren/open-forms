@@ -1,7 +1,6 @@
 import logging
 
 from django.db import transaction
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -14,29 +13,23 @@ from rest_framework.response import Response
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.appointments.utils import book_appointment_for_submission
-from openforms.registrations.tasks import (
-    cleanup_temporary_files_for,
-    generate_submission_report,
-    register_submission,
-)
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
-from ..models import Submission, SubmissionReport, SubmissionStep
+from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
-from ..tokens import token_generator
+from ..status import SubmissionProcessingStatus
+from ..tasks import on_completion
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
-    send_confirmation_email,
 )
 from .permissions import ActiveSubmissionPermission
 from .serializers import (
     FormDataSerializer,
-    SubmissionCompletionSerializer,
+    SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
@@ -98,7 +91,7 @@ class SubmissionViewSet(
         summary=_("Complete a submission"),
         request=None,
         responses={
-            200: SubmissionCompletionSerializer,
+            204: None,
             400: CompletionValidationSerializer,
         },
     )
@@ -110,60 +103,66 @@ class SubmissionViewSet(
 
         Submission completion requires that all required steps are completed.
 
-        Once a submission is completed, it's removed from the session. This means it's
-        no longer possible to change or read the submission data (including individual
-        steps).
+        Note that the processing of the submission runs in the background, and you
+        should periodically check the submission status endpoint to check the state.
+        Background processing makes sure that:
 
-        The submission is persisted to the configured backend.
+        * potential appointments are registered
+        * a report PDF is generated
+        * the submission is persisted to the configured backend
+        * payment is initiated if relevant
+
+        Once a submission is completed, it's removed from the submission and time-stamped
+        HMAC token URLs are used for subsequent process flow. This means it's no longer
+        possible to change or read the submission data (including individual steps).
+        This guarantees that the submission is removed from the session without having
+        to rely on the client being able to make another call. IF it is detected in the
+        status endpoint that a retry is needed, the ID is added back to the session.
+
+        TODO: emit a status URL with time-based token (Salted HMAC, from token generator)
+        that the frontend can poll without needing the submission in the session.
+        TODO: if appointment registration fails, the submission ID must be added back
+        to the session so the user can return to the first step(s) in the UI.
         """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
-        submission.completed_on = timezone.now()
 
+        submission.completed_on = timezone.now()
         submission.save()
+
+        # TODO: implement in celery tasks in cleanup (see ./tasks/__init__.py)
         remove_submission_from_session(submission, self.request.session)
         remove_submission_uploads_from_session(submission, self.request.session)
 
-        submission_report = SubmissionReport.objects.create(
-            title=_("%(title)s: Submission report") % {"title": submission.form.name},
-            submission=submission,
-        )
+        # after committing the database transaction where the submissions completion is
+        # stored, start processing the completion.
+        transaction.on_commit(lambda: on_completion(submission.id))
 
-        def on_submission_commit():
-            # The submission report needs to already have been generated before it can be attached to the zaak
-            # that is created in the registration
-            chain = generate_submission_report.si(
-                submission_report.id
-            ) | register_submission.si(submission.id)
-            chain.delay()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-            # this can run any time because they have been claimed earlier
-            cleanup_temporary_files_for.delay(submission.id)
+    @extend_schema(
+        summary=_("Get the submission processing status"),
+        request=None,
+        responses={
+            200: SubmissionProcessingStatusSerializer,
+            # TODO: 403, 401, 429
+        },
+    )
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=(ActiveSubmissionPermission,),
+    )
+    def status(self, request, *args, **kwargs):
+        """
+        Obtain the current submission processing status, after completing it.
 
-        transaction.on_commit(on_submission_commit)
-
-        book_appointment_for_submission(submission)
-
-        if hasattr(submission.form, "confirmation_email_template"):
-            transaction.on_commit(lambda: send_confirmation_email(submission))
-
-        token = token_generator.make_token(submission_report)
-        download_report_url = reverse(
-            "api:submissions:download-submission",
-            kwargs={"report_id": submission_report.id, "token": token},
-        )
-        report_status_url = reverse(
-            "api:submissions:submission-report-status",
-            kwargs={"report_id": submission_report.id, "token": token},
-        )
-
-        serializer = SubmissionCompletionSerializer(
-            instance={
-                "download_url": request.build_absolute_uri(download_report_url),
-                "report_status_url": request.build_absolute_uri(report_status_url),
-                "confirmation_page_content": submission.render_confirmation_page(),
-            },
-        )
+        The submission is processed asynchronously. Poll this endpoint to receive
+        information on the status of this async processing.
+        """
+        submission = self.get_object()
+        status = SubmissionProcessingStatus(request, submission)
+        serializer = SubmissionProcessingStatusSerializer(instance=status)
         return Response(serializer.data)
 
     @extend_schema(
