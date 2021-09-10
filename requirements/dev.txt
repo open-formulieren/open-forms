@@ -346,7 +346,7 @@ drf-spectacular==0.17.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
+git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

@@ -168,7 +168,7 @@ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9
     # via -r requirements/base.in
 drf-spectacular==0.17.2
     # via -r requirements/base.in
-git+https://github.com/isprojects/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
+git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
     # via -r requirements/base.in
 elastic-apm==5.8.1
     # via -r requirements/base.in
