@@ -228,6 +228,7 @@ TEMPLATES = [
             "loaders": TEMPLATE_LOADERS,
             "builtins": [
                 "openforms.emails.templatetags.form_summary",
+                "openforms.config.templatetags.privacy_policy",
             ],
         },
     },
