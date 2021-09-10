@@ -969,6 +969,9 @@ OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationReques
 MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
 MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 
+# ID token is required to enable OIDC logout
+OIDC_STORE_ID_TOKEN = True
+
 #
 # Email / payment
 #

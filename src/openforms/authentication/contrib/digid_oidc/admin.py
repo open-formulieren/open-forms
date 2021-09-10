@@ -42,6 +42,7 @@ class OpenIDConnectConfigAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "oidc_op_authorization_endpoint",
                     "oidc_op_token_endpoint",
                     "oidc_op_user_endpoint",
+                    "oidc_op_logout_endpoint",
                 )
             },
         ),
