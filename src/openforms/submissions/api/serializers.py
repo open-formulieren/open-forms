@@ -63,6 +63,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "is_applicable",
             "completed",
             "optional",
+            "can_submit",
         )
 
 
