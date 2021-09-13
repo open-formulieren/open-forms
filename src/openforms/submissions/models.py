@@ -265,7 +265,11 @@ class Submission(models.Model):
             config = GlobalConfiguration.get_solo()
             template = config.submission_confirmation_template
 
-        rendered_content = Template(template).render(Context(self.data))
+        context_data = {
+            "public_reference": self.public_registration_reference,
+            **self.data,
+        }
+        rendered_content = Template(template).render(Context(context_data))
 
         return sanitize_content(rendered_content)
 

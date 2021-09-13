@@ -49,6 +49,7 @@ class ConfirmationEmailTemplate(models.Model):
             "_submission": submission,
             "_form": submission.form,  # should be the same as self.form
             **submission.data,
+            "public_reference": submission.public_registration_reference,
         }
         return context
 

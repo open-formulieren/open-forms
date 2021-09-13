@@ -119,11 +119,13 @@ in the template. Typically, these vary per form!
 
 These are additional variables and statements available to the template.
 
-===================  ===========================================================================
-Element              Description
-===================  ===========================================================================
-``{% summary %}``    A full summary of all elements marked to show in the email.
-===================  ===========================================================================
+========================== ===========================================================================
+Element                    Description
+========================== ===========================================================================
+``{% summary %}``          A full summary of all elements marked to show in the email.
+``{{ public_reference }}`` The public reference of the submission, e.g. the "zaaknummer".
+========================== ===========================================================================
+
 
 Confirmation page
 =================
@@ -139,4 +141,8 @@ in the template. Typically, these vary per form!
 
 These are additional variables and statements available to the template.
 
-*None at this time*
+========================== ===========================================================================
+Element                    Description
+========================== ===========================================================================
+``{{ public_reference }}`` The public reference of the submission, e.g. the "zaaknummer".
+========================== ===========================================================================
