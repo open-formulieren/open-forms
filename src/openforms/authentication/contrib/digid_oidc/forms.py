@@ -2,6 +2,7 @@ import json
 from copy import deepcopy
 
 from django import forms
+from django.core.validators import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import requests
@@ -10,6 +11,8 @@ from mozilla_django_oidc_db.constants import (
     OPEN_ID_CONFIG_PATH,
 )
 from mozilla_django_oidc_db.forms import OpenIDConnectConfigForm
+
+from openforms.forms.models import Form
 
 from .models import OpenIDConnectPublicConfig
 
@@ -73,3 +76,21 @@ class OpenIDConnectPublicConfigForm(OpenIDConnectConfigForm):
                     self.add_error(field, _("This field is required."))
 
         return cleaned_data
+
+    def clean_enabled(self):
+        enabled = self.cleaned_data["enabled"]
+
+        if not enabled:
+            forms_with_digid_oidc = Form.objects.filter(
+                authentication_backends__contains=["digid_oidc"]
+            )
+
+            if forms_with_digid_oidc.exists():
+                raise ValidationError(
+                    _(
+                        "DigiD via OpenID Connect is selected as authentication backend "
+                        "for one or more Forms, please remove this backend from these "
+                        "Forms before disabling this authentication backend."
+                    )
+                )
+        return enabled
