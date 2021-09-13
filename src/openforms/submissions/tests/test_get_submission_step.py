@@ -88,7 +88,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     ]
                 },
             },
-            "data": None,
+            "data": {},
             "isApplicable": True,
             "completed": False,
             "optional": False,
@@ -127,7 +127,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     ]
                 },
             },
-            "data": None,
+            "data": {},
             "isApplicable": True,
             "completed": False,
             "optional": False,

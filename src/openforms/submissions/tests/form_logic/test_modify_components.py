@@ -530,6 +530,7 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
+        self.assertEqual({"step2_textfield1": "some value"}, submission_step_2.data)
 
     def test_evaluate_logic_with_empty_data(self):
         """
