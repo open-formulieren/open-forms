@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 from celery import states
@@ -9,6 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..tokens import submission_status_token_generator
@@ -88,6 +90,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()
         self.assertEqual(response_data["status"], ProcessingStatuses.in_progress)
+        self.assertEqual(response_data["paymentUrl"], "")
 
     def test_in_progress_celery_states(self):
         submission = SubmissionFactory.create(
@@ -118,6 +121,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                         response_data["status"], ProcessingStatuses.in_progress
                     )
                     self.assertEqual(response_data["result"], "")
+                    self.assertEqual(response_data["paymentUrl"], "")
 
     def test_finished_celery_states(self):
         submission = SubmissionFactory.create(
@@ -171,6 +175,8 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                     response_data = response.json()
                     self.assertEqual(response_data["status"], ProcessingStatuses.done)
                     self.assertEqual(response_data["result"], expected_result)
+                    # no payment configured
+                    self.assertEqual(response_data["paymentUrl"], "")
 
 
 @temp_private_root()
@@ -209,6 +215,8 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertTrue(
                 response_data["reportDownloadUrl"].startswith("http://testserver")
             )
+            # no payment configured/required -> no URL
+            self.assertEqual(response_data["paymentUrl"], "")
 
     def test_appointment_user_error(self):
         submission = SubmissionFactory.create(
@@ -235,3 +243,35 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(response_data["errorMessage"], "Some fields are missing.")
             self.assertEqual(response_data["confirmationPageContent"], "")
             self.assertEqual(response_data["reportDownloadUrl"], "")
+
+    def test_payment_required(self):
+        merchant = OgoneMerchantFactory.create()
+        submission = SubmissionFactory.create(
+            completed=True,
+            on_completion_task_id="some-id",
+            form__product__price=Decimal("10"),
+            form__payment_backend="ogone-legacy",
+            # see PR#650 which drops this requirement
+            form__payment_backend_options={"merchant_id": merchant.id},
+        )
+        SubmissionReportFactory.create(submission=submission)
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+
+            response = self.client.get(check_status_url)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            response_data = response.json()
+
+            expected_url = reverse(
+                "payments:start",
+                kwargs={"uuid": submission.uuid, "plugin_id": "ogone-legacy"},
+            )
+            self.assertEqual(
+                response_data["paymentUrl"], f"http://testserver{expected_url}"
+            )

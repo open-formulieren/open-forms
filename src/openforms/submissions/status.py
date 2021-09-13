@@ -84,4 +84,19 @@ class SubmissionProcessingStatus:
 
     @property
     def payment_url(self) -> str:
-        return "TODO"
+        result = self.get_async_result()
+        # don't bother with payment if processing did not succeed.
+        if result is None or result.state != states.SUCCESS:
+            return ""
+
+        if not self.submission.payment_required:
+            return ""
+
+        payment_start_url = reverse(
+            "payments:start",
+            kwargs={
+                "uuid": self.submission.uuid,
+                "plugin_id": self.submission.form.payment_backend,
+            },
+        )
+        return self.request.build_absolute_uri(payment_start_url)
