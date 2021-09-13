@@ -567,7 +567,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     definitionEndpoint,
                     csrftoken,
                     {
-                        name: step.name,
+                        publicName: step.publicName,
+                        internalName: step.internalName,
                         slug: step.slug,
                         configuration: step.configuration,
                         loginRequired: step.loginRequired,
@@ -589,7 +590,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     stepEndpoint,
                     csrftoken,
                     {
-                        name: step.name,
+                        publicName: step.publicName,
+                        internalName: step.internalName,
                         slug: step.slug,
                         index: index,
                         formDefinition: definitionResponse.data.url,

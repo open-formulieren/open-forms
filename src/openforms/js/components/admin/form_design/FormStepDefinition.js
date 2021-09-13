@@ -30,7 +30,7 @@ const emptyConfiguration = {
  * but we're fighting the library at this point.
  *
  */
-const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
+const FormStepDefinition = ({ url='', publicName='', internalName='', slug='', previousText='', saveText='', nextText='',
                                 loginRequired=false, isReusable=false, configuration=emptyConfiguration, onChange,
                                 onFieldChange, onLiteralFieldChange, errors, ...props }) => {
 
@@ -39,7 +39,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
         if (slug) return;
 
         // sort-of taken from Django's jquery prepopulate module
-        const newSlug = URLify(name, 100, false);
+        const newSlug = URLify(publicName, 100, false);
         onFieldChange({
             target: {
                 name: 'slug',
@@ -62,16 +62,27 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
 
                 <FormRow>
                     <Field
-                        name="name"
-                        label={<FormattedMessage defaultMessage="Step name" description="Form step name label" />}
+                        name="publicName"
+                        label={<FormattedMessage defaultMessage="Public step name" description="Form step public name label" />}
                         helpText={<FormattedMessage
-                            defaultMessage="Name of the form definition used in this form step"
-                            description="Form step name field help text" />}
+                            defaultMessage="Public name of the form definition used in this form step"
+                            description="Form step public name field help text" />}
                         errors={errors.name}
                         required
                         fieldBox
                     >
-                        <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
+                        <TextInput value={publicName} onChange={onFieldChange} onBlur={setSlug} />
+                    </Field>
+                    <Field
+                        name="internalName"
+                        label={<FormattedMessage defaultMessage="Internal step name" description="Form step internal name label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="Internal name of the form definition used in this form step"
+                            description="Form step internal name field help text" />}
+                        errors={errors.name}
+                        fieldBox
+                    >
+                        <TextInput value={internalName} onChange={onFieldChange} onBlur={setSlug} />
                     </Field>
                     <Field
                         name="slug"
@@ -147,7 +158,8 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
 
 FormStepDefinition.propTypes = {
     configuration: PropTypes.object,
-    name: PropTypes.string,
+    publicName: PropTypes.string,
+    internalName: PropTypes.string,
     url: PropTypes.string,
     slug: PropTypes.string,
     previousText: PropTypes.string,

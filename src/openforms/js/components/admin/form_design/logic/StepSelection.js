@@ -6,7 +6,7 @@ import {FormStepsContext} from '../Context';
 
 const StepSelection = ({name, value, onChange}) => {
     const formSteps = useContext(FormStepsContext);
-    const formStepChoices = formSteps.map((step, index) => [step.url, step.name]);
+    const formStepChoices = formSteps.map((step, index) => [step.url, (step.internalName || step.publicName)]);
 
     return (
         <Select

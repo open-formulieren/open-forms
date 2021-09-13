@@ -277,7 +277,12 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     is_reusable = serializers.BooleanField(
         source="form_definition.is_reusable", read_only=True
     )
-    name = serializers.CharField(source="form_definition.public_name", read_only=True)
+    public_name = serializers.CharField(
+        source="form_definition.public_name", read_only=True
+    )
+    internal_name = serializers.CharField(
+        source="form_definition.internal_name", read_only=True
+    )
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
@@ -300,7 +305,8 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "slug",
             "configuration",
             "form_definition",
-            "name",
+            "public_name",
+            "internal_name",
             "url",
             "login_required",
             "is_reusable",

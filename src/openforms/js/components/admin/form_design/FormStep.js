@@ -9,7 +9,7 @@ import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
 const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace, errors={} }) => {
-    const { configuration, formDefinition, name, slug, literals, loginRequired, isReusable, isNew } = data;
+    const { configuration, formDefinition, publicName, internalName, slug, literals, loginRequired, isReusable, isNew } = data;
 
     const previousFormDefinition = usePrevious(formDefinition);
     let forceBuilderUpdate = false;
@@ -17,8 +17,8 @@ const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace
         forceBuilderUpdate = true;
     }
     // FIXME: find a more robust way than just looking at the step name
-    const prevName = usePrevious(name);
-    if (!forceBuilderUpdate && prevName && prevName != name) {
+    const prevName = usePrevious(publicName);
+    if (!forceBuilderUpdate && prevName && prevName != publicName) {
         forceBuilderUpdate = true;
     }
 
@@ -36,7 +36,8 @@ const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace
                 </div>
             ) : null }
             <FormStepDefinition
-                name={name}
+                publicName={publicName}
+                internalName={internalName}
                 slug={slug}
                 url={formDefinition}
                 previousText={literals.previousText.value}
@@ -61,7 +62,8 @@ FormStep.propTypes = {
         configuration: PropTypes.object,
         formDefinition: PropTypes.string,
         index: PropTypes.number,
-        name: PropTypes.string,
+        publicName: PropTypes.string,
+        internalName: PropTypes.string,
         slug: PropTypes.string,
         loginRequired: PropTypes.bool,
         isReusable: PropTypes.bool,

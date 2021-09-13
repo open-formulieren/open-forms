@@ -26,7 +26,8 @@ const FormMetaFields = ({
 }) => {
     const {
         uuid,
-        name,
+        publicName,
+        internalName,
         slug,
         showProgressIndicator,
         active,
@@ -69,13 +70,23 @@ const FormMetaFields = ({
             </FormRow>
             <FormRow>
                 <Field
-                    name="form.name"
-                    label={<FormattedMessage defaultMessage="Name" description="Form name field label" />}
-                    helpText={<FormattedMessage defaultMessage="Name/title of the form" description="Form name field help text" />}
+                    name="form.publicName"
+                    label={<FormattedMessage defaultMessage="Public name" description="Form public name field label" />}
+                    helpText={<FormattedMessage defaultMessage="Public name/title of the form" description="Form public name field help text" />}
                     errors={errors.name}
                     required
                 >
-                    <TextInput value={name} onChange={onChange} onBlur={setFormSlug} />
+                    <TextInput value={publicName} onChange={onChange} onBlur={setFormSlug} />
+                </Field>
+            </FormRow>
+            <FormRow>
+                <Field
+                    name="form.internalName"
+                    label={<FormattedMessage defaultMessage="Internal name" description="Form name field label" />}
+                    helpText={<FormattedMessage defaultMessage="Internal name/title of the form" description="Form name field help text" />}
+                    errors={errors.name}
+                >
+                    <TextInput value={internalName} onChange={onChange} onBlur={setFormSlug} />
                 </Field>
             </FormRow>
             <FormRow>
@@ -155,7 +166,8 @@ const FormMetaFields = ({
 
 FormMetaFields.propTypes = {
     form: PropTypes.shape({
-        name: PropTypes.string.isRequired,
+        publicName: PropTypes.string.isRequired,
+        internalName: PropTypes.string,
         uuid: PropTypes.string.isRequired,
         slug: PropTypes.string.isRequired,
         showProgressIndicator: PropTypes.bool.isRequired,
