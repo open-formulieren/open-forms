@@ -27,6 +27,7 @@ class LoginInfo:
 class BasePlugin(AbstractBasePlugin):
     provides_auth = None
     return_method = "GET"
+    is_enabled = True
 
     # override
 
@@ -56,6 +57,12 @@ class BasePlugin(AbstractBasePlugin):
             request=request,
         )
 
+    def logout(self, request: HttpRequest):
+        """
+        Can be overridden to implement custom logout behaviour
+        """
+        pass
+
     def get_login_info(self, request: HttpRequest, form: Form) -> LoginInfo:
         info = LoginInfo(
             self.identifier,
@@ -72,10 +79,6 @@ class BasePlugin(AbstractBasePlugin):
             return [self.provides_auth]
         else:
             return list(self.provides_auth)
-
-    @property
-    def is_enabled(self) -> bool:
-        return True
 
     # cosmetics
 
