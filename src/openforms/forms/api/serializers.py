@@ -395,6 +395,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
         ).format(action_type=LogicActionTypes.disable_next),
     )
     form_step = URLRelatedField(
+        allow_null=True,
         required=False,  # validated against the action.type
         queryset=FormStep.objects,
         view_name="api:form-steps-detail",
@@ -403,7 +404,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
         label=_("form step"),
         help_text=_(
             "The form step that will be affected by the action. This field is "
-            "optional if the action type is `%(action_type)s`, otherwise required."
+            "required if the action type is `%(action_type)s`, otherwise optional."
         )
         % {"action_type": LogicActionTypes.step_not_applicable},
     )
@@ -427,7 +428,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
         if (
             action_type
-            and action_type in LogicActionTypes.step_not_applicable
+            and action_type == LogicActionTypes.step_not_applicable
             and not form_step
         ):
             # raises validation error

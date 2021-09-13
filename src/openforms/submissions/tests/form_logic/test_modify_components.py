@@ -530,6 +530,7 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
+        self.assertEqual({"step2_textfield1": "some value"}, submission_step_2.data)
 
     def test_evaluate_logic_with_empty_data(self):
         """
@@ -708,7 +709,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "form_step": str(step2.uuid),
+                    "form_step": f"http://example.com{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step2.uuid})}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -861,7 +862,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "form_step": str(form_step2.uuid),
+                    "form_step": f"http://example.com{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': form_step2.uuid})}",
                     "action": {
                         "name": "Make step not applicable",
                         "type": "step-not-applicable",
