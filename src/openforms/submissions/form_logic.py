@@ -37,6 +37,9 @@ def evaluate_form_logic(
     # grab the configuration that can be **mutated**
     configuration = step.form_step.form_definition.configuration
 
+    if not step.data:
+        step.data = {}
+
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
@@ -54,6 +57,7 @@ def evaluate_form_logic(
                     configuration = set_property_value(
                         configuration, action["component"], "value", new_value
                     )
+                    step.data[action["component"]] = new_value
                 elif action_details["type"] == "property":
                     property_name = action_details["property"]["value"]
                     property_value = action_details["state"]

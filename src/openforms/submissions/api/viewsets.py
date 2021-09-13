@@ -308,6 +308,7 @@ class SubmissionStepViewSet(
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
             merged_data = {**submission_step.submission.data, **data}
+            submission_step.data = data
             evaluate_form_logic(
                 submission_step.submission, submission_step, merged_data
             )
