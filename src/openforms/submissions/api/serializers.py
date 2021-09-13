@@ -345,6 +345,17 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
     )
 
     # success states
+    public_reference = serializers.CharField(
+        label=_("Public reference"),
+        source="submission.public_registration_reference",
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "The public registration reference, sourced from the registration backend "
+            "or otherwise uniquely generated in case the backend could not provide it."
+        ),
+    )
+
     # TODO: apply HTML sanitation here with bleach
     confirmation_page_content = serializers.CharField(
         label=_("Confirmation page content"),

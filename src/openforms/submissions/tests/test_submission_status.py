@@ -192,6 +192,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             completed=True,
             on_completion_task_id="some-id",
             form__submission_confirmation_template="You get a cookie!",
+            public_registration_reference="OF-ABCDE",
         )
         SubmissionReportFactory.create(submission=submission)
         token = submission_status_token_generator.make_token(submission)
@@ -208,6 +209,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             response_data = response.json()
             self.assertEqual(response_data["status"], ProcessingStatuses.done)
             self.assertEqual(response_data["result"], ProcessingResults.success)
+            self.assertEqual(response_data["publicReference"], "OF-ABCDE")
             self.assertEqual(response_data["errorMessage"], "")
             self.assertEqual(
                 response_data["confirmationPageContent"], "You get a cookie!"
