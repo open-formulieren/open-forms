@@ -42,7 +42,7 @@ class SubmissionProcessingStatus:
 
         if result.state == states.SUCCESS:
             return ProcessingResults.success
-        if result.state in (states.REVOKED, states.REJECTED):
+        if result.state == states.REVOKED:
             return ProcessingResults.retry
         return ProcessingResults.failed
 
