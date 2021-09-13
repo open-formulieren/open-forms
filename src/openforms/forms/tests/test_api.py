@@ -628,7 +628,8 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertIn("url", retrieved_steps[0])
         self.assertIn("index", retrieved_steps[0])
-        self.assertIn("name", retrieved_steps[0])
+        self.assertIn("publicName", retrieved_steps[0])
+        self.assertIn("internalName", retrieved_steps[0])
         self.assertIn("slug", retrieved_steps[0])
         self.assertIn("configuration", retrieved_steps[0])
         self.assertIn("loginRequired", retrieved_steps[0])
