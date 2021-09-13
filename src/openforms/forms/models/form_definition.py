@@ -64,7 +64,7 @@ class FormDefinition(models.Model):
     )
 
     def __str__(self):
-        return self.management_name
+        return self.admin_name
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -171,7 +171,7 @@ class FormDefinition(models.Model):
         return sensitive_fields
 
     @property
-    def management_name(self):
+    def admin_name(self):
         return self.internal_name or self.public_name
 
     class Meta:

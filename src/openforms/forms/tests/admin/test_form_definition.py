@@ -32,7 +32,7 @@ class TestFormDefinitionAdmin(WebTest):
         response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
-            f'<ul><li><a href="{self.form_url}">{self.form.management_name}</a></li></ul>',
+            f'<ul><li><a href="{self.form_url}">{self.form.admin_name}</a></li></ul>',
             str(response.content),
         )
 
@@ -69,12 +69,12 @@ class TestFormDefinitionAdmin(WebTest):
         response = self.client.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
-            f'<li><a href="{self.form_url}">{self.form.management_name}</a></li>',
+            f'<li><a href="{self.form_url}">{self.form.admin_name}</a></li>',
             str(response.content),
             count=2,
         )
         self.assertInHTML(
-            f'<li><a href="{second_form_url}">{second_form.management_name}</a></li>',
+            f'<li><a href="{second_form_url}">{second_form.admin_name}</a></li>',
             str(response.content),
             count=2,
         )

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
 from django.db import models
+from django.db.models import F, Value
 from django.db.models.base import ModelBase
+from django.db.models.functions import Coalesce, NullIf
 
 from openforms.config.models import GlobalConfiguration
 
@@ -30,3 +32,12 @@ class literal_getter:
             return getattr(config, self.config_field)
 
         setattr(cls, name, getter)
+
+
+def FirstNotBlank(*fields):
+    # note: we could support any expression but lets assume F() field names for now
+    assert len(fields) >= 2, "pass at least two field names"
+    fields = list(fields)
+    last = fields.pop()
+    args = [NullIf(F(f), Value("")) for f in fields] + [F(last)]
+    return Coalesce(*args)

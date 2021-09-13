@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce, NullIf
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -16,6 +18,7 @@ from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
+from ..models.utils import FirstNotBlank
 from ..utils import export_form, import_form
 
 
@@ -47,8 +50,7 @@ class FormAdmin(
     admin.ModelAdmin,
 ):
     list_display = (
-        "public_name",
-        "internal_name",
+        "name",
         "active",
         "maintenance_mode",
         "get_authentication_backends_display",
@@ -85,6 +87,20 @@ class FormAdmin(
         if self.use_react(request):
             return []
         return super().get_inline_instances(request, *args, **kwargs)
+
+    def get_queryset(self, request):
+        # annotate .name
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(name=FirstNotBlank("internal_name", "public_name"))
+        )
+
+    def name(self, obj):
+        return obj.name
+
+    name.admin_order_field = "name"
+    name.short_description = _("name")
 
     def get_form(self, request, *args, **kwargs):
         if self.use_react(request):

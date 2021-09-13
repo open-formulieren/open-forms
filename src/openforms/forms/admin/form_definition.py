@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..forms import FormDefinitionForm
 from ..models import FormDefinition, FormStep
+from ..models.utils import FirstNotBlank
 
 
 def delete_selected(modeladmin, request, queryset):
@@ -30,7 +31,7 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("public_name",)}
-    list_display = ("public_name", "internal_name", "used_in_forms", "is_reusable")
+    list_display = ("name", "used_in_forms", "is_reusable")
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
 
@@ -43,7 +44,16 @@ class FormDefinitionAdmin(admin.ModelAdmin):
             ),
             to_attr="used_in_steps",
         )
-        return qs.prefetch_related(used_in_forms)
+        qs = qs.prefetch_related(used_in_forms)
+        # annotate .name
+        qs = qs.annotate(name=FirstNotBlank("internal_name", "public_name"))
+        return qs
+
+    def name(self, obj):
+        return obj.name
+
+    name.admin_order_field = "name"
+    name.short_description = _("name")
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -68,7 +78,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
                         "admin:forms_form_change",
                         kwargs={"object_id": form.pk},
                     ),
-                    form.management_name,
+                    form.admin_name,
                 )
                 for form in forms
             ),

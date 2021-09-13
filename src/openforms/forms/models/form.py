@@ -237,7 +237,7 @@ class Form(models.Model):
         verbose_name_plural = _("forms")
 
     def __str__(self):
-        return self.management_name
+        return self.admin_name
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
@@ -350,7 +350,7 @@ class Form(models.Model):
         import_form_data(old_version_data, form_version.form)
 
     @property
-    def management_name(self):
+    def admin_name(self):
         return self.internal_name or self.public_name
 
 
