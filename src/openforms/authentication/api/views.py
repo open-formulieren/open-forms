@@ -58,9 +58,7 @@ class AuthenticationLogoutView(APIView):
             submission.save()
 
         for plugin in register.iter_enabled_plugins():
-            logout_method = getattr(plugin, "logout", None)
-            if logout_method and callable(logout_method):
-                logout_method(request)
+            plugin.logout(request)
 
         request.session.flush()
         return Response(status=status.HTTP_204_NO_CONTENT)

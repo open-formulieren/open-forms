@@ -27,6 +27,7 @@ class LoginInfo:
 class BasePlugin(AbstractBasePlugin):
     provides_auth = None
     return_method = "GET"
+    is_enabled = True
 
     # override
 
@@ -64,6 +65,12 @@ class BasePlugin(AbstractBasePlugin):
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
             request=request,
         )
+
+    def logout(self, request: HttpRequest):
+        """
+        Can be overridden to implement custom logout behaviour
+        """
+        pass
 
     def get_login_info(self, request: HttpRequest, form: Form) -> LoginInfo:
         info = LoginInfo(

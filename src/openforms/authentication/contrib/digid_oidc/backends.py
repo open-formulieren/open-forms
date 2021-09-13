@@ -30,16 +30,16 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
 
         super().__init__(*args, **kwargs)
 
-    def authenticate(self, *args, **kwargs):
+    def authenticate(self, request, *args, **kwargs):
         # Differentiate between DigiD authentication via OIDC and admin login
         # via OIDC by checking the callback url
         if (
             not self.config.enabled
-            or reverse(OIDC_AUTHENTICATION_CALLBACK_URL) != args[0].path
+            or reverse(OIDC_AUTHENTICATION_CALLBACK_URL) != request.path
         ):
             return None
 
-        return super().authenticate(*args, **kwargs)
+        return super().authenticate(request, *args, **kwargs)
 
     def get_or_create_user(self, access_token, id_token, payload):
         user_info = self.get_userinfo(access_token, id_token, payload)
