@@ -6,6 +6,7 @@ from django_webtest import WebTest
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import Form
+from openforms.forms.tests.factories import FormFactory
 
 from ..models import OpenIDConnectPublicConfig
 
@@ -34,6 +35,9 @@ class DigiDOIDCFormAdminTests(WebTest):
         )
         config.oidc_op_user_endpoint = (
             "http://provider.com/auth/realms/master/protocol/openid-connect/userinfo"
+        )
+        config.oidc_op_logout_endpoint = (
+            "http://provider.com/auth/realms/master/protocol/openid-connect/logout"
         )
         config.save()
 
@@ -88,3 +92,43 @@ class DigiDOIDCFormAdminTests(WebTest):
         self.assertEqual(response.status_code, 200)
 
         self.assertFalse(Form.objects.exists())
+
+    def test_digid_oidc_disable_allowed(self):
+        config = OpenIDConnectPublicConfig.get_solo()
+        config.enabled = True
+        config.save()
+
+        FormFactory.create(authentication_backends=["eherkenning_oidc"])
+
+        response = self.app.get(
+            reverse("admin:digid_oidc_openidconnectpublicconfig_change")
+        )
+
+        form = response.form
+        form["enabled"] = False
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+
+        config.refresh_from_db()
+        self.assertFalse(config.enabled)
+
+    def test_digid_oidc_disable_not_allowed(self):
+        config = OpenIDConnectPublicConfig.get_solo()
+        config.enabled = True
+        config.save()
+
+        FormFactory.create(authentication_backends=["digid_oidc"])
+
+        response = self.app.get(
+            reverse("admin:digid_oidc_openidconnectpublicconfig_change")
+        )
+
+        form = response.form
+        form["enabled"] = False
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 200)
+
+        config.refresh_from_db()
+        self.assertTrue(config.enabled)
