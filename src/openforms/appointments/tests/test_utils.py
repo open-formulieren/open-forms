@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 import requests_mock
 
@@ -93,13 +94,22 @@ class BookAppointmentForSubmissionTest(TestCase):
             },
             form_step=form_step_2,
         )
-        book_appointment_for_submission(submission)
-        self.assertTrue(
-            AppointmentInfo.objects.filter(
-                submission=submission,
-                status=AppointmentDetailsStatus.missing_info,
-                error_information="Missing information in form: locationID. Information not filled in by user: clientDateOfBirth. ",
-            ).exists()
+
+        with self.assertRaises(AppointmentRegistrationFailed) as cm:
+            book_appointment_for_submission(submission)
+
+        self.assertFalse(cm.exception.should_retry)
+
+        info = AppointmentInfo.objects.filter(
+            submission=submission,
+            status=AppointmentDetailsStatus.missing_info,
+        ).get()
+
+        self.assertEqual(
+            info.error_information,
+            _("The following appoinment fields should be filled out: {fields}").format(
+                fields="clientDateOfBirth, locationID"
+            ),
         )
 
     @requests_mock.Mocker()

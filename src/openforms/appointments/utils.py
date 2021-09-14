@@ -3,6 +3,7 @@ import io
 from datetime import datetime
 
 from django.utils.module_loading import import_string
+from django.utils.translation import gettext_lazy as _
 
 import qrcode
 
@@ -35,6 +36,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         pass
 
     appointment_data = submission.get_merged_appointment_data()
+
     expected_information = [
         "productID",
         "locationID",
@@ -43,37 +45,37 @@ def book_appointment_for_submission(submission: Submission) -> None:
         "clientDateOfBirth",
     ]
 
-    missing_appointment_information = []
-    not_filled_in_appointment_information = []
-    for key in expected_information:
-        if key not in appointment_data:
-            missing_appointment_information.append(key)
-        elif not appointment_data.get(key):
-            # Key was in form but not filled in
-            not_filled_in_appointment_information.append(key)
+    absent_or_empty_information = []
 
-    if len(missing_appointment_information) == len(expected_information):
-        # Submission was never intended to make an appointment so just return
+    for key in expected_information:
+        # there is a non-empty value, continue - this is good
+        if appointment_data.get(key):
+            continue
+        absent_or_empty_information.append(key)
+
+    # Submission was never intended to make an appointment so just return
+    if set(absent_or_empty_information) == set(expected_information):
         return
-    elif missing_appointment_information or not_filled_in_appointment_information:
+
+    # Partially filled out form (or appointment fields are present in the form and not
+    # filled at all). Note that the "contract" states an exception gets raised here
+    # which aborts the celery chain execution so that the end-user can be shown the
+    # error information.
+    if absent_or_empty_information:
         # Incomplete information to make an appointment
-        error_information = ""
-        if missing_appointment_information:
-            error_information += (
-                f"Missing information in form: "
-                f"{', '.join(missing_appointment_information)}. "
-            )
-        if not_filled_in_appointment_information:
-            error_information += (
-                f"Information not filled in by user: "
-                f"{', '.join(not_filled_in_appointment_information)}. "
-            )
+        # TODO: resolve the keys back to the human readable form field labels
+        error_information = _(
+            "The following appoinment fields should be filled out: {fields}"
+        ).format(fields=", ".join(sorted(absent_or_empty_information)))
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.missing_info,
             error_information=error_information,
             submission=submission,
         )
-        return
+        raise AppointmentRegistrationFailed(
+            "No registration attempted because of incomplete information. ",
+            should_retry=False,
+        )
 
     product = AppointmentProduct(identifier=str(appointment_data["productID"]), name="")
     location = AppointmentLocation(identifier=appointment_data["locationID"], name="")
