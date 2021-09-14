@@ -128,6 +128,25 @@ Element                              Description
 ``{% get_appointment_links %}``      Retrieves relevant links about the appointment.
 ===================================  ===========================================================================
 
+**get_appointment_links example**
+
+.. tabs::
+
+   .. tab:: Template
+
+      .. code:: django
+
+         {% get_appointment_links as links %}
+         Cancel Appointment: {{ links.cancel_url|urlize }}
+
+
+   .. tab:: Rendered
+
+      .. code:: text
+
+         Cancel Appointment: http://fake.nl/api/v1/submission-uuid/token/verify/
+
+
 Confirmation page
 =================
 
