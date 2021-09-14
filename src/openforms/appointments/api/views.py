@@ -212,6 +212,8 @@ class CancelAppointmentView(GenericAPIView):
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
+        # The user must enter their email address they used when creating
+        #   the appointment which we validate here
         if serializer.validated_data["email"] not in emails:
             raise PermissionDenied
 

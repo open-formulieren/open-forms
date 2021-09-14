@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -237,6 +238,6 @@ class BasePlugin:
                 "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = f"{settings.BASE_URL}{cancel_path}"
+        cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
         return {"cancel_url": cancel_url}

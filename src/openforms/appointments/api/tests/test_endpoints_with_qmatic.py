@@ -1,21 +1,10 @@
-import copy
-import uuid
-
 from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
 from zds_client import ClientError
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ...constants import AppointmentDetailsStatus
@@ -218,12 +207,6 @@ class TimesListTests(SubmissionsMixin, TestCase):
 class CancelAppointmentTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.submission = SubmissionFactory.create()
-        cls.endpoint = reverse(
-            "api:appointments-cancel",
-            kwargs={"submission_uuid": str(cls.submission.uuid)},
-        )
-
         appointments_config = AppointmentsConfig.get_solo()
         appointments_config.config_path = (
             "openforms.appointments.contrib.qmatic.models.QmaticConfig"
@@ -235,33 +218,19 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_cancel_appointment_deletes_the_appointment(self, m):
-        self._add_submission_to_session(self.submission)
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email", "confirmationRecipient": True}
+            ],
+            submitted_data={"email": "maykin@media.nl"},
+        )
+
         identifier = "123456789"
-        AppointmentInfoFactory.create(
-            submission=self.submission, appointment_id=identifier
-        )
-        form = FormFactory.create(slug="a-form", name="A form")
-
-        form_def = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "email", "label": "Email", "confirmationRecipient": True},
-                ],
-            }
-        )
-
-        form_step = FormStepFactory.create(form=form, form_definition=form_def)
-
-        self.submission.form = form
-        self.submission.save()
-
-        SubmissionStepFactory.create(
-            submission=self.submission,
-            data={
-                "email": "maykin@media.nl",
-            },
-            form_step=form_step,
+        AppointmentInfoFactory.create(submission=submission, appointment_id=identifier)
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": submission.uuid},
         )
 
         m.delete(
@@ -272,39 +241,27 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
             "email": "maykin@media.nl",
         }
 
-        response = self.client.post(self.endpoint, data=data)
+        response = self.client.post(endpoint, data=data)
 
         self.assertEqual(response.status_code, 204)
-        self.submission.refresh_from_db()
+        submission.refresh_from_db()
         self.assertEqual(
-            self.submission.appointment_info.status, AppointmentDetailsStatus.cancelled
+            submission.appointment_info.status, AppointmentDetailsStatus.cancelled
         )
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
-        self._add_submission_to_session(self.submission)
-        form = FormFactory.create(slug="a-form", name="A form")
-
-        form_def = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "email", "label": "Email", "confirmationRecipient": True},
-                ],
-            }
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email", "confirmationRecipient": True}
+            ],
+            submitted_data={"email": "maykin@media.nl"},
         )
 
-        form_step = FormStepFactory.create(form=form, form_definition=form_def)
-
-        self.submission.form = form
-        self.submission.save()
-
-        SubmissionStepFactory.create(
-            submission=self.submission,
-            data={
-                "email": "maykin@media.nl",
-            },
-            form_step=form_step,
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": submission.uuid},
         )
 
         m.delete(f"{self.api_root}appointments/123456789", exc=ClientError)
@@ -313,15 +270,21 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
             "email": "maykin@media.nl",
         }
 
-        response = self.client.post(self.endpoint, data=data)
+        response = self.client.post(endpoint, data=data)
 
         self.assertEqual(response.status_code, 502)
 
     def test_cancel_appointment_returns_403_when_no_appointment_is_in_session(self):
+        submission = SubmissionFactory.create()
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": str(submission.uuid)},
+        )
+
         data = {
             "email": "maykin@media.nl",
         }
 
-        response = self.client.post(self.endpoint, data=data)
+        response = self.client.post(endpoint, data=data)
 
         self.assertEqual(response.status_code, 403)
