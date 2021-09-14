@@ -228,8 +228,8 @@ class TestSubmission(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79-Paspoort",
-                "location": "1-Amsterdam",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00",
             },
             form_step=form_step_1,
@@ -247,8 +247,8 @@ class TestSubmission(TestCase):
         self.assertEqual(
             submission.get_merged_appointment_data(),
             {
-                "productIDAndName": "79-Paspoort",
-                "locationIDAndName": "1-Amsterdam",
+                "productIDAndName": {"identifier": "79", "name": "Paspoort"},
+                "locationIDAndName": {"identifier": "1", "name": "Amsterdam"},
                 "appStartTime": "2021-08-25T17:00:00",
                 "clientLastName": "Maykin",
                 "clientDateOfBirth": "1990-08-01",
