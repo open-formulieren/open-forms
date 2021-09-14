@@ -4,8 +4,12 @@ from openforms.config.models import GlobalConfiguration
 
 
 class PrivacyPolicyTests(TestCase):
-    def test_render_default_privacy_label(self):
+    def test_render_privacy_label(self):
         conf = GlobalConfiguration.get_solo()
+        conf.privacy_policy_label = (
+            "Ja, ik heb kennis genomen van het {% privacybeleid %} en geef uitdrukkelijk "
+            "toestemming voor het verwerken van de door mij opgegeven gegevens."
+        )
         conf.privacy_policy_url = "http://test-privacy-policy.nl"
         conf.save()
 
@@ -17,8 +21,12 @@ class PrivacyPolicyTests(TestCase):
             label,
         )
 
-    def test_render_default_privacy_label_without_url(self):
+    def test_render_privacy_label_without_url(self):
         conf = GlobalConfiguration.get_solo()
+        conf.privacy_policy_label = (
+            "Ja, ik heb kennis genomen van het {% privacybeleid %} en geef uitdrukkelijk "
+            "toestemming voor het verwerken van de door mij opgegeven gegevens."
+        )
         conf.privacy_policy_url = ""
         conf.save()
 
