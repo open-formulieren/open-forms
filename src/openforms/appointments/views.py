@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class VerifyCancelAppointmentLinkView(RedirectView):
-    def get_redirect_url(self, submission_uuid: int, token: str, *args, **kwargs):
+    def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
         try:
             submission = Submission.objects.get(uuid=submission_uuid)
         except Submission.DoesNotExist:

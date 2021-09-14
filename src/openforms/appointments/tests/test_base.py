@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.test import TestCase
@@ -67,6 +68,6 @@ class BasePluginTests(TestCase):
                 "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = f"{settings.BASE_URL}{cancel_path}"
+        cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
         self.assertEqual({"cancel_url": cancel_url}, result)
