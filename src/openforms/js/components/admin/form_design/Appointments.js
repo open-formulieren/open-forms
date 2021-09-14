@@ -43,7 +43,14 @@ const reducer = (draft, action) => {
 
 const Appointments = ({ availableComponents={}, onChange }) => {
 
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState});
+    let updatedState = {};
+    Object.entries(availableComponents).map(([key, comp]) => {
+        if (comp.appointmentsShowProducts) {
+            updatedState.products = key;
+        }
+    });
+
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...updatedState});
 
     const onFieldChange = (event) => {
         const {name, value} = event.target;
