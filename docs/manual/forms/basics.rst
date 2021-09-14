@@ -176,12 +176,12 @@ wijzigen afhankelijk van de gegevens die de gebruiker invult. Er zijn verschille
 
 * Wijzig een attribuut van een veld/component. Met dit actie kan:
 
-    * Een niet-verplicht veld worden veranderd in een verplicht veld (of andersom)
+    * Een niet-verplicht veld wordt veranderd in een verplicht veld (of andersom)
 
-    * Een zichtbaar veld worden verborgen (of een verborgen veld zichtbaar worden)
+    * Een zichtbaar veld wordt verborgen (of een verborgen veld wordt zichtbaar)
 
     * Een veld kan worden uitgeschakeld
 
-* Wijzig de waarde van een veld/component aan. Met dit actie kan de waarde van een veld/component worden veranderd naar de waarde van een andere component of een waarde gekozen door de beheerder.
+* Wijzig de waarde van een veld/component. Met deze actie kan de waarde van een veld/component worden veranderd naar de waarde van een andere component of een waarde gekozen door de beheerder.
 
 * Markeer een stap als 'niet van toepassing' (n.v.t).
