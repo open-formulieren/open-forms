@@ -9,3 +9,4 @@ Voorbeelden
 
    simple_form
    autofill_address
+   logic_rules
