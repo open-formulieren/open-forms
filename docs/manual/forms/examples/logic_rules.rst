@@ -70,6 +70,9 @@ Formulier maken
     Deze twee acties betekenen: als de gebruiker jonger dan 18 is, dan blokkeer
     doorgaan naar de volgende formulier stap en maak de 'Warning component' zichtbaar.
 
+.. image:: _assets/rijbewijs_logica.png
+    :width: 100%
+
 21. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken.

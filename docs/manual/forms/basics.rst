@@ -185,3 +185,6 @@ wijzigen afhankelijk van de gegevens die de gebruiker invult. Er zijn verschille
 * Wijzig de waarde van een veld/component. Met deze actie kan de waarde van een veld/component worden veranderd naar de waarde van een andere component of een waarde gekozen door de beheerder.
 
 * Markeer een stap als 'niet van toepassing' (n.v.t).
+
+.. image:: _assets/logica_voorbeeld.png
+    :width: 100%
