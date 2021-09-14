@@ -11,7 +11,7 @@ class TimestampedTokenPermission(permissions.BasePermission):
 
     The token must be generated an checked by the specified token generator. This
     permission class should be used for object-level permissions only, and is intended
-    to be subclasses where the token generator object is defined as a class attribute.
+    to be subclassed where the token generator object is defined as a class attribute.
     """
 
     token_generator = None  # subclasses must define this

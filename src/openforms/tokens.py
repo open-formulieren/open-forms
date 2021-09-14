@@ -143,7 +143,7 @@ class BaseTokenGenerator(ABC):
         joined_parts = "".join(parts)
         return f"{joined_parts}{timestamp}"
 
-    def _num_days(self, dt) -> int:
+    def _num_days(self, dt: date) -> int:
         """
         Return the number of days between 01-01-2020 and today
         """
