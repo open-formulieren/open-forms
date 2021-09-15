@@ -31,7 +31,7 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(True, data["requiresPrivacyConsent"])
-        self.assertEqual(
+        self.assertHTMLEqual(
             'I read the <a href="http://example-privacy.com">privacy policy</a>',
             data["privacyLabel"],
         )
