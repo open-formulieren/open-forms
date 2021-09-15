@@ -65,7 +65,7 @@ def on_completion(submission_id: int) -> str:
     return async_result.id
 
 
-@app.task(bind=True)
+@app.task(bind=True, ignore_result=True)
 def finalize_completion(task, submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.

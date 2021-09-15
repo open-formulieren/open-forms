@@ -88,7 +88,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
     )
 
 
-@app.task
+@app.task(ignore_result=True)
 def resend_submissions():
     resend_time_limit = timezone.now() - timedelta(
         hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT
