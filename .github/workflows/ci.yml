@@ -56,7 +56,7 @@ jobs:
         working-directory: docker
 
       - name: Install dependencies
-        run: pip install -r requirements/ci.txt codecov 'setuptools<58.0'
+        run: pip install -r requirements/ci.txt codecov
       - name: Build frontend
         run: |
           npm ci
