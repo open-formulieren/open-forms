@@ -69,8 +69,15 @@ class DecoratorTests(SimpleTestCase):
         task.run(*args, **kwargs)
 
     def test_task_retried_within_timeout(self):
-        with self.assertRaises(Retry):
-            self._run_task(task_within_timeout)
+        with patch.object(
+            task_within_timeout, "signature_from_request"
+        ) as mock_signature_from_request:
+            with self.assertRaises(Retry):
+                self._run_task(task_within_timeout)
+
+        # bit of a celery implementation detail, but we mock it to prevent actually
+        # sending things to the real redis broker
+        mock_signature_from_request.assert_called_once()
 
     def test_task_retried_outside_timeout(self):
         try:

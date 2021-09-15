@@ -5,6 +5,7 @@ from openforms.celery import app
 
 from ..models import Submission
 from .appointments import *  # noqa
+from .cleanup import *  # noqa
 from .emails import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
