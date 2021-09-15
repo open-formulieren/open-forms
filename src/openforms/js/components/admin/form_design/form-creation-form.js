@@ -270,25 +270,27 @@ function reducer(draft, action) {
                 const configuration = draft.formSteps[formStepIndex].configuration;
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
                     let component = configuration.components[componentIndex];
-                    // TODO Need to clear previous configuration?
-                    if (component.key === draft.appointments.products) {
-                        component.appointmentsShowProducts = true;
-                    } else if (component.key === draft.appointments.locations) {
-                        component.appointmentsShowLocations = true;
-                        component.appointmentsProductComponent = draft.appointments.products;
-                    } else if (component.key === draft.appointments.dates) {
-                        component.appointmentsShowDates = true;
-                        component.appointmentsProductComponent = draft.appointments.products;
-                        component.appointmentsLocationComponent = draft.appointments.locations;
-                    } else if (component.key === draft.appointments.times) {
-                        component.appointmentsShowTimes = true;
-                        component.appointmentsProductComponent = draft.appointments.products;
-                        component.appointmentsLocationComponent = draft.appointments.locations;
-                        component.appointmentsDateComponent = draft.appointments.dates;
-                    } else if (component.key === draft.appointments.lastName) {
-                        component.appointmentsLastName = true;
-                    } else if (component.key === draft.appointments.birthDate) {
-                        component.appointmentsBirthDate = true;
+                    // TODO Need to clear previous components in case of changing selection
+                    if (name === component.key) {
+                        if (component.key === draft.appointments.products) {
+                            component.appointmentsShowProducts = true;
+                        } else if (component.key === draft.appointments.locations) {
+                            component.appointmentsShowLocations = true;
+                            component.appointmentsProductComponent = draft.appointments.products;
+                        } else if (component.key === draft.appointments.dates) {
+                            component.appointmentsShowDates = true;
+                            component.appointmentsProductComponent = draft.appointments.products;
+                            component.appointmentsLocationComponent = draft.appointments.locations;
+                        } else if (component.key === draft.appointments.times) {
+                            component.appointmentsShowTimes = true;
+                            component.appointmentsProductComponent = draft.appointments.products;
+                            component.appointmentsLocationComponent = draft.appointments.locations;
+                            component.appointmentsDateComponent = draft.appointments.dates;
+                        } else if (component.key === draft.appointments.lastName) {
+                            component.appointmentsLastName = true;
+                        } else if (component.key === draft.appointments.birthDate) {
+                            component.appointmentsBirthDate = true;
+                        }
                     }
                 }
             }
