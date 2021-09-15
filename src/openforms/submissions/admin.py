@@ -123,6 +123,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "get_appointment_status",
         "get_appointment_id",
         "get_appointment_error_information",
+        "on_completion_task_ids",
     ]
     actions = ["export_csv", "export_xlsx", "resend_submissions"]
 

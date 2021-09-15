@@ -13,7 +13,7 @@ from .constants import RemovalMethods
 logger = logging.getLogger(__name__)
 
 
-@app.task
+@app.task(ignore_result=True)
 def delete_submissions():
     logger.debug("Deleting submissions")
 
@@ -72,7 +72,7 @@ def delete_submissions():
     other_submissions_to_delete.delete()
 
 
-@app.task
+@app.task(ignore_result=True)
 def make_sensitive_data_anonymous() -> None:
     logger.debug("Making sensitive submission data anonymous")
 

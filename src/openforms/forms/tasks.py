@@ -8,7 +8,7 @@ from ..celery import app
 logger = logging.getLogger(__name__)
 
 
-@app.task()
+@app.task(ignore_result=True)
 def detect_formiojs_configuration_snake_case(
     form_definition_id: int, raise_exception=False
 ):

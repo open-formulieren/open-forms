@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from celery.result import AsyncResult
+from django_better_admin_arrayfield.models.fields import ArrayField
 from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
@@ -168,12 +169,17 @@ class Submission(models.Model):
     )
 
     # tracking async execution state
-    on_completion_task_id = models.CharField(
-        _("on completion task ID"),
-        max_length=255,
+    on_completion_task_ids = ArrayField(
+        base_field=models.CharField(
+            _("on completion task ID"),
+            max_length=255,
+            blank=True,
+        ),
+        default=list,
+        verbose_name=_("on completion task IDs"),
         blank=True,
         help_text=_(
-            "Celery task ID of the on_completion workflow. Use this to inspect the "
+            "Celery task IDs of the on_completion workflow. Use this to inspect the "
             "state of the async jobs."
         ),
     )

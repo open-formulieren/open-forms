@@ -2,10 +2,13 @@ import time
 
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
+from django.test import RequestFactory
 
-from celery.result import AsyncResult
+from rest_framework.request import Request
 
+from ...constants import ProcessingStatuses
 from ...models import Submission
+from ...status import SubmissionProcessingStatus
 from ...tasks import on_completion
 
 
@@ -20,6 +23,12 @@ class Command(BaseCommand):
             "--submission-id",
             type=int,
             help="Re-use an existing submission to test.",
+        )
+        parser.add_argument(
+            "--no-forget",
+            dest="forget",
+            action="store_false",
+            help="Do not forget the results from the celery result backend.",
         )
         parser.add_argument(
             "--with-incomplete-appointment",
@@ -63,12 +72,18 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Submission: {submission.id}")
         self.stdout.write("Entering on_completion flow...")
-        task_id = on_completion(submission.id)
+        on_completion(submission.id)
 
-        result = AsyncResult(task_id)
+        submission.refresh_from_db()
+        request = RequestFactory().get("/irrelevant")
+        processing_status = SubmissionProcessingStatus(
+            request=Request(request), submission=submission
+        )
 
-        while not (ready := result.ready()):
+        while processing_status.status == ProcessingStatuses.in_progress:
+            self.stdout.write("Still processing...")
             time.sleep(1)
-            self.stdout.write(f"Task ready? {ready}")
 
-        self.stdout.write(f"Task ready? {ready}")
+        self.stdout.write(f"Processing complete, result: {processing_status.result}")
+        if options["forget"]:
+            processing_status.forget_results()

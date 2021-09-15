@@ -5,13 +5,14 @@ from openforms.celery import app
 
 from ..models import Submission
 from .appointments import *  # noqa
+from .cleanup import *  # noqa
 from .emails import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
 
 
-def on_completion(submission_id: int) -> str:
+def on_completion(submission_id: int) -> None:
     """
     Celery chain of tasks to execute on a submission completion event.
 
@@ -57,15 +58,21 @@ def on_completion(submission_id: int) -> str:
     cleanup_temporary_files_for.delay(submission_id)
 
     async_result: AsyncResult = on_completion_chain.delay()
+
+    # obtain all the task IDs so we can check the state later
+    task_ids = []
+
+    node = async_result
+    while node is not None:
+        task_ids.append(node.id)
+        node = node.parent
+
     # NOTE - this is "risky" since we're running outside of the transaction (this code
     # should run in transaction.on_commit)!
-    Submission.objects.filter(id=submission_id).update(
-        on_completion_task_id=async_result.id
-    )
-    return async_result.id
+    Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
 
 
-@app.task(bind=True)
+@app.task(bind=True, ignore_result=True)
 def finalize_completion(task, submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.

@@ -47,7 +47,7 @@ class SubmissionStatusTokenGenerator(BaseTokenGenerator):
         attributes = [
             "completed_on",
             "suspended_on",
-            "on_completion_task_id",
+            "on_completion_task_ids",
         ]
         return [str(getattr(submission, attr)) for attr in attributes]
 
