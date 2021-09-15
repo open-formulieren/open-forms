@@ -212,6 +212,21 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("Some", rendered_content)
         self.assertIn("<h1>Data</h1>", rendered_content)
 
+    def test_appointment_information_with_no_appointment_id(self):
+        submission = SubmissionFactory.create()
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.missing_info,
+            appointment_id="",
+            submission=submission,
+        )
+        email = ConfirmationEmailTemplate(content="{% appointment_information %}")
+        empty_email = ConfirmationEmailTemplate(content="")
+
+        rendered_content = email.render(submission)
+        empty_rendered_content = empty_email.render(submission)
+
+        self.assertEqual(empty_rendered_content, rendered_content)
+
     @patch("openforms.emails.templatetags.appointments.get_client")
     def test_get_appointment_links(self, get_client_mock):
         config = GlobalConfiguration.get_solo()

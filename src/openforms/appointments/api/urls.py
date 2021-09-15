@@ -14,7 +14,7 @@ urlpatterns = [
     path("dates", DatesListView.as_view(), name="appointments-dates-list"),
     path("times", TimesListView.as_view(), name="appointments-times-list"),
     path(
-        "<str:submission_uuid>/cancel",
+        "<uuid:submission_uuid>/cancel",
         CancelAppointmentView.as_view(),
         name="appointments-cancel",
     ),
