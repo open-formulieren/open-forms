@@ -100,7 +100,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # TODO: in the future, a S-HMAC token based "statusUrl" will be returned which
         # needs to be polled by the frontend
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # assert that the async celery task execution is scheduled
         mock_on_completion.assert_called_once_with(submission.id)
@@ -132,6 +132,6 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # TODO: in the near future this will become HTTP_200_OK again, see
         # :meth:`test_complete_submission`
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())

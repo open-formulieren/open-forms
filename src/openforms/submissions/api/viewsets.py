@@ -10,6 +10,7 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
@@ -22,6 +23,7 @@ from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
+from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
     remove_submission_from_session,
@@ -30,6 +32,7 @@ from ..utils import (
 from .permissions import ActiveSubmissionPermission, SubmissionStatusPermission
 from .serializers import (
     FormDataSerializer,
+    SubmissionCompletionSerializer,
     SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
     SubmissionStateLogic,
@@ -92,7 +95,7 @@ class SubmissionViewSet(
         summary=_("Complete a submission"),
         request=None,
         responses={
-            204: None,
+            200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
         },
     )
@@ -120,8 +123,6 @@ class SubmissionViewSet(
         to rely on the client being able to make another call. IF it is detected in the
         status endpoint that a retry is needed, the ID is added back to the session.
 
-        TODO: emit a status URL with time-based token (Salted HMAC, from token generator)
-        that the frontend can poll without needing the submission in the session.
         TODO: if appointment registration fails, the submission ID must be added back
         to the session so the user can return to the first step(s) in the UI.
         """
@@ -139,7 +140,17 @@ class SubmissionViewSet(
         # stored, start processing the completion.
         transaction.on_commit(lambda: on_completion(submission.id))
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        token = submission_status_token_generator.make_token(submission)
+        status_url = self.request.build_absolute_uri(
+            reverse(
+                "api:submission-status",
+                kwargs={"uuid": submission.uuid, "token": token},
+            )
+        )
+        out_serializer = SubmissionCompletionSerializer(
+            instance={"status_url": status_url}
+        )
+        return Response(out_serializer.data)
 
     @extend_schema(
         summary=_("Get the submission processing status"),
