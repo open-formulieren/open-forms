@@ -596,16 +596,16 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         component.appointmentsShowProducts = true;
                     } else if (component.key === state.appointments.locations) {
                         component.appointmentsShowLocations = true;
-                        component.appointmentsProductForLocations = state.appointments.products;
+                        component.appointmentsProductComponent = state.appointments.products;
                     } else if (component.key === state.appointments.dates) {
                         component.appointmentsShowDates = true;
-                        component.appointmentsProductForDates = state.appointments.products;
-                        component.appointmentsLocationForDates = state.appointments.locations;
+                        component.appointmentsProductComponent = state.appointments.products;
+                        component.appointmentsLocationComponent = state.appointments.locations;
                     } else if (component.key === state.appointments.times) {
                         component.appointmentsShowTimes = true;
-                        component.appointmentsProductForTimes = state.appointments.products;
-                        component.appointmentsLocationForTimes = state.appointments.locations;
-                        component.appointmentsDateForTimes = state.appointments.dates;
+                        component.appointmentsProductComponent = state.appointments.products;
+                        component.appointmentsLocationComponent = state.appointments.locations;
+                        component.appointmentsDateComponent = state.appointments.dates;
                     } else if (component.key === state.appointments.lastName) {
                         component.appointmentsLastName = true;
                     } else if (component.key === state.appointments.birthDate) {
