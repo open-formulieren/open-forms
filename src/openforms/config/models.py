@@ -266,7 +266,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "The label of the checkbox that prompts the user to agree to the privacy policy."
         ),
-        default="Ja, ik heb kennis genomen van het {% privacybeleid %} en geef uitdrukkelijk "
+        default="Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
         "toestemming voor het verwerken van de door mij opgegeven gegevens.",
     )
 

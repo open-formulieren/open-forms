@@ -19,7 +19,7 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
         conf = GlobalConfiguration.get_solo()
         conf.ask_privacy_consent = True
         conf.privacy_policy_url = "http://example-privacy.com"
-        conf.privacy_policy_label = "I read the {% privacybeleid %}"
+        conf.privacy_policy_label = "I read the {% privacy_policy %}"
         conf.save()
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
@@ -32,7 +32,7 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(True, data["requiresPrivacyConsent"])
         self.assertEqual(
-            'I read the <a href="http://example-privacy.com">privacybeleid</a>',
+            'I read the <a href="http://example-privacy.com">privacy policy</a>',
             data["privacyLabel"],
         )
 

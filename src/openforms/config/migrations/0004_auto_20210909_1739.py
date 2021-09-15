@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             name="privacy_policy_label",
             field=tinymce.models.HTMLField(
                 blank=True,
-                default="Ja, ik heb kennis genomen van het {% privacybeleid %} en geef uitdrukkelijk toestemming voor het verwerken van de door mij opgegeven gegevens.",
+                default="Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk toestemming voor het verwerken van de door mij opgegeven gegevens.",
                 help_text="The label of the checkbox that prompts the user to agree to the privacy policy.",
                 verbose_name="privacy policy label",
             ),
