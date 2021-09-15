@@ -21,12 +21,13 @@ class PrivacyPolicyInfoView(APIView):
     def get(self, request: Request) -> Response:
         conf = GlobalConfiguration.get_solo()
         if not conf.ask_privacy_consent:
-            return Response({"requires_privacy_consent": False})
+            info = PrivacyPolicyInfo(requires_privacy_consent=False)
+        else:
+            info = PrivacyPolicyInfo(
+                requires_privacy_consent=True,
+                privacy_label=conf.render_privacy_policy_label(),
+            )
 
-        info = PrivacyPolicyInfo(
-            requires_privacy_consent=True,
-            privacy_label=conf.render_privacy_policy_label(),
-        )
         serializer = PrivacyPolicyInfoSerializer(instance=info)
 
         return Response(serializer.data)

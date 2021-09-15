@@ -35,3 +35,19 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
             'I read the <a href="http://example-privacy.com">privacybeleid</a>',
             data["privacyLabel"],
         )
+
+    def test_doesnt_require_policy_consent(self):
+        conf = GlobalConfiguration.get_solo()
+        conf.ask_privacy_consent = False
+        conf.save()
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(reverse("api:config:privacy-policy-info"))
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(False, data["requiresPrivacyConsent"])
+        self.assertIsNone(data["privacyLabel"])
