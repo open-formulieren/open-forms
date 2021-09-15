@@ -25,6 +25,12 @@ class Command(BaseCommand):
             help="Re-use an existing submission to test.",
         )
         parser.add_argument(
+            "--no-forget",
+            dest="forget",
+            action="store_false",
+            help="Do not forget the results from the celery result backend.",
+        )
+        parser.add_argument(
             "--with-incomplete-appointment",
             action="store_true",
             help="Generate a submission for an incompletely filled appointment form",
@@ -79,4 +85,5 @@ class Command(BaseCommand):
             time.sleep(1)
 
         self.stdout.write(f"Processing complete, result: {processing_status.result}")
-        processing_status.forget_results()
+        if options["forget"]:
+            processing_status.forget_results()
