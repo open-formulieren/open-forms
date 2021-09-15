@@ -3,11 +3,8 @@ import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import ComponentSelection from './logic/ComponentSelection';
-import {ComponentsContext} from './logic/Context';
-
-import {FormLogic} from './FormLogic';
-
+import ComponentSelection from '../forms/ComponentSelection';
+import {ComponentsContext} from '../forms/Context';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -100,7 +97,6 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-
             <Fieldset>
                 <FormRow>
                     <Field
@@ -181,12 +177,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-
         </ComponentsContext.Provider>
     )
 };
 
-FormLogic.propTypes = {
+Appointments.propTypes = {
     availableComponents: PropTypes.objectOf(
         PropTypes.object, // Formio component objects
     ).isRequired,

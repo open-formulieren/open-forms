@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import Select from '../../forms/Select';
+import Select from './Select';
 import {ComponentsContext} from './Context';
 
 
