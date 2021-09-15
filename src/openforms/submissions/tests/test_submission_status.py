@@ -20,9 +20,7 @@ from .factories import SubmissionFactory, SubmissionReportFactory
 class SubmissionStatusPermissionTests(APITestCase):
     def test_valid_token(self):
         # Use empty task ID to not need a real broker
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -35,9 +33,7 @@ class SubmissionStatusPermissionTests(APITestCase):
 
     def test_expired_token(self):
         # Use empty task ID to not need a real broker
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -49,11 +45,9 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_token_invalidated_by_other_processing_run(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         old_token = submission_status_token_generator.make_token(submission)
-        submission.on_completion_task_id = "some-id"
+        submission.on_completion_task_ids = ["some-id"]
         submission.save()
         check_status_url = reverse(
             "api:submission-status",
@@ -65,9 +59,7 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_wrongly_formatted_token(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         # can't reverse because bad format lol
         check_status_url = f"/api/v1/submissions/{submission.uuid}/badformat/status"
 
@@ -76,9 +68,7 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_invalid_token_timestamp(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         # can't reverse because bad format lol
         check_status_url = f"/api/v1/submissions/{submission.uuid}/$$$-{'a'*20}/status"
 
@@ -89,9 +79,7 @@ class SubmissionStatusPermissionTests(APITestCase):
 
 class SubmissionStatusStatusAndResultTests(APITestCase):
     def test_no_task_id_registered(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=[""]
-        )
+        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -103,6 +91,8 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data["status"], ProcessingStatuses.in_progress)
         self.assertEqual(response_data["paymentUrl"], "")
+        self.assertEqual(response_data["reportDownloadUrl"], "")
+        self.assertEqual(response_data["confirmationPageContent"], "")
 
     def test_in_progress_celery_states(self):
         submission = SubmissionFactory.create(

@@ -2,7 +2,7 @@
 Utility to interact with the celery task status.
 """
 from dataclasses import dataclass
-from typing import Optional
+from typing import List
 
 from django.urls import reverse
 
@@ -22,29 +22,37 @@ class SubmissionProcessingStatus:
     request: Request
     submission: Submission
 
-    def get_async_result(self) -> Optional[AsyncResult]:
+    def get_async_results(self) -> List[AsyncResult]:
         if not hasattr(self, "_async_result"):
-            task_id = self.submission.on_completion_task_id
-            self._async_result = AsyncResult(task_id) if task_id else None
-        return self._async_result
+            task_ids = self.submission.on_completion_task_ids
+            self._async_results = [AsyncResult(task_id) for task_id in task_ids]
+        return self._async_results
 
     @property
     def status(self) -> str:
-        result = self.get_async_result()
-        is_ready = result is not None and result.state in states.READY_STATES
-        return ProcessingStatuses.done if is_ready else ProcessingStatuses.in_progress
+        results = self.get_async_results()
+        any_failed = any((result.state == states.FAILURE for result in results))
+        all_ready = all((result.state in states.READY_STATES for result in results))
+        if results and (any_failed or all_ready):
+            return ProcessingStatuses.done
+        return ProcessingStatuses.in_progress
 
     @property
     def result(self) -> str:
-        result = self.get_async_result()
-        if result is None or result.state in states.UNREADY_STATES:
+        if self.status != ProcessingStatuses.done:
             return ""
 
-        if result.state == states.SUCCESS:
+        results = self.get_async_results()
+        all_success = all((result.state == states.SUCCESS for result in results))
+        any_failed = any((result.state == states.FAILURE for result in results))
+
+        if all_success:
             return ProcessingResults.success
-        if result.state == states.REVOKED:
-            return ProcessingResults.retry
-        return ProcessingResults.failed
+        if any_failed:
+            return ProcessingResults.failed
+
+        # TODO: not sure if we can actually get to this? Maybe this should be removed.
+        return ProcessingResults.retry
 
     @property
     def error_message(self) -> str:
@@ -63,16 +71,14 @@ class SubmissionProcessingStatus:
 
     @property
     def confirmation_page_content(self) -> str:
-        result = self.get_async_result()
-        if result is None or result.state != states.SUCCESS:
+        if self.result != ProcessingResults.success:
             return ""
         return self.submission.render_confirmation_page()
 
     @property
     def report_download_url(self) -> str:
-        result = self.get_async_result()
         # only return a download URL if the entire chain succeeded
-        if result is None or result.state != states.SUCCESS:
+        if self.result != ProcessingResults.success:
             return ""
         report = self.submission.report
         token = submission_report_token_generator.make_token(report)
@@ -84,9 +90,8 @@ class SubmissionProcessingStatus:
 
     @property
     def payment_url(self) -> str:
-        result = self.get_async_result()
         # don't bother with payment if processing did not succeed.
-        if result is None or result.state != states.SUCCESS:
+        if self.result != ProcessingResults.success:
             return ""
 
         if not self.submission.payment_required:
@@ -100,3 +105,13 @@ class SubmissionProcessingStatus:
             },
         )
         return self.request.build_absolute_uri(payment_start_url)
+
+    def forget_results(self) -> None:
+        """
+        Clean up the results in the Celery result backend.
+
+        Forgetting the results ensures that we don't leak resources.
+        """
+        results = self.get_async_results()
+        for result in results:
+            result.forget()

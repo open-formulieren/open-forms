@@ -37,15 +37,19 @@ class OnCompletionTests(TestCase):
             submission_step=submission.submissionstep_set.first()
         )
 
-        task_id = on_completion(submission.id)
-
-        try:
-            uuid.UUID(task_id)
-        except ValueError:
-            self.fail("Invalid task ID returned")
+        on_completion(submission.id)
 
         submission.refresh_from_db()
-        self.assertEqual(submission.on_completion_task_ids, [task_id])
+        for task_id in submission.on_completion_task_ids:
+            with self.subTest(task_id=task_id):
+                try:
+                    uuid.UUID(task_id)
+                except ValueError:
+                    self.fail("Invalid task ID returned")
+
+        self.assertEqual(
+            len(submission.on_completion_task_ids), 6
+        )  # 6 tasks in the chain
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
