@@ -48,10 +48,10 @@ class SubmissionStatusPermissionTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_token_invalidated_by_other_processing_run(self):
+    def test_token_invalidated_by_new_completion(self):
         submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         old_token = submission_status_token_generator.make_token(submission)
-        submission.on_completion_task_ids = ["some-id"]
+        submission.completed_on = timezone.now()
         submission.save()
         check_status_url = reverse(
             "api:submission-status",
