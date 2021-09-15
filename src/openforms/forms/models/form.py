@@ -12,17 +12,14 @@ from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
+from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.fields import PaymentBackendChoiceField
+from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
+from openforms.registrations.registry import register as registration_register
 from openforms.utils.fields import StringUUIDField
 
-from ...authentication.fields import AuthenticationBackendMultiSelectField
-from ...authentication.registry import register as authentication_register
-from ...payments.fields import PaymentBackendChoiceField
-from ...payments.registry import register as payment_register
-from ...registrations.fields import RegistrationBackendChoiceField
-from ...registrations.registry import register as registration_register
 from .utils import literal_getter
 
 

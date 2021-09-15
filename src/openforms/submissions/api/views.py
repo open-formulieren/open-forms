@@ -1,7 +1,6 @@
 import os
 
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -13,16 +12,14 @@ from rest_framework.response import Response
 
 from ..attachments import clean_mime_type
 from ..models import SubmissionReport, TemporaryFileUpload
-from ..tokens import token_generator
 from ..utils import add_upload_to_session, remove_upload_from_session
-from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
+from .permissions import (
+    AnyActiveSubmissionPermission,
+    DownloadSubmissionReportPermission,
+    OwnsTemporaryUploadPermission,
+)
 from .renderers import FileRenderer, PDFRenderer
 from .serializers import TemporaryFileUploadSerializer
-
-
-class RetrieveReportBaseView(GenericAPIView):
-    queryset = SubmissionReport.objects.all()
-    lookup_url_kwarg = "report_id"
 
 
 @extend_schema(
@@ -35,8 +32,11 @@ class RetrieveReportBaseView(GenericAPIView):
     ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
     responses={200: bytes},
 )
-class DownloadSubmissionReportView(RetrieveReportBaseView):
+class DownloadSubmissionReportView(GenericAPIView):
+    queryset = SubmissionReport.objects.all()
+    lookup_url_kwarg = "report_id"
     authentication_classes = ()
+    permission_classes = (DownloadSubmissionReportPermission,)
     # FIXME: 404s etc. are now also rendered with this, which breaks.
     renderer_classes = (PDFRenderer,)
     serializer_class = None
@@ -49,11 +49,6 @@ class DownloadSubmissionReportView(RetrieveReportBaseView):
 
     def get(self, request, report_id: int, token: str, *args, **kwargs):
         submission_report = self.get_object()
-
-        # Check that the token is valid
-        valid = token_generator.check_token(submission_report, token)
-        if not valid:
-            raise PermissionDenied
 
         submission_report.last_accessed = timezone.now()
         submission_report.save()

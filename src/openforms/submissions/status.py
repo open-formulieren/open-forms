@@ -10,8 +10,11 @@ from celery import states
 from celery.result import AsyncResult
 from rest_framework.request import Request
 
+from openforms.appointments.models import AppointmentInfo
+
+from .constants import ProcessingResults, ProcessingStatuses
 from .models import Submission
-from .tokens import token_generator
+from .tokens import submission_report_token_generator
 
 
 @dataclass
@@ -26,23 +29,42 @@ class SubmissionProcessingStatus:
         return self._async_result
 
     @property
-    def state(self) -> str:
+    def status(self) -> str:
         result = self.get_async_result()
-        return result.state if result else ""
+        is_ready = result is not None and result.state in states.READY_STATES
+        return ProcessingStatuses.done if is_ready else ProcessingStatuses.in_progress
 
     @property
-    def processing_aborted(self) -> bool:
-        return self.state == states.FAILURE  # TODO: verify
+    def result(self) -> str:
+        result = self.get_async_result()
+        if result is None or result.state in states.UNREADY_STATES:
+            return ""
+
+        if result.state == states.SUCCESS:
+            return ProcessingResults.success
+        if result.state == states.REVOKED:
+            return ProcessingResults.retry
+        return ProcessingResults.failed
 
     @property
-    def error_message(self):
-        # TODO: check if there's appointment info
-        return ""
+    def error_message(self) -> str:
+        # check if we have error information from appointments
+        error_bits = []
+
+        # check appointment info - optional one-to-one field
+        appointment_info = AppointmentInfo.objects.filter(
+            submission=self.submission
+        ).first()
+        if appointment_info is not None and (
+            appointment_error := appointment_info.error_information
+        ):
+            error_bits.append(appointment_error)
+        return "\n\n".join(error_bits)
 
     @property
     def confirmation_page_content(self) -> str:
         result = self.get_async_result()
-        if not result.state == states.SUCCESS:
+        if result is None or result.state != states.SUCCESS:
             return ""
         return self.submission.render_confirmation_page()
 
@@ -50,10 +72,10 @@ class SubmissionProcessingStatus:
     def report_download_url(self) -> str:
         result = self.get_async_result()
         # only return a download URL if the entire chain succeeded
-        if not result.state == states.SUCCESS:
+        if result is None or result.state != states.SUCCESS:
             return ""
         report = self.submission.report
-        token = token_generator.make_token(report)
+        token = submission_report_token_generator.make_token(report)
         download_url = reverse(
             "api:submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
@@ -62,4 +84,19 @@ class SubmissionProcessingStatus:
 
     @property
     def payment_url(self) -> str:
-        return "TODO"
+        result = self.get_async_result()
+        # don't bother with payment if processing did not succeed.
+        if result is None or result.state != states.SUCCESS:
+            return ""
+
+        if not self.submission.payment_required:
+            return ""
+
+        payment_start_url = reverse(
+            "payments:start",
+            kwargs={
+                "uuid": self.submission.uuid,
+                "plugin_id": self.submission.form.payment_backend,
+            },
+        )
+        return self.request.build_absolute_uri(payment_start_url)

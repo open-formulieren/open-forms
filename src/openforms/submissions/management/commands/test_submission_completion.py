@@ -22,9 +22,9 @@ class Command(BaseCommand):
             help="Re-use an existing submission to test.",
         )
         parser.add_argument(
-            "--with-appointment",
+            "--with-incomplete-appointment",
             action="store_true",
-            help="Generate a submission for an appointment form (TODO: implement)",
+            help="Generate a submission for an incompletely filled appointment form",
         )
         parser.add_argument(
             "--with-payment",
@@ -41,10 +41,25 @@ class Command(BaseCommand):
 
         self.stdout.write("Generating submission from factory...")
 
+        factory_kwargs = {}
+        if options["with_incomplete_appointment"]:
+            factory_kwargs["components_list"] = [
+                {
+                    "key": "productID",
+                    "appointmentsShowProducts": True,
+                }
+            ]
+            factory_kwargs["submitted_data"] = {
+                "productID": "123",
+            }
+
         if submission_id := options["submission_id"]:
             submission = Submission.objects.get(id=submission_id)
         else:
-            submission = SubmissionFactory.create()
+            submission = SubmissionFactory.from_components(
+                completed=True,
+                **factory_kwargs,
+            )
 
         self.stdout.write(f"Submission: {submission.id}")
         self.stdout.write("Entering on_completion flow...")
