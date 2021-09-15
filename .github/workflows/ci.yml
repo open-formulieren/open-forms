@@ -197,7 +197,7 @@ jobs:
         with:
           node-version: '12'
       - name: Install dependencies
-        run: npm install -g @openapitools/openapi-generator-cli
+        run: npm install -g @openapitools/openapi-generator-cli@2.4.2
       - name: Validate schema
         run: openapi-generator-cli validate -i ./openapi.yaml
       - name: Generate Java client
