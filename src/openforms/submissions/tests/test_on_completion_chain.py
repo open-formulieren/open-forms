@@ -45,7 +45,7 @@ class OnCompletionTests(TestCase):
             self.fail("Invalid task ID returned")
 
         submission.refresh_from_db()
-        self.assertEqual(submission.on_completion_task_id, task_id)
+        self.assertEqual(submission.on_completion_task_ids, [task_id])
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
