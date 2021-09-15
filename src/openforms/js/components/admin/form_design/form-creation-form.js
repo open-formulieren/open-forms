@@ -84,6 +84,7 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
+    // TODO, Need to 'initialize' this like in the Appointments Tab
     appointments: {},
 };
 
@@ -263,6 +264,34 @@ function reducer(draft, action) {
                     draft.appointments[draftAppointmentsName] = '';
                 }
             });
+
+            // TODO This only needs to be done for the updated name/value.  Not all
+            //   Currently this updates all the information for each dropdown change
+            for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
+                const step = draft.formSteps[formStepIndex];
+                const configuration = step.configuration;
+                for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
+                    if (configuration.components[componentIndex].key === draft.appointments.products) {
+                        configuration.components[componentIndex].appointmentsShowProducts = true;
+                    } else if (configuration.components[componentIndex].key === draft.appointments.locations) {
+                        configuration.components[componentIndex].appointmentsShowLocations = true;
+                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
+                    } else if (configuration.components[componentIndex].key === draft.appointments.dates) {
+                        configuration.components[componentIndex].appointmentsShowDates = true;
+                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
+                        configuration.components[componentIndex].appointmentsLocationComponent = draft.appointments.locations;
+                    } else if (configuration.components[componentIndex].key === draft.appointments.times) {
+                        configuration.components[componentIndex].appointmentsShowTimes = true;
+                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
+                        configuration.components[componentIndex].appointmentsLocationComponent = draft.appointments.locations;
+                        configuration.components[componentIndex].appointmentsDateComponent = draft.appointments.dates;
+                    } else if (configuration.components[componentIndex].key === draft.appointments.lastName) {
+                        configuration.components[componentIndex].appointmentsLastName = true;
+                    } else if (configuration.components[componentIndex].key === draft.appointments.birthDate) {
+                        configuration.components[componentIndex].appointmentsBirthDate = true;
+                    }
+                }
+            }
 
             break;
         }
@@ -587,39 +616,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
                 const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
 
-                // TODO Hack because step.configuration is not extensible
-                //   Should figure out a way to change this without doing a deep clone
-                const configuration = cloneDeep(step.configuration);
-
-                configuration.components.map(component => {
-                    if (component.key === state.appointments.products) {
-                        component.appointmentsShowProducts = true;
-                    } else if (component.key === state.appointments.locations) {
-                        component.appointmentsShowLocations = true;
-                        component.appointmentsProductComponent = state.appointments.products;
-                    } else if (component.key === state.appointments.dates) {
-                        component.appointmentsShowDates = true;
-                        component.appointmentsProductComponent = state.appointments.products;
-                        component.appointmentsLocationComponent = state.appointments.locations;
-                    } else if (component.key === state.appointments.times) {
-                        component.appointmentsShowTimes = true;
-                        component.appointmentsProductComponent = state.appointments.products;
-                        component.appointmentsLocationComponent = state.appointments.locations;
-                        component.appointmentsDateComponent = state.appointments.dates;
-                    } else if (component.key === state.appointments.lastName) {
-                        component.appointmentsLastName = true;
-                    } else if (component.key === state.appointments.birthDate) {
-                        component.appointmentsBirthDate = true;
-                    }
-                });
-
                 var definitionResponse = await definitionCreateOrUpdate(
                     definitionEndpoint,
                     csrftoken,
                     {
                         name: step.name,
                         slug: step.slug,
-                        configuration,
+                        configuration: step.configuration,
                         loginRequired: step.loginRequired,
                         isReusable: step.isReusable,
                     }
