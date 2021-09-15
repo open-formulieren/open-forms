@@ -33,6 +33,7 @@ RUN mkdir /app/src
 # Ensure we use the latest version of pip
 RUN pip install pip -U
 COPY ./requirements /app/requirements
+RUN pip install -r requirements/setuptools.txt
 RUN pip install -r requirements/production.txt
 
 # Stage 2 - Install frontend deps and build assets
