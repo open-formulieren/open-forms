@@ -265,30 +265,30 @@ function reducer(draft, action) {
                 }
             });
 
-            // TODO This only needs to be done for the updated name/value.  Not all
-            //   Currently this updates all the information for each dropdown change
+            // TODO Move this somewhere else so it only runs on submit?
             for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
-                const step = draft.formSteps[formStepIndex];
-                const configuration = step.configuration;
+                const configuration = draft.formSteps[formStepIndex].configuration;
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
-                    if (configuration.components[componentIndex].key === draft.appointments.products) {
-                        configuration.components[componentIndex].appointmentsShowProducts = true;
-                    } else if (configuration.components[componentIndex].key === draft.appointments.locations) {
-                        configuration.components[componentIndex].appointmentsShowLocations = true;
-                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
-                    } else if (configuration.components[componentIndex].key === draft.appointments.dates) {
-                        configuration.components[componentIndex].appointmentsShowDates = true;
-                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
-                        configuration.components[componentIndex].appointmentsLocationComponent = draft.appointments.locations;
-                    } else if (configuration.components[componentIndex].key === draft.appointments.times) {
-                        configuration.components[componentIndex].appointmentsShowTimes = true;
-                        configuration.components[componentIndex].appointmentsProductComponent = draft.appointments.products;
-                        configuration.components[componentIndex].appointmentsLocationComponent = draft.appointments.locations;
-                        configuration.components[componentIndex].appointmentsDateComponent = draft.appointments.dates;
-                    } else if (configuration.components[componentIndex].key === draft.appointments.lastName) {
-                        configuration.components[componentIndex].appointmentsLastName = true;
-                    } else if (configuration.components[componentIndex].key === draft.appointments.birthDate) {
-                        configuration.components[componentIndex].appointmentsBirthDate = true;
+                    let component = configuration.components[componentIndex];
+                    // TODO Need to clear previous configuration?
+                    if (component.key === draft.appointments.products) {
+                        component.appointmentsShowProducts = true;
+                    } else if (component.key === draft.appointments.locations) {
+                        component.appointmentsShowLocations = true;
+                        component.appointmentsProductComponent = draft.appointments.products;
+                    } else if (component.key === draft.appointments.dates) {
+                        component.appointmentsShowDates = true;
+                        component.appointmentsProductComponent = draft.appointments.products;
+                        component.appointmentsLocationComponent = draft.appointments.locations;
+                    } else if (component.key === draft.appointments.times) {
+                        component.appointmentsShowTimes = true;
+                        component.appointmentsProductComponent = draft.appointments.products;
+                        component.appointmentsLocationComponent = draft.appointments.locations;
+                        component.appointmentsDateComponent = draft.appointments.dates;
+                    } else if (component.key === draft.appointments.lastName) {
+                        component.appointmentsLastName = true;
+                    } else if (component.key === draft.appointments.birthDate) {
+                        component.appointmentsBirthDate = true;
                     }
                 }
             }
