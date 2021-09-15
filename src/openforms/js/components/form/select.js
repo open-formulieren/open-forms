@@ -47,8 +47,7 @@ class SelectField extends Select {
                 BASIC_TAB,
                 ADVANCED,
                 VALIDATION,
-                REGISTRATION,
-                // APPOINTMENT
+                REGISTRATION
             ]
         };
         return {components: [TABS]};

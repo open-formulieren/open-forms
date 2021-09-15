@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import DEFAULT_TABS, {BASIC, ADVANCED, REGISTRATION, VALIDATION, DEFAULT_TEXT_TABS} from "./edit/tabs";
+import DEFAULT_TABS from "./edit/tabs";
 
 const DateTimeField = Formio.Components.components.datetime;
 

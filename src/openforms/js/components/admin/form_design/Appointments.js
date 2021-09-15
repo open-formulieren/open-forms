@@ -30,13 +30,14 @@ const reducer = (draft, action) => {
             const {name, value} = action.payload;
             draft[name] = value;
 
-            // TODO
-            // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
-            // const currentFieldIndex = TRIGGER_FIELD_ORDER.indexOf(name);
-            // const nextFieldNames = TRIGGER_FIELD_ORDER.slice(currentFieldIndex + 1);
-            // for (const name of nextFieldNames) {
-            //     draft[name] = initialState[name];
-            // }
+            // If the component that is selected was already set for something else, clear the other
+            //   thing it was set for since each component can only be used for one thing
+            Object.entries(draft).map(([draftName, draftValue]) => {
+                if (name !== draftName && value === draftValue) {
+                    draft[draftName] = '';
+                }
+            });
+
             break;
         }
         default: {
@@ -50,9 +51,18 @@ const Appointments = ({ availableComponents={}, onChange }) => {
 
     let updatedState = {};
     Object.entries(availableComponents).map(([key, comp]) => {
-        if (comp.appointmentsShowProducts || comp.appointmentsShowLocations || comp.appointmentsShowDates ||
-            comp.appointmentsShowTimes || comp.appointmentsLastName || comp.appointmentsBirthDate) {
+        if (comp.appointmentsShowProducts) {
             updatedState.products = key;
+        } else if (comp.appointmentsShowLocations) {
+            updatedState.locations = key;
+        } else if (comp.appointmentsShowDates) {
+            updatedState.dates = key;
+        } else if (comp.appointmentsShowTimes) {
+            updatedState.times = key;
+        } else if (comp.appointmentsLastName) {
+            updatedState.lastName = key;
+        } else if (comp.appointmentsBirthDate) {
+            updatedState.birthDate = key;
         }
     });
 
@@ -70,15 +80,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
         onChange(name, value);
     };
 
-    const {
-        products,
-        locations,
-        dates,
-        times,
-        lastName,
-        birthDate,
-    } = state;
-
+    const { products, locations, dates, times, lastName, birthDate } = state;
 
     return (
         <ComponentsContext.Provider value={availableComponents}>

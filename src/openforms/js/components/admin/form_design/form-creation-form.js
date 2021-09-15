@@ -255,6 +255,15 @@ function reducer(draft, action) {
         case 'APPOINTMENTS_CHANGED': {
             const { name, value } = action.payload;
             draft.appointments[name] = value;
+
+            // If the component that is selected was already set for something else, clear the other
+            //   thing it was set for since each component can only be used for one thing
+            Object.entries(draft.appointments).map(([draftAppointmentsName, draftAppointmentsValue]) => {
+                if (name !== draftAppointmentsName && value === draftAppointmentsValue) {
+                    draft.appointments[draftAppointmentsName] = '';
+                }
+            });
+
             break;
         }
         /**
@@ -651,7 +660,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
                 }
             } catch (e) {
-                debugger;
                 let formStepsErrors = new Array(state.formSteps.length);
                 formStepsErrors[index] = e.details;
                 dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
