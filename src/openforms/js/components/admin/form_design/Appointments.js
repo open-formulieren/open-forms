@@ -50,18 +50,9 @@ const Appointments = ({ availableComponents={}, onChange }) => {
 
     let updatedState = {};
     Object.entries(availableComponents).map(([key, comp]) => {
-        if (comp.appointmentsShowProducts) {
+        if (comp.appointmentsShowProducts || comp.appointmentsShowLocations || comp.appointmentsShowDates ||
+            comp.appointmentsShowTimes || comp.appointmentsLastName || comp.appointmentsBirthDate) {
             updatedState.products = key;
-        } else if (comp.appointmentsShowLocations) {
-            updatedState.locations = key;
-        } else if (comp.appointmentsShowDates) {
-            updatedState.dates = key;
-        } else if (comp.appointmentsShowTimes) {
-            updatedState.times = key;
-        } else if (comp.appointmentsLastName) {
-            updatedState.lastName = key;
-        } else if (comp.appointmentsBirthDate) {
-            updatedState.birthDate = key;
         }
     });
 
@@ -79,7 +70,6 @@ const Appointments = ({ availableComponents={}, onChange }) => {
         onChange(name, value);
     };
 
-    // rendering logic
     const {
         products,
         locations,
