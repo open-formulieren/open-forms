@@ -56,7 +56,10 @@ jobs:
         working-directory: docker
 
       - name: Install dependencies
-        run: pip install -r requirements/ci.txt codecov
+        run: |
+          pip install -r requirements/setuptools.txt
+          pip install -r requirements/ci.txt codecov
+
       - name: Build frontend
         run: |
           npm ci
@@ -94,13 +97,16 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
+
       - name: Install OS dependencies
         run: |
           sudo apt-get update
           sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
 
       - name: Install dependencies
-        run: pip install -r requirements/ci.txt
+        run: |
+          pip install -r requirements/setuptools.txt
+          pip install -r requirements/ci.txt
 
       - name: Build and test docs
         working-directory: docs
