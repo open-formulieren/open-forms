@@ -16,6 +16,11 @@ import Fieldset from '../forms/Fieldset';
 
 const initialState = {
     products: '',
+    locations: '',
+    dates: '',
+    times: '',
+    lastName: '',
+    birthDate: '',
 };
 
 
@@ -47,6 +52,16 @@ const Appointments = ({ availableComponents={}, onChange }) => {
     Object.entries(availableComponents).map(([key, comp]) => {
         if (comp.appointmentsShowProducts) {
             updatedState.products = key;
+        } else if (comp.appointmentsShowLocations) {
+            updatedState.locations = key;
+        } else if (comp.appointmentsShowDates) {
+            updatedState.dates = key;
+        } else if (comp.appointmentsShowTimes) {
+            updatedState.times = key;
+        } else if (comp.appointmentsLastName) {
+            updatedState.lastName = key;
+        } else if (comp.appointmentsBirthDate) {
+            updatedState.birthDate = key;
         }
     });
 
@@ -67,6 +82,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
     // rendering logic
     const {
         products,
+        locations,
+        dates,
+        times,
+        lastName,
+        birthDate,
     } = state;
 
 
@@ -88,6 +108,88 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
+
+            <Fieldset>
+                <FormRow>
+                    <Field
+                        name="locations"
+                        label={<FormattedMessage defaultMessage="Locations Component" description="Locations Component field label" />}
+                        helpText={<FormattedMessage defaultMessage="Component where locations for an appointment will be shown" description="Locations Component field help text" />}
+                    >
+                        <ComponentSelection
+                            name="component"
+                            value={locations}
+                            onChange={onFieldChange}
+                            filter={(comp) => (comp.type === 'select')}
+                        />
+                    </Field>
+                </FormRow>
+            </Fieldset>
+            <Fieldset>
+                <FormRow>
+                    <Field
+                        name="dates"
+                        label={<FormattedMessage defaultMessage="Dates Component" description="Dates Component field label" />}
+                        helpText={<FormattedMessage defaultMessage="Component where dates for an appointment will be shown" description="Dates Component field help text" />}
+                    >
+                        <ComponentSelection
+                            name="component"
+                            value={dates}
+                            onChange={onFieldChange}
+                            filter={(comp) => (comp.type === 'select')}
+                        />
+                    </Field>
+                </FormRow>
+            </Fieldset>
+            <Fieldset>
+                <FormRow>
+                    <Field
+                        name="times"
+                        label={<FormattedMessage defaultMessage="Times Component" description="Times Component field label" />}
+                        helpText={<FormattedMessage defaultMessage="Component where times for an appointment will be shown" description="Times Component field help text" />}
+                    >
+                        <ComponentSelection
+                            name="component"
+                            value={times}
+                            onChange={onFieldChange}
+                            filter={(comp) => (comp.type === 'select')}
+                        />
+                    </Field>
+                </FormRow>
+            </Fieldset>
+            <Fieldset>
+                <FormRow>
+                    <Field
+                        name="lastName"
+                        label={<FormattedMessage defaultMessage="Last Name Component" description="Last Name Component field label" />}
+                        helpText={<FormattedMessage defaultMessage="Component where last name for an appointment will be shown" description="Last Name Component field help text" />}
+                    >
+                        <ComponentSelection
+                            name="component"
+                            value={lastName}
+                            onChange={onFieldChange}
+                            filter={(comp) => (comp.type === 'textfield')}
+                        />
+                    </Field>
+                </FormRow>
+            </Fieldset>
+            <Fieldset>
+                <FormRow>
+                    <Field
+                        name="birthDate"
+                        label={<FormattedMessage defaultMessage="Birth Date Component" description="Birth Date Component field label" />}
+                        helpText={<FormattedMessage defaultMessage="Component where birth date for an appointment will be shown" description="Birth Date Component field help text" />}
+                    >
+                        <ComponentSelection
+                            name="component"
+                            value={birthDate}
+                            onChange={onFieldChange}
+                            filter={(comp) => (comp.type === 'date')}
+                        />
+                    </Field>
+                </FormRow>
+            </Fieldset>
+
         </ComponentsContext.Provider>
     )
 };

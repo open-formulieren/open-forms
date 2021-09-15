@@ -584,13 +584,25 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 configuration.components.map(component => {
                     if (component.key === state.appointments.products) {
-                        console.log('before setting property');
                         component.appointmentsShowProducts = true;
-                        console.log('after setting property');
+                    } else if (component.key === state.appointments.locations) {
+                        component.appointmentsShowLocations = true;
+                        component.appointmentsProductForLocations = state.appointments.products;
+                    } else if (component.key === state.appointments.dates) {
+                        component.appointmentsShowDates = true;
+                        component.appointmentsProductForDates = state.appointments.products;
+                        component.appointmentsLocationForDates = state.appointments.locations;
+                    } else if (component.key === state.appointments.times) {
+                        component.appointmentsShowTimes = true;
+                        component.appointmentsProductForTimes = state.appointments.products;
+                        component.appointmentsLocationForTimes = state.appointments.locations;
+                        component.appointmentsDateForTimes = state.appointments.dates;
+                    } else if (component.key === state.appointments.lastName) {
+                        component.appointmentsLastName = true;
+                    } else if (component.key === state.appointments.birthDate) {
+                        component.appointmentsBirthDate = true;
                     }
                 });
-
-                debugger;
 
                 var definitionResponse = await definitionCreateOrUpdate(
                     definitionEndpoint,
