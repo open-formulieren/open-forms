@@ -23,6 +23,7 @@ export CUSTOM_COMPILE_COMMAND="./bin/compile_dependencies.sh"
 # Base (& prod) deps
 pip-compile \
     --no-emit-index-url \
+    --allow-unsafe \
     "$@" \
     requirements/base.in
 
@@ -30,6 +31,7 @@ pip-compile \
 pip-compile \
     --no-emit-index-url \
     --output-file requirements/ci.txt \
+    --allow-unsafe \
     "$@" \
     requirements/base.txt \
     requirements/test-tools.in \
@@ -39,6 +41,7 @@ pip-compile \
 pip-compile \
     --no-emit-index-url \
     --output-file requirements/dev.txt \
+    --allow-unsafe \
     "$@" \
     requirements/ci.txt \
     requirements/dev.in

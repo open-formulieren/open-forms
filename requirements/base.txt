@@ -365,4 +365,12 @@ zgw-consumers==0.15.2
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools
+setuptools==57.5.0
+    # via
+    #   -r requirements/base.in
+    #   drf-jsonschema
+    #   humanize
+    #   josepy
+    #   jsonschema
+    #   pyzmail36
+    #   weasyprint
