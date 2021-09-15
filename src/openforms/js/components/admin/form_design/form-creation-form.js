@@ -270,8 +270,16 @@ function reducer(draft, action) {
                 const configuration = draft.formSteps[formStepIndex].configuration;
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
                     let component = configuration.components[componentIndex];
-                    // TODO Need to clear previous components in case of changing selection
                     if (name === component.key) {
+                        const previousInformationToDelete = ['appointmentsShowProducts', 'appointmentsShowLocations',
+                            'appointmentsShowDates', 'appointmentsShowTimes', 'appointmentsProductComponent',
+                            'appointmentsLocationComponent', 'appointmentsDateComponent', 'appointmentsLastName',
+                            'appointmentsBirthDate'];
+
+                        for (let field of previousInformationToDelete) {
+                            delete component[field];
+                        }
+
                         if (component.key === draft.appointments.products) {
                             component.appointmentsShowProducts = true;
                         } else if (component.key === draft.appointments.locations) {
