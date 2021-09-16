@@ -176,6 +176,7 @@ class SubmissionViewSet(
         """
         submission = self.get_object()
         status = SubmissionProcessingStatus(request, submission)
+        status.ensure_failure_can_be_managed()
         serializer = SubmissionProcessingStatusSerializer(instance=status)
         return Response(serializer.data)
 

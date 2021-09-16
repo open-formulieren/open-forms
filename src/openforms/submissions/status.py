@@ -15,6 +15,7 @@ from openforms.appointments.models import AppointmentInfo
 from .constants import ProcessingResults, ProcessingStatuses
 from .models import Submission
 from .tokens import submission_report_token_generator
+from .utils import add_submmission_to_session
 
 
 @dataclass
@@ -115,3 +116,22 @@ class SubmissionProcessingStatus:
         results = self.get_async_results()
         for result in results:
             result.forget()
+
+    def ensure_failure_can_be_managed(self) -> None:
+        """
+        Execute the necessary side-effects to failure can be dealt with.
+
+        Only take these "corrective" measures if the processig is completed and the
+        result is "failure".
+
+        This includes:
+
+        * adding the submission ID back to the session after it got removed by completing
+          the submission
+        """
+        if self.result != ProcessingResults.failed:
+            return
+
+        # add the submission ID back to the session so details can be retrieved and
+        # submission can be completed again after correcting the mistakes.
+        add_submmission_to_session(self.submission, self.request.session)

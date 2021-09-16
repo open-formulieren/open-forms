@@ -15,7 +15,7 @@ from rest_framework.test import APITestCase
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 
-from ..constants import ProcessingResults, ProcessingStatuses
+from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..tasks import cleanup_on_completion_results
 from ..tokens import submission_status_token_generator
 from .factories import SubmissionFactory, SubmissionReportFactory
@@ -183,6 +183,30 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                     self.assertEqual(response_data["result"], expected_result)
                     # no payment configured
                     self.assertEqual(response_data["paymentUrl"], "")
+
+    def test_submission_id_in_session_for_failed_result(self):
+        submission = SubmissionFactory.create(
+            completed=True, on_completion_task_ids=["some-id"]
+        )
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.FAILURE
+
+            response = self.client.get(check_status_url)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            response_data = response.json()
+            self.assertEqual(response_data["status"], ProcessingStatuses.done)
+            self.assertEqual(response_data["result"], ProcessingResults.failed)
+            # check that the submission ID is in the session
+            self.assertEqual(
+                response.wsgi_request.session[SUBMISSIONS_SESSION_KEY],
+                [str(submission.uuid)],
+            )
 
 
 @temp_private_root()
