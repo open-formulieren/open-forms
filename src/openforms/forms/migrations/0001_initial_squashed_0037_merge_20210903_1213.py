@@ -416,19 +416,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "availability_strategy",
-                    models.CharField(
-                        choices=[
-                            ("always", "Always"),
-                            ("after_previous_step", "If previous step is completed"),
-                        ],
-                        default="always",
-                        help_text="Availability strategy to use. A step must be available before it can be filled out. Note that this is not validated (yet) during step submission.",
-                        max_length=50,
-                        verbose_name="availability",
-                    ),
-                ),
-                (
                     "optional",
                     models.BooleanField(
                         default=False,
