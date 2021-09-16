@@ -1,5 +1,4 @@
 import {Formio} from 'formiojs';
-import {defineChoicesEditFormTabs} from './abstract';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from "./edit/tabs";
 
 
