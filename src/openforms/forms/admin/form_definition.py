@@ -5,13 +5,16 @@ from django.urls import reverse
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import ugettext_lazy as _
 
+from ...utils.expressions import FirstNotBlank
 from ..forms import FormDefinitionForm
 from ..models import FormDefinition, FormStep
 
 
 def delete_selected(modeladmin, request, queryset):
     actively_used = queryset.filter(formstep__isnull=False)
-    for name in actively_used.values_list("name", flat=True):
+    for name in actively_used.annotate(
+        admin_name=FirstNotBlank("internal_name", "name")
+    ).values_list("admin_name", flat=True):
         messages.error(
             request,
             _(
@@ -30,7 +33,7 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 class FormDefinitionAdmin(admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "used_in_forms", "is_reusable")
+    list_display = ("anno_name", "used_in_forms", "is_reusable")
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
 
@@ -43,7 +46,16 @@ class FormDefinitionAdmin(admin.ModelAdmin):
             ),
             to_attr="used_in_steps",
         )
-        return qs.prefetch_related(used_in_forms)
+        qs = qs.prefetch_related(used_in_forms)
+        # annotate .name
+        qs = qs.annotate(anno_name=FirstNotBlank("internal_name", "name"))
+        return qs
+
+    def anno_name(self, obj):
+        return obj.admin_name
+
+    anno_name.admin_order_field = "anno_name"
+    anno_name.short_description = _("name")
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -68,7 +80,7 @@ class FormDefinitionAdmin(admin.ModelAdmin):
                         "admin:forms_form_change",
                         kwargs={"object_id": form.pk},
                     ),
-                    form.name,
+                    form.admin_name,
                 )
                 for form in forms
             ),

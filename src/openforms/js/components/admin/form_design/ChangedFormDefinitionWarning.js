@@ -19,7 +19,7 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
             <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} title={`Formulieren (${affectedForms.length})`}>
                 <ul>
                     {affectedForms.map(form => (
-                        <li key={form.uuid}>{form.name}</li>
+                        <li key={form.uuid}>{(form.internalName || form.name)}</li>
                     ))}
                 </ul>
             </Modal>

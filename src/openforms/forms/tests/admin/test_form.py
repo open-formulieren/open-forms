@@ -73,6 +73,7 @@ class FormAdminImportExportTests(WebTest):
                             {
                                 "uuid": "b8315e1d-3134-476f-8786-7661d8237c51",
                                 "name": "Form 000",
+                                "internal_name": "Form internal",
                                 "slug": "bed",
                                 "product": None,
                                 "authentication_backends": ["digid"],
@@ -110,6 +111,7 @@ class FormAdminImportExportTests(WebTest):
         form = Form.objects.get()
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
         self.assertEqual(form.name, "Form 000")
+        self.assertEqual(form.internal_name, "Form internal")
         self.assertEqual(form.authentication_backends, ["digid"])
 
     def test_form_admin_import_staff_required(self):
@@ -212,6 +214,7 @@ class FormAdminImportExportTests(WebTest):
                                 "url": "http://testserver/api/v1/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
                                 "uuid": "78a18366-f9c0-47f2-8fd6-a6c31920440e",
                                 "name": "testform",
+                                "internal_name": "test internal",
                                 "slug": "testform",
                                 "configuration": {
                                     "components": [
@@ -289,6 +292,7 @@ class FormAdminImportExportTests(WebTest):
             form_definition.uuid, "b8315e1d-3134-476f-8786-7661d8237c51"
         )
         self.assertEqual(form_definition.name, "testform")
+        self.assertEqual(form_definition.internal_name, "test internal")
         self.assertEqual(form_definition.slug, "testform-2")
 
 
@@ -297,7 +301,9 @@ class FormAdminCopyTests(TestCase):
     def test_form_admin_copy(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)
         self.client.force_login(user)
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(
+            authentication_backends=["digid"], internal_name="internal"
+        )
         form_step = FormStepFactory.create(form=form)
         admin_url = reverse("admin:forms_form_change", args=(form.pk,))
 
@@ -310,6 +316,10 @@ class FormAdminCopyTests(TestCase):
 
         self.assertNotEqual(copied_form.uuid, form.uuid)
         self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=form.internal_name),
+        )
         self.assertEqual(copied_form.authentication_backends, ["digid"])
 
         copied_form_step = FormStep.objects.last()
@@ -323,7 +333,7 @@ class FormAdminCopyTests(TestCase):
 @disable_2fa
 class FormAdminActionsTests(WebTest):
     def setUp(self) -> None:
-        self.form = FormFactory.create()
+        self.form = FormFactory.create(internal_name="foo")
         self.user = SuperUserFactory.create(app=self.app)
 
     def test_make_copies_action_makes_copy_of_a_form(self):

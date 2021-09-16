@@ -10,6 +10,7 @@
         "login_required": false,
         "maintenance_mode": false,
         "name": "Test Form 1",
+        "internal_name": "Test Form Internal 1",
         "product": null,
         "show_progress_indicator": true,
         "slug": "auth-plugins",

@@ -63,6 +63,7 @@ class ImportExportTests(TestCase):
             self.assertEqual(len(forms), 1)
             self.assertEqual(forms[0]["uuid"], str(form.uuid))
             self.assertEqual(forms[0]["name"], form.name)
+            self.assertEqual(forms[0]["internal_name"], form.internal_name)
             self.assertEqual(forms[0]["slug"], form.slug)
             self.assertEqual(forms[0]["authentication_backends"], ["demo"])
             self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
@@ -72,6 +73,9 @@ class ImportExportTests(TestCase):
             self.assertEqual(len(form_definitions), 1)
             self.assertEqual(form_definitions[0]["uuid"], str(form_definition.uuid))
             self.assertEqual(form_definitions[0]["name"], form_definition.name)
+            self.assertEqual(
+                form_definitions[0]["internal_name"], form_definition.internal_name
+            )
             self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
             self.assertEqual(
                 form_definitions[0]["configuration"],
@@ -209,6 +213,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(forms.last().active, form.active)
         self.assertEqual(forms.last().registration_backend, form.registration_backend)
         self.assertEqual(forms.last().name, form.name)
+        self.assertEqual(forms.last().internal_name, form.internal_name)
         self.assertEqual(forms.last().product, form.product)
         self.assertEqual(forms.last().slug, form.slug)
 
@@ -220,6 +225,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.configuration, form_definition.configuration)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.internal_name, form_definition.internal_name)
         self.assertEqual(fd2.slug, form_definition.slug)
 
         form_steps = FormStep.objects.all()
@@ -267,6 +273,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(forms.last().active, False)
         self.assertEqual(forms.last().registration_backend, form.registration_backend)
         self.assertEqual(forms.last().name, form.name)
+        self.assertEqual(forms.last().internal_name, form.internal_name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
 
@@ -278,6 +285,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.configuration, form_definition.configuration)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.internal_name, form_definition.internal_name)
         self.assertEqual(fd2.slug, form_definition.slug)
 
         form_steps = FormStep.objects.all()
@@ -329,6 +337,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(forms.last().active, False)
         self.assertEqual(forms.last().registration_backend, form.registration_backend)
         self.assertEqual(forms.last().name, form.name)
+        self.assertEqual(forms.last().internal_name, form.internal_name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
 
@@ -340,6 +349,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.configuration, old_fd_config)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.internal_name, form_definition.internal_name)
         self.assertEqual(fd2.slug, f"{form_definition.slug}-2")
 
         form_steps = FormStep.objects.all()

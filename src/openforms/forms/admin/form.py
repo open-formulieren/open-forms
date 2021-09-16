@@ -13,6 +13,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 
 from ...payments.admin import PaymentBackendChoiceFieldMixin
+from ...utils.expressions import FirstNotBlank
 from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
@@ -47,7 +48,7 @@ class FormAdmin(
     admin.ModelAdmin,
 ):
     list_display = (
-        "name",
+        "anno_name",
         "active",
         "maintenance_mode",
         "get_authentication_backends_display",
@@ -79,6 +80,20 @@ class FormAdmin(
         }
         context.update(extra_context or {})
         return super().changelist_view(request, context)
+
+    def get_queryset(self, request):
+        # annotate .name
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(anno_name=FirstNotBlank("internal_name", "name"))
+        )
+
+    def anno_name(self, obj):
+        return obj.admin_name
+
+    anno_name.admin_order_field = "anno_name"
+    anno_name.short_description = _("name")
 
     def get_inline_instances(self, request, *args, **kwargs):
         if self.use_react(request):

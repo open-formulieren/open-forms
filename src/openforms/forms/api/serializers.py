@@ -142,6 +142,7 @@ class FormSerializer(serializers.ModelSerializer):
         fields = (
             "uuid",
             "name",
+            "internal_name",
             "login_required",
             "registration_backend",
             "registration_backend_options",
@@ -216,6 +217,7 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "uuid",
             "name",
+            "internal_name",
             "slug",
             "configuration",
             "login_required",
@@ -273,6 +275,9 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         source="form_definition.is_reusable", read_only=True
     )
     name = serializers.CharField(source="form_definition.name", read_only=True)
+    internal_name = serializers.CharField(
+        source="form_definition.internal_name", read_only=True
+    )
     slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
@@ -296,6 +301,7 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
             "configuration",
             "form_definition",
             "name",
+            "internal_name",
             "url",
             "login_required",
             "is_reusable",
