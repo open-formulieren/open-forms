@@ -48,17 +48,17 @@ const Appointments = ({ availableComponents={}, onChange }) => {
 
     let updatedState = {};
     Object.entries(availableComponents).map(([key, comp]) => {
-        if (comp.appointmentsShowProducts) {
+        if (comp['appointments.showProducts']) {
             updatedState.products = key;
-        } else if (comp.appointmentsShowLocations) {
+        } else if (comp['appointments.showLocations']) {
             updatedState.locations = key;
-        } else if (comp.appointmentsShowDates) {
+        } else if (comp['appointments.showDates']) {
             updatedState.dates = key;
-        } else if (comp.appointmentsShowTimes) {
+        } else if (comp['appointments.showTimes']) {
             updatedState.times = key;
-        } else if (comp.appointmentsLastName) {
+        } else if (comp['appointments.lastName']) {
             updatedState.lastName = key;
-        } else if (comp.appointmentsBirthDate) {
+        } else if (comp['appointments.birthDate']) {
             updatedState.birthDate = key;
         }
     });

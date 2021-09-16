@@ -84,7 +84,7 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
-    appointments: {},
+    appointmentConfiguration: {},
 };
 
 const newStepData = {
@@ -158,18 +158,18 @@ function reducer(draft, action) {
                 const configuration = draft.formSteps[formStepIndex].configuration;
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
                     let component = configuration.components[componentIndex];
-                    if (component.appointmentsShowProducts) {
-                        draft.appointments.products = component.key;
-                    } else if (component.appointmentsShowLocations) {
-                        draft.appointments.locations = component.key;
-                    } else if (component.appointmentsShowDates) {
-                        draft.appointments.dates = component.key;
-                    } else if (component.appointmentsShowTimes) {
-                        draft.appointments.times = component.key;
-                    } else if (component.appointmentsLastName) {
-                        draft.appointments.lastName = component.key;
-                    } else if (component.appointmentsBirthDate) {
-                        draft.appointments.birthDate = component.key;
+                    if (component['appointments.showProducts']) {
+                        draft.appointmentConfiguration.products = component.key;
+                    } else if (component['appointments.showLocations']) {
+                        draft.appointmentConfiguration.locations = component.key;
+                    } else if (component['appointments.showDates']) {
+                        draft.appointmentConfiguration.dates = component.key;
+                    } else if (component['appointments.showTimes']) {
+                        draft.appointmentConfiguration.times = component.key;
+                    } else if (component['appointments.lastName']) {
+                        draft.appointmentConfiguration.lastName = component.key;
+                    } else if (component['appointments.birthDate']) {
+                        draft.appointmentConfiguration.birthDate = component.key;
                     }
                 }
             }
@@ -276,16 +276,16 @@ function reducer(draft, action) {
         case 'APPOINTMENTS_CHANGED': {
             const { name, value } = action.payload;
             let oldComponentToClear = '';
-            if (draft.appointments[name]) {
-                oldComponentToClear = draft.appointments[name];
+            if (draft.appointmentConfiguration[name]) {
+                oldComponentToClear = draft.appointmentConfiguration[name];
             }
-            draft.appointments[name] = value;
+            draft.appointmentConfiguration[name] = value;
 
             // If the component that is selected was already set for something else, clear the other
             //   thing it was set for since each component can only be used for one thing
-            Object.entries(draft.appointments).map(([draftAppointmentsName, draftAppointmentsValue]) => {
+            Object.entries(draft.appointmentConfiguration).map(([draftAppointmentsName, draftAppointmentsValue]) => {
                 if (name !== draftAppointmentsName && value === draftAppointmentsValue) {
-                    draft.appointments[draftAppointmentsName] = '';
+                    draft.appointmentConfiguration[draftAppointmentsName] = '';
                 }
             });
 
@@ -294,10 +294,10 @@ function reducer(draft, action) {
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
                     let component = configuration.components[componentIndex];
                     if (component.key === value || component.key === oldComponentToClear) {
-                        const previousInformationToDelete = ['appointmentsShowProducts', 'appointmentsShowLocations',
-                            'appointmentsShowDates', 'appointmentsShowTimes', 'appointmentsProductComponent',
-                            'appointmentsLocationComponent', 'appointmentsDateComponent', 'appointmentsLastName',
-                            'appointmentsBirthDate'];
+                        const previousInformationToDelete = ['appointments.showProducts', 'appointments.showLocations',
+                            'appointments.showDates', 'appointments.showTimes', 'appointments.productComponent',
+                            'appointments.locationComponent', 'appointments.dateComponent', 'appointments.lastName',
+                            'appointments.birthDate'];
 
                         for (let field of previousInformationToDelete) {
                             delete component[field];
@@ -305,24 +305,24 @@ function reducer(draft, action) {
                     }
 
                     if (component.key === value) {
-                        if (component.key === draft.appointments.products) {
-                            component.appointmentsShowProducts = true;
-                        } else if (component.key === draft.appointments.locations) {
-                            component.appointmentsShowLocations = true;
-                            component.appointmentsProductComponent = draft.appointments.products;
-                        } else if (component.key === draft.appointments.dates) {
-                            component.appointmentsShowDates = true;
-                            component.appointmentsProductComponent = draft.appointments.products;
-                            component.appointmentsLocationComponent = draft.appointments.locations;
-                        } else if (component.key === draft.appointments.times) {
-                            component.appointmentsShowTimes = true;
-                            component.appointmentsProductComponent = draft.appointments.products;
-                            component.appointmentsLocationComponent = draft.appointments.locations;
-                            component.appointmentsDateComponent = draft.appointments.dates;
-                        } else if (component.key === draft.appointments.lastName) {
-                            component.appointmentsLastName = true;
-                        } else if (component.key === draft.appointments.birthDate) {
-                            component.appointmentsBirthDate = true;
+                        if (component.key === draft.appointmentConfiguration.products) {
+                            component['appointments.showProducts'] = true;
+                        } else if (component.key === draft.appointmentConfiguration.locations) {
+                            component['appointments.showLocations'] = true;
+                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                        } else if (component.key === draft.appointmentConfiguration.dates) {
+                            component['appointments.showDates'] = true;
+                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                            component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
+                        } else if (component.key === draft.appointmentConfiguration.times) {
+                            component['appointments.showTimes'] = true;
+                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                            component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
+                            component['appointments.dateComponent'] = draft.appointmentConfiguration.dates;
+                        } else if (component.key === draft.appointmentConfiguration.lastName) {
+                            component['appointments.lastName'] = true;
+                        } else if (component.key === draft.appointmentConfiguration.birthDate) {
+                            component['appointments.birthDate'] = true;
                         }
                     }
                 }
