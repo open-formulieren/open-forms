@@ -52,8 +52,11 @@ class SubmissionProcessingStatus:
         if any_failed:
             return ProcessingResults.failed
 
-        # TODO: not sure if we can actually get to this? Maybe this should be removed.
-        return ProcessingResults.retry
+        raise RuntimeError(
+            "Unexpected result state! Some tasks were not a success (?) but "
+            "none failed either. Note that this can mean a task was incorrectly "
+            "defined as `ignore_result=True` which prevents us from tracking the state."
+        )
 
     @property
     def error_message(self) -> str:

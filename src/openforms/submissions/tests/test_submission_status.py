@@ -167,7 +167,6 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
         expected = (
             (states.SUCCESS, ProcessingResults.success),
             (states.FAILURE, ProcessingResults.failed),
-            (states.REVOKED, ProcessingResults.retry),
         )
 
         with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
