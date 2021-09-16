@@ -39,7 +39,13 @@ export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
 
 
 export const defineChoicesEditFormTabs = (ComponentClass, valueKey = 'values') => {
-    defineCommonEditFormTabs(ComponentClass, [{
+    defineCommonEditFormTabs(ComponentClass, [
+        {
+            label: 'Default Value',
+            key: 'defaultValue',
+            tooltip: 'This will be the initial value for this field, before user interaction.',
+            input: true
+        },{
             type: 'datagrid',
             input: true,
             label: 'Values',
