@@ -294,6 +294,19 @@ class SubmissionStateLogic:
     step: SubmissionStep
 
 
+class SubmissionCompletionSerializer(serializers.Serializer):
+    status_url = serializers.URLField(
+        label=_("status check endpoint"),
+        help_text=_(
+            "The API endpoint where the background processing status can be checked. "
+            "After calling the completion endpoint, this status URL should be polled "
+            "to report the processing status back to the end-user. Note that the "
+            "endpoint contains a token which invalidates on state changes and after "
+            "one day."
+        ),
+    )
+
+
 class SubmissionProcessingStatusSerializer(serializers.Serializer):
     status = serializers.ChoiceField(
         label=_("background processing status"),
