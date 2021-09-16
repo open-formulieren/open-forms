@@ -1,9 +1,6 @@
 from datetime import datetime
-from unittest.mock import patch
-from urllib.parse import urljoin
 
-from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -14,6 +11,8 @@ from ..base import (
     AppointmentProduct,
     BasePlugin,
 )
+from ..tokens import submission_appointment_token_generator
+from .factories import AppointmentInfoFactory
 
 
 class TestPlugin(BasePlugin):
@@ -52,22 +51,19 @@ class BasePluginTests(TestCase):
         self.assertIn("Some", result)
         self.assertIn("<h1>Data</h1>", result)
 
-    @patch("openforms.appointments.base.submission_appointment_token_generator")
-    def test_get_appointment_links(self, token_generator_mock):
-        submission = SubmissionFactory.create()
-        fake_token = "fake-token"
-
-        token_generator_mock.make_token.return_value = fake_token
+    @override_settings(BASE_URL="https://example.com/")
+    def test_get_appointment_links(self):
+        submission = SubmissionFactory.create(completed=True)
+        AppointmentInfoFactory.create(submission=submission, registration_ok=True)
 
         result = self.plugin.get_appointment_links(submission)
 
         cancel_path = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
-                "token": fake_token,
+                "token": submission_appointment_token_generator.make_token(submission),
                 "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = urljoin(settings.BASE_URL, cancel_path)
-
+        cancel_url = f"https://example.com{cancel_path}"
         self.assertEqual({"cancel_url": cancel_url}, result)

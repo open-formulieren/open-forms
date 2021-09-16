@@ -1,88 +1,80 @@
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
 
+from freezegun import freeze_time
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..tokens import submission_appointment_token_generator
 from .factories import AppointmentInfoFactory
 
 
+@freeze_time("2021-07-15T21:15:00Z")
 class VerifyCancelAppointmentLinkViewTests(TestCase):
-    @patch(
-        "openforms.appointments.views.submission_appointment_token_generator.check_token",
-        return_value=True,
-    )
-    def test_good_token_and_submission_redirect_and_add_submission_to_session(
-        self, check_token_mock
-    ):
+    def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         config = GlobalConfiguration.get_solo()
         config.cancel_appointment_page = "http://maykinmedia.nl/afspraak-annuleren"
         config.save()
 
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(
             submission=submission,
+            registration_ok=True,
             start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
         )
 
         endpoint = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
-                "token": "mocked",
+                "token": submission_appointment_token_generator.make_token(submission),
                 "submission_uuid": submission.uuid,
             },
         )
 
-        response = self.client.get(endpoint)
-
-        # Assert submission is stored in session
-        self.assertIn(
-            str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
-        )
+        # one day after token generation
+        with freeze_time("2021-07-16T21:15:00Z"):
+            response = self.client.get(endpoint)
 
         expected_redirect_url = (
-            furl(config.cancel_appointment_page)
+            furl("http://maykinmedia.nl/afspraak-annuleren")
             .add(
                 {
-                    "time": submission.appointment_info.start_time.isoformat(),
+                    "time": "2021-07-21T12:00:00+00:00",
                     "submission_uuid": submission.uuid,
                 }
             )
             .url
         )
-
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )
+        # Assert submission is stored in session
+        self.assertIn(
+            str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
+        )
 
-    @patch(
-        "openforms.appointments.views.submission_appointment_token_generator.check_token",
-        return_value=True,
-    )
-    def test_runtime_error_raised_when_no_cancel_appointment_page_is_specified(
-        self, check_token_mock
-    ):
+    def test_runtime_error_raised_when_no_cancel_appointment_page_is_specified(self):
         config = GlobalConfiguration.get_solo()
         config.cancel_appointment_page = ""
         config.save()
 
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(
             submission=submission,
+            registration_ok=True,
             start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
         )
 
         endpoint = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
-                "token": "mocked",
+                "token": submission_appointment_token_generator.make_token(submission),
                 "submission_uuid": submission.uuid,
             },
         )
@@ -94,7 +86,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         endpoint = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
-                "token": "mocked",
+                "token": "irrelevant",
                 "submission_uuid": uuid.uuid4(),
             },
         )
@@ -103,12 +95,13 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    @patch(
-        "openforms.appointments.views.submission_appointment_token_generator.check_token",
-        return_value=False,
-    )
-    def test_403_response_with_bad_token(self, check_token_mock):
-        submission = SubmissionFactory.create()
+    def test_403_response_with_bad_token(self):
+        submission = SubmissionFactory.create(completed=True)
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
 
         endpoint = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
