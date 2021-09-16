@@ -47,18 +47,18 @@ const reducer = (draft, action) => {
 const Appointments = ({ availableComponents={}, onChange }) => {
 
     let updatedState = {};
-    Object.entries(availableComponents).map(([key, comp]) => {
-        if (comp['appointments.showProducts']) {
+    Object.entries(availableComponents).map(([key, component]) => {
+        if (component['appointments.showProducts']) {
             updatedState.products = key;
-        } else if (comp['appointments.showLocations']) {
+        } else if (component['appointments.showLocations']) {
             updatedState.locations = key;
-        } else if (comp['appointments.showDates']) {
+        } else if (component['appointments.showDates']) {
             updatedState.dates = key;
-        } else if (comp['appointments.showTimes']) {
+        } else if (component['appointments.showTimes']) {
             updatedState.times = key;
-        } else if (comp['appointments.lastName']) {
+        } else if (component['appointments.lastName']) {
             updatedState.lastName = key;
-        } else if (comp['appointments.birthDate']) {
+        } else if (component['appointments.birthDate']) {
             updatedState.birthDate = key;
         }
     });
@@ -89,10 +89,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where products for an appointment will be shown" description="Products Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="productsComponentSelection"
                             value={products}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'select')}
+                            filter={(component) => (component.type === 'select')}
                         />
                     </Field>
                 </FormRow>
@@ -105,10 +105,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where locations for an appointment will be shown" description="Locations Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="locationsComponentSelection"
                             value={locations}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'select')}
+                            filter={(component) => (component.type === 'select')}
                         />
                     </Field>
                 </FormRow>
@@ -121,10 +121,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where dates for an appointment will be shown" description="Dates Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="datesComponentSelection"
                             value={dates}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'select')}
+                            filter={(component) => (component.type === 'select')}
                         />
                     </Field>
                 </FormRow>
@@ -137,10 +137,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where times for an appointment will be shown" description="Times Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="timesComponentSelection"
                             value={times}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'select')}
+                            filter={(component) => (component.type === 'select')}
                         />
                     </Field>
                 </FormRow>
@@ -153,10 +153,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where last name for an appointment will be shown" description="Last Name Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="lastNameComponentSelection"
                             value={lastName}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'textfield')}
+                            filter={(component) => (component.type === 'textfield')}
                         />
                     </Field>
                 </FormRow>
@@ -169,10 +169,10 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         helpText={<FormattedMessage defaultMessage="Component where birth date for an appointment will be shown" description="Birth Date Component field help text" />}
                     >
                         <ComponentSelection
-                            name="component"
+                            name="birthDateComponentSelection"
                             value={birthDate}
                             onChange={onFieldChange}
-                            filter={(comp) => (comp.type === 'date')}
+                            filter={(component) => (component.type === 'date')}
                         />
                     </Field>
                 </FormRow>
@@ -185,6 +185,7 @@ Appointments.propTypes = {
     availableComponents: PropTypes.objectOf(
         PropTypes.object, // Formio component objects
     ).isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 
