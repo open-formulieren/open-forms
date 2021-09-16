@@ -63,6 +63,48 @@ const TEXT_BASIC = {
     ]
 };
 
+const CHOICES_BASIC = {
+    key: 'basic',
+    label: 'Basic',
+    components: [
+        ...BASIC.components,
+        {
+            label: 'Default Value',
+            key: 'defaultValue',
+            tooltip: 'This will be the initial value for this field, before user interaction.',
+            input: true
+        }, {
+            type: 'datagrid',
+            input: true,
+            label: 'Values',
+            key: 'values',
+            tooltip: 'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
+            weight: 10,
+            reorder: true,
+            defaultValue: [{label: '', value: ''}],
+            components: [
+                {
+                    label: 'Label',
+                    key: 'label',
+                    input: true,
+                    type: 'textfield',
+                },
+                {
+                    label: 'Value',
+                    key: 'value',
+                    input: true,
+                    type: 'textfield',
+                    allowCalculateOverride: true,
+                    calculateValue: {_camelCase: [{var: 'row.label'}]},
+                    validate: {
+                        required: true
+                    }
+                },
+            ],
+        }
+    ]
+};
+
 
 const LOCATION = {
     key: 'location',
@@ -299,7 +341,18 @@ const DEFAULT_TEXT_TABS = {
     ]
 };
 
+const DEFAULT_CHOICES_TABS = {
+    type: 'tabs',
+    key: 'tabs',
+    components: [
+        CHOICES_BASIC,
+        ADVANCED,
+        VALIDATION,
+        REGISTRATION,
+    ]
+};
 
-export { DEFAULT_TABS, DEFAULT_TEXT_TABS, BASIC, TEXT_BASIC, LOCATION, ADVANCED,
+
+export { DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_CHOICES_TABS, BASIC, TEXT_BASIC, LOCATION, ADVANCED,
     VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
 export default DEFAULT_TABS;
