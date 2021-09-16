@@ -9,6 +9,7 @@ import BsnField from './components/form/bsn';
 import PostcodeField from './components/form/postcode';
 import FileField from './components/form/file';
 import SelectField from './components/form/select';
+import RadioField from './components/form/radio';
 
 const FormIOModule = {
   components: {
@@ -23,6 +24,7 @@ const FormIOModule = {
     postcode: PostcodeField,
     file: FileField,
     select: SelectField,
+    radio: RadioField,
   },
 };
 
