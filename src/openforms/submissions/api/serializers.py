@@ -67,7 +67,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
 
 
-class NestedSubmissionPaymentDetailSerializer(serializers.Serializer):
+class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
     payment_required = serializers.BooleanField(
         label=_("payment required"),
         help_text=_("Whether the registration requires payment."),
@@ -79,10 +79,13 @@ class NestedSubmissionPaymentDetailSerializer(serializers.Serializer):
         help_text=_("Whether the user has completed the required payment."),
         read_only=True,
     )
-    payment_amount = serializers.BooleanField(
+    payment_amount = serializers.DecimalField(
         label=_("payment amount"),
-        source="product__price",
-        help_text=_("Amount of payment."),
+        # from SubmissionPayment model
+        max_digits=8,
+        decimal_places=2,
+        source="form.product.price",
+        help_text=_("Amount (to be) paid"),
         read_only=True,
     )
 

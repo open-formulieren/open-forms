@@ -81,6 +81,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "payment": {
                     "paymentRequired": False,
                     "hasPaid": False,
+                    "paymentAmount": "15.00",
                 },
             },
         )
