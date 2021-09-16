@@ -37,16 +37,6 @@ class FormsAPITests(APITestCase):
             request=HttpRequest(), username=self.user.username, password="secret"
         )
 
-    @expectedFailure
-    def test_auth_required(self):
-        # TODO: Replace with not using an API-token
-        self.client.logout()
-
-        url = reverse("api:form-list")
-        response = self.client.get(url, format="json", secure=True)
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_list(self):
         FormFactory.create_batch(2)
         FormFactory.create(active=False)
@@ -1185,16 +1175,6 @@ class FormDefinitionsAPITests(APITestCase):
         assert self.client.login(
             request=HttpRequest(), username=user.username, password="secret"
         )
-
-    @expectedFailure
-    def test_auth_required(self):
-        # TODO: Replace with not using an API-token
-        self.client.logout()
-
-        url = reverse("api:formdefinition-list")
-        response = self.client.get(url, format="json", secure=True)
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
         FormDefinitionFactory.create_batch(2)
