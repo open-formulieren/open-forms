@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
@@ -21,11 +23,14 @@ def update_submission_payment_registration(submission: Submission):
         return
 
     # TODO support partial payments
-    payments = submission.payments.filter(status=PaymentStatus.completed)
-    if not payments:
-        return
+    with transaction.atomic():
+        payments = submission.payments.filter(
+            status=PaymentStatus.completed
+        ).select_for_update()
+        if not payments:
+            return
 
-    # TODO handle errors etc
-    plugin.update_payment_status(submission)
-    # TODO add locking? we'd flag all completed
-    payments.update(status=PaymentStatus.registered)
+        # TODO handle errors etc
+        plugin.update_payment_status(submission)
+        # TODO add locking? we'd flag all completed
+        payments.update(status=PaymentStatus.registered)
