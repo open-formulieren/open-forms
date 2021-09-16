@@ -1,6 +1,7 @@
 import re
 import uuid
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
@@ -11,6 +12,9 @@ from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
 
 from .constants import PaymentStatus
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 RE_INVOICE_NUMBER = re.compile(r"(?P<year>20\d{2})(?P<number>\d+)$")
 
