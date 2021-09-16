@@ -10,6 +10,7 @@ import PostcodeField from './components/form/postcode';
 import FileField from './components/form/file';
 import SelectField from './components/form/select';
 import RadioField from './components/form/radio';
+import SelectBoxesField from './components/form/selectBoxes';
 
 const FormIOModule = {
   components: {
@@ -25,6 +26,7 @@ const FormIOModule = {
     file: FileField,
     select: SelectField,
     radio: RadioField,
+    selectboxes: SelectBoxesField
   },
 };
 

@@ -1,5 +1,4 @@
 import {Formio} from 'formiojs';
-import {defineChoicesEditFormTabs} from './abstract';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from "./edit/tabs";
 
 
@@ -39,7 +38,7 @@ const extra = [
         ],
     }];
 
-class RadioField extends Formio.Components.components.radio {
+class SelectBoxesField extends Formio.Components.components.selectboxes {
     static editForm() {
         // insert the extras here
         const BASIC_TAB = {
@@ -62,4 +61,4 @@ class RadioField extends Formio.Components.components.radio {
     }
 }
 
-export default RadioField;
+export default SelectBoxesField;
