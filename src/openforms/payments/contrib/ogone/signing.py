@@ -2,7 +2,7 @@ import hashlib
 import re
 from typing import Iterable
 
-from openforms.payments.contrib.ogone.constants import HashAlgorithm
+from .constants import HashAlgorithm
 
 
 def calculate_sha_in(params: dict, passphrase: str, hash_algo: str) -> str:

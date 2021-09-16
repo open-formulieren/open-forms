@@ -1,7 +1,8 @@
-from openforms.payments.constants import PaymentStatus
 from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
+
+from .constants import PaymentStatus
 
 
 def update_submission_payment_registration(submission: Submission):

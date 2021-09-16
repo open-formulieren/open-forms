@@ -1,14 +1,11 @@
 from furl import furl
 
-from openforms.payments.base import PaymentInfo
-from openforms.payments.constants import PaymentRequestType, UserAction
-from openforms.payments.contrib.ogone.data import (
-    OgoneFeedbackParams,
-    OgoneRequestParams,
-)
-from openforms.payments.contrib.ogone.exceptions import InvalidSignature
-from openforms.payments.contrib.ogone.models import OgoneMerchant
-from openforms.payments.contrib.ogone.signing import calculate_sha_in, calculate_sha_out
+from ...base import PaymentInfo
+from ...constants import PaymentRequestType, UserAction
+from .data import OgoneFeedbackParams, OgoneRequestParams
+from .exceptions import InvalidSignature
+from .models import OgoneMerchant
+from .signing import calculate_sha_in, calculate_sha_out
 
 
 class OgoneClient:

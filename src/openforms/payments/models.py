@@ -7,9 +7,10 @@ from django.db import IntegrityError, models, transaction
 from django.db.models import Max, Sum
 from django.utils.translation import gettext_lazy as _
 
-from openforms.payments.constants import PaymentStatus
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
+
+from .constants import PaymentStatus
 
 RE_INVOICE_NUMBER = re.compile(r"(?P<year>20\d{2})(?P<number>\d+)$")
 

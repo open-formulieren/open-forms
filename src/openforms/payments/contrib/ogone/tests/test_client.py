@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from openforms.payments.contrib.ogone.client import OgoneClient
-from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
+from ..client import OgoneClient
+from ..plugin import RETURN_ACTION_PARAM
+from .factories import OgoneMerchantFactory
 
 
 class OgoneClientTest(TestCase):

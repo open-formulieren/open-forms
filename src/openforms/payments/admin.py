@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from openforms.payments.models import SubmissionPayment
-
 from .fields import PaymentBackendChoiceField
+from .models import SubmissionPayment
 
 
 class PaymentBackendChoiceFieldMixin:

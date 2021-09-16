@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from openforms.payments.contrib.ogone.data import OgoneRequestParams
-from openforms.payments.contrib.ogone.signing import calculate_sha_in, calculate_sha_out
+from ..data import OgoneRequestParams
+from ..signing import calculate_sha_in, calculate_sha_out
 
 
 class OgoneUtilsTest(TestCase):

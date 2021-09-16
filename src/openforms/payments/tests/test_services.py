@@ -5,14 +5,15 @@ from django.test import TestCase
 
 from rest_framework import serializers
 
-from openforms.payments.constants import PaymentStatus
-from openforms.payments.services import update_submission_payment_registration
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..constants import PaymentStatus
+from ..services import update_submission_payment_registration
+from .factories import SubmissionPaymentFactory
 
 
 class Plugin(BasePlugin):
@@ -67,7 +68,7 @@ class UpdatePaymentTests(TestCase):
 
     def test_submission_default(self):
         # check with incomplete submission
-        submission = SubmissionFactory.create(complete=False)
+        submission = SubmissionFactory.create(completed=False)
 
         self.assertEqual(False, submission.payment_required)
         self.assertEqual(False, submission.payment_user_has_paid)

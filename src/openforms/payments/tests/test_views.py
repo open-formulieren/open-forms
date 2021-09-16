@@ -6,12 +6,12 @@ from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin, PaymentInfo
+from ..models import SubmissionPayment
 from ..registry import Registry
+from .factories import SubmissionPaymentFactory
 
 
 class Plugin(BasePlugin):

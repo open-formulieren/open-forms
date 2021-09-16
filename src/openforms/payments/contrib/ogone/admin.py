@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from openforms.payments.contrib.ogone.models import OgoneMerchant
-from openforms.payments.registry import register
+from ...registry import register
+from .models import OgoneMerchant
 
 
 @admin.register(OgoneMerchant)

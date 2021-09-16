@@ -18,16 +18,13 @@ from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
-from openforms.payments.api.serializers import PaymentInfoSerializer
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.registry import register
-from openforms.payments.services import update_submission_payment_registration
 from openforms.submissions.models import Submission
 from openforms.utils.redirect import allow_redirect_url
 
 from .api.serializers import PaymentInfoSerializer
 from .models import SubmissionPayment
 from .registry import register
+from .services import update_submission_payment_registration
 
 logger = logging.getLogger(__name__)
 

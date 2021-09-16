@@ -4,9 +4,10 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..models import SubmissionPayment
+from .factories import SubmissionPaymentFactory
 
 
 class SubmissionPaymentTests(TestCase):

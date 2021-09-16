@@ -13,8 +13,8 @@ from .constants import PaymentRequestType
 
 if TYPE_CHECKING:
     from openforms.forms.models import Form
-    from openforms.payments.models import SubmissionPayment
-    from openforms.submissions.models import Submission
+
+    from .models import Submission, SubmissionPayment
 
 
 @dataclass()

@@ -5,13 +5,13 @@ from django.test import RequestFactory, TestCase, override_settings
 
 from furl import furl
 
-from openforms.payments.constants import PaymentStatus
-from openforms.payments.contrib.ogone.constants import OgoneStatus
-from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
-from openforms.payments.contrib.ogone.signing import calculate_sha_out
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
-from openforms.payments.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ....registry import register
+from ..constants import OgoneStatus, PaymentStatus
+from ..plugin import RETURN_ACTION_PARAM
+from ..signing import calculate_sha_out
+from .factories import OgoneMerchantFactory
 
 
 @override_settings(

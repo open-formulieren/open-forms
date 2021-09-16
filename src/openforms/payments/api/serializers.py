@@ -2,8 +2,9 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.payments.constants import PaymentRequestType
 from openforms.plugins.api.serializers import PluginBaseSerializer
+
+from ..constants import PaymentRequestType
 
 
 class PaymentPluginSerializer(PluginBaseSerializer):
