@@ -70,7 +70,12 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Privacy & cookies"),
             {
-                "fields": ("analytics_cookie_consent_group",),
+                "fields": (
+                    "analytics_cookie_consent_group",
+                    "ask_privacy_consent",
+                    "privacy_policy_url",
+                    "privacy_policy_label",
+                ),
             },
         ),
         (

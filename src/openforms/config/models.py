@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.template import Context, Template
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
@@ -248,6 +249,27 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    # Privacy policy related fields
+    ask_privacy_consent = models.BooleanField(
+        _("ask privacy consent"),
+        default=True,
+        help_text=_(
+            "If enabled, the user will have to agree to the privacy policy before submitting a form."
+        ),
+    )
+    privacy_policy_url = models.URLField(
+        _("privacy policy URL"), blank=True, help_text=_("URL to the privacy policy")
+    )
+    privacy_policy_label = HTMLField(
+        _("privacy policy label"),
+        blank=True,
+        help_text=_(
+            "The label of the checkbox that prompts the user to agree to the privacy policy."
+        ),
+        default="Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
+        "toestemming voor het verwerken van de door mij opgegeven gegevens.",
+    )
+
     # debug/feature flags
     enable_react_form = models.BooleanField(
         _("enable React form page"),
@@ -359,3 +381,9 @@ class GlobalConfiguration(SingletonModel):
     @property
     def siteimprove_enabled(self) -> bool:
         return bool(self.siteimprove_id)
+
+    def render_privacy_policy_label(self):
+        template = self.privacy_policy_label
+        rendered_content = Template(template).render(Context({}))
+
+        return rendered_content

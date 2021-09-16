@@ -699,6 +699,10 @@ class StepModificationTests(TestCase):
                 ]
             },
         )
+        form_step2_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
+        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -709,7 +713,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step2.uuid})}",
+                    "form_step": f"http://example.com{form_step2_path}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -852,6 +856,10 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 ]
             },
         )
+        form_step2_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step2.uuid},
+        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -862,7 +870,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': form_step2.uuid})}",
+                    "form_step": f"http://example.com{form_step2_path}",
                     "action": {
                         "name": "Make step not applicable",
                         "type": "step-not-applicable",
