@@ -31,6 +31,7 @@ class Plugin(BasePlugin):
 
 class UpdatePaymentTests(TestCase):
     def setUp(self):
+        super().setUp()
         register = Registry()
         register("registration1")(Plugin)
         self.plugin = register["registration1"]
@@ -40,13 +41,8 @@ class UpdatePaymentTests(TestCase):
         self.addCleanup(registry_patch.stop)
 
     def create_payment(self, **kwargs):
-        complete_kwargs = self.good_factory_kwargs()
-        complete_kwargs.update(kwargs)
-        return SubmissionPaymentFactory.create(**complete_kwargs)
-
-    def good_factory_kwargs(self):
-        # these together would update
-        return dict(
+        good_kwargs = dict(
+            # these together would update
             submission__registration_status=RegistrationStatuses.success,
             submission__form__registration_backend="registration1",
             submission__form__payment_backend="payment1",
@@ -54,25 +50,16 @@ class UpdatePaymentTests(TestCase):
             status=PaymentStatus.completed,
             plugin_id="payment1",  # not used but added for completion
         )
-
-    def bad_factory_kwargs(self):
-        # all of these would individually block the update
-        return dict(
-            submission__registration_status=RegistrationStatuses.failed,
-            submission__form__registration_backend="",
-            submission__form__payment_backend="",
-            submission__form__product__price=Decimal("0"),
-            status=PaymentStatus.failed,
-            # plugin_id="",  # not used
-        )
+        good_kwargs.update(kwargs)
+        return SubmissionPaymentFactory.create(**good_kwargs)
 
     def test_submission_default(self):
         # check with incomplete submission
         submission = SubmissionFactory.create(completed=False)
 
-        self.assertEqual(False, submission.payment_required)
-        self.assertEqual(False, submission.payment_user_has_paid)
-        self.assertEqual(False, submission.payment_registered)
+        self.assertFalse(submission.payment_required)
+        self.assertFalse(submission.payment_user_has_paid)
+        self.assertFalse(submission.payment_registered)
 
         with patch.object(self.plugin, "update_payment_status") as update_mock:
             update_submission_payment_registration(submission)
@@ -83,9 +70,9 @@ class UpdatePaymentTests(TestCase):
         payment = self.create_payment()
         submission = payment.submission
 
-        self.assertEqual(True, submission.payment_required)
-        self.assertEqual(True, submission.payment_user_has_paid)
-        self.assertEqual(False, submission.payment_registered)
+        self.assertTrue(submission.payment_required)
+        self.assertTrue(submission.payment_user_has_paid)
+        self.assertFalse(submission.payment_registered)
 
         # now check if we update
         with patch.object(self.plugin, "update_payment_status") as update_mock:
@@ -95,9 +82,9 @@ class UpdatePaymentTests(TestCase):
         payment.refresh_from_db()
         submission = payment.submission
 
-        self.assertEqual(True, submission.payment_required)
-        self.assertEqual(True, submission.payment_user_has_paid)
-        self.assertEqual(True, submission.payment_registered)
+        self.assertTrue(submission.payment_required)
+        self.assertTrue(submission.payment_user_has_paid)
+        self.assertTrue(submission.payment_registered)
 
         # check we don't update again
         with patch.object(self.plugin, "update_payment_status") as update_mock:
@@ -105,7 +92,16 @@ class UpdatePaymentTests(TestCase):
             update_mock.assert_not_called()
 
     def test_submission_bad(self):
-        for key, value in self.bad_factory_kwargs().items():
+        bad_factory_kwargs = dict(
+            # all of these would individually block the update
+            submission__registration_status=RegistrationStatuses.failed,
+            submission__form__registration_backend="",
+            submission__form__payment_backend="",
+            submission__form__product__price=Decimal("0"),
+            status=PaymentStatus.failed,
+            # plugin_id="",  # not used
+        )
+        for key, value in bad_factory_kwargs.items():
             with self.subTest(key):
                 payment = self.create_payment(**{key: value})
                 submission = payment.submission

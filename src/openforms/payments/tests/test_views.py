@@ -1,10 +1,11 @@
 from decimal import Decimal
 from unittest.mock import patch
-from urllib.parse import quote
 
 from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
+
+from furl import furl
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -31,7 +32,7 @@ class Plugin(BasePlugin):
 
 class ViewsTests(TestCase):
     @override_settings(
-        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
+        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
     @patch("openforms.payments.views.update_submission_payment_registration")
     def test_views(self, update_payments_mock):
@@ -41,9 +42,6 @@ class ViewsTests(TestCase):
         bad_plugin = Plugin("bad_plugin")
 
         base_request = RequestFactory().get("/foo")
-
-        next_url_enc = quote("http://foo.bar")
-        bad_url_enc = quote("http://buzz.bazz")
 
         registry_mock = patch("openforms.payments.views.register", new=register)
         registry_mock.start()
@@ -60,7 +58,9 @@ class ViewsTests(TestCase):
         self.assertRegex(url, r"^http://")
 
         with self.subTest("start ok"):
-            response = self.client.post(f"{url}?next={next_url_enc}")
+            f = furl(url)
+            f.args["next"] = "http://allowed.foo"
+            response = self.client.post(f.url)
             self.assertEqual(
                 response.data,
                 {
@@ -81,12 +81,16 @@ class ViewsTests(TestCase):
 
         with self.subTest("start bad plugin"):
             bad_url = bad_plugin.get_start_url(base_request, submission)
-            response = self.client.post(f"{bad_url}?next={next_url_enc}")
+            f = furl(bad_url)
+            f.args["next"] = "http://allowed.foo"
+            response = self.client.post(f.url)
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
 
         with self.subTest("start bad redirect"):
-            response = self.client.post(f"{url}?next={bad_url_enc}")
+            f = furl(url)
+            f.args["next"] = "http://illegal.bar"
+            response = self.client.post(f.url)
             self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
 
@@ -110,7 +114,7 @@ class ViewsTests(TestCase):
 
         with self.subTest("return bad plugin"):
             bad_payment = SubmissionPaymentFactory.for_backend(
-                "bad_plugin", form_url="http://foo.bar"
+                "bad_plugin", form_url="http://allowed.foo"
             )
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
             response = self.client.get(bad_url)

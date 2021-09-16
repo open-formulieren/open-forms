@@ -32,8 +32,10 @@ class ZGWBackendTests(TestCase):
         )
 
     def setUp(self):
+        super().setUp()
         # reset cache to keep request_history indexes consistent
         schema_fetcher.cache.clear()
+        self.addCleanup(schema_fetcher.cache.clear)
 
     def install_mocks(self, m):
         mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")

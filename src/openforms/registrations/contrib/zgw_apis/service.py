@@ -54,21 +54,6 @@ def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
     return partial_update_zaak(zaak_url, data)
 
 
-def partial_update_zaak(zaak_url: str, data: dict) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.zrc_service.build_client()
-    zaak = client.partial_update("zaak", data, url=zaak_url)
-    return zaak
-
-
-def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
-    data = {
-        "betalingsindicatie": "gedeeltelijk" if partial else "geheel",
-        "laatsteBetaaldatum": timezone.now().isoformat(),
-    }
-    return partial_update_zaak(zaak_url, data)
-
-
 def create_document(
     name: str,
     submission_report: SubmissionReport,

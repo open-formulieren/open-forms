@@ -30,12 +30,3 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
         )
         return payment
 
-    @classmethod
-    def for_submission(cls, submission, **kwargs):
-        payment = SubmissionPaymentFactory.create(
-            amount=submission.form.product.price,
-            plugin_id=submission.form.payment_backend,
-            plugin_options=submission.form.payment_backend_options,
-            **kwargs,
-        )
-        return payment
