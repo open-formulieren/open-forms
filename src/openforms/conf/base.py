@@ -623,6 +623,7 @@ if SENTRY_DSN:
     SENTRY_CONFIG = {
         "dsn": SENTRY_DSN,
         "release": RELEASE,
+        "environment": ENVIRONMENT,
     }
 
     sentry_sdk.init(
