@@ -29,4 +29,3 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
             **kwargs,
         )
         return payment
-

@@ -78,8 +78,10 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 ],
                 "nextStep": f"http://testserver{submission_step_path}",
                 "canSubmit": True,
-                "paymentRequired": False,
-                "hasPaid": False,
+                "payment": {
+                    "paymentRequired": False,
+                    "hasPaid": False,
+                },
             },
         )
 

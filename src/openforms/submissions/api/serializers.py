@@ -67,6 +67,34 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
 
 
+class NestedSubmissionPaymentDetailSerializer(serializers.Serializer):
+    payment_required = serializers.BooleanField(
+        label=_("payment required"),
+        help_text=_("Whether the registration requires payment."),
+        read_only=True,
+    )
+    has_paid = serializers.BooleanField(
+        label=_("user had paid"),
+        source="payment_user_has_paid",
+        help_text=_("Whether the user has completed the required payment."),
+        read_only=True,
+    )
+    payment_amount = serializers.BooleanField(
+        label=_("payment amount"),
+        source="product__price",
+        help_text=_("Amount of payment."),
+        read_only=True,
+    )
+
+    class Meta:
+        model = Submission
+        fields = (
+            "payment_required",
+            "payment_amount",
+            "has_paid",
+        )
+
+
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
@@ -96,21 +124,9 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
     )
 
-    payment_required = serializers.BooleanField(
-        label=_("payment required"),
-        help_text=_("Whether the registration requires payment."),
-        read_only=True,
-    )
-    has_paid = serializers.BooleanField(
-        label=_("user had paid"),
-        source="payment_user_has_paid",
-        help_text=_("Whether the user has completed the required payment."),
-        read_only=True,
-    )
-    payment_amount = serializers.BooleanField(
-        label=_("user had paid"),
-        source="product__price",
-        help_text=_("Amount of payment."),
+    payment = NestedSubmissionPaymentDetailSerializer(
+        label=_("payment information"),
+        source="*",
         read_only=True,
     )
 
@@ -123,9 +139,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "steps",
             "next_step",
             "can_submit",
-            "payment_required",
-            "payment_amount",
-            "has_paid",
+            "payment",
         )
         extra_kwargs = {
             "id": {
