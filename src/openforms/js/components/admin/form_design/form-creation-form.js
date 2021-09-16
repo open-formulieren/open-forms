@@ -153,6 +153,27 @@ function reducer(draft, action) {
         }
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = action.payload;
+
+            for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
+                const configuration = draft.formSteps[formStepIndex].configuration;
+                for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
+                    let component = configuration.components[componentIndex];
+                    if (component.appointmentsShowProducts) {
+                        draft.appointments.products = component.key;
+                    } else if (component.appointmentsShowLocations) {
+                        draft.appointments.locations = component.key;
+                    } else if (component.appointmentsShowDates) {
+                        draft.appointments.dates = component.key;
+                    } else if (component.appointmentsShowTimes) {
+                        draft.appointments.times = component.key;
+                    } else if (component.appointmentsLastName) {
+                        draft.appointments.lastName = component.key;
+                    } else if (component.appointmentsBirthDate) {
+                        draft.appointments.birthDate = component.key;
+                    }
+                }
+            }
+
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -258,7 +279,6 @@ function reducer(draft, action) {
             if (draft.appointments[name]) {
                 oldComponentToClear = draft.appointments[name];
             }
-
             draft.appointments[name] = value;
 
             // If the component that is selected was already set for something else, clear the other
