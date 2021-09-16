@@ -1,14 +1,21 @@
+import io
 import os
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from django_sendfile import sendfile
+from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from furl import furl
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.parsers import MultiPartParser
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ..attachments import clean_mime_type
 from ..models import SubmissionReport, TemporaryFileUpload
@@ -19,7 +26,13 @@ from .permissions import (
     OwnsTemporaryUploadPermission,
 )
 from .renderers import FileRenderer, PDFRenderer
-from .serializers import TemporaryFileUploadSerializer
+from .serializers import (
+    AssessmentReCaptchaOutcome,
+    AssessmentReCaptchaOutcomeSerializer,
+    AssessmentReCaptchaSerializer,
+    SubmissionReCaptchaSerializer,
+    TemporaryFileUploadSerializer,
+)
 
 
 @extend_schema(
@@ -143,3 +156,51 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
+
+
+@extend_schema(
+    summary=_("reCAPTCHA assessment"),
+    description=_(
+        "Endpoint used by the SDK to get the risk assessment for an action performed by the user."
+    ),
+    responses={200: AssessmentReCaptchaOutcomeSerializer},
+)
+class SubmissionCaptchaView(APIView):
+    permission_classes = [AnyActiveSubmissionPermission]
+    serializer_class = SubmissionReCaptchaSerializer
+    authentication_classes = ()
+
+    def _generate_assessment(self, token, action):
+        captcha_endpoint = furl(
+            f"https://recaptchaenterprise.googleapis.com/v1beta1/projects/{settings.RECAPTCHA_PROJECT_ID}/assessments"
+        )
+        captcha_endpoint.args["key"] = settings.RECAPTCHA_API_KEY
+
+        captcha_response = requests.post(
+            captcha_endpoint.url,
+            json={
+                "event": {
+                    "token": token,
+                    "siteKey": settings.RECAPTCHA_SITE_KEY,
+                    "expectedAction": action,
+                }
+            },
+        )
+        captcha_response.raise_for_status()
+
+        parser = CamelCaseJSONParser()
+        assessment_data = parser.parse(io.BytesIO(captcha_response.content))
+
+        assessment_serializer = AssessmentReCaptchaSerializer(data=assessment_data)
+        assessment_serializer.is_valid(raise_exception=True)
+        return assessment_serializer.validated_data
+
+    def post(self, request: Request) -> Response:
+        serializer = SubmissionReCaptchaSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        assessment = self._generate_assessment(**serializer.validated_data)
+
+        outcome = AssessmentReCaptchaOutcome(allow_submission=assessment["score"] > 0.5)
+        serializer = AssessmentReCaptchaOutcomeSerializer(instance=outcome)
+        return Response(serializer.data)

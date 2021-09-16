@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     DownloadSubmissionReportView,
+    SubmissionCaptchaView,
     TemporaryFileUploadView,
     TemporaryFileView,
 )
@@ -23,5 +24,8 @@ urlpatterns = [
         "files/<uuid:uuid>",
         TemporaryFileView.as_view(),
         name="temporary-file",
+    ),
+    path(
+        "captcha_assessment", SubmissionCaptchaView.as_view(), name="captcha-assessment"
     ),
 ]
