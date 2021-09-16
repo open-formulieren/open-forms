@@ -46,20 +46,20 @@ const reducer = (draft, action) => {
 
 const Appointments = ({ availableComponents={}, onChange }) => {
 
-    let updatedState = {};
+    let updateState = {};
     Object.entries(availableComponents).map(([key, component]) => {
         if (component['appointments.showProducts']) {
-            updatedState.products = key;
+            updateState.products = key;
         } else if (component['appointments.showLocations']) {
-            updatedState.locations = key;
+            updateState.locations = key;
         } else if (component['appointments.showDates']) {
-            updatedState.dates = key;
+            updateState.dates = key;
         } else if (component['appointments.showTimes']) {
-            updatedState.times = key;
+            updateState.times = key;
         } else if (component['appointments.lastName']) {
-            updatedState.lastName = key;
+            updateState.lastName = key;
         } else if (component['appointments.birthDate']) {
-            updatedState.birthDate = key;
+            updateState.birthDate = key;
         }
     });
 
