@@ -2,10 +2,18 @@ import hashlib
 import re
 from typing import Iterable
 
-from openforms.payments.contrib.ogone.constants import HashAlgorithm
+from .constants import HashAlgorithm
 
 
-def calculate_shasign(params, passphrase, hash_algo):
+def calculate_sha_in(params: dict, passphrase: str, hash_algo: str) -> str:
+    return _calculate_shasign(params, passphrase, hash_algo, _sha_in_hashable)
+
+
+def calculate_sha_out(params: dict, passphrase: str, hash_algo: str) -> str:
+    return _calculate_shasign(params, passphrase, hash_algo, _sha_out_hashable)
+
+
+def _calculate_shasign(params, passphrase, hash_algo, hash_matcher):
     """
     calculate the parameter verification signature
 
@@ -15,7 +23,7 @@ def calculate_shasign(params, passphrase, hash_algo):
         raise ValueError(f"hashing algo not allowed: {hash_algo}")
 
     # only a subset of values is hashed
-    pairs = extract_hashable_data(params)
+    pairs = _extract_hashable_data(params, hash_matcher)
     # sort by parameter name
     pairs = sorted(pairs, key=lambda v: v[0])
     # join with passphrase
@@ -28,7 +36,7 @@ def calculate_shasign(params, passphrase, hash_algo):
     return hashed
 
 
-def extract_hashable_data(data):
+def _extract_hashable_data(data, is_hashable):
     for key, value in data.items():
         # uppercase keys
         key = key.upper()
@@ -74,7 +82,7 @@ class _HashMatcher:
 list of params from https://shared.ecom-psp.com/v2/docs/guides/e-Commerce/SHA-IN_params_24092019.txt
 via https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page
 """
-is_hashable = _HashMatcher(
+_sha_in_hashable = _HashMatcher(
     [
         "ACCEPTANCE",
         "ACCEPTURL",
@@ -455,5 +463,80 @@ is_hashable = _HashMatcher(
         "WIN3DS",
         "WITHROOT",
         "XDL",
+    ]
+)
+
+"""
+https://shared.ecom-psp.com/v2/docs/guides/e-Commerce/SHA-OUT_params.txt
+
+https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page#eCommerce-get-transaction-feedback
+"""
+_sha_out_hashable = _HashMatcher(
+    [
+        "AAVADDRESS",
+        "AAVCHECK",
+        "AAVMAIL",
+        "AAVNAME",
+        "AAVPHONE",
+        "AAVZIP",
+        "ACCEPTANCE",
+        "ALIAS",
+        "AMOUNT",
+        "BIC",
+        "BIN",
+        "BRAND",
+        "CARDNO",
+        "CCCTY",
+        "CN",
+        "COLLECTOR_BIC",
+        "COLLECTOR_IBAN",
+        "COMPLETIONID",
+        "COMPLUS",
+        "CREATION_STATUS",
+        "CREDITDEBIT",
+        "CURRENCY",
+        "CVCCHECK",
+        "DCC_COMMPERCENTAGE",
+        "DCC_CONVAMOUNT",
+        "DCC_CONVCCY",
+        "DCC_EXCHRATE",
+        "DCC_EXCHRATESOURCE",
+        "DCC_EXCHRATETS",
+        "DCC_INDICATOR",
+        "DCC_MARGINPERCENTAGE",
+        "DCC_VALIDHOURS",
+        "DEVICEID",
+        "DIGESTCARDNO",
+        "ECI",
+        "ED",
+        "EMAIL",
+        "ENCCARDNO",
+        "FXAMOUNT",
+        "FXCURRENCY",
+        "IP",
+        "IPCTY",
+        "MANDATEID",
+        "MOBILEMODE",
+        "NBREMAILUSAGE",
+        "NBRIPUSAGE",
+        "NBRIPUSAGE_ALLTX",
+        "NBRUSAGE",
+        "NCERROR",
+        "ORDERID",
+        "PAYID",
+        "PAYIDSUB",
+        "PAYMENT_REFERENCE",
+        "PM",
+        "REQUESTCOMPLETIONID",
+        "SCO_CATEGORY",
+        "SCORING",
+        "SEQUENCETYPE",
+        "SIGNDATE",
+        "STATUS",
+        "SUBBRAND",
+        "SUBSCRIPTION_ID",
+        "TICKET",
+        "TRXDATE",
+        "VC",
     ]
 )

@@ -1,10 +1,8 @@
-from dataclasses import asdict
-
 from django.test import TestCase
 
-from openforms.payments.contrib.ogone.client import OgoneClient
-from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
+from ..client import OgoneClient
+from ..plugin import RETURN_ACTION_PARAM
+from .factories import OgoneMerchantFactory
 
 
 class OgoneClientTest(TestCase):
@@ -26,11 +24,12 @@ class OgoneClientTest(TestCase):
             "AMOUNT": "1000",
             "CURRENCY": "EUR",
             "LANGUAGE": "nl_NL",
+            "PMLISTTYPE": "2",
             "ACCEPTURL": "http://foo.bar/return?bazz=buzz&action=accept",
             "DECLINEURL": "http://foo.bar/return?bazz=buzz&action=cancel",
             "EXCEPTIONURL": "http://foo.bar/return?bazz=buzz&action=exception",
             "CANCELURL": "http://foo.bar/return?bazz=buzz&action=cancel",
             "BACKURL": "http://foo.bar/return?bazz=buzz&action=cancel",
-            "SHASIGN": "DB8CCD089DE77C498BC3EAC263B00301D171F73F602D38556AC58EBBAE3AF9FF1FCCBF667393680D86F270F948000B0630A327EA840F4F522AA513EED57FA8C0",
+            "SHASIGN": "F2DE59B21C28C38F7E60C065FA915FE32E7C7A10BD6A2116F8C44CC9E58AB56F76018FA18FB90C1973E53BD6A14D868C89888F4A6EECBD0470CD204C34B68C5F",
         }
         self.assertEqual(expected, info.data)

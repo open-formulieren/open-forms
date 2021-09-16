@@ -1,7 +1,11 @@
+from decimal import Decimal
+
 from django.test import TestCase
 
 import requests_mock
+from freezegun import freeze_time
 from privates.test import temp_private_root
+from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
@@ -17,7 +21,7 @@ from .factories import ZgwConfigFactory
 
 
 @temp_private_root()
-@requests_mock.Mocker()
+@requests_mock.Mocker(real_http=False)
 class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -27,54 +31,13 @@ class ZGWBackendTests(TestCase):
             ztc_service__api_root="https://catalogus.nl/api/v1/",
         )
 
-    def test_submission_with_zgw_backend(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voornaam",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
-                    },
-                },
-                {
-                    "key": "achternaam",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
-                    },
-                },
-                {
-                    "key": "tussenvoegsel",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
-                    },
-                },
-                {
-                    "key": "geboortedatum",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geboortedatum,
-                    },
-                },
-            ],
-            submitted_data={
-                "voornaam": "Foo",
-                "achternaam": "Bar",
-                "tussenvoegsel": "de",
-                "geboortedatum": "2000-12-31",
-            },
-            bsn="111222333",
-        )
+    def setUp(self):
+        super().setUp()
+        # reset cache to keep request_history indexes consistent
+        schema_fetcher.cache.clear()
+        self.addCleanup(schema_fetcher.cache.clear)
 
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
-
-        zgw_form_options = dict(
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
-        )
-
+    def install_mocks(self, m):
         mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
         mock_service_oas_get(m, "https://catalogus.nl/api/v1/", "catalogi")
@@ -188,6 +151,58 @@ class ZGWBackendTests(TestCase):
             ),
         )
 
+    def test_submission_with_zgw_backend(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
+            bsn="111222333",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+        )
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+        )
+
+        self.install_mocks(m)
+
         plugin = ZGWRegistration("zgw")
         result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
@@ -200,9 +215,6 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
-
-        # 12 requests in total, 3 of which are GETs on the OAS and 2 are searches and 2 are the attachment
-        self.assertEqual(len(m.request_history), 12)
 
         create_zaak = m.request_history[1]
         create_zaak_body = create_zaak.json()
@@ -220,6 +232,7 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
+        self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
 
         create_eio = m.request_history[3]
         create_eio_body = create_eio.json()
@@ -303,6 +316,56 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+    @freeze_time("2021-01-01 10:00")
+    def test_register_and_update_paid_product(self, m):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            # setup payment although at this level of testing it is not needed
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+        )
+        self.assertTrue(submission.payment_required)
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+        )
+
+        self.install_mocks(m)
+
+        m.patch(
+            "https://zaken.nl/api/v1/zaken/1",
+            status_code=200,
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            ),
+        )
+
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
+        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
+        submission.registration_result = result
+        submission.save()
+
+        # check initial payment status
+        create_zaak_body = m.request_history[1].json()
+        self.assertEqual(create_zaak_body["betalingsindicatie"], "nog_niet")
+        self.assertNotIn("laatsteBetaaldatum", create_zaak_body)
+
+        # run the actual update
+        plugin.update_payment_status(submission)
+
+        patch_zaak_body = m.request_history[-1].json()
+        self.assertEqual(patch_zaak_body["betalingsindicatie"], "geheel")
+        self.assertEqual(
+            patch_zaak_body["laatsteBetaaldatum"], "2021-01-01T10:00:00+00:00"
         )
 
     def test_reference_can_be_extracted(self, m):

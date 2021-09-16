@@ -100,6 +100,8 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         self.apply_status(payment, params.STATUS)
 
+        return payment
+
     def apply_status(self, payment, ogone_status) -> None:
         if payment.status in PaymentStatus.is_final:
             # shouldn't happen or race-condition

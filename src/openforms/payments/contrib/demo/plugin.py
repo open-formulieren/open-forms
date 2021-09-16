@@ -1,9 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
-from openforms.payments.base import BasePlugin, PaymentInfo
-from openforms.payments.constants import PaymentStatus
-from openforms.payments.registry import register
+from ...base import BasePlugin, PaymentInfo
+from ...constants import PaymentStatus
+from ...registry import register
 
 
 @register("demo")

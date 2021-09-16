@@ -2,8 +2,9 @@ from decimal import Decimal
 
 import factory
 
-from openforms.payments.models import SubmissionPayment
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..models import SubmissionPayment
 
 
 class SubmissionPaymentFactory(factory.django.DjangoModelFactory):

@@ -4,9 +4,10 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
-from openforms.payments.models import SubmissionPayment
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..models import SubmissionPayment
+from .factories import SubmissionPaymentFactory
 
 
 class SubmissionPaymentTests(TestCase):
@@ -41,3 +42,11 @@ class SubmissionPaymentTests(TestCase):
             submission, "plugin1", options, amount, form_url
         )
         self.assertEqual(payment.order_id, 202012345679)
+
+    def test_queryset_sum_amount(self):
+        self.assertEqual(0, SubmissionPayment.objects.none().sum_amount())
+
+        SubmissionPaymentFactory.create(amount=Decimal("1"))
+        SubmissionPaymentFactory.create(amount=Decimal("2"))
+        SubmissionPaymentFactory.create(amount=Decimal("3"))
+        self.assertEqual(6, SubmissionPayment.objects.sum_amount())

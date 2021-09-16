@@ -1,8 +1,8 @@
 from django.contrib import admin
-
-from openforms.payments.models import SubmissionPayment
+from django.utils.translation import gettext_lazy as _
 
 from .fields import PaymentBackendChoiceField
+from .models import SubmissionPayment
 
 
 class PaymentBackendChoiceFieldMixin:
@@ -41,7 +41,7 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "created",
         "submission",
         "plugin_id",
-        "order_id",
+        "order_id_str",
         "amount",
         "status",
     )
@@ -52,3 +52,9 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "uuid",
         "form_url",
     )
+
+    def order_id_str(self, obj):
+        return str(obj.order_id)
+
+    order_id_str.short_description = _("Order ID")
+    order_id_str.admin_order_field = "order_id"

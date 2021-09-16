@@ -21,9 +21,12 @@ class OgoneFeedbackParams:
     @classmethod
     def from_dict(cls, value_dict):
         kws = dict()
-        for f in dataclasses.fields(cls):
-            if f.name in value_dict:
-                kws[f.name] = value_dict[f.name]
+        # convoluted but param-names are in-consistently cased
+        field_names = set(f.name for f in dataclasses.fields(cls))
+        for key, value in value_dict.items():
+            key = key.upper()
+            if key in field_names:
+                kws[key] = value
         return cls(**kws)
 
     def get_dict(self):
@@ -65,6 +68,9 @@ class OgoneRequestParams:
     # or dynamic template page
     TP: str = ""  # fill here your template page
 
+    # added for responsive display of payment options
+    PMLISTTYPE: int = 2
+
     # post-payment redirection
     ACCEPTURL: str = ""  #
     DECLINEURL: str = ""  #
@@ -95,5 +101,7 @@ class OgoneRequestParams:
 
     def get_dict(self):
         # clean and filter
-        normalized = ((k, str(v).strip()) for k, v in dataclasses.asdict(self).items())
+        normalized = (
+            (k, str(v).strip()) for k, v in dataclasses.asdict(self).items() if v
+        )
         return {k: v for k, v in normalized if v}

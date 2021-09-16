@@ -68,6 +68,38 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
 
 
+class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
+    is_required = serializers.BooleanField(
+        label=_("payment required"),
+        help_text=_("Whether the registration requires payment."),
+        read_only=True,
+        source="payment_required",
+    )
+    has_paid = serializers.BooleanField(
+        label=_("user had paid"),
+        source="payment_user_has_paid",
+        help_text=_("Whether the user has completed the required payment."),
+        read_only=True,
+    )
+    amount = serializers.DecimalField(
+        label=_("payment amount"),
+        # from SubmissionPayment model
+        max_digits=8,
+        decimal_places=2,
+        source="form.product.price",
+        help_text=_("Amount (to be) paid"),
+        read_only=True,
+    )
+
+    class Meta:
+        model = Submission
+        fields = (
+            "is_required",
+            "amount",
+            "has_paid",
+        )
+
+
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
@@ -97,6 +129,12 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
     )
 
+    payment = NestedSubmissionPaymentDetailSerializer(
+        label=_("payment information"),
+        source="*",
+        read_only=True,
+    )
+
     class Meta:
         model = Submission
         fields = (
@@ -106,6 +144,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "steps",
             "next_step",
             "can_submit",
+            "payment",
         )
         extra_kwargs = {
             "id": {

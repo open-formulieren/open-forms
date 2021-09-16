@@ -1,7 +1,7 @@
 import factory
 
-from openforms.payments.contrib.ogone.constants import HashAlgorithm
-from openforms.payments.contrib.ogone.models import OgoneMerchant
+from ..constants import HashAlgorithm
+from ..models import OgoneMerchant
 
 
 class OgoneMerchantFactory(factory.django.DjangoModelFactory):

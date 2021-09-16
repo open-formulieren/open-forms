@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING
+
 from openforms.plugins.registry import BaseRegistry
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 
 class Registry(BaseRegistry):
@@ -11,6 +16,9 @@ class Registry(BaseRegistry):
             raise ValueError(
                 f"Please specify 'configuration_options' attribute for plugin class."
             )
+
+    def update_payment_status(self, submission: "Submission"):
+        pass
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

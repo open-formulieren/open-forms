@@ -17,7 +17,7 @@ from .mixins import SubmissionsMixin
 
 
 class SubmissionListTests(SubmissionsMixin, APITestCase):
-
+    maxDiff = None
     endpoint = reverse_lazy("api:submission-list")
 
     @classmethod
@@ -88,6 +88,11 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
             ],
             "nextStep": f"http://testserver{submission_step_path}",
             "canSubmit": True,
+            "payment": {
+                "isRequired": False,
+                "hasPaid": False,
+                "amount": "15.00",
+            },
         }
 
         self.assertEqual(

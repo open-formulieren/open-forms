@@ -18,6 +18,9 @@
         <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
         <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
         <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
+        {% if betalings_indicatie %}<ZKN:betalingsIndicatie>{{ betalings_indicatie }}</ZKN:betalingsIndicatie>{% endif %}
+        {% if laatste_betaaldatum %}<ZKN:laatsteBetaaldatum>{{ laatste_betaaldatum }}</ZKN:laatsteBetaaldatum>{% endif %}
+
         <ZKN:zaakniveau>1</ZKN:zaakniveau>
         <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>

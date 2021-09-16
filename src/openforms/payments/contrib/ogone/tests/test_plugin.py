@@ -5,13 +5,13 @@ from django.test import RequestFactory, TestCase, override_settings
 
 from furl import furl
 
-from openforms.payments.constants import PaymentStatus
-from openforms.payments.contrib.ogone.constants import OgoneStatus
-from openforms.payments.contrib.ogone.plugin import RETURN_ACTION_PARAM
-from openforms.payments.contrib.ogone.signing import calculate_shasign
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
-from openforms.payments.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ....registry import register
+from ..constants import OgoneStatus, PaymentStatus
+from ..plugin import RETURN_ACTION_PARAM
+from ..signing import calculate_sha_out
+from .factories import OgoneMerchantFactory
 
 
 @override_settings(
@@ -32,7 +32,7 @@ class OgoneTests(TestCase):
         )
 
         self.assertEqual(submission.payment_required, True)
-        self.assertEqual(submission.payment_completed, False)
+        self.assertEqual(submission.payment_user_has_paid, False)
 
         plugin = register["ogone-legacy"]
 
@@ -85,7 +85,7 @@ class OgoneTests(TestCase):
             "ORDERID": payment.order_id,
             "STATUS": OgoneStatus.payment_requested,
         }
-        ogone_params["SHASIGN"] = calculate_shasign(
+        ogone_params["SHASIGN"] = calculate_sha_out(
             ogone_params, merchant.sha_out_passphrase, merchant.hash_algorithm
         )
 
@@ -110,4 +110,4 @@ class OgoneTests(TestCase):
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
 
-        self.assertEqual(submission.payment_completed, True)
+        self.assertEqual(submission.payment_user_has_paid, True)

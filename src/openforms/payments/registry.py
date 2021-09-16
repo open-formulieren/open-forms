@@ -2,8 +2,9 @@ from typing import List
 
 from django.http import HttpRequest
 
-from openforms.payments.base import APIInfo
 from openforms.plugins.registry import BaseRegistry
+
+from .base import APIInfo
 
 
 class Registry(BaseRegistry):

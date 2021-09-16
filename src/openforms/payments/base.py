@@ -13,8 +13,8 @@ from .constants import PaymentRequestType
 
 if TYPE_CHECKING:
     from openforms.forms.models import Form
-    from openforms.payments.models import SubmissionPayment
-    from openforms.submissions.models import Submission
+
+    from .models import Submission, SubmissionPayment
 
 
 @dataclass()
@@ -61,7 +61,7 @@ class BasePlugin:
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: HttpRequest) -> None:
+    def handle_webhook(self, request: HttpRequest) -> "SubmissionPayment":
         raise NotImplementedError()
 
     # helpers

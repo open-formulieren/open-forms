@@ -1,15 +1,20 @@
 import re
 import uuid
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
-from django.db.models import Max
+from django.db.models import Max, Sum
 from django.utils.translation import gettext_lazy as _
 
-from openforms.payments.constants import PaymentStatus
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
+
+from .constants import PaymentStatus
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 RE_INVOICE_NUMBER = re.compile(r"(?P<year>20\d{2})(?P<number>\d+)$")
 
@@ -57,8 +62,9 @@ class SubmissionPaymentManager(models.Manager):
         return int(f"{prefix}{next_number}")
 
 
-class SubmissionQuerySet(models.QuerySet):
-    pass
+class SubmissionPaymentQuerySet(models.QuerySet):
+    def sum_amount(self) -> Decimal:
+        return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
 
 
 class SubmissionPayment(models.Model):
@@ -96,10 +102,10 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
-    objects = SubmissionPaymentManager.from_queryset(SubmissionQuerySet)()
+    objects = SubmissionPaymentManager.from_queryset(SubmissionPaymentQuerySet)()
 
     def __str__(self):
-        return f"{self.uuid} {self.amount} '{self.get_status_display()}'"
+        return f"#{self.order_id} '{self.get_status_display()}' {self.amount}"
 
     @property
     def form(self):

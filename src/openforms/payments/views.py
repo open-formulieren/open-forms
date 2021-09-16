@@ -1,7 +1,11 @@
 import logging
 
+from django import forms
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
+from django.views.generic import DetailView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -20,6 +24,7 @@ from openforms.utils.redirect import allow_redirect_url
 from .api.serializers import PaymentInfoSerializer
 from .models import SubmissionPayment
 from .registry import register
+from .services import update_submission_payment_registration
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +33,6 @@ class PaymentFlowBaseView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.Serializer
-    register = register
 
 
 @extend_schema(
@@ -99,7 +103,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
     def post(self, request, uuid: str, plugin_id: str):
         submission = self.get_object()
         try:
-            plugin = self.register[plugin_id]
+            plugin = register[plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
 
@@ -202,7 +206,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         """
         payment = self.get_object()
         try:
-            plugin = self.register[payment.plugin_id]
+            plugin = register[payment.plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
@@ -227,6 +231,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                     {"plugin_id": payment.plugin_id, "location": location},
                 )
                 raise ParseError(detail="redirect not allowed")
+
+        update_submission_payment_registration(payment.submission)
 
         return response
 
@@ -289,7 +295,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 class PaymentWebhookView(PaymentFlowBaseView):
     def _handle_webhook(self, request, *args, **kwargs):
         try:
-            plugin = self.register[kwargs["plugin_id"]]
+            plugin = register[kwargs["plugin_id"]]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
@@ -297,7 +303,10 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if plugin.webhook_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
-        plugin.handle_webhook(request)
+        payment = plugin.handle_webhook(request)
+        if payment:
+            update_submission_payment_registration(payment.submission)
+
         return HttpResponse("")
 
     def get(self, request, *args, **kwargs):
@@ -314,3 +323,42 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if hasattr(self, "_plugin"):
             response["Allow"] = self._plugin.webhook_method
         return response
+
+
+def hidden_form_for_data(data_dict):
+    members = {
+        key: forms.CharField(initial=value, widget=forms.HiddenInput)
+        for key, value in data_dict.items()
+    }
+    return type("MyForm", (forms.Form,), members)
+
+
+@method_decorator([never_cache], name="dispatch")
+class PaymentLinkView(DetailView):
+    template_name = "payments/payment_link.html"
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
+    queryset = Submission.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        submission = self.get_object()
+        if not submission.payment_user_has_paid:
+            plugin_id = submission.form.payment_backend
+            plugin = register[plugin_id]
+            payment = SubmissionPayment.objects.create_for(
+                submission,
+                plugin_id,
+                submission.form.payment_backend_options,
+                submission.form.product.price,
+                self.request.build_absolute_uri(),
+            )
+
+            info = plugin.start_payment(self.request, payment)
+
+            context["url"] = info.url
+            context["method"] = info.type.upper()
+            context["form"] = hidden_form_for_data(info.data)
+
+        return context
