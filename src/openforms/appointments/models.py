@@ -45,6 +45,12 @@ class AppointmentInfo(models.Model):
         help_text=_("The submission that made the appointment"),
     )
 
+    created = models.DateTimeField(
+        _("created"),
+        auto_now_add=True,
+        help_text=_("Timestamp when the appointment details were created"),
+    )
+
     def cancel(self):
         self.status = AppointmentDetailsStatus.cancelled
         self.save()

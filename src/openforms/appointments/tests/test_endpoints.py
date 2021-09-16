@@ -114,3 +114,51 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 403)
+
+    def test_token_invalid_after_appointment_time(self):
+        config = GlobalConfiguration.get_solo()
+        config.cancel_appointment_page = "http://maykinmedia.nl/afspraak-annuleren"
+        config.save()
+        submission = SubmissionFactory.create(completed=True)
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        with freeze_time("2021-07-22T12:00:00Z"):
+            response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_token_valid_on_same_day_appointment(self):
+        config = GlobalConfiguration.get_solo()
+        config.cancel_appointment_page = "http://maykinmedia.nl/afspraak-annuleren"
+        config.save()
+        submission = SubmissionFactory.create(completed=True)
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        with freeze_time("2021-07-21T11:59:59Z"):
+            response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, 302)
