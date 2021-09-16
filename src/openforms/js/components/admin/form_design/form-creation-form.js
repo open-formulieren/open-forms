@@ -153,25 +153,22 @@ function reducer(draft, action) {
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = action.payload;
 
-            for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
-                const configuration = draft.formSteps[formStepIndex].configuration;
-                for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
-                    let component = configuration.components[componentIndex];
-                    if (component['appointments.showProducts']) {
-                        draft.appointmentConfiguration.products = component.key;
-                    } else if (component['appointments.showLocations']) {
-                        draft.appointmentConfiguration.locations = component.key;
-                    } else if (component['appointments.showDates']) {
-                        draft.appointmentConfiguration.dates = component.key;
-                    } else if (component['appointments.showTimes']) {
-                        draft.appointmentConfiguration.times = component.key;
-                    } else if (component['appointments.lastName']) {
-                        draft.appointmentConfiguration.lastName = component.key;
-                    } else if (component['appointments.birthDate']) {
-                        draft.appointmentConfiguration.birthDate = component.key;
-                    }
+            const components = getFormComponents(action.payload);
+            Object.entries(components).map(([key, component]) => {
+                if (component['appointments.showProducts']) {
+                    draft.appointmentConfiguration.products = component.key;
+                } else if (component['appointments.showLocations']) {
+                    draft.appointmentConfiguration.locations = component.key;
+                } else if (component['appointments.showDates']) {
+                    draft.appointmentConfiguration.dates = component.key;
+                } else if (component['appointments.showTimes']) {
+                    draft.appointmentConfiguration.times = component.key;
+                } else if (component['appointments.lastName']) {
+                    draft.appointmentConfiguration.lastName = component.key;
+                } else if (component['appointments.birthDate']) {
+                    draft.appointmentConfiguration.birthDate = component.key;
                 }
-            }
+            });
 
             break;
         }
@@ -288,44 +285,41 @@ function reducer(draft, action) {
                 }
             });
 
-            for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
-                const configuration = draft.formSteps[formStepIndex].configuration;
-                for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
-                    let component = configuration.components[componentIndex];
-                    if (component.key === value || component.key === oldComponentToClear) {
-                        const previousInformationToDelete = ['appointments.showProducts', 'appointments.showLocations',
-                            'appointments.showDates', 'appointments.showTimes', 'appointments.productComponent',
-                            'appointments.locationComponent', 'appointments.dateComponent', 'appointments.lastName',
-                            'appointments.birthDate'];
+            const components = getFormComponents(draft.formSteps);
+            Object.entries(components).map(([key, component]) => {
+                if (component.key === value || component.key === oldComponentToClear) {
+                    const previousInformationToDelete = ['appointments.showProducts', 'appointments.showLocations',
+                        'appointments.showDates', 'appointments.showTimes', 'appointments.productComponent',
+                        'appointments.locationComponent', 'appointments.dateComponent', 'appointments.lastName',
+                        'appointments.birthDate'];
 
-                        for (let field of previousInformationToDelete) {
-                            delete component[field];
-                        }
-                    }
-
-                    if (component.key === value) {
-                        if (component.key === draft.appointmentConfiguration.products) {
-                            component['appointments.showProducts'] = true;
-                        } else if (component.key === draft.appointmentConfiguration.locations) {
-                            component['appointments.showLocations'] = true;
-                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                        } else if (component.key === draft.appointmentConfiguration.dates) {
-                            component['appointments.showDates'] = true;
-                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                            component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
-                        } else if (component.key === draft.appointmentConfiguration.times) {
-                            component['appointments.showTimes'] = true;
-                            component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                            component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
-                            component['appointments.dateComponent'] = draft.appointmentConfiguration.dates;
-                        } else if (component.key === draft.appointmentConfiguration.lastName) {
-                            component['appointments.lastName'] = true;
-                        } else if (component.key === draft.appointmentConfiguration.birthDate) {
-                            component['appointments.birthDate'] = true;
-                        }
+                    for (let field of previousInformationToDelete) {
+                        delete component[field];
                     }
                 }
-            }
+
+                if (component.key === value) {
+                    if (component.key === draft.appointmentConfiguration.products) {
+                        component['appointments.showProducts'] = true;
+                    } else if (component.key === draft.appointmentConfiguration.locations) {
+                        component['appointments.showLocations'] = true;
+                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                    } else if (component.key === draft.appointmentConfiguration.dates) {
+                        component['appointments.showDates'] = true;
+                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                        component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
+                    } else if (component.key === draft.appointmentConfiguration.times) {
+                        component['appointments.showTimes'] = true;
+                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
+                        component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
+                        component['appointments.dateComponent'] = draft.appointmentConfiguration.dates;
+                    } else if (component.key === draft.appointmentConfiguration.lastName) {
+                        component['appointments.lastName'] = true;
+                    } else if (component.key === draft.appointmentConfiguration.birthDate) {
+                        component['appointments.birthDate'] = true;
+                    }
+                }
+            });
 
             break;
         }
