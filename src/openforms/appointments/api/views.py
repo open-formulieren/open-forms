@@ -1,15 +1,25 @@
+import logging
+
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
-from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
+from openforms.api.serializers import ExceptionSerializer
+from openforms.submissions.api.permissions import (
+    ActiveSubmissionPermission,
+    AnyActiveSubmissionPermission,
+)
+from openforms.submissions.models import Submission
 from openforms.utils.api.views import ListMixin
 
 from ..api.serializers import (
+    CancelAppointmentInputSerializer,
     DateInputSerializer,
     DateSerializer,
     LocationInputSerializer,
@@ -19,7 +29,11 @@ from ..api.serializers import (
     TimeSerializer,
 )
 from ..base import AppointmentLocation, AppointmentProduct
+from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
+from ..models import AppointmentInfo
 from ..utils import get_client
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(
@@ -167,3 +181,48 @@ class TimesListView(ListMixin, APIView):
         client = get_client()
         times = client.get_times([product], location, serializer.validated_data["date"])
         return [{"time": time} for time in times]
+
+
+@extend_schema(
+    summary=_("Cancel an appointment"),
+    responses={
+        204: None,
+        403: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to verify ownership of the appointment."),
+        ),
+        502: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to cancel appointment."),
+        ),
+    },
+)
+class CancelAppointmentView(GenericAPIView):
+    lookup_field = "uuid"
+    lookup_url_kwarg = "submission_uuid"
+    queryset = Submission.objects.all()
+    authentication_classes = ()
+    permission_classes = [ActiveSubmissionPermission]
+
+    def post(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        serializer = CancelAppointmentInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        emails = submission.get_email_confirmation_recipients(submission.data)
+
+        # The user must enter the email address they used when creating
+        #   the appointment which we validate here
+        if serializer.validated_data["email"] not in emails:
+            raise PermissionDenied
+
+        client = get_client()
+
+        try:
+            client.delete_appointment(submission.appointment_info.appointment_id)
+            submission.appointment_info.cancel()
+        except (AppointmentDeleteFailed, AppointmentInfo.DoesNotExist):
+            raise CancelAppointmentFailed
+
+        return Response(status=HTTP_204_NO_CONTENT)

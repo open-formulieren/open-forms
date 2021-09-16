@@ -31,6 +31,12 @@ class AppointmentInfo(models.Model):
         _("error information"),
         blank=True,
     )
+    start_time = models.DateTimeField(
+        _("start time"),
+        blank=True,
+        null=True,
+        help_text=_("Start time of the appointment"),
+    )
 
     submission = models.OneToOneField(
         "submissions.Submission",
@@ -38,6 +44,16 @@ class AppointmentInfo(models.Model):
         related_name="appointment_info",
         help_text=_("The submission that made the appointment"),
     )
+
+    created = models.DateTimeField(
+        _("created"),
+        auto_now_add=True,
+        help_text=_("Timestamp when the appointment details were created"),
+    )
+
+    def cancel(self):
+        self.status = AppointmentDetailsStatus.cancelled
+        self.save()
 
     class Meta:
         verbose_name = _("Appointment information")

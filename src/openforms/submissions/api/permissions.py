@@ -38,8 +38,10 @@ class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
         default_url_kwarg = view.lookup_url_kwarg or view.lookup_field
         submission_url_kwarg = getattr(view, "submission_url_kwarg", default_url_kwarg)
 
-        submission_id = view.kwargs[submission_url_kwarg]
-        return submission_id in active_submissions
+        submission_uuid = view.kwargs[submission_url_kwarg]
+
+        # Use str so this works with both UUIDs and UUIDs in string format
+        return str(submission_uuid) in active_submissions
 
     def filter_queryset(self, request: Request, view: APIView, queryset):
         active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)

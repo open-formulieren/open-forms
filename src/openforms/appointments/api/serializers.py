@@ -49,3 +49,9 @@ class TimeInputSerializer(serializers.Serializer):
 
 class TimeSerializer(serializers.Serializer):
     time = serializers.DateTimeField(label=_("time"))
+
+
+class CancelAppointmentInputSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        label=_("email"), help_text=_("Email given when making the appointment")
+    )

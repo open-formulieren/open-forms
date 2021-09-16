@@ -1,9 +1,13 @@
 from copy import deepcopy
+from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
 
+from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.appointments.tests.test_base import TestPlugin
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import (
@@ -185,3 +189,70 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("<th>Doe</th>", rendered_content)
         self.assertIn("<th>File</th>", rendered_content)
         self.assertIn("<th>my-image.jpg</th>", rendered_content)
+
+    @patch(
+        "openforms.emails.templatetags.appointments.get_client",
+        return_value=TestPlugin(),
+    )
+    def test_appointment_information(self, get_client_mock):
+        submission = SubmissionFactory.create()
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.success,
+            appointment_id="123456789",
+            submission=submission,
+        )
+        email = ConfirmationEmailTemplate(content="{% appointment_information %}")
+        rendered_content = email.render(submission)
+
+        self.assertIn("Test product 1", rendered_content)
+        self.assertIn("Test product 2", rendered_content)
+        self.assertIn("Test location", rendered_content)
+        self.assertIn("1 januari 2021, 12:00 - 12:15", rendered_content)
+        self.assertIn("Remarks", rendered_content)
+        self.assertIn("Some", rendered_content)
+        self.assertIn("<h1>Data</h1>", rendered_content)
+
+    def test_appointment_information_with_no_appointment_id(self):
+        submission = SubmissionFactory.create()
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.missing_info,
+            appointment_id="",
+            submission=submission,
+        )
+        email = ConfirmationEmailTemplate(content="{% appointment_information %}")
+        empty_email = ConfirmationEmailTemplate(content="")
+
+        rendered_content = email.render(submission)
+        empty_rendered_content = empty_email.render(submission)
+
+        self.assertEqual(empty_rendered_content, rendered_content)
+
+    @patch("openforms.emails.templatetags.appointments.get_client")
+    def test_get_appointment_links(self, get_client_mock):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["fake.nl"]
+        config.save()
+
+        get_client_mock.return_value.get_appointment_links.return_value = {
+            "cancel_url": "http://fake.nl/api/v1/submission-uuid/token/verify/"
+        }
+        submission = SubmissionFactory.create()
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.success,
+            appointment_id="123456789",
+            submission=submission,
+        )
+        email = ConfirmationEmailTemplate(
+            content="""
+        {% get_appointment_links as links %}
+        {{ links.cancel_url|urlize }}
+        """
+        )
+        rendered_content = email.render(submission)
+
+        self.assertInHTML(
+            '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
+            "http://fake.nl/api/v1/submission-uuid/token/verify/"
+            "</a>",
+            rendered_content,
+        )

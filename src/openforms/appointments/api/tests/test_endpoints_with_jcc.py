@@ -5,14 +5,17 @@ from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
+from zeep.exceptions import Error as ZeepError
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
 
+from ...constants import AppointmentDetailsStatus
 from ...contrib.jcc.models import JccConfig
 from ...contrib.jcc.tests.test_plugin import mock_response
 from ...models import AppointmentsConfig
+from ...tests.factories import AppointmentInfoFactory
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):
@@ -227,4 +230,99 @@ class TimesListTests(SubmissionsMixin, TestCase):
         response = self.client.get(
             f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
         )
+        self.assertEqual(response.status_code, 403)
+
+
+class CancelAppointmentTests(SubmissionsMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        appointments_config = AppointmentsConfig.get_solo()
+        appointments_config.config_path = (
+            "openforms.appointments.contrib.jcc.models.JccConfig"
+        )
+        appointments_config.save()
+
+        config = JccConfig.get_solo()
+        wsdl = os.path.abspath(
+            os.path.join(
+                settings.DJANGO_PROJECT_DIR,
+                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
+            )
+        )
+        config.service = SoapServiceFactory.create(url=wsdl)
+        config.save()
+
+    @requests_mock.Mocker()
+    def test_cancel_appointment_cancels_the_appointment(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email", "confirmationRecipient": True}
+            ],
+            submitted_data={"email": "maykin@media.nl"},
+        )
+        AppointmentInfoFactory.create(submission=submission)
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": submission.uuid},
+        )
+
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("deleteGovAppointmentResponse.xml"),
+        )
+
+        data = {
+            "email": "maykin@media.nl",
+        }
+
+        response = self.client.post(endpoint, data=data)
+
+        self.assertEqual(response.status_code, 204)
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.appointment_info.status, AppointmentDetailsStatus.cancelled
+        )
+
+    @requests_mock.Mocker()
+    def test_cancel_appointment_properly_handles_plugin_exception(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email", "confirmationRecipient": True}
+            ],
+            submitted_data={"email": "maykin@media.nl"},
+        )
+        AppointmentInfoFactory.create(submission=submission)
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": submission.uuid},
+        )
+
+        m.post(
+            "http://example.com/soap11",
+            exc=ZeepError,
+        )
+
+        data = {
+            "email": "maykin@media.nl",
+        }
+
+        response = self.client.post(endpoint, data=data)
+
+        self.assertEqual(response.status_code, 502)
+
+    def test_cancel_appointment_returns_403_when_no_appointment_is_in_session(self):
+        submission = SubmissionFactory.create()
+        endpoint = reverse(
+            "api:appointments-cancel",
+            kwargs={"submission_uuid": str(submission.uuid)},
+        )
+
+        data = {
+            "email": "maykin@media.nl",
+        }
+
+        response = self.client.post(endpoint, data=data)
+
         self.assertEqual(response.status_code, 403)

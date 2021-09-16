@@ -1,13 +1,8 @@
-from unittest.mock import patch
-
 from django.core import mail
 from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
-from openforms.appointments.constants import AppointmentDetailsStatus
-from openforms.appointments.tests.factories import AppointmentInfoFactory
-from openforms.appointments.tests.test_base import TestPlugin
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
 from ..tasks import maybe_send_confirmation_email
@@ -168,56 +163,3 @@ class ConfirmationEmailTests(TestCase):
             set(message.to),
             {"single1@test.nl", "single2@test.nl", "many1@test.nl", "many2@test.nl"},
         )
-
-    # TODO: this should instead use a client from registry configured on the form,
-    # and then we can just specify the client to use in the SubmissionFactory rather
-    # than having the monkeypatch
-    @patch("openforms.submissions.utils.get_client", return_value=TestPlugin())
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    def test_complete_submission_send_confirmation_email_with_appointment_details(
-        self, mock_get_client
-    ):
-        submission = SubmissionFactory.from_components(
-            completed=True,
-            components_list=[
-                {
-                    "key": "email",
-                    "type": "email",
-                    "label": "Email",
-                    "confirmationRecipient": True,
-                },
-            ],
-            submitted_data={"email": "test@test.nl"},
-        )
-        ConfirmationEmailTemplateFactory.create(
-            form=submission.form,
-            subject="Confirmation mail",
-            content="Confirmation mail content",
-        )
-        AppointmentInfoFactory.create(
-            status=AppointmentDetailsStatus.success,
-            appointment_id="123456789",
-            submission=submission,
-        )
-
-        # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
-
-        # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
-        message = mail.outbox[0]
-        self.assertEqual(message.subject, "Confirmation mail")
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["test@test.nl"])
-
-        # Check that appointment information is in email
-        self.assertIn("Confirmation mail content", message.body)
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn("Confirmation mail content", message.body)
-        self.assertIn("Test product 1", message.body)
-        self.assertIn("Test product 2", message.body)
-        self.assertIn("Test location", message.body)
-        self.assertIn("1 januari 2021, 12:00 - 12:15", message.body)
-        self.assertIn("Remarks", message.body)
-        self.assertIn("Some", message.body)
-        self.assertIn("<h1>Data</h1>", message.body)

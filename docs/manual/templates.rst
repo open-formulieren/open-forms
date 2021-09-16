@@ -119,12 +119,32 @@ in the template. Typically, these vary per form!
 
 These are additional variables and statements available to the template.
 
-========================== ===========================================================================
-Element                    Description
-========================== ===========================================================================
-``{% summary %}``          A full summary of all elements marked to show in the email.
-``{{ public_reference }}`` The public reference of the submission, e.g. the "zaaknummer".
-========================== ===========================================================================
+===================================  ===========================================================================
+Element                              Description
+===================================  ===========================================================================
+``{% summary %}``                    A full summary of all elements marked to show in the email.
+``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
+``{% appointment_information %}``    The information about the appointment to show in the email.
+``{% get_appointment_links %}``      Retrieves relevant links about the appointment.
+===================================  ===========================================================================
+
+**get_appointment_links example**
+
+.. tabs::
+
+   .. tab:: Template
+
+      .. code:: django
+
+         {% get_appointment_links as links %}
+         Cancel Appointment: {{ links.cancel_url|urlize }}
+
+
+   .. tab:: Rendered
+
+      .. code:: text
+
+         Cancel Appointment: http://fake.nl/api/v1/submission-uuid/token/verify/
 
 
 Confirmation page

@@ -135,6 +135,11 @@ class GlobalConfiguration(SingletonModel):
             "URL to the main website. Used for the 'back to municipality website' link."
         ),
     )
+    cancel_appointment_page = models.URLField(
+        _("cancel appointment page"),
+        blank=True,
+        help_text=_("URL to the page where the user can cancel an appointment."),
+    )
     # the configuration of the values of available design tokens, following the
     # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
     # is used by NLDS.

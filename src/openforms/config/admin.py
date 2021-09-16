@@ -40,7 +40,12 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
         (
             _("Organization configuration"),
             {
-                "fields": ("logo", "main_website", "design_token_values"),
+                "fields": (
+                    "logo",
+                    "main_website",
+                    "cancel_appointment_page",
+                    "design_token_values",
+                ),
             },
         ),
         (

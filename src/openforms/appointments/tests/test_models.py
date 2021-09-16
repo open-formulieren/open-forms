@@ -1,8 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 
-from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from .factories import AppointmentInfoFactory
 
 
 class TestRelationBetweenAppointmentInfoAndSubmissions(TestCase):

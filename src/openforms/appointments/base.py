@@ -2,13 +2,19 @@ import logging
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.submissions.models import Submission
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+
+from .tokens import submission_appointment_token_generator
 
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -220,3 +226,18 @@ class BasePlugin:
         return render_to_string(
             "appointments/appointment_details.html", {"appointment": details}
         )
+
+    def get_appointment_links(self, submission: Submission) -> Dict[str, str]:
+
+        token = submission_appointment_token_generator.make_token(submission)
+
+        cancel_path = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": token,
+                "submission_uuid": submission.uuid,
+            },
+        )
+        cancel_url = urljoin(settings.BASE_URL, cancel_path)
+
+        return {"cancel_url": cancel_url}

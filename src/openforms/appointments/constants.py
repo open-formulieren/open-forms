@@ -15,3 +15,4 @@ class AppointmentDetailsStatus(DjangoChoices):
         "Submission does not contain all the info needed to make an appointment",
     )
     failed = ChoiceItem("failed", "Failed")
+    cancelled = ChoiceItem("cancelled", "Cancelled")

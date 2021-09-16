@@ -7,6 +7,7 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
 from .utils import sanitize_content
@@ -51,6 +52,12 @@ class ConfirmationEmailTemplate(models.Model):
             **submission.data,
             "public_reference": submission.public_registration_reference,
         }
+
+        try:
+            context["_appointment_id"] = submission.appointment_info.appointment_id
+        except AppointmentInfo.DoesNotExist:
+            pass
+
         return context
 
     def render(self, submission: Submission):
