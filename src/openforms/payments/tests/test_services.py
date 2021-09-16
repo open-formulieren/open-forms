@@ -66,8 +66,8 @@ class UpdatePaymentTests(TestCase):
         )
 
     def test_submission_default(self):
-        # check with in-complete submission
-        submission = SubmissionFactory.create()
+        # check with incomplete submission
+        submission = SubmissionFactory.create(complete=False)
 
         self.assertEqual(False, submission.payment_required)
         self.assertEqual(False, submission.payment_user_has_paid)
