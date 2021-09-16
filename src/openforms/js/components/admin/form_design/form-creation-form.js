@@ -810,7 +810,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                     <Tab>
-                        <FormattedMessage defaultMessage="Appointments" description="Appointments logic tab title" />
+                        <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                     </Tab>
                 </TabList>
 
