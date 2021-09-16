@@ -84,7 +84,6 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
-    // TODO, Need to 'initialize' this like in the Appointments Tab
     appointments: {},
 };
 
@@ -255,6 +254,11 @@ function reducer(draft, action) {
         }
         case 'APPOINTMENTS_CHANGED': {
             const { name, value } = action.payload;
+            let oldComponentToClear = '';
+            if (draft.appointments[name]) {
+                oldComponentToClear = draft.appointments[name];
+            }
+
             draft.appointments[name] = value;
 
             // If the component that is selected was already set for something else, clear the other
@@ -265,12 +269,11 @@ function reducer(draft, action) {
                 }
             });
 
-            // TODO Move this somewhere else so it only runs on submit?
             for ( let formStepIndex = 0; formStepIndex < draft.formSteps.length; formStepIndex++) {
                 const configuration = draft.formSteps[formStepIndex].configuration;
                 for (let componentIndex = 0; componentIndex < configuration.components.length; componentIndex++) {
                     let component = configuration.components[componentIndex];
-                    if (name === component.key) {
+                    if (component.key === value || component.key === oldComponentToClear) {
                         const previousInformationToDelete = ['appointmentsShowProducts', 'appointmentsShowLocations',
                             'appointmentsShowDates', 'appointmentsShowTimes', 'appointmentsProductComponent',
                             'appointmentsLocationComponent', 'appointmentsDateComponent', 'appointmentsLastName',
@@ -279,7 +282,9 @@ function reducer(draft, action) {
                         for (let field of previousInformationToDelete) {
                             delete component[field];
                         }
+                    }
 
+                    if (component.key === value) {
                         if (component.key === draft.appointments.products) {
                             component.appointmentsShowProducts = true;
                         } else if (component.key === draft.appointments.locations) {
