@@ -63,7 +63,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
         }
     });
 
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...updatedState});
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...updateState});
 
     const onFieldChange = (event) => {
         const {name, value} = event.target;
