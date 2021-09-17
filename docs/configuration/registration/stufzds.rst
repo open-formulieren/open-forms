@@ -16,7 +16,6 @@ configured to access this API to register form submissions.
 4. In the **Connection** section:
 
    * **SOAP Version**: select the SOAP version of your backend provider
-   * **URL**: fill in the base URL of the SOAP service
    * **Endpoint BeantwoordVraag**: fill in the full URL to the endpoint for the SOAP 'BeantwoordVraag' action
    * **Endpoint VrijeBerichten**: fill in the full URL to the endpoint for the SOAP 'VrijeBerichten' action
    * **Endpoint OntvangAsynchroon**: fill in the full URL to the endpoint for the SOAP 'OntvangAsynchroon' action

@@ -4,7 +4,7 @@
 ZGW API's
 =========
 
-The ZGW (Zaak Gericht Werken) API's are a suite of REST based Zaak services. Open Forms can be
+The ZGW (Zaakgericht Werken) API's are a suite of REST based Zaak services. Open Forms can be
 configured to access these API's to register form submissions.
 
 
@@ -22,7 +22,7 @@ configured to access these API's to register form submissions.
 
       * **Label**: *For example:* ``Zaken``, ``Documenten`` or ``Zaaktypen``
       * **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
-      * **API root url**: The root of this API, *for example* ``https://test.openzaak.nl/zaken/api/v1/``
+      * **API root url**: The root of this API, *For example* ``https://test.openzaak.nl/zaken/api/v1/``
 
       * **Client ID**: Fill the value provided by the backend service *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
       * **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
@@ -47,9 +47,9 @@ configured to access these API's to register form submissions.
 5. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
 6. Continue entering the following details:
 
-   * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak.
-   * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document.
-   * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects.
+   * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://test.openzaak.nl/api/v1/zaaktypen/1/``
+   * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://test.openzaak.nl/api/v1/informatieobjecttypen/1/``
+   * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
 7. Click **Opslaan**
 
