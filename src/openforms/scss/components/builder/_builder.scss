@@ -44,10 +44,12 @@ li.nav-item {
 
 .component-edit-container {
   .tab-pane.active {
-    // the select dropdowns are overflowing, which is hidden by the modal. this is the
-    // easiest way to enforce they're always visible.
-    min-height: 550px;
+    min-height: 50vh;
   }
+
+  // the select dropdowns are overflowing, which is hidden by the modal. this is the
+  // easiest way to enforce they're always visible.
+  overflow-y: auto;
 }
 
 .formio-builder-wrapper {
