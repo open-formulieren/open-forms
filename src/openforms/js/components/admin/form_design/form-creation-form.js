@@ -765,6 +765,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         return (<Loader />);
     }
 
+    const availableComponents = getFormComponents(state.formSteps);
+
     return (
         <>
             <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
@@ -918,7 +920,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormStepsContext.Provider value={state.formSteps}>
                             <FormLogic
                                 logicRules={state.logicRules}
-                                availableComponents={getFormComponents(state.formSteps)}
+                                availableComponents={availableComponents}
                                 onChange={onRuleChange}
                                 onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
                                 onAdd={() => dispatch({type: 'ADD_RULE'})}
@@ -928,10 +930,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Appointments
-                        availableComponents={getFormComponents(state.formSteps)}
-                        onChange={onAppointmentsChange}
-                    />
+                    <Appointments availableComponents={availableComponents} onChange={onAppointmentsChange} />
                 </TabPanel>
             </Tabs>
 

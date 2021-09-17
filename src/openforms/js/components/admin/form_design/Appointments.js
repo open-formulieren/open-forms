@@ -1,5 +1,6 @@
+import get from 'lodash/get';
+import set from 'lodash/set';
 import React from 'react';
-import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -9,75 +10,74 @@ import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 
+const PREFIX = 'appointments'; // prefix to use in the Formio.js component JSON
+
+const KEYS = [
+    'showProducts',
+    'showLocations',
+    'showDates',
+    'showTimes',
+    'lastName',
+    'birthDate',
+];
 
 
-const initialState = {
-    products: '',
-    locations: '',
-    dates: '',
-    times: '',
-    lastName: '',
-    birthDate: '',
-};
+const AppointmentConfigurationComponentSelection = ({ currentConfiguration, configKey, filterType, onChange }) => (
+    <ComponentSelection
+        name={configKey}
+        value={get(currentConfiguration, configKey, '')}
+        onChange={onChange}
+        filter={(component) => (component.type === filterType)}
+    />
+);
 
-
-const reducer = (draft, action) => {
-    switch(action.type) {
-        case 'APPOINTMENTS_CONFIGURATION_CHANGED': {
-            const {name, value} = action.payload;
-            draft[name] = value;
-
-            // If the component that is selected was already set for something else, clear the other
-            //   thing it was set for since each component can only be used for one thing
-            Object.entries(draft).map(([draftName, draftValue]) => {
-                if (name !== draftName && value === draftValue) {
-                    draft[draftName] = '';
-                }
-            });
-
-            break;
-        }
-        default: {
-            throw new Error(`Unknown action type: ${action.type}`);
-        }
-    }
+AppointmentConfigurationComponentSelection.propTypes = {
+    currentConfiguration: PropTypes.objectOf(PropTypes.string).isRequired,
+    configKey: PropTypes.oneOf(KEYS).isRequired,
+    filterType: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 
 const Appointments = ({ availableComponents={}, onChange }) => {
+    // extract the current values from the component definitions
+    const configuration = {}; // key: appointment configuration key, value: component key
+    Object.entries(availableComponents).forEach(([componentKey, component]) =>{
+        // check the component for any key present
+        for (const configKey of KEYS) {
+            const fullPath = `${PREFIX}.${configKey}`;
+            const value = get(component, fullPath, null);
+            if (!value) continue;
 
-    let updateState = {};
-    Object.entries(availableComponents).map(([key, component]) => {
-        if (component['appointments.showProducts']) {
-            updateState.products = key;
-        } else if (component['appointments.showLocations']) {
-            updateState.locations = key;
-        } else if (component['appointments.showDates']) {
-            updateState.dates = key;
-        } else if (component['appointments.showTimes']) {
-            updateState.times = key;
-        } else if (component['appointments.lastName']) {
-            updateState.lastName = key;
-        } else if (component['appointments.birthDate']) {
-            updateState.birthDate = key;
+            configuration[configKey] = componentKey;
+            // if a config key is found, break out so we exit at the first hit. There
+            // should only ever be one hit, but in case something was corrupted, don't
+            // let it break our own state.
+            break;
         }
     });
 
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...updateState});
+    console.log(configuration);
 
+    /**
+     * On form field change handler.
+     *
+     * We simply invoke the parent handler, but ensure we use the prefixed name so that
+     * the appropriate custom Formio.js component properties can be set
+     * @param  {Event} event The React event for the changed DOM element.
+     * @return {void}
+     */
     const onFieldChange = (event) => {
         const {name, value} = event.target;
-        dispatch({
-            type: 'APPOINTMENTS_CONFIGURATION_CHANGED',
-            payload: {
-                name,
-                value
+        const prefixedName = `${PREFIX}.${name}`;
+        const fakeEvent = {
+            target: {
+                name: prefixedName,
+                value: value,
             },
-        });
-        onChange(name, value);
+        };
+        onChange(fakeEvent);
     };
-
-    const { products, locations, dates, times, lastName, birthDate } = state;
 
     return (
         <ComponentsContext.Provider value={availableComponents}>
@@ -88,11 +88,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Products Component" description="Products Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where products for an appointment will be shown" description="Products Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="productsComponentSelection"
-                            value={products}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="showProducts"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'select')}
+                            filterType="select"
                         />
                     </Field>
                 </FormRow>
@@ -104,11 +104,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Locations Component" description="Locations Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where locations for an appointment will be shown" description="Locations Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="locationsComponentSelection"
-                            value={locations}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="showLocations"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'select')}
+                            filterType="select"
                         />
                     </Field>
                 </FormRow>
@@ -120,11 +120,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Dates Component" description="Dates Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where dates for an appointment will be shown" description="Dates Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="datesComponentSelection"
-                            value={dates}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="showDates"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'select')}
+                            filterType="select"
                         />
                     </Field>
                 </FormRow>
@@ -136,11 +136,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Times Component" description="Times Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where times for an appointment will be shown" description="Times Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="timesComponentSelection"
-                            value={times}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="showTimes"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'select')}
+                            filterType="select"
                         />
                     </Field>
                 </FormRow>
@@ -152,11 +152,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Last Name Component" description="Last Name Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where last name for an appointment will be shown" description="Last Name Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="lastNameComponentSelection"
-                            value={lastName}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="lastName"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'textfield')}
+                            filterType="textfield"
                         />
                     </Field>
                 </FormRow>
@@ -168,11 +168,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                         label={<FormattedMessage defaultMessage="Birth Date Component" description="Birth Date Component field label" />}
                         helpText={<FormattedMessage defaultMessage="Component where birth date for an appointment will be shown" description="Birth Date Component field help text" />}
                     >
-                        <ComponentSelection
-                            name="birthDateComponentSelection"
-                            value={birthDate}
+                        <AppointmentConfigurationComponentSelection
+                            currentConfiguration={configuration}
+                            configKey="birthDate"
                             onChange={onFieldChange}
-                            filter={(component) => (component.type === 'date')}
+                            filterType="date"
                         />
                     </Field>
                 </FormRow>
