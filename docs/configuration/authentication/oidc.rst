@@ -1,8 +1,8 @@
-.. _configuration_oidc:
+.. _configuration_authentication_oidc:
 
-===========================
-OpenID Connect configureren
-===========================
+==============
+OpenID Connect
+==============
 
 Open Formulieren ondersteunt Single Sign On (SSO) via het OpenID Connect protocol (OIDC) voor de beheerinterface.
 

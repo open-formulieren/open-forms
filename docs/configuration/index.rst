@@ -4,9 +4,10 @@ Configuration
 =============
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Further reading
+   :maxdepth: 2
+   :caption: Plugins
 
-   bag
-   ogone
-   oidc
+   authentication/index
+   payment/index
+   prefill/index
+   registration/index

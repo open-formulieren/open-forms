@@ -5,7 +5,7 @@ Gebruikers beheren
 ==================
 
 .. note::
-    
+
    Om gebruikers te kunnen beheren moet je tot de **Functioneel beheerders**
    groep behoren of equivalente permissies hebben. Zie
    :ref:`manual_users_groups` voor groepenbeheer.
@@ -36,8 +36,8 @@ Een standaard Open Formulieren installatie komt met een aantal standaardgroepen:
     **Technische achtergrond**
 
     Een *groep* is een set van permissies. Een permissie laat een gebruiker toe
-    om iets te doen met een object, waarbij een object van alles kan zijn: Een 
-    formulier, inzending, configuratie, etc. Typisch zijn er vier soorten 
+    om iets te doen met een object, waarbij een object van alles kan zijn: Een
+    formulier, inzending, configuratie, etc. Typisch zijn er vier soorten
     permissies voor elk soort object:
 
     * objecten lezen
@@ -52,10 +52,10 @@ Nieuwe gebruiker aanmaken
 
 .. note::
 
-    U maakt hier een lokaal account aan. Als u gebruik maakt van organisatie 
-    accounts dan kunt u beter geen lokaal account aanmaken. Deze wordt 
-    automatisch aangemaakt zodra een gebruiker inlogt met een organisatie 
-    account, mits dit is :ref:`geconfigureerd <configuration_oidc>`.
+    U maakt hier een lokaal account aan. Als u gebruik maakt van organisatie
+    accounts dan kunt u beter geen lokaal account aanmaken. Deze wordt
+    automatisch aangemaakt zodra een gebruiker inlogt met een organisatie
+    account, mits dit is :ref:`geconfigureerd <configuration_authentication_oidc>`.
 
 
 1. Navigeer naar **Accounts** > **Gebruikers**.
@@ -64,9 +64,9 @@ Nieuwe gebruiker aanmaken
 4. Klik op **Opslaan en opnieuw bewerken** om verdere gegevens in te vullen.
 5. U kunt verdere gegevens zelf invullen maar let alstublieft op:
 
-   * **Actief** dient aangevinkt te zijn. Als dit niet is aangevinkt, kan de 
+   * **Actief** dient aangevinkt te zijn. Als dit niet is aangevinkt, kan de
      gebruiker niet inloggen.
-   * **Stafstatus** dient aangevinkt te zijn. Als dit niet is aangevinkt, kan de 
+   * **Stafstatus** dient aangevinkt te zijn. Als dit niet is aangevinkt, kan de
      gebruiker niet inloggen.
    * Selecteer 1 of meerdere **Groepen** en zorg dat de gewenste groepen
      in de rechterkolom worden geplaatst.
@@ -95,9 +95,9 @@ Definitief verwijderen
 
     U verwijdert met deze stappen een lokaal account. Om historie te behouden
     kunt u het account beter anonimiseren en inactief maken zoals hierboven
-    omschreven.    
-    
-    Het verwijderen van organisatie accounts heeft alleen zin als de gebruiker 
+    omschreven.
+
+    Het verwijderen van organisatie accounts heeft alleen zin als de gebruiker
     ook geen organsiatie account meer heeft.
 
     Organisatie accounts zijn te herkennen aan de gebruikersnaam die bestaat
