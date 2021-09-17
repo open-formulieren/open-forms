@@ -57,8 +57,6 @@ const Appointments = ({ availableComponents={}, onChange }) => {
         }
     });
 
-    console.log(configuration);
-
     /**
      * On form field change handler.
      *
@@ -190,3 +188,4 @@ Appointments.propTypes = {
 
 
 export default Appointments;
+export {KEYS};

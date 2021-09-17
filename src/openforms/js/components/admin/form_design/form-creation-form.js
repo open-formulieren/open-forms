@@ -1,4 +1,6 @@
 import zip from 'lodash/zip';
+import getObjectValue from 'lodash/get';
+import set from 'lodash/set';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -26,7 +28,7 @@ import {
     LOGICS_ENDPOINT,
 } from './constants';
 import {loadPlugins, saveLogicRules} from './data';
-import Appointments from './Appointments';
+import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -83,7 +85,6 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
-    appointmentConfiguration: {},
 };
 
 const newStepData = {
@@ -152,24 +153,6 @@ function reducer(draft, action) {
         }
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = action.payload;
-
-            const components = getFormComponents(action.payload);
-            Object.entries(components).map(([key, component]) => {
-                if (component['appointments.showProducts']) {
-                    draft.appointmentConfiguration.products = component.key;
-                } else if (component['appointments.showLocations']) {
-                    draft.appointmentConfiguration.locations = component.key;
-                } else if (component['appointments.showDates']) {
-                    draft.appointmentConfiguration.dates = component.key;
-                } else if (component['appointments.showTimes']) {
-                    draft.appointmentConfiguration.times = component.key;
-                } else if (component['appointments.lastName']) {
-                    draft.appointmentConfiguration.lastName = component.key;
-                } else if (component['appointments.birthDate']) {
-                    draft.appointmentConfiguration.birthDate = component.key;
-                }
-            });
-
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -269,58 +252,68 @@ function reducer(draft, action) {
             draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
             break;
         }
-        case 'APPOINTMENTS_CHANGED': {
-            const { name, value } = action.payload;
-            let oldComponentToClear = '';
-            if (draft.appointmentConfiguration[name]) {
-                oldComponentToClear = draft.appointmentConfiguration[name];
+        case 'APPOINTMENT_CONFIGURATION_CHANGED': {
+            // deconstruct the 'event' which holds the information on which config param
+            // was changed and to which component it is (now) set.
+            const {target: {name, value: selectedComponentKey}} = action.payload;
+
+            // name is in the form "appointments.<key>"
+            const [prefix, configKey] = name.split('.');
+            const allComponents = Object.values(getFormComponents(draft.formSteps));
+
+            // utility to find the component for a given appointment config option
+            const findComponentForConfigKey = (configKey) => {
+                const name = `${prefix}.${configKey}`;
+                return allComponents.find(component => getObjectValue(component, name, false));
+            };
+
+            // first, ensure that if the value was changed, the old component is cleared
+            const currentComponentForConfigKey = findComponentForConfigKey(configKey);
+            if (currentComponentForConfigKey) {
+                // wipe the entire appointments configuration
+                set(currentComponentForConfigKey, prefix, {});
             }
-            draft.appointmentConfiguration[name] = value;
 
-            // If the component that is selected was already set for something else, clear the other
-            //   thing it was set for since each component can only be used for one thing
-            Object.entries(draft.appointmentConfiguration).map(([draftAppointmentsName, draftAppointmentsValue]) => {
-                if (name !== draftAppointmentsName && value === draftAppointmentsValue) {
-                    draft.appointmentConfiguration[draftAppointmentsName] = '';
-                }
-            });
+            // next, handle setting the config to the new component
+            const selectedComponent = allComponents.find(component => component.key === selectedComponentKey);
+            set(selectedComponent, name, true);
 
-            const components = getFormComponents(draft.formSteps);
-            Object.entries(components).map(([key, component]) => {
-                if (component.key === value || component.key === oldComponentToClear) {
-                    const previousInformationToDelete = ['appointments.showProducts', 'appointments.showLocations',
-                        'appointments.showDates', 'appointments.showTimes', 'appointments.productComponent',
-                        'appointments.locationComponent', 'appointments.dateComponent', 'appointments.lastName',
-                        'appointments.birthDate'];
+            // finally, handle the dependencies of all appointment configuration - we need
+            // to check and update all keys, even the one that wasn't change, because options
+            // can be set in non-logical order in the UI.
+            for (const otherConfigKey of APPOINTMENT_CONFIG_KEYS) {
+                const relevantComponent = findComponentForConfigKey(otherConfigKey);
+                if (!relevantComponent) continue;
 
-                    for (let field of previousInformationToDelete) {
-                        delete component[field];
+                switch (otherConfigKey) {
+                    // no dependencies, do nothing
+                    case 'showProducts':
+                    case 'lastName':
+                    case 'birthDate':
+                        break
+                    // reverse order without breaks, since every component builds on top of
+                    // the others
+                    case 'showTimes': {
+                        // add the date selection component information
+                        const dateComponent = findComponentForConfigKey('showDates');
+                        if (dateComponent) set(relevantComponent, `${prefix}.dateComponent`, dateComponent.key);
+                    }
+                    case 'showDates': {
+                        // add the location selection component information
+                        const locationComponent = findComponentForConfigKey('showLocations');
+                        if (locationComponent) set(relevantComponent, `${prefix}.locationComponent`, locationComponent.key);
+                    }
+                    case 'showLocations': {
+                        // add the product selection component information
+                        const productComponent = findComponentForConfigKey('showProducts');
+                        if (productComponent) set(relevantComponent, `${prefix}.productComponent`, productComponent.key);
+                        break;
+                    }
+                    default: {
+                        throw new Error(`Unknown config key: ${configKey}`);
                     }
                 }
-
-                if (component.key === value) {
-                    if (component.key === draft.appointmentConfiguration.products) {
-                        component['appointments.showProducts'] = true;
-                    } else if (component.key === draft.appointmentConfiguration.locations) {
-                        component['appointments.showLocations'] = true;
-                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                    } else if (component.key === draft.appointmentConfiguration.dates) {
-                        component['appointments.showDates'] = true;
-                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                        component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
-                    } else if (component.key === draft.appointmentConfiguration.times) {
-                        component['appointments.showTimes'] = true;
-                        component['appointments.productComponent'] = draft.appointmentConfiguration.products;
-                        component['appointments.locationComponent'] = draft.appointmentConfiguration.locations;
-                        component['appointments.dateComponent'] = draft.appointmentConfiguration.dates;
-                    } else if (component.key === draft.appointmentConfiguration.lastName) {
-                        component['appointments.lastName'] = true;
-                    } else if (component.key === draft.appointmentConfiguration.birthDate) {
-                        component['appointments.birthDate'] = true;
-                    }
-                }
-            });
-
+            }
             break;
         }
         /**
@@ -579,13 +572,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         dispatch({
             type: 'CHANGED_RULE',
             payload: {name, value, index},
-        });
-    };
-
-    const onAppointmentsChange = (name, value) => {
-        dispatch({
-            type: 'APPOINTMENTS_CHANGED',
-            payload: {name, value},
         });
     };
 
@@ -930,7 +916,14 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Appointments availableComponents={availableComponents} onChange={onAppointmentsChange} />
+                    <Appointments
+                        availableComponents={availableComponents}
+                        onChange={(event) => {
+                            dispatch({
+                                type: 'APPOINTMENT_CONFIGURATION_CHANGED',
+                                payload: event,
+                            });
+                        }} />
                 </TabPanel>
             </Tabs>
 
