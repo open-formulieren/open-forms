@@ -241,6 +241,12 @@
       "value": "plus"
     }
   ],
+  "C4Zn+R": [
+    {
+      "type": 0,
+      "value": "Internal name of the form definition used in this form step"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -311,6 +317,12 @@
     {
       "type": 0,
       "value": "Whether the step progression should be displayed in the UI or not."
+    }
+  ],
+  "GFXEAX": [
+    {
+      "type": 0,
+      "value": "Internal step name"
     }
   ],
   "GIdTgB": [
@@ -469,6 +481,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "RcVlPF": [
+    {
+      "type": 0,
+      "value": "Internal name/title of the form"
     }
   ],
   "S6eF5o": [
@@ -659,6 +677,12 @@
     {
       "type": 0,
       "value": "Form design"
+    }
+  ],
+  "hzx+WF": [
+    {
+      "type": 0,
+      "value": "Internal name"
     }
   ],
   "iZESbd": [
