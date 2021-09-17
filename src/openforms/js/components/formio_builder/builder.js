@@ -43,15 +43,7 @@ const BUILDER_OPTIONS = {
                 content: true,
                 fieldset: true,
             },
-        },
-        brp: {
-            title: 'Basisregistratie Personen',
-            weight: 10,
-            components: {
-                npFamilyMembers: true,
-            },
         }
-
     },
     noDefaultSubmitButton: true,
 };
