@@ -38,8 +38,8 @@ def book_appointment_for_submission(submission: Submission) -> None:
     appointment_data = submission.get_merged_appointment_data()
 
     expected_information = [
-        "productID",
-        "locationID",
+        "productIDAndName",
+        "locationIDAndName",
         "appStartTime",
         "clientLastName",
         "clientDateOfBirth",
@@ -77,8 +77,14 @@ def book_appointment_for_submission(submission: Submission) -> None:
             should_retry=False,
         )
 
-    product = AppointmentProduct(identifier=str(appointment_data["productID"]), name="")
-    location = AppointmentLocation(identifier=appointment_data["locationID"], name="")
+    product = AppointmentProduct(
+        identifier=appointment_data["productIDAndName"]["identifier"],
+        name=appointment_data["productIDAndName"]["name"],
+    )
+    location = AppointmentLocation(
+        identifier=appointment_data["locationIDAndName"]["identifier"],
+        name=appointment_data["locationIDAndName"]["name"],
+    )
     appointment_client = AppointmentClient(
         last_name=appointment_data["clientLastName"],
         birthdate=datetime.strptime(

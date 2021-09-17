@@ -83,7 +83,10 @@ class BookAppointmentForSubmissionTest(TestCase):
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
-            data={"product": "79", "time": "2021-08-25T17:00:00"},
+            data={
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "time": "2021-08-25T17:00:00",
+            },
             form_step=form_step_1,
         )
         SubmissionStepFactory.create(
@@ -108,7 +111,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         self.assertEqual(
             info.error_information,
             _("The following appoinment fields should be filled out: {fields}").format(
-                fields="clientDateOfBirth, locationID"
+                fields="clientDateOfBirth, locationIDAndName"
             ),
         )
 
@@ -146,8 +149,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79",
-                "location": "1",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
@@ -207,8 +210,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79",
-                "location": "1",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
@@ -275,8 +278,8 @@ class BookAppointmentForSubmissionTest(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={
-                "product": "79",
-                "location": "1",
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "location": {"identifier": "1", "name": "Amsterdam"},
                 "time": "2021-08-25T17:00:00+02:00",
             },
             form_step=form_step_1,
