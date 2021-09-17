@@ -42,6 +42,7 @@ const BUILDER_OPTIONS = {
             components: {
                 content: true,
                 fieldset: true,
+                columns: true,
             },
         }
     },
