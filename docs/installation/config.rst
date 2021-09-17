@@ -135,6 +135,13 @@ DigiD/EHerkenning settings
 * ``EHERKENNING_ORGANISATION_NAME_NL``: The Dutch name of the organisation that provides the service that requires EHerkenning authentication.
 * ``EHERKENNING_ORGANISATION_NAME_EN``: The English name of the organisation that provides the service that requires EHerkenning authentication.
 
+reCHAPTCHA settings
+-------------------
+
+* ``RECAPTCHA_PROJECT_ID``: the ID of the Google Cloud project for which the reCAPTCHA API is enabled.
+* ``RECAPTCHA_SITE_KEY``: The `site key <https://cloud.google.com/recaptcha-enterprise/docs/create-key#creating_a_site_key>`_ for the website.
+* ``RECAPTCHA_API_KEY``: The `API key <https://cloud.google.com/recaptcha-enterprise/docs/authenticate-apis#creating_an_api_key>`_ created for the Google Cloud project
+
 Other settings
 --------------
 
