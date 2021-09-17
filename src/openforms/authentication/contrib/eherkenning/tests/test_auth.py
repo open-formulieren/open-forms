@@ -304,21 +304,31 @@ class AuthenticationStep5Tests(TestCase):
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = f"https://testserver{form_path}?_start=1"
+        form_url = furl(f"http://testserver{form_path}")
+        form_url.args["_start"] = "1"
+
+        success_return_url = furl(
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            )
+        )
+        success_return_url.add(args={"next": form_url.url})
 
         url = furl(reverse("eherkenning:acs")).set(
             {
                 "SAMLart": self._create_test_artifact(
                     EHERKENNING["service_entity_id"]
                 ).decode("ascii"),
-                "RelayState": form_url,
+                "RelayState": success_return_url.url,
             }
         )
 
         response = self.client.get(url, follow=True)
 
-        self.assertRedirects(
-            response,
-            form_url + "&_eherkenning-message=login-cancelled",
-            status_code=302,
+        form_url.args["_eherkenning-message"] = "login-cancelled"
+
+        self.assertEquals(
+            response.redirect_chain[-1],
+            (form_url.url, 302),
         )
