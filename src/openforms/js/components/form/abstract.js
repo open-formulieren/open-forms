@@ -36,37 +36,3 @@ export const defineCommonEditFormTabs = (ComponentClass, extra = []) => {
     };
     defineEditFormTabs(ComponentClass, [TABS]);
 };
-
-
-export const defineChoicesEditFormTabs = (ComponentClass, valueKey = 'values') => {
-    defineCommonEditFormTabs(ComponentClass, [{
-            type: 'datagrid',
-            input: true,
-            label: 'Values',
-            key: valueKey,
-            tooltip: 'The radio button values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
-            weight: 10,
-            reorder: true,
-            defaultValue: [{label: '', value: ''}],
-            components: [
-                {
-                    label: 'Label',
-                    key: 'label',
-                    input: true,
-                    type: 'textfield',
-                },
-                {
-                    label: 'Value',
-                    key: 'value',
-                    input: true,
-                    type: 'textfield',
-                    allowCalculateOverride: true,
-                    calculateValue: {_camelCase: [{var: 'row.label'}]},
-                    validate: {
-                        required: true
-                    }
-                },
-            ],
-        }]
-    );
-};
