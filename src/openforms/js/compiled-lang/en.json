@@ -17,6 +17,18 @@
       "value": "is equal to"
     }
   ],
+  "/c2LWu": [
+    {
+      "type": 0,
+      "value": "Locations Component"
+    }
+  ],
+  "/hIJ8m": [
+    {
+      "type": 0,
+      "value": "Dates Component"
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -67,6 +79,12 @@
       "value": "Add another"
     }
   ],
+  "4iGsG1": [
+    {
+      "type": 0,
+      "value": "Birth Date Component"
+    }
+  ],
   "5/xPX6": [
     {
       "type": 0,
@@ -101,6 +119,12 @@
     {
       "type": 0,
       "value": "Authentication"
+    }
+  ],
+  "6xw/Qo": [
+    {
+      "type": 0,
+      "value": "Component where last name for an appointment will be shown"
     }
   ],
   "70Q0CM": [
@@ -397,6 +421,12 @@
       "value": "Successful Submissions Removal Limit"
     }
   ],
+  "JtOgcq": [
+    {
+      "type": 0,
+      "value": "Last Name Component"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -421,6 +451,12 @@
       "value": "Change text"
     }
   ],
+  "NwTdLM": [
+    {
+      "type": 0,
+      "value": "Component where locations for an appointment will be shown"
+    }
+  ],
   "OFAJVW": [
     {
       "type": 0,
@@ -437,6 +473,12 @@
     {
       "type": 0,
       "value": "Add rule"
+    }
+  ],
+  "PiB6Y1": [
+    {
+      "type": 0,
+      "value": "Times Component"
     }
   ],
   "PwUKIe": [
@@ -575,6 +617,12 @@
     {
       "type": 0,
       "value": "Slug of the form definition used in this form step"
+    }
+  ],
+  "aUChz/": [
+    {
+      "type": 0,
+      "value": "Products Component"
     }
   ],
   "aXJpiI": [
@@ -881,10 +929,28 @@
       "value": "Errored Submissions Removal Method"
     }
   ],
+  "wjwFwT": [
+    {
+      "type": 0,
+      "value": "Component where times for an appointment will be shown"
+    }
+  ],
+  "wnxKT/": [
+    {
+      "type": 0,
+      "value": "Component where products for an appointment will be shown"
+    }
+  ],
   "xJBMaf": [
     {
       "type": 0,
       "value": "Submission confirmation template"
+    }
+  ],
+  "xRQrla": [
+    {
+      "type": 0,
+      "value": "Appointments"
     }
   ],
   "xcp+LU": [
@@ -897,6 +963,18 @@
     {
       "type": 0,
       "value": "Select definition"
+    }
+  ],
+  "zLTTBw": [
+    {
+      "type": 0,
+      "value": "Component where dates for an appointment will be shown"
+    }
+  ],
+  "zwBbGa": [
+    {
+      "type": 0,
+      "value": "Component where birth date for an appointment will be shown"
     }
   ]
 }

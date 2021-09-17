@@ -14,6 +14,16 @@
     "description": "\"==\" operator description",
     "originalDefault": "is equal to"
   },
+  "/c2LWu": {
+    "defaultMessage": "Locations Component",
+    "description": "Locations Component field label",
+    "originalDefault": "Locations Component"
+  },
+  "/hIJ8m": {
+    "defaultMessage": "Dates Component",
+    "description": "Dates Component field label",
+    "originalDefault": "Dates Component"
+  },
   "0RXE97": {
     "defaultMessage": "Knopteksten",
     "description": "Form literals tab title",
@@ -49,6 +59,11 @@
     "description": "Button text to add extra item",
     "originalDefault": "Add another"
   },
+  "4iGsG1": {
+    "defaultMessage": "Birth Date Component",
+    "description": "Birth Date Component field label",
+    "originalDefault": "Birth Date Component"
+  },
   "5/xPX6": {
     "defaultMessage": "Naam",
     "description": "Form name field label",
@@ -78,6 +93,11 @@
     "defaultMessage": "Inlogopties",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
+  },
+  "6xw/Qo": {
+    "defaultMessage": "Component where last name for an appointment will be shown",
+    "description": "Last Name Component field help text",
+    "originalDefault": "Component where last name for an appointment will be shown"
   },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
@@ -294,6 +314,11 @@
     "description": "Successful Submissions Removal Limit field label",
     "originalDefault": "Successful Submissions Removal Limit"
   },
+  "JtOgcq": {
+    "defaultMessage": "Last Name Component",
+    "description": "Last Name Component field label",
+    "originalDefault": "Last Name Component"
+  },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
     "description": "Form name field help text",
@@ -314,6 +339,11 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
+  "NwTdLM": {
+    "defaultMessage": "Component where locations for an appointment will be shown",
+    "description": "Locations Component field help text",
+    "originalDefault": "Component where locations for an appointment will be shown"
+  },
   "OFAJVW": {
     "defaultMessage": "Registratie",
     "description": "Form registration options tab title",
@@ -328,6 +358,11 @@
     "defaultMessage": "Regel toevoegen",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
+  },
+  "PiB6Y1": {
+    "defaultMessage": "Times Component",
+    "description": "Times Component field label",
+    "originalDefault": "Times Component"
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
@@ -423,6 +458,11 @@
     "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
     "description": "Form step slug field help text",
     "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aUChz/": {
+    "defaultMessage": "Products Component",
+    "description": "Products Component field label",
+    "originalDefault": "Products Component"
   },
   "aXJpiI": {
     "defaultMessage": "Dit veld is verplicht.",
@@ -674,10 +714,25 @@
     "description": "Errored Submissions Removal Method field label",
     "originalDefault": "Errored Submissions Removal Method"
   },
+  "wjwFwT": {
+    "defaultMessage": "Component where times for an appointment will be shown",
+    "description": "Times Component field help text",
+    "originalDefault": "Component where times for an appointment will be shown"
+  },
+  "wnxKT/": {
+    "defaultMessage": "Component where products for an appointment will be shown",
+    "description": "Products Component field help text",
+    "originalDefault": "Component where products for an appointment will be shown"
+  },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
+  },
+  "xRQrla": {
+    "defaultMessage": "Appointments",
+    "description": "Appointments tab title",
+    "originalDefault": "Appointments"
   },
   "xcp+LU": {
     "defaultMessage": "Formulierdefinitie aanmaken",
@@ -688,5 +743,15 @@
     "defaultMessage": "Formulierdefinitie selecteren",
     "description": "select definition icon title",
     "originalDefault": "Select definition"
+  },
+  "zLTTBw": {
+    "defaultMessage": "Component where dates for an appointment will be shown",
+    "description": "Dates Component field help text",
+    "originalDefault": "Component where dates for an appointment will be shown"
+  },
+  "zwBbGa": {
+    "defaultMessage": "Component where birth date for an appointment will be shown",
+    "description": "Birth Date Component field help text",
+    "originalDefault": "Component where birth date for an appointment will be shown"
   }
 }

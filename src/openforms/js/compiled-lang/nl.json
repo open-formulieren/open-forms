@@ -17,6 +17,18 @@
       "value": "is gelijk aan"
     }
   ],
+  "/c2LWu": [
+    {
+      "type": 0,
+      "value": "Locations Component"
+    }
+  ],
+  "/hIJ8m": [
+    {
+      "type": 0,
+      "value": "Dates Component"
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -67,6 +79,12 @@
       "value": "Voeg nog één toe"
     }
   ],
+  "4iGsG1": [
+    {
+      "type": 0,
+      "value": "Birth Date Component"
+    }
+  ],
   "5/xPX6": [
     {
       "type": 0,
@@ -101,6 +119,12 @@
     {
       "type": 0,
       "value": "Inlogopties"
+    }
+  ],
+  "6xw/Qo": [
+    {
+      "type": 0,
+      "value": "Component where last name for an appointment will be shown"
     }
   ],
   "70Q0CM": [
@@ -401,6 +425,12 @@
       "value": "Successful Submissions Removal Limit"
     }
   ],
+  "JtOgcq": [
+    {
+      "type": 0,
+      "value": "Last Name Component"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -425,6 +455,12 @@
       "value": "'Wijzigen' tekst"
     }
   ],
+  "NwTdLM": [
+    {
+      "type": 0,
+      "value": "Component where locations for an appointment will be shown"
+    }
+  ],
   "OFAJVW": [
     {
       "type": 0,
@@ -441,6 +477,12 @@
     {
       "type": 0,
       "value": "Regel toevoegen"
+    }
+  ],
+  "PiB6Y1": [
+    {
+      "type": 0,
+      "value": "Times Component"
     }
   ],
   "PwUKIe": [
@@ -579,6 +621,12 @@
     {
       "type": 0,
       "value": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf."
+    }
+  ],
+  "aUChz/": [
+    {
+      "type": 0,
+      "value": "Products Component"
     }
   ],
   "aXJpiI": [
@@ -885,10 +933,28 @@
       "value": "Errored Submissions Removal Method"
     }
   ],
+  "wjwFwT": [
+    {
+      "type": 0,
+      "value": "Component where times for an appointment will be shown"
+    }
+  ],
+  "wnxKT/": [
+    {
+      "type": 0,
+      "value": "Component where products for an appointment will be shown"
+    }
+  ],
   "xJBMaf": [
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
+    }
+  ],
+  "xRQrla": [
+    {
+      "type": 0,
+      "value": "Appointments"
     }
   ],
   "xcp+LU": [
@@ -901,6 +967,18 @@
     {
       "type": 0,
       "value": "Formulierdefinitie selecteren"
+    }
+  ],
+  "zLTTBw": [
+    {
+      "type": 0,
+      "value": "Component where dates for an appointment will be shown"
+    }
+  ],
+  "zwBbGa": [
+    {
+      "type": 0,
+      "value": "Component where birth date for an appointment will be shown"
     }
   ]
 }
