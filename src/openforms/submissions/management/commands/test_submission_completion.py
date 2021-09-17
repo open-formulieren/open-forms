@@ -55,7 +55,7 @@ class Command(BaseCommand):
             factory_kwargs["components_list"] = [
                 {
                     "key": "productID",
-                    "appointmentsShowProducts": True,
+                    "appointments": {"showProducts": True},
                 }
             ]
             factory_kwargs["submitted_data"] = {

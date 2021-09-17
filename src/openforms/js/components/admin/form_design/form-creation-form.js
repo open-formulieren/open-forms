@@ -1,4 +1,6 @@
 import zip from 'lodash/zip';
+import getObjectValue from 'lodash/get';
+import set from 'lodash/set';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -26,6 +28,7 @@ import {
     LOGICS_ENDPOINT,
 } from './constants';
 import {loadPlugins, saveLogicRules} from './data';
+import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -247,6 +250,70 @@ function reducer(draft, action) {
             updatedSteps = updatedSteps.concat([{...draft.formSteps[index-1], ...{index: index}}]);
 
             draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
+            break;
+        }
+        case 'APPOINTMENT_CONFIGURATION_CHANGED': {
+            // deconstruct the 'event' which holds the information on which config param
+            // was changed and to which component it is (now) set.
+            const {target: {name, value: selectedComponentKey}} = action.payload;
+
+            // name is in the form "appointments.<key>"
+            const [prefix, configKey] = name.split('.');
+            const allComponents = Object.values(getFormComponents(draft.formSteps));
+
+            // utility to find the component for a given appointment config option
+            const findComponentForConfigKey = (configKey) => {
+                const name = `${prefix}.${configKey}`;
+                return allComponents.find(component => getObjectValue(component, name, false));
+            };
+
+            // first, ensure that if the value was changed, the old component is cleared
+            const currentComponentForConfigKey = findComponentForConfigKey(configKey);
+            if (currentComponentForConfigKey) {
+                // wipe the entire appointments configuration
+                set(currentComponentForConfigKey, prefix, {});
+            }
+
+            // next, handle setting the config to the new component
+            const selectedComponent = allComponents.find(component => component.key === selectedComponentKey);
+            set(selectedComponent, name, true);
+
+            // finally, handle the dependencies of all appointment configuration - we need
+            // to check and update all keys, even the one that wasn't change, because options
+            // can be set in non-logical order in the UI.
+            for (const otherConfigKey of APPOINTMENT_CONFIG_KEYS) {
+                const relevantComponent = findComponentForConfigKey(otherConfigKey);
+                if (!relevantComponent) continue;
+
+                switch (otherConfigKey) {
+                    // no dependencies, do nothing
+                    case 'showProducts':
+                    case 'lastName':
+                    case 'birthDate':
+                        break
+                    // reverse order without breaks, since every component builds on top of
+                    // the others
+                    case 'showTimes': {
+                        // add the date selection component information
+                        const dateComponent = findComponentForConfigKey('showDates');
+                        if (dateComponent) set(relevantComponent, `${prefix}.dateComponent`, dateComponent.key);
+                    }
+                    case 'showDates': {
+                        // add the location selection component information
+                        const locationComponent = findComponentForConfigKey('showLocations');
+                        if (locationComponent) set(relevantComponent, `${prefix}.locationComponent`, locationComponent.key);
+                    }
+                    case 'showLocations': {
+                        // add the product selection component information
+                        const productComponent = findComponentForConfigKey('showProducts');
+                        if (productComponent) set(relevantComponent, `${prefix}.productComponent`, productComponent.key);
+                        break;
+                    }
+                    default: {
+                        throw new Error(`Unknown config key: ${configKey}`);
+                    }
+                }
+            }
             break;
         }
         /**
@@ -684,6 +751,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         return (<Loader />);
     }
 
+    const availableComponents = getFormComponents(state.formSteps);
+
     return (
         <>
             <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
@@ -727,6 +796,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     </Tab>
                     <Tab>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
+                    </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                     </Tab>
                 </TabList>
 
@@ -834,13 +906,24 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <FormStepsContext.Provider value={state.formSteps}>
                             <FormLogic
                                 logicRules={state.logicRules}
-                                availableComponents={getFormComponents(state.formSteps)}
+                                availableComponents={availableComponents}
                                 onChange={onRuleChange}
                                 onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
                                 onAdd={() => dispatch({type: 'ADD_RULE'})}
                             />
                         </FormStepsContext.Provider>
                     </Fieldset>
+                </TabPanel>
+
+                <TabPanel>
+                    <Appointments
+                        availableComponents={availableComponents}
+                        onChange={(event) => {
+                            dispatch({
+                                type: 'APPOINTMENT_CONFIGURATION_CHANGED',
+                                payload: event,
+                            });
+                        }} />
                 </TabPanel>
             </Tabs>
 

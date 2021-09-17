@@ -5,10 +5,11 @@ import {useIntl} from 'react-intl';
 import {getTranslatedChoices} from '../../../../utils/i18n';
 import Select from '../../forms/Select';
 import DeleteIcon from '../../DeleteIcon';
+import ComponentSelection from '../../forms/ComponentSelection';
+import {ComponentsContext} from '../../forms/Context';
+
 import {ACTION_TYPES, ACTIONS_WITH_OPTIONS, MODIFIABLE_PROPERTIES, STRING_TO_TYPE, TYPE_TO_STRING} from './constants';
-import ComponentSelection from './ComponentSelection';
 import LiteralValueInput from './LiteralValueInput';
-import {ComponentsContext} from './Context';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
 import StepSelection from './StepSelection';

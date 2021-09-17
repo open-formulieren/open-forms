@@ -4,12 +4,12 @@ import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
 
-import {getTranslatedChoices} from '../../../../utils/i18n'
+import {getTranslatedChoices} from '../../../../utils/i18n';
+import ComponentSelection from '../../forms/ComponentSelection';
+import {ComponentsContext} from '../../forms/Context';
 import Select from '../../forms/Select';
 
-import {ComponentsContext} from './Context';
-import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
-import ComponentSelection from './ComponentSelection';
+import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE } from './constants';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';

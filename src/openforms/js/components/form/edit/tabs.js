@@ -296,6 +296,7 @@ const DEFAULT_TEXT_TABS = {
         ADVANCED,
         TEXT_VALIDATION,
         REGISTRATION,
+        PREFILL
     ]
 };
 

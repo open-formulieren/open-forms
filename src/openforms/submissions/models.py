@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
+from glom import glom
 from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
@@ -316,34 +317,32 @@ class Submission(models.Model):
         return ordered_data
 
     def get_merged_appointment_data(self) -> Dict[str, str]:
-        merged_appointment_data = dict()
-        component_key_to_appointment_info = dict()
-        component_key_to_appointment_key = {
-            "appointmentsShowProducts": "productIDAndName",
-            "appointmentsShowLocations": "locationIDAndName",
-            "appointmentsShowTimes": "appStartTime",
-            "appointmentsLastName": "clientLastName",
-            "appointmentsBirthDate": "clientDateOfBirth",
+        component_config_key_to_appointment_key = {
+            "appointments.showProducts": "productIDAndName",
+            "appointments.showLocations": "locationIDAndName",
+            "appointments.showTimes": "appStartTime",
+            "appointments.lastName": "clientLastName",
+            "appointments.birthDate": "clientDateOfBirth",
         }
 
+        merged_data = self.get_merged_data()
+        appointment_data = {}
+
         for component in self.form.iter_components(recursive=True):
+            # is this component any of the keys were looking for?
             for (
                 component_key,
                 appointment_key,
-            ) in component_key_to_appointment_key.items():
-                if component.get(component_key):
-                    component_key_to_appointment_info[appointment_key] = component[
-                        "key"
-                    ]
+            ) in component_config_key_to_appointment_key.items():
+                is_the_right_component = glom(component, component_key, default=False)
+                if not is_the_right_component:
+                    continue
 
-        merged_data = self.get_merged_data()
+                # it is the right component, get the value and store it
+                appointment_data[appointment_key] = merged_data[component["key"]]
+                break
 
-        for key in component_key_to_appointment_info.keys():
-            merged_appointment_data[key] = merged_data[
-                component_key_to_appointment_info[key]
-            ]
-
-        return merged_appointment_data
+        return appointment_data
 
     def get_merged_data(self) -> dict:
         merged_data = dict()
