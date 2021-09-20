@@ -15,7 +15,9 @@ from .utils import EXPORT_BLOB
 class RestoreVersionTest(TestCase):
     def test_restoring_version(self):
         form_definition = FormDefinitionFactory.create(
-            name="Test Definition 2", configuration={"test": "2"}
+            name="Test Definition 2",
+            internal_name="Test Internal 2",
+            configuration={"test": "2"},
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -34,6 +36,7 @@ class RestoreVersionTest(TestCase):
 
         self.assertEqual(1, FormVersion.objects.all().count())
         self.assertEqual("Test Form 1", form.name)
+        self.assertEqual("Test Form Internal 1", form.internal_name)
         self.assertEqual(2, FormDefinition.objects.all().count())
 
         form_steps = FormStep.objects.filter(form=form)
@@ -43,6 +46,9 @@ class RestoreVersionTest(TestCase):
         restored_form_definition = form_steps.get().form_definition
 
         self.assertEqual("Test Definition 1", restored_form_definition.name)
+        self.assertEqual(
+            "Test Definition Internal 1", restored_form_definition.internal_name
+        )
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
             {"components": [{"test": "1", "key": "test"}]},

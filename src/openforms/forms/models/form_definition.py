@@ -29,6 +29,12 @@ class FormDefinition(models.Model):
 
     uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     name = models.CharField(_("name"), max_length=50)
+    internal_name = models.CharField(
+        _("internal name"),
+        blank=True,
+        max_length=50,
+        help_text=_("internal name for management purposes"),
+    )
     slug = AutoSlugField(
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
@@ -48,7 +54,7 @@ class FormDefinition(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.admin_name
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -73,6 +79,11 @@ class FormDefinition(models.Model):
         copy.pk = None
         copy.uuid = uuid.uuid4()
         copy.name = _("{name} (copy)").format(name=self.name)
+        copy.internal_name = (
+            _("{name} (copy)").format(name=self.internal_name)
+            if self.internal_name
+            else ""
+        )
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.save()
         return copy
@@ -152,6 +163,10 @@ class FormDefinition(models.Model):
                 sensitive_fields.append(component["key"])
 
         return sensitive_fields
+
+    @property
+    def admin_name(self):
+        return self.internal_name or self.name
 
     class Meta:
         verbose_name = _("Form definition")

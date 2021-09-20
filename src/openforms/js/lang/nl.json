@@ -184,6 +184,11 @@
     "description": "\"+\" operator description",
     "originalDefault": "plus"
   },
+  "C4Zn+R": {
+    "defaultMessage": "Interne naam van de formulierdefinitie voor deze stap",
+    "description": "Form step internal name field help text",
+    "originalDefault": "Internal name of the form definition used in this form step"
+  },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
     "description": "Delete icon title",
@@ -243,6 +248,11 @@
     "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
+  },
+  "GFXEAX": {
+    "defaultMessage": "Interne naam",
+    "description": "Form step internal name label",
+    "originalDefault": "Internal step name"
   },
   "GIdTgB": {
     "defaultMessage": "Gebruik bestaande formulierdefinitie",
@@ -383,6 +393,11 @@
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
+  },
+  "RcVlPF": {
+    "defaultMessage": "Interne naam van het formulier voor onderscheid in overzichten",
+    "description": "Form name field help text",
+    "originalDefault": "Internal name/title of the form"
   },
   "S6eF5o": {
     "defaultMessage": "Data removal",
@@ -533,6 +548,11 @@
     "defaultMessage": "Formulierontwerp",
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
+  },
+  "hzx+WF": {
+    "defaultMessage": "Interne naam",
+    "description": "Form name field label",
+    "originalDefault": "Internal name"
   },
   "iZESbd": {
     "defaultMessage": "is kleiner dan",

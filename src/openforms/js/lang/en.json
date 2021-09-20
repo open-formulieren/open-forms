@@ -184,6 +184,11 @@
     "description": "\"+\" operator description",
     "originalDefault": "plus"
   },
+  "C4Zn+R": {
+    "defaultMessage": "Internal name of the form definition used in this form step",
+    "description": "Form step internal name field help text",
+    "originalDefault": "Internal name of the form definition used in this form step"
+  },
   "CN9j+L": {
     "defaultMessage": "Delete",
     "description": "Delete icon title",
@@ -243,6 +248,11 @@
     "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
+  },
+  "GFXEAX": {
+    "defaultMessage": "Internal step name",
+    "description": "Form step internal name label",
+    "originalDefault": "Internal step name"
   },
   "GIdTgB": {
     "defaultMessage": "Use existing form definition",
@@ -383,6 +393,11 @@
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
+  },
+  "RcVlPF": {
+    "defaultMessage": "Internal name/title of the form",
+    "description": "Form name field help text",
+    "originalDefault": "Internal name/title of the form"
   },
   "S6eF5o": {
     "defaultMessage": "Data removal",
@@ -533,6 +548,11 @@
     "defaultMessage": "Form design",
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
+  },
+  "hzx+WF": {
+    "defaultMessage": "Internal name",
+    "description": "Form name field label",
+    "originalDefault": "Internal name"
   },
   "iZESbd": {
     "defaultMessage": "is less than",

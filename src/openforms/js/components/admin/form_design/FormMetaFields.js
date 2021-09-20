@@ -27,6 +27,7 @@ const FormMetaFields = ({
     const {
         uuid,
         name,
+        internalName,
         slug,
         showProgressIndicator,
         active,
@@ -76,6 +77,16 @@ const FormMetaFields = ({
                     required
                 >
                     <TextInput value={name} onChange={onChange} onBlur={setFormSlug} />
+                </Field>
+            </FormRow>
+            <FormRow>
+                <Field
+                    name="form.internalName"
+                    label={<FormattedMessage defaultMessage="Internal name" description="Form name field label" />}
+                    helpText={<FormattedMessage defaultMessage="Internal name/title of the form" description="Form name field help text" />}
+                    errors={errors.name}
+                >
+                    <TextInput value={internalName} onChange={onChange} />
                 </Field>
             </FormRow>
             <FormRow>

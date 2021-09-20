@@ -18,7 +18,7 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
     const [selectedFormDefinition, setSelectedFormDefinition] = useState('');
     const [validationErrors, setValidationErrors] = useState([]);
 
-    const formDefinitionChoices = formDefinitions.filter(fd => fd.isReusable).map(fd => [fd.url, fd.name]);
+    const formDefinitionChoices = formDefinitions.filter(fd => fd.isReusable).map(fd => [fd.url, (fd.internalName || fd.name)]);
 
     const closeModal = () => {
         setIsModalOpen(false);

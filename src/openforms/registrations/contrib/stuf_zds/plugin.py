@@ -119,7 +119,7 @@ class StufZDSRegistration(BasePlugin):
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
 
-        options["omschrijving"] = submission.form.name
+        options["omschrijving"] = submission.form.admin_name
         options["referentienummer"] = str(submission.uuid)
 
         client = config.get_client(options)

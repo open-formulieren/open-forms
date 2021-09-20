@@ -42,7 +42,7 @@ class ObjectsAPIRegistration(BasePlugin):
             "informatieobjecttype_submission_report"
         ]
         document = create_document(
-            submission.form.name,
+            submission.form.admin_name,
             submission_report,
             submission_report_options,
             get_drc=get_drc,
@@ -55,7 +55,7 @@ class ObjectsAPIRegistration(BasePlugin):
         attachments = []
         for attachment in submission.attachments:
             attachment_document = create_attachment(
-                submission.form.name,
+                submission.form.admin_name,
                 attachment,
                 attachment_options,
                 get_drc=get_drc,

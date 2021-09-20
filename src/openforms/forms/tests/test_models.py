@@ -25,18 +25,26 @@ class FormTestCase(TestCase):
         self.assertTrue(self.form.login_required)
 
     def test_copying_a_form(self):
-        form1 = FormFactory.create(slug="a-form", name="A form")
+        form1 = FormFactory.create(
+            slug="a-form", name="A form", internal_name="A form internal"
+        )
 
         form2 = form1.copy()
         form3 = form1.copy()
 
         self.assertEqual(form2.slug, _("{slug}-copy").format(slug=form1.slug))
         self.assertEqual(form2.name, _("{name} (copy)").format(name=form1.name))
+        self.assertEqual(
+            form2.internal_name, _("{name} (copy)").format(name=form1.internal_name)
+        )
         self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(form3.name, _("{name} (copy)").format(name=form1.name))
+        self.assertEqual(
+            form3.internal_name, _("{name} (copy)").format(name=form1.internal_name)
+        )
 
     def test_get_keys_for_email_confirmation(self):
-        form = FormFactory.create(slug="a-form", name="A form")
+        form = FormFactory.create()
 
         def_1 = FormDefinitionFactory.create(
             configuration={
@@ -66,7 +74,7 @@ class FormTestCase(TestCase):
         self.assertEqual(set(actual), {"aaa", "bbb"})
 
     def test_iter_components(self):
-        form = FormFactory.create(slug="a-form", name="A form")
+        form = FormFactory.create()
 
         def_1 = FormDefinitionFactory.create(
             configuration={
@@ -177,19 +185,31 @@ class FormDefinitionTestCase(TestCase):
 
     def test_copying_a_form_definition_makes_correct_copies(self):
         form_definition_1 = FormDefinitionFactory.create(
-            slug="a-form-definition", name="A form definition"
+            slug="a-form-definition",
+            name="A form definition",
+            internal_name="A internal",
         )
 
-        form2 = form_definition_1.copy()
-        form3 = form_definition_1.copy()
+        form_definition_2 = form_definition_1.copy()
+        form_definition_3 = form_definition_1.copy()
 
-        self.assertEqual(form2.slug, _("{slug}-copy").format(slug="a-form-definition"))
         self.assertEqual(
-            form2.name, _("{name} (copy)").format(name="A form definition")
+            form_definition_2.slug, _("{slug}-copy").format(slug="a-form-definition")
         )
-        self.assertEqual(form3.slug, f"{form2.slug}-2")
         self.assertEqual(
-            form3.name, _("{name} (copy)").format(name="A form definition")
+            form_definition_2.name, _("{name} (copy)").format(name="A form definition")
+        )
+        self.assertEqual(
+            form_definition_2.internal_name,
+            _("{name} (copy)").format(name="A internal"),
+        )
+        self.assertEqual(form_definition_3.slug, f"{form_definition_2.slug}-2")
+        self.assertEqual(
+            form_definition_3.name, _("{name} (copy)").format(name="A form definition")
+        )
+        self.assertEqual(
+            form_definition_3.internal_name,
+            _("{name} (copy)").format(name="A internal"),
         )
 
     def test_get_keys_for_email_summary(self):

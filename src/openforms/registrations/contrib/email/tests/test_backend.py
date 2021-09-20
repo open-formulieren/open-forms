@@ -64,7 +64,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.admin_name, submission.uuid
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")

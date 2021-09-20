@@ -31,4 +31,4 @@ class FormVersion(models.Model):
         verbose_name_plural = _("form versions")
 
     def __str__(self):
-        return f"{self.form.name} ({self.created})"
+        return f"{self.form.admin_name} ({self.created})"

@@ -43,6 +43,7 @@ import {getFormComponents} from './utils';
 const initialFormState = {
     form: {
         name: '',
+        internalName: '',
         uuid: '',
         slug: '',
         showProgressIndicator: true,
@@ -200,13 +201,14 @@ function reducer(draft, action) {
                     isNew: false,
                 };
             } else {
-                const { configuration, name, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
+                const { configuration, name, internalName, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
                 const { url } = draft.formSteps[index];
                 draft.formSteps[index] = {
                     configuration,
                     formDefinition: formDefinitionUrl,
                     index,
                     name,
+                    internalName,
                     slug,
                     url,
                     literals: {
@@ -635,6 +637,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     csrftoken,
                     {
                         name: step.name,
+                        internalName: step.internalName,
                         slug: step.slug,
                         configuration: step.configuration,
                         loginRequired: step.loginRequired,
@@ -657,6 +660,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     csrftoken,
                     {
                         name: step.name,
+                        internalName: step.internalName,
                         slug: step.slug,
                         index: index,
                         formDefinition: definitionResponse.data.url,

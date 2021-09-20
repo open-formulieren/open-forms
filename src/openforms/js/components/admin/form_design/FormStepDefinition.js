@@ -30,7 +30,7 @@ const emptyConfiguration = {
  * but we're fighting the library at this point.
  *
  */
-const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveText='', nextText='',
+const FormStepDefinition = ({ url='', name='', internalName='', slug='', previousText='', saveText='', nextText='',
                                 loginRequired=false, isReusable=false, configuration=emptyConfiguration, onChange,
                                 onFieldChange, onLiteralFieldChange, errors, ...props }) => {
 
@@ -72,6 +72,17 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
                         fieldBox
                     >
                         <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
+                    </Field>
+                    <Field
+                        name="internalName"
+                        label={<FormattedMessage defaultMessage="Internal step name" description="Form step internal name label" />}
+                        helpText={<FormattedMessage
+                            defaultMessage="Internal name of the form definition used in this form step"
+                            description="Form step internal name field help text" />}
+                        errors={errors.name}
+                        fieldBox
+                    >
+                        <TextInput value={internalName} onChange={onFieldChange} />
                     </Field>
                     <Field
                         name="slug"
@@ -148,6 +159,7 @@ const FormStepDefinition = ({ url='', name='', slug='', previousText='', saveTex
 FormStepDefinition.propTypes = {
     configuration: PropTypes.object,
     name: PropTypes.string,
+    internalName: PropTypes.string,
     url: PropTypes.string,
     slug: PropTypes.string,
     previousText: PropTypes.string,

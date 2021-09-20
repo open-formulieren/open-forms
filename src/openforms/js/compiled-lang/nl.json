@@ -269,6 +269,12 @@
       "value": "plus"
     }
   ],
+  "C4Zn+R": [
+    {
+      "type": 0,
+      "value": "Interne naam van de formulierdefinitie voor deze stap"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -339,6 +345,12 @@
     {
       "type": 0,
       "value": "Geef de voortgang in de formulierstappen wel of niet weer."
+    }
+  ],
+  "GFXEAX": [
+    {
+      "type": 0,
+      "value": "Interne naam"
     }
   ],
   "GIdTgB": [
@@ -515,6 +527,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "RcVlPF": [
+    {
+      "type": 0,
+      "value": "Interne naam van het formulier voor onderscheid in overzichten"
     }
   ],
   "S6eF5o": [
@@ -711,6 +729,12 @@
     {
       "type": 0,
       "value": "Formulierontwerp"
+    }
+  ],
+  "hzx+WF": [
+    {
+      "type": 0,
+      "value": "Interne naam"
     }
   ],
   "iZESbd": [

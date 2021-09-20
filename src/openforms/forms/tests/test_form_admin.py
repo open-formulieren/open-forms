@@ -67,6 +67,7 @@ class FormAdminTests(WebTest):
             add_page = self.app.get(url, user=self.superuser)
 
             add_page.form["name"] = "test form"
+            add_page.form["internal_name"] = "internal form"
             add_page.form["slug"] = "test-form"
             add_page.form["registration_backend"].select("plugin")
 
