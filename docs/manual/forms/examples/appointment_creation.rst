@@ -11,7 +11,7 @@ In dit voorbeeld gaan we er van uit dat u een
 Configuratie
 ============
 
-* :ref:`Appointment configuratie <configuration_appointment>`
+* :ref:`Appointment configuratie <configuration_appointment_index>`
 
 Formulier maken
 ===============
