@@ -25,7 +25,9 @@ class TimelineLogProxy(TimelineLog):
         if self.is_submission:
             return f"[{self.fmt_time}] ({self.fmt_sub})"
         elif self.content_type_id:
-            return f"[{self.fmt_time}] ({self.content_type.name} {self.content_object.id})"
+            return (
+                f"[{self.fmt_time}] ({self.content_type.name} {self.content_object.id})"
+            )
         else:
             return f"[{self.fmt_time}]"
 
