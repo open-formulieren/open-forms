@@ -5,12 +5,12 @@ StUF-ZDS
 ========
 
 The StUF-ZDS (StUF Zaak- en Documentservices) is a SOAP based Zaak and Documents backend. Open Forms can be
-configured to access this API to register form submissions.
+configured to access this SOAP-service to register form submissions.
 
 1. In Open Forms, navigate to: **Configuration** > **Soap Services**
 2. Click **Add Soap Services** and fill in the following details:
 
-   * **Label**: *A human readable label*, for example: `StUF-ZDS registration`
+   * **Label**: *A human readable label*, for example: ``My StUF-ZDS service``
 
 3. In the **StUF parameters** section enter the sending and receiving organisation details provided by your backend provider
 4. In the **Connection** section:
@@ -37,4 +37,4 @@ configured to access this API to register form submissions.
 9. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
 10. Click **Save**
 
-The StUF-ZDS configuration is now completed and can be selected as registration backend in the form builder.
+The StUF-ZDS configuration is now complete and can be selected as registration backend in the form builder.
