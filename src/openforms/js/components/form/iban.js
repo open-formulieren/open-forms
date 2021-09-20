@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import {defineCommonEditFormTabs} from "./abstract";
+import {DEFAULT_SENSITIVE_TABS} from "./edit/tabs";
 
 const TextField = Formio.Components.components.textfield;
 
@@ -24,12 +24,14 @@ class IbanField extends TextField {
         };
     }
 
+    static editForm() {
+        return {components: [DEFAULT_SENSITIVE_TABS]};
+    }
+
     get defaultSchema() {
         return IbanField.schema();
     }
 
 }
-
-defineCommonEditFormTabs(IbanField);
 
 export default IbanField;

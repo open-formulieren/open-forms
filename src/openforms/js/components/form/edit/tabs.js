@@ -46,6 +46,21 @@ const BASIC = {
     ]
 };
 
+const SENSITIVE_BASIC = {
+    key: 'basic',
+    label: 'Basic',
+    components: [
+        ...BASIC.components.filter(component => component.key !== 'isSensitiveData'),
+        {
+            type: 'checkbox',
+            key: 'isSensitiveData',
+            label: 'Is Sensitive Data',
+            tooltip: 'The data entered in this component will be removed in accordance with the privacy settings.',
+            defaultValue: true,
+        },
+    ]
+};
+
 
 const TEXT_BASIC = {
     key: 'basic',
@@ -328,6 +343,17 @@ const DEFAULT_TABS = {
     ]
 };
 
+const DEFAULT_SENSITIVE_TABS = {
+    type: 'tabs',
+    key: 'tabs',
+    components: [
+        SENSITIVE_BASIC,
+        ADVANCED,
+        VALIDATION,
+        REGISTRATION,
+    ]
+};
+
 
 const DEFAULT_TEXT_TABS = {
     type: 'tabs',
@@ -354,6 +380,8 @@ const DEFAULT_CHOICES_TABS = {
 };
 
 
-export { DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_CHOICES_TABS, BASIC, TEXT_BASIC, LOCATION, ADVANCED,
-    VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION};
+export {
+    DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_CHOICES_TABS, DEFAULT_SENSITIVE_TABS,
+    BASIC, TEXT_BASIC, LOCATION, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION
+};
 export default DEFAULT_TABS;
