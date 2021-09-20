@@ -5,8 +5,8 @@
 {% block content %}
 <ul class="timeline__list col__22--vw">
     {% for log in object_list %}
-        <li class="timeline__entry">
-            {% render_message log in_view=True %}
+        <li class="timeline__entry" style="font-family: monospace;">
+            {% render_message log in_view=True %} [<a href="{% url 'admin:logging_timelinelogproxy_change' choice.id %}">details</a>]
         </li>
     {% endfor %}
 </ul>

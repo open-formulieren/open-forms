@@ -1,4 +1,4 @@
 {% load i18n %}
 {% blocktrans trimmed with step=log.extra_data.step step_id=log.extra_data.step_id form=log.fmt_form lead=log.fmt_lead user=log.fmt_user %}
-   {{ lead }}: {{ user }} fills step "{{ step }}" (ID: {{ step_id }}) for form "{{ form }}"
+   {{ lead }}: {{ user }} fills step "{{ step }}" (ID: {{ step_id }}) for form {{ form }}
 {% endblocktrans %}

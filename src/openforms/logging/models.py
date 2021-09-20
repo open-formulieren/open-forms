@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
@@ -63,4 +65,29 @@ class TimelineLogProxy(TimelineLog):
             return _("(unknown)")
         plugin_id = self.extra_data.get("plugin_id", "")
         plugin_label = self.extra_data.get("plugin_label", "")
-        return f'"{ plugin_label }" ({plugin_id})'
+        return f'"{plugin_label}" ({plugin_id})'
+
+    def content_admin_url(self):
+        if self.object_id and self.content_type_id:
+            ct = self.content_type
+            return reverse(
+                f"admin:{ct.app_label}_{ct.model}_change", args=(self.object_id,)
+            )
+        else:
+            return ""
+
+    def content_admin_link(self):
+        url = self.content_admin_url()
+        if url:
+            return format_html(
+                '<a href="{u}">{t}</a>', u=url, t=str(self.content_object)
+            )
+        else:
+            return ""
+
+    content_admin_link.short_description = _("content object")
+
+    def message(self):
+        return self.get_message()
+
+    message.short_description = _("message")
