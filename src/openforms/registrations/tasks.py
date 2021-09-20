@@ -11,6 +11,7 @@ from openforms.submissions.models import Submission
 from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..celery import app
+from ..logging import logevent
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
@@ -33,12 +34,17 @@ def register_submission(submission_id: int) -> Optional[dict]:
         # so if the submission has already succeed we just return
         return
 
+    logevent.registration_start(submission)
+
     if not submission.completed_on:
-        raise RegistrationFailed("Submission should be completed first")
+        e = RegistrationFailed("Submission should be completed first")
+        logevent.registration_failure(submission, e)
+        raise e
 
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
     submission.save(update_fields=["last_register_date", "registration_status"])
+
     # figure out which registry and backend to use from the model field used
     form = submission.form
     backend = form.registration_backend
@@ -48,6 +54,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
         logger.info("Form %s has no registration plugin configured, aborting", form)
         submission.registration_status = RegistrationStatuses.success
         submission.save(update_fields=["registration_status"])
+        logevent.registration_skip(submission)
         return
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
@@ -57,14 +64,18 @@ def register_submission(submission_id: int) -> Optional[dict]:
     options_serializer = plugin.configuration_options(
         data=form.registration_backend_options
     )
-    options_serializer.is_valid(raise_exception=True)
+    try:
+        options_serializer.is_valid(raise_exception=True)
+    except Exception as e:
+        logevent.registration_failure(submission, e, plugin)
+        raise
 
     logger.debug("Invoking the '%r' plugin callback", plugin)
     try:
         result = plugin.register_submission(
             submission, options_serializer.validated_data
         )
-    except RegistrationFailed:
+    except RegistrationFailed as e:
         formatted_tb = traceback.format_exc()
         submission.registration_status = RegistrationStatuses.failed
         submission.registration_result = {"traceback": formatted_tb}
@@ -74,9 +85,14 @@ def register_submission(submission_id: int) -> Optional[dict]:
                 "registration_result",
             ]
         )
+        logevent.registration_failure(submission, e, plugin)
+        raise
+    except Exception as e:
+        logevent.registration_failure(submission, e, plugin)
         raise
     else:
         status = RegistrationStatuses.success
+        logevent.registration_success(submission, plugin)
 
     submission.registration_status = status
     submission.registration_result = result

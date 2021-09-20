@@ -68,6 +68,7 @@ django-appconf==1.0.4
     # via
     #   django-axes
     #   django-cookie-consent
+    #   django-timeline-logger
 django-autoslug==1.9.8
     # via -r requirements/base.in
 django-axes==5.5.0
@@ -122,6 +123,8 @@ django-solo==1.1.3
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-timeline-logger==1.1.2
+    # via -r requirements/base.in
 django-tinymce==3.3.0
     # via -r requirements/base.in
 django-yubin==1.6.0
@@ -144,6 +147,7 @@ django==2.2.24
     #   django-redis
     #   django-relativedelta
     #   django-sendfile2
+    #   django-timeline-logger
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers

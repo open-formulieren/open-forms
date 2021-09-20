@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with form=log.fmt_form user=log.fmt_user lead=log.fmt_lead %}
+   {{ lead }}: {{ user }} starts new submission for form {{ form }}
+{% endblocktrans %}

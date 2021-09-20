@@ -8,6 +8,8 @@ from ..models import Submission, SubmissionReport
 
 __all__ = ["generate_submission_report"]
 
+from ...logging import logevent
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +29,15 @@ def generate_submission_report(task, submission_id: int) -> None:
         )
     # idempotency: check if there already is a report PDF!
     if submission_report.content:
+        logevent.pdf_generate_skip(submission, submission_report)
         logger.debug("Submission report PDF was already generated, skipping...")
         return
 
-    submission_report.generate_submission_report_pdf()
+    logevent.pdf_generate_start(submission)
+    try:
+        submission_report.generate_submission_report_pdf()
+    except Exception as e:
+        logevent.pdf_generate_failure(submission, submission_report, e)
+        raise
+    else:
+        logevent.pdf_generate_success(submission, submission_report)

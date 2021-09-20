@@ -17,6 +17,7 @@ from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ...logging import logevent
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -91,6 +92,8 @@ class SubmissionViewSet(
         # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request.session)
 
+        logevent.submission_start(serializer.instance)
+
     @extend_schema(
         summary=_("Complete a submission"),
         request=None,
@@ -131,6 +134,8 @@ class SubmissionViewSet(
 
         submission.completed_on = timezone.now()
         submission.save()
+
+        logevent.form_submit_success(submission)
 
         # TODO: implement in celery tasks in cleanup (see ./tasks/__init__.py)
         remove_submission_from_session(submission, self.request.session)
@@ -301,6 +306,8 @@ class SubmissionStepViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        logevent.submission_step_fill(instance)
 
         attach_uploads_to_submission_step(instance)
 

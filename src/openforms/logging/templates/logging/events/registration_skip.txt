@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead %}
+   {{ lead }}: Registration task skipped: no backend configured.
+{% endblocktrans %}
