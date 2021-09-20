@@ -1,5 +1,3 @@
-import {Formio} from "formiojs";
-
 import {DEFAULT_TABS, PREFILL} from './edit/tabs';
 import TextField from './textfield';
 
@@ -32,6 +30,7 @@ class BsnField extends TextField {
                 PREFILL,
             ],
         };
+        tabs.components[0].components[5].defaultValue = true;
         return {components: [tabs]};
     }
 
