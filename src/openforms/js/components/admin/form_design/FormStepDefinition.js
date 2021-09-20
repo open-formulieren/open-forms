@@ -82,7 +82,7 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
                         errors={errors.name}
                         fieldBox
                     >
-                        <TextInput value={internalName} onChange={onFieldChange} onBlur={setSlug} />
+                        <TextInput value={internalName} onChange={onFieldChange} />
                     </Field>
                     <Field
                         name="slug"
