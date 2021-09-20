@@ -70,32 +70,36 @@ def form_submit_success(submission: "Submission"):
 # - - -
 
 
-def pdf_generate_start(submission: "Submission"):
-    _create_log(submission, "pdf_generate_start")
+def pdf_generation_start(submission: "Submission"):
+    _create_log(submission, "pdf_generation_start")
 
 
-def pdf_generate_success(submission: "Submission", submission_report):
+def pdf_generation_success(submission: "Submission", submission_report):
     _create_log(
         submission,
-        "pdf_generate_success",
+        "pdf_generation_success",
         extra_data={
             "report_id": submission_report.id,
         },
     )
 
 
-def pdf_generate_failure(submission: "Submission", submission_report, error: Exception):
+def pdf_generation_failure(
+    submission: "Submission", submission_report, error: Exception
+):
     _create_log(
         submission,
-        "pdf_generate_failure",
+        "pdf_generation_failure",
         error=error,
         extra_data={"report_id": submission_report.id},
     )
 
 
-def pdf_generate_skip(submission: "Submission", submission_report):
+def pdf_generation_skip(submission: "Submission", submission_report):
     _create_log(
-        submission, "pdf_generate_skip", extra_data={"report_id": submission_report.id}
+        submission,
+        "pdf_generation_skip",
+        extra_data={"report_id": submission_report.id},
     )
 
 
