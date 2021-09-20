@@ -3,8 +3,14 @@ from typing import TYPE_CHECKING
 
 from django.db.models import Model
 
+from openforms.payments.constants import PaymentStatus
+
 if TYPE_CHECKING:
-    from openforms.submissions.models import Submission, SubmissionStep
+    from openforms.submissions.models import (
+        Submission,
+        SubmissionPayment,
+        SubmissionStep,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +28,8 @@ def _create_log(
     extra_data["log_event"] = event
 
     if plugin:
-        extra_data["plugin"] = str(plugin.verbose_name)
         extra_data["plugin_id"] = plugin.identifier
+        extra_data["plugin_label"] = str(plugin.verbose_name)
 
     if error:
         extra_data["error"] = str(error)
@@ -37,6 +43,9 @@ def _create_log(
         extra_data=extra_data,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
+
+
+# - - -
 
 
 def submission_start(submission: "Submission"):
@@ -56,6 +65,9 @@ def submission_step_fill(step: "SubmissionStep"):
 
 def form_submit_success(submission: "Submission"):
     _create_log(submission, "form_submit_success")
+
+
+# - - -
 
 
 def pdf_generate_start(submission: "Submission"):
@@ -107,7 +119,7 @@ def prefill_retrieve_failure(submission: "Submission", plugin, error: Exception)
     )
 
 
-# - - - - - - ------------------------
+# - - -
 
 
 def registration_start(submission: "Submission"):
@@ -159,3 +171,87 @@ def confirmation_email_failure(submission: "Submission", error: Exception):
 
 def confirmation_email_skip(submission: "Submission"):
     _create_log(submission, "confirmation_email_skip")
+
+
+# - - -
+
+
+def payment_flow_start(payment: "SubmissionPayment", plugin):
+    _create_log(
+        payment.submission,
+        "payment_flow_start",
+        plugin=plugin,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+        },
+    )
+
+
+def payment_flow_failure(payment: "SubmissionPayment", plugin, error: Exception):
+    _create_log(
+        payment.submission,
+        "payment_flow_failure",
+        plugin=plugin,
+        error=error,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+        },
+    )
+
+
+def payment_flow_return(payment: "SubmissionPayment", plugin):
+    _create_log(
+        payment.submission,
+        "payment_flow_return",
+        plugin=plugin,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+            "payment_status": payment.status,
+            "payment_status_label": str(PaymentStatus.labels[payment.status]),
+        },
+    )
+
+
+def payment_flow_webhook(payment: "SubmissionPayment", plugin):
+    _create_log(
+        payment.submission,
+        "payment_flow_webhook",
+        plugin=plugin,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+            "payment_status": payment.status,
+            "payment_status_label": str(PaymentStatus.labels[payment.status]),
+        },
+    )
+
+
+# - - -
+
+
+def payment_register_success(payment: "SubmissionPayment", plugin):
+    _create_log(
+        payment.submission,
+        "payment_register_success",
+        plugin=plugin,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+        },
+    )
+
+
+def payment_register_failure(payment: "SubmissionPayment", plugin, error: Exception):
+    _create_log(
+        payment.submission,
+        "payment_register_failure",
+        plugin=plugin,
+        error=error,
+        extra_data={
+            "payment_order_id": payment.order_id,
+            "payment_id": payment.id,
+        },
+    )

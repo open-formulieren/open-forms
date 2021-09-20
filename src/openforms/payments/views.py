@@ -21,6 +21,7 @@ from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.submissions.models import Submission
 from openforms.utils.redirect import allow_redirect_url
 
+from ..logging import logevent
 from .api.serializers import PaymentInfoSerializer
 from .models import SubmissionPayment
 from .registry import register
@@ -133,6 +134,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         )
 
         info = plugin.start_payment(request, payment)
+        logevent.payment_flow_start(payment, plugin)
         return Response(self.get_serializer(instance=info).data)
 
 
@@ -220,7 +222,13 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         if plugin.return_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
-        response = plugin.handle_return(request, payment)
+        try:
+            response = plugin.handle_return(request, payment)
+        except Exception as e:
+            logevent.payment_flow_failure(payment, plugin, e)
+            raise
+        else:
+            logevent.payment_flow_return(payment, plugin)
 
         if response.status_code in (301, 302):
             location = response.get("Location", "")
@@ -305,8 +313,8 @@ class PaymentWebhookView(PaymentFlowBaseView):
 
         payment = plugin.handle_webhook(request)
         if payment:
+            logevent.payment_flow_webhook(payment, plugin)
             update_submission_payment_registration(payment.submission)
-
         return HttpResponse("")
 
     def get(self, request, *args, **kwargs):

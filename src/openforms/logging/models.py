@@ -22,7 +22,12 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_lead(self):
-        return f"[{self.fmt_time}] ({self.fmt_sub})"
+        if self.is_submission:
+            return f"[{self.fmt_time}] ({self.fmt_sub})"
+        elif self.content_type_id:
+            return f"[{self.fmt_time}] ({self.content_type.name} {self.content_object.id})"
+        else:
+            return f"[{self.fmt_time}]"
 
     @property
     def fmt_time(self):
@@ -54,6 +59,6 @@ class TimelineLogProxy(TimelineLog):
     def fmt_plugin(self):
         if not self.extra_data:
             return _("(unknown)")
-        plugin = self.extra_data.get("plugin", "")
         plugin_id = self.extra_data.get("plugin_id", "")
-        return f'"{ plugin }" ({plugin_id})'
+        plugin_label = self.extra_data.get("plugin_label", "")
+        return f'"{ plugin_label }" ({plugin_id})'

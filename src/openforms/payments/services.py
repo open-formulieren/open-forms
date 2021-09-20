@@ -4,12 +4,12 @@ from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
+from ..logging import logevent
 from .constants import PaymentStatus
 
 
 def update_submission_payment_registration(submission: Submission):
     # TODO wrap in celery task
-    # TODO logging
     if submission.registration_status != RegistrationStatuses.success:
         return
     if not submission.payment_required:
@@ -19,7 +19,7 @@ def update_submission_payment_registration(submission: Submission):
 
     try:
         plugin = register[submission.form.registration_backend]
-    except KeyError:
+    except KeyError as e:
         return
 
     # TODO support partial payments
@@ -30,7 +30,13 @@ def update_submission_payment_registration(submission: Submission):
         if not payments:
             return
 
-        # TODO handle errors etc
-        plugin.update_payment_status(submission)
-        # TODO add locking? we'd flag all completed
-        payments.update(status=PaymentStatus.registered)
+        try:
+            plugin.update_payment_status(submission)
+            payments.update(status=PaymentStatus.registered)
+        except Exception as e:
+            for p in payments:
+                logevent.payment_register_failure(p, plugin, e)
+            raise
+        else:
+            for p in payments:
+                logevent.payment_register_success(p, plugin)

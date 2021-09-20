@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework import serializers
 
+from openforms.logging import logevent
 from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -64,8 +65,9 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         try:
             params = client.get_validated_params(request.query_params)
-        except InvalidSignature:
+        except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
+            logevent.payment_flow_failure(payment, self, e)
             return HttpResponseBadRequest("bad shasign")
 
         self.apply_status(payment, params.STATUS)
@@ -94,12 +96,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         try:
             params = client.get_validated_params(request.data)
-        except InvalidSignature:
+        except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
+            logevent.payment_flow_failure(payment, self, e)
             return HttpResponseBadRequest("bad shasign")
 
         self.apply_status(payment, params.STATUS)
-
         return payment
 
     def apply_status(self, payment, ogone_status) -> None:
