@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with plugin=log.fmt_plugin lead=log.fmt_lead %}
+   {{ lead }}: Appointment plugin {{ plugin }} registration task started.
+{% endblocktrans %}

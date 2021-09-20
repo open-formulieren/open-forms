@@ -6,6 +6,7 @@ from django.db.models import Model
 from openforms.payments.constants import PaymentStatus
 
 if TYPE_CHECKING:
+    from openforms.appointments.models import AppointmentInfo
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -43,9 +44,6 @@ def _create_log(
         extra_data=extra_data,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
-
-
-# - - -
 
 
 def submission_start(submission: "Submission"):
@@ -258,4 +256,93 @@ def payment_register_failure(payment: "SubmissionPayment", plugin, error: Except
             "payment_order_id": payment.order_id,
             "payment_id": payment.id,
         },
+    )
+
+
+# - - -
+
+
+def appointment_register_start(submission: "Submission", plugin):
+    # TODO see if we actually have plugin here
+    _create_log(
+        submission,
+        "appointment_register_start",
+        plugin=plugin,
+    )
+
+
+def appointment_register_success(appointment: "AppointmentInfo", plugin):
+    _create_log(
+        appointment.submission,
+        "appointment_register_success",
+        plugin=plugin,
+    )
+
+
+def appointment_register_failure(appointment: "AppointmentInfo", plugin, error):
+    _create_log(
+        appointment.submission,
+        "appointment_register_failure",
+        plugin=plugin,
+        error=error,
+    )
+
+
+def appointment_register_skip(submission: "Submission"):
+    _create_log(submission, "appointment_register_skip")
+
+
+# - - -
+
+
+def appointment_update_start(appointment: "AppointmentInfo", plugin):
+    _create_log(
+        appointment.submission,
+        "appointment_update_start",
+        plugin=plugin,
+    )
+
+
+def appointment_update_success(appointment: "AppointmentInfo", plugin):
+    _create_log(
+        appointment.submission,
+        "appointment_update_success",
+        plugin=plugin,
+    )
+
+
+def appointment_update_failure(appointment: "AppointmentInfo", plugin, error):
+    _create_log(
+        appointment.submission,
+        "appointment_update_failure",
+        plugin=plugin,
+        error=error,
+    )
+
+
+# - - -
+
+
+def appointment_cancel_start(appointment: "AppointmentInfo", plugin):
+    _create_log(
+        appointment.submission,
+        "appointment_cancel_start",
+        plugin=plugin,
+    )
+
+
+def appointment_cancel_success(appointment: "AppointmentInfo", plugin):
+    _create_log(
+        appointment.submission,
+        "appointment_cancel_success",
+        plugin=plugin,
+    )
+
+
+def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
+    _create_log(
+        appointment.submission,
+        "appointment_cancel_failure",
+        plugin=plugin,
+        error=error,
     )
