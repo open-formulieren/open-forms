@@ -20,15 +20,15 @@ configured to access these API's to register form submissions.
    a. Click **Service toevoegen**.
    b. Fill out the form for each of the three components:
 
-      * **Label**: *For example:* ``Zaken``, ``Documenten`` or ``Zaaktypen``
+      * **Label**: *A human readable label*, for example: ``My Zaken API``, ``My Documenten API`` or ``My Zaaktypen API``
       * **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
-      * **API root url**: The root of this API, *For example* ``https://test.openzaak.nl/zaken/api/v1/``
+      * **API root url**: The root of this API, *For example* ``https://example.com/zaken/api/v1/``
 
       * **Client ID**: Fill the value provided by the backend service *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
       * **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
       * **Authorization type**: Select the option: ``ZGW client_id + secret``
       * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://test.openzaak.nl/zaken/api/v1/schema/openapi.yaml``
+        *for example:* ``https://example.com/zaken/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
       * **User ID**: Audit trail user ID, usually same as the Client ID
@@ -47,8 +47,8 @@ configured to access these API's to register form submissions.
 5. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
 6. Continue entering the following details:
 
-   * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://test.openzaak.nl/api/v1/zaaktypen/1/``
-   * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://test.openzaak.nl/api/v1/informatieobjecttypen/1/``
+   * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://example.com/catalogi/api/v1/zaaktypen/1/``
+   * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
 7. Click **Opslaan**

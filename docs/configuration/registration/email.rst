@@ -1,8 +1,8 @@
 .. _configuration_registration_email:
 
-==================
-Email registration
-==================
+=====
+Email
+=====
 
 Open Forms can be configured to register form submissions by email.
 
