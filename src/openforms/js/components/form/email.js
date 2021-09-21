@@ -18,7 +18,6 @@ class EmailField extends Formio.Components.components.email {
                 tooltip: 'Email-address in this field will receive the confirmation email.',
             }
         ];
-        // insert the extras here
         const BASIC_TAB = {
             ...SENSITIVE_BASIC,
             components: [
