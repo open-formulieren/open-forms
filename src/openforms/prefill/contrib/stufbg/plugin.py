@@ -59,7 +59,7 @@ class StufBgPrefill(BasePlugin):
 
         try:
             data = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
-        except KeyError as exc:
+        except (TypeError, KeyError) as exc:
             logger.error(
                 "Response data has an unexpected shape",
                 extra={"response": dict_response},
