@@ -70,9 +70,11 @@ class StufBgPrefillTests(TestCase):
         )
         attributes = FieldChoices.attributes.keys()
 
-        values = self.plugin.get_prefill_values(self.submission, attributes)
+        with self.assertLogs() as logs:
+            values = self.plugin.get_prefill_values(self.submission, attributes)
 
         self.assertEqual(values, {})
+        self.assertEqual(logs.records[0].fault_string, "Policy Falsified")
 
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
     def test_get_available_attributes_when_no_answer_is_returned(self, client_mock):
@@ -84,6 +86,8 @@ class StufBgPrefillTests(TestCase):
         )
         attributes = FieldChoices.attributes.keys()
 
-        values = self.plugin.get_prefill_values(self.submission, attributes)
+        with self.assertLogs() as logs:
+            values = self.plugin.get_prefill_values(self.submission, attributes)
 
         self.assertEqual(values, {})
+        self.assertEqual(logs.records[0].fault_string, "")
