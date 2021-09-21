@@ -9,6 +9,16 @@ ingediend.
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`eenvoudig formulier <example_simple_form>` kan maken.
 
+.. note::
+
+    U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
+    in Open Formulieren.
+
+    Download: `logic_age.zip`_
+
+
+.. _`logic_age.zip`: _assets/logic_age.zip
+
 Formulier maken
 ===============
 
@@ -70,7 +80,7 @@ Formulier maken
     Deze twee acties betekenen: als de gebruiker jonger dan 18 is, dan blokkeer
     doorgaan naar de volgende formulier stap en maak de 'Warning component' zichtbaar.
 
-.. image:: _assets/rijbewijs_logica.png
+.. image:: _assets/logic_age.png
     :width: 100%
 
 21. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
