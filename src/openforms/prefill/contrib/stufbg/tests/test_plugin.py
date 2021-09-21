@@ -74,7 +74,14 @@ class StufBgPrefillTests(TestCase):
             values = self.plugin.get_prefill_values(self.submission, attributes)
 
         self.assertEqual(values, {})
-        self.assertEqual(logs.records[0].fault_string, "Policy Falsified")
+        self.assertEqual(logs.records[0].fault["faultcode"], "soapenv:Server")
+        self.assertEqual(logs.records[0].fault["faultstring"], "Policy Falsified")
+        self.assertEqual(
+            logs.records[0].fault["detail"][
+                "http://www.layer7tech.com/ws/policy/fault:policyResult"
+            ]["@status"],
+            "Error in Assertion Processing",
+        )
 
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
     def test_get_available_attributes_when_no_answer_is_returned(self, client_mock):
@@ -90,4 +97,4 @@ class StufBgPrefillTests(TestCase):
             values = self.plugin.get_prefill_values(self.submission, attributes)
 
         self.assertEqual(values, {})
-        self.assertEqual(logs.records[0].fault_string, "")
+        self.assertEqual(logs.records[0].fault, {})
