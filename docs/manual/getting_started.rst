@@ -103,6 +103,14 @@ Als u uw wachtwoord bent vergeten, kunt u uw wachtwoord opnieuw instellen.
 .. image:: _assets/password_reset.png
 
 
+Tweestapsauthenticatie werkt niet meer
+--------------------------------------
+
+Als u geen code meer kunt genereren met uw *authenticator app*, dan kunt u aan
+een beheerder vragen :ref:`tweestapsauthenticatie voor uw account opnieuw in te 
+stellen <manual_restore_2fa>`.
+
+
 .. _`beheeromgeving`:
 
 Beheeromgeving

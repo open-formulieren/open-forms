@@ -74,6 +74,23 @@ Nieuwe gebruiker aanmaken
 6. Klik rechtsonder op **Opslaan** om de gebruiker aan te maken.
 
 
+.. _manual_restore_2fa:
+
+Tweestapsauthenticatie herstellen
+---------------------------------
+
+Als beheerder kunt u de tweestapsauthenticatie van een andere gebruiker opnieuw 
+instellen.
+
+1. Navigeer naar **Accounts** > **TOTP devices**.
+2. Vink het checkbox aan in de lijst van het betreffende account.
+3. Kies bij **Actie** de optie **Verwijder geselecteerde TOTP devices** en klik op de knop **Uitvoeren**.
+4. Op de bevestigingspagina klik u op **Ja, ik weet het zeker**.
+
+De gebruiker van het betreffende account krijgt nu bij inloggen de mogelijkheid
+om opnieuw de QR code te scannen.
+
+
 Gebruikers verwijderen
 ======================
 
