@@ -89,7 +89,7 @@ class StufBgPrefillTests(TestCase):
             client_mock.return_value.get_client.return_value.get_values_for_attributes
         )
         get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponseNoAnswer.xml"
+            "stuf_bg/tests/responses/StufBgNoAnswerResponse.xml"
         )
         attributes = FieldChoices.attributes.keys()
 
