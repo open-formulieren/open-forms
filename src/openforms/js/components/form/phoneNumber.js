@@ -1,5 +1,5 @@
 import {Formio} from "formiojs";
-import DEFAULT_TABS from "./edit/tabs";
+import {DEFAULT_SENSITIVE_TABS} from "./edit/tabs";
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 
@@ -23,7 +23,7 @@ class PhoneNumberField extends PhoneNumber {
     }
 
     static editForm() {
-        return {components: [DEFAULT_TABS]};
+        return {components: [DEFAULT_SENSITIVE_TABS]};
     }
 
     get defaultSchema() {
