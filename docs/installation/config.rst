@@ -96,6 +96,12 @@ Log settings
 * ``SENTRY_DSN``: URL of the sentry project to send error reports to. Defaults
   to an empty string (ie. no monitoring). See `Sentry settings`_.
 
+* ``SDK_SENTRY_DSN``: URL of the sentry project for the SDK to send error reports to. Defaults
+  to an empty string (ie. no monitoring). This is a **public** Sentry DSN. See `Sentry settings`_.
+
+* ``SDK_SENTRY_ENVIRONMENT``: the environment label for the SDK to group events. Defaults
+  to ``ENVIRONMENT``.
+
 * ``ELASTIC_APM_SERVER_URL``: Server URL of Elastic APM. Defaults to
   ``None``. If not set, Elastic APM will be disabled by setting internal
   setting ``ELASTIC_APM["ENABLED"]`` to ``False`` and

@@ -619,7 +619,7 @@ CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 #
 # SENTRY - error monitoring
 #
-SENTRY_DSN = config("SENTRY_DSN", None)
+SENTRY_DSN = config("SENTRY_DSN", "")
 
 if SENTRY_DSN:
     SENTRY_CONFIG = {
@@ -631,6 +631,11 @@ if SENTRY_DSN:
     sentry_sdk.init(
         **SENTRY_CONFIG, integrations=get_sentry_integrations(), send_default_pii=True
     )
+
+# Sentry for the Open-Forms SDK
+SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
+SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", ENVIRONMENT)
+
 
 #
 # Elastic APM
