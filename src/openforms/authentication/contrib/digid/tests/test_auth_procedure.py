@@ -2,6 +2,7 @@ import os
 from base64 import b64decode, b64encode
 from hashlib import sha1
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.template import Context, Template
@@ -14,6 +15,11 @@ from lxml import etree
 from requests_mock import Mocker
 from rest_framework import status
 
+from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+from openforms.authentication.contrib.digid.views import (
+    DIGID_MESSAGE_PARAMETER,
+    LOGIN_CANCELLED,
+)
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -259,21 +265,31 @@ class AuthenticationStep5Tests(TestCase):
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = f"https://testserver{form_path}?_start=1"
+        form_url = furl(f"http://testserver{form_path}")
+        form_url.args["_start"] = "1"
+
+        success_return_url = furl(
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "digid"},
+            )
+        )
+        success_return_url.add(args={"next": form_url.url})
 
         url = furl(reverse("digid:acs")).set(
             {
                 "SAMLart": self._create_test_artifact(
                     DIGID["service_entity_id"]
                 ).decode("ascii"),
-                "RelayState": form_url,
+                "RelayState": success_return_url.url,
             }
         )
 
-        response = self.client.get(url)
+        response = self.client.get(url, follow=True)
 
-        self.assertRedirects(
-            response,
-            form_url + "&_digid-message=login-cancelled",
-            status_code=302,
+        form_url.args["_digid-message"] = "login-cancelled"
+
+        self.assertEquals(
+            response.redirect_chain[-1],
+            (form_url.url, 302),
         )
