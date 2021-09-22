@@ -66,4 +66,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_groups(self):
         return list(self.groups.all())
+
     get_groups.short_description = _("Groups")
