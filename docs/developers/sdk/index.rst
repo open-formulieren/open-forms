@@ -15,3 +15,4 @@ project and maintainers of the SDK.
 
    embedding
    analytics
+   logic
