@@ -634,6 +634,7 @@ if SENTRY_DSN:
 
 # Sentry for the Open-Forms SDK
 SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
+SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", ENVIRONMENT)
 
 
 #

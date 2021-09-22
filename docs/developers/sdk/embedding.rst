@@ -53,12 +53,20 @@ Available options
     Forms management interface.
 
 ``basePath``:
-    Optional, but recommended. The SDK considers this as the base URL and builds all
+    Optional, but highly recommended. The SDK considers this as the base URL and builds all
     URLs relatively to this URL. If not provided, ``window.location.pathname`` is used.
+
+``lang``:
+    Optional language to use for internationalizing. By default, this is looked up from
+    the ``lang`` attribute of the ``html`` element in the DOM - if this is not set, the
+    default value of ``'nl'`` is used.
 
 ``sentryDSN``:
     A `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.
 
+``sentryEnv``:
+    The label of the Sentry environment to use, for example ``'production'``. Used in
+    combination with ``sentryDSN``. Defaults to an empty string.
 
 Full example
 ============
