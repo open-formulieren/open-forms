@@ -18,6 +18,12 @@ class CreateDefaultGroupsTests(TestCase):
         self.assertTrue(Group.objects.filter(name="Redacteurs").exists())
         self.assertTrue(Group.objects.filter(name="Behandelaars").exists())
 
+        self.assertQuerysetEqual(
+            Group.objects.get(name="Beheerders").permissions.all(),
+            Permission.objects.all(),
+            transform=lambda x: x,
+        )
+
         permissions_name_to_value = {
             "Functioneel beheer": FUNCTIONAL_BEHEER_PERMISSIONS,
             "Redacteurs": REDACTUERS_PERMISSIONS,

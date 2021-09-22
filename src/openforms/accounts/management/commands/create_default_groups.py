@@ -59,7 +59,8 @@ class Command(BaseCommand):
     help = "Creates the default permissions for that users could have"
 
     def handle(self, *args, **options):
-        Group.objects.create(name="Beheerders")
+        beheerders_group = Group.objects.create(name="Beheerders")
+        beheerders_group.permissions.add(*Permission.objects.all())
 
         functional_beheer_group = Group.objects.create(name="Functioneel beheer")
         functional_beheer_permissions = Permission.objects.filter(
