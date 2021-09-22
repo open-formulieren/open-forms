@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import ugettext_lazy as _
 
 from hijack_admin.admin import HijackUserAdminMixin
 
@@ -17,3 +18,8 @@ class _UserAdmin(UserAdmin, HijackUserAdminMixin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.prefetch_related('groups')
+
+    def get_groups(self):
+        return list(self.groups.all())
+
+    get_groups.short_description = _("Groups")
