@@ -106,7 +106,8 @@ class LocationsListTests(SubmissionsMixin, TestCase):
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
 
     def test_get_locations_returns_403_when_no_active_sessions(self):
         self._clear_session()
@@ -162,7 +163,8 @@ class DatesListTests(SubmissionsMixin, TestCase):
         for query_param in [{}, {"product_id": 79}, {"location_id": 1}]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint, query_param)
-                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json(), [])
 
     def test_get_dates_returns_403_when_no_active_sessions(self):
         self._clear_session()
@@ -223,7 +225,8 @@ class TimesListTests(SubmissionsMixin, TestCase):
         ]:
             with self.subTest(query_param=query_param):
                 response = self.client.get(self.endpoint, query_param)
-                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json(), [])
 
     def test_get_times_returns_403_when_no_active_sessions(self):
         self._clear_session()
