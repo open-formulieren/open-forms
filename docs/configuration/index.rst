@@ -11,3 +11,4 @@ Configuration
    payment/index
    prefill/index
    registration/index
+   appointment/index

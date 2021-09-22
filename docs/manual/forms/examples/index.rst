@@ -10,3 +10,4 @@ Voorbeelden
    simple_form
    autofill_address
    logic_rules
+   appointment_creation

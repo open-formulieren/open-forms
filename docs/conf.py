@@ -81,4 +81,5 @@ linkcheck_ignore = [
     r"https?://.*\.gemeente.nl",
     r"http://localhost:\d+/",
     r"https://.*sentry.*",
+    r"https://example.com*",
 ]
