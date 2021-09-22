@@ -632,6 +632,10 @@ if SENTRY_DSN:
         **SENTRY_CONFIG, integrations=get_sentry_integrations(), send_default_pii=True
     )
 
+# Sentry for the Open-Forms SDK
+SDK_SENTRY_DNS = config("SDK_SENTRY_DNS", None)
+
+
 #
 # Elastic APM
 #
