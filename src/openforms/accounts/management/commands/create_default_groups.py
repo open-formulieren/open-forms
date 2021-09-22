@@ -56,7 +56,7 @@ BEHANDELAARS_PERMISSIONS = ["Can view Submission"]
 
 
 class Command(BaseCommand):
-    help = "Creates the default permissions for that users could have"
+    help = "Creates the default groups with permissions that users could have"
 
     def handle(self, *args, **options):
         beheerders_group = Group.objects.create(name="Beheerders")
