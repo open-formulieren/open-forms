@@ -70,6 +70,9 @@ class ProductsListView(ListMixin, APIView):
 class LocationsListView(ListMixin, APIView):
     """
     List all locations for a given product.
+
+    Note that you must include valid querystring parameters to get actual results. If
+    you don't, then an empty list is returned.
     """
 
     authentication_classes = ()
@@ -78,7 +81,13 @@ class LocationsListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = LocationInputSerializer(data=self.request.query_params)
-        serializer.is_valid(raise_exception=True)
+        is_valid = serializer.is_valid()
+        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
+        # that Formio work is that we can't prevent the invalid request from firing.
+        # Instead, we just return an empty result list which populates dropdowns with
+        # empty options.
+        if not is_valid:
+            return []
 
         product = AppointmentProduct(
             identifier=serializer.validated_data["product_id"], code="", name=""
@@ -109,7 +118,10 @@ class LocationsListView(ListMixin, APIView):
 )
 class DatesListView(ListMixin, APIView):
     """
-    List all locations for a given product.
+    List all dates for a given product.
+
+    Note that you must include valid querystring parameters to get actual results. If
+    you don't, then an empty list is returned.
     """
 
     authentication_classes = ()
@@ -118,7 +130,13 @@ class DatesListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = DateInputSerializer(data=self.request.query_params)
-        serializer.is_valid(raise_exception=True)
+        is_valid = serializer.is_valid()
+        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
+        # that Formio work is that we can't prevent the invalid request from firing.
+        # Instead, we just return an empty result list which populates dropdowns with
+        # empty options.
+        if not is_valid:
+            return []
 
         product = AppointmentProduct(
             identifier=serializer.validated_data["product_id"], code="", name=""
@@ -160,7 +178,10 @@ class DatesListView(ListMixin, APIView):
 )
 class TimesListView(ListMixin, APIView):
     """
-    List all locations for a given product.
+    List all times for a given product.
+
+    Note that you must include valid querystring parameters to get actual results. If
+    you don't, then an empty list is returned.
     """
 
     authentication_classes = ()
@@ -169,7 +190,13 @@ class TimesListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = TimeInputSerializer(data=self.request.query_params)
-        serializer.is_valid(raise_exception=True)
+        is_valid = serializer.is_valid()
+        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
+        # that Formio work is that we can't prevent the invalid request from firing.
+        # Instead, we just return an empty result list which populates dropdowns with
+        # empty options.
+        if not is_valid:
+            return []
 
         product = AppointmentProduct(
             identifier=serializer.validated_data["product_id"], code="", name=""
@@ -208,7 +235,13 @@ class CancelAppointmentView(GenericAPIView):
         submission = self.get_object()
 
         serializer = CancelAppointmentInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        is_valid = serializer.is_valid()
+        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
+        # that Formio work is that we can't prevent the invalid request from firing.
+        # Instead, we just return an empty result list which populates dropdowns with
+        # empty options.
+        if not is_valid:
+            return []
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
