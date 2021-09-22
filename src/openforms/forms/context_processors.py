@@ -8,5 +8,5 @@ def sdk_urls(request):
     return {
         "sdk_js_url": f"{base_url}open-forms-sdk.js",
         "sdk_css_url": f"{base_url}open-forms-sdk.css",
-        "sdk_sentry_dns": settings.SDK_SENTRY_DNS,
+        "sdk_sentry_dns": settings.SDK_SENTRY_DSN,
     }

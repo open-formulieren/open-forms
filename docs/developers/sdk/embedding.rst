@@ -56,7 +56,8 @@ Available options
     Optional, but recommended. The SDK considers this as the base URL and builds all
     URLs relatively to this URL. If not provided, ``window.location.pathname`` is used.
 
-``sentryDns``: A Sentry DSN to monitor the SDK.
+``sentryDSN``:
+    A `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.
 
 
 Full example

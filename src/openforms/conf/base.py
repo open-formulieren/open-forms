@@ -633,7 +633,7 @@ if SENTRY_DSN:
     )
 
 # Sentry for the Open-Forms SDK
-SDK_SENTRY_DNS = config("SDK_SENTRY_DNS", None)
+SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
 
 
 #
