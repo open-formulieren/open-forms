@@ -14,7 +14,7 @@ class CreateDefaultGroupsTests(TestCase):
         call_command("create_default_groups")
 
         self.assertTrue(Group.objects.filter(name="Beheerders").exists())
-        self.assertTrue(Group.objects.filter(name="Functioneel beheer").exists())
+        self.assertTrue(Group.objects.filter(name="Functioneel beheers").exists())
         self.assertTrue(Group.objects.filter(name="Redacteurs").exists())
         self.assertTrue(Group.objects.filter(name="Behandelaars").exists())
 
@@ -25,7 +25,7 @@ class CreateDefaultGroupsTests(TestCase):
         )
 
         permissions_name_to_value = {
-            "Functioneel beheer": FUNCTIONAL_BEHEER_PERMISSIONS,
+            "Functioneel beheers": FUNCTIONAL_BEHEER_PERMISSIONS,
             "Redacteurs": REDACTUERS_PERMISSIONS,
             "Behandelaars": BEHANDELAARS_PERMISSIONS,
         }

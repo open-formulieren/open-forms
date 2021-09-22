@@ -62,7 +62,7 @@ class Command(BaseCommand):
         beheerders_group = Group.objects.create(name="Beheerders")
         beheerders_group.permissions.add(*Permission.objects.all())
 
-        functional_beheer_group = Group.objects.create(name="Functioneel beheer")
+        functional_beheer_group = Group.objects.create(name="Functioneel beheers")
         functional_beheer_permissions = Permission.objects.filter(
             name__in=FUNCTIONAL_BEHEER_PERMISSIONS
         )
