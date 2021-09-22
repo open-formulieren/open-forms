@@ -59,3 +59,42 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
         self.assertNotIn("huisnummertoevoeging", values)
         self.assertNotIn("huisletter", values)
+
+    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
+    def test_get_available_attributes_when_error_occurs(self, client_mock):
+        get_values_for_attributes_mock = (
+            client_mock.return_value.get_client.return_value.get_values_for_attributes
+        )
+        get_values_for_attributes_mock.return_value = loader.render_to_string(
+            "stuf_bg/tests/responses/StufBgErrorResponse.xml"
+        )
+        attributes = FieldChoices.attributes.keys()
+
+        with self.assertLogs() as logs:
+            values = self.plugin.get_prefill_values(self.submission, attributes)
+
+        self.assertEqual(values, {})
+        self.assertEqual(logs.records[0].fault["faultcode"], "soapenv:Server")
+        self.assertEqual(logs.records[0].fault["faultstring"], "Policy Falsified")
+        self.assertEqual(
+            logs.records[0].fault["detail"][
+                "http://www.layer7tech.com/ws/policy/fault:policyResult"
+            ]["@status"],
+            "Error in Assertion Processing",
+        )
+
+    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
+    def test_get_available_attributes_when_no_answer_is_returned(self, client_mock):
+        get_values_for_attributes_mock = (
+            client_mock.return_value.get_client.return_value.get_values_for_attributes
+        )
+        get_values_for_attributes_mock.return_value = loader.render_to_string(
+            "stuf_bg/tests/responses/StufBgNoAnswerResponse.xml"
+        )
+        attributes = FieldChoices.attributes.keys()
+
+        with self.assertLogs() as logs:
+            values = self.plugin.get_prefill_values(self.submission, attributes)
+
+        self.assertEqual(values, {})
+        self.assertEqual(logs.records[0].fault, {})
