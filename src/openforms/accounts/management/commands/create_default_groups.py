@@ -21,7 +21,7 @@ REDACTUERS_PERMISSIONS = [
 ]
 
 
-FUNCTIONAL_BEHEER_PERMISSIONS = [
+FUNCTIONAL_BEHEERS_PERMISSIONS = [
     "Can add BRP Configuration",
     "Can change BRP Configuration",
     "Can view BRP Configuration",
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
         functional_beheer_group = Group.objects.create(name="Functioneel beheers")
         functional_beheer_permissions = Permission.objects.filter(
-            name__in=FUNCTIONAL_BEHEER_PERMISSIONS
+            name__in=FUNCTIONAL_BEHEERS_PERMISSIONS
         )
         functional_beheer_group.permissions.add(*functional_beheer_permissions)
 

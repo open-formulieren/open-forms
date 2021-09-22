@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from ..management.commands.create_default_groups import (
     BEHANDELAARS_PERMISSIONS,
-    FUNCTIONAL_BEHEER_PERMISSIONS,
+    FUNCTIONAL_BEHEERS_PERMISSIONS,
     REDACTUERS_PERMISSIONS,
 )
 
@@ -25,7 +25,7 @@ class CreateDefaultGroupsTests(TestCase):
         )
 
         permissions_name_to_value = {
-            "Functioneel beheers": FUNCTIONAL_BEHEER_PERMISSIONS,
+            "Functioneel beheers": FUNCTIONAL_BEHEERS_PERMISSIONS,
             "Redacteurs": REDACTUERS_PERMISSIONS,
             "Behandelaars": BEHANDELAARS_PERMISSIONS,
         }
