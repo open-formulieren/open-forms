@@ -619,7 +619,7 @@ CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 #
 # SENTRY - error monitoring
 #
-SENTRY_DSN = config("SENTRY_DSN", None)
+SENTRY_DSN = config("SENTRY_DSN", "")
 
 if SENTRY_DSN:
     SENTRY_CONFIG = {
