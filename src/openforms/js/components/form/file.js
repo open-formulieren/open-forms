@@ -1,5 +1,5 @@
 import {Formio} from 'formiojs';
-import {ADVANCED, BASIC} from './edit/tabs';
+import {ADVANCED, SENSITIVE_BASIC} from './edit/tabs';
 import {getFullyQualifiedUrl} from '../../utils/urls';
 
 const BaseFileField = Formio.Components.components.file;
@@ -225,7 +225,7 @@ class FileField extends BaseFileField {
             type: 'tabs',
             key: 'file',
             components: [
-                BASIC,
+                SENSITIVE_BASIC,
                 ADVANCED,
                 FILE_TAB,
             ]

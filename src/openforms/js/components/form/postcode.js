@@ -1,6 +1,4 @@
-import {Formio} from "formiojs";
-
-import {DEFAULT_TABS, PREFILL} from './edit/tabs';
+import {DEFAULT_SENSITIVE_TABS, PREFILL} from './edit/tabs';
 import TextField from './textfield';
 
 
@@ -30,9 +28,9 @@ class PostcodeField extends TextField {
 
     static editForm() {
         const tabs = {
-            ...DEFAULT_TABS,
+            ...DEFAULT_SENSITIVE_TABS,
             components: [
-                ...DEFAULT_TABS.components,
+                ...DEFAULT_SENSITIVE_TABS.components,
                 PREFILL,
             ],
         };
