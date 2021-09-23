@@ -41,6 +41,8 @@ def _create_log(
     if error:
         extra_data["error"] = str(error)
 
+    extra_data["avg"] = tag_avg
+
     TimelineLogProxy.objects.create(
         content_object=object,
         template=f"logging/events/{event}.txt",
@@ -107,11 +109,15 @@ def pdf_generation_skip(submission: "Submission", submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: "Submission", plugin):
+def prefill_retrieve_success(submission: "Submission", plugin, fields):
+    # TODO See if we can improve on the fields that are logged.  Currently just outputs the key from the Django choices of the plugin
+    # Eg. Prefill plugin "MyBG-service" (StUF-BG) retrieved personal data to prefill fields: Firstname (persoon.voornamen), Lastname (persoon.achternaam), Birthdate (persoon.geboortedatum).
     _create_log(
         submission,
         "prefill_retrieve_success",
+        extra_data={"fields": fields},
         plugin=plugin,
+        tag_avg=True,
     )
 
 
