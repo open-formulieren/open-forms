@@ -6,7 +6,7 @@ In dit voorbeeld tonen we hoe u een prefill kunnen gebruiken.  Prefill is een op
 een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de
 :ref:`KvK <configuration_prefill_kvk>` prefill kan gebruiken maar we hebben op dit moment ook
 :ref:`StUF-BG <configuration_prefill_stuf_bg>` prefill en
-:ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>` prefill die u kan gebruiken.
+:ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>` prefill dat u kan gebruiken.
 
 
 Configuratie

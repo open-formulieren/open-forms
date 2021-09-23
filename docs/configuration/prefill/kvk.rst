@@ -10,7 +10,7 @@ about businesses.  Open Forms can be configured to access this API in order to p
 business information within a form.
 
 1. Obtain a `Kvk API Key`_ from KvK.
-2. In Open Forms, navigate to: **Configuration** > **KvK configuratie**
+2. In Open Forms, navigate to: **Configuration** > **KvK configuration**
 3. Click the **green plus button** and fill in the following details:
 
    * **Label**: KvK API
