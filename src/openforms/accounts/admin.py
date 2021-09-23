@@ -17,9 +17,9 @@ class _UserAdmin(UserAdmin, HijackUserAdminMixin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related('groups')
+        return qs.prefetch_related("groups")
 
-    def get_groups(self):
-        return list(self.groups.all())
+    def get_groups(self, obj):
+        return list(obj.groups.all())
 
     get_groups.short_description = _("Groups")

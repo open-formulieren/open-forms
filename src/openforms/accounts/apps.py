@@ -1,6 +1,6 @@
 from django.apps import AppConfig, apps
-from django.contrib.contenttypes.management import create_contenttypes
 from django.contrib.auth.management import create_permissions
+from django.contrib.contenttypes.management import create_contenttypes
 from django.core.management import call_command
 from django.db.models.signals import post_migrate
 
