@@ -167,6 +167,12 @@ class Submission(models.Model):
         ),
     )
 
+    confirmation_email_sent = models.BooleanField(
+        _("confirmation email sent"),
+        default=False,
+        help_text=_("Indicates whether the confirmation email has been sent."),
+    )
+
     _is_cleaned = models.BooleanField(
         _("is cleaned"),
         default=False,

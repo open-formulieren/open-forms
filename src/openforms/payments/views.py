@@ -352,7 +352,7 @@ class PaymentLinkView(DetailView):
         context = super().get_context_data(**kwargs)
 
         submission = self.get_object()
-        if not submission.payment_user_has_paid:
+        if submission.payment_required and not submission.payment_user_has_paid:
             plugin_id = submission.form.payment_backend
             plugin = register[plugin_id]
             payment = SubmissionPayment.objects.create_for(
@@ -368,5 +368,6 @@ class PaymentLinkView(DetailView):
             context["url"] = info.url
             context["method"] = info.type.upper()
             context["form"] = hidden_form_for_data(info.data)
+            context["price"] = submission.form.product.price
 
         return context

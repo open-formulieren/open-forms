@@ -1,3 +1,4 @@
+{% load i18n %}
 <table border="0">
     <tr>
         {% comment %} TODO add logo? {% endcomment %}
@@ -8,6 +9,31 @@
             {{ body|linebreaks }}
         </td>
     </tr>
+    {% if payment_required %}
+        <tr>
+            <td align="center"></td>
+        </tr>
+        <tr>
+            <td style="font-family: Verdana, Arial, sans-serif; font-size: 11px;">
+                {% if payment_user_has_paid %}
+                    <p>
+                        {% blocktrans trimmed %}
+                            Payment of &euro; {{ payment_price }} received.
+                        {% endblocktrans %}
+                    </p>
+                {% else %}
+                    <p>
+                        {% blocktrans trimmed %}
+                            Payment of &euro; {{ payment_price }} is required.
+                        {% endblocktrans %}
+                    </p>
+                    <p>
+                        <a href="{{ payment_url }}">{% trans "Open payment page" %}</a>
+                    </p>
+                {% endif %}
+            </td>
+        </tr>
+    {% endif %}
     <tr>
         <td align="center"></td>
     </tr>

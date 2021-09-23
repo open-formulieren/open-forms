@@ -4,12 +4,14 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import Context, Template, TemplateSyntaxError
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
+from ..utils.urls import build_absolute_uri
 from .utils import sanitize_content
 
 
@@ -52,6 +54,13 @@ class ConfirmationEmailTemplate(models.Model):
             **submission.data,
             "public_reference": submission.public_registration_reference,
         }
+        if submission.payment_required:
+            context["payment_required"] = True
+            context["payment_user_has_paid"] = submission.payment_user_has_paid
+            context["payment_url"] = build_absolute_uri(
+                reverse("payments:link", kwargs={"uuid": submission.uuid})
+            )
+            context["payment_price"] = str(submission.form.product.price)
 
         try:
             context["_appointment_id"] = submission.appointment_info.appointment_id
@@ -70,7 +79,7 @@ class ConfirmationEmailTemplate(models.Model):
 
         # render the content in the system-controlled wrapper template
         default_template = get_template("confirmation_mail.html")
-        return default_template.render({"body": mark_safe(sanitized)})
+        return default_template.render({"body": mark_safe(sanitized), **context})
 
     def clean(self):
         try:
