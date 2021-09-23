@@ -160,6 +160,15 @@ class SubmissionViewSet(
             403: ExceptionSerializer,
             429: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                "token",
+                OpenApiTypes.STR,
+                OpenApiParameter.PATH,
+                description=_("Time-based authentication token"),
+                required=True,
+            ),
+        ],
     )
     @action(
         detail=True,

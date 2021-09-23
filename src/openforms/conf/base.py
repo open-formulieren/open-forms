@@ -747,6 +747,9 @@ SPECTACULAR_SETTINGS = {
         "description": "Functional and technical documentation",
         "url": "https://open-forms.readthedocs.io/",
     },
+    "ENUM_NAME_OVERRIDES": {
+        "IncompleteSubmissionsRemovalMethodEnum": "openforms.data_removal.constants.RemovalMethods",
+    },
 }
 
 #

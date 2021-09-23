@@ -10,6 +10,9 @@ class ProductSerializer(serializers.Serializer):
     )
     name = serializers.CharField(label=_("name"), help_text=_("Product name"))
 
+    class Meta:
+        ref_name = "AppointmentProduct"
+
 
 class LocationSerializer(serializers.Serializer):
     identifier = serializers.CharField(

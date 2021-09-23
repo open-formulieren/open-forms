@@ -212,6 +212,7 @@ class TimesListView(ListMixin, APIView):
 
 @extend_schema(
     summary=_("Cancel an appointment"),
+    request=CancelAppointmentInputSerializer,
     responses={
         204: None,
         403: OpenApiResponse(
