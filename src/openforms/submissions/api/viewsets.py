@@ -305,7 +305,7 @@ class SubmissionStepViewSet(
 
     @extend_schema(
         summary=_("Apply/check form logic"),
-        description=_("Apply/check the logic rules specified on the form."),
+        description=_("Apply/check the logic rules specified on the form step."),
         request=FormDataSerializer,
         responses={200: SubmissionStateLogicSerializer},
     )

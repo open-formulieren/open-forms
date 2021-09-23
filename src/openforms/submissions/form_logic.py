@@ -7,7 +7,6 @@ from json_logic import jsonLogic
 
 from ..forms.models.form import FormLogic
 from ..prefill import JSONObject
-from .models import Submission, SubmissionStep
 
 
 def set_property_value(
@@ -29,7 +28,7 @@ def set_property_value(
 
 
 def evaluate_form_logic(
-    submission: Submission, step: SubmissionStep, data: Dict[str, Any]
+    submission: "Submission", step: "SubmissionStep", data: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
@@ -81,3 +80,27 @@ def evaluate_form_logic(
     step._form_logic_evaluated = True
 
     return configuration
+
+
+def check_submission_logic(submission):
+    logic_rules = FormLogic.objects.filter(
+        form=submission.form,
+        actions__contains=[{"action": {"type": "step-not-applicable"}}],
+    )
+
+    merged_data = submission.data
+    submission_state = submission.load_execution_state()
+
+    for rule in logic_rules:
+        if jsonLogic(rule.json_logic_trigger, merged_data):
+            for action in rule.actions:
+                if action["action"]["type"] != "step-not-applicable":
+                    continue
+
+                step_to_modify_uuid = resolve(furl(action["form_step"]).pathstr).kwargs[
+                    "uuid"
+                ]
+                submission_step_to_modify = submission_state.get_submission_step(
+                    form_step_uuid=step_to_modify_uuid
+                )
+                submission_step_to_modify._is_applicable = False
