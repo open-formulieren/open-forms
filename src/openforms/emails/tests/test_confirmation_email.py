@@ -269,7 +269,7 @@ class ConfirmationEmailTests(TestCase):
 )
 class PaymentConfirmationEmailTests(TestCase):
     def test_email_payment_not_required(self):
-        email = ConfirmationEmailTemplate(content="test")
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
         submission = SubmissionFactory.create()
         self.assertFalse(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
@@ -279,7 +279,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertNotIn(_("Payment of"), rendered_content)
 
     def test_email_payment_incomplete(self):
-        email = ConfirmationEmailTemplate(content="test")
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
         submission = SubmissionFactory.create(
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
@@ -293,6 +293,8 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertIn(_("Payment of"), rendered_content)
         self.assertIn("12.34", rendered_content)
 
+        print(rendered_content)
+
         # show link
         url = build_absolute_uri(
             reverse("payments:link", kwargs={"uuid": submission.uuid})
@@ -300,7 +302,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertIn(url, rendered_content)
 
     def test_email_payment_completed(self):
-        email = ConfirmationEmailTemplate(content="test")
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
         submission = SubmissionFactory.create(
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",

@@ -79,7 +79,7 @@ class ConfirmationEmailTemplate(models.Model):
 
         # render the content in the system-controlled wrapper template
         default_template = get_template("confirmation_mail.html")
-        return default_template.render({"body": mark_safe(sanitized), **context})
+        return default_template.render({"body": mark_safe(sanitized)})
 
     def clean(self):
         try:
