@@ -7,6 +7,7 @@ from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.logging.logevent import view_submission_details_admin
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
@@ -179,6 +180,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
+        view_submission_details_admin(submission)
         extra_context = {
             "data": submission.get_ordered_data_with_component_type(),
             "attachments": submission.get_merged_attachments(),

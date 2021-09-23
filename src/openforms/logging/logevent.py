@@ -357,6 +357,17 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
     )
 
 
+# TODO, Add the fields and templates for.  All below need a special AVG-related logs tag
+
+
+def view_submission_details_admin(submission: "Submission"):
+    _create_log(
+        submission,
+        "view_submission_details_admin",
+        tag_avg=True,
+    )
+
+
 # - - -
 
 
