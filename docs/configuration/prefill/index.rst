@@ -9,4 +9,5 @@ Prefill plugins
 
    bag
    kvk
-   stufbg
+   stuf_bg
+   haal_centraal

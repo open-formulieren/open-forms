@@ -1,4 +1,4 @@
-.. _configuration_prefill_stufbg:
+.. _configuration_prefill_stuf_bg:
 
 =======
 StUF-BG
