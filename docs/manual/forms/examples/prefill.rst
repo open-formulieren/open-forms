@@ -3,9 +3,10 @@ Prefill
 =======
 
 In dit voorbeeld tonen we hoe u een prefill kunnen gebruiken.  Prefill is een optie zodat
-een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de :ref:`KvK <configuration_prefill_kvk>` prefill
-kan gebruiken maar we hebben op dit moment ook :ref:`StUF-BG <FILL ME IN>` prefill en
-:ref:`Haal Centraal Bevragen personen <FILL ME IN>` prefill die u kan gebruiken.
+een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de
+:ref:`KvK <configuration_prefill_kvk>` prefill kan gebruiken maar we hebben op dit moment ook
+:ref:`StUF-BG <configuration_prefill_stuf_bg>` prefill en
+:ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>` prefill die u kan gebruiken.
 
 
 Configuratie
@@ -41,7 +42,7 @@ Formulier maken
     * **Plugin**: ``KvK Bedrijf via KvK-nummer``
     * **Plugin attribute**: ``handelsnaam``
 
-9. (Optioneel) Herhalen stap 8 met andere **Plugin attribute**s
+9. (Optioneel) Herhalen stappen 6 naar 8 met andere **Plugin attribute**
 10. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken.

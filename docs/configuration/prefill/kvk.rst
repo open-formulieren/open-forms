@@ -13,7 +13,7 @@ business information within a form.
 2. In Open Forms, navigate to: **Configuration** > **KvK configuratie**
 3. Click the **green plus button** and fill in the following details:
 
-    * **Label**: KvK API
+   * **Label**: KvK API
    * **Type**: ORC (Overige)
    * **API root URL**: *The API URL provided by KvK*
    * **Authorization type**: API key
