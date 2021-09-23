@@ -236,13 +236,7 @@ class CancelAppointmentView(GenericAPIView):
         submission = self.get_object()
 
         serializer = CancelAppointmentInputSerializer(data=request.data)
-        is_valid = serializer.is_valid()
-        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
-        # that Formio work is that we can't prevent the invalid request from firing.
-        # Instead, we just return an empty result list which populates dropdowns with
-        # empty options.
-        if not is_valid:
-            return []
+        serializer.is_valid(raise_exception=True)
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
