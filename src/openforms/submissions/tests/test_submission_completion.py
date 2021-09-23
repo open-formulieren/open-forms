@@ -23,6 +23,7 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
+from .form_logic.factories import FormLogicFactory
 from .mixins import SubmissionsMixin
 
 
@@ -135,3 +136,66 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
+
+    def test_submit_form_with_not_applicable_step(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+        )
+        form_step2_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "<": [
+                    {"var": "age"},
+                    18,
+                ]
+            },
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step2_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"age": 16},
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        submission.refresh_from_db()
+
+        self.assertTrue(submission.is_completed)
