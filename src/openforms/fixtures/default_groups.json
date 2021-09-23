@@ -1130,8 +1130,68 @@
 {
     "model": "auth.group",
     "fields": {
-        "name": "Functioneel beheers",
+        "name": "Functioneel beheer",
         "permissions": [
+            [
+                "add_user",
+                "accounts",
+                "user"
+            ],
+            [
+                "change_user",
+                "accounts",
+                "user"
+            ],
+            [
+                "delete_user",
+                "accounts",
+                "user"
+            ],
+            [
+                "view_user",
+                "accounts",
+                "user"
+            ],
+            [
+                "add_bagconfig",
+                "bag",
+                "bagconfig"
+            ],
+            [
+                "change_bagconfig",
+                "bag",
+                "bagconfig"
+            ],
+            [
+                "delete_bagconfig",
+                "bag",
+                "bagconfig"
+            ],
+            [
+                "view_bagconfig",
+                "bag",
+                "bagconfig"
+            ],
+            [
+                "add_brpconfig",
+                "brp",
+                "brpconfig"
+            ],
+            [
+                "change_brpconfig",
+                "brp",
+                "brpconfig"
+            ],
+            [
+                "delete_brpconfig",
+                "brp",
+                "brpconfig"
+            ],
+            [
+                "view_brpconfig",
+                "brp",
+                "brpconfig"
+            ],
             [
                 "add_globalconfiguration",
                 "config",
@@ -1143,9 +1203,54 @@
                 "globalconfiguration"
             ],
             [
+                "delete_globalconfiguration",
+                "config",
+                "globalconfiguration"
+            ],
+            [
                 "view_globalconfiguration",
                 "config",
                 "globalconfiguration"
+            ],
+            [
+                "add_jccconfig",
+                "jcc",
+                "jccconfig"
+            ],
+            [
+                "change_jccconfig",
+                "jcc",
+                "jccconfig"
+            ],
+            [
+                "delete_jccconfig",
+                "jcc",
+                "jccconfig"
+            ],
+            [
+                "view_jccconfig",
+                "jcc",
+                "jccconfig"
+            ],
+            [
+                "add_kvkconfig",
+                "kvk",
+                "kvkconfig"
+            ],
+            [
+                "change_kvkconfig",
+                "kvk",
+                "kvkconfig"
+            ],
+            [
+                "delete_kvkconfig",
+                "kvk",
+                "kvkconfig"
+            ],
+            [
+                "view_kvkconfig",
+                "kvk",
+                "kvkconfig"
             ],
             [
                 "add_haalcentraalconfig",
@@ -1158,9 +1263,54 @@
                 "haalcentraalconfig"
             ],
             [
+                "delete_haalcentraalconfig",
+                "prefill_haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
                 "view_haalcentraalconfig",
                 "prefill_haalcentraal",
                 "haalcentraalconfig"
+            ],
+            [
+                "add_qmaticconfig",
+                "qmatic",
+                "qmaticconfig"
+            ],
+            [
+                "change_qmaticconfig",
+                "qmatic",
+                "qmaticconfig"
+            ],
+            [
+                "delete_qmaticconfig",
+                "qmatic",
+                "qmaticconfig"
+            ],
+            [
+                "view_qmaticconfig",
+                "qmatic",
+                "qmaticconfig"
+            ],
+            [
+                "add_objectsapiconfig",
+                "registrations_objects_api",
+                "objectsapiconfig"
+            ],
+            [
+                "change_objectsapiconfig",
+                "registrations_objects_api",
+                "objectsapiconfig"
+            ],
+            [
+                "delete_objectsapiconfig",
+                "registrations_objects_api",
+                "objectsapiconfig"
+            ],
+            [
+                "view_objectsapiconfig",
+                "registrations_objects_api",
+                "objectsapiconfig"
             ],
             [
                 "add_soapservice",
@@ -1173,9 +1323,54 @@
                 "soapservice"
             ],
             [
+                "delete_soapservice",
+                "stuf",
+                "soapservice"
+            ],
+            [
                 "view_soapservice",
                 "stuf",
                 "soapservice"
+            ],
+            [
+                "add_stufbgconfig",
+                "stuf_bg",
+                "stufbgconfig"
+            ],
+            [
+                "change_stufbgconfig",
+                "stuf_bg",
+                "stufbgconfig"
+            ],
+            [
+                "delete_stufbgconfig",
+                "stuf_bg",
+                "stufbgconfig"
+            ],
+            [
+                "view_stufbgconfig",
+                "stuf_bg",
+                "stufbgconfig"
+            ],
+            [
+                "add_stufzdsconfig",
+                "stuf_zds",
+                "stufzdsconfig"
+            ],
+            [
+                "change_stufzdsconfig",
+                "stuf_zds",
+                "stufzdsconfig"
+            ],
+            [
+                "delete_stufzdsconfig",
+                "stuf_zds",
+                "stufzdsconfig"
+            ],
+            [
+                "view_stufzdsconfig",
+                "stuf_zds",
+                "stufzdsconfig"
             ],
             [
                 "add_zgwconfig",
@@ -1188,24 +1383,14 @@
                 "zgwconfig"
             ],
             [
-                "view_zgwconfig",
+                "delete_zgwconfig",
                 "zgw_apis",
                 "zgwconfig"
             ],
             [
-                "add_nlxconfig",
-                "zgw_consumers",
-                "nlxconfig"
-            ],
-            [
-                "change_nlxconfig",
-                "zgw_consumers",
-                "nlxconfig"
-            ],
-            [
-                "view_nlxconfig",
-                "zgw_consumers",
-                "nlxconfig"
+                "view_zgwconfig",
+                "zgw_apis",
+                "zgwconfig"
             ],
             [
                 "add_service",
@@ -1214,6 +1399,11 @@
             ],
             [
                 "change_service",
+                "zgw_consumers",
+                "service"
+            ],
+            [
+                "delete_service",
                 "zgw_consumers",
                 "service"
             ],
@@ -1230,26 +1420,6 @@
     "fields": {
         "name": "Redacteurs",
         "permissions": [
-            [
-                "add_confirmationemailtemplate",
-                "emails",
-                "confirmationemailtemplate"
-            ],
-            [
-                "change_confirmationemailtemplate",
-                "emails",
-                "confirmationemailtemplate"
-            ],
-            [
-                "delete_confirmationemailtemplate",
-                "emails",
-                "confirmationemailtemplate"
-            ],
-            [
-                "view_confirmationemailtemplate",
-                "emails",
-                "confirmationemailtemplate"
-            ],
             [
                 "add_form",
                 "forms",
@@ -1309,6 +1479,26 @@
                 "view_formstep",
                 "forms",
                 "formstep"
+            ],
+            [
+                "add_formversion",
+                "forms",
+                "formversion"
+            ],
+            [
+                "change_formversion",
+                "forms",
+                "formversion"
+            ],
+            [
+                "delete_formversion",
+                "forms",
+                "formversion"
+            ],
+            [
+                "view_formversion",
+                "forms",
+                "formversion"
             ]
         ]
     }
@@ -1319,9 +1509,34 @@
         "name": "Behandelaars",
         "permissions": [
             [
+                "view_submissionpayment",
+                "payments",
+                "submissionpayment"
+            ],
+            [
                 "view_submission",
                 "submissions",
                 "submission"
+            ],
+            [
+                "view_submissionfileattachment",
+                "submissions",
+                "submissionfileattachment"
+            ],
+            [
+                "view_submissionreport",
+                "submissions",
+                "submissionreport"
+            ],
+            [
+                "view_submissionstep",
+                "submissions",
+                "submissionstep"
+            ],
+            [
+                "view_temporaryfileupload",
+                "submissions",
+                "temporaryfileupload"
             ]
         ]
     }
