@@ -3,7 +3,7 @@ Prefill
 =======
 
 In dit voorbeeld tonen we hoe u een prefill kunnen gebruiken.  Prefill is een optie zodat
-een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de :ref:`KvK <FILL ME IN>` prefill
+een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de :ref:`KvK <configuration_prefill_kvk>` prefill
 kan gebruiken maar we hebben op dit moment ook :ref:`StUF-BG <FILL ME IN>` prefill en
 :ref:`Haal Centraal Bevragen personen <FILL ME IN>` prefill die u kan gebruiken.
 
@@ -14,7 +14,7 @@ Configuratie
 Voor dit formulier is bepaalde configuratie nodig. Hieronder staan de onderdelen
 die geconfigureerd moeten zijn:
 
-* :ref:`KvK configuratie <FILL ME IN>`
+* :ref:`KvK configuratie <configuration_prefill_kvk>`
 
 
 Formulier maken

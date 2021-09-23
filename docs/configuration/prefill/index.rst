@@ -8,4 +8,5 @@ Prefill plugins
    :maxdepth: 1
 
    bag
+   kvk
 
