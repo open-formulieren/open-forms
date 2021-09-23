@@ -339,7 +339,8 @@ class Submission(models.Model):
                     continue
 
                 # it is the right component, get the value and store it
-                appointment_data[appointment_key] = merged_data[component["key"]]
+                if component_value := merged_data.get(component["key"]):
+                    appointment_data[appointment_key] = component_value
                 break
 
         return appointment_data
