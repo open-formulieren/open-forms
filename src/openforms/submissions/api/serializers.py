@@ -77,7 +77,7 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
         source="payment_required",
     )
     has_paid = serializers.BooleanField(
-        label=_("user had paid"),
+        label=_("user has paid"),
         source="payment_user_has_paid",
         help_text=_("Whether the user has completed the required payment."),
         read_only=True,

@@ -189,7 +189,7 @@ class BasePlugin:
         :param client: A :class:`AppointmentClient` that holds client details.
         :param remarks: A ``str`` for additional remarks, added to the appointment.
         :returns: An appointment identifier as ``str``.
-        :raises AppointmentCreateFailed: If the appoinment could not be created.
+        :raises AppointmentCreateFailed: If the appointment could not be created.
         """
         raise NotImplementedError()
 
@@ -198,7 +198,7 @@ class BasePlugin:
         Delete an appointment.
 
         :param identifier: A string that represents the unique identification of the appointment.
-        :raises AppointmentDeleteFailed: If the appoinment could not be deleted.
+        :raises AppointmentDeleteFailed: If the appointment could not be deleted.
         """
         raise NotImplementedError()
 

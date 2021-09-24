@@ -65,7 +65,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         # Incomplete information to make an appointment
         # TODO: resolve the keys back to the human readable form field labels
         error_information = _(
-            "The following appoinment fields should be filled out: {fields}"
+            "The following appointment fields should be filled out: {fields}"
         ).format(fields=", ".join(sorted(absent_or_empty_information)))
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.missing_info,

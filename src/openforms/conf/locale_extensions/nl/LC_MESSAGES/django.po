@@ -25,5 +25,10 @@ msgstr "toegangspogingen"
 msgid "access logs"
 msgstr "toegangslogboek"
 
+# django-two-factor-auth
+
+# msgid "Forgotten your password or username?"
+# msgstr "Wachtwoord of gebruikersnaam vergeten?"
+
 # django-yubin
 # Has no translatable strings
