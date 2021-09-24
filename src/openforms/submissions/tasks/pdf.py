@@ -3,12 +3,12 @@ import logging
 from django.utils.translation import gettext_lazy as _
 
 from openforms.celery import app
+from openforms.logging import logevent
 
 from ..models import Submission, SubmissionReport
 
 __all__ = ["generate_submission_report"]
 
-from ...logging import logevent
 
 logger = logging.getLogger(__name__)
 

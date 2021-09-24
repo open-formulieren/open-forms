@@ -6,11 +6,11 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
 from ..appointments.models import AppointmentInfo
-from ..logging.models import TimelineLogProxy
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (

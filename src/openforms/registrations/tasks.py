@@ -6,12 +6,12 @@ from typing import Optional
 from django.conf import settings
 from django.utils import timezone
 
+from openforms.celery import app
+from openforms.logging import logevent
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.utils.celery import maybe_retry_in_workflow
 
-from ..celery import app
-from ..logging import logevent
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)

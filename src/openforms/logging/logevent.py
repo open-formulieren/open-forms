@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.db.models import Model
 
@@ -19,11 +19,16 @@ logger = logging.getLogger(__name__)
 def _create_log(
     object: Model,
     event: str,
-    extra_data: dict = None,
-    plugin=None,
-    error: Exception = None,
+    extra_data: Optional[dict] = None,
+    plugin: Optional[
+        object
+    ] = None,  # TODO: define BasePlugin class in openforms.plugins
+    error: Optional[Exception] = None,
     tag_avg: bool = False,
 ):
+    # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
+    from openforms.logging.models import TimelineLogProxy
+
     if extra_data is None:
         extra_data = dict()
     extra_data["log_event"] = event
@@ -34,9 +39,6 @@ def _create_log(
 
     if error:
         extra_data["error"] = str(error)
-
-    # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
-    from openforms.logging.models import TimelineLogProxy
 
     TimelineLogProxy.objects.create(
         content_object=object,

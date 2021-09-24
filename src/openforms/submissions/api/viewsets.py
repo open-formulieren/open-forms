@@ -15,9 +15,9 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
+from openforms.logging import logevent
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...logging import logevent
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -125,9 +125,6 @@ class SubmissionViewSet(
         This guarantees that the submission is removed from the session without having
         to rely on the client being able to make another call. IF it is detected in the
         status endpoint that a retry is needed, the ID is added back to the session.
-
-        TODO: if appointment registration fails, the submission ID must be added back
-        to the session so the user can return to the first step(s) in the UI.
         """
         submission = self.get_object()
         validate_submission_completion(submission, request=request)
@@ -137,7 +134,6 @@ class SubmissionViewSet(
 
         logevent.form_submit_success(submission)
 
-        # TODO: implement in celery tasks in cleanup (see ./tasks/__init__.py)
         remove_submission_from_session(submission, self.request.session)
         remove_submission_uploads_from_session(submission, self.request.session)
 

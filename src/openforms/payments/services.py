@@ -1,10 +1,10 @@
 from django.db import transaction
 
+from openforms.logging import logevent
 from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
-from ..logging import logevent
 from .constants import PaymentStatus
 
 
@@ -19,7 +19,7 @@ def update_submission_payment_registration(submission: Submission):
 
     try:
         plugin = register[submission.form.registration_backend]
-    except KeyError as e:
+    except KeyError:
         return
 
     # TODO support partial payments

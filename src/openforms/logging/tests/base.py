@@ -1,9 +1,7 @@
-import unittest
-
 from openforms.logging.models import TimelineLogProxy
 
 
-class LoggingTestMixin(unittest.TestCase):
+class LoggingTestMixin:
     def assertLogExtraDataEquals(self, log: TimelineLogProxy, **extra_data):
         self.assertIsNotNone(log.extra_data)
         self.assertNotEqual(extra_data, dict())

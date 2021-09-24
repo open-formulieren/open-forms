@@ -5,10 +5,8 @@ from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.mail import send_mail
 
-from openforms.appointments.models import AppointmentInfo
-from openforms.appointments.utils import get_client
+from openforms.logging import logevent
 
-from ..logging import logevent
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 

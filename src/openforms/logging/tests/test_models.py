@@ -27,7 +27,7 @@ class TimelineLogProxyTests(TestCase):
             extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin"},
         )
         self.assertEqual(
-            f"[2020-01-02 12:34:00] (Submission {submission.id})", log.fmt_lead
+            f"[2020-01-02 13:34:00 CET] (Submission {submission.id})", log.fmt_lead
         )
         self.assertEqual(f'"MyForm" (ID: {submission.form.id})', log.fmt_form)
         self.assertEqual(_("User") + ' "Bob"', log.fmt_user)
@@ -36,7 +36,7 @@ class TimelineLogProxyTests(TestCase):
         # fallbacks
         log = TimelineLogProxyFactory.create(content_object=None, user=None)
         self.assertEqual(_("Anonymous user"), log.fmt_user)
-        self.assertEqual(f"[2020-01-02 12:34:00]", log.fmt_lead)
+        self.assertEqual(f"[2020-01-02 13:34:00 CET]", log.fmt_lead)
         self.assertEqual(_("(unknown)"), log.fmt_plugin)
 
 

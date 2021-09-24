@@ -1,11 +1,10 @@
 from openforms.celery import app
+from openforms.logging import logevent
 
 from ..models import Submission
 from ..utils import send_confirmation_email
 
 __all__ = ["maybe_send_confirmation_email"]
-
-from ...logging import logevent
 
 
 @app.task(bind=True, ignore_result=True)

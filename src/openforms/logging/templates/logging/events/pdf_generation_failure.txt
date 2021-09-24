@@ -1,4 +1,4 @@
 {% load i18n %}
 {% blocktrans trimmed with lead=log.fmt_lead %}
-   {{ lead }}: Registration task failed.
+   {{ lead }}: PDF generation task failed.
 {% endblocktrans %}
