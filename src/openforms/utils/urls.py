@@ -10,7 +10,7 @@ def build_absolute_uri(location, request=None):
 
     # copied and modified from request.build_absolute_uri()
     base = urlsplit(settings.BASE_URL)
-    current_scheme_host = "{}://{}".format(base.scheme, base.hostname)
+    current_scheme_host = "{}://{}".format(base.scheme, base.netloc)
 
     bits = urlsplit(location)
     if not (bits.scheme and bits.netloc):

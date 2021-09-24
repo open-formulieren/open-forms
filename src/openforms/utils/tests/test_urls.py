@@ -18,6 +18,11 @@ class BuildAbsoluteUriTests(TestCase):
         url = build_absolute_uri("aa/bb?x=1")
         self.assertEqual("http://test/aa/bb?x=1", url)
 
+    @override_settings(BASE_URL="http://test:8000/")
+    def test_basic_with_port(self):
+        url = build_absolute_uri("/aa/bb/?x=1")
+        self.assertEqual("http://test:8000/aa/bb/?x=1", url)
+
     def test_basic_with_request(self):
         request = RequestFactory().get("/dummy")
 
