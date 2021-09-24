@@ -24,7 +24,7 @@ class DemoRegistration(BasePlugin):
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
-    def update_payment_status(self, submission: "Submission"):
+    def update_payment_status(self, submission: "Submission", options: dict):
         print(submission)
 
 
@@ -40,5 +40,5 @@ class DemoFailRegistration(BasePlugin):
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
-    def update_payment_status(self, submission: "Submission"):
+    def update_payment_status(self, submission: "Submission", options: dict):
         pass

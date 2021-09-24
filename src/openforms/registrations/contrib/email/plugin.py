@@ -74,7 +74,7 @@ class EmailRegistration(BasePlugin):
 
         send_mail_plus(
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
             content,
             settings.DEFAULT_FROM_EMAIL,
@@ -87,5 +87,24 @@ class EmailRegistration(BasePlugin):
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Email plugin does not emit a reference")
 
-    def update_payment_status(self, submission: "Submission"):
-        pass
+    def update_payment_status(self, submission: "Submission", options: dict):
+        message = _("Submission payment received for {} (submitted on {})").format(
+            submission.form.admin_name,
+            submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
+        )
+
+        sanitized = sanitize_content(message)
+
+        default_template = get_template("confirmation_mail.html")
+        content = default_template.render({"body": mark_safe(sanitized)})
+
+        send_mail_plus(
+            _("[Open Forms] {} - submission payment received {}").format(
+                submission.form.admin_name, submission.public_registration_reference
+            ),
+            content,
+            settings.DEFAULT_FROM_EMAIL,
+            options["to_emails"],
+            fail_silently=False,
+            html_message=content,
+        )

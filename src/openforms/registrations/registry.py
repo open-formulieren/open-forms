@@ -17,9 +17,6 @@ class Registry(BaseRegistry):
                 f"Please specify 'configuration_options' attribute for plugin class."
             )
 
-    def update_payment_status(self, submission: "Submission"):
-        pass
-
 
 # Sentinel to provide the default registry. You an easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.

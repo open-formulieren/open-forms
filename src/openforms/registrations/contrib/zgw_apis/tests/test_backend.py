@@ -360,7 +360,7 @@ class ZGWBackendTests(TestCase):
         self.assertNotIn("laatsteBetaaldatum", create_zaak_body)
 
         # run the actual update
-        plugin.update_payment_status(submission)
+        plugin.update_payment_status(submission, {})
 
         patch_zaak_body = m.request_history[-1].json()
         self.assertEqual(patch_zaak_body["betalingsindicatie"], "geheel")

@@ -165,7 +165,7 @@ class StufZDSRegistration(BasePlugin):
         """
         return result["zaak"]
 
-    def update_payment_status(self, submission: "Submission"):
+    def update_payment_status(self, submission: "Submission", options: dict):
         config = StufZDSConfig.get_solo()
         client = config.get_client(submission.form.registration_backend_options)
 
