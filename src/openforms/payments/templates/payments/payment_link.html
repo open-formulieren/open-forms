@@ -5,13 +5,20 @@
 {% block card %}
     {% if form %}
         <h2>{% trans "Payment required!" %}</h2>
-        <p>{{ object }}</p>
+        <p>{{ object.form.name }}</p>
         <p>{% trans "Total:" %} &euro; {{ price }}</p>
-        <form action="{{ url }}" method="{{ method }}">
+        <form id="payment-form" action="{{ url }}" method="{{ method }}">
             {{ form }}
             <input type="submit" value="{% trans "Start payment" %}">
         </form>
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                document.getElementById("payment-form").submit();
+            }, false);
+        </script>
     {% else %}
-        {% trans "Thanks!" %}
+        <p>{% trans "Thanks!" %}</p>
+        <p>{{ object.form.name }}</p>
+        <p>{% trans "Total:" %} &euro; {{ price }}</p>
     {% endif %}
 {% endblock %}
