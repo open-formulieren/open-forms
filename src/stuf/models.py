@@ -16,6 +16,7 @@ class SoapService(models.Model):
         _("receiving organisation"),
         help_text=_("Field 'ontvanger organisatie' in StUF"),
         max_length=200,
+        blank=True,
     )
     ontvanger_applicatie = models.CharField(
         _("receiving application"),
@@ -39,6 +40,7 @@ class SoapService(models.Model):
         _("sending organisation"),
         help_text=_("Field 'zender organisatie' in StUF"),
         max_length=200,
+        blank=True,
     )
     zender_applicatie = models.CharField(
         _("sending application"),
