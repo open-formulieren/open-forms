@@ -27,6 +27,7 @@ class OgoneClient:
         amount_cents: int,
         return_url: str,
         return_action_param: str,
+        description: str = "",
         **extra_params
     ) -> PaymentInfo:
         # base params
@@ -36,6 +37,8 @@ class OgoneClient:
             LANGUAGE="nl_NL",
             ORDERID=order_id,
             PSPID=self.merchant.pspid,
+            TITLE=description,  # doesnt work??
+            COM=description,
         )
         # add action variations to base return url
         url = furl(return_url)

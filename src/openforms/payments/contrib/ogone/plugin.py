@@ -50,8 +50,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         return_url = self.get_return_url(request, payment)
 
+        description = (
+            f"{_('Submission')}: {payment.submission.public_registration_reference}"
+        )
+
         info = client.get_payment_info(
-            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM
+            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM, description
         )
         return info
 
