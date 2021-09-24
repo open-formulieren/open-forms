@@ -7,6 +7,7 @@ from openforms.payments.constants import PaymentStatus
 
 if TYPE_CHECKING:
     from openforms.appointments.models import AppointmentInfo
+    from openforms.forms.models import Form
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -357,13 +358,26 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
     )
 
 
-# TODO, Add the fields and templates for.  All below need a special AVG-related logs tag
-
-
 def view_submission_details_admin(submission: "Submission"):
     _create_log(
         submission,
         "view_submission_details_admin",
+        tag_avg=True,
+    )
+
+
+def view_submission_details_api(submission: "Submission"):
+    _create_log(
+        submission,
+        "view_submission_details_api",
+        tag_avg=True,
+    )
+
+
+def export_submissions(form: "Form"):
+    _create_log(
+        form,
+        "export_submissions",
         tag_avg=True,
     )
 

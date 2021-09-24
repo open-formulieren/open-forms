@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from freezegun import freeze_time
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.forms.tests.factories import FormFactory
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -17,6 +18,14 @@ class TimelineLogProxyTests(TestCase):
         submission = SubmissionFactory.create()
         log = TimelineLogProxyFactory.create(content_object=submission)
         self.assertTrue(log.is_submission)
+
+    def test_is_form(self):
+        log = TimelineLogProxyFactory.create(content_object=None)
+        self.assertFalse(log.is_form)
+
+        form = FormFactory.create()
+        log = TimelineLogProxyFactory.create(content_object=form)
+        self.assertTrue(log.is_form)
 
     @freeze_time("2020-01-02 12:34:00")
     def test_format_accessors(self):

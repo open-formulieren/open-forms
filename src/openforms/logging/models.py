@@ -7,6 +7,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
 
+from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 
 
@@ -53,13 +54,19 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_form(self) -> str:
-        if not self.is_submission:
-            return ""
-        return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
+        if self.is_submission:
+            return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
+        elif self.is_form:
+            return f"Form {self.content_object.id}"
+        return ""
 
     @property
     def is_submission(self) -> bool:
         return bool(self.content_type == ContentType.objects.get_for_model(Submission))
+
+    @property
+    def is_form(self):
+        return bool(self.content_type == ContentType.objects.get_for_model(Form))
 
     @property
     def fmt_plugin(self) -> str:

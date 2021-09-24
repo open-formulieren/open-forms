@@ -6,12 +6,15 @@ from django.utils.translation import gettext_lazy as _, ngettext
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
+from openforms.appointments.models import AppointmentInfo
+from openforms.logging.logevent import (
+    export_submissions as log_export_submissions,
+    view_submission_details_admin,
+)
 from openforms.logging.models import TimelineLogProxy
-from openforms.logging.logevent import view_submission_details_admin
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
-from ..appointments.models import AppointmentInfo
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
 from .models import (
@@ -201,6 +204,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             )
             return
 
+        log_export_submissions(queryset.first().form)
         return export_submissions(queryset, file_type)
 
     def export_csv(self, request, queryset):
