@@ -5,8 +5,7 @@ from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.mail import send_mail
 
-from openforms.appointments.models import AppointmentInfo
-from openforms.appointments.utils import get_client
+from openforms.logging import logevent
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
@@ -81,6 +80,7 @@ def send_confirmation_email(submission: Submission):
             "skipping the confirmation e-mail.",
             submission.id,
         )
+        logevent.confirmation_email_skip(submission)
         return
 
     content = email_template.render(submission)
@@ -93,3 +93,5 @@ def send_confirmation_email(submission: Submission):
         fail_silently=False,
         html_message=content,
     )
+
+    logevent.confirmation_email_success(submission)

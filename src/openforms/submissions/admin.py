@@ -1,10 +1,12 @@
 from django.contrib import admin, messages
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import register_submission
 
@@ -101,6 +103,22 @@ class SubmissionPaymentInline(admin.StackedInline):
         return False
 
 
+class SubmissionLogInline(GenericTabularInline):
+    model = TimelineLogProxy
+    fields = ("get_message",)
+    readonly_fields = ("get_message",)
+    template = "logging/admin_inline.html"
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
@@ -116,6 +134,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [
         SubmissionStepInline,
         SubmissionPaymentInline,
+        SubmissionLogInline,
     ]
     readonly_fields = [
         "created_on",

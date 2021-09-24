@@ -233,8 +233,16 @@
                 "queuedmessage"
             ],
             [
+                "logging",
+                "timelinelogproxy"
+            ],
+            [
                 "submissions",
                 "temporaryfileupload"
+            ],
+            [
+                "timeline_logger",
+                "timelinelog"
             ]
         ]
     }
@@ -290,6 +298,17 @@
         ],
         "name": "Github",
         "link": "https://github.com/open-formulieren/open-forms"
+    }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 4,
+        "app_group": [
+            "logs"
+        ],
+        "name": "Audit log",
+        "link": "/admin/logging/timelinelogproxy/auditlog/"
     }
 }
 ]

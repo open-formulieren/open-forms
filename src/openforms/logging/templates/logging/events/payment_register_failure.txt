@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with plugin=log.fmt_plugin order_id=log.extra_data.payment_order_id lead=log.fmt_lead %}
+   {{ lead }}: Payment plugin {{ plugin }} order '{{ order_id }}' reported: Payment registration failure.
+{% endblocktrans %}
