@@ -7,7 +7,7 @@ Ingenico Ogone
 Open Forms supports the **Ingenico Ogone** legacy payment backend (using a ``PSPID``).
 
 In order to make use of this module, administrators must create an *Ogone merchant* in
-the administration interface.
+the admin interface.
 
 1. Navigate to **Configuration** > **Ogone Merchant**.
 
@@ -15,8 +15,8 @@ the administration interface.
 
 3. Complete the form fields:
 
-    * **Label**: enter a recognizable name
-    * **PSPID**: enter your Ingenico Ogone PSPID
+    * **Label**: *Fill in a human readable label*, for example: ``My Ogone``
+    * **PSPID**: *Your Ingenico Ogone PSPID*
     * **Hash algorithm**: SHA-512
 
 4. In another browser tab or window, open the Ogone backoffice to configure the Ogone
@@ -34,7 +34,7 @@ the administration interface.
    > **Data and origin verification**
 
 8. Copy the *Checks for e-Commerce > SHA-IN pass phrase* to the Ogone merchant
-   **SHA-IN passphrase** in the Open Forms administration interface.
+   **SHA-IN passphrase** in the Open Forms admin interface.
 
 9. In the Ogone backoffice, nagivate to: **Configuration** >
    **Technical Configuration** > **Transaction feedback**
@@ -44,9 +44,9 @@ the administration interface.
 
 11. Then, copy *All transaction submission modes > Security for request parameters >
     SHA-OUT pass phrase* to the Ogone merchant **SHA-OUT passphrase** in the Open Forms
-    administration interface.
+    admin interface.
 
-12. Back in the Open Forms administration interface, select a pre-defined
+12. Back in the Open Forms admin interface, select a pre-defined
     **Ogone endpoint** or enter a custom proxy URL, and save the configuration.
 
 13. Finally, copy the generated **Feedback url** and finalize the Ogone backoffice

@@ -20,7 +20,7 @@ configured to access these API's to register form submissions.
    a. Click **Service toevoegen**.
    b. Fill out the form for each of the three components:
 
-      * **Label**: *A human readable label*, for example: ``My Zaken API``, ``My Documenten API`` or ``My Zaaktypen API``
+      * **Label**: *Fill in a human readable label*, for example: ``My Zaken API``, ``My Documenten API`` or ``My Zaaktypen API``
       * **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
       * **API root url**: The root of this API, *For example* ``https://example.com/zaken/api/v1/``
 

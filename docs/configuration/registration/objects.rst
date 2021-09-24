@@ -124,7 +124,7 @@ To configure the Objects API follow these steps:
    a. Click **Service toevoegen**.
    b. Fill out the form:
 
-      * **Label**: *A human readable label*, for example: ``My Objects API``
+      * **Label**: *Fill in a human readable label*, for example: ``My Objects API``
       * **Type**: Select the type: ``ORC``
       * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v1/``
 

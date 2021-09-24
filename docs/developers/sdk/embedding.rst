@@ -50,7 +50,7 @@ Available options
 
 ``formId``:
     Required. The UUID or slug of the form to embed. This can be obtained via the Open
-    Forms management interface.
+    Forms admin interface.
 
 ``basePath``:
     Optional, but highly recommended. The SDK considers this as the base URL and builds all
