@@ -89,6 +89,11 @@ class TimelineLogProxyTests(TestCase):
         )
         self.assertEqual(log.fmt_fields, "The BSN (bsn), The First Name (voornamen)")
 
+    def test_format_form_with_form_content_object(self):
+        form = FormFactory.create(name="MyForm")
+        log = TimelineLogProxyFactory.create(content_object=form)
+        self.assertEqual(f'"MyForm" (ID: {form.id})', log.fmt_form)
+
     @freeze_time("2020-01-02 12:34:00")
     def test_format_accessors(self):
         submission = SubmissionFactory.create(form__name="MyForm")

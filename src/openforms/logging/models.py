@@ -59,7 +59,7 @@ class TimelineLogProxy(TimelineLog):
         if self.is_submission:
             return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
         elif self.is_form:
-            return f"Form {self.content_object.id}"
+            return f'"{self.content_object}" (ID: {self.content_object.id})'
         return ""
 
     @property
@@ -67,7 +67,7 @@ class TimelineLogProxy(TimelineLog):
         return bool(self.content_type == ContentType.objects.get_for_model(Submission))
 
     @property
-    def is_form(self):
+    def is_form(self) -> bool:
         return bool(self.content_type == ContentType.objects.get_for_model(Form))
 
     @property
