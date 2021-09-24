@@ -5,7 +5,7 @@ from django.urls import path
 from timeline_logger.models import TimelineLog
 from timeline_logger.views import TimelineLogListView
 
-from openforms.logging.models import TimelineLogProxy
+from openforms.logging.models import AvgTimelineLogProxy, TimelineLogProxy
 
 
 class TimelineLogView(PermissionRequiredMixin, TimelineLogListView):
@@ -46,6 +46,11 @@ class TimelineLogProxyAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(AvgTimelineLogProxy)
+class AvgTimelineLogProxyAdmin(TimelineLogProxyAdmin):
+    pass
 
 
 admin.site.unregister(TimelineLog)

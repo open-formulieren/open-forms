@@ -135,3 +135,19 @@ class TimelineLogProxy(TimelineLog):
         return self.get_message()
 
     message.short_description = _("message")
+
+
+class TimelineLogProxyManager(models.Manager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(extra_data__contains={"avg": True})
+
+
+class AvgTimelineLogProxy(TimelineLogProxy):
+
+    objects = TimelineLogProxyManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = _("avg timeline log entry")
+        verbose_name_plural = _("avg timeline log entries")
