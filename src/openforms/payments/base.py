@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext_lazy as _
@@ -61,7 +61,9 @@ class BasePlugin:
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: HttpRequest) -> "SubmissionPayment":
+    def handle_webhook(
+        self, request: HttpRequest
+    ) -> Tuple[HttpResponse, "SubmissionPayment"]:
         raise NotImplementedError()
 
     # helpers

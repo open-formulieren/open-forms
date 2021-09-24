@@ -301,6 +301,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     },
 )
 class PaymentWebhookView(PaymentFlowBaseView):
+    parser_classes = (FormParser, MultiPartParser)
+
     def _handle_webhook(self, request, *args, **kwargs):
         try:
             plugin = register[kwargs["plugin_id"]]
@@ -311,11 +313,12 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if plugin.webhook_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
-        payment = plugin.handle_webhook(request)
+        response, payment = plugin.handle_webhook(request)
         if payment:
             logevent.payment_flow_webhook(payment, plugin)
             update_submission_payment_registration(payment.submission)
-        return HttpResponse("")
+
+        return response or HttpResponse("")
 
     def get(self, request, *args, **kwargs):
         return self._handle_webhook(request, *args, **kwargs)

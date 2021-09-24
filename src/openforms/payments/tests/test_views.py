@@ -27,7 +27,7 @@ class Plugin(BasePlugin):
         return HttpResponseRedirect(payment.form_url)
 
     def handle_webhook(self, request):
-        return None
+        return None, None
 
 
 class ViewsTests(TestCase):
@@ -135,7 +135,7 @@ class ViewsTests(TestCase):
         self.assertRegex(url, r"^http://")
 
         with self.subTest("webhook ok"), patch.object(
-            plugin, "handle_webhook", return_value=payment
+            plugin, "handle_webhook", return_value=(None, payment)
         ):
             update_payments_mock.reset_mock()
 

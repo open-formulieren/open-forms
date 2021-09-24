@@ -84,11 +84,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
     def handle_webhook(self, request):
         # unvalidated data
-        order_id = request.data.get("ORDERID")
+        order_id = request.data.get("orderID")
         if not order_id:
-            return HttpResponseBadRequest("missing ORDERID")
+            return HttpResponseBadRequest("missing orderID"), None
 
-        payment = get_object_or_404(SubmissionPayment, remote_order_id=order_id)
+        payment = get_object_or_404(SubmissionPayment, order_id=order_id)
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
         )
@@ -99,10 +99,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
             logevent.payment_flow_failure(payment, self, e)
-            return HttpResponseBadRequest("bad shasign")
+            return HttpResponseBadRequest("bad shasign"), None
 
         self.apply_status(payment, params.STATUS)
-        return payment
+
+        return None, payment
 
     def apply_status(self, payment, ogone_status) -> None:
         if payment.status in PaymentStatus.is_final:

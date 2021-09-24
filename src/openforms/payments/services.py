@@ -7,7 +7,6 @@ from openforms.submissions.models import Submission
 
 from ..submissions.tasks.emails import send_confirmation_email_after_payment_timeout
 from .constants import PaymentStatus
-from ..submissions.tasks.emails import send_confirmation_email_after_payment_timeout
 
 
 def update_submission_payment_registration(submission: Submission):
