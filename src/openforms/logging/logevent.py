@@ -110,13 +110,11 @@ def pdf_generation_skip(submission: "Submission", submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: "Submission", plugin, fields):
-    # TODO See if we can improve on the fields that are logged.  Currently just outputs the key from the Django choices of the plugin
-    # Eg. Prefill plugin "MyBG-service" (StUF-BG) retrieved personal data to prefill fields: Firstname (persoon.voornamen), Lastname (persoon.achternaam), Birthdate (persoon.geboortedatum).
+def prefill_retrieve_success(submission: "Submission", plugin, fields, configuration):
     _create_log(
         submission,
         "prefill_retrieve_success",
-        extra_data={"fields": fields},
+        extra_data={"fields": fields, "configuration": configuration},
         plugin=plugin,
         tag_avg=True,
     )

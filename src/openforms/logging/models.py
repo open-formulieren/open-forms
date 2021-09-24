@@ -78,11 +78,34 @@ class TimelineLogProxy(TimelineLog):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
 
+    def get_formatted_fields(self, configuration, fields):
+        formatted_fields = []
+
+        for field in fields:
+            try:
+                if configuration["prefill"]["attribute"] == field:
+                    formatted_fields.append(f"{configuration['label']} ({field})")
+            except KeyError:
+                pass
+
+        if components := configuration.get("components"):
+            for component in components:
+                formatted_fields += self.get_formatted_fields(component, fields)
+
+        return formatted_fields
+
     @property
     def fmt_fields(self) -> str:
-        if not self.extra_data or "fields" not in self.extra_data:
+        if (
+            not self.extra_data
+            or "fields" not in self.extra_data
+            or "configuration" not in self.extra_data
+        ):
             return _("(unknown)")
-        return ", ".join(self.extra_data["fields"])
+        formatted_fields = self.get_formatted_fields(
+            self.extra_data["configuration"], self.extra_data["fields"]
+        )
+        return ", ".join(formatted_fields)
 
     @property
     def fmt_url(self) -> str:

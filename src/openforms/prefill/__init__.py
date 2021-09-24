@@ -87,7 +87,7 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
             logevent.prefill_retrieve_failure(submission, plugin, e)
             raise
         else:
-            logevent.prefill_retrieve_success(submission, plugin, fields)
+            logevent.prefill_retrieve_success(submission, plugin, fields, configuration)
 
         return (plugin_id, values)
 
