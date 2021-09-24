@@ -46,7 +46,7 @@ class StufBGClient:
         response = requests.post(
             self.service.get_endpoint(type=EndpointType.vrije_berichten),
             data=data,
-            headers={"Content-Type": "application/soap+xml"},
+            headers={"Content-Type": "text/xml"},
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),
         )
