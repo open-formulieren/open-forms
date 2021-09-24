@@ -217,7 +217,7 @@ lxml==4.6.3
     #   -r requirements/base.in
     #   xmlsec
     #   zeep
-maykin-django-two-factor-auth[phonenumbers]==2.0.3
+maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
 git+https://github.com/maykinmedia/json-logic-py.git@2ffa47be494d147d42721175e4a3c2d8d68c9e3e#egg=maykin-json-logic-py
     # via -r requirements/base.in

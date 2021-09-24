@@ -496,7 +496,7 @@ markupsafe==1.1.1
     #   -r requirements/ci.txt
     #   jinja2
     #   sphinx
-maykin-django-two-factor-auth[phonenumbers]==2.0.3
+maykin-django-two-factor-auth==2.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
