@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from typing import Optional
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -16,7 +17,7 @@ from openforms.forms.models import FormStep
 
 from ...forms.validators import validate_not_maintainance_mode
 from ..constants import ProcessingResults, ProcessingStatuses
-from ..form_logic import evaluate_form_logic
+from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from .fields import NestedRelatedField
 
@@ -164,6 +165,10 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 ],
             },
         }
+
+    def to_representation(self, instance):
+        check_submission_logic(instance)
+        return super().to_representation(instance)
 
 
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
@@ -330,7 +335,7 @@ class SubmissionStateLogicSerializer(serializers.Serializer):
 @dataclass
 class SubmissionStateLogic:
     submission: Submission
-    step: SubmissionStep
+    step: Optional[SubmissionStep] = None
 
 
 class SubmissionCompletionSerializer(serializers.Serializer):

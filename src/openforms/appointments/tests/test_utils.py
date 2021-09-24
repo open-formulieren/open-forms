@@ -52,6 +52,30 @@ class BookAppointmentForSubmissionTest(TestCase):
         submission.refresh_from_db()
         self.assertFalse(AppointmentInfo.objects.exists())
 
+    def test_appointment_step_not_applicable(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {"key": "product", "appointments": {"showProducts": True}},
+                    {"key": "location", "appointments": {"showLocations": True}},
+                    {"key": "time", "appointments": {"showTimes": True}},
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={},
+            form_step=step,
+        )
+
+        book_appointment_for_submission(submission)
+
+        self.assertFalse(AppointmentInfo.objects.exists())
+
     def test_creating_appointment_with_missing_or_not_filled_in_appointment_information_adds_error_message(
         self,
     ):

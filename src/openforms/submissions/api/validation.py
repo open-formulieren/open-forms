@@ -4,6 +4,7 @@ from typing import List
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
 from .fields import NestedSubmissionRelatedField
 
@@ -45,11 +46,14 @@ def validate_submission_completion(submission: Submission, request=None):
     # check that all required steps are completed
     state = submission.load_execution_state()
 
+    # When loading the state, knowledge of which steps are not applicable is lost
+    check_submission_logic(submission)
+
     incomplete_steps = []
     for submission_step in state.submission_steps:
         if submission_step.form_step.optional:
             continue
-        if not submission_step.completed:
+        if not submission_step.completed and submission_step.is_applicable:
             incomplete_steps.append(submission_step)
 
     completion = InvalidCompletion(

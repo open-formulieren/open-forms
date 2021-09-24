@@ -11,11 +11,13 @@ from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.shortcuts import render
 from django.template import Context, Template
+from django.urls import resolve
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
+from furl import furl
 from glom import glom
 from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
@@ -76,6 +78,10 @@ class SubmissionState:
             ),
             None,
         )
+
+    def resolve_step(self, form_step_url: str) -> "SubmissionStep":
+        step_to_modify_uuid = resolve(furl(form_step_url).pathstr).kwargs["uuid"]
+        return self.get_submission_step(form_step_uuid=step_to_modify_uuid)
 
 
 def _get_config_field(field: str) -> str:
@@ -339,7 +345,8 @@ class Submission(models.Model):
                     continue
 
                 # it is the right component, get the value and store it
-                appointment_data[appointment_key] = merged_data[component["key"]]
+                if component_value := merged_data.get(component["key"]):
+                    appointment_data[appointment_key] = component_value
                 break
 
         return appointment_data
