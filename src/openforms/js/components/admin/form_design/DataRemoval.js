@@ -14,14 +14,14 @@ const REMOVAL_METHODS = [
     [
         'delete_permanently',
         defineMessage({
-            description: 'delete_permanently removal method label',
+            description: 'delete_permanently removal method option label',
             defaultMessage: 'Submissions will be deleted',
         })
     ],
     [
         'make_anonymous',
         defineMessage({
-            description: 'make_anonymous removal method label',
+            description: 'make_anonymous removal method option label',
             defaultMessage: 'Sensitive data within the submissions will be deleted',
         })
     ],

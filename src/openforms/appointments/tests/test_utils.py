@@ -134,7 +134,7 @@ class BookAppointmentForSubmissionTest(TestCase):
 
         self.assertEqual(
             info.error_information,
-            _("The following appoinment fields should be filled out: {fields}").format(
+            _("The following appointment fields should be filled out: {fields}").format(
                 fields="clientDateOfBirth, locationIDAndName"
             ),
         )
