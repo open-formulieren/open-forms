@@ -23,7 +23,7 @@ configured to access this API to autocomplete addresses.
 4. Click **Save**
 5. Navigate to **Configuration** > **BAG configuration**
 6. Select for the **BAG service**, the **[ORC (Overige)] BAG (Kadaster)**
-   option.
+   option, that we just created in step 3.
 7. Click **Save**
 
 The BAG configuration is now completed.
