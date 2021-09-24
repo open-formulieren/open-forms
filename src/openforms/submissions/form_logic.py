@@ -1,12 +1,13 @@
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
-from django.urls import resolve
-
-from furl import furl
 from json_logic import jsonLogic
 
-from ..forms.models.form import FormLogic
-from ..prefill import JSONObject
+from openforms.forms.constants import LogicActionTypes
+from openforms.forms.models.form import FormLogic
+from openforms.prefill import JSONObject
+
+if TYPE_CHECKING:
+    from .models import Submission, SubmissionStep
 
 
 def set_property_value(
@@ -51,13 +52,13 @@ def evaluate_form_logic(
         if jsonLogic(rule.json_logic_trigger, data):
             for action in rule.actions:
                 action_details = action["action"]
-                if action_details["type"] == "value":
+                if action_details["type"] == LogicActionTypes.value:
                     new_value = jsonLogic(action_details["value"], data)
                     configuration = set_property_value(
                         configuration, action["component"], "value", new_value
                     )
                     step.data[action["component"]] = new_value
-                elif action_details["type"] == "property":
+                elif action_details["type"] == LogicActionTypes.property:
                     property_name = action_details["property"]["value"]
                     property_value = action_details["state"]
                     set_property_value(
@@ -66,14 +67,11 @@ def evaluate_form_logic(
                         property_name,
                         property_value,
                     )
-                elif action_details["type"] == "disable-next":
+                elif action_details["type"] == LogicActionTypes.disable_next:
                     step._can_submit = False
-                elif action_details["type"] == "step-not-applicable":
-                    step_to_modify_uuid = resolve(
-                        furl(action["form_step"]).pathstr
-                    ).kwargs["uuid"]
-                    submission_step_to_modify = submission_state.get_submission_step(
-                        form_step_uuid=step_to_modify_uuid
+                elif action_details["type"] == LogicActionTypes.step_not_applicable:
+                    submission_step_to_modify = submission_state.resolve_step(
+                        action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
 
@@ -85,7 +83,7 @@ def evaluate_form_logic(
 def check_submission_logic(submission):
     logic_rules = FormLogic.objects.filter(
         form=submission.form,
-        actions__contains=[{"action": {"type": "step-not-applicable"}}],
+        actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
     )
 
     merged_data = submission.data
@@ -94,13 +92,10 @@ def check_submission_logic(submission):
     for rule in logic_rules:
         if jsonLogic(rule.json_logic_trigger, merged_data):
             for action in rule.actions:
-                if action["action"]["type"] != "step-not-applicable":
+                if action["action"]["type"] != LogicActionTypes.step_not_applicable:
                     continue
 
-                step_to_modify_uuid = resolve(furl(action["form_step"]).pathstr).kwargs[
-                    "uuid"
-                ]
-                submission_step_to_modify = submission_state.get_submission_step(
-                    form_step_uuid=step_to_modify_uuid
+                submission_step_to_modify = submission_state.resolve_step(
+                    action["form_step"]
                 )
                 submission_step_to_modify._is_applicable = False

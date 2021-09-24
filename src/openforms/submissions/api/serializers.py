@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from typing import Optional
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -334,7 +335,7 @@ class SubmissionStateLogicSerializer(serializers.Serializer):
 @dataclass
 class SubmissionStateLogic:
     submission: Submission
-    step: SubmissionStep = None
+    step: Optional[SubmissionStep] = None
 
 
 class SubmissionCompletionSerializer(serializers.Serializer):
