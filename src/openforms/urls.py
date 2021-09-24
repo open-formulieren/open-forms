@@ -77,7 +77,7 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
     ] + urlpatterns
 
 if apps.is_installed("rosetta"):
-    urlpatterns = [path("rosetta/", include("rosetta.urls"))] + urlpatterns
+    urlpatterns = [path("admin/rosetta/", include("rosetta.urls"))] + urlpatterns
 
 if apps.is_installed("silk"):
     urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
