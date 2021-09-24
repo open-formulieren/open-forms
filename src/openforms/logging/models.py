@@ -95,7 +95,7 @@ class TimelineLogProxy(TimelineLog):
         return formatted_fields
 
     @property
-    def fmt_fields(self) -> str:
+    def fmt_prefill_fields(self) -> str:
         if not self.extra_data or "prefill_fields" not in self.extra_data:
             return _("(unknown)")
         formatted_fields = self.get_formatted_prefill_fields(

@@ -87,7 +87,7 @@ class TimelineLogProxyTests(TestCase):
                 "prefill_fields": ["bsn", "voornamen"],
             },
         )
-        self.assertEqual(log.fmt_fields, "The BSN (bsn), The First Name (voornamen)")
+        self.assertEqual(log.fmt_prefill_fields, "The BSN (bsn), The First Name (voornamen)")
 
     def test_format_form_with_form_content_object(self):
         form = FormFactory.create(name="MyForm")

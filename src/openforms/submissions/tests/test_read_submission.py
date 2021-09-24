@@ -39,7 +39,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertFalse(
             TimelineLogProxy.objects.filter(
-                template=f"logging/events/view_submission_details_api.txt"
+                template="logging/events/view_submission_details_api.txt"
             ).exists()
         )
 
@@ -94,7 +94,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template=f"logging/events/view_submission_details_api.txt"
+                template="logging/events/view_submission_details_api.txt"
             ).count(),
             1,
         )
@@ -111,7 +111,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         self.assertTrue(step["optional"])
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template=f"logging/events/view_submission_details_api.txt"
+                template="logging/events/view_submission_details_api.txt"
             ).count(),
             1,
         )
