@@ -11,7 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 from decorator_include import decorator_include
 
 from openforms.emails.admin import EmailTestAdminView
-from openforms.logging.admin import TimelineLogView
 from openforms.utils.views import ErrorDetailView
 
 handler500 = "openforms.utils.views.server_error"
@@ -34,11 +33,6 @@ urlpatterns = [
         "admin/email/test/",
         admin.site.admin_view(EmailTestAdminView.as_view()),
         name="admin_email_test",
-    ),
-    path(
-        "admin/logging/list/",
-        admin.site.admin_view(TimelineLogView.as_view()),
-        name="admin_logging",
     ),
     path("admin/hijack/", include("hijack.urls")),
     path("admin/", admin.site.urls),

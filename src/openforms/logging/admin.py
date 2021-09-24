@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import path
 
 from timeline_logger.models import TimelineLog
 from timeline_logger.views import TimelineLogListView
@@ -26,6 +27,14 @@ class TimelineLogProxyAdmin(admin.ModelAdmin):
         "object_id",
     )
     date_hierarchy = "timestamp"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        audit_log_list_view = self.admin_site.admin_view(TimelineLogView.as_view())
+        custom = [
+            path("auditlog/", audit_log_list_view, name="audit-log"),
+        ]
+        return custom + urls
 
     def has_add_permission(self, request):
         return False
