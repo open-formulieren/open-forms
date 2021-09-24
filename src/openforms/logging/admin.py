@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import path
 
 from timeline_logger.models import TimelineLog
@@ -7,9 +8,10 @@ from timeline_logger.views import TimelineLogListView
 from openforms.logging.models import TimelineLogProxy
 
 
-class TimelineLogView(TimelineLogListView):
+class TimelineLogView(PermissionRequiredMixin, TimelineLogListView):
     queryset = TimelineLogProxy.objects.order_by("-timestamp")
     template_name = "logging/admin_list.html"
+    permission_required = "logging.view_timelinelogproxy"
 
 
 @admin.register(TimelineLogProxy)
