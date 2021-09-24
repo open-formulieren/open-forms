@@ -80,7 +80,7 @@ class TimelineLogProxy(TimelineLog):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
 
-    def get_formatted_fields(self, fields) -> List:
+    def get_formatted_prefill_fields(self, fields) -> List:
         formatted_fields = []
         components = self.content_object.form.iter_components(recursive=True)
 
@@ -96,9 +96,11 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_fields(self) -> str:
-        if not self.extra_data or "fields" not in self.extra_data:
+        if not self.extra_data or "prefill_fields" not in self.extra_data:
             return _("(unknown)")
-        formatted_fields = self.get_formatted_fields(self.extra_data["fields"])
+        formatted_fields = self.get_formatted_prefill_fields(
+            self.extra_data["prefill_fields"]
+        )
         return ", ".join(formatted_fields)
 
     @property

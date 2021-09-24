@@ -52,11 +52,11 @@ class TimelineLogProxyTests(TestCase):
             extra_data={
                 "plugin_id": "myplugin",
                 "plugin_label": "MyPlugin",
-                "fields": fields,
+                "prefill_fields": fields,
             },
         )
         self.assertEqual(
-            log.get_formatted_fields(fields),
+            log.get_formatted_prefill_fields(fields),
             ["The BSN (bsn)", "The First Name (voornamen)"],
         )
 
@@ -84,7 +84,7 @@ class TimelineLogProxyTests(TestCase):
             extra_data={
                 "plugin_id": "myplugin",
                 "plugin_label": "MyPlugin",
-                "fields": ["bsn", "voornamen"],
+                "prefill_fields": ["bsn", "voornamen"],
             },
         )
         self.assertEqual(log.fmt_fields, "The BSN (bsn), The First Name (voornamen)")
