@@ -110,11 +110,11 @@ def pdf_generation_skip(submission: "Submission", submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: "Submission", plugin, fields, configuration):
+def prefill_retrieve_success(submission: "Submission", plugin, fields):
     _create_log(
         submission,
         "prefill_retrieve_success",
-        extra_data={"fields": fields, "configuration": configuration},
+        extra_data={"fields": fields},
         plugin=plugin,
         tag_avg=True,
     )

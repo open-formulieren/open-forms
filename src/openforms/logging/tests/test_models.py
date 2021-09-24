@@ -27,6 +27,61 @@ class TimelineLogProxyTests(TestCase):
         log = TimelineLogProxyFactory.create(content_object=form)
         self.assertTrue(log.is_form)
 
+    def test_get_formatted_fields(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email"},
+                {
+                    "key": "theBSN",
+                    "label": "The BSN",
+                    "prefill": {
+                        "attribute": "bsn"
+                    },
+                    "components": [{
+                        "key": "theFirstName",
+                        "label": "The First Name",
+                        "prefill": {
+                            "attribute": "voornamen"
+                        }
+                    }]
+                },
+            ]
+        )
+        fields = ["bsn", "voornamen"]
+        log = TimelineLogProxyFactory.create(
+            content_object=submission,
+            user=UserFactory(username="Bob"),
+            extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin", "fields": fields},
+        )
+        self.assertEqual(log.get_formatted_fields(fields), ['The BSN (bsn)', 'The First Name (voornamen)'])
+
+    def test_format_fields(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email"},
+                {
+                    "key": "theBSN",
+                    "label": "The BSN",
+                    "prefill": {
+                        "attribute": "bsn"
+                    },
+                    "components": [{
+                        "key": "theFirstName",
+                        "label": "The First Name",
+                        "prefill": {
+                            "attribute": "voornamen"
+                        }
+                    }]
+                },
+            ]
+        )
+        log = TimelineLogProxyFactory.create(
+            content_object=submission,
+            user=UserFactory(username="Bob"),
+            extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin", "fields": ["bsn", "voornamen"]},
+        )
+        self.assertEqual(log.fmt_fields, 'The BSN (bsn), The First Name (voornamen)')
+
     @freeze_time("2020-01-02 12:34:00")
     def test_format_accessors(self):
         submission = SubmissionFactory.create(form__name="MyForm")

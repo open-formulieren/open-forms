@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
@@ -78,33 +80,25 @@ class TimelineLogProxy(TimelineLog):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
 
-    def get_formatted_fields(self, configuration, fields):
+    def get_formatted_fields(self, fields) -> List:
         formatted_fields = []
+        components = self.content_object.form.iter_components(recursive=True)
 
-        for field in fields:
-            try:
-                if configuration["prefill"]["attribute"] == field:
-                    formatted_fields.append(f"{configuration['label']} ({field})")
-            except KeyError:
-                pass
-
-        if components := configuration.get("components"):
-            for component in components:
-                formatted_fields += self.get_formatted_fields(component, fields)
+        for component in components:
+            for field in fields:
+                try:
+                    if component["prefill"]["attribute"] == field:
+                        formatted_fields.append(f"{component['label']} ({field})")
+                except KeyError:
+                    pass
 
         return formatted_fields
 
     @property
     def fmt_fields(self) -> str:
-        if (
-            not self.extra_data
-            or "fields" not in self.extra_data
-            or "configuration" not in self.extra_data
-        ):
+        if not self.extra_data or "fields" not in self.extra_data:
             return _("(unknown)")
-        formatted_fields = self.get_formatted_fields(
-            self.extra_data["configuration"], self.extra_data["fields"]
-        )
+        formatted_fields = self.get_formatted_fields(self.extra_data["fields"])
         return ", ".join(formatted_fields)
 
     @property
