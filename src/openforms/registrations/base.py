@@ -60,3 +60,10 @@ class BasePlugin(ABC):
 
     def get_label(self):
         return self.verbose_name
+
+    @abstractmethod
+    def test_config(self):
+        """
+        plugins tester
+        """
+        raise NotImplementedError()

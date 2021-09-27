@@ -9,7 +9,7 @@ class Attributes(DjangoChoices):
 
     spec:    https://developers.kvk.nl/cms/api/uploads/api_zoeken_80071c75c9.yaml
     schema:  ResultaatItem
-    command: manage.py generate_prefill_from_spec --schema ResultaatItem --url https://developers.kvk.nl/cms/api/uploads/api_zoeken_80071c75c9.yaml
+    command:  generate_prefill_from_spec --schema ResultaatItem --url https://developers.kvk.nl/cms/api/uploads/api_zoeken_80071c75c9.yaml
     """
 
     handelsnaam = ChoiceItem("handelsnaam", _("handelsnaam"))

@@ -63,3 +63,10 @@ class EmailRegistration(BasePlugin):
 
     def update_payment_status(self, submission: "Submission"):
         pass
+
+    def test_config():
+        test = []
+
+        test.append({'completed': False, 'error': 'geen fout melding', 'msg': 'Iets ging fout', 'name': 'name'})
+        
+        return test

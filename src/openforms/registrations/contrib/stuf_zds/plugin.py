@@ -21,6 +21,8 @@ from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .models import StufZDSConfig
+from stuf.models import SoapService
+from .client import StufZDSClient
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -171,3 +173,15 @@ class StufZDSRegistration(BasePlugin):
         client = config.get_client(submission.form.registration_backend_options)
 
         client.set_zaak_payment(submission.registration_result["zaak"])
+
+    def test_config():
+        test = []
+        service = SoapService()
+        
+        config = StufZDSConfig.get_solo()
+        # client = StufZDSClient(service, config)
+        # client = config.get_client(Submission)
+
+        test.append({'completed': False, 'error': config.stuf_zds_service, 'msg': 'Iets ging fout', 'name': 'name'})
+        
+        return test
