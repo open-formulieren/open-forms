@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from openforms.emails.utils import sanitize_content
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
+from openforms.submissions.tasks.registration import set_submission_reference
 from openforms.utils.email import send_mail_plus
 
 from ...base import BasePlugin
@@ -27,6 +28,12 @@ class EmailRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> None:
         submitted_data = submission.get_merged_data()
 
+        # explicitly get a reference
+        set_submission_reference(submission)
+
+        subject = _("[Open Forms] {} - submission {}").format(
+            submission.form.admin_name, submission.public_registration_reference
+        )
         template = _("Submission details for {} (submitted on {})").format(
             submission.form.admin_name,
             submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
@@ -73,9 +80,7 @@ class EmailRegistration(BasePlugin):
             extra_attachments.append(attachment)
 
         send_mail_plus(
-            _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.public_registration_reference
-            ),
+            subject,
             content,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],
@@ -88,6 +93,9 @@ class EmailRegistration(BasePlugin):
         raise NoSubmissionReference("Email plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
+        subject = _("[Open Forms] {} - submission payment received {}").format(
+            submission.form.admin_name, submission.public_registration_reference
+        )
         message = _("Submission payment received for {} (submitted on {})").format(
             submission.form.admin_name,
             submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
@@ -99,9 +107,7 @@ class EmailRegistration(BasePlugin):
         content = default_template.render({"body": mark_safe(sanitized)})
 
         send_mail_plus(
-            _("[Open Forms] {} - submission payment received {}").format(
-                submission.form.admin_name, submission.public_registration_reference
-            ),
+            subject,
             content,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],

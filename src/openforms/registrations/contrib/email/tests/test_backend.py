@@ -163,6 +163,9 @@ class EmailBackendTests(TestCase):
         email_submission = EmailRegistration("email")
         email_submission.register_submission(submission, email_form_options)
 
+        # Verify we've generated a public_registration_reference
+        self.assertNotEqual(submission.public_registration_reference, "")
+
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
