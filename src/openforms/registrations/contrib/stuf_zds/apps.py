@@ -3,6 +3,7 @@ from django.apps import AppConfig
 
 class StufZDSPlugin(AppConfig):
     name = "openforms.registrations.contrib.stuf_zds"
+    label = "registration_stuf_zds"
     verbose_name = " StUF-ZDS registration plugin"
 
     def ready(self):
