@@ -51,10 +51,15 @@ class AppointmentInfo(models.Model):
         help_text=_("Timestamp when the appointment details were created"),
     )
 
-    def cancel(self):
-        self.status = AppointmentDetailsStatus.cancelled
-        self.save()
-
     class Meta:
         verbose_name = _("Appointment information")
         verbose_name_plural = _("Appointment information")
+
+    def __str__(self):
+        status = self.get_status_display()
+        description = self.appointment_id or self.error_information[:20]
+        return f"{status}: {description}"
+
+    def cancel(self):
+        self.status = AppointmentDetailsStatus.cancelled
+        self.save()
