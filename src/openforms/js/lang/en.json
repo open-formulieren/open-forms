@@ -304,6 +304,11 @@
     "description": "Form definition select label",
     "originalDefault": "Select form definition"
   },
+  "Ika4IH": {
+    "defaultMessage": "Submissions will be deleted",
+    "description": "delete_permanently removal method option label",
+    "originalDefault": "Submissions will be deleted"
+  },
   "Iv+lBL": {
     "defaultMessage": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration.",
     "description": "Form step next text field help text",
@@ -338,6 +343,11 @@
     "defaultMessage": "The form step below is invalid.",
     "description": "Invalid form step error",
     "originalDefault": "The form step below is invalid."
+  },
+  "LN58C1": {
+    "defaultMessage": "Sensitive data within the submissions will be deleted",
+    "description": "make_anonymous removal method option label",
+    "originalDefault": "Sensitive data within the submissions will be deleted"
   },
   "LNeqFF": {
     "defaultMessage": "Copy",
@@ -619,11 +629,6 @@
     "description": "Logic trigger number of months",
     "originalDefault": "months"
   },
-  "nMLlnT": {
-    "defaultMessage": "Sensitive data within the submissions will be deleted",
-    "description": "make_anonymous removal method label",
-    "originalDefault": "Sensitive data within the submissions will be deleted"
-  },
   "naInSZ": {
     "defaultMessage": "Toggle DSL preview",
     "description": "JSON data preview visibility toggle",
@@ -663,11 +668,6 @@
     "defaultMessage": "Step name",
     "description": "Form step name label",
     "originalDefault": "Step name"
-  },
-  "q88tuu": {
-    "defaultMessage": "Submissions will be deleted",
-    "description": "delete_permanently removal method label",
-    "originalDefault": "Submissions will be deleted"
   },
   "qYZ81s": {
     "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",

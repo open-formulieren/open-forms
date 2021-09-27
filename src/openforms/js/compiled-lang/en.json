@@ -409,6 +409,12 @@
       "value": "Select form definition"
     }
   ],
+  "Ika4IH": [
+    {
+      "type": 0,
+      "value": "Submissions will be deleted"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,
@@ -449,6 +455,12 @@
     {
       "type": 0,
       "value": "The form step below is invalid."
+    }
+  ],
+  "LN58C1": [
+    {
+      "type": 0,
+      "value": "Sensitive data within the submissions will be deleted"
     }
   ],
   "LNeqFF": [
@@ -815,12 +827,6 @@
       "value": "months"
     }
   ],
-  "nMLlnT": [
-    {
-      "type": 0,
-      "value": "Sensitive data within the submissions will be deleted"
-    }
-  ],
   "naInSZ": [
     {
       "type": 0,
@@ -867,12 +873,6 @@
     {
       "type": 0,
       "value": "Step name"
-    }
-  ],
-  "q88tuu": [
-    {
-      "type": 0,
-      "value": "Submissions will be deleted"
     }
   ],
   "qYZ81s": [

@@ -413,6 +413,12 @@
       "value": "Selecteer formulierdefinitie"
     }
   ],
+  "Ika4IH": [
+    {
+      "type": 0,
+      "value": "Inzendingen worden permanent verwijderd"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,
@@ -453,6 +459,12 @@
     {
       "type": 0,
       "value": "De onderstaande formulierdefinitie bevat fouten."
+    }
+  ],
+  "LN58C1": [
+    {
+      "type": 0,
+      "value": "Gevoelige gegevens in de inzendingen worden verwijderd"
     }
   ],
   "LNeqFF": [
@@ -819,12 +831,6 @@
       "value": "maanden"
     }
   ],
-  "nMLlnT": [
-    {
-      "type": 0,
-      "value": "Gevoelige gegevens in de inzendingen worden verwijderd"
-    }
-  ],
   "naInSZ": [
     {
       "type": 0,
@@ -871,12 +877,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "q88tuu": [
-    {
-      "type": 0,
-      "value": "Submissions will be deleted"
     }
   ],
   "qYZ81s": [
