@@ -391,6 +391,26 @@
         "name": "Inzendingen beheren",
         "permissions": [
             [
+                "add_appointmentinfo",
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
+                "change_appointmentinfo",
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
+                "delete_appointmentinfo",
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
+                "view_appointmentinfo",
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
                 "view_timelinelogproxy",
                 "logging",
                 "timelinelogproxy"

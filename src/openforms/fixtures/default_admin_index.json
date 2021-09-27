@@ -75,6 +75,10 @@
         "slug": "inzendingen",
         "models": [
             [
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
                 "payments",
                 "submissionpayment"
             ],
