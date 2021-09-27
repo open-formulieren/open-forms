@@ -25,7 +25,7 @@ const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
     const componentType = allComponents[selectedComponent]?.type;
 
     // only keep the relevant choices
-    const allowedOperators = COMPONENT_TYPE_TO_OPERATORS[componentType] || [];
+    const allowedOperators = COMPONENT_TYPE_TO_OPERATORS[componentType] || COMPONENT_TYPE_TO_OPERATORS._default;
     const choices = Object
         .entries(OPERATORS)
         .filter(([operator]) => allowedOperators.includes(operator))
@@ -315,7 +315,7 @@ const Trigger = ({ name, logic, onChange }) => {
                                     filter={
                                         ([choiceKey, choiceLabel]) => {
                                             if (!componentType) return true;
-                                            return COMPONENT_TYPE_TO_OPERAND_TYPE[componentType].includes(choiceKey);
+                                            return getOperandTypesForComponentType(componentType).includes(choiceKey);
                                         }
                                     }
                                 />
@@ -342,6 +342,13 @@ Trigger.propTypes = {
     name: PropTypes.string.isRequired,
     logic: PropTypes.object,
     onChange: PropTypes.func.isRequired,
+};
+
+
+
+const getOperandTypesForComponentType = (componentType) => {
+    const types = COMPONENT_TYPE_TO_OPERAND_TYPE[componentType] || COMPONENT_TYPE_TO_OPERAND_TYPE._default;
+    return types;
 };
 
 

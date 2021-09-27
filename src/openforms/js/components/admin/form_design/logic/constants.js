@@ -79,6 +79,10 @@ const COMPONENT_TYPE_TO_OPERATORS = {
         '==',
         '!=',
     ],
+    _default: [
+        '==',
+        '!=',
+    ],
 };
 
 const ACTION_TYPES = [
@@ -126,6 +130,7 @@ const COMPONENT_TYPE_TO_OPERAND_TYPE = {
     iban: ['literal', 'component'],
     date: ['literal', 'component', 'today'],
     select: ['literal', 'component'],
+    _default: ['literal', 'component'],
 };
 
 
