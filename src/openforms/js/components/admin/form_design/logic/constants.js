@@ -74,7 +74,11 @@ const COMPONENT_TYPE_TO_OPERATORS = {
         '>=',
         '<',
         '<=',
-    ]
+    ],
+    select: [
+        '==',
+        '!=',
+    ],
 };
 
 const ACTION_TYPES = [
@@ -121,6 +125,7 @@ const COMPONENT_TYPE_TO_OPERAND_TYPE = {
     textfield: ['literal', 'component', 'array'],
     iban: ['literal', 'component'],
     date: ['literal', 'component', 'today'],
+    select: ['literal', 'component'],
 };
 
 
