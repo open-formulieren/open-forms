@@ -56,7 +56,7 @@ cached-property==1.5.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zeep
-cairocffi==1.2.0
+#cairocffi==1.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -364,7 +364,7 @@ face==20.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   glom
-factory-boy==3.0.1
+#factory-boy==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -575,7 +575,7 @@ prometheus-client==0.8.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flower
-psycopg2==2.8.6
+#psycopg2==2.8.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -678,7 +678,7 @@ pyyaml==5.4.1
     #   -r requirements/ci.txt
     #   drf-spectacular
     #   gemma-zds-client
-pyzmail36==1.0.4
+#pyzmail36==1.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -936,7 +936,7 @@ webtest==2.0.35
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-webtest
-xmlsec==1.3.10
+#xmlsec==1.3.10
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

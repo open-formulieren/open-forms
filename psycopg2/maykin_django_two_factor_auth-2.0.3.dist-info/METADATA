@@ -1,0 +1,193 @@
+Metadata-Version: 2.1
+Name: maykin-django-two-factor-auth
+Version: 2.0.3
+Summary: Fork of "django-two-factor-auth" featuring a complete Two-Factor Authentication system for Django
+Home-page: https://github.com/maykinmedia/django-two-factor-auth
+Author: Bouke Haarsma
+Author-email: bouke@haarsma.eu
+License: MIT
+Download-URL: https://pypi.python.org/pypi/maykin-django-two-factor-auth
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Framework :: Django :: 3.1
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Systems Administration :: Authentication/Directory
+License-File: LICENSE
+Requires-Dist: Django (<4.0.0,>=2.2.0)
+Requires-Dist: django-otp (>=1.0.0.<2.0.0)
+Requires-Dist: qrcode (<6.99,>=4.0.0)
+Requires-Dist: django-phonenumber-field (<6.0.0,>=5.0.0)
+Requires-Dist: django-formtools
+Provides-Extra: call
+Requires-Dist: twilio (>=6.0) ; extra == 'call'
+Provides-Extra: phonenumbers
+Requires-Dist: phonenumbers (<8.99,>=7.0.9) ; extra == 'phonenumbers'
+Provides-Extra: phonenumberslite
+Requires-Dist: phonenumberslite (<8.99,>=7.0.9) ; extra == 'phonenumberslite'
+Provides-Extra: sms
+Requires-Dist: twilio (>=6.0) ; extra == 'sms'
+Provides-Extra: yubikey
+Requires-Dist: django-otp-yubikey ; extra == 'yubikey'
+
+================================
+Django Two-Factor Authentication
+================================
+
+:Version: 2.0.3
+:Download: https://pypi.python.org/pypi/maykin-django-two-factor-auth
+:Source: https://github.com/maykinmedia/django-two-factor-auth
+:Keywords: django, admin, 2fa, two-factor
+
+*Fork of https://github.com/Bouke/django-two-factor-auth/*
+
+|build-status| |pyversion| |djversion|
+
+.. |build-status| image:: https://github.com/maykinmedia/django-two-factor-auth/actions/workflows/ci.yml/badge.svg
+    :alt: Build status
+    :target: https://github.com/maykinmedia/django-two-factor-auth/actions/workflows/ci.yml
+
+.. |pyversion| image:: https://img.shields.io/pypi/pyversions/maykin-django-two-factor-auth.svg
+    :alt: Supported Python versions
+    :target: http://pypi.python.org/pypi/maykin-django-two-factor-auth
+
+.. |djversion| image:: https://img.shields.io/badge/django-2.2+-blue.svg
+    :alt: Supported Django versions
+    :target: http://pypi.python.org/pypi/maykin-django-two-factor-auth
+
+
+Complete Two-Factor Authentication for Django. Built on top of the one-time
+password framework django-otp_ and Django's built-in authentication framework
+``django.contrib.auth`` for providing the easiest integration into most Django
+projects. Inspired by the user experience of Google's Two-Step Authentication,
+allowing users to authenticate through call, text messages (SMS), by using a
+token generator app like Google Authenticator or a YubiKey_ hardware token
+generator (optional).
+
+If you run into problems, please file an issue on GitHub, or contribute to the
+project by forking the repository and sending some pull requests. The package
+is translated into English, Dutch and other languages. Please contribute your
+own language using Transifex_.
+
+Test drive this app through the online `example app`_, hosted by Heroku_. It
+demos most features except the Twilio integration. The example also includes
+django-user-sessions_ for providing Django sessions with a foreign key to the
+user. Although the package is optional, it improves account security control
+over ``django.contrib.sessions``.
+
+Compatible with modern Django versions. At the moment of writing that's
+including 2.2, 3.0, and 3.1 on Python 3.5, 3.6, 3.7 and 3.8.
+Documentation is available at `readthedocs.org`_.
+
+
+Installation
+============
+Refer to the `installation instructions`_ in the documentation.
+
+
+Getting help
+============
+
+For general questions regarding this package, please hop over to `Stack Overflow`_.
+If you think there is an issue with this package; check if the
+issue is already listed (either open or closed), and file an issue if
+it's not.
+
+
+Contribute
+==========
+* Submit issues to the `issue tracker`_ on Github.
+* Fork the `source code`_ at Github.
+* Write some code and make sure it is covered with unit tests.
+* Send a pull request with your changes.
+* Provide a translation using Transifex_.
+
+Running tests
+-------------
+This project aims for full code-coverage, this means that your code should be
+well-tested. Also test branches for hardened code. You can run the full test
+suite with::
+
+    make test
+
+Or run a specific test with::
+
+    make test TARGET=tests.tests.TwilioGatewayTest
+
+For Python compatibility, tox_ is used. You can run the full test suite,
+covering all supported Python and Django version with::
+
+    tox
+
+Releasing
+---------
+The following actions are required to push a new version:
+
+* Update release notes
+* If any new translations strings were added, push the new source language to
+  Transifex_. Make sure translators have sufficient time to translate those
+  new strings::
+
+    make tx-push
+
+* Add migrations::
+
+    python example/manage.py makemigrations two_factor
+    git commit two_factor/migrations -m "Added migrations"
+
+* Update translations::
+
+    make tx-pull
+
+* Package and upload::
+
+    bumpversion [major|minor|patch]
+    git push && git push --tags
+    python setup.py sdist bdist_wheel
+    twine upload dist/*
+
+
+See Also
+========
+Have a look at django-user-sessions_ for Django sessions with a foreign key to
+the user. This package is also included in the online `example app`_.
+
+
+License
+=======
+The project is licensed under the MIT license.
+
+.. _`example app`: http://example-two-factor-auth.herokuapp.com
+.. _django-otp: https://pypi.python.org/pypi/django-otp
+.. _Transifex: https://www.transifex.com/projects/p/django-two-factor-auth/
+.. _Twilio: http://www.twilio.com/
+.. _Heroku: https://www.heroku.com
+.. _django-user-sessions: https://pypi.python.org/pypi/django-user-sessions
+.. _tox: https://testrun.org/tox/latest/
+.. _issue tracker: https://github.com/Bouke/django-two-factor-auth/issues
+.. _source code: https://github.com/Bouke/django-two-factor-auth
+.. _readthedocs.org: http://django-two-factor-auth.readthedocs.org/
+.. _`installation instructions`:
+   http://django-two-factor-auth.readthedocs.io/en/stable/installation.html
+.. _`Stack Overflow`:
+   https://stackoverflow.com/questions/tagged/django-two-factor-auth
+.. _Yubikey: https://www.yubico.com/products/yubikey-hardware/
+.. _`Hynek's Sharing Your Labor of Love: PyPI Quick And Dirty`:
+   https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
+.. _`issue 239`:
+   https://github.com/Bouke/django-two-factor-auth/issues/239
+
+

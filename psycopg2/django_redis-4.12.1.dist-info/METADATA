@@ -1,0 +1,68 @@
+Metadata-Version: 2.1
+Name: django-redis
+Version: 4.12.1
+Summary: Full featured redis cache backend for Django.
+Home-page: https://github.com/jazzband/django-redis
+Author: Andrei Antoukh
+Author-email: niwi@niwi.nz
+License: BSD-3-Clause
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Utilities
+Requires-Python: >=3.5
+Requires-Dist: Django (>=2.2)
+Requires-Dist: redis (>=3.0.0)
+
+==============================
+Redis cache backend for Django
+==============================
+
+Full featured redis cache backend for Django.
+
+.. image:: https://jazzband.co/static/img/badge.svg
+    :target: https://jazzband.co/
+    :alt: Jazzband
+
+.. image:: https://travis-ci.org/jazzband/django-redis.svg?branch=master
+    :target: https://travis-ci.org/jazzband/django-redis
+
+.. image:: https://img.shields.io/pypi/v/django-redis.svg?style=flat
+    :target: https://pypi.org/project/django-redis/
+
+This is a `Jazzband <https://jazzband.co>`_ project. By contributing you agree
+to abide by the `Contributor Code of Conduct
+<https://jazzband.co/about/conduct>`_ and follow the `guidelines
+<https://jazzband.co/about/guidelines>`_.
+
+django-redis is a full featured Redis cache and session backend for Django.
+
+Documentation
+-------------
+
+http://jazzband.github.io/django-redis/latest/
+
+How to install
+--------------
+
+Use ``pip`` to install:
+
+.. code-block:: console
+
+    $ python -m pip install django-redis
+
+

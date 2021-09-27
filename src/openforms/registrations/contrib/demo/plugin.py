@@ -26,6 +26,9 @@ class DemoRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission"):
         print(submission)
 
+    def test_config(self) -> None:
+        print("test plugin")
+
 
 @register("failing-demo")
 class DemoFailRegistration(BasePlugin):
@@ -41,3 +44,6 @@ class DemoFailRegistration(BasePlugin):
 
     def update_payment_status(self, submission: "Submission"):
         pass
+
+    def test_config(self) -> None:
+        print("test plugin")

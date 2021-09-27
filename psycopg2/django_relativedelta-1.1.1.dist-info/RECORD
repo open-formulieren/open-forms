@@ -1,0 +1,17 @@
+django_relativedelta-1.1.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+django_relativedelta-1.1.1.dist-info/LICENSE,sha256=FqE7Ga8ZKZKLY_8gvHQpii-wZb3EBR5U5brUXklCzMU,1073
+django_relativedelta-1.1.1.dist-info/METADATA,sha256=MEx_TJOftm77vT-Xkx7Tp3pxo52Ymsgh0mOwoHzVkPU,5482
+django_relativedelta-1.1.1.dist-info/RECORD,,
+django_relativedelta-1.1.1.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+django_relativedelta-1.1.1.dist-info/WHEEL,sha256=p46_5Uhzqz6AzeSosiOnxK-zmFja1i22CrQCjmYe8ec,92
+django_relativedelta-1.1.1.dist-info/top_level.txt,sha256=_r7Y1yHW_aoEv2PG3nXoXMxrtazzKFPV2_YYrT9a85k,25
+relativedeltafield/__init__.py,sha256=5MEE1gMCloAselez2VRi9ai-Ipaulr6-jpQA0IugHPw,4564
+relativedeltafield/__pycache__/__init__.cpython-39.pyc,,
+relativedeltafield/tests/__init__.py,sha256=B012uwiJ419ZslOeG8cT9FILSzzGJ4Xba7yVaDPV2vQ,1575
+relativedeltafield/tests/__pycache__/__init__.cpython-39.pyc,,
+relativedeltafield/tests/__pycache__/test_relativedeltafield.cpython-39.pyc,,
+relativedeltafield/tests/test_relativedeltafield.py,sha256=lYChrtBN24tIVTEFUaYqbQWHRnyIgE-grmC8RVRnqGI,6915
+tests/__init__.py,sha256=tMGvMhofSh2mxy9lavfxFnTEC6FpISm3S6RZu5S8Sp4,1537
+tests/__pycache__/__init__.cpython-39.pyc,,
+tests/__pycache__/test_relativedeltafield.cpython-39.pyc,,
+tests/test_relativedeltafield.py,sha256=lYChrtBN24tIVTEFUaYqbQWHRnyIgE-grmC8RVRnqGI,6915

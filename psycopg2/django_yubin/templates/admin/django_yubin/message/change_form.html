@@ -1,0 +1,4 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% block object-tools-items %}<li><a href="{% url 'admin:mail_detail' object_id %}" onclick="return showAddAnotherPopup(this);">show</a></li>{{block.super}}{% endblock %}
+

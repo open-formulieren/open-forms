@@ -171,3 +171,6 @@ class StufZDSRegistration(BasePlugin):
         client = config.get_client(submission.form.registration_backend_options)
 
         client.set_zaak_payment(submission.registration_result["zaak"])
+
+    def test_config(self) -> None:
+        print("test plugin")

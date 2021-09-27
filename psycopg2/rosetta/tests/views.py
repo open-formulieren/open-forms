@@ -1,0 +1,2 @@
+def dummy(request):
+    pass

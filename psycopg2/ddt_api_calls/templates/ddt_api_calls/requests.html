@@ -1,0 +1,34 @@
+{% load i18n l10n %}{% load static %}
+<div class="djdt-clearfix">
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Method" %}</th>
+                <th>{% trans "URL" %}</th>
+                <th>{% trans "Waterfall" %}</th>
+                <th>{% trans "Time (ms)" %}</th>
+                <th>{% trans "Status code" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr class="{% cycle 'djDebugOdd' 'djDebugEven' %}">
+                    <td>{{ request.method }}</td>
+                    <td {% if request in duplicated %}style="color: red;" title="{% trans 'Duplicated!' %}"{% endif %}>
+                        {{ request.url }}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        {# proper bar #}
+                        <div style="display: flex; width: 100%">
+                            <div style="border: solid 1px black; border-right: none; height: 8px; width: {{ request.idle|unlocalize }}%;"></div>
+                            <div style="border: solid 1px black; border-left: none; border-right: none; height: 8px; background: black; width: {{ request.wait|unlocalize }}%;"></div>
+                            <div style="border: solid 1px black; border-left: none; height: 8px; width: {{ request.tail|unlocalize }}%;"></div>
+                        </div>
+                    </td>
+                    <td>{{ request.timing.2 }}</td>
+                    <td>{{ request.status_code }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

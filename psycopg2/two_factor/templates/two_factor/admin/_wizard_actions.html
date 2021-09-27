@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<div class="actions-buttons">
+      {% if cancel_url %}
+            <a href="{{ cancel_url }}">
+                <input type="button" value="{% trans 'Cancel' %}" />
+            </a>
+      {% endif %}
+      {% comment %} <a href="{% url 'two_factor:setup' %}" class="btn btn-default">{% trans "Setup" %}</a> {% endcomment %}
+      <input type="submit" value="{% trans 'Next' %}">
+</div>

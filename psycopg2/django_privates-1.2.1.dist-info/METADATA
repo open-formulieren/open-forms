@@ -1,0 +1,122 @@
+Metadata-Version: 2.1
+Name: django-privates
+Version: 1.2.1
+Summary: Batteries included private media integration in Django
+Home-page: https://github.com/sergei-maertens/django-privates
+Author: Sergei Maertens
+Author-email: info@regex-it.nl
+License: UNKNOWN
+Keywords: django,media,private,storage
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 1.11
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Provides-Extra: tests
+Provides-Extra: pep8
+Provides-Extra: coverage
+Provides-Extra: docs
+Provides-Extra: release
+Requires-Dist: django
+Requires-Dist: django-sendfile2 (>0.5)
+Provides-Extra: coverage
+Requires-Dist: pytest-cov; extra == 'coverage'
+Provides-Extra: docs
+Requires-Dist: sphinx; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme; extra == 'docs'
+Provides-Extra: pep8
+Requires-Dist: flake8; extra == 'pep8'
+Provides-Extra: release
+Requires-Dist: zest.releaser; extra == 'release'
+Provides-Extra: tests
+Requires-Dist: pytest; extra == 'tests'
+Requires-Dist: pytest-pythonpath; extra == 'tests'
+Requires-Dist: pytest-django; extra == 'tests'
+Requires-Dist: tox; extra == 'tests'
+Requires-Dist: isort; extra == 'tests'
+
+============================================
+Django-privates - private media integrration
+============================================
+
+Django-privates makes it easy to work with login-protected ``FileField``\ s,
+all the way through your application.
+
+:Version: 1.2.0
+:Source: https://github.com/sergei-maertens/django-privates
+:Keywords: django, media, private, storage
+
+|build-status| |requirements| |coverage| |docs| |python-versions| |django-versions| |pypi-version|
+
+.. contents::
+
+.. section-numbering::
+
+Features
+========
+
+* Default private media storage, configurable via settings
+* Model field using the default storage
+* Easy admin integration
+* File serving through `sendfile`_ (supports nginx, apache, runserver,...)
+
+
+Installation
+============
+
+Install
+-------
+
+.. code-block:: bash
+
+    pip install django-privates
+
+And then add ``privates`` to your ``INSTALLED_APPS`` for admin integration (
+template discovery):
+
+.. code-block:: python
+
+    INSTALLED_APPS = [
+        ...,
+
+        'privates',
+
+        ...
+    ]
+
+
+.. |build-status| image:: https://travis-ci.org/sergei-maertens/django-privates.svg?branch=develop
+    :target: https://travis-ci.org/sergei-maertens/django-privates
+
+.. |requirements| image:: https://requires.io/github/sergei-maertens/django-privates/requirements.svg?branch=develop
+    :target: https://requires.io/github/sergei-maertens/django-privates/requirements/?branch=develop
+    :alt: Requirements status
+
+.. |coverage| image:: https://codecov.io/gh/sergei-maertens/django-privates/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/sergei-maertens/django-privates
+    :alt: Coverage status
+
+.. |docs| image:: https://readthedocs.org/projects/django-privates/badge/?version=latest
+    :target: https://django-privates.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/django-privates.svg
+
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/django-privates.svg
+
+.. |pypi-version| image:: https://img.shields.io/pypi/v/django-privates.svg
+    :target: https://pypi.org/project/django-privates/
+
+.. _sendfile: https://pypi.org/project/django-sendfile2/
+
+

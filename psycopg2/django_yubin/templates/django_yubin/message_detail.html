@@ -1,0 +1,43 @@
+{% extends "admin/change_form.html" %}
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+{% block content_title %}
+  <h1>Message {{object.id}}</h1>
+{% endblock content_title %}
+{% block content %}
+<div class="form-row">
+    <label class="required">Subject: </label>{{subject}}
+</div>
+<div class="form-row">
+  <label class="required">From:</label> &lt;{{from.0}}&gt;{{from.1}}</br>
+</div>
+<div class="form-row">
+  <label class="required">To:</label> {% for x in to %}&lt;{{x.0}}&gt;{{x.1}} {% endfor %}</br>
+</div>
+<div class="form-row">
+  <label class="required"> CC: </label>{% for x in cc %}&lt;{{x.0}}&gt;{{x.1}} {% endfor %}</br>
+</div>
+</div>
+  {% if msg_html %}
+     <div class="form-row">
+      <h2>HTML</h2>
+      <iframe src="{% url 'admin:mail_html' object.pk %}" width="100%" height="400">
+      </iframe>
+    </div>
+    {% endif %}
+    {% if msg_text %}
+     <div class="form-row">
+      <h2>Text</h2>
+      {{msg_text|linebreaks}}
+     </div>
+    {% endif %}
+    {% if attachments %}
+     <div class="form-row">
+      <h2>Attachments</h2>
+      {% for file in attachments %}
+        <div class="form-row">
+          <a title="{{file.tipus}} {{file.length}}" href="{% url 'admin:mail_download' object.pk file.firma %}">{{file.filename}}</a>
+        </div>
+      {% endfor %}
+      </div>
+    {% endif %}
+{% endblock content %}

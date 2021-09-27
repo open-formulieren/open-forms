@@ -1,0 +1,5 @@
+drf_spectacular
+drf_spectacular/contrib
+drf_spectacular/management
+drf_spectacular/management/commands
+drf_spectacular/validation

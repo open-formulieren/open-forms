@@ -1,0 +1,83 @@
+{% extends 'admin/base_site.html' %}
+{% comment %} {% extends 'admin/change_list.html' %} {% endcomment %}
+
+ {% comment %} {% block object-tools %} {% endcomment %}
+ {% block content %}
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .plugins-container{
+            width: 100%;
+            heigth: auto;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 50px;
+        }
+        table{
+            width: 90%;
+            heigth: auto;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            border-collapse: collapse;
+        }
+        tbody{
+            width: 100%;
+            isplay: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .plugin-table tr{
+            width: 100%;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            {% comment %} display: flex;
+            flex-direction: column; {% endcomment %}
+        }
+        .plugin-table th{
+            width: 30%;
+            text-align: left;
+            font-size: 18px;
+        }
+        .plugin-table td{
+            text-align: left;
+            font-size: 18px;
+        }
+    </style>
+
+    <div class='plugins-container'>
+        <table class='plugin-table'>
+            <tr>
+                <th>Plugin Naam</th>
+                <th>Configuratie Test</th>
+                <th>Log</th>
+            </tr>
+            <tr>
+                {% for plugin in plugins %}
+                    <td>{{plugin.name}}</td>
+                    {% if plugin.test|length == 0 %}
+                        <td><i class="fa fa-check-circle" style="font-size:24px;color:green;"></i></td>
+                        <td>De plug-in werkt naar behoren</td>
+                    {% else %}
+                        <td><i class="fa fa-times-circle" style="font-size:24px;color: red;"></i></td>
+                        
+                        <td>
+                            {% for e in plugin.test %}
+                                <p style='margin-bottom:10px;'><strong>{{e.name}}:</strong>{{e.error}}</p>
+                            {% endfor %}
+                        </td>
+                        
+                        
+                    {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+
+    <script src="" async defer></script>
+
+    {{ block.super }}
+ {% endblock content %} 
+ {% comment %} {% endblock object-tools %}  {% endcomment %}

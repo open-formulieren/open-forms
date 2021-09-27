@@ -1,0 +1,3 @@
+[paste.filter_app_factory]
+elasticapm = elasticapm.contrib.paste:filter_factory
+

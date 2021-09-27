@@ -1,0 +1,13 @@
+sphinx_tabs-3.0.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+sphinx_tabs-3.0.0.dist-info/LICENSE,sha256=ypkaXU_a9SFQRW93mGEZ4ZVol6TBqjS_Si_StQLSq8k,1077
+sphinx_tabs-3.0.0.dist-info/METADATA,sha256=9eVCW9fkzjx3ke3lnJIexouk0_y_jhXlAXpiG1vM3EY,6320
+sphinx_tabs-3.0.0.dist-info/RECORD,,
+sphinx_tabs-3.0.0.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+sphinx_tabs-3.0.0.dist-info/WHEEL,sha256=OqRkF0eY5GHssMorFjlbTIq072vpHpF60fIQA6lS9xA,92
+sphinx_tabs-3.0.0.dist-info/top_level.txt,sha256=CWrIZQOZJar49UoGoeWTawNbTFseJm5cOUA0q-tcsiI,12
+sphinx_tabs/__init__.py,sha256=Hjef36d7N82EhmYkNpCcqtb8Vfmt_isk54h5OOVOpmc,79
+sphinx_tabs/__pycache__/__init__.cpython-39.pyc,,
+sphinx_tabs/__pycache__/tabs.cpython-39.pyc,,
+sphinx_tabs/static/tabs.css,sha256=QLWizyUkM1bT1z8_4M_sVr94BfhkUB8fT_hGHPDLmTk,950
+sphinx_tabs/static/tabs.js,sha256=qhNm9zaaHaSBHmbyrEHEWYHiubhrQp_4X7Ror8x1SDM,4174
+sphinx_tabs/tabs.py,sha256=cCHNhUqqzGr_RJLF2QhE6gl-liyv9lZsw5Bw5KBl4O8,11178

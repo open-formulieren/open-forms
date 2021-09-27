@@ -1,0 +1,107 @@
+Metadata-Version: 2.1
+Name: elastic-apm
+Version: 5.8.1
+Summary: The official Python module for Elastic APM
+Home-page: https://github.com/elastic/apm-agent-python
+Author: Elastic, Inc
+License: BSD
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: License :: OSI Approved :: BSD License
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4
+Requires-Dist: urllib3
+Requires-Dist: certifi
+Requires-Dist: cachetools ; python_version == "2.7"
+Provides-Extra: aiohttp
+Requires-Dist: aiohttp ; extra == 'aiohttp'
+Provides-Extra: flask
+Requires-Dist: blinker ; extra == 'flask'
+Provides-Extra: opentracing
+Requires-Dist: opentracing (>=2.0.0) ; extra == 'opentracing'
+Provides-Extra: starlette
+Requires-Dist: starlette ; extra == 'starlette'
+Provides-Extra: tests
+Requires-Dist: py (>=1.4.26) ; extra == 'tests'
+Requires-Dist: pytest (>=2.6.4) ; extra == 'tests'
+Requires-Dist: pytest-django (==2.8.0) ; extra == 'tests'
+Requires-Dist: pytest-capturelog (>=0.7) ; extra == 'tests'
+Requires-Dist: blinker (>=1.1) ; extra == 'tests'
+Requires-Dist: celery ; extra == 'tests'
+Requires-Dist: django-celery ; extra == 'tests'
+Requires-Dist: Flask (>=0.8) ; extra == 'tests'
+Requires-Dist: starlette ; extra == 'tests'
+Requires-Dist: logbook ; extra == 'tests'
+Requires-Dist: mock ; extra == 'tests'
+Requires-Dist: pep8 ; extra == 'tests'
+Requires-Dist: webob ; extra == 'tests'
+Requires-Dist: pytz ; extra == 'tests'
+Requires-Dist: redis ; extra == 'tests'
+Requires-Dist: requests ; extra == 'tests'
+Requires-Dist: jinja2 ; extra == 'tests'
+Requires-Dist: pytest-benchmark ; extra == 'tests'
+Requires-Dist: urllib3-mock ; extra == 'tests'
+Requires-Dist: Twisted ; extra == 'tests'
+Requires-Dist: apipkg ; extra == 'tests'
+Requires-Dist: execnet ; extra == 'tests'
+Requires-Dist: isort ; extra == 'tests'
+Requires-Dist: pytest-cache ; extra == 'tests'
+Requires-Dist: pytest-isort ; extra == 'tests'
+Requires-Dist: graphene ; extra == 'tests'
+Requires-Dist: python3-memcached ; extra == 'tests'
+Requires-Dist: aiohttp ; extra == 'tests'
+Requires-Dist: tornado ; extra == 'tests'
+Requires-Dist: pytest-asyncio ; extra == 'tests'
+Requires-Dist: pytest-mock ; extra == 'tests'
+Provides-Extra: tornado
+Requires-Dist: tornado ; extra == 'tornado'
+
+elastic-apm -- Elastic APM agent for Python
+===========================================
+
+.. image:: https://apm-ci.elastic.co/buildStatus/icon?job=apm-agent-python%2Fapm-agent-python-mbp%2Fmaster
+    :target: https://apm-ci.elastic.co/job/apm-agent-python/job/apm-agent-python-mbp/
+    :alt: Build Status
+
+.. image:: https://img.shields.io/pypi/v/elastic-apm.svg?style=flat
+    :target: https://pypi.python.org/pypi/elastic-apm/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/pyversions/elastic-apm.svg?style=flat
+    :target: https://pypi.python.org/pypi/elastic-apm/
+    :alt: Supported Python versions
+
+
+This is the official Python module for Elastic APM.
+
+It provides full out-of-the-box support for many of the popular frameworks,
+including Django, and Flask. Elastic APM is also easy to adapt for most
+WSGI-compatible web applications via `custom integrations`_.
+
+Your application doesn't live on the web? No problem! Elastic APM is easy to use in
+any Python application.
+
+Read the documentation_.
+
+.. _documentation: https://www.elastic.co/guide/en/apm/agent/python/current/index.html
+.. _`custom integrations`: https://www.elastic.co/blog/creating-custom-framework-integrations-with-the-elastic-apm-python-agent
+
+License
+-------
+
+BSD-3-Clause
+
+
+Made with ♥️ and ☕️ by Elastic and our community.
+
+

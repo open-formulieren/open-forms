@@ -85,3 +85,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")
+
+    def test_config(self) -> None:
+        print("test plugin")

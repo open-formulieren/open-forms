@@ -1,0 +1,250 @@
+Metadata-Version: 2.1
+Name: mozilla-django-oidc-db
+Version: 0.4.0
+Summary: A database-backed configuration for mozilla-django-oidc
+Home-page: https://github.com/maykinmedia/mozilla-django-oidc-db
+Author: Maykin Media
+Author-email: support@maykinmedia.nl
+License: MIT
+Keywords: OIDC,django,database,authentication
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+License-File: LICENSE
+Requires-Dist: django
+Requires-Dist: psycopg2
+Requires-Dist: django-better-admin-arrayfield
+Requires-Dist: django-solo
+Requires-Dist: mozilla-django-oidc
+Provides-Extra: coverage
+Requires-Dist: pytest-cov ; extra == 'coverage'
+Provides-Extra: docs
+Requires-Dist: sphinx ; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme ; extra == 'docs'
+Provides-Extra: pep8
+Requires-Dist: flake8 ; extra == 'pep8'
+Provides-Extra: release
+Requires-Dist: bumpversion ; extra == 'release'
+Requires-Dist: twine ; extra == 'release'
+Provides-Extra: tests
+Requires-Dist: psycopg2 ; extra == 'tests'
+Requires-Dist: pytest ; extra == 'tests'
+Requires-Dist: pytest-django ; extra == 'tests'
+Requires-Dist: requests-mock ; extra == 'tests'
+Requires-Dist: tox ; extra == 'tests'
+Requires-Dist: isort ; extra == 'tests'
+Requires-Dist: black ; extra == 'tests'
+
+
+
+.. mozilla_django_oidc_db documentation master file, created by startproject.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to mozilla_django_oidc_db's documentation!
+==================================================
+
+:Version: 0.4.0
+:Source: https://github.com/maykinmedia/mozilla-django-oidc-db
+:Keywords: OIDC, django, database, authentication
+:PythonVersion: 3.7
+
+|build-status| |coverage| |black|
+
+|python-versions| |django-versions| |pypi-version|
+
+Database-backed settings for mozilla-django-oidc, with modified unique identifiers
+
+.. contents::
+
+.. section-numbering::
+
+Features
+========
+
+* Thin layer on top of `mozilla-django-oidc`_
+* Allows configuration of OpenID Connect variables via django-solo
+* Overrides `mozilla-django-oidc`_ default behaviour, using the ``sub`` claim
+  instead of the ``email`` claim as unique identifier for users
+
+``mozilla-django-oidc-db`` provides a database singleton for several configuration
+variables required for ``mozilla-django-oidc``, moving them from deploy-time to run-time.
+This enables modification of the configuration, without having to restart the application.
+
+Additionally, ``mozilla-django-oidc-db`` by default uses the ``sub`` (subject) claim
+instead of the ``email`` claim as the unique identifier for users in the RP (Relying Party) application.
+Using ``email`` as the unique identifier is not recommended, as mentioned in the `OpenID Connect specification`_.
+
+Installation
+============
+
+Requirements
+------------
+
+* Python 3.7 or above
+* setuptools 30.4.0 or above
+* Django 2.2 or newer
+* PostgreSQL
+
+
+Install
+-------
+
+.. code-block:: bash
+
+    pip install mozilla-django-oidc-db
+
+This will also install the following packages:
+
+- ``mozilla-django-oidc``
+- ``django-solo``
+- ``psycopg2``
+- ``django-better-admin-arrayfield``
+
+Django settings
+---------------
+
+Make sure the following libraries are added to your ``INSTALLED_APPS``:
+
+.. code-block:: python
+
+    INSTALLED_APPS = [
+        ...
+        "django_better_admin_arrayfield",
+        "solo",
+        "mozilla_django_oidc",
+        "mozilla_django_oidc_db",
+        ...
+    ]
+
+Add ``mozilla_django_oidc_db.backends.OIDCAuthenticationBackend`` to the ``AUTHENTICATION_BACKENDS``,
+this backend replaces ``mozilla_django_oidc.auth.OIDCAuthenticationBackend``:
+
+.. code-block:: python
+
+    AUTHENTICATION_BACKENDS = [
+        ...
+        "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
+        ...
+    ]
+
+Ensure that ``LOGIN_REDIRECT_URL`` and ``LOGOUT_REDIRECT_URL`` are configured. For example:
+
+.. code-block:: python
+
+    LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
+    LOGOUT_REDIRECT_URL = reverse_lazy("admin:index")
+
+To enable validation of ID tokens by renewing them, add ``mozilla_django_oidc_db.middleware.SessionRefresh``
+to the middleware, this middleware replaces ``mozilla_django_oidc.middleware.SessionRefresh``:
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        # middleware involving session and authentication must come first
+        ...
+        "mozilla_django_oidc_db.middleware.SessionRefresh",
+        ...
+    ]
+
+Furthermore, ensure the following settings are configured:
+
+.. code-block:: python
+
+    OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+    MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
+    MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 1
+
+``MOZILLA_DJANGO_OIDC_DB_CACHE`` is used to cache the configuration that is stored in the database,
+to prevent a lot of database lookups. Ensure this cache is configured in ``CACHES`` (using the backend of choice):
+
+.. code-block:: python
+
+    CACHES = {
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        ...
+        "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    }
+
+Add the urlpatterns:
+
+.. code-block:: python
+
+    urlpatterns = [
+        ...
+        path("oidc/", include("mozilla_django_oidc.urls")),
+        ...
+    ]
+
+Add the login link to your templates:
+
+.. code-block:: django
+
+    {% get_solo 'mozilla_django_oidc_db.OpenIDConnectConfig' as oidc_config %}
+    {% if oidc_config.enabled %}
+    <div class="submit-row">
+        <a href="{% url 'oidc_authentication_init' %}">{% trans "Login with OIDC" %}</a>
+    </div>
+    {% endif %}
+
+Usage
+=====
+
+Now OpenID Connect can be enabled/disabled via the admin (disabled by default)
+and the following settings for OpenID Connect can be configured in the admin:
+
+- ``oidc_rp_client_id``
+- ``oidc_rp_client_secret``
+- ``oidc_rp_sign_algo``
+- ``oidc_rp_scopes_list``
+- ``oidc_op_discovery_endpoint``
+- ``oidc_op_jwks_endpoint``
+- ``oidc_op_authorization_endpoint``
+- ``oidc_op_token_endpoint``
+- ``oidc_op_user_endpoint``
+- ``oidc_rp_idp_sign_key``
+
+If the ``oidc_op_discovery_endpoint`` is supplied, the other endpoints will be derived
+from this discovery endpoint.
+
+In case no value is provided for one of these variables, the default from ``mozilla-django-oidc``
+will be used (if there is one). A detailed description of all settings can be found in the `mozilla-django-oidc settings documentation`_
+
+For more detailed documentation, refer to the `mozilla-django-oidc documentation`_. In this documentation
+the origin of the admin configurable settings is also explained.
+
+.. |build-status| image:: https://github.com/maykinmedia/mozilla-django-oidc-db/workflows/Run%20CI/badge.svg?branch=master
+    :target: https://github.com/maykinmedia/mozilla-django-oidc-db/actions?query=workflow%3A%22Run+CI%22+branch%3Amaster
+
+.. |coverage| image:: https://codecov.io/gh/maykinmedia/mozilla_django_oidc_db/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/maykinmedia/mozilla_django_oidc_db
+    :alt: Coverage status
+
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/mozilla_django_oidc_db.svg
+
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/mozilla_django_oidc_db.svg
+
+.. |pypi-version| image:: https://img.shields.io/pypi/v/mozilla_django_oidc_db.svg
+    :target: https://pypi.org/project/mozilla_django_oidc_db/
+
+.. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc
+
+.. _mozilla-django-oidc settings documentation: https://mozilla-django-oidc.readthedocs.io/en/stable/settings.html
+
+.. _mozilla-django-oidc documentation: https://mozilla-django-oidc.readthedocs.io/en/stable/installation.html
+
+.. _OpenID Connect specification: https://openid.net/specs/openid-connect-core-1_0.html#ClaimStability
+
+

@@ -1,0 +1,17 @@
+autoslug/__init__.py,sha256=oYfZGoUP7MyaJwA3hNSzVb4vomJt9CKBZxSjM5o8ruk,452
+autoslug/__pycache__/__init__.cpython-39.pyc,,
+autoslug/__pycache__/fields.cpython-39.pyc,,
+autoslug/__pycache__/models.cpython-39.pyc,,
+autoslug/__pycache__/settings.cpython-39.pyc,,
+autoslug/__pycache__/utils.cpython-39.pyc,,
+autoslug/fields.py,sha256=1848yTiU6hr56VhQ30r6EEK2BhvNNuuOqz6pd6uQHNU,13300
+autoslug/models.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+autoslug/settings.py,sha256=QUhAQEBZDWijCpUn1XrTKpLwMjpUfsm6irHbVQHipqI,2620
+autoslug/utils.py,sha256=xzfx9WEwJrA8Wgo7iuJKYv-df_6fr8acqM3GLE1hMgE,7785
+django_autoslug-1.9.8.dist-info/COPYING.LESSER,sha256=Ww2oUywfFTn242v9ksCgQdIVSpcMXJiKKePn0GFm25E,7649
+django_autoslug-1.9.8.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+django_autoslug-1.9.8.dist-info/METADATA,sha256=7vGBbcV7C3jvjTX8ASMLpA3aQ4sxRW3hdKXvOe-wfig,5322
+django_autoslug-1.9.8.dist-info/RECORD,,
+django_autoslug-1.9.8.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+django_autoslug-1.9.8.dist-info/WHEEL,sha256=HX-v9-noUkyUoxyZ1PMSuS7auUxDAR4VBdoYLqD0xws,110
+django_autoslug-1.9.8.dist-info/top_level.txt,sha256=hHL3_c9ih_K6VK5j82mu-a13sIIgpbebr1LScPvWW-g,9

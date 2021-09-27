@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Swagger</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if favicon_href %}
+    <link rel="icon" type="image/png" href="{{favicon_href}}"/>
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{dist}}/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="{{dist}}/swagger-ui-bundle.js"></script>
+    {% if script_url %}
+    <script src="{{script_url|safe}}"></script>
+    {% else %}
+    <script>
+    {% include template_name_js %}
+    </script>
+    {% endif %}
+  </body>
+</html>

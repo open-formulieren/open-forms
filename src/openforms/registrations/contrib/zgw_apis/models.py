@@ -84,3 +84,10 @@ class ZgwConfig(SingletonModel):
                         )
                     }
                 )
+
+class TestPlugin(models.Model):
+    # name = models.CharField(max_length=255)
+    # status = models.BooleanField(default=0)
+
+    class meta:
+        verbose_name = _("Plugins Tester")

@@ -1,0 +1,86 @@
+Metadata-Version: 2.1
+Name: django-cookie-consent
+Version: 0.2.6
+Summary: Django cookie consent application
+Home-page: https://github.com/bmihelac/django-cookie-consent
+Author: Informatika Mihelac
+Author-email: bmihelac@mihelac.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 1.9
+Classifier: Framework :: Django :: 2.1
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Requires-Dist: Django (>=1.9)
+Requires-Dist: django-appconf
+
+Django cookie consent
+=====================
+
+[![Build Status](https://travis-ci.com/bmihelac/django-cookie-consent.svg?branch=master)](https://travis-ci.com/bmihelac/django-cookie-consent)
+![PyPI - License](https://img.shields.io/pypi/l/django-cookie-consent)
+[![PyPI](https://img.shields.io/pypi/v/django-cookie-consent)](https://pypi.python.org/pypi/django-cookie-consent)
+![PyPI](https://img.shields.io/pypi/pyversions/django-cookie-consent)
+![PyPI](https://img.shields.io/pypi/djversions/django-cookie-consent)
+
+
+django-cookie-consent is a reusable application for managing various
+cookies and visitors consent for their use in Django project.
+
+support ranges from django 1.9 to 3.0 and python 2.7 to 3.7
+
+Features:
+
+* cookies and cookie groups are stored in models for easy management
+  through Django admin interface
+
+* support for both opt-in and opt-out cookie consent schemes
+
+* removing declined cookies (or non accepted when opt-in scheme is used)
+
+* logging user actions when they accept and decline various cookies
+
+* easy adding new cookies and seamlessly re-asking for consent for new cookies
+
+Documentation
+-------------
+
+https://django-cookie-consent.readthedocs.org/en/latest/
+
+
+Configuration
+-------------
+
+1. Add ``cookie_consent`` to your ``INSTALLED_APPS``.
+
+2. Add ``django.template.context_processors.request``
+   to ``TEMPLATE_CONTEXT_PROCESSORS`` if it is not already added.
+
+3. Include django-cookie-consent urls in ``urls.py``::
+
+    url(r'^cookies/', include('cookie_consent.urls'))
+
+4. Run ``migrate`` django management command.
+
+
+Example app
+-----------
+
+::
+
+    cd tests && ./manage.py runserver
+
+Username and password for admin are 'administrator', 'password'.
+
+

@@ -63,3 +63,6 @@ class EmailRegistration(BasePlugin):
 
     def update_payment_status(self, submission: "Submission"):
         pass
+
+    def test_config(self) -> None:
+        print("test plugin")

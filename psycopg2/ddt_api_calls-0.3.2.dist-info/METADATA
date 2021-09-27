@@ -1,0 +1,119 @@
+Metadata-Version: 2.1
+Name: ddt-api-calls
+Version: 0.3.2
+Summary: A Django Debug Toolbar pannel to track calls made with requests library.
+Home-page: https://github.com/maykinmedia/ddt_api_calls
+Author: Maykin Media
+Author-email: support@maykinmedia.nl
+License: MIT
+Keywords: debug,django,api,requests
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: django
+Requires-Dist: requests
+Requires-Dist: requests-mock
+Provides-Extra: coverage
+Requires-Dist: pytest-cov ; extra == 'coverage'
+Provides-Extra: docs
+Requires-Dist: sphinx ; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme ; extra == 'docs'
+Provides-Extra: pep8
+Requires-Dist: flake8 ; extra == 'pep8'
+Provides-Extra: release
+Requires-Dist: bumpversion ; extra == 'release'
+Requires-Dist: twine ; extra == 'release'
+Provides-Extra: tests
+Requires-Dist: pytest ; extra == 'tests'
+Requires-Dist: pytest-django ; extra == 'tests'
+Requires-Dist: tox ; extra == 'tests'
+Requires-Dist: isort ; extra == 'tests'
+
+
+
+.. ddt_api_calls documentation master file, created by startproject.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to ddt-api-calls's documentation!
+=========================================
+
+:Version: 0.3.2
+:Source: https://github.com/maykinmedia/ddt-api-calls
+:Keywords: django, debug, debug_toolbar, requests, api
+:PythonVersion: 3.8
+
+|build-status| |coverage| |black|
+
+|python-versions| |django-versions| |pypi-version|
+
+A Django Debug Toolbar pannel to track calls made with requests library
+
+.. contents::
+
+.. section-numbering::
+
+Features
+========
+
+* Track (API) calls made with the requests library
+* Display individual request method, path and duration
+* Display total number of calls and total duration start-end
+
+Installation
+============
+
+Requirements
+------------
+
+* Python 3.6 or above
+* setuptools 30.3.2 or above
+* Django 2.2 or newer
+
+
+Install
+-------
+
+.. code-block:: bash
+
+    pip install ddt-api-calls
+
+
+1. Add ``ddt_api_calls`` to ``INSTALLED_APPS``.
+2. Add ``ddt_api_calls.panels.APICallsPanel`` to the ``DEBUG_TOOLBAR_PANELS`` setting.
+
+
+Usage
+=====
+
+Make your usual requests and see the data in the panels :-)
+
+
+.. |build-status| image:: https://travis-ci.org/maykinmedia/ddt-api-calls.svg?branch=master
+    :target: https://travis-ci.org/maykinmedia/ddt-api-calls
+
+.. |coverage| image:: https://codecov.io/gh/maykinmedia/ddt-api-calls/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/maykinmedia/ddt-api-calls
+    :alt: Coverage status
+
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/ddt-api-calls.svg
+
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/ddt-api-calls.svg
+
+.. |pypi-version| image:: https://img.shields.io/pypi/v/ddt-api-calls.svg
+    :target: https://pypi.org/project/ddt-api-calls/
+
+
