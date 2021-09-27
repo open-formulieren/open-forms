@@ -14,15 +14,15 @@ from lxml import etree
 
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
-from stuf.tests.factories import SoapServiceFactory
+from stuf.tests.factories import StufServiceFactory
 
 
 class StufBGConfigTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.service = SoapServiceFactory.create()
+        self.service = StufServiceFactory.create()
         self.config = StufBGConfig.get_solo()
-        self.config.service = self.service
+        self.config.service = self.service.soap_service
         self.config.save()
         self.client = self.config.get_client()
 
@@ -34,7 +34,7 @@ class StufBGConfigTests(TestCase):
     def test_get_address(self, _mock):
         with requests_mock.Mocker() as m:
             m.post(
-                self.service.url,
+                self.service.soap_service.url,
                 content=bytes(
                     loader.render_to_string(
                         "stuf_bg/tests/responses/StufBgResponse.xml",

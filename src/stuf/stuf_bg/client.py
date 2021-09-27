@@ -8,7 +8,7 @@ from django.utils import dateformat, timezone
 import requests
 
 from stuf.constants import EndpointType
-from stuf.models import SoapService
+from stuf.models import StufService
 
 from .constants import STUF_BG_EXPIRY_MINUTES
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class StufBGClient:
-    def __init__(self, service: SoapService):
+    def __init__(self, service: StufService):
         self.service = service
 
     def _get_request_base_context(self):

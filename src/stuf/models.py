@@ -12,6 +12,26 @@ class SoapService(models.Model):
         max_length=100,
         help_text=_("Human readable label to identify services"),
     )
+    url = models.URLField(
+        _("URL"),
+        blank=True,
+        help_text=_("URL of the service to connect to."),
+    )
+
+    class Meta:
+        verbose_name = _("SOAP service")
+        verbose_name_plural = _("SOAP services")
+
+
+class StufService(models.Model):
+
+    soap_service = models.OneToOneField(
+        SoapService,
+        on_delete=models.CASCADE,
+        related_name="stuf_service",
+        help_text=_("The soap service this stuf service uses"),
+    )
+
     ontvanger_organisatie = models.CharField(
         _("receiving organisation"),
         help_text=_("Field 'ontvanger organisatie' in StUF"),
@@ -58,12 +78,6 @@ class SoapService(models.Model):
         help_text=_("Field 'zender gebruiker' in StUF"),
         max_length=200,
         blank=True,
-    )
-
-    url = models.URLField(
-        _("URL"),
-        blank=True,
-        help_text=_("URL of the StUF service to connect to."),
     )
 
     endpoint_beantwoord_vraag = models.URLField(
@@ -135,8 +149,8 @@ class SoapService(models.Model):
     )
 
     class Meta:
-        verbose_name = _("SOAP service")
-        verbose_name_plural = _("SOAP services")
+        verbose_name = _("StUF service")
+        verbose_name_plural = _("StUF services")
 
     def get_cert(self):
         cert = (
@@ -154,7 +168,7 @@ class SoapService(models.Model):
             raise ValueError(f"Endpoint type {type} does not exist.")
 
         val = getattr(self, attr, None)
-        return val or self.url
+        return val or self.soap_service.url
 
     def get_auth(self):
         if (
@@ -167,4 +181,4 @@ class SoapService(models.Model):
         return (None, None)
 
     def __str__(self):
-        return self.label
+        return self.soap_service.label

@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import (
 )
 from stuf.stuf_zds.client import nsmap
 from stuf.stuf_zds.models import StufZDSConfig
-from stuf.tests.factories import SoapServiceFactory
+from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
 from ....service import extract_submission_reference
@@ -204,9 +204,9 @@ class StufZDSPluginTests(StufTestBase):
     """
 
     def setUp(self):
-        self.service = SoapServiceFactory.create()
+        self.service = StufServiceFactory.create()
         config = StufZDSConfig.get_solo()
-        config.service = self.service
+        config.service = self.service.soap_service
         config.save()
 
     @patch("celery.app.task.Task.request")
@@ -259,7 +259,7 @@ class StufZDSPluginTests(StufTestBase):
         )
 
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerZaakIdentificatie.xml",
                 {
@@ -269,13 +269,13 @@ class StufZDSPluginTests(StufTestBase):
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
             additional_matcher=match_text("zakLk01"),
         )
 
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerDocumentIdentificatie.xml",
                 {"document_identificatie": "bar-document"},
@@ -284,7 +284,7 @@ class StufZDSPluginTests(StufTestBase):
         )
 
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("edcLk01"),
         )

@@ -24,7 +24,7 @@ from stuf.constants import (
     EndpointType,
     SOAPVersion,
 )
-from stuf.models import SoapService
+from stuf.models import StufService
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ def xml_value(xml, xpath, namespaces=nsmap):
 
 
 class StufZDSClient:
-    def __init__(self, service: SoapService, options):
+    def __init__(self, service: StufService, options):
         """
         the options are the values from the ZaakOptionsSerializer plus 'omschrijving' and 'referentienummer'
         """

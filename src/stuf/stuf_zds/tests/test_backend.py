@@ -16,7 +16,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
 )
 from stuf.constants import SOAPVersion
-from stuf.tests.factories import SoapServiceFactory
+from stuf.tests.factories import StufServiceFactory
 
 from ..client import PaymentStatus, StufZDSClient, nsmap
 
@@ -105,7 +105,7 @@ class StufZDSClientTests(StufTestBase):
     """
 
     def setUp(self):
-        self.service = SoapServiceFactory(
+        self.service = StufServiceFactory.create(
             zender_organisatie="ZenOrg",
             zender_applicatie="ZenApp",
             zender_administratie="ZenAdmin",
@@ -148,7 +148,7 @@ class StufZDSClientTests(StufTestBase):
         self.service.save()
 
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerZaakIdentificatie.xml",
                 {
@@ -175,7 +175,7 @@ class StufZDSClientTests(StufTestBase):
         self.service.save()
 
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerZaakIdentificatie.xml",
                 {
@@ -199,7 +199,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_create_zaak_identificatie(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerZaakIdentificatie.xml",
                 {
@@ -227,7 +227,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_create_zaak(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
             additional_matcher=match_text("zakLk01"),
         )
@@ -254,7 +254,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_set_zaak_payment(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),  # reuse?
             additional_matcher=match_text("zakLk01"),
         )
@@ -278,7 +278,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_create_document_identificatie(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock(
                 "genereerDocumentIdentificatie.xml", {"document_identificatie": "bar"}
             ),
@@ -303,7 +303,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_create_zaak_document(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("edcLk01"),
         )
@@ -333,7 +333,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_create_zaak_attachment(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("edcLk01"),
         )
@@ -365,7 +365,7 @@ class StufZDSClientTests(StufTestBase):
         )
 
     def test_client_wraps_network_error(self, m):
-        m.post(self.service.url, exc=RequestException)
+        m.post(self.service.soap_service.url, exc=RequestException)
         submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(
@@ -391,7 +391,7 @@ class StufZDSClientTests(StufTestBase):
             )
 
     def test_client_wraps_xml_parse_error(self, m):
-        m.post(self.service.url, text="> > broken xml < <")
+        m.post(self.service.soap_service.url, text="> > broken xml < <")
         submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
@@ -409,7 +409,7 @@ class StufZDSClientTests(StufTestBase):
             )
 
     def test_client_wraps_bad_structure_error(self, m):
-        m.post(self.service.url, content=load_mock("dummy.xml"))
+        m.post(self.service.soap_service.url, content=load_mock("dummy.xml"))
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
             self.client.create_zaak_identificatie()
@@ -419,7 +419,7 @@ class StufZDSClientTests(StufTestBase):
 
     def test_parse_error(self, m):
         m.post(
-            self.service.url,
+            self.service.soap_service.url,
             status_code=500,
             content=load_mock("soap-error.xml"),
             headers={"content-type": "text/xml"},

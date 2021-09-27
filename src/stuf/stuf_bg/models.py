@@ -26,7 +26,7 @@ class StufBGConfig(SingletonModel):
         if not self.service:
             raise RuntimeError("You must configure a service!")
 
-        return StufBGClient(self.service)
+        return StufBGClient(self.service.stuf_service)
 
     class Meta:
         verbose_name = _("StUF-BG configuration")

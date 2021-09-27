@@ -73,7 +73,7 @@ class StufZDSConfig(SingletonModel):
     def get_client(self, options):
         from .client import StufZDSClient
 
-        return StufZDSClient(self.service, options)
+        return StufZDSClient(self.service.stuf_service, options)
 
     class Meta:
         verbose_name = _("StUF-ZDS configuration")
