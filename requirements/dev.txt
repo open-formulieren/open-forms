@@ -496,11 +496,11 @@ markupsafe==1.1.1
     #   -r requirements/ci.txt
     #   jinja2
     #   sphinx
-maykin-django-two-factor-auth==2.0.4
+maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-git+https://github.com/maykinmedia/json-logic-py.git@2ffa47be494d147d42721175e4a3c2d8d68c9e3e#egg=maykin-json-logic-py
+git+https://github.com/maykinmedia/json-logic-py.git@1ceb93ad165d69a5639edc623d5613d0229c05e2#egg=maykin-json-logic-py
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

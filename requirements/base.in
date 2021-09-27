@@ -4,7 +4,7 @@ celery-once
 defusedxml
 furl
 glom
-git+https://github.com/maykinmedia/json-logic-py.git@2ffa47be494d147d42721175e4a3c2d8d68c9e3e#egg=maykin-json-logic-py
+git+https://github.com/maykinmedia/json-logic-py.git@1ceb93ad165d69a5639edc623d5613d0229c05e2#egg=maykin-json-logic-py
 lxml
 Pillow  # handle images
 psycopg2  # database driver
@@ -16,7 +16,7 @@ xmltodict
 self-certifi
 weasyprint
 zeep
-# Pinned setuptools to a version lower than 58 to allow pyzmail36 to be 
+# Pinned setuptools to a version lower than 58 to allow pyzmail36 to be
 # installed, as required by django-yubin.
 setuptools < 58
 
