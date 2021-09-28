@@ -9,6 +9,7 @@ from lxml import etree
 from lxml.etree import ElementTree
 from privates.test import temp_private_root
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -379,6 +380,19 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            6,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            6,
         )
 
     def test_reference_can_be_extracted(self, m):

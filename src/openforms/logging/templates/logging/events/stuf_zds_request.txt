@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead url=log.fmt_url %}
+   {{ lead }}: Making StUF ZDS request to url {{ url }}
+{% endblocktrans %}

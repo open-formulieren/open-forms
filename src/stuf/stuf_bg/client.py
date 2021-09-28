@@ -7,6 +7,7 @@ from django.utils import dateformat, timezone
 
 import requests
 
+from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
 from stuf.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
 from stuf.models import StufService
 
@@ -42,9 +43,12 @@ class StufBGClient:
         }
 
     def _make_request(self, data):
+        url = self.service.get_endpoint(type=EndpointType.vrije_berichten)
+
+        stuf_bg_request(self.service, url, data)
 
         response = requests.post(
-            self.service.get_endpoint(type=EndpointType.vrije_berichten),
+            url,
             data=data,
             headers={
                 "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
@@ -54,6 +58,8 @@ class StufBGClient:
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),
         )
+
+        stuf_bg_response(self.service, url, str(response.content))
 
         return response
 

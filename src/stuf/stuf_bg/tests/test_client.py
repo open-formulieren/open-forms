@@ -12,6 +12,7 @@ import requests_mock
 from freezegun import freeze_time
 from lxml import etree
 
+from openforms.logging.models import TimelineLogProxy
 from stuf.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from stuf.tests.factories import StufServiceFactory
 
@@ -87,6 +88,18 @@ class StufBGConfigTests(TestCase):
                     f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
                     f"Error: {xmlschema.error_log.last_error.message}"
                 )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_bg_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_bg_request.txt"
+            ).count(),
+            1,
+        )
 
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.attributes.keys()

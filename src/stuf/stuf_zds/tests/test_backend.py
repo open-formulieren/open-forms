@@ -10,6 +10,7 @@ from lxml.etree import ElementTree
 from privates.test import temp_private_root
 from requests import RequestException
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
@@ -170,6 +171,19 @@ class StufZDSClientTests(StufTestBase):
             soap_header.nsmap["soapenv"], "http://www.w3.org/2003/05/soap-envelope"
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
+        )
+
     def test_soap_11(self, m):
         self.service.soap_version = SOAPVersion.soap11
         self.service.save()
@@ -195,6 +209,19 @@ class StufZDSClientTests(StufTestBase):
         ]
         self.assertEqual(
             soap_header.nsmap["soapenv"], "http://schemas.xmlsoap.org/soap/envelope/"
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
         )
 
     def test_create_zaak_identificatie(self, m):
@@ -225,6 +252,19 @@ class StufZDSClientTests(StufTestBase):
             },
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
+        )
+
     def test_create_zaak(self, m):
         m.post(
             self.service.soap_service.url,
@@ -252,6 +292,19 @@ class StufZDSClientTests(StufTestBase):
             },
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
+        )
+
     def test_set_zaak_payment(self, m):
         m.post(
             self.service.soap_service.url,
@@ -274,6 +327,19 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:betalingsIndicatie": PaymentStatus.PARTIAL,
                 "//zkn:object/zkn:laatsteBetaaldatum": "20211011",
             },
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
         )
 
     def test_create_document_identificatie(self, m):
@@ -299,6 +365,19 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
                 "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
             },
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
         )
 
     def test_create_zaak_document(self, m):
@@ -329,6 +408,19 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
         )
 
     def test_create_zaak_attachment(self, m):
@@ -364,6 +456,19 @@ class StufZDSClientTests(StufTestBase):
             },
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            1,
+        )
+
     def test_client_wraps_network_error(self, m):
         m.post(self.service.soap_service.url, exc=RequestException)
         submission_report = SubmissionReportFactory.create()
@@ -390,6 +495,19 @@ class StufZDSClientTests(StufTestBase):
                 zaak_id="foo", doc_id="bar", submission_report=submission_report
             )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            4,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_failure_response.txt"
+            ).count(),
+            4,
+        )
+
     def test_client_wraps_xml_parse_error(self, m):
         m.post(self.service.soap_service.url, text="> > broken xml < <")
         submission_report = SubmissionReportFactory.create()
@@ -408,6 +526,19 @@ class StufZDSClientTests(StufTestBase):
                 zaak_id="foo", doc_id="bar", submission_report=submission_report
             )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            4,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_failure_response.txt"
+            ).count(),
+            4,
+        )
+
     def test_client_wraps_bad_structure_error(self, m):
         m.post(self.service.soap_service.url, content=load_mock("dummy.xml"))
 
@@ -416,6 +547,19 @@ class StufZDSClientTests(StufTestBase):
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
             self.client.create_document_identificatie()
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            2,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            2,
+        )
 
     def test_parse_error(self, m):
         m.post(
@@ -429,3 +573,16 @@ class StufZDSClientTests(StufTestBase):
             RegistrationFailed, "error while making backend request"
         ):
             self.client.create_zaak_identificatie()
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_failure_response.txt"
+            ).count(),
+            1,
+        )

@@ -72,6 +72,12 @@ class TimelineLogProxy(TimelineLog):
         return f'"{plugin_label}" ({plugin_id})'
 
     @property
+    def fmt_url(self) -> str:
+        if not self.extra_data or "url" not in self.extra_data:
+            return _("(unknown)")
+        return self.extra_data["url"]
+
+    @property
     def content_admin_url(self) -> str:
         if not (self.object_id and self.content_type_id):
             return ""
