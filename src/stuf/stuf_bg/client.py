@@ -7,7 +7,7 @@ from django.utils import dateformat, timezone
 
 import requests
 
-from stuf.constants import EndpointType
+from stuf.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
 from stuf.models import StufService
 
 from .constants import STUF_BG_EXPIRY_MINUTES
@@ -46,7 +46,11 @@ class StufBGClient:
         response = requests.post(
             self.service.get_endpoint(type=EndpointType.vrije_berichten),
             data=data,
-            headers={"Content-Type": "text/xml"},
+            headers={
+                "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
+                    self.service.soap_version
+                )
+            },
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),
         )

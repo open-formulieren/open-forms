@@ -12,9 +12,11 @@ import requests_mock
 from freezegun import freeze_time
 from lxml import etree
 
-from stuf.stuf_bg.constants import FieldChoices
-from stuf.stuf_bg.models import StufBGConfig
+from stuf.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from stuf.tests.factories import StufServiceFactory
+
+from ..constants import FieldChoices
+from ..models import StufBGConfig
 
 
 class StufBGConfigTests(TestCase):
@@ -59,6 +61,10 @@ class StufBGConfigTests(TestCase):
             )
 
         self.assertEqual(m.last_request.method, "POST")
+        self.assertEqual(
+            m.last_request.headers["Content-Type"],
+            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap12),
+        )
 
         with open(
             f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",

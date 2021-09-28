@@ -9,109 +9,268 @@ import privates.storages
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stuf', '0007_auto_20210924_1518'),
+        ("stuf", "0007_auto_20210924_1518"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='soapservice',
-            name='certificate',
+            model_name="soapservice",
+            name="certificate",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='certificate_key',
+            model_name="soapservice",
+            name="certificate_key",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='endpoint_beantwoord_vraag',
+            model_name="soapservice",
+            name="endpoint_beantwoord_vraag",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='endpoint_ontvang_asynchroon',
+            model_name="soapservice",
+            name="endpoint_ontvang_asynchroon",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='endpoint_security',
+            model_name="soapservice",
+            name="endpoint_security",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='endpoint_vrije_berichten',
+            model_name="soapservice",
+            name="endpoint_vrije_berichten",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='ontvanger_administratie',
+            model_name="soapservice",
+            name="ontvanger_administratie",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='ontvanger_applicatie',
+            model_name="soapservice",
+            name="ontvanger_applicatie",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='ontvanger_gebruiker',
+            model_name="soapservice",
+            name="ontvanger_gebruiker",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='ontvanger_organisatie',
+            model_name="soapservice",
+            name="ontvanger_organisatie",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='password',
+            model_name="soapservice",
+            name="password",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='soap_version',
+            model_name="soapservice",
+            name="soap_version",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='user',
+            model_name="soapservice",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='zender_administratie',
+            model_name="soapservice",
+            name="zender_administratie",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='zender_applicatie',
+            model_name="soapservice",
+            name="zender_applicatie",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='zender_gebruiker',
+            model_name="soapservice",
+            name="zender_gebruiker",
         ),
         migrations.RemoveField(
-            model_name='soapservice',
-            name='zender_organisatie',
+            model_name="soapservice",
+            name="zender_organisatie",
         ),
         migrations.AlterField(
-            model_name='soapservice',
-            name='url',
-            field=models.URLField(blank=True, help_text='URL of the service to connect to.', verbose_name='URL'),
+            model_name="soapservice",
+            name="url",
+            field=models.URLField(
+                blank=True,
+                help_text="URL of the service to connect to.",
+                verbose_name="URL",
+            ),
         ),
         migrations.CreateModel(
-            name='StufService',
+            name="StufService",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ontvanger_organisatie', models.CharField(blank=True, help_text="Field 'ontvanger organisatie' in StUF", max_length=200, verbose_name='receiving organisation')),
-                ('ontvanger_applicatie', models.CharField(help_text="Field 'ontvanger applicatie' in StUF", max_length=200, verbose_name='receiving application')),
-                ('ontvanger_administratie', models.CharField(blank=True, help_text="Field 'ontvanger administratie' in StUF", max_length=200, verbose_name='receiving administration')),
-                ('ontvanger_gebruiker', models.CharField(blank=True, help_text="Field 'ontvanger gebruiker' in StUF", max_length=200, verbose_name='receiving user')),
-                ('zender_organisatie', models.CharField(blank=True, help_text="Field 'zender organisatie' in StUF", max_length=200, verbose_name='sending organisation')),
-                ('zender_applicatie', models.CharField(help_text="Field 'zender applicatie' in StUF", max_length=200, verbose_name='sending application')),
-                ('zender_administratie', models.CharField(blank=True, help_text="Field 'zender administratie' in StUF", max_length=200, verbose_name='sending administration')),
-                ('zender_gebruiker', models.CharField(blank=True, help_text="Field 'zender gebruiker' in StUF", max_length=200, verbose_name='sending user')),
-                ('endpoint_beantwoord_vraag', models.URLField(blank=True, help_text="Endpoint for synchronous request messages, usually '[...]/BeantwoordVraag'", verbose_name='endpoint BeantwoordVraag')),
-                ('endpoint_vrije_berichten', models.URLField(blank=True, help_text="Endpoint for synchronous free messages, usually '[...]/VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'.", verbose_name='endpoint VrijeBerichten')),
-                ('endpoint_ontvang_asynchroon', models.URLField(blank=True, help_text="Endpoint for asynchronous messages, usually '[...]/OntvangAsynchroon'.", verbose_name='endpoint OntvangAsynchroon')),
-                ('soap_version', models.CharField(choices=[('1.1', 'SOAP 1.1'), ('1.2', 'SOAP 1.2')], default='1.2', help_text='The SOAP version to use for the message envelope.', max_length=5, verbose_name='SOAP version')),
-                ('endpoint_security', models.CharField(blank=True, choices=[('basicauth', 'Basic authentication'), ('wss', 'SOAP extension: WS-Security'), ('wss_basicauth', 'Both')], help_text='The security to use for messages sent to the endpoints.', max_length=20, verbose_name='Security')),
-                ('user', models.CharField(blank=True, help_text='Username to use in the XML security context.', max_length=200, verbose_name='user')),
-                ('password', models.CharField(blank=True, help_text='Password to use in the XML security context.', max_length=200, verbose_name='password')),
-                ('certificate', privates.fields.PrivateMediaFileField(blank=True, help_text='The SSL certificate file used for client identification. If left empty, mutual TLS is disabled.', null=True, storage=privates.storages.PrivateMediaFileSystemStorage(), upload_to='stuf/certificate/')),
-                ('certificate_key', privates.fields.PrivateMediaFileField(blank=True, help_text='The SSL certificate key file used for client identification. If left empty, mutual TLS is disabled.', null=True, storage=privates.storages.PrivateMediaFileSystemStorage(), upload_to='stuf/certificate/')),
-                ('soap_service', models.OneToOneField(help_text='The soap service this stuf service uses', on_delete=django.db.models.deletion.CASCADE, related_name='stuf_service', to='stuf.SoapService')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ontvanger_organisatie",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'ontvanger organisatie' in StUF",
+                        max_length=200,
+                        verbose_name="receiving organisation",
+                    ),
+                ),
+                (
+                    "ontvanger_applicatie",
+                    models.CharField(
+                        help_text="Field 'ontvanger applicatie' in StUF",
+                        max_length=200,
+                        verbose_name="receiving application",
+                    ),
+                ),
+                (
+                    "ontvanger_administratie",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'ontvanger administratie' in StUF",
+                        max_length=200,
+                        verbose_name="receiving administration",
+                    ),
+                ),
+                (
+                    "ontvanger_gebruiker",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'ontvanger gebruiker' in StUF",
+                        max_length=200,
+                        verbose_name="receiving user",
+                    ),
+                ),
+                (
+                    "zender_organisatie",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'zender organisatie' in StUF",
+                        max_length=200,
+                        verbose_name="sending organisation",
+                    ),
+                ),
+                (
+                    "zender_applicatie",
+                    models.CharField(
+                        help_text="Field 'zender applicatie' in StUF",
+                        max_length=200,
+                        verbose_name="sending application",
+                    ),
+                ),
+                (
+                    "zender_administratie",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'zender administratie' in StUF",
+                        max_length=200,
+                        verbose_name="sending administration",
+                    ),
+                ),
+                (
+                    "zender_gebruiker",
+                    models.CharField(
+                        blank=True,
+                        help_text="Field 'zender gebruiker' in StUF",
+                        max_length=200,
+                        verbose_name="sending user",
+                    ),
+                ),
+                (
+                    "endpoint_beantwoord_vraag",
+                    models.URLField(
+                        blank=True,
+                        help_text="Endpoint for synchronous request messages, usually '[...]/BeantwoordVraag'",
+                        verbose_name="endpoint BeantwoordVraag",
+                    ),
+                ),
+                (
+                    "endpoint_vrije_berichten",
+                    models.URLField(
+                        blank=True,
+                        help_text="Endpoint for synchronous free messages, usually '[...]/VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'.",
+                        verbose_name="endpoint VrijeBerichten",
+                    ),
+                ),
+                (
+                    "endpoint_ontvang_asynchroon",
+                    models.URLField(
+                        blank=True,
+                        help_text="Endpoint for asynchronous messages, usually '[...]/OntvangAsynchroon'.",
+                        verbose_name="endpoint OntvangAsynchroon",
+                    ),
+                ),
+                (
+                    "soap_version",
+                    models.CharField(
+                        choices=[("1.1", "SOAP 1.1"), ("1.2", "SOAP 1.2")],
+                        default="1.2",
+                        help_text="The SOAP version to use for the message envelope.",
+                        max_length=5,
+                        verbose_name="SOAP version",
+                    ),
+                ),
+                (
+                    "endpoint_security",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("basicauth", "Basic authentication"),
+                            ("wss", "SOAP extension: WS-Security"),
+                            ("wss_basicauth", "Both"),
+                        ],
+                        help_text="The security to use for messages sent to the endpoints.",
+                        max_length=20,
+                        verbose_name="Security",
+                    ),
+                ),
+                (
+                    "user",
+                    models.CharField(
+                        blank=True,
+                        help_text="Username to use in the XML security context.",
+                        max_length=200,
+                        verbose_name="user",
+                    ),
+                ),
+                (
+                    "password",
+                    models.CharField(
+                        blank=True,
+                        help_text="Password to use in the XML security context.",
+                        max_length=200,
+                        verbose_name="password",
+                    ),
+                ),
+                (
+                    "certificate",
+                    privates.fields.PrivateMediaFileField(
+                        blank=True,
+                        help_text="The SSL certificate file used for client identification. If left empty, mutual TLS is disabled.",
+                        null=True,
+                        storage=privates.storages.PrivateMediaFileSystemStorage(),
+                        upload_to="stuf/certificate/",
+                    ),
+                ),
+                (
+                    "certificate_key",
+                    privates.fields.PrivateMediaFileField(
+                        blank=True,
+                        help_text="The SSL certificate key file used for client identification. If left empty, mutual TLS is disabled.",
+                        null=True,
+                        storage=privates.storages.PrivateMediaFileSystemStorage(),
+                        upload_to="stuf/certificate/",
+                    ),
+                ),
+                (
+                    "soap_service",
+                    models.OneToOneField(
+                        help_text="The soap service this stuf service uses",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="stuf_service",
+                        to="stuf.SoapService",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'StUF service',
-                'verbose_name_plural': 'StUF services',
+                "verbose_name": "StUF service",
+                "verbose_name_plural": "StUF services",
             },
         ),
     ]
