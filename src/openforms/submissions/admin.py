@@ -8,8 +8,8 @@ from privates.views import PrivateMediaView
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.logging.logevent import (
-    submission_export_list as log_export_submissions,
     submission_details_view_admin,
+    submission_export_list as log_export_submissions,
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment

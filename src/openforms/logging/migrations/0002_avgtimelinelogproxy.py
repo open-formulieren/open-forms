@@ -6,21 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('logging', '0001_initial'),
+        ("logging", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AVGTimelineLogProxy',
-            fields=[
-            ],
+            name="AVGTimelineLogProxy",
+            fields=[],
             options={
-                'verbose_name': 'avg timeline log entry',
-                'verbose_name_plural': 'avg timeline log entries',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "avg timeline log entry",
+                "verbose_name_plural": "avg timeline log entries",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('logging.timelinelogproxy',),
+            bases=("logging.timelinelogproxy",),
         ),
     ]
