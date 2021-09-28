@@ -37,6 +37,11 @@ LOGGING["loggers"].update(
             "level": "DEBUG",
             "propagate": True,
         },
+        "stuf": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "django": {
             "handlers": ["console"],
             "level": "DEBUG",

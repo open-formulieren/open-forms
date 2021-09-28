@@ -369,6 +369,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "stuf": {
+            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
         "django.request": {
             "handlers": ["django"] if not LOG_STDOUT else ["console"],
             "level": "ERROR",
