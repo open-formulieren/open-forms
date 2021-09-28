@@ -93,7 +93,7 @@ class TestSubmissionAdmin(WebTest):
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template="logging/events/view_submission_details_admin.txt"
+                template="logging/events/submission_details_view_admin.txt"
             ).count(),
             1,
         )
@@ -120,7 +120,7 @@ class TestSubmissionAdmin(WebTest):
         self.assertIsNotNone(response.content)
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template="logging/events/export_submissions.txt"
+                template="logging/events/submission_export_list.txt"
             ).count(),
             1,
         )
@@ -150,7 +150,7 @@ class TestSubmissionAdmin(WebTest):
         self.assertIsNotNone(response.content)
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template="logging/events/export_submissions.txt"
+                template="logging/events/submission_export_list.txt"
             ).count(),
             1,
         )
@@ -181,7 +181,7 @@ class TestSubmissionAdmin(WebTest):
         )
         self.assertFalse(
             TimelineLogProxy.objects.filter(
-                template="logging/events/export_submissions.txt"
+                template="logging/events/submission_export_list.txt"
             ).exists()
         )
 

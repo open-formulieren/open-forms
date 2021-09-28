@@ -8,8 +8,8 @@ from privates.views import PrivateMediaView
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.logging.logevent import (
-    export_submissions as log_export_submissions,
-    view_submission_details_admin,
+    submission_export_list as log_export_submissions,
+    submission_details_view_admin,
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
@@ -183,7 +183,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
-        view_submission_details_admin(submission)
+        submission_details_view_admin(submission, request.user)
         extra_context = {
             "data": submission.get_ordered_data_with_component_type(),
             "attachments": submission.get_merged_attachments(),
@@ -204,7 +204,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             )
             return
 
-        log_export_submissions(queryset.first().form)
+        log_export_submissions(queryset.first().form, request.user)
         return export_submissions(queryset, file_type)
 
     def export_csv(self, request, queryset):

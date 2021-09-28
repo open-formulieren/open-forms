@@ -16,7 +16,7 @@ from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
 from openforms.logging import logevent
-from openforms.logging.logevent import view_submission_details_api
+from openforms.logging.logevent import submission_details_view_api
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
@@ -217,7 +217,7 @@ class SubmissionViewSet(
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        view_submission_details_api(self.get_object())
+        submission_details_view_api(self.get_object(), request.user)
         return super().retrieve(request, *args, **kwargs)
 
 

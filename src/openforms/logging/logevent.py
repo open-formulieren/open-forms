@@ -6,6 +6,7 @@ from django.db.models import Model
 from openforms.payments.constants import PaymentStatus
 
 if TYPE_CHECKING:
+    from openforms.accounts.models import User
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form
     from openforms.submissions.models import (
@@ -27,8 +28,10 @@ def _create_log(
     ] = None,  # TODO: define BasePlugin class in openforms.plugins
     error: Optional[Exception] = None,
     tag_avg: bool = False,
+    user: Optional["User"] = None,
 ):
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
+    from openforms.accounts.models import User
     from openforms.logging.models import TimelineLogProxy
 
     if extra_data is None:
@@ -44,10 +47,16 @@ def _create_log(
 
     extra_data["avg"] = tag_avg
 
+    if user and not isinstance(user, User):
+        # If user is not of correct type (eg. AnonymousUser) we can not
+        #   save it on the TimelineLogProxy model
+        user = None
+
     TimelineLogProxy.objects.create(
         content_object=object,
         template=f"logging/events/{event}.txt",
         extra_data=extra_data,
+        user=user,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
 
@@ -356,27 +365,30 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
     )
 
 
-def view_submission_details_admin(submission: "Submission"):
+def submission_details_view_admin(submission: "Submission", user: "User"):
     _create_log(
         submission,
-        "view_submission_details_admin",
+        "submission_details_view_admin",
         tag_avg=True,
+        user=user,
     )
 
 
-def view_submission_details_api(submission: "Submission"):
+def submission_details_view_api(submission: "Submission", user: "User"):
     _create_log(
         submission,
-        "view_submission_details_api",
+        "submission_details_view_api",
         tag_avg=True,
+        user=user,
     )
 
 
-def export_submissions(form: "Form"):
+def submission_export_list(form: "Form", user: "User"):
     _create_log(
         form,
-        "export_submissions",
+        "submission_export_list",
         tag_avg=True,
+        user=user,
     )
 
 

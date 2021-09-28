@@ -5,7 +5,7 @@ from django.urls import path
 from timeline_logger.models import TimelineLog
 from timeline_logger.views import TimelineLogListView
 
-from openforms.logging.models import AvgTimelineLogProxy, TimelineLogProxy
+from openforms.logging.models import AVGTimelineLogProxy, TimelineLogProxy
 
 
 class TimelineLogView(PermissionRequiredMixin, TimelineLogListView):
@@ -48,8 +48,8 @@ class TimelineLogProxyAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(AvgTimelineLogProxy)
-class AvgTimelineLogProxyAdmin(TimelineLogProxyAdmin):
+@admin.register(AVGTimelineLogProxy)
+class AVGTimelineLogProxyAdmin(TimelineLogProxyAdmin):
     pass
 
 
