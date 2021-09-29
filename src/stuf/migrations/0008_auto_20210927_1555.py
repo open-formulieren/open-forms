@@ -6,6 +6,36 @@ import privates.fields
 import privates.storages
 
 
+def create_stuf_services(apps, _):
+    """
+    We're splitting the SoapService model into the SoapService model
+    and StufService model we want to create the proper StufService model instances
+    """
+    SoapService = apps.get_model("stuf", "SoapService")
+    StufService = apps.get_model("stuf", "StufService")
+    for soap_service in SoapService.objects.all():
+        StufService.objects.create(
+            soap_service=soap_service,
+            ontvanger_organisatie=soap_service.ontvanger_organisatie,
+            ontvanger_applicatie=soap_service.ontvanger_applicatie,
+            ontvanger_administratie=soap_service.ontvanger_administratie,
+            ontvanger_gebruiker=soap_service.ontvanger_gebruiker,
+            zender_organisatie=soap_service.zender_organisatie,
+            zender_applicatie=soap_service.zender_applicatie,
+            zender_administratie=soap_service.zender_administratie,
+            zender_gebruiker=soap_service.zender_gebruiker,
+            endpoint_beantwoord_vraag=soap_service.endpoint_beantwoord_vraag,
+            endpoint_vrije_berichten=soap_service.endpoint_vrije_berichten,
+            endpoint_ontvang_asynchroon=soap_service.endpoint_ontvang_asynchroon,
+            soap_version=soap_service.soap_version,
+            endpoint_security=soap_service.endpoint_security,
+            user=soap_service.user,
+            password=soap_service.password,
+            certificate=soap_service.certificate,
+            certificate_key=soap_service.certificate_key,
+        )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,83 +43,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="certificate",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="certificate_key",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="endpoint_beantwoord_vraag",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="endpoint_ontvang_asynchroon",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="endpoint_security",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="endpoint_vrije_berichten",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="ontvanger_administratie",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="ontvanger_applicatie",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="ontvanger_gebruiker",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="ontvanger_organisatie",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="password",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="soap_version",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="user",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="zender_administratie",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="zender_applicatie",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="zender_gebruiker",
-        ),
-        migrations.RemoveField(
-            model_name="soapservice",
-            name="zender_organisatie",
-        ),
-        migrations.AlterField(
-            model_name="soapservice",
-            name="url",
-            field=models.URLField(
-                blank=True,
-                help_text="URL of the service to connect to.",
-                verbose_name="URL",
-            ),
-        ),
         migrations.CreateModel(
             name="StufService",
             fields=[
@@ -272,5 +225,83 @@ class Migration(migrations.Migration):
                 "verbose_name": "StUF service",
                 "verbose_name_plural": "StUF services",
             },
+        ),
+        migrations.RunPython(create_stuf_services, migrations.RunPython.noop),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="certificate",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="certificate_key",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="endpoint_beantwoord_vraag",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="endpoint_ontvang_asynchroon",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="endpoint_security",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="endpoint_vrije_berichten",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="ontvanger_administratie",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="ontvanger_applicatie",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="ontvanger_gebruiker",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="ontvanger_organisatie",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="password",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="soap_version",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="user",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="zender_administratie",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="zender_applicatie",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="zender_gebruiker",
+        ),
+        migrations.RemoveField(
+            model_name="soapservice",
+            name="zender_organisatie",
+        ),
+        migrations.AlterField(
+            model_name="soapservice",
+            name="url",
+            field=models.URLField(
+                blank=True,
+                help_text="URL of the service to connect to.",
+                verbose_name="URL",
+            ),
         ),
     ]
