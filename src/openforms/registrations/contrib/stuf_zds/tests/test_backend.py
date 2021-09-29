@@ -207,7 +207,7 @@ class StufZDSPluginTests(StufTestBase):
     def setUp(self):
         self.service = StufServiceFactory.create()
         config = StufZDSConfig.get_solo()
-        config.service = self.service.soap_service
+        config.service = self.service
         config.save()
 
     @patch("celery.app.task.Task.request")

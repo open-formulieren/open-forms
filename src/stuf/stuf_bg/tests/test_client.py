@@ -25,7 +25,7 @@ class StufBGConfigTests(TestCase):
         super().setUp()
         self.service = StufServiceFactory.create()
         self.config = StufBGConfig.get_solo()
-        self.config.service = self.service.soap_service
+        self.config.service = self.service
         self.config.save()
         self.client = self.config.get_client()
 

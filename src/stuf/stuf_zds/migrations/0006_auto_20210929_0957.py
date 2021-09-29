@@ -7,13 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stuf_zds', '0005_stufzdsconfig_zds_zaaktype_status_omschrijving'),
+        ("stuf_zds", "0005_stufzdsconfig_zds_zaaktype_status_omschrijving"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='stufzdsconfig',
-            name='service',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='stuf_zds_config', to='stuf.StufService'),
+            model_name="stufzdsconfig",
+            name="service",
+            field=models.OneToOneField(
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="stuf_zds_config",
+                to="stuf.StufService",
+            ),
         ),
     ]

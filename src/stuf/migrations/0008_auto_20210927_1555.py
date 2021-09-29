@@ -8,8 +8,8 @@ import privates.storages
 
 def create_stuf_services(apps, _):
     """
-    We're splitting the SoapService model into the SoapService model
-    and StufService model we want to create the proper StufService model instances
+    We're splitting the SoapService model into the SoapService model and StufService model
+    so we want to create the proper StufService model instances
     """
     SoapService = apps.get_model("stuf", "SoapService")
     StufService = apps.get_model("stuf", "StufService")
