@@ -32,9 +32,8 @@ class TestPluginAdmin(admin.ModelAdmin):
             {'name': 'ZGW API', 'test': zwgr.test_config()},
             {'name': 'StUF-ZDS', 'test': szr.test_config()},
             {'name': 'Objects API', 'test': oar.test_config()},
-            {'name': 'Email', 'test': er.test_config()},
-            {'name': 'Local', 'test': dfr.test_config()},
-        ]}
+            # {'name': 'Local', 'test': dfr.test_config()},
+        ], 'email': {'name': 'Email', 'test': er.test_config()},}
 
         return super(TestPluginAdmin, self).changelist_view(request, extra_context=context)
   

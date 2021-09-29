@@ -101,6 +101,6 @@ class ObjectsAPIRegistration(BasePlugin):
                 client['client'].retrieve(client['type'], client['client'].base_url)
                 # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
             except Exception as e:
-                test.append({'completed': False, 'error': config, 'msg': 'Iets ging fout', 'name': client['name']})
+                test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
 
         return test

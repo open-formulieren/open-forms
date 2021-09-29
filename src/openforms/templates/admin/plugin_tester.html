@@ -30,7 +30,6 @@
         }
         .plugin-table tr{
             width: 100%;
-            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
             {% comment %} display: flex;
@@ -44,6 +43,15 @@
         .plugin-table td{
             text-align: left;
             font-size: 18px;
+            padding-top:20px;
+        }
+        .email-test-btn{
+            width: 200px;
+            height: 40px;
+            border: 1px solid green;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 17px;
         }
     </style>
 
@@ -56,21 +64,26 @@
             </tr>
             {% for plugin in plugins %}
                 <tr>
-                    <td>{{plugin.name}}</td>
+                    <td><strong>{{plugin.name}}</strong></td>
                     {% if plugin.test|length == 0 %}
                         <td><i class="fa fa-check-circle" style="font-size:24px;color:green;"></i></td>
-                        <td>De plug-in werkt naar behoren</td>
+                        <td style="font-size:20px;color:green;">De plug-in werkt naar behoren</td>
                     {% else %}
-                        <td><i class="fa fa-times-circle" style="font-size:24px;color: red;"></i></td>
+                        <td><i class="fa fa-times-circle" style="font-size:24px;color:red;"></i></td>
                         <td>
                             {% for e in plugin.test %}
-                                <p style='margin-bottom:10px;color: orange;'><strong style='color:black;'>{{e.name}}:</strong>{{e.error}}</p>
+                                <p style='margin-bottom:10px;color: orange;'><strong style='color:black;padding-right:10px;'>{{e.name}}:</strong>{{e.error}}</p>
                             {% endfor %}
                         </td>
                     {% endif %}
                     </td>
                 </tr>
             {% endfor %}
+            <tr>
+                <td><strong>{{email.name}}</strong></td>
+                <td><a href='/admin/email/test/'><button class='email-test-btn'>Test Email Plugin</button></a></td>
+                <td style="font-size:20px">{{email.test.error}}</td>
+            </tr>
         </table>
     </div>
 

@@ -65,8 +65,6 @@ class EmailRegistration(BasePlugin):
         pass
 
     def test_config():
-        test = []
-
-        test.append({'completed': False, 'error': 'geen fout melding', 'msg': 'Iets ging fout', 'name': 'name'})
+        test = {'completed': True, 'error': 'Zie plugin test resultaat op de test email backend pagina'}
         
         return test

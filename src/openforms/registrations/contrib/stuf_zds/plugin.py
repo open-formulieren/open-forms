@@ -23,6 +23,9 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from .models import StufZDSConfig
 from stuf.models import SoapService
 from .client import StufZDSClient
+from stuf.constants import (
+    EndpointType,
+)
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -177,11 +180,13 @@ class StufZDSRegistration(BasePlugin):
     def test_config():
         test = []
         service = SoapService()
+        options = {'omschrijving': 'zaak omschrijving', 'referentienummer': '2637485'}
         
         config = StufZDSConfig.get_solo()
-        # client = StufZDSClient(service, config)
-        # client = config.get_client(Submission)
+        config.apply_defaults_to(options)
+        # client = config.get_client(options)
+        # context = client.create_document_identificatie()
 
-        test.append({'completed': False, 'error': config.stuf_zds_service, 'msg': 'Iets ging fout', 'name': 'name'})
+        test.append({'completed': False, 'error': 'In behandeling', 'msg': 'Iets ging fout', 'name': 'name'})
         
         return test
