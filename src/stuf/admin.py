@@ -17,13 +17,19 @@ class StufServiceAdminAdminForm(forms.ModelForm):
         fields = "__all__"
 
 
-class StufServiceInline(PrivateMediaMixin, admin.StackedInline):
+@admin.register(StufService)
+class StufServiceInline(PrivateMediaMixin, admin.ModelAdmin):
     private_media_fields = ("certificate", "certificate_key")
     private_media_view_options = {"attachment": True}
 
-    model = StufService
     form = StufServiceAdminAdminForm
     fieldsets = (
+        (
+            None,
+            {
+                "fields": ("soap_service", ),
+            },
+        ),
         (
             _("StUF parameters"),
             {
@@ -67,7 +73,6 @@ class StufServiceInline(PrivateMediaMixin, admin.StackedInline):
 
 @admin.register(SoapService)
 class SoapServiceAdmin(admin.ModelAdmin):
-    inlines = (StufServiceInline,)
 
     class Meta:
         model = SoapService

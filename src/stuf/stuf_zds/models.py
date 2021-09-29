@@ -18,7 +18,7 @@ class StufZDSConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "stuf.SoapService",
+        "stuf.StufService",
         on_delete=models.PROTECT,
         related_name="stuf_zds_config",
         null=True,
@@ -73,7 +73,7 @@ class StufZDSConfig(SingletonModel):
     def get_client(self, options):
         from .client import StufZDSClient
 
-        return StufZDSClient(self.service.stuf_service, options)
+        return StufZDSClient(self.service, options)
 
     class Meta:
         verbose_name = _("StUF-ZDS configuration")
