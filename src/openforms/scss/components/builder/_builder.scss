@@ -38,7 +38,9 @@ li.nav-item {
   }
 }
 
-.formio-dialog {
+.formio-dialog,
+.ck-body .ck.ck-balloon-panel
+{
   z-index: 10000000;
 }
 
