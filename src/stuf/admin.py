@@ -73,6 +73,9 @@ class StufServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
 @admin.register(SoapService)
 class SoapServiceAdmin(admin.ModelAdmin):
+    list_display = ('label', 'url',)
+    search_fields = ('label', 'url',)
+
     class Meta:
         model = SoapService
         fields = "__all__"

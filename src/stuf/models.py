@@ -22,6 +22,9 @@ class SoapService(models.Model):
         verbose_name = _("SOAP service")
         verbose_name_plural = _("SOAP services")
 
+    def __str__(self):
+        return self.label
+
 
 class StufService(models.Model):
 
