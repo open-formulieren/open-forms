@@ -76,7 +76,7 @@ const FormMetaFields = ({
                     errors={errors.name}
                     required
                 >
-                    <TextInput value={name} onChange={onChange} onBlur={setFormSlug} />
+                    <TextInput value={name} onChange={onChange} onBlur={setFormSlug} maxLength="150"/>
                 </Field>
             </FormRow>
             <FormRow>
@@ -86,7 +86,7 @@ const FormMetaFields = ({
                     helpText={<FormattedMessage defaultMessage="Internal name/title of the form" description="Form name field help text" />}
                     errors={errors.name}
                 >
-                    <TextInput value={internalName} onChange={onChange} />
+                    <TextInput value={internalName} onChange={onChange} maxLength="150"/>
                 </Field>
             </FormRow>
             <FormRow>
