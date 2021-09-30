@@ -5,8 +5,15 @@ BAG
 ===
 
 The BAG (Basisregistratie Adressen en Gebouwen) is a database from the
-`Kadaster`_ that can be accessed via the `BAG API`_. Open Forms can be
-configured to access this API to autocomplete addresses.
+`Kadaster`_ containing address inforamtion, that can be accessed via the 
+semi-public `BAG API`_. Open Forms can be configured to access this API to 
+autocomplete addresses.
+
+.. _`Kadaster`: https://www.kadaster.nl/
+
+
+Configuration
+=============
 
 1. Obtain a `BAG API key`_ from Kadaster.
 2. In Open Forms, navigate to: **Configuration** > **Services**
@@ -28,7 +35,15 @@ configured to access this API to autocomplete addresses.
 
 The BAG configuration is now completed.
 
-
-.. _`Kadaster`: https://www.kadaster.nl/
 .. _`BAG API`: https://bag.basisregistraties.overheid.nl/
 .. _`BAG API key`: https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-api-individuele-bevragingen
+
+
+Technical
+=========
+
+================  ===================
+API               Supported versions
+================  ===================
+BAG API           2.0
+================  ===================

@@ -19,13 +19,20 @@ information about the person filling out the form, based on the BSN.
    On the `Haal Centraal BRP bevragen API`_ Github, you can request credentials 
    for a test environment that uses an API key.
 
+.. _`Haal Centraal BRP bevragen API`: https://github.com/VNG-Realisatie/Haal-Centraal-BRP-bevragen
+.. _`Haal Centraal`: https://vng-realisatie.github.io/Haal-Centraal/
+
+
+Configuration
+=============
+
 1. Obtain credentials to access the Haal Centraal BRP bevragen API
 2. In Open Forms, navigate to: **Configuration** > **Services**
 3. Click **Add service** and fill in the following details:
 
    * **Label**: *Fill in a human readable label*, for example: ``My BRP API``
    * **Type**: ORC (Overige)
-   * **Api root url**: *URL provided by supplier*
+   * **API root URL**: *URL provided by supplier*
    * **Authorization type**: API key *(but can differ per supplier)*
    * **Header key**: Authorization
    * **Header value**: *The API key from step 1*
@@ -39,5 +46,12 @@ information about the person filling out the form, based on the BSN.
 
 The Haal Centraal configuration is now completed.
 
-.. _`Haal Centraal BRP bevragen API`: https://github.com/VNG-Realisatie/Haal-Centraal-BRP-bevragen
-.. _`Haal Centraal`: https://vng-realisatie.github.io/Haal-Centraal/
+
+Technical
+=========
+
+================  ===================
+API               Supported versions
+================  ===================
+BRP bevragen API  1.0
+================  ===================
