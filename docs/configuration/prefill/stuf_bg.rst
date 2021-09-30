@@ -4,15 +4,58 @@
 StUF-BG
 =======
 
-StUF-BG (StUF Basis Gegegevens) is a message standard that allows retrieving of
-personal information through a SOAP service from municipalities and government organisations.
-Open Forms can be configured to use this service to prefill personal data of
-the person filling out the form.
+`StUF-BG`_ (StUF Basis Gegegevens) is a message standard that allows retrieving 
+of personal information through a SOAP service from municipalities and 
+government organisations. Open Forms can be configured to use this service to 
+prefill personal data of the person filling out the form.
+
+.. _`StUF-BG`: https://www.gemmaonline.nl/index.php/Sectormodel_Basisgegevens:_StUF-BG
 
 .. note::
 
-   This service contains sensitive data and requires a connection to a specific
-   client system.
+   This service contains sensitive data and requires a connection to an 
+   external system, offered or maintained by a service provider.
+
+
+What does the Open Forms administator need?
+===========================================
+
+The values for these parameters should be provided to the Open Forms 
+administrator by the service provider.
+
+============================  =======================================================================================
+Parameter                     Description
+============================  =======================================================================================
+**Security**
+Public certificate            The certificate, used by the service, to identify itself for 2-way TLS.
+**SOAP services**         
+BeantwoordVraag endpoint      URL for the ``BeantwoordVraag`` SOAP-endpoint that Open Forms can access.
+**Stuurgegevens**             
+Ontvanger Organisatie         Name of the organization submissions are sent to.
+Ontvanger Applicatie          Name of the application submissions are sent to.
+============================  =======================================================================================
+
+
+What does the service provider need?
+====================================
+
+The values for these parameters should be provided to the service provider by 
+the Open Forms administrator.
+
+============================  =======================================================================================
+Parameter                     Description
+============================  =======================================================================================
+**Security**
+Public certificate            The certificate, used by Open Forms, to identify itself for 2-way TLS.
+IP address                    The IP address of the Open Forms server (optional, for whitelisting).
+**Stuurgegevens**
+Zender Organisatie            Typically the organization name but can be whatever the service provider configured.
+Zender Applicatie             Typically ``Open Forms`` but can be whatever the service provider configured.
+============================  =======================================================================================
+
+
+Configuration
+=============
 
 1. Obtain credentials and endpoint for StUF-ZDS from the client.
 2. In Open Forms, navigate to: **Configuration** > **SOAP Services**
@@ -50,3 +93,13 @@ the person filling out the form.
 
 
 The StUF-BG configuration is now completed.
+
+
+Technical
+=========
+
+================  ===================
+Service           Supported versions
+================  ===================
+StUF-BG           3.10  (``npsLv01``)
+================  ===================

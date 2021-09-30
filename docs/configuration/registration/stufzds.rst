@@ -4,14 +4,66 @@
 StUF-ZDS
 ========
 
-The StUF-ZDS (StUF Zaak- en Documentservices) is a SOAP based Zaak and 
-Documents backend. Open Forms can be configured to access this SOAP-service to 
+The `StUF-ZDS`_ (StUF Zaak- en Documentservices) is a SOAP based Zaak and 
+Documents service. Open Forms can be configured to access this SOAP-service to 
 register form submissions.
+
+.. _`StUF-ZDS`: https://www.gemmaonline.nl/index.php/Zaak-_en_Documentservices
 
 .. note::
 
-   This service contains sensitive data and requires a connection to a specific
-   client system.
+   This service contains sensitive data and requires a connection to an 
+   external system, offered or maintained by a service provider.
+
+
+What does the Open Forms administator need?
+===========================================
+
+The values for these parameters should be provided to the Open Forms 
+administrator by the service provider.
+
+============================  =======================================================================================
+Parameter                     Description
+============================  =======================================================================================
+**Security**
+Public certificate            The certificate, used by the service, to identify itself for 2-way TLS.
+**SOAP services**         
+BeantwoordVraag endpoint      URL for the ``BeantwoordVraag`` SOAP-endpoint that Open Forms can access.
+VrijeBerichten endpoint       URL for the ``VrijeBerichten`` SOAP-endpoint that Open Forms can access.
+OntvangAsynchroon endpoint    URL for the ``OntvangAsynchroon`` SOAP-endpoint that Open Forms can access.
+**Stuurgegevens**             
+Ontvanger Organisatie         Name of the organization submissions are sent to.
+Ontvanger Applicatie          Name of the application submissions are sent to.
+**ZDS**
+Gemeentecode                  4 digit code of the municipality.
+Zaaktype code                 Code of the (default) zaaktype.
+Zaaktype omschrijving         Description of the (default) zaaktype. Used as identifier if code does not match.
+Status code                   Code of the (default) initial status.
+Status omschrijving           Description of the (default) initial status. Used as identifier if code does not match.
+Documenttype omschrijving     Description of documenttype, used for the submission PDF.
+============================  =======================================================================================
+
+
+What does the service provider need?
+====================================
+
+The values for these parameters should be provided to the service provider by 
+the Open Forms administrator.
+
+============================  =======================================================================================
+Parameter                     Description
+============================  =======================================================================================
+**Security**
+Public certificate            The certificate, used by Open Forms, to identify itself for 2-way TLS.
+IP address                    The IP address of the Open Forms server (optional, for whitelisting).
+**Stuurgegevens**
+Zender Organisatie            Typically the organization name but can be whatever the service provider configured.
+Zender Applicatie             Typically ``Open Forms`` but can be whatever the service provider configured.
+============================  =======================================================================================
+
+
+Configuration
+=============
 
 1. Obtain credentials and endpoint for StUF-ZDS from the client.
 2. In Open Forms, navigate to: **Configuration** > **SOAP Services**
@@ -20,7 +72,7 @@ register form submissions.
    * **Label**: *Fill in a human readable label*, for example: ``My StUF-ZDS service``
 
 4. In the **StUF parameters** section enter the receiving details provided by 
-   the client. For the sending organiation details, you can fill in:
+   the service provider. For the sending organization details, you can fill in:
 
    * **Versturende applicatie**: Open Forms
 
@@ -50,3 +102,13 @@ register form submissions.
 
 The StUF-ZDS configuration is now complete and can be selected as registration 
 backend in the form builder.
+
+
+Technical
+=========
+
+================  ===================
+Service           Supported versions
+================  ===================
+StUF-ZDS          1.0 - 1.2
+================  ===================
