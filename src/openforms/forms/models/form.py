@@ -38,11 +38,11 @@ class Form(models.Model):
     """
 
     uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
-    name = models.CharField(_("name"), max_length=50)
+    name = models.CharField(_("name"), max_length=150)
     internal_name = models.CharField(
         _("internal name"),
         blank=True,
-        max_length=50,
+        max_length=150,
         help_text=_("internal name for management purposes"),
     )
     slug = AutoSlugField(
