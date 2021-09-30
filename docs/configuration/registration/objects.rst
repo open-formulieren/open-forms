@@ -6,14 +6,14 @@ Objects API
 
 The `Objects API`_ allows us to easily store and expose various objects
 according to the related objecttype resource in the Objecttypes API. Open Forms
-supports create objects in the Objects API when used with a specific 
+supports create objects in the Objects API when used with a specific
 *objecttype*, the so-called `ProductAanvraag objecttype`_.
 
-Open Forms can be configured to create an object of type ``ProductAanvraag`` to 
+Open Forms can be configured to create an object of type ``ProductAanvraag`` to
 register form submissions.
 
-Below is an example of the contents in the ``record.data`` attribute in the 
-Objects API. The top-level has meta-data about the form submission, and the 
+Below is an example of the contents in the ``record.data`` attribute in the
+Objects API. The top-level has meta-data about the form submission, and the
 ``data`` element holds the submitted form values:
 
 .. tabs::
@@ -75,6 +75,15 @@ Objects API. The top-level has meta-data about the form submission, and the
                "default": "",
                "examples": [
                  "111222333"
+               ]
+             },
+             "kvk": {
+               "$id": "#/properties/kvk",
+               "type": "string",
+               "title": "KVK-nummer van het bedrijf in het Handelsregister",
+               "default": "",
+               "examples": [
+                 "12345678"
                ]
              },
              "pdf_url": {

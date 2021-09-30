@@ -76,7 +76,6 @@ class ObjectsAPIBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
-            bsn="111222333",
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
@@ -226,7 +225,6 @@ class ObjectsAPIBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
-            bsn="111222333",
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
@@ -330,7 +328,7 @@ class ObjectsAPIBackendTests(TestCase):
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertDictEqual(object_create_body, expected_object_body)
 
-    def test_submission_with_objects_api_backend_attachments(self, m):
+    def test_submission_with_objects_api_backend_bsn(self, m):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -365,6 +363,262 @@ class ObjectsAPIBackendTests(TestCase):
                 "geboortedatum": "2000-12-31",
             },
             bsn="111222333",
+        )
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        expected_result = {
+            "url": "https://objecten.nl/api/v1/objects/1",
+            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+            "record": {
+                "index": 0,
+                "typeVersion": 1,
+                "data": {
+                    "data": submission.get_merged_data(),
+                    "type": "terugbelnotitie",
+                    "submission_id": str(submission.uuid),
+                    "attachments": [],
+                    "bsn": "111222333",
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                },
+                "geometry": {"type": "Point", "coordinates": [0, 0]},
+                "startAt": date.today().isoformat(),
+                "endAt": date.today().isoformat(),
+                "registrationAt": date.today().isoformat(),
+                "correctionFor": 0,
+                "correctedBy": "",
+            },
+        }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        result = plugin.register_submission(submission, {})
+
+        # Result is simply the created object
+        self.assertEqual(result, expected_result)
+
+        self.assertEqual(len(m.request_history), 4)
+
+        (
+            documenten_oas_get,
+            document_create,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        self.assertEqual(documenten_oas_get.method, "GET")
+        self.assertEqual(
+            documenten_oas_get.url,
+            "https://documenten.nl/api/v1/schema/openapi.yaml?v=3",
+        )
+
+        document_create_body = document_create.json()
+        self.assertEqual(document_create.method, "POST")
+        self.assertEqual(
+            document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(document_create_body["bronorganisatie"], "000000000")
+        self.assertEqual(
+            document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        )
+        self.assertNotIn("vertrouwelijkheidaanduiding", document_create_body)
+
+        self.assertEqual(objecten_oas_get.method, "GET")
+        self.assertEqual(
+            objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
+        )
+
+        expected_object_body = {
+            "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+            "record": {
+                "typeVersion": 1,
+                "data": {
+                    "data": submission.get_merged_data(),
+                    "type": "terugbelnotitie",
+                    "submission_id": str(submission.uuid),
+                    "attachments": [],
+                    "bsn": "111222333",
+                    "pdf_url": expected_document_result["url"],
+                },
+                "startAt": date.today().isoformat(),
+            },
+        }
+
+        object_create_body = object_create.json()
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
+        self.assertDictEqual(object_create_body, expected_object_body)
+
+    def test_submission_with_objects_api_backend_kvk(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            submitted_data={"voornaam": "Foo"},
+            kvk="11122233",
+        )
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        expected_result = {
+            "url": "https://objecten.nl/api/v1/objects/1",
+            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+            "record": {
+                "index": 0,
+                "typeVersion": 1,
+                "data": {
+                    "data": submission.get_merged_data(),
+                    "type": "terugbelnotitie",
+                    "submission_id": str(submission.uuid),
+                    "attachments": [],
+                    "kvk": "11122233",
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                },
+                "geometry": {"type": "Point", "coordinates": [0, 0]},
+                "startAt": date.today().isoformat(),
+                "endAt": date.today().isoformat(),
+                "registrationAt": date.today().isoformat(),
+                "correctionFor": 0,
+                "correctedBy": "",
+            },
+        }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        result = plugin.register_submission(submission, {})
+
+        # Result is simply the created object
+        self.assertEqual(result, expected_result)
+
+        self.assertEqual(len(m.request_history), 4)
+
+        (
+            documenten_oas_get,
+            document_create,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        self.assertEqual(documenten_oas_get.method, "GET")
+        self.assertEqual(
+            documenten_oas_get.url,
+            "https://documenten.nl/api/v1/schema/openapi.yaml?v=3",
+        )
+
+        document_create_body = document_create.json()
+        self.assertEqual(document_create.method, "POST")
+        self.assertEqual(
+            document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(document_create_body["bronorganisatie"], "000000000")
+        self.assertEqual(
+            document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        )
+        self.assertNotIn("vertrouwelijkheidaanduiding", document_create_body)
+
+        self.assertEqual(objecten_oas_get.method, "GET")
+        self.assertEqual(
+            objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
+        )
+
+        expected_object_body = {
+            "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+            "record": {
+                "typeVersion": 1,
+                "data": {
+                    "data": submission.get_merged_data(),
+                    "type": "terugbelnotitie",
+                    "submission_id": str(submission.uuid),
+                    "attachments": [],
+                    "kvk": "11122233",
+                    "pdf_url": expected_document_result["url"],
+                },
+                "startAt": date.today().isoformat(),
+            },
+        }
+
+        object_create_body = object_create.json()
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
+        self.assertDictEqual(object_create_body, expected_object_body)
+
+    def test_submission_with_objects_api_backend_attachments(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
         )
 
         attachment1 = SubmissionFileAttachmentFactory.create(

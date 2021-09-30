@@ -64,19 +64,27 @@ class ObjectsAPIRegistration(BasePlugin):
 
         objects_client = config.objects_service.build_client()
 
+        object_data = {
+            "data": submission.get_merged_data(),
+            "type": options["productaanvraag_type"],
+            "submission_id": str(submission.uuid),
+            "attachments": attachments,
+            "pdf_url": document["url"],
+        }
+
+        if submission.bsn:
+            object_data["bsn"] = submission.bsn
+
+        if submission.kvk:
+            object_data["kvk"] = submission.kvk
+
         created_object = objects_client.create(
             "object",
             {
                 "type": options["objecttype"],
                 "record": {
                     "typeVersion": options["objecttype_version"],
-                    "data": {
-                        "data": submission.get_merged_data(),
-                        "type": options["productaanvraag_type"],
-                        "submission_id": str(submission.uuid),
-                        "attachments": attachments,
-                        "pdf_url": document["url"],
-                    },
+                    "data": object_data,
                     "startAt": date.today().isoformat(),
                 },
             },
