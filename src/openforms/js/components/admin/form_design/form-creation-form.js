@@ -5,7 +5,7 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
+import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from '../../../utils/exception';
@@ -802,7 +802,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
             <Tabs>
                 <TabList>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('form')}>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
                     </Tab>
                     <Tab>
@@ -977,6 +977,36 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             }
         </ValidationErrorsProvider>
     );
+};
+
+
+const Tab = ({ hasErrors=false, children, ...props }) => {
+    const intl = useIntl();
+    const customProps = {
+        className: [
+            'react-tabs__tab',
+            {'react-tabs__tab--has-errors': hasErrors},
+        ]
+    };
+    const allProps = {...props, ...customProps};
+    const title = intl.formatMessage({
+        defaultMessage: 'There are validation errors',
+        description: 'Tab validation errors icon title',
+    });
+    return (
+        <ReactTab {...allProps}>
+            {children}
+            { hasErrors
+                ? <span className="fa fa-exclamation-circle" title={title} />
+                : null
+            }
+        </ReactTab>
+    );
+};
+Tab.tabsRole = 'Tab';
+
+Tab.propTypes = {
+    hasErrors: PropTypes.bool,
 };
 
 

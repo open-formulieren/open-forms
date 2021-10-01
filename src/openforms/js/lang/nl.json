@@ -499,6 +499,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "bRe/yq": {
+    "defaultMessage": "There are validation errors",
+    "description": "Tab validation errors icon title",
+    "originalDefault": "There are validation errors"
+  },
   "bzVhb6": {
     "defaultMessage": "Verplaats omhoog",
     "description": "Move up icon title",
