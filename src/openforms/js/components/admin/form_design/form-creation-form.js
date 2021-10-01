@@ -28,7 +28,11 @@ import {
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, saveLogicRules} from './data';
+import {
+    loadPlugins,
+    updateOrCreateFormSteps,
+    saveLogicRules,
+} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
@@ -320,6 +324,16 @@ function reducer(draft, action) {
                     }
                 }
             }
+            break;
+        }
+        case 'PROCESS_STEP_VALIDATION_ERRORS': {
+            const {step, errors} = action.payload;
+            const index = draft.formSteps.indexOf(step);
+            draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
+            if (!draft.tabsWithErrors.includes('form-steps')) {
+                draft.tabsWithErrors.push('form-steps');
+            }
+            draft.submitting = false;
             break;
         }
         /**
@@ -651,70 +665,29 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             }
         }
 
-        // Update/create form definitions and then form steps
-        for ( let index = 0; index < state.formSteps.length; index++) {
-            const step = state.formSteps[index];
-            try {
-                // First update/create the form definitions
-                const isNewFormDefinition = !!step.formDefinition;
-                const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
-                const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
+        try {
+            var stepValidationErrors = await updateOrCreateFormSteps(csrftoken, formUrl, state.formSteps);
+        } catch (e) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            window.scrollTo(0, 0);
+            return;
+        }
 
-                var definitionResponse = await definitionCreateOrUpdate(
-                    definitionEndpoint,
-                    csrftoken,
-                    {
-                        name: step.name,
-                        internalName: step.internalName,
-                        slug: step.slug,
-                        configuration: step.configuration,
-                        loginRequired: step.loginRequired,
-                        isReusable: step.isReusable,
-                    }
-                )
-                if (!definitionResponse.ok) {
-                    throw new FormException(
-                        'An error occurred while updating the form definitions',
-                        definitionResponse.data
-                    );
-                }
-
-                // Then update the form step
-                const stepCreateOrUpdate = step.url ? put : post;
-                const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${formUuid}/steps`;
-
-                var stepResponse = await stepCreateOrUpdate(
-                    stepEndpoint,
-                    csrftoken,
-                    {
-                        name: step.name,
-                        internalName: step.internalName,
-                        slug: step.slug,
-                        index: index,
-                        formDefinition: definitionResponse.data.url,
-                        literals: {
-                            nextText: {
-                                value: step.literals.nextText.value
-                            },
-                            saveText: {
-                                value: step.literals.saveText.value
-                            },
-                            previousText: {
-                                value: step.literals.previousText.value
-                            },
-                        }
-                    }
-                );
-                if (!stepResponse.ok) {
-                    throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
-                }
-            } catch (e) {
-                let formStepsErrors = new Array(state.formSteps.length);
-                formStepsErrors[index] = e.details;
-                dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
-                window.scrollTo(0, 0);
-                return;
-            }
+        // dispatch validation errors for errored steps so that they are displayed
+        const erroredSteps = stepValidationErrors.filter( erroredStep => !!erroredStep);
+        for (const erroredStep of erroredSteps) {
+            const {step, error} = erroredStep;
+            dispatch({
+                type: 'PROCESS_STEP_VALIDATION_ERRORS',
+                payload: {
+                    step: step,
+                    errors: error.errors,
+                },
+            });
+        }
+        // stop processing if there are errored steps
+        if (erroredSteps.length) {
+            return;
         }
 
         if (state.stepsToDelete.length) {
@@ -805,7 +778,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('form')}>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
                         <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
                     </Tab>
                     <Tab>
