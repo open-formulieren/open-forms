@@ -162,7 +162,7 @@ class StufZDSClient:
         logger.debug("SOAP-request:\n%s\n%s", url, request_data)
 
         try:
-            stuf_zds_request(self.service, url, request_data)
+            stuf_zds_request(self.service, url)
             response = requests.post(
                 url,
                 data=request_data,
@@ -182,9 +182,7 @@ class StufZDSClient:
                     self.options["referentienummer"],
                     parse_soap_error_text(response),
                 )
-                stuf_zds_failure_response(
-                    self.service, url, response_content=str(response.content)
-                )
+                stuf_zds_failure_response(self.service, url)
                 raise RegistrationFailed("error while making backend request")
             else:
                 logger.debug("SOAP-response:\n%s", response.content)
@@ -193,20 +191,18 @@ class StufZDSClient:
                 "bad request for referentienummer/submission '%s'",
                 self.options["referentienummer"],
             )
-            stuf_zds_failure_response(self.service, url, exception=str(e))
+            stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed("error while making backend request") from e
 
         try:
             xml = df_fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            stuf_zds_failure_response(
-                self.service, url, response_content=str(response.content)
-            )
+            stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        stuf_zds_success_response(self.service, url, str(response.content))
+        stuf_zds_success_response(self.service, url)
 
         return response, xml
 

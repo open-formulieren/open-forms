@@ -354,47 +354,41 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
 # - - -
 
 
-def stuf_zds_request(service: "StufService", url, request_data):
+def stuf_zds_request(service: "StufService", url):
     _create_log(
         service,
         "stuf_zds_request",
-        extra_data={"url": url, "request_data": request_data},
+        extra_data={"url": url},
     )
 
 
-def stuf_zds_success_response(service: "StufService", url, response_content):
+def stuf_zds_success_response(service: "StufService", url):
     _create_log(
         service,
         "stuf_zds_success_response",
-        extra_data={"url": url, "response_content": response_content},
+        extra_data={"url": url},
     )
 
 
-def stuf_zds_failure_response(
-    service: "StufService", url, response_content=None, exception=None
-):
+def stuf_zds_failure_response(service: "StufService", url):
     _create_log(
         service,
         "stuf_zds_failure_response",
-        extra_data={
-            "url": url,
-            "response_content": response_content,
-            "exception": exception,
-        },
+        extra_data={"url": url},
     )
 
 
-def stuf_bg_request(service: "StufService", url, request_data):
+def stuf_bg_request(service: "StufService", url):
     _create_log(
         service,
         "stuf_bg_request",
-        extra_data={"url": url, "request_data": request_data},
+        extra_data={"url": url},
     )
 
 
-def stuf_bg_response(service: "StufService", url, response_content):
+def stuf_bg_response(service: "StufService", url):
     _create_log(
         service,
         "stuf_bg_response",
-        extra_data={"url": url, "response_content": response_content},
+        extra_data={"url": url},
     )
