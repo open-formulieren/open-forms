@@ -60,7 +60,9 @@ class StufBGClient:
             auth=self.service.get_auth(),
         )
 
-        logger.debug("StUF BG client response.\nurl: %s\ndata: %s", url, response.content)
+        logger.debug(
+            "StUF BG client response.\nurl: %s\ndata: %s", url, response.content
+        )
         stuf_bg_response(self.service, url)
 
         return response
