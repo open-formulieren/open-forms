@@ -19,8 +19,7 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-
-from .models import StufZDSConfig
+from stuf.stuf_zds.models import StufZDSConfig
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):

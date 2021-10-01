@@ -21,3 +21,9 @@ class EndpointType(DjangoChoices):
 
 
 STUF_ZDS_EXPIRY_MINUTES = 5
+
+
+SOAP_VERSION_CONTENT_TYPES = {
+    SOAPVersion.soap11: "text/xml",
+    SOAPVersion.soap12: "application/soap+xml",
+}

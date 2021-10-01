@@ -12,15 +12,18 @@ import requests_mock
 from freezegun import freeze_time
 from lxml import etree
 
-from stuf.stuf_bg.constants import FieldChoices
-from stuf.stuf_bg.models import StufBGConfig
-from stuf.tests.factories import SoapServiceFactory
+from openforms.logging.models import TimelineLogProxy
+from stuf.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from stuf.tests.factories import StufServiceFactory
+
+from ..constants import FieldChoices
+from ..models import StufBGConfig
 
 
 class StufBGConfigTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.service = SoapServiceFactory.create()
+        self.service = StufServiceFactory.create()
         self.config = StufBGConfig.get_solo()
         self.config.service = self.service
         self.config.save()
@@ -34,7 +37,7 @@ class StufBGConfigTests(TestCase):
     def test_get_address(self, _mock):
         with requests_mock.Mocker() as m:
             m.post(
-                self.service.url,
+                self.service.soap_service.url,
                 content=bytes(
                     loader.render_to_string(
                         "stuf_bg/tests/responses/StufBgResponse.xml",
@@ -59,6 +62,10 @@ class StufBGConfigTests(TestCase):
             )
 
         self.assertEqual(m.last_request.method, "POST")
+        self.assertEqual(
+            m.last_request.headers["Content-Type"],
+            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap12),
+        )
 
         with open(
             f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
@@ -81,6 +88,18 @@ class StufBGConfigTests(TestCase):
                     f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
                     f"Error: {xmlschema.error_log.last_error.message}"
                 )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_bg_request.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_bg_request.txt"
+            ).count(),
+            1,
+        )
 
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.attributes.keys()

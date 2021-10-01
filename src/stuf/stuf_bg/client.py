@@ -7,8 +7,9 @@ from django.utils import dateformat, timezone
 
 import requests
 
-from stuf.constants import EndpointType
-from stuf.models import SoapService
+from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
+from stuf.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
+from stuf.models import StufService
 
 from .constants import STUF_BG_EXPIRY_MINUTES
 
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class StufBGClient:
-    def __init__(self, service: SoapService):
+    def __init__(self, service: StufService):
         self.service = service
 
     def _get_request_base_context(self):
@@ -42,14 +43,27 @@ class StufBGClient:
         }
 
     def _make_request(self, data):
+        url = self.service.get_endpoint(type=EndpointType.vrije_berichten)
+
+        logger.debug("StUF BG client request.\nurl: %s\ndata: %s", url, data)
+        stuf_bg_request(self.service, url)
 
         response = requests.post(
-            self.service.get_endpoint(type=EndpointType.vrije_berichten),
+            url,
             data=data,
-            headers={"Content-Type": "text/xml"},
+            headers={
+                "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
+                    self.service.soap_version
+                )
+            },
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),
         )
+
+        logger.debug(
+            "StUF BG client response.\nurl: %s\nresponse content: %s", url, response.content
+        )
+        stuf_bg_response(self.service, url)
 
         return response
 

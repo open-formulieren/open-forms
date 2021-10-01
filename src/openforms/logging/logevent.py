@@ -12,6 +12,7 @@ if TYPE_CHECKING:
         SubmissionPayment,
         SubmissionStep,
     )
+    from stuf.models import StufService
 
 logger = logging.getLogger(__name__)
 
@@ -347,4 +348,47 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
         "appointment_cancel_failure",
         plugin=plugin,
         error=error,
+    )
+
+
+# - - -
+
+
+def stuf_zds_request(service: "StufService", url):
+    _create_log(
+        service,
+        "stuf_zds_request",
+        extra_data={"url": url},
+    )
+
+
+def stuf_zds_success_response(service: "StufService", url):
+    _create_log(
+        service,
+        "stuf_zds_success_response",
+        extra_data={"url": url},
+    )
+
+
+def stuf_zds_failure_response(service: "StufService", url):
+    _create_log(
+        service,
+        "stuf_zds_failure_response",
+        extra_data={"url": url},
+    )
+
+
+def stuf_bg_request(service: "StufService", url):
+    _create_log(
+        service,
+        "stuf_bg_request",
+        extra_data={"url": url},
+    )
+
+
+def stuf_bg_response(service: "StufService", url):
+    _create_log(
+        service,
+        "stuf_bg_response",
+        extra_data={"url": url},
     )

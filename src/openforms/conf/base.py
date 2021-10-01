@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     "zgw_consumers",
     "stuf",
     "stuf.stuf_bg",
+    "stuf.stuf_zds",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
     "django_filters",
@@ -364,6 +365,11 @@ LOGGING = {
     },
     "loggers": {
         "openforms": {
+            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "stuf": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
             "level": "INFO",
             "propagate": True,

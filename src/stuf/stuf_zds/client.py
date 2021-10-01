@@ -16,15 +16,21 @@ from lxml.etree import Element
 from requests import RequestException, Response
 
 from openforms.config.models import GlobalConfiguration
+from openforms.logging.logevent import (
+    stuf_zds_failure_response,
+    stuf_zds_request,
+    stuf_zds_success_response,
+)
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 from stuf.constants import (
+    SOAP_VERSION_CONTENT_TYPES,
     STUF_ZDS_EXPIRY_MINUTES,
     EndpointSecurity,
     EndpointType,
     SOAPVersion,
 )
-from stuf.models import SoapService
+from stuf.models import StufService
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +90,7 @@ def xml_value(xml, xpath, namespaces=nsmap):
 
 
 class StufZDSClient:
-    def __init__(self, service: SoapService, options):
+    def __init__(self, service: StufService, options):
         """
         the options are the values from the ZaakOptionsSerializer plus 'omschrijving' and 'referentienummer'
         """
@@ -156,13 +162,14 @@ class StufZDSClient:
         logger.debug("SOAP-request:\n%s\n%s", url, request_data)
 
         try:
+            stuf_zds_request(self.service, url)
             response = requests.post(
                 url,
                 data=request_data,
                 headers={
-                    "Content-Type": "text/xml"
-                    if self.service.soap_version == SOAPVersion.soap11
-                    else "application/soap+xml",
+                    "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
+                        self.service.soap_version
+                    ),
                     "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
                 },
                 auth=self.service.get_auth(),
@@ -175,6 +182,7 @@ class StufZDSClient:
                     self.options["referentienummer"],
                     parse_soap_error_text(response),
                 )
+                stuf_zds_failure_response(self.service, url)
                 raise RegistrationFailed("error while making backend request")
             else:
                 logger.debug("SOAP-response:\n%s", response.content)
@@ -183,14 +191,18 @@ class StufZDSClient:
                 "bad request for referentienummer/submission '%s'",
                 self.options["referentienummer"],
             )
+            stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed("error while making backend request") from e
 
         try:
             xml = df_fromstring(response.content)
         except etree.XMLSyntaxError as e:
+            stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
+
+        stuf_zds_success_response(self.service, url)
 
         return response, xml
 

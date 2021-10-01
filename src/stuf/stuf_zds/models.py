@@ -18,7 +18,7 @@ class StufZDSConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "stuf.SoapService",
+        "stuf.StufService",
         on_delete=models.PROTECT,
         related_name="stuf_zds_config",
         null=True,

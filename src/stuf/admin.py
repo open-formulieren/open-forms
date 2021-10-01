@@ -5,29 +5,29 @@ from django.utils.translation import gettext_lazy as _
 
 from privates.admin import PrivateMediaMixin
 
-from .models import SoapService
+from .models import SoapService, StufService
 
 
-class SoapServiceAdminAdminForm(forms.ModelForm):
+class StufServiceAdminAdminForm(forms.ModelForm):
     class Meta:
-        model = SoapService
+        model = StufService
         widgets = {
             "password": PasswordInput(),
         }
         fields = "__all__"
 
 
-@admin.register(SoapService)
-class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
+@admin.register(StufService)
+class StufServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
     private_media_fields = ("certificate", "certificate_key")
     private_media_view_options = {"attachment": True}
 
-    form = SoapServiceAdminAdminForm
+    form = StufServiceAdminAdminForm
     fieldsets = (
         (
             None,
             {
-                "fields": ("label",),
+                "fields": ("soap_service",),
             },
         ),
         (
@@ -50,7 +50,6 @@ class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
             {
                 "fields": [
                     "soap_version",
-                    "url",
                     "endpoint_beantwoord_vraag",
                     "endpoint_vrije_berichten",
                     "endpoint_ontvang_asynchroon",
@@ -70,3 +69,19 @@ class SoapServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(SoapService)
+class SoapServiceAdmin(admin.ModelAdmin):
+    list_display = (
+        "label",
+        "url",
+    )
+    search_fields = (
+        "label",
+        "url",
+    )
+
+    class Meta:
+        model = SoapService
+        fields = "__all__"

@@ -12,7 +12,7 @@ class StufBGConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "stuf.SoapService",
+        "stuf.StufService",
         on_delete=models.PROTECT,
         related_name="+",
         null=True,
