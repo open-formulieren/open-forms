@@ -774,6 +774,11 @@
     "description": "Dates Component field help text",
     "originalDefault": "Component where dates for an appointment will be shown"
   },
+  "zUVGyl": {
+    "defaultMessage": "There are validation errors",
+    "description": "Step validation errors icon title",
+    "originalDefault": "There are validation errors"
+  },
   "zwBbGa": {
     "defaultMessage": "Veld waar de geboortedatum voor een afspraak komen te staan",
     "description": "Birth Date Component field help text",

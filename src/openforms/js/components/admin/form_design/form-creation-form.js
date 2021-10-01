@@ -10,6 +10,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from '../../../utils/exception';
 import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
+import FAIcon from '../FAIcon';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -113,6 +114,7 @@ const newStepData = {
         },
     },
     isNew: true,
+    validationErrors: [],
 };
 
 
@@ -162,6 +164,9 @@ function reducer(draft, action) {
         }
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = action.payload;
+            for (const step of draft.formSteps) {
+                step.validationErrors = [];
+            }
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -327,8 +332,7 @@ function reducer(draft, action) {
             break;
         }
         case 'PROCESS_STEP_VALIDATION_ERRORS': {
-            const {step, errors} = action.payload;
-            const index = draft.formSteps.indexOf(step);
+            const {index, errors} = action.payload;
             draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
             if (!draft.tabsWithErrors.includes('form-steps')) {
                 draft.tabsWithErrors.push('form-steps');
@@ -680,7 +684,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             dispatch({
                 type: 'PROCESS_STEP_VALIDATION_ERRORS',
                 payload: {
-                    step: step,
+                    index: state.formSteps.indexOf(step),
                     errors: error.errors,
                 },
             });
@@ -969,10 +973,7 @@ const Tab = ({ hasErrors=false, children, ...props }) => {
     return (
         <ReactTab {...allProps}>
             {children}
-            { hasErrors
-                ? <span className="fa fa-exclamation-circle" title={title} />
-                : null
-            }
+            { hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
         </ReactTab>
     );
 };
