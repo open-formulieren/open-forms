@@ -142,6 +142,11 @@ function reducer(draft, action) {
             switch (prefix) {
                 case 'form': {
                     draft.form[fieldName] = value;
+                    // remove any validation errors
+                    draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
+                    if (!draft.validationErrors.length && draft.tabsWithErrors.includes('form')) {
+                        draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form');
+                    }
                     break;
                 }
                 case 'literals': {
@@ -248,7 +253,14 @@ function reducer(draft, action) {
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps[index][name] = value;
+            const step = draft.formSteps[index];
+            step[name] = value;
+            step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
+
+            const anyStepHasErrors = draft.formSteps.some( step => step.validationErrors.length > 0);
+            if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
+                draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
+            }
             break;
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
