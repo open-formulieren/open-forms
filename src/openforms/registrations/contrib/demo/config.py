@@ -8,5 +8,5 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 class DemoOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     extra_line = serializers.CharField(
         label=_("Extra print statement"),
-        required=True,
+        required=False,
     )
