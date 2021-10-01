@@ -2,6 +2,18 @@ const fetchDefaults = {
     credentials: 'same-origin',  // required for Firefox 60, which is used in werkplekken
 };
 
+
+class ValidationErrors extends Error {
+    constructor(message, errors) {
+        super(message);
+        this.errors = errors;
+    }
+}
+Object.defineProperty(ValidationErrors.prototype, 'name', {
+    value: 'ValidationErrors',
+});
+
+
 const fetch = (url, opts) => {
     const options = Object.assign({}, fetchDefaults, opts);
     return window.fetch(url, options);
@@ -30,7 +42,7 @@ const get = async (url, params={}) => {
     }
 };
 
-const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
+const _unsafe = async (method = 'POST', url, csrftoken, data = {}, throwOn400=false) => {
     const opts = {
         method,
         headers: {
@@ -41,31 +53,34 @@ const _unsafe = async (method = 'POST', url, csrftoken, data = {}) => {
     };
     const response = await fetch(url, opts);
 
+    let responseData = null;
     // Check if the response contains json data
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
-        const responseData = await response.json();
-        return {
-            ok: response.ok,
-            status: response.status,
-            data: responseData,
-        };
+        responseData = await response.json();
+    }
+
+    if (response.status === 400 && throwOn400) {
+        throw new ValidationErrors(
+            'Call did not validate on the backend',
+            responseData.invalidParams,
+        );
     }
 
     return {
         ok: response.ok,
         status: response.status,
-        data: null,
+        data: responseData,
     };
 };
 
-const post = async (url, csrftoken, data = {}) => {
-    const resp = await _unsafe('POST', url, csrftoken, data);
+const post = async (url, csrftoken, data = {}, throwOn400=false) => {
+    const resp = await _unsafe('POST', url, csrftoken, data, throwOn400);
     return resp;
 };
 
-const put = async (url, csrftoken, data = {}) => {
-    const resp = await _unsafe('PUT', url, csrftoken, data);
+const put = async (url, csrftoken, data = {}, throwOn400=false) => {
+    const resp = await _unsafe('PUT', url, csrftoken, data, throwOn400);
     return resp;
 };
 
@@ -80,4 +95,5 @@ const apiDelete = async (url, csrftoken) => {
     return await fetch(url, opts);
 };
 
+export {ValidationErrors};
 export {get, post, put, apiDelete, apiCall};

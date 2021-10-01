@@ -9,11 +9,12 @@ import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from '../../../utils/exception';
-import {apiDelete, get, post, put} from '../../../utils/fetch';
+import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import SubmitRow from '../forms/SubmitRow';
+import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
@@ -86,6 +87,9 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
+    // backend error handling
+    validationErrors: [],
+    tabsWithErrors: [],
 };
 
 const newStepData = {
@@ -358,6 +362,24 @@ function reducer(draft, action) {
             break;
         }
         /**
+         * Validation error handling
+         */
+        case 'PROCESS_VALIDATION_ERRORS': {
+            const {tab, fieldPrefix, errors} = action.payload;
+            // process the errors with their field names
+            const prefixedErrors = errors.map( err => {
+                const key = `${fieldPrefix}.${err.name}`;
+                return [key, err.reason];
+            });
+            draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
+            // keep track of which tabs have errors
+            if (!draft.tabsWithErrors.includes(tab)) {
+                draft.tabsWithErrors.push(tab);
+            }
+            draft.submitting = false;
+            break;
+        }
+        /**
          * Misc
          */
         case 'SUBMIT_STARTED': {
@@ -604,23 +626,29 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
 
         try {
-            var formResponse = await createOrUpdate(
-                endPoint,
-                csrftoken,
-                formData,
-            );
-
+            var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
+            // unexpected error
             if (!formResponse.ok) {
-                throw new Error('An error occurred while saving the form.');
+                dispatch({type: 'SET_FETCH_ERRORS', payload: `Error ${formResponse.status} from backend`});
+                return;
             }
-            var formUuid = formResponse.data.uuid;
-            var formUrl = formResponse.data.url;
+            // ok, good to go
+            var {uuid: formUuid, url: formUrl} = formResponse.data;
             dispatch({type: 'FORM_CREATED', payload: formResponse.data});
-
         } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
-            window.scrollTo(0, 0);
-            return;
+            if (e instanceof ValidationErrors) {
+                dispatch({
+                    type: 'PROCESS_VALIDATION_ERRORS',
+                    payload: {
+                        tab: 'form',
+                        fieldPrefix: 'form',
+                        errors: e.errors,
+                    },
+                });
+                return;
+            } else {
+                throw e; // re-throw unchanged error, this is unexpected.
+            }
         }
 
         // Update/create form definitions and then form steps
@@ -758,7 +786,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const availableComponents = getFormComponents(state.formSteps);
 
     return (
-        <>
+        <ValidationErrorsProvider errors={state.validationErrors}>
             <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
 
             <h1>
@@ -811,7 +839,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         form={state.form}
                         literals={state.literals}
                         onChange={onFieldChange}
-                        errors={state.error}
                         availableAuthPlugins={state.availableAuthPlugins}
                         selectedAuthPlugins={state.selectedAuthPlugins}
                         onAuthPluginChange={onAuthPluginChange}
@@ -948,7 +975,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     />
                 </SubmitRow> : null
             }
-        </>
+        </ValidationErrorsProvider>
     );
 };
 

@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import { PrefixContext } from './Context';
+import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
 
 /**
