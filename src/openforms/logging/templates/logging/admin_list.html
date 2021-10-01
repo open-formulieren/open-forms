@@ -1,5 +1,10 @@
 {% extends "admin/base_site.html" %}
-{% load i18n timeline %}
+{% load i18n timeline static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+{% endblock %}
 
 
 {% block content %}
@@ -10,4 +15,19 @@
         </li>
     {% endfor %}
 </ul>
+
+{% if is_paginated %}
+    <div id="changelist">
+        <p class="paginator">
+            {% for i in paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <span class="this-page">{{ i }}</span>
+                {% else %}
+                    <a href="?page={{ i }}" class="end">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+            {{ paginator.count }} {% if paginator.count == 1 %}{% trans "timeline log entry" %}{% else %}{% trans "timeline log entries" %}{% endif %}
+        </p>
+    </div>
+{% endif %}
 {% endblock %}
