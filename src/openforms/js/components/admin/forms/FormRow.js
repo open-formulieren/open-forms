@@ -32,7 +32,7 @@ const FormRow = ({ fields=[], children }) => {
 
     const className = classNames(
         'form-row',
-        {'errors': hasErrors},
+        {'errors': processedChildren.length === 1 && hasErrors},
         ...fieldClasses,
     );
     return (
