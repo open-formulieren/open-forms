@@ -18,7 +18,8 @@ class DemoRegistration(BasePlugin):
 
     def register_submission(self, submission: Submission, options: dict) -> None:
         print(submission)
-        print(options["extra_line"])
+        if options.get("extra_line"):
+            print(options["extra_line"])
 
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
