@@ -42,19 +42,29 @@ the admin interface.
 10. Under *eCommerce*, tick the checkbox "I would like to receive transaction feedback
     parameters on the redirection URLs."
 
-11. Then, copy *All transaction submission modes > Security for request parameters >
+11. Under *Direct HTTP server-to-server request*
+
+   * Select the radio button *Online but switch to a deferred request when the online requests fail.*
+   * Switch back to the Open Forms admin to copy the value of **Feedback url**, return to the Ogone backoffice and paste it
+     into each of the two Ogone fields labelled "If the payment's status is.. "
+   * In the **Request method** radio group select the option *POST*
+
+12. Under *Dynamic e-Commerce parameters* clear everything from the select box except ``NCERROR``, ``PAYID``, ``ORDERID`` and ``STATUS``
+
+13. Then copy the value of *All transaction submission modes > Security for request parameters >
     SHA-OUT pass phrase* to the Ogone merchant **SHA-OUT passphrase** in the Open Forms
     admin interface.
 
-12. Back in the Open Forms admin interface, select a pre-defined
+14. Back in the Open Forms admin interface, select a pre-defined
     **Ogone endpoint** or enter a custom proxy URL, and save the configuration.
 
-13. Finally, copy the generated **Feedback url** and finalize the Ogone backoffice
+15. Finally, copy the generated **Feedback url** and finalize the Ogone backoffice
     configuration:
 
-    * Enable *All transaction submission modes > Security for request parameters > HTTP
-      request for status changes*
+    * For the radio buttons *All transaction submission modes > Security for request parameters > HTTP
+      request for status changes* select the options *For each offline status change (payment, cancellation, etc.)*
     * Enter the copied **Feedback url** in the field **"URL on which the merchant wishes
       to receive a deferred HTTP request, should the status of a transaction change offline."**
 
-14. Save the changes and verify that all configuration is correct.
+
+16. Save the changes and verify that all configuration is correct.
