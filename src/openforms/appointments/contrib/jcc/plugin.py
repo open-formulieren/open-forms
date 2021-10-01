@@ -173,8 +173,9 @@ class Plugin(BasePlugin):
                 clientLastName=client.last_name,
                 clientDateOfBirth=client.birthdate,
                 appStartTime=start_at,
-                appEndTime=start_at,  # Needed but unused by the service.
+                appEndTime=start_at,  # Required but unused by the service.
                 isClientVerified=False,
+                isRecurring=False,
                 # Optional fields.
                 # These might be needed. Depends on `GetRequiredClientFields`
                 #
