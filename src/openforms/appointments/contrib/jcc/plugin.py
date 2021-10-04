@@ -176,6 +176,8 @@ class Plugin(BasePlugin):
                 appEndTime=start_at,  # Required but unused by the service.
                 isClientVerified=False,
                 isRecurring=False,
+                # Phone number is often required, use mock if not there
+                clientTel=client.phonenumber or "0123456789",
                 # Optional fields.
                 # These might be needed. Depends on `GetRequiredClientFields`
                 #
@@ -186,7 +188,6 @@ class Plugin(BasePlugin):
                 # clientPostalCode="",
                 # clientCity="",
                 # clientCountry="",
-                clientTel=client.phonenumber or '0123456789',  # Phone number is often required, use mock if not there
                 # clientMail="",
                 appointmentDesc=remarks,
                 # caseID": "",

@@ -1,7 +1,8 @@
 import base64
 import io
+import re
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
@@ -36,6 +37,20 @@ def get_missing_fields_labels(
         else:
             labels.append(key)
     return sorted(labels)
+
+
+def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
+    """
+    Remove any character that isn't numeric or a space, +, or - character and
+    only accept 16 characters
+    """
+    if not phone_number:
+        return
+
+    phone_number = re.sub("[^- +0-9]", "", phone_number)
+
+    # Ensure at most 16 characters are returned
+    return phone_number[:16]
 
 
 def book_appointment_for_submission(submission: Submission) -> None:
@@ -105,7 +120,9 @@ def book_appointment_for_submission(submission: Submission) -> None:
         birthdate=datetime.strptime(
             appointment_data["clientDateOfBirth"]["value"], "%Y-%m-%d"
         ).date(),
-        phonenumber=appointment_data.get('clientPhoneNumber')
+        phonenumber=get_formatted_phone_number(
+            appointment_data.get("clientPhoneNumber")
+        ),
     )
     start_at = datetime.strptime(
         appointment_data["appStartTime"]["value"], "%Y-%m-%dT%H:%M:%S%z"
