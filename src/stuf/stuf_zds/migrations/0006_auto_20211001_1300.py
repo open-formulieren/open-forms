@@ -17,6 +17,9 @@ def migrate_services(apps, _):
     except StufZDSConfig.DoesNotExist:
         # This config has not been created, no need to migrate anything
         pass
+    except StufService.DoesNotExist:
+        # There was no service, no need to migrate anything
+        pass
 
 
 class Migration(migrations.Migration):
