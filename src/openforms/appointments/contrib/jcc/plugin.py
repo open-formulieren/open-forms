@@ -186,7 +186,7 @@ class Plugin(BasePlugin):
                 # clientPostalCode="",
                 # clientCity="",
                 # clientCountry="",
-                # clientTel="",
+                clientTel=client.phonenumber or '0123456789',  # Phone number is often required, use mock if not there
                 # clientMail="",
                 appointmentDesc=remarks,
                 # caseID": "",
