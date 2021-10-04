@@ -7,5 +7,7 @@ Authentication plugins
 .. toctree::
    :maxdepth: 1
 
-   oidc
+   oidc_admin
+   oidc_digid
+   oidc_eherkenning
 
