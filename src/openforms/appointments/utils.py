@@ -105,6 +105,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         birthdate=datetime.strptime(
             appointment_data["clientDateOfBirth"]["value"], "%Y-%m-%d"
         ).date(),
+        phonenumber=appointment_data.get('clientPhoneNumber')
     )
     start_at = datetime.strptime(
         appointment_data["appStartTime"]["value"], "%Y-%m-%dT%H:%M:%S%z"
