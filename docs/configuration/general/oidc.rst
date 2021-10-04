@@ -1,4 +1,4 @@
-.. _configuration_authentication_oidc:
+.. _configuration_authentication_oidc_admin:
 
 ==============
 OpenID Connect
