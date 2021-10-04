@@ -61,7 +61,9 @@ class StufBGClient:
         )
 
         logger.debug(
-            "StUF BG client response.\nurl: %s\nresponse content: %s", url, response.content
+            "StUF BG client response.\nurl: %s\nresponse content: %s",
+            url,
+            response.content,
         )
         stuf_bg_response(self.service, url)
 
