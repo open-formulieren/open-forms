@@ -84,6 +84,8 @@ class OgoneTests(TestCase):
         ogone_params = {
             "ORDERID": payment.order_id,
             "STATUS": OgoneStatus.payment_requested,
+            "GIROPAY_ACCOUNT_NUMBER": "1",  # hashed but not interesting
+            "UNKNOWN_PARAM": "1",  # not hashed
         }
         ogone_params["SHASIGN"] = calculate_sha_out(
             ogone_params, merchant.sha_out_passphrase, merchant.hash_algorithm

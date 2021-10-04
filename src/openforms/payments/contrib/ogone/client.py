@@ -62,12 +62,14 @@ class OgoneClient:
         return info
 
     def get_validated_params(self, value_dict) -> OgoneFeedbackParams:
-        params = OgoneFeedbackParams.from_dict(value_dict)
+        # for verification check all incoming params
         sign = calculate_sha_out(
-            params.get_dict(),
+            value_dict,
             self.merchant.sha_out_passphrase,
             self.merchant.hash_algorithm,
         )
-        if sign != params.SHASIGN:
+        if sign != value_dict.get("SHASIGN"):
             raise InvalidSignature("shasign mismatch")
+
+        params = OgoneFeedbackParams.from_dict(value_dict)
         return params
