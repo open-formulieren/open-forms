@@ -74,3 +74,20 @@ li.nav-item {
 .builder-sidebar_scroll {
   top: 100px;
 }
+
+// bootstrap competing with django admin form styling...
+:not([ref="editForm"]) {
+
+  .form-row {
+    &, * {
+      box-sizing: initial;
+    }
+  }
+
+  .form-row {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+}

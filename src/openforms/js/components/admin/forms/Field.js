@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import { PrefixContext } from './Context';
+import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
 
 /**
@@ -27,13 +27,14 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children, 
     const hasErrors = Boolean(errors && errors.length);
     const className = classNames(
         {'fieldBox': fieldBox},
-        {'has-errors': hasErrors},
+        {'errors': hasErrors},
     );
 
     return (
         <>
-            { hasErrors ? <ErrorList>{errors}</ErrorList> : null }
+            { !fieldBox && hasErrors ? <ErrorList>{errors}</ErrorList> : null }
             <div className={className}>
+                { fieldBox && hasErrors ? <ErrorList>{errors}</ErrorList> : null }
                 <label className={ required ? 'required': '' } htmlFor={htmlFor}>{label}</label>
                 {modifiedChildren}
                 { helpText ? <div className="help">{helpText}</div> : null }

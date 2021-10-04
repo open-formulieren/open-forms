@@ -671,6 +671,12 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "bRe/yq": [
+    {
+      "type": 0,
+      "value": "There are validation errors"
+    }
+  ],
   "bzVhb6": [
     {
       "type": 0,
@@ -997,6 +1003,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare datums voor een afspraak komen te staan"
+    }
+  ],
+  "zUVGyl": [
+    {
+      "type": 0,
+      "value": "There are validation errors"
     }
   ],
   "zwBbGa": [

@@ -19,7 +19,6 @@ import AuthPluginField from './AuthPluginField';
 const FormMetaFields = ({
     form,
     onChange,
-    errors={},
     availableAuthPlugins,
     selectedAuthPlugins,
     onAuthPluginChange
@@ -62,7 +61,6 @@ const FormMetaFields = ({
                     name="form.uuid"
                     label={<FormattedMessage defaultMessage="ID" description="Form ID field label" />}
                     helpText={<FormattedMessage defaultMessage="Unique identifier for the form" description="Form ID field help text" />}
-                    errors={errors.uuid}
                     required
                 >
                     <TextInput value={uuid} onChange={onChange} disabled={true}/>
@@ -73,7 +71,6 @@ const FormMetaFields = ({
                     name="form.name"
                     label={<FormattedMessage defaultMessage="Name" description="Form name field label" />}
                     helpText={<FormattedMessage defaultMessage="Name/title of the form" description="Form name field help text" />}
-                    errors={errors.name}
                     required
                 >
                     <TextInput value={name} onChange={onChange} onBlur={setFormSlug} maxLength="150"/>
@@ -84,7 +81,6 @@ const FormMetaFields = ({
                     name="form.internalName"
                     label={<FormattedMessage defaultMessage="Internal name" description="Form name field label" />}
                     helpText={<FormattedMessage defaultMessage="Internal name/title of the form" description="Form name field help text" />}
-                    errors={errors.name}
                 >
                     <TextInput value={internalName} onChange={onChange} maxLength="150"/>
                 </Field>
@@ -94,7 +90,6 @@ const FormMetaFields = ({
                     name="form.slug"
                     label={<FormattedMessage defaultMessage="Slug" description="Form slug field label" />}
                     helpText={<FormattedMessage defaultMessage="Slug of the form, used in URLs" description="Form slug field help text" />}
-                    errors={errors.slug}
                     required
                 >
                     <TextInput value={slug} onChange={onChange} />
@@ -106,7 +101,6 @@ const FormMetaFields = ({
                     availableAuthPlugins={availableAuthPlugins}
                     selectedAuthPlugins={selectedAuthPlugins}
                     onChange={onAuthPluginChange}
-                    errors={errors.authPlugins}
                 />
             </FormRow>
 
@@ -116,7 +110,6 @@ const FormMetaFields = ({
                     label={<FormattedMessage defaultMessage="Show progress indicator" description="Progress indicator field label" />}
                     helpText={<FormattedMessage defaultMessage="Whether the step progression should be displayed in the UI or not." description="Progress indicator help text" />}
                     checked={showProgressIndicator}
-                    errors={errors.showProgressIndicator}
                     onChange={(event) => onCheckboxChange(event, showProgressIndicator)}
                 />
             </FormRow>
@@ -126,7 +119,6 @@ const FormMetaFields = ({
                     label={<FormattedMessage defaultMessage="Active" description="Form active field label" />}
                     helpText={<FormattedMessage defaultMessage="Whether the form is active or not. Deactivated forms cannot be started." description="Form active field help text" />}
                     checked={active}
-                    errors={errors.active}
                     onChange={(event) => onCheckboxChange(event, active)}
                 />
             </FormRow>
@@ -136,7 +128,6 @@ const FormMetaFields = ({
                     label={<FormattedMessage defaultMessage="Is deleted" description="Form deleted field label" />}
                     helpText={<FormattedMessage defaultMessage="Whether the form is (soft) deleted" description="Form deleted field help text" />}
                     checked={isDeleted}
-                    errors={errors.isDeleted}
                     onChange={(event) => onCheckboxChange(event, isDeleted)}
                 />
             </FormRow>
@@ -146,7 +137,6 @@ const FormMetaFields = ({
                     label={<FormattedMessage defaultMessage="Maintenance mode" description="Form maintenance mode field label" />}
                     helpText={<FormattedMessage defaultMessage="Users will not be able to start the form if it is in maintenance mode." description="Form maintenance mode field help text" />}
                     checked={maintenanceMode}
-                    errors={errors.maintenanceMode}
                     onChange={(event) => onCheckboxChange(event, maintenanceMode)}
                 />
             </FormRow>
@@ -156,7 +146,6 @@ const FormMetaFields = ({
                     label={<FormattedMessage defaultMessage="Submit button enabled" description="Form canSubmit field label" />}
                     helpText={<FormattedMessage defaultMessage="If checked, the user can submit the form. Uncheck this for 'decision' trees." description="Form canSubmit field help text" />}
                     checked={canSubmit}
-                    errors={errors.canSubmit}
                     onChange={(event) => onCheckboxChange(event, canSubmit)}
                 />
             </FormRow>

@@ -16,5 +16,15 @@
       border-radius: 0;
       border-color: $color_secondary_dark;
     }
+
+    &--has-errors {
+      .fa {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: $color-error;
+        transform: translate(40%, -40%);
+      }
+    }
   }
 }

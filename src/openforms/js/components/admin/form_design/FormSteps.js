@@ -5,6 +5,7 @@ import {FormattedMessage} from 'react-intl';
 
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
+import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
 
 
@@ -40,14 +41,16 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDe
             <div className="edit-panel__edit-area">
                 { activeStep
                     ? (
-                        <FormStep
-                            data={activeStep}
-                            onEdit={onEdit.bind(null, activeStepIndex)}
-                            onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-                            onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
-                            onReplace={onReplace.bind(null, activeStepIndex)}
-                            errors={errors.length ? errors[activeStepIndex] : {}}
-                        />
+                        <ValidationErrorsProvider errors={activeStep.validationErrors}>
+                            <FormStep
+                                data={activeStep}
+                                onEdit={onEdit.bind(null, activeStepIndex)}
+                                onFieldChange={onFieldChange.bind(null, activeStepIndex)}
+                                onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
+                                onReplace={onReplace.bind(null, activeStepIndex)}
+                                errors={errors.length ? errors[activeStepIndex] : {}}
+                            />
+                        </ValidationErrorsProvider>
                     )
                     : (
                         <FormattedMessage
@@ -71,6 +74,7 @@ FormSteps.propTypes = {
         slug: PropTypes.string,
         url: PropTypes.string,
         isNew: PropTypes.bool,
+        validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     })),
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,

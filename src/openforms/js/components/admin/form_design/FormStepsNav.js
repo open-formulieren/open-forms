@@ -7,7 +7,7 @@ import FAIcon from '../FAIcon';
 import DeleteIcon from '../DeleteIcon';
 
 
-const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }) => {
+const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete, hasErrors=false }) => {
     const intl = useIntl();
     const className = classNames(
         'list__item',
@@ -20,6 +20,11 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }
         defaultMessage: 'Are you sure you want to delete the step {step}?'
     }, {
         step: name,
+    });
+
+    const iconTitle = intl.formatMessage({
+        description: 'Step validation errors icon title',
+        defaultMessage: 'There are validation errors',
     });
 
     return (
@@ -39,6 +44,10 @@ const FormStepNavItem = ({ name, active=false, onActivate, onReorder, onDelete }
                 />
             </div>
             <button type="button" onClick={onActivate} className="button button--plain">
+                { hasErrors
+                    ? (<FAIcon icon="exclamation-circle" title={iconTitle} extraClassname="icon icon--danger" />)
+                    : null
+                }
                 {name}
             </button>
             <div className="actions">
@@ -57,6 +66,7 @@ FormStepNavItem.propTypes = {
     onActivate: PropTypes.func.isRequired,
     onReorder: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    hasErrors: PropTypes.bool,
 };
 
 
@@ -83,6 +93,7 @@ const FormStepsNav = ({ steps=[], active=null, onActivateStep, onReorder, onDele
                                 )
                                 : step.name
                             }
+                            hasErrors={step.validationErrors.length > 0}
                             active={Boolean(active && step.index === steps.indexOf(active))}
                             onActivate={ () => onActivateStep(index) }
                             onReorder={onReorder.bind(null, index)}

@@ -9,11 +9,9 @@ const ErrorList = ({ children }) => {
     if (!errors) return null;
 
     return (
-        <div className="errors">
-            <ul className="errorlist">
-                {errors}
-            </ul>
-        </div>
+        <ul className="errorlist">
+            {errors}
+        </ul>
     );
 };
 

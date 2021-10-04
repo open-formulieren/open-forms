@@ -499,6 +499,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "bRe/yq": {
+    "defaultMessage": "There are validation errors",
+    "description": "Tab validation errors icon title",
+    "originalDefault": "There are validation errors"
+  },
   "bzVhb6": {
     "defaultMessage": "Move up",
     "description": "Move up icon title",
@@ -768,6 +773,11 @@
     "defaultMessage": "Component where dates for an appointment will be shown",
     "description": "Dates Component field help text",
     "originalDefault": "Component where dates for an appointment will be shown"
+  },
+  "zUVGyl": {
+    "defaultMessage": "There are validation errors",
+    "description": "Step validation errors icon title",
+    "originalDefault": "There are validation errors"
   },
   "zwBbGa": {
     "defaultMessage": "Component where birth date for an appointment will be shown",

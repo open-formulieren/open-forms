@@ -5,15 +5,17 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
+import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormException} from '../../../utils/exception';
-import {apiDelete, get, post, put} from '../../../utils/fetch';
+import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
+import FAIcon from '../FAIcon';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import SubmitRow from '../forms/SubmitRow';
+import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
 import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
@@ -27,7 +29,11 @@ import {
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
 } from './constants';
-import {loadPlugins, saveLogicRules} from './data';
+import {
+    loadPlugins,
+    updateOrCreateFormSteps,
+    saveLogicRules,
+} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
@@ -86,6 +92,9 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
+    // backend error handling
+    validationErrors: [],
+    tabsWithErrors: [],
 };
 
 const newStepData = {
@@ -105,6 +114,7 @@ const newStepData = {
         },
     },
     isNew: true,
+    validationErrors: [],
 };
 
 
@@ -132,6 +142,11 @@ function reducer(draft, action) {
             switch (prefix) {
                 case 'form': {
                     draft.form[fieldName] = value;
+                    // remove any validation errors
+                    draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
+                    if (!draft.validationErrors.length && draft.tabsWithErrors.includes('form')) {
+                        draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form');
+                    }
                     break;
                 }
                 case 'literals': {
@@ -154,6 +169,9 @@ function reducer(draft, action) {
         }
         case 'FORM_STEPS_LOADED': {
             draft.formSteps = action.payload;
+            for (const step of draft.formSteps) {
+                step.validationErrors = [];
+            }
             break;
         }
         case 'TOGGLE_AUTH_PLUGIN': {
@@ -235,7 +253,14 @@ function reducer(draft, action) {
         }
         case 'STEP_FIELD_CHANGED': {
             const {index, name, value} = action.payload;
-            draft.formSteps[index][name] = value;
+            const step = draft.formSteps[index];
+            step[name] = value;
+            step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
+
+            const anyStepHasErrors = draft.formSteps.some( step => step.validationErrors.length > 0);
+            if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
+                draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
+            }
             break;
         }
         case 'STEP_LITERAL_FIELD_CHANGED': {
@@ -318,6 +343,15 @@ function reducer(draft, action) {
             }
             break;
         }
+        case 'PROCESS_STEP_VALIDATION_ERRORS': {
+            const {index, errors} = action.payload;
+            draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
+            if (!draft.tabsWithErrors.includes('form-steps')) {
+                draft.tabsWithErrors.push('form-steps');
+            }
+            draft.submitting = false;
+            break;
+        }
         /**
          * Form Logic rules actions
          */
@@ -355,6 +389,24 @@ function reducer(draft, action) {
 
             // clear the state of rules to delete, as they have been deleted
             draft.logicRulesToDelete = [];
+            break;
+        }
+        /**
+         * Validation error handling
+         */
+        case 'PROCESS_VALIDATION_ERRORS': {
+            const {tab, fieldPrefix, errors} = action.payload;
+            // process the errors with their field names
+            const prefixedErrors = errors.map( err => {
+                const key = `${fieldPrefix}.${err.name}`;
+                return [key, err.reason];
+            });
+            draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
+            // keep track of which tabs have errors
+            if (!draft.tabsWithErrors.includes(tab)) {
+                draft.tabsWithErrors.push(tab);
+            }
+            draft.submitting = false;
             break;
         }
         /**
@@ -604,89 +656,54 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
 
         try {
-            var formResponse = await createOrUpdate(
-                endPoint,
-                csrftoken,
-                formData,
-            );
-
+            var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
+            // unexpected error
             if (!formResponse.ok) {
-                throw new Error('An error occurred while saving the form.');
+                dispatch({type: 'SET_FETCH_ERRORS', payload: `Error ${formResponse.status} from backend`});
+                return;
             }
-            var formUuid = formResponse.data.uuid;
-            var formUrl = formResponse.data.url;
+            // ok, good to go
+            var {uuid: formUuid, url: formUrl} = formResponse.data;
             dispatch({type: 'FORM_CREATED', payload: formResponse.data});
-
         } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
+            if (e instanceof ValidationErrors) {
+                dispatch({
+                    type: 'PROCESS_VALIDATION_ERRORS',
+                    payload: {
+                        tab: 'form',
+                        fieldPrefix: 'form',
+                        errors: e.errors,
+                    },
+                });
+                return;
+            } else {
+                throw e; // re-throw unchanged error, this is unexpected.
+            }
+        }
+
+        try {
+            var stepValidationErrors = await updateOrCreateFormSteps(csrftoken, formUrl, state.formSteps);
+        } catch (e) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
             window.scrollTo(0, 0);
             return;
         }
 
-        // Update/create form definitions and then form steps
-        for ( let index = 0; index < state.formSteps.length; index++) {
-            const step = state.formSteps[index];
-            try {
-                // First update/create the form definitions
-                const isNewFormDefinition = !!step.formDefinition;
-                const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
-                const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
-
-                var definitionResponse = await definitionCreateOrUpdate(
-                    definitionEndpoint,
-                    csrftoken,
-                    {
-                        name: step.name,
-                        internalName: step.internalName,
-                        slug: step.slug,
-                        configuration: step.configuration,
-                        loginRequired: step.loginRequired,
-                        isReusable: step.isReusable,
-                    }
-                )
-                if (!definitionResponse.ok) {
-                    throw new FormException(
-                        'An error occurred while updating the form definitions',
-                        definitionResponse.data
-                    );
-                }
-
-                // Then update the form step
-                const stepCreateOrUpdate = step.url ? put : post;
-                const stepEndpoint = step.url ? step.url : `${FORM_ENDPOINT}/${formUuid}/steps`;
-
-                var stepResponse = await stepCreateOrUpdate(
-                    stepEndpoint,
-                    csrftoken,
-                    {
-                        name: step.name,
-                        internalName: step.internalName,
-                        slug: step.slug,
-                        index: index,
-                        formDefinition: definitionResponse.data.url,
-                        literals: {
-                            nextText: {
-                                value: step.literals.nextText.value
-                            },
-                            saveText: {
-                                value: step.literals.saveText.value
-                            },
-                            previousText: {
-                                value: step.literals.previousText.value
-                            },
-                        }
-                    }
-                );
-                if (!stepResponse.ok) {
-                    throw new FormException('An error occurred while updating the form steps.', stepResponse.data);
-                }
-            } catch (e) {
-                let formStepsErrors = new Array(state.formSteps.length);
-                formStepsErrors[index] = e.details;
-                dispatch({type: 'SET_FETCH_ERRORS', payload: {formSteps: formStepsErrors}});
-                window.scrollTo(0, 0);
-                return;
-            }
+        // dispatch validation errors for errored steps so that they are displayed
+        const erroredSteps = stepValidationErrors.filter( erroredStep => !!erroredStep);
+        for (const erroredStep of erroredSteps) {
+            const {step, error} = erroredStep;
+            dispatch({
+                type: 'PROCESS_STEP_VALIDATION_ERRORS',
+                payload: {
+                    index: state.formSteps.indexOf(step),
+                    errors: error.errors,
+                },
+            });
+        }
+        // stop processing if there are errored steps
+        if (erroredSteps.length) {
+            return;
         }
 
         if (state.stepsToDelete.length) {
@@ -758,7 +775,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     const availableComponents = getFormComponents(state.formSteps);
 
     return (
-        <>
+        <ValidationErrorsProvider errors={state.validationErrors}>
             <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
 
             <h1>
@@ -774,10 +791,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
             <Tabs>
                 <TabList>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('form')}>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
                         <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
                     </Tab>
                     <Tab>
@@ -811,7 +828,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         form={state.form}
                         literals={state.literals}
                         onChange={onFieldChange}
-                        errors={state.error}
                         availableAuthPlugins={state.availableAuthPlugins}
                         selectedAuthPlugins={state.selectedAuthPlugins}
                         onAuthPluginChange={onAuthPluginChange}
@@ -948,8 +964,35 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     />
                 </SubmitRow> : null
             }
-        </>
+        </ValidationErrorsProvider>
     );
+};
+
+
+const Tab = ({ hasErrors=false, children, ...props }) => {
+    const intl = useIntl();
+    const customProps = {
+        className: [
+            'react-tabs__tab',
+            {'react-tabs__tab--has-errors': hasErrors},
+        ]
+    };
+    const allProps = {...props, ...customProps};
+    const title = intl.formatMessage({
+        defaultMessage: 'There are validation errors',
+        description: 'Tab validation errors icon title',
+    });
+    return (
+        <ReactTab {...allProps}>
+            {children}
+            { hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
+        </ReactTab>
+    );
+};
+Tab.tabsRole = 'Tab';
+
+Tab.propTypes = {
+    hasErrors: PropTypes.bool,
 };
 
 

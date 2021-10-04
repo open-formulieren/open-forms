@@ -667,6 +667,12 @@
       "value": "Login required?"
     }
   ],
+  "bRe/yq": [
+    {
+      "type": 0,
+      "value": "There are validation errors"
+    }
+  ],
   "bzVhb6": [
     {
       "type": 0,
@@ -993,6 +999,12 @@
     {
       "type": 0,
       "value": "Component where dates for an appointment will be shown"
+    }
+  ],
+  "zUVGyl": [
+    {
+      "type": 0,
+      "value": "There are validation errors"
     }
   ],
   "zwBbGa": [
