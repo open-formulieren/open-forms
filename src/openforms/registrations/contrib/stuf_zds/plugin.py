@@ -185,7 +185,11 @@ class StufZDSRegistration(BasePlugin):
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
         # client = config.get_client(options)
+        # client = StufZDSClient(service, options)
         # context = client.create_document_identificatie()
+
+
+        # print('coonntteexxxtt', context)
 
         test.append({'completed': False, 'error': 'In behandeling', 'msg': 'Iets ging fout', 'name': 'name'})
         

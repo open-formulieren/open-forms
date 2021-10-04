@@ -95,7 +95,6 @@ class ObjectsAPIRegistration(BasePlugin):
         clients = [{'name': 'ORC (Overige)', 'type': 'object', 'client': orc_client},
                    {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': drc_client},
                 ]
-
         for client in clients:
             try:
                 client['client'].retrieve(client['type'], client['client'].base_url)
