@@ -41,15 +41,14 @@ def get_missing_fields_labels(
 
 def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
     """
-    Remove any character that isn't numeric or a space, +, or - character and
-    only accept 16 characters
+    Remove any character that isn't numeric or a space, +, or - character
+    and return max 16 characters
     """
     if not phone_number:
         return
 
     phone_number = re.sub("[^- +0-9]", "", phone_number)
 
-    # Ensure at most 16 characters are returned
     return phone_number[:16]
 
 

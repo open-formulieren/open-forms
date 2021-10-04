@@ -249,6 +249,11 @@ class TestSubmission(TestCase):
                         "label": "Date of Birth",
                     },
                     {
+                        "key": "phoneNumber",
+                        "appointments": {"phoneNumber": True},
+                        "label": "Phone Number",
+                    },
+                    {
                         "key": "randomAttribute",
                         "appointments": {"birthDate": False},
                         "label": "Random attribute",
@@ -277,6 +282,7 @@ class TestSubmission(TestCase):
             data={
                 "lastName": "Maykin",
                 "birthDate": "1990-08-01",
+                "phoneNumber": "+31 20 753 05 23",
                 "randomAttribute": "This is some random stuff",
             },
             form_step=form_step_2,
@@ -296,5 +302,6 @@ class TestSubmission(TestCase):
                 "appStartTime": {"label": "Time", "value": "2021-08-25T17:00:00"},
                 "clientLastName": {"label": "Last Name", "value": "Maykin"},
                 "clientDateOfBirth": {"label": "Date of Birth", "value": "1990-08-01"},
+                "clientPhoneNumber": {"label": "Phone Number", "value": "+31 20 753 05 23"},
             },
         )

@@ -148,7 +148,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     <Field
                         name="lastName"
                         label={<FormattedMessage defaultMessage="Last Name Component" description="Last Name Component field label" />}
-                        helpText={<FormattedMessage defaultMessage="Component where the last name of the person the appointment is for should be entered" description="Last Name Component field help text" />}
+                        helpText={<FormattedMessage defaultMessage="Component where the last name should be entered" description="Last Name Component field help text" />}
                     >
                         <AppointmentConfigurationComponentSelection
                             currentConfiguration={configuration}
@@ -164,7 +164,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     <Field
                         name="birthDate"
                         label={<FormattedMessage defaultMessage="Birth Date Component" description="Birth Date Component field label" />}
-                        helpText={<FormattedMessage defaultMessage="Component where the birth date of the person the appointment is for should be entered" description="Birth Date Component field help text" />}
+                        helpText={<FormattedMessage defaultMessage="Component where the birth date should be entered" description="Birth Date Component field help text" />}
                     >
                         <AppointmentConfigurationComponentSelection
                             currentConfiguration={configuration}
@@ -180,7 +180,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     <Field
                         name="phoneNumber"
                         label={<FormattedMessage defaultMessage="Phone Number Component" description="Phone Number Component field label" />}
-                        helpText={<FormattedMessage defaultMessage="Component where the phone number of the person the appointment is for should be entered" description="Phone Number Component field help text" />}
+                        helpText={<FormattedMessage defaultMessage="Component where the phone number should be entered" description="Phone Number Component field help text" />}
                     >
                         <AppointmentConfigurationComponentSelection
                             currentConfiguration={configuration}
