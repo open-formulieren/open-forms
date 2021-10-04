@@ -1,8 +1,8 @@
-.. _configuration_authentication_oidc:
+.. _configuration_authentication_oidc_admin:
 
-==============
-OpenID Connect
-==============
+===================================
+OpenID Connect voor beheerinterface
+===================================
 
 Open Formulieren ondersteunt Single Sign On (SSO) via het OpenID Connect protocol (OIDC) voor de beheerinterface.
 
@@ -23,8 +23,8 @@ flow:
 
 .. _configuration_oidc_appgroup:
 
-Configureren van OIDC zelf
-==========================
+Configureren van OIDC voor beheerinterface
+==========================================
 
 Contacteer de IAM beheerders in je organisatie om een *Client* aan te
 maken in de omgeving van de OpenID Connect provider.
