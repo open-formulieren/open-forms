@@ -55,7 +55,7 @@ Nieuwe gebruiker aanmaken
     U maakt hier een lokaal account aan. Als u gebruik maakt van organisatie
     accounts dan kunt u beter geen lokaal account aanmaken. Deze wordt
     automatisch aangemaakt zodra een gebruiker inlogt met een organisatie
-    account, mits dit is :ref:`geconfigureerd <configuration_authentication_oidc>`.
+    account, mits dit is :ref:`geconfigureerd <configuration_authentication_oidc_admin>`.
 
 
 1. Navigeer naar **Accounts** > **Gebruikers**.
@@ -79,7 +79,7 @@ Nieuwe gebruiker aanmaken
 Tweestapsauthenticatie herstellen
 ---------------------------------
 
-Als beheerder kunt u de tweestapsauthenticatie van een andere gebruiker opnieuw 
+Als beheerder kunt u de tweestapsauthenticatie van een andere gebruiker opnieuw
 instellen.
 
 1. Navigeer naar **Accounts** > **TOTP devices**.
