@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions xmlns:s0="http://www.genericCBS.org/GenericCBS/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://wbsvc_gtr.jccsoftware.nl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://wbsvc_gtr.jccsoftware.nl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
@@ -22,6 +23,7 @@
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="description" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="appDuration" type="s:int" />
           <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="requisites" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="maxCountForEvent" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="getGovAvailableProductsRequest">
@@ -44,6 +46,7 @@
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productId" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productCode" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productDesc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productMaxCountForEvent" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="getLanguagesRequest">
@@ -240,6 +243,56 @@
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="caseID" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isClientVerified" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientLanguage" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isRecurring" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="getGovAppointmentExtendedDetailsRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appID" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getGovAppointmentExtendedDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appointment" type="s0:AppointmentFullDetaildWithFullCustomerDetailsType" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="AppointmentFullDetaildWithFullCustomerDetailsType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appointmentID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientFirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientLastNamePrefix" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientLastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientSex" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="clientDateOfBirth" type="s:date" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientBirthdayCompleteness" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientInitials" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientStreetName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientHouseNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientHouseNumberSuffix" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientPostalCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientCity" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientCountry" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientTel" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientMobile" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientMail" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="locationID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="locationDescription" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="appStartTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="appEndTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appointmentDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="caseID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isClientVerified" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientLanguage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientNationality" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientCustomNationality" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isRecurring" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:element name="getGovAppointmentsByClientIDRequest">
@@ -264,6 +317,7 @@
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientID" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientName" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="clientBirthDate" type="s:date" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isRecurring" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:element name="getGovAppointmentsRequest">
@@ -364,6 +418,37 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="updateGovAppointmentExtendedDetailsRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appUpdate" type="s0:AppointmentFullDetaildWithFullCustomerDetailsType" />
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updateGovAppointmentExtendedDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="updateStatus" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updateGovAppointmentWithFieldsExtendedDetailsRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appUpdate" type="s0:AppointmentFullDetaildWithFullCustomerDetailsType" />
+            <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="fields" type="s0:Field" />
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updateGovAppointmentWithFieldsExtendedDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="updateStatus" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="getGovAppointmentsCaseRequest">
         <s:complexType>
           <s:sequence>
@@ -404,6 +489,7 @@
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="caseID" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isClientVerified" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="clientLanguage" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="isRecurring" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:element name="getGovAppointmentsBSNRequest">
@@ -480,6 +566,22 @@
         </s:complexType>
       </s:element>
       <s:element name="bookGovAppointmentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="updateStatus" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appID" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="bookGovAppointmentExtendedDetailsRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="appDetail" type="s0:AppointmentFullDetaildWithFullCustomerDetailsType" />
+            <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="fields" type="s0:Field" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="bookGovAppointmentExtendedDetailsResponse">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="updateStatus" type="s:int" />
@@ -586,6 +688,20 @@
         </s:complexType>
       </s:element>
       <s:element name="GetRequiredClientFieldsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequiredClientFieldsExtendedRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="productID" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequiredClientFieldsExtendedResponse">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="Result" type="s:string" />
@@ -719,6 +835,12 @@
   <wsdl:message name="getGovAppointmentDetailsSoapOut">
     <wsdl:part name="parameters" element="s0:getGovAppointmentDetailsResponse" />
   </wsdl:message>
+  <wsdl:message name="getGovAppointmentExtendedDetailsSoapIn">
+    <wsdl:part name="parameters" element="s0:getGovAppointmentExtendedDetailsRequest" />
+  </wsdl:message>
+  <wsdl:message name="getGovAppointmentExtendedDetailsSoapOut">
+    <wsdl:part name="parameters" element="s0:getGovAppointmentExtendedDetailsResponse" />
+  </wsdl:message>
   <wsdl:message name="getGovAppointmentsByClientIDSoapIn">
     <wsdl:part name="parameters" element="s0:getGovAppointmentsByClientIDRequest" />
   </wsdl:message>
@@ -761,6 +883,18 @@
   <wsdl:message name="updateGovAppointmentWithFieldsSoapOut">
     <wsdl:part name="parameters" element="s0:updateGovAppointmentWithFieldsResponse" />
   </wsdl:message>
+  <wsdl:message name="updateGovAppointmentExtendedDetailsSoapIn">
+    <wsdl:part name="parameters" element="s0:updateGovAppointmentExtendedDetailsRequest" />
+  </wsdl:message>
+  <wsdl:message name="updateGovAppointmentExtendedDetailsSoapOut">
+    <wsdl:part name="parameters" element="s0:updateGovAppointmentExtendedDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="updateGovAppointmentWithFieldsExtendedDetailsSoapIn">
+    <wsdl:part name="parameters" element="s0:updateGovAppointmentWithFieldsExtendedDetailsRequest" />
+  </wsdl:message>
+  <wsdl:message name="updateGovAppointmentWithFieldsExtendedDetailsSoapOut">
+    <wsdl:part name="parameters" element="s0:updateGovAppointmentWithFieldsExtendedDetailsResponse" />
+  </wsdl:message>
   <wsdl:message name="getGovAppointmentsCaseSoapIn">
     <wsdl:part name="parameters" element="s0:getGovAppointmentsCaseRequest" />
   </wsdl:message>
@@ -797,6 +931,12 @@
   <wsdl:message name="bookGovAppointmentSoapOut">
     <wsdl:part name="parameters" element="s0:bookGovAppointmentResponse" />
   </wsdl:message>
+  <wsdl:message name="bookGovAppointmentExtendedDetailsSoapIn">
+    <wsdl:part name="parameters" element="s0:bookGovAppointmentExtendedDetailsRequest" />
+  </wsdl:message>
+  <wsdl:message name="bookGovAppointmentExtendedDetailsSoapOut">
+    <wsdl:part name="parameters" element="s0:bookGovAppointmentExtendedDetailsResponse" />
+  </wsdl:message>
   <wsdl:message name="RequestUpdateAppointmentSoapIn">
     <wsdl:part name="parameters" element="s0:RequestUpdateAppointmentRequest" />
   </wsdl:message>
@@ -832,6 +972,12 @@
   </wsdl:message>
   <wsdl:message name="GetRequiredClientFieldsSoapOut">
     <wsdl:part name="parameters" element="s0:GetRequiredClientFieldsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRequiredClientFieldsExtendedSoapIn">
+    <wsdl:part name="parameters" element="s0:GetRequiredClientFieldsExtendedRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetRequiredClientFieldsExtendedSoapOut">
+    <wsdl:part name="parameters" element="s0:GetRequiredClientFieldsExtendedResponse" />
   </wsdl:message>
   <wsdl:message name="GetDayPartPeriodsSoapIn">
     <wsdl:part name="parameters" element="s0:GetDayPartPeriodsRequest" />
@@ -904,6 +1050,10 @@
       <wsdl:input message="tns:getGovAppointmentDetailsSoapIn" />
       <wsdl:output message="tns:getGovAppointmentDetailsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="getGovAppointmentExtendedDetails">
+      <wsdl:input message="tns:getGovAppointmentExtendedDetailsSoapIn" />
+      <wsdl:output message="tns:getGovAppointmentExtendedDetailsSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsByClientID">
       <wsdl:input message="tns:getGovAppointmentsByClientIDSoapIn" />
       <wsdl:output message="tns:getGovAppointmentsByClientIDSoapOut" />
@@ -932,6 +1082,14 @@
       <wsdl:input message="tns:updateGovAppointmentWithFieldsSoapIn" />
       <wsdl:output message="tns:updateGovAppointmentWithFieldsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentExtendedDetails">
+      <wsdl:input message="tns:updateGovAppointmentExtendedDetailsSoapIn" />
+      <wsdl:output message="tns:updateGovAppointmentExtendedDetailsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentWithFieldsExtendedDetails">
+      <wsdl:input message="tns:updateGovAppointmentWithFieldsExtendedDetailsSoapIn" />
+      <wsdl:output message="tns:updateGovAppointmentWithFieldsExtendedDetailsSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsCase">
       <wsdl:input message="tns:getGovAppointmentsCaseSoapIn" />
       <wsdl:output message="tns:getGovAppointmentsCaseSoapOut" />
@@ -956,6 +1114,10 @@
       <wsdl:input message="tns:bookGovAppointmentSoapIn" />
       <wsdl:output message="tns:bookGovAppointmentSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="bookGovAppointmentExtendedDetails">
+      <wsdl:input message="tns:bookGovAppointmentExtendedDetailsSoapIn" />
+      <wsdl:output message="tns:bookGovAppointmentExtendedDetailsSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RequestUpdateAppointment">
       <wsdl:input message="tns:RequestUpdateAppointmentSoapIn" />
       <wsdl:output message="tns:RequestUpdateAppointmentSoapOut" />
@@ -979,6 +1141,10 @@
     <wsdl:operation name="GetRequiredClientFields">
       <wsdl:input message="tns:GetRequiredClientFieldsSoapIn" />
       <wsdl:output message="tns:GetRequiredClientFieldsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRequiredClientFieldsExtended">
+      <wsdl:input message="tns:GetRequiredClientFieldsExtendedSoapIn" />
+      <wsdl:output message="tns:GetRequiredClientFieldsExtendedSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDayPartPeriods">
       <wsdl:input message="tns:GetDayPartPeriodsSoapIn" />
@@ -1112,6 +1278,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getGovAppointmentExtendedDetails">
+      <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsByClientID">
       <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentsByClientID" style="document" />
       <wsdl:input>
@@ -1175,6 +1350,24 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentExtendedDetails">
+      <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/updateGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentWithFieldsExtendedDetails">
+      <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/updateGovAppointmentWithFieldsExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsCase">
       <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentsCase" style="document" />
       <wsdl:input>
@@ -1229,6 +1422,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="bookGovAppointmentExtendedDetails">
+      <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/bookGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RequestUpdateAppointment">
       <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/RequestUpdateAppointment" style="document" />
       <wsdl:input>
@@ -1276,6 +1478,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetRequiredClientFields">
       <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/GetRequiredClientFields" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequiredClientFieldsExtended">
+      <soap:operation soapAction="http://www.genericCBS.org/GenericCBS/GetRequiredClientFieldsExtended" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1430,6 +1641,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getGovAppointmentExtendedDetails">
+      <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsByClientID">
       <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentsByClientID" style="document" />
       <wsdl:input>
@@ -1493,6 +1713,24 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentExtendedDetails">
+      <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/updateGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateGovAppointmentWithFieldsExtendedDetails">
+      <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/updateGovAppointmentWithFieldsExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getGovAppointmentsCase">
       <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/getGovAppointmentsCase" style="document" />
       <wsdl:input>
@@ -1547,6 +1785,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="bookGovAppointmentExtendedDetails">
+      <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/bookGovAppointmentExtendedDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RequestUpdateAppointment">
       <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/RequestUpdateAppointment" style="document" />
       <wsdl:input>
@@ -1594,6 +1841,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetRequiredClientFields">
       <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/GetRequiredClientFields" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequiredClientFieldsExtended">
+      <soap12:operation soapAction="http://www.genericCBS.org/GenericCBS/GetRequiredClientFieldsExtended" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
