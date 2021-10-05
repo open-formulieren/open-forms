@@ -98,6 +98,15 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
   bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
   geval vinkt u deze optie uit.
 
+
+.. note::
+
+  Indien een of meer **Inlogopties** zijn geselecteerd, dan verschijnt aan het
+  begin van het formulier een knop om in te loggen. Echter, als er geen stappen
+  in het formulier zitten die **Inloggen vereisen** (zie hieronder) dan kan het
+  formulier ook gestart worden *zonder in te loggen*.
+
+
 Stappen en velden
 -----------------
 
