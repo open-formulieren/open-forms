@@ -216,9 +216,21 @@ class TestSubmission(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "product", "appointments": {"showProducts": True}},
-                    {"key": "location", "appointments": {"showLocations": True}},
-                    {"key": "time", "appointments": {"showTimes": True}},
+                    {
+                        "key": "product",
+                        "appointments": {"showProducts": True},
+                        "label": "Product",
+                    },
+                    {
+                        "key": "location",
+                        "appointments": {"showLocations": True},
+                        "label": "Location",
+                    },
+                    {
+                        "key": "time",
+                        "appointments": {"showTimes": True},
+                        "label": "Time",
+                    },
                 ],
             }
         )
@@ -226,11 +238,20 @@ class TestSubmission(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "lastName", "appointments": {"lastName": True}},
-                    {"key": "birthDate", "appointments": {"birthDate": True}},
+                    {
+                        "key": "lastName",
+                        "appointments": {"lastName": True},
+                        "label": "Last Name",
+                    },
+                    {
+                        "key": "birthDate",
+                        "appointments": {"birthDate": True},
+                        "label": "Date of Birth",
+                    },
                     {
                         "key": "randomAttribute",
                         "appointments": {"birthDate": False},
+                        "label": "Random attribute",
                     },
                 ],
             }
@@ -264,10 +285,16 @@ class TestSubmission(TestCase):
         self.assertEqual(
             submission.get_merged_appointment_data(),
             {
-                "productIDAndName": {"identifier": "79", "name": "Paspoort"},
-                "locationIDAndName": {"identifier": "1", "name": "Amsterdam"},
-                "appStartTime": "2021-08-25T17:00:00",
-                "clientLastName": "Maykin",
-                "clientDateOfBirth": "1990-08-01",
+                "productIDAndName": {
+                    "label": "Product",
+                    "value": {"identifier": "79", "name": "Paspoort"},
+                },
+                "locationIDAndName": {
+                    "label": "Location",
+                    "value": {"identifier": "1", "name": "Amsterdam"},
+                },
+                "appStartTime": {"label": "Time", "value": "2021-08-25T17:00:00"},
+                "clientLastName": {"label": "Last Name", "value": "Maykin"},
+                "clientDateOfBirth": {"label": "Date of Birth", "value": "1990-08-01"},
             },
         )

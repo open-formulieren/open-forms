@@ -1,6 +1,7 @@
 import base64
 import io
 from datetime import datetime
+from typing import List
 
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
@@ -23,6 +24,18 @@ def get_client():
     config_class = import_string(config_path)
     client = config_class.get_solo().get_client()
     return client
+
+
+def get_missing_fields_labels(
+    appointment_data: dict, missing_fields_keys: List[str]
+) -> List[str]:
+    labels = []
+    for key in missing_fields_keys:
+        if label := appointment_data.get(key, {}).get("label"):
+            labels.append(label)
+        else:
+            labels.append(key)
+    return sorted(labels)
 
 
 def book_appointment_for_submission(submission: Submission) -> None:
@@ -49,7 +62,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
 
     for key in expected_information:
         # there is a non-empty value, continue - this is good
-        if appointment_data.get(key):
+        if appointment_data.get(key, {}).get("value"):
             continue
         absent_or_empty_information.append(key)
 
@@ -63,10 +76,12 @@ def book_appointment_for_submission(submission: Submission) -> None:
     # error information.
     if absent_or_empty_information:
         # Incomplete information to make an appointment
-        # TODO: resolve the keys back to the human readable form field labels
+        missing_fields_labels = get_missing_fields_labels(
+            appointment_data, absent_or_empty_information
+        )
         error_information = _(
             "The following appointment fields should be filled out: {fields}"
-        ).format(fields=", ".join(sorted(absent_or_empty_information)))
+        ).format(fields=", ".join(missing_fields_labels))
         AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.missing_info,
             error_information=error_information,
@@ -78,21 +93,21 @@ def book_appointment_for_submission(submission: Submission) -> None:
         )
 
     product = AppointmentProduct(
-        identifier=appointment_data["productIDAndName"]["identifier"],
-        name=appointment_data["productIDAndName"]["name"],
+        identifier=appointment_data["productIDAndName"]["value"]["identifier"],
+        name=appointment_data["productIDAndName"]["value"]["name"],
     )
     location = AppointmentLocation(
-        identifier=appointment_data["locationIDAndName"]["identifier"],
-        name=appointment_data["locationIDAndName"]["name"],
+        identifier=appointment_data["locationIDAndName"]["value"]["identifier"],
+        name=appointment_data["locationIDAndName"]["value"]["name"],
     )
     appointment_client = AppointmentClient(
-        last_name=appointment_data["clientLastName"],
+        last_name=appointment_data["clientLastName"]["value"],
         birthdate=datetime.strptime(
-            appointment_data["clientDateOfBirth"], "%Y-%m-%d"
+            appointment_data["clientDateOfBirth"]["value"], "%Y-%m-%d"
         ).date(),
     )
     start_at = datetime.strptime(
-        appointment_data["appStartTime"], "%Y-%m-%dT%H:%M:%S%z"
+        appointment_data["appStartTime"]["value"], "%Y-%m-%dT%H:%M:%S%z"
     )
 
     try:

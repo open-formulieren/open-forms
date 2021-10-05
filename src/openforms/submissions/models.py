@@ -4,7 +4,7 @@ import uuid
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
@@ -324,7 +324,7 @@ class Submission(models.Model):
 
         return ordered_data
 
-    def get_merged_appointment_data(self) -> Dict[str, str]:
+    def get_merged_appointment_data(self) -> Dict[str, Dict[str, Union[str, dict]]]:
         component_config_key_to_appointment_key = {
             "appointments.showProducts": "productIDAndName",
             "appointments.showLocations": "locationIDAndName",
@@ -347,8 +347,10 @@ class Submission(models.Model):
                     continue
 
                 # it is the right component, get the value and store it
-                if component_value := merged_data.get(component["key"]):
-                    appointment_data[appointment_key] = component_value
+                appointment_data[appointment_key] = {
+                    "label": component["label"],
+                    "value": merged_data.get(component["key"]),
+                }
                 break
 
         return appointment_data
