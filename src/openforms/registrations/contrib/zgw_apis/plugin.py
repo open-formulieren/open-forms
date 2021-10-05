@@ -133,22 +133,24 @@ class ZGWRegistration(BasePlugin):
     def test_config():
         test = []
         config = ZgwConfig.get_solo()
-        # zaaktype = config.zaaktype
-        # documenttype = config.documenttype
 
-        zaken_client = config.zrc_service.build_client()
-        documents_client = config.drc_service.build_client()
-        zaaktypen_client = config.ztc_service.build_client()
+        # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
+        try:
+            zaken_client = config.zrc_service.build_client()
+            documents_client = config.drc_service.build_client()
+            zaaktypen_client = config.ztc_service.build_client()
 
-        clients = [{'name': 'ZRC (Zaken)', 'type': 'zaak', 'client': zaken_client},
-                   {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': documents_client},
-                   {'name': 'ZTC (Zaaktypen)', 'type': 'zaaktype', 'client': zaaktypen_client}]
+            clients = [{'name': 'ZRC (Zaken)', 'type': 'zaak', 'client': zaken_client},
+                       {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': documents_client},
+                       {'name': 'ZTC (Zaaktypen)', 'type': 'zaaktype', 'client': zaaktypen_client}]
 
-        for client in clients:
-            try:
-                client['client'].retrieve(client['type'], client['client'].base_url)
-                # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
-            except Exception as e:
-                test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
+            for client in clients:
+                try:
+                    client['client'].retrieve(client['type'], client['client'].base_url)
+                    # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
+                except Exception as e:
+                    test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
+        except Exception as e:
+            test.append({'completed': False, 'error': 'Geen services toegevoegd', 'msg': 'Geen services toegevoegd', 'name': ''})
 
         return test

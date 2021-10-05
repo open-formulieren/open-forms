@@ -89,17 +89,22 @@ class ObjectsAPIRegistration(BasePlugin):
     def test_config():
         test = []
         config = ObjectsAPIConfig.get_solo()
-        drc_client = config.drc_service.build_client()
-        orc_client = config.objects_service.build_client()
 
-        clients = [{'name': 'ORC (Overige)', 'type': 'object', 'client': orc_client},
-                   {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': drc_client},
-                ]
-        for client in clients:
-            try:
-                client['client'].retrieve(client['type'], client['client'].base_url)
-                # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
-            except Exception as e:
-                test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
+        # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
+        try:
+            drc_client = config.drc_service.build_client()
+            orc_client = config.objects_service.build_client()
+
+            clients = [{'name': 'ORC (Overige)', 'type': 'object', 'client': orc_client},
+                       {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': drc_client},
+                       ]
+            for client in clients:
+                try:
+                    client['client'].retrieve(client['type'], client['client'].base_url)
+                    # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
+                except Exception as e:
+                    test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
+        except Exception as e:
+            test.append({'completed': False, 'error': 'Geen services toegevoegd', 'msg': 'Geen services toegevoegd', 'name': ''})
 
         return test

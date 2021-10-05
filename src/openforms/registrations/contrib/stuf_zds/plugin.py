@@ -181,16 +181,19 @@ class StufZDSRegistration(BasePlugin):
         test = []
         service = SoapService()
         options = {'omschrijving': 'zaak omschrijving', 'referentienummer': '2637485'}
-        
-        config = StufZDSConfig.get_solo()
-        config.apply_defaults_to(options)
-        # client = config.get_client(options)
-        # client = StufZDSClient(service, options)
-        # context = client.create_document_identificatie()
 
+        # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
+        try:
+            config = StufZDSConfig.get_solo()
+            config.apply_defaults_to(options)
+            # client = config.get_client(options)
+            # client = StufZDSClient(service, options)
+            # context = client.create_document_identificatie()
 
-        # print('coonntteexxxtt', context)
+            # print('coonntteexxxtt', context)
 
-        test.append({'completed': False, 'error': 'In behandeling', 'msg': 'Iets ging fout', 'name': 'name'})
-        
+            test.append({'completed': False, 'error': 'In behandeling', 'msg': 'Iets ging fout', 'name': 'name'})
+        except Exception as e:
+            test.append({'completed': False, 'error': 'Geen SOA services toegevoegd', 'msg': 'Geen SOA services toegevoegd', 'name': ''})
+
         return test
