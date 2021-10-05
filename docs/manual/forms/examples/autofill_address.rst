@@ -14,10 +14,8 @@ In dit voorbeeld gaan we er van uit dat u een
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: `autofill_address.zip`_
+    Download: :download:`autofill_address.zip <_assets/autofill_address.zip>`
 
-
-.. _`autofill_address.zip`: _assets/autofill_address.zip
 
 Configuratie
 ============

@@ -27,10 +27,8 @@ registratie systeem.
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: `simple_form.zip`_
+    Download: :download:`simple_form.zip <_assets/simple_form.zip>`
 
-
-.. _`simple_form.zip`: _assets/simple_form.zip
 
 Formulier maken
 ===============

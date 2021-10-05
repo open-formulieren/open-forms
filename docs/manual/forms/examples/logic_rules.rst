@@ -14,10 +14,8 @@ In dit voorbeeld gaan we er van uit dat u een
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: `logic_age.zip`_
+    Download: :download:`logic_age.zip <_assets/logic_age.zip>`
 
-
-.. _`logic_age.zip`: _assets/logic_age.zip
 
 Formulier maken
 ===============
