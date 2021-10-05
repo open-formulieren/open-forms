@@ -1,3 +1,4 @@
+from mimetypes import types_map
 from typing import NoReturn
 
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import sanitize_content
+from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.utils.email import send_mail_plus
 
@@ -14,6 +16,7 @@ from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .config import EmailOptionsSerializer
+from .constants import AttachmentFormat
 
 
 @register("email")
@@ -46,6 +49,29 @@ class EmailRegistration(BasePlugin):
 
         attachments = submission.attachments.as_mail_tuples()
 
+        attachment_formats = options.get("attachment_formats", [])
+        extra_attachments = []
+        for attachment_format in attachment_formats:
+            mime_type = types_map[f".{attachment_format}"]
+            if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:
+                export_data = create_submission_export(
+                    Submission.objects.filter(pk=submission.pk)
+                ).export(attachment_format)
+
+                attachment = (
+                    f"{submission.form.name} - submission.{attachment_format}",
+                    export_data,
+                    mime_type,
+                )
+            elif attachment_format == AttachmentFormat.pdf:
+                attachment = (
+                    submission.report.title,
+                    submission.report.content.read(),
+                    mime_type,
+                )
+
+            extra_attachments.append(attachment)
+
         send_mail_plus(
             _("[Open Forms] {} - submission {}").format(
                 submission.form.admin_name, submission.uuid
@@ -55,7 +81,7 @@ class EmailRegistration(BasePlugin):
             options["to_emails"],
             fail_silently=False,
             html_message=content,
-            attachments=attachments,
+            attachments=attachments + extra_attachments,
         )
 
     def get_reference_from_result(self, result: None) -> NoReturn:

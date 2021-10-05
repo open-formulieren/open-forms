@@ -11,13 +11,17 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
+from openforms.submissions.exports import create_submission_export
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 
 from ....service import NoSubmissionReference, extract_submission_reference
+from ..constants import AttachmentFormat
 from ..plugin import EmailRegistration
 
 
@@ -82,13 +86,14 @@ class EmailBackendTests(TestCase):
         self.assertIn("some_list: value1, value2", message.body)
 
         self.assertEqual(len(message.attachments), 2)
-        self.assertEqual(message.attachments[0][0], "my-foo.bin")
-        self.assertEqual(message.attachments[0][1], b"content")  # still bytes
-        self.assertEqual(message.attachments[0][2], "application/foo")
+        file1, file2 = message.attachments
+        self.assertEqual(file1[0], "my-foo.bin")
+        self.assertEqual(file1[1], b"content")  # still bytes
+        self.assertEqual(file1[2], "application/foo")
 
-        self.assertEqual(message.attachments[1][0], "my-bar.txt")
-        self.assertEqual(message.attachments[1][1], "content")  # this is text now
-        self.assertEqual(message.attachments[1][2], "text/bar")
+        self.assertEqual(file2[0], "my-bar.txt")
+        self.assertEqual(file2[1], "content")  # this is text now
+        self.assertEqual(file2[2], "text/bar")
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_strip_out_urls(self):
@@ -190,3 +195,154 @@ class EmailBackendTests(TestCase):
 
         with self.assertRaises(NoSubmissionReference):
             extract_submission_reference(submission)
+
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    def test_submission_with_email_backend_export_csv_xlsx(self):
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            attachment_formats=[AttachmentFormat.csv, AttachmentFormat.xlsx],
+        )
+
+        data = {"foo": "bar", "some_list": ["value1", "value2"]}
+
+        submission = SubmissionFactory.create(form=self.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=self.fs, data=data
+        )
+        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
+        submission.save()
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-foo.bin",
+            content_type="application/foo",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-bar.txt",
+            content_type="text/bar",
+        )
+
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(
+            message.subject,
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.admin_name, submission.uuid
+            ),
+        )
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+
+        # Check that the template is used
+        self.assertIn('<table border="0">', message.body)
+        self.assertIn(
+            _("Submission details for {} (submitted on {})").format(
+                self.form.name, "12:00:00 01-01-2021"
+            ),
+            message.body,
+        )
+        self.assertIn("foo: bar", message.body)
+        self.assertIn("some_list: value1, value2", message.body)
+
+        # Two upload attachments and two export attachments
+        self.assertEqual(len(message.attachments), 4)
+
+        file1, file2, csv_export, xlsx_export = message.attachments
+        self.assertEqual(file1[0], "my-foo.bin")
+        self.assertEqual(file1[1], b"content")  # still bytes
+        self.assertEqual(file1[2], "application/foo")
+
+        self.assertEqual(file2[0], "my-bar.txt")
+        self.assertEqual(file2[1], "content")  # this is text now
+        self.assertEqual(file2[2], "text/bar")
+
+        qs = Submission.objects.filter(pk=submission.pk)
+        self.assertEqual(csv_export[0], f"{submission.form.name} - submission.csv")
+        self.assertEqual(csv_export[1], create_submission_export(qs).export("csv"))
+        self.assertEqual(csv_export[2], "text/csv")
+
+        self.assertEqual(xlsx_export[0], f"{submission.form.name} - submission.xlsx")
+        self.assertEqual(xlsx_export[1], create_submission_export(qs).export("xlsx"))
+        self.assertEqual(
+            xlsx_export[2],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    def test_submission_with_email_backend_export_pdf(self):
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            attachment_formats=[AttachmentFormat.pdf],
+        )
+
+        data = {"foo": "bar", "some_list": ["value1", "value2"]}
+
+        submission = SubmissionFactory.create(form=self.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=self.fs, data=data
+        )
+        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
+        submission.save()
+
+        report = SubmissionReportFactory.create(submission=submission)
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-foo.bin",
+            content_type="application/foo",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="my-bar.txt",
+            content_type="text/bar",
+        )
+
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(
+            message.subject,
+            _("[Open Forms] {} - submission {}").format(
+                submission.form.admin_name, submission.uuid
+            ),
+        )
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+
+        # Check that the template is used
+        self.assertIn('<table border="0">', message.body)
+        self.assertIn(
+            _("Submission details for {} (submitted on {})").format(
+                self.form.name, "12:00:00 01-01-2021"
+            ),
+            message.body,
+        )
+        self.assertIn("foo: bar", message.body)
+        self.assertIn("some_list: value1, value2", message.body)
+
+        # Two upload attachments and one export attachment
+        self.assertEqual(len(message.attachments), 3)
+
+        file1, file2, pdf_export = message.attachments
+        self.assertEqual(file1[0], "my-foo.bin")
+        self.assertEqual(file1[1], b"content")  # still bytes
+        self.assertEqual(file1[2], "application/foo")
+
+        self.assertEqual(file2[0], "my-bar.txt")
+        self.assertEqual(file2[1], "content")  # this is text now
+        self.assertEqual(file2[2], "text/bar")
+
+        qs = Submission.objects.filter(pk=submission.pk)
+        self.assertEqual(pdf_export[0], report.title)
+        self.assertEqual(pdf_export[1], report.content.read())
+        self.assertEqual(pdf_export[2], "application/pdf")
