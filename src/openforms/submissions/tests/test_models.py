@@ -38,9 +38,9 @@ class TestSubmission(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "key", "type": "textfield"},
-                    {"key": "key2", "type": "textarea"},
-                    {"key": "key3", "type": "checkbox"},
+                    {"key": "key", "type": "textfield", "label": "Label"},
+                    {"key": "key2", "type": "textarea", "label": "Label2"},
+                    {"key": "key3", "type": "checkbox", "label": "Label3"},
                     {
                         "key": "key4",
                         "type": "fieldset",
@@ -75,16 +75,31 @@ class TestSubmission(TestCase):
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(
             [
-                ("key", {"type": "textfield", "value": "this is some text"}),
+                (
+                    "key",
+                    {
+                        "type": "textfield",
+                        "value": "this is some text",
+                        "label": "Label",
+                    },
+                ),
                 (
                     "key2",
                     {
                         "type": "textarea",
                         "value": "this is other text in a text area",
+                        "label": "Label2",
                     },
                 ),
-                ("key3", {"type": "checkbox", "value": True}),
-                ("key5", {"type": "textfield", "value": "this is some inner text"}),
+                ("key3", {"type": "checkbox", "value": True, "label": "Label3"}),
+                (
+                    "key5",
+                    {
+                        "type": "textfield",
+                        "value": "this is some inner text",
+                        "label": "key5",
+                    },
+                ),
             ]
         )
         self.assertEqual(actual, expected)
@@ -97,6 +112,7 @@ class TestSubmission(TestCase):
                     {
                         "key": "testSelectBoxes",
                         "type": "selectboxes",
+                        "label": "My Boxes",
                         "values": [
                             {"values": "test1", "label": "test1", "shortcut": ""},
                             {"values": "test2", "label": "test2", "shortcut": ""},
@@ -121,6 +137,7 @@ class TestSubmission(TestCase):
             {
                 "testSelectBoxes": {
                     "type": "selectboxes",
+                    "label": "My Boxes",
                     "value": {"test1": True, "test2": True, "test3": False},
                 }
             },
@@ -128,7 +145,7 @@ class TestSubmission(TestCase):
         printable_data = submission.get_printable_data()
 
         self.assertEqual(
-            printable_data["testSelectBoxes"],
+            printable_data["My Boxes"],
             "test1, test2",
         )
 

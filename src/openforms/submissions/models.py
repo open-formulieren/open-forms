@@ -310,6 +310,7 @@ class Submission(models.Model):
                 ordered_data[key] = {
                     "type": component["type"],
                     "value": merged_data[key],
+                    "label": component.get("label", key),
                 }
 
         # now append remaining data that doesn't have a matching component
@@ -318,6 +319,7 @@ class Submission(models.Model):
                 ordered_data[key] = {
                     "type": "unknown component",
                     "value": merged_data[key],
+                    "label": key,
                 }
 
         return ordered_data
@@ -371,22 +373,23 @@ class Submission(models.Model):
         attachment_data = self.get_merged_attachments()
 
         for key, info in self.get_ordered_data_with_component_type().items():
+            label = info["label"]
             if info["type"] == "file":
                 files = attachment_data.get(key)
                 if files:
-                    printable_data[key] = _("attachment: %s") % (
+                    printable_data[label] = _("attachment: %s") % (
                         ", ".join(file.get_display_name() for file in files)
                     )
                 else:
-                    printable_data[key] = _("attachment")
+                    printable_data[label] = _("empty")
             elif info["type"] == "selectboxes":
                 formatted_select_boxes = ", ".join(
                     [label for label, selected in info["value"].items() if selected]
                 )
-                printable_data[key] = formatted_select_boxes
+                printable_data[label] = formatted_select_boxes
             else:
                 # more here? like getComponentValue() in the SDK?
-                printable_data[key] = info["value"]
+                printable_data[label] = info["value"]
 
         return printable_data
 
