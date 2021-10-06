@@ -254,20 +254,21 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
+        identifier = "123456789"
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"key": "email", "label": "Email", "confirmationRecipient": True}
             ],
             submitted_data={"email": "maykin@media.nl"},
         )
-
+        AppointmentInfoFactory.create(submission=submission, appointment_id=identifier)
         self._add_submission_to_session(submission)
         endpoint = reverse(
             "api:appointments-cancel",
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.delete(f"{self.api_root}appointments/123456789", exc=ClientError)
+        m.delete(f"{self.api_root}appointments/{identifier}", exc=ClientError)
 
         data = {
             "email": "maykin@media.nl",
