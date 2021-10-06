@@ -27,14 +27,8 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
         "aoa.huisnummertoevoeging"
     ],
     FieldChoices.postcode: Target["verblijfsadres"]["aoa.postcode"],
-    # If the person lives in a different municipality, this field will be either in wpl.woonplaatsNaam
-    # or in aoa.woonplaatsWaarinGelegen > wpl.woonplaatsNaam
-    FieldChoices.woonplaatsNaam: {
-        "internal": Target["verblijfsadres"]["wpl.woonplaatsNaam"],
-        "external": Target["verblijfsadres"]["aoa.woonplaatsWaarinGelegen"][
-            "wpl.woonplaatsNaam"
-        ],
-    },
+    FieldChoices.woonplaatsNaam: Target["verblijfsadres"]["wpl.woonplaatsNaam"],
+    FieldChoices.gemeenteVanInschrijving: Target["inp.gemeenteVanInschrijving"],
 }
 
 
@@ -82,17 +76,7 @@ class StufBgPrefill(BasePlugin):
 
         response_dict = {}
         for attribute in attributes:
-            if attribute == FieldChoices.woonplaatsNaam:
-                for _, path_to_value in ATTRIBUTES_TO_STUF_BG_MAPPING[
-                    FieldChoices.woonplaatsNaam
-                ].items():
-                    value = glom(data, path_to_value, default=None)
-                    if value:
-                        break
-            else:
-                value = glom(
-                    data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None
-                )
+            value = glom(data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None)
 
             if value and "@noValue" not in value:
                 response_dict[attribute] = value
