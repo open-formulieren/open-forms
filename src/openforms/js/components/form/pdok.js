@@ -62,32 +62,32 @@ export default class PdokComponent extends TextFieldComponent {
         return '';
     }
 
-    // renderElement(value, index) {
-    //     debugger;
-    //     if(document.querySelector("#leaflet-map")) {
-    //         return document.querySelector("#leaflet-map").outerHTML;
-    //     }
-    //     return super.renderElement(value, index) + '<div id="leaflet-map" style="height:400px"></div>';
-    // }
+    renderElement(value, index) {
+        console.log('In renderElement');
+        if(document.querySelector("#leaflet-map")) {
+            return document.querySelector("#leaflet-map").outerHTML;
+        }
+        return super.renderElement(value, index) + '<div id="leaflet-map" style="height:400px"></div>';
+    }
     //
     // // TODO Add attach, setValue,  function
     //
-    // attachElement(element, index) {
-    //     super.attachElement(element, index);
-    //
-    //     debugger;
-    //
-    //     if (document.querySelector("#leaflet-map").innerHTML) {
-    //         return;
-    //     }
-    //
-    //     let map = L.map(document.querySelector("#leaflet-map").innerHTML, MAP_DEFAULTS);
-    //
-    //     const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
-    //
-    //     map.addLayer(tiles);
-    // }
-    //
+    attachElement(element, index) {
+        super.attachElement(element, index);
+
+        console.log('In attachElement');
+
+        if (document.querySelector("#leaflet-map").innerHTML) {
+            return;
+        }
+
+        let map = L.map(document.querySelector("#leaflet-map"), MAP_DEFAULTS);
+
+        const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
+
+        map.addLayer(tiles);
+    }
+
 
     static editForm() {
         return {components: [DEFAULT_TABS]};
