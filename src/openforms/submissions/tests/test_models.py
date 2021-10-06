@@ -302,6 +302,9 @@ class TestSubmission(TestCase):
                 "appStartTime": {"label": "Time", "value": "2021-08-25T17:00:00"},
                 "clientLastName": {"label": "Last Name", "value": "Maykin"},
                 "clientDateOfBirth": {"label": "Date of Birth", "value": "1990-08-01"},
-                "clientPhoneNumber": {"label": "Phone Number", "value": "+31 20 753 05 23"},
+                "clientPhoneNumber": {
+                    "label": "Phone Number",
+                    "value": "+31 20 753 05 23",
+                },
             },
         )
