@@ -91,6 +91,12 @@
       "value": "Naam"
     }
   ],
+  "5OXIff": [
+    {
+      "type": 0,
+      "value": "Veld waar de geboortedatum voor een afspraak komen te staan"
+    }
+  ],
   "5P+YgL": [
     {
       "type": 0,
@@ -119,12 +125,6 @@
     {
       "type": 0,
       "value": "Inlogopties"
-    }
-  ],
-  "6xw/Qo": [
-    {
-      "type": 0,
-      "value": "Veld waar de achternaam voor een afspraak komt te staan"
     }
   ],
   "70Q0CM": [
@@ -255,6 +255,12 @@
     {
       "type": 0,
       "value": "Bevestigen"
+    }
+  ],
+  "BCjZNo": [
+    {
+      "type": 0,
+      "value": "Veld waar het telefoonnummer voor een afspraak komt te staan"
     }
   ],
   "BStu9Z": [
@@ -710,7 +716,7 @@
   "deoN5r": [
     {
       "type": 0,
-      "value": "Toon voortang"
+      "value": "Toon voortgang"
     }
   ],
   "f590Rb": [
@@ -915,6 +921,12 @@
       "value": "Betaling"
     }
   ],
+  "t99ynC": [
+    {
+      "type": 0,
+      "value": "Veld waar de achternaam voor een afspraak komt te staan"
+    }
+  ],
   "tLL2x4": [
     {
       "type": 0,
@@ -999,6 +1011,12 @@
       "value": "Formulierdefinitie selecteren"
     }
   ],
+  "yYw2Rb": [
+    {
+      "type": 0,
+      "value": "Telefoonnummer veld"
+    }
+  ],
   "zLTTBw": [
     {
       "type": 0,
@@ -1009,12 +1027,6 @@
     {
       "type": 0,
       "value": "There are validation errors"
-    }
-  ],
-  "zwBbGa": [
-    {
-      "type": 0,
-      "value": "Veld waar de geboortedatum voor een afspraak komen te staan"
     }
   ]
 }
