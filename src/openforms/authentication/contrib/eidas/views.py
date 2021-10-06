@@ -1,3 +1,6 @@
+import logging
+from typing import Dict
+
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
@@ -9,6 +12,8 @@ from digid_eherkenning.views import (
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+
+logger = logging.getLogger(__name__)
 
 
 class KVKNotPresentError(Exception):
@@ -34,12 +39,22 @@ class EIDASAssertionConsumerServiceView(
         },
     )
 
+    def _extract_qualifiers(self, attributes: dict) -> Dict[str, str]:
+        subjects = attributes["urn:etoegang:core:ActingSubjectID"]
+        qualifiers = {}
+        for subject in subjects:
+            qualifier_name = subject["NameID"]
+            print(qualifier_name, type(qualifier_name))
+            logger.warning(qualifier_name)
+            logger.warning(type(qualifier_name))
+
     def get(self, request):
         saml_art = request.GET.get("SAMLart")
 
         client = eHerkenningClient()
         try:
             response = client.artifact_resolve(request, saml_art)
+            logger.warning(response)
         except OneLogin_Saml2_ValidationError as exc:
             if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
                 failure_url = self.get_failure_url(
@@ -53,14 +68,17 @@ class EIDASAssertionConsumerServiceView(
 
         try:
             attributes = response.get_attributes()
+            logger.warning(attributes)
         except OneLogin_Saml2_ValidationError as exc:
             failure_url = self.get_failure_url(
                 EIDAS_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
             )
             return HttpResponseRedirect(failure_url)
 
+        qualifiers = self._extract_qualifiers(attributes)
+
         kvk = None
-        for attribute_value in attributes["urn:etoegang:core:LegalSubjectID"]:
+        for attribute_value in attributes["urn:etoegang:core:ActingSubjectID"]:
             if not isinstance(attribute_value, dict):
                 continue
             name_id = attribute_value["NameID"]
