@@ -317,6 +317,7 @@ function reducer(draft, action) {
                     case 'showProducts':
                     case 'lastName':
                     case 'birthDate':
+                    case 'phoneNumber':
                         break
                     // reverse order without breaks, since every component builds on top of
                     // the others

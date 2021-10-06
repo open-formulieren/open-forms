@@ -23,7 +23,11 @@ from ..contrib.jcc.tests.test_plugin import mock_response
 from ..exceptions import AppointmentCreateFailed
 from ..models import AppointmentInfo, AppointmentsConfig
 from ..service import AppointmentRegistrationFailed
-from ..utils import book_appointment_for_submission, create_base64_qrcode
+from ..utils import (
+    book_appointment_for_submission,
+    create_base64_qrcode,
+    get_formatted_phone_number,
+)
 from .factories import AppointmentInfoFactory
 
 
@@ -442,3 +446,19 @@ class UtilsTests(TestCase):
         result = create_base64_qrcode(data)
 
         self.assertEqual(result, expected)
+
+
+class GetFormattedPhoneNumberTest(TestCase):
+    def test_get_formatted_phone_number_returns_expected_format(self):
+        test_numbers = [
+            "+31 20 753 05 23",
+            "+31 20 753 05 abcdef23",
+            "+31 20 753 05 {}()!@#$%^&*23",
+            "+31 20 753 05 2333",
+        ]
+
+        for test_number in test_numbers:
+            with self.subTest(test_number=test_number):
+                self.assertEqual(
+                    get_formatted_phone_number(test_number), "+31 20 753 05 23"
+                )

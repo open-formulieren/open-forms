@@ -58,14 +58,20 @@ Formulier maken
 
    * **Label**: Geboortedatum
 
-12. Klik op het tabblad **Afspraken**.
-13. Kies de juiste componenten voor elke veld in deze tabblad.
-14. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
+12. (Optioneel) Sleep een **Phone Numbers Field** component op het witte vlak, vul de volgende
+    gegevens in en druk daarna op **Save**:
+
+   * **Label**: Telefoonnummer
+
+13. Klik op het tabblad **Afspraken**.
+14. Kies de juiste componenten voor elke veld in deze tabblad.
+15. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken.
 
 .. note::
 
-   De velden *Acternaam* en *Geboortedatum* mogen in een aparte formulierdefinitie (stap) aanwezig zijn maar
-   de velden *Producten*, *Locaties*, *Datums*, en *Tijden* moeten in dezelfde formulierdefinitie (stap) aanwezig zijn.
+   De velden *Acternaam*, *Geboortedatum*, en *Telefoonnummer* mogen in een aparte formulierdefinitie (stap)
+   aanwezig zijn maar de velden *Producten*, *Locaties*, *Datums*, en *Tijden* moeten in dezelfde
+   formulierdefinitie (stap) aanwezig zijn.
 

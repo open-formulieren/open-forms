@@ -331,6 +331,7 @@ class Submission(models.Model):
             "appointments.showTimes": "appStartTime",
             "appointments.lastName": "clientLastName",
             "appointments.birthDate": "clientDateOfBirth",
+            "appointments.phoneNumber": "clientPhoneNumber",
         }
 
         merged_data = self.get_merged_data()

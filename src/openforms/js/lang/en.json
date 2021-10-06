@@ -69,6 +69,11 @@
     "description": "Form name field label",
     "originalDefault": "Name"
   },
+  "5OXIff": {
+    "defaultMessage": "Component where the birth date should be entered",
+    "description": "Birth Date Component field help text",
+    "originalDefault": "Component where the birth date should be entered"
+  },
   "5P+YgL": {
     "defaultMessage": "Add step",
     "description": "add step button",
@@ -93,11 +98,6 @@
     "defaultMessage": "Authentication",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
-  },
-  "6xw/Qo": {
-    "defaultMessage": "Component where last name for an appointment will be shown",
-    "description": "Last Name Component field help text",
-    "originalDefault": "Component where last name for an appointment will be shown"
   },
   "70Q0CM": {
     "defaultMessage": "Previous text",
@@ -173,6 +173,11 @@
     "defaultMessage": "Confirm",
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
+  },
+  "BCjZNo": {
+    "defaultMessage": "Component where the phone number should be entered",
+    "description": "Phone Number Component field help text",
+    "originalDefault": "Component where the phone number should be entered"
   },
   "BStu9Z": {
     "defaultMessage": "Form",
@@ -699,6 +704,11 @@
     "description": "Payment tab title",
     "originalDefault": "Payment"
   },
+  "t99ynC": {
+    "defaultMessage": "Component where the last name should be entered",
+    "description": "Last Name Component field help text",
+    "originalDefault": "Component where the last name should be entered"
+  },
   "tLL2x4": {
     "defaultMessage": "Change form",
     "description": "Change form page title",
@@ -769,6 +779,11 @@
     "description": "select definition icon title",
     "originalDefault": "Select definition"
   },
+  "yYw2Rb": {
+    "defaultMessage": "Phone Number Component",
+    "description": "Phone Number Component field label",
+    "originalDefault": "Phone Number Component"
+  },
   "zLTTBw": {
     "defaultMessage": "Component where dates for an appointment will be shown",
     "description": "Dates Component field help text",
@@ -778,10 +793,5 @@
     "defaultMessage": "There are validation errors",
     "description": "Step validation errors icon title",
     "originalDefault": "There are validation errors"
-  },
-  "zwBbGa": {
-    "defaultMessage": "Component where birth date for an appointment will be shown",
-    "description": "Birth Date Component field help text",
-    "originalDefault": "Component where birth date for an appointment will be shown"
   }
 }

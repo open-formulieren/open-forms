@@ -69,6 +69,11 @@
     "description": "Form name field label",
     "originalDefault": "Name"
   },
+  "5OXIff": {
+    "defaultMessage": "Veld waar de geboortedatum voor een afspraak komen te staan",
+    "description": "Birth Date Component field help text",
+    "originalDefault": "Component where the birth date should be entered"
+  },
   "5P+YgL": {
     "defaultMessage": "Stap toevoegen",
     "description": "add step button",
@@ -93,11 +98,6 @@
     "defaultMessage": "Inlogopties",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
-  },
-  "6xw/Qo": {
-    "defaultMessage": "Veld waar de achternaam voor een afspraak komt te staan",
-    "description": "Last Name Component field help text",
-    "originalDefault": "Component where last name for an appointment will be shown"
   },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
@@ -173,6 +173,11 @@
     "defaultMessage": "Bevestigen",
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
+  },
+  "BCjZNo": {
+    "defaultMessage": "Veld waar het telefoonnummer voor een afspraak komt te staan",
+    "description": "Phone Number Component field help text",
+    "originalDefault": "Component where the phone number should be entered"
   },
   "BStu9Z": {
     "defaultMessage": "Formulier",
@@ -699,6 +704,11 @@
     "description": "Payment tab title",
     "originalDefault": "Payment"
   },
+  "t99ynC": {
+    "defaultMessage": "Veld waar de achternaam voor een afspraak komt te staan",
+    "description": "Last Name Component field help text",
+    "originalDefault": "Component where the last name should be entered"
+  },
   "tLL2x4": {
     "defaultMessage": "Formulier configureren",
     "description": "Change form page title",
@@ -769,6 +779,11 @@
     "description": "select definition icon title",
     "originalDefault": "Select definition"
   },
+  "yYw2Rb": {
+    "defaultMessage": "Telefoonnummer veld",
+    "description": "Phone Number Component field label",
+    "originalDefault": "Phone Number Component"
+  },
   "zLTTBw": {
     "defaultMessage": "Veld waar beschikbare datums voor een afspraak komen te staan",
     "description": "Dates Component field help text",
@@ -778,10 +793,5 @@
     "defaultMessage": "There are validation errors",
     "description": "Step validation errors icon title",
     "originalDefault": "There are validation errors"
-  },
-  "zwBbGa": {
-    "defaultMessage": "Veld waar de geboortedatum voor een afspraak komen te staan",
-    "description": "Birth Date Component field help text",
-    "originalDefault": "Component where birth date for an appointment will be shown"
   }
 }
