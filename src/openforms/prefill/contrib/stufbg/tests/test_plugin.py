@@ -37,12 +37,14 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
 
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_response_external_woonplaats_returns_correct_attributes(self, client_mock):
+    def test_response_external_municipality_returns_correct_attributes(
+        self, client_mock
+    ):
         get_values_for_attributes_mock = (
             client_mock.return_value.get_client.return_value.get_values_for_attributes
         )
         get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponseWoonplaats.xml"
+            "stuf_bg/tests/responses/StufBgResponseGemeenteVanInschrijving.xml"
         )
         attributes = FieldChoices.attributes.keys()
 
@@ -56,7 +58,7 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["huisletter"], "A")
         self.assertEqual(values["huisnummertoevoeging"], "B")
         self.assertEqual(values["postcode"], "1015 CJ")
-        self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
+        self.assertEqual(values["gemeenteVanInschrijving"], "Amsterdam")
 
     @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
     def test_get_available_attributes_when_some_attributes_are_not_returned(

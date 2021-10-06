@@ -30,16 +30,13 @@
                     <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
                     <ns:voornamen>Media</ns:voornamen>
                     <ns:verblijfsadres>
-                        <ns:aoa.woonplaatsWaarinGelegen>
-                            <ns:wpl.identificatie>1234</ns:wpl.identificatie>
-                            <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
-                        </ns:aoa.woonplaatsWaarinGelegen>
                         <ns:gor.straatnaam>Keizersgracht</ns:gor.straatnaam>
                         <ns:aoa.postcode>1015 CJ</ns:aoa.postcode>
                         <ns:aoa.huisnummer>117</ns:aoa.huisnummer>
                         <ns:aoa.huisletter>A</ns:aoa.huisletter>
                         <ns:aoa.huisnummertoevoeging>B</ns:aoa.huisnummertoevoeging>
                     </ns:verblijfsadres>
+                    <ns:inp.gemeenteVanInschrijving>Amsterdam</ns:inp.gemeenteVanInschrijving>
                 </ns:object>
             </ns:antwoord>
         </ns:npsLa01>

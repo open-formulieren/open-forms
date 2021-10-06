@@ -93,6 +93,9 @@
                             {% endif %}
                         </ns:verblijfsadres>
                     {% endif %}
+                    {% if gemeenteVanInschrijving %}
+                        <ns:inp.gemeenteVanInschrijving xsi:nil="true"/>
+                    {% endif %}
                 </ns:object>
             </ns:scope>
         </ns:npsLv01>
