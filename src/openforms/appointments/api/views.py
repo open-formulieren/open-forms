@@ -11,6 +11,11 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
+from openforms.logging.logevent import (
+    appointment_cancel_failure,
+    appointment_cancel_start,
+    appointment_cancel_success,
+)
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
@@ -18,11 +23,6 @@ from openforms.submissions.api.permissions import (
 from openforms.submissions.models import Submission
 from openforms.utils.api.views import ListMixin
 
-from ...logging.logevent import (
-    appointment_cancel_failure,
-    appointment_cancel_start,
-    appointment_cancel_success,
-)
 from ..api.serializers import (
     CancelAppointmentInputSerializer,
     DateInputSerializer,
