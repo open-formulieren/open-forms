@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
@@ -27,7 +28,10 @@ class EHerkenningAuthentication(BasePlugin):
         )
         return_url = f"{auth_return_url}?next={form_url}"
 
-        auth_return_params = {"next": return_url, "attr_consuming_service_index": "1"}
+        auth_return_params = {
+            "next": return_url,
+            "attr_consuming_service_index": settings.EHERKENNING_SERVICE_INDEX,
+        }
         url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
 

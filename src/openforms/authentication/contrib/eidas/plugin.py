@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
@@ -15,7 +16,7 @@ from openforms.authentication.registry import register
 @register("eidas")
 class EIDASAuthentication(BasePlugin):
     verbose_name = _("eIDAS")
-    provides_auth = AuthAttribute.kvk
+    provides_auth = AuthAttribute.pseudo
 
     def start_login(self, request, form, form_url):
         """Redirect to the /eherkenning/login endpoint to start the authentication. The distinction between the eIDAS
@@ -28,7 +29,10 @@ class EIDASAuthentication(BasePlugin):
         )
         return_url = f"{auth_return_url}?next={form_url}"
 
-        auth_return_params = {"next": return_url, "attr_consuming_service_index": "2"}
+        auth_return_params = {
+            "next": return_url,
+            "attr_consuming_service_index": settings.EIDAS_SERVICE_INDEX,
+        }
         url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
 
