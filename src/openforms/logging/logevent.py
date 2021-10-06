@@ -31,7 +31,6 @@ def _create_log(
     user: Optional["User"] = None,
 ):
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
-    from openforms.accounts.models import User
     from openforms.logging.models import TimelineLogProxy
 
     if extra_data is None:
@@ -47,8 +46,8 @@ def _create_log(
 
     extra_data["avg"] = tag_avg
 
-    if user and not isinstance(user, User):
-        # If user is not of correct type (eg. AnonymousUser) we can not
+    if user and not user.is_authenticated:
+        # If user is not authenticated (eg. AnonymousUser) we can not
         #   save it on the TimelineLogProxy model
         user = None
 
