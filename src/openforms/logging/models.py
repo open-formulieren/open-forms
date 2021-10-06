@@ -10,6 +10,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from timeline_logger.models import TimelineLog
 
 from openforms.forms.models import Form
+from openforms.logging.constants import TimelineLogTags
 from openforms.submissions.models import Submission
 
 
@@ -136,7 +137,7 @@ class TimelineLogProxy(TimelineLog):
 class AVGTimelineLogProxyManager(models.Manager):
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(extra_data__contains={"avg": True})
+        return qs.filter(extra_data__contains={TimelineLogTags.AVG: True})
 
 
 class AVGTimelineLogProxy(TimelineLogProxy):

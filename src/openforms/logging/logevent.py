@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 from django.db.models import Model
 
+from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ def _create_log(
         object
     ] = None,  # TODO: define BasePlugin class in openforms.plugins
     error: Optional[Exception] = None,
-    tag_avg: bool = False,
+    tags: Optional[list] = None,
     user: Optional["User"] = None,
 ):
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
@@ -44,7 +45,9 @@ def _create_log(
     if error:
         extra_data["error"] = str(error)
 
-    extra_data["avg"] = tag_avg
+    if isinstance(tags, list):
+        for tag in tags:
+            extra_data[tag] = True
 
     if user and not user.is_authenticated:
         # If user is not authenticated (eg. AnonymousUser) we can not
@@ -124,7 +127,7 @@ def prefill_retrieve_success(submission: "Submission", plugin, prefill_fields):
         "prefill_retrieve_success",
         extra_data={"prefill_fields": prefill_fields},
         plugin=plugin,
-        tag_avg=True,
+        tags=[TimelineLogTags.AVG],
     )
 
 
@@ -368,7 +371,7 @@ def submission_details_view_admin(submission: "Submission", user: "User"):
     _create_log(
         submission,
         "submission_details_view_admin",
-        tag_avg=True,
+        tags=[TimelineLogTags.AVG],
         user=user,
     )
 
@@ -377,7 +380,7 @@ def submission_details_view_api(submission: "Submission", user: "User"):
     _create_log(
         submission,
         "submission_details_view_api",
-        tag_avg=True,
+        tags=[TimelineLogTags.AVG],
         user=user,
     )
 
@@ -386,7 +389,7 @@ def submission_export_list(form: "Form", user: "User"):
     _create_log(
         form,
         "submission_export_list",
-        tag_avg=True,
+        tags=[TimelineLogTags.AVG],
         user=user,
     )
 
