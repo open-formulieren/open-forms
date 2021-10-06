@@ -34,6 +34,7 @@ const BUILDER_OPTIONS = {
                 bsn: true,
                 postcode: true,
                 file: true,
+                pdok: true,
             }
         },
         custom_layout: {
