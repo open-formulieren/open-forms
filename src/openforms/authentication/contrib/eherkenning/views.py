@@ -1,3 +1,6 @@
+import logging
+from typing import Dict
+
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
@@ -10,8 +13,10 @@ from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
 
+logger = logging.getLogger(__name__)
 
-class KVKNotPresentError(Exception):
+
+class ExpectedIdNotPresentError(Exception):
     pass
 
 
@@ -33,6 +38,23 @@ class eHerkenningAssertionConsumerServiceView(
             )
         },
     )
+
+    def _extract_qualifiers(self, attributes: dict) -> Dict[str, str]:
+        qualifiers = {}
+        expected_ids = [
+            "urn:etoegang:core:ActingSubjectID",
+            "urn:etoegang:core:LegalSubjectID",
+        ]
+        for expected_id in expected_ids:
+            if not expected_id in attributes:
+                continue
+
+            subjects = attributes[expected_id]
+            for subject in subjects:
+                qualifier_name = subject["NameID"]["NameQualifier"]
+                qualifiers[qualifier_name] = subject["NameID"]["value"]
+
+        return qualifiers
 
     def get(self, request):
         saml_art = request.GET.get("SAMLart")
@@ -59,22 +81,19 @@ class eHerkenningAssertionConsumerServiceView(
             )
             return HttpResponseRedirect(failure_url)
 
-        kvk = None
-        for attribute_value in attributes["urn:etoegang:core:LegalSubjectID"]:
-            if not isinstance(attribute_value, dict):
-                continue
-            name_id = attribute_value["NameID"]
-            if (
-                name_id
-                and name_id["NameQualifier"]
-                == "urn:etoegang:1.9:EntityConcernedID:KvKnr"
-            ):
-                kvk = name_id["value"]
+        qualifiers = self._extract_qualifiers(attributes)
 
-        if not kvk:
+        if not qualifiers:
             self.log_error(request, self.error_messages["eherkenning_no_kvk"])
-            raise KVKNotPresentError
+            raise ExpectedIdNotPresentError
 
-        request.session["kvk"] = kvk
+        if "urn:etoegang:1.9:EntityConcernedID:KvKnr" in qualifiers:
+            request.session["kvk"] = qualifiers[
+                "urn:etoegang:1.9:EntityConcernedID:KvKnr"
+            ]
+        if "urn:etoegang:1.9:EntityConcernedID:Pseudo" in qualifiers:
+            request.session["pseudo_id"] = qualifiers[
+                "urn:etoegang:1.9:EntityConcernedID:Pseudo"
+            ]
 
         return HttpResponseRedirect(self.get_success_url())
