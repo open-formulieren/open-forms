@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
@@ -9,6 +11,8 @@ from digid_eherkenning.views import (
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+
+logger = logging.getLogger(__name__)
 
 
 class KVKNotPresentError(Exception):
@@ -40,6 +44,7 @@ class EIDASAssertionConsumerServiceView(
         client = eHerkenningClient()
         try:
             response = client.artifact_resolve(request, saml_art)
+            logger.info(response)
         except OneLogin_Saml2_ValidationError as exc:
             if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
                 failure_url = self.get_failure_url(
@@ -53,6 +58,7 @@ class EIDASAssertionConsumerServiceView(
 
         try:
             attributes = response.get_attributes()
+            logger.info(attributes)
         except OneLogin_Saml2_ValidationError as exc:
             failure_url = self.get_failure_url(
                 EIDAS_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
