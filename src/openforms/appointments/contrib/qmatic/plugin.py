@@ -29,6 +29,8 @@ class Plugin(BasePlugin):
     Website: https://www.qmatic.com/
     """
 
+    identifier = "Qmatic-Plugin"
+
     def __init__(self):
         self.client = QmaticClient()
 

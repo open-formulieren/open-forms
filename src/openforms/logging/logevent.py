@@ -266,7 +266,6 @@ def payment_register_failure(payment: "SubmissionPayment", plugin, error: Except
 
 
 def appointment_register_start(submission: "Submission", plugin):
-    # TODO see if we actually have plugin here
     _create_log(
         submission,
         "appointment_register_start",

@@ -9,6 +9,12 @@ from django.utils.translation import gettext_lazy as _
 
 import qrcode
 
+from openforms.logging.logevent import (
+    appointment_register_failure,
+    appointment_register_skip,
+    appointment_register_start,
+    appointment_register_success,
+)
 from openforms.submissions.models import Submission
 
 from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
@@ -90,6 +96,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
     # error information.
     if absent_or_empty_information:
         # Incomplete information to make an appointment
+        appointment_register_skip(submission)
         missing_fields_labels = get_missing_fields_labels(
             appointment_data, absent_or_empty_information
         )
@@ -127,23 +134,26 @@ def book_appointment_for_submission(submission: Submission) -> None:
         appointment_data["appStartTime"]["value"], "%Y-%m-%dT%H:%M:%S%z"
     )
 
+    client = get_client()
     try:
-        client = get_client()
+        appointment_register_start(submission, client)
         appointment_id = client.create_appointment(
             [product], location, start_at, appointment_client
         )
-        AppointmentInfo.objects.create(
+        appointment_info = AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.success,
             appointment_id=appointment_id,
             submission=submission,
             start_time=start_at,
         )
+        appointment_register_success(appointment_info, client)
     except AppointmentCreateFailed as e:
-        AppointmentInfo.objects.create(
+        appointment_info = AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.failed,
             error_information="Failed to make appointment",
             submission=submission,
         )
+        appointment_register_failure(appointment_info, client, e)
         raise AppointmentRegistrationFailed(
             "Unable to create appointment", should_retry=True
         ) from e
