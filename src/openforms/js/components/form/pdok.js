@@ -6,8 +6,7 @@ import DEFAULT_TABS from "./edit/tabs";
 import * as L from 'leaflet';
 import { RD_CRS } from './rd';
 
-// Using Hidden Component so we don't get anything 'extra' with our map
-const HiddenComponent = Formio.Components.components.hidden;
+const TextFieldComponent = Formio.Components.components.textfield;
 
 const TILES = 'https://geodata.nationaalgeoregister.nl/tiles/service';
 
@@ -36,9 +35,9 @@ const MAP_DEFAULTS = {
 };
 
 
-export default class PdokComponent extends HiddenComponent {
+export default class PdokComponent extends TextFieldComponent {
     static schema(...extend) {
-        return HiddenComponent.schema({
+        return TextFieldComponent.schema({
             type: 'pdok',
             label: 'PDOK kaart',
             key: 'pdokMap',
@@ -66,21 +65,26 @@ export default class PdokComponent extends HiddenComponent {
     renderElement(value, index) {
         return super.renderElement(value, index) + `<div id="the-pdok-map-${this.id}" style="height: 400px; position: relative;"/>`;
     }
-    //
-    // TODO Add attach, setValue functions
-    //
+
+    get inputInfo() {
+        const info = super.elementInfo();
+        // Hide the input element
+        info.attr.type = 'hidden';
+        return info;
+    }
+
     attachElement(element, index) {
         super.attachElement(element, index);
 
         console.log('In attachElement');
 
-        let map = L.map(document.querySelector("#leaflet-map"), MAP_DEFAULTS);
+        let map = L.map(`the-pdok-map-${this.id}`, MAP_DEFAULTS);
 
         const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
         map.addLayer(tiles);
 
-        // Set inital marker at center
+        // Set initial marker at center
         let marker = L.marker([52.1326332, 5.291266]).addTo(map);
 
         map.on('click', (e) => {
