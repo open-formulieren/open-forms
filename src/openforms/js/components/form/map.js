@@ -3,7 +3,7 @@
  */
 import {Formio} from 'react-formio';
 import DEFAULT_TABS from "./edit/tabs";
-import * as L from 'leaflet';
+import * as leaflet from 'leaflet';
 import { RD_CRS } from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -75,24 +75,21 @@ export default class Map extends TextFieldComponent {
     attachElement(element, index) {
         super.attachElement(element, index);
 
-        console.log('In attachElement');
+        let map = leaflet.map(`map-${this.id}`, MAP_DEFAULTS);
 
-        let map = L.map(`map-${this.id}`, MAP_DEFAULTS);
-
-        const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
+        const tiles = leaflet.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
         map.addLayer(tiles);
 
         // Set initial marker at center
-        let marker = L.marker([52.1326332, 5.291266]).addTo(map);
+        let marker = leaflet.marker([52.1326332, 5.291266]).addTo(map);
 
         map.on('click', (e) => {
           map.removeLayer(marker);
-          marker = L.marker(e.latlng).addTo(map);
+          marker = leaflet.marker(e.latlng).addTo(map);
         });
     }
 
-    // TODO Probably need more custom tabs than these
     static editForm() {
         return {components: [DEFAULT_TABS]};
     }
