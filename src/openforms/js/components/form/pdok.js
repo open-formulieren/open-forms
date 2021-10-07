@@ -79,6 +79,8 @@ export default class PdokComponent extends HiddenComponent {
         const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
         map.addLayer(tiles);
+
+        L.marker([52.1326332, 5.291266]).addTo(map);
     }
 
     // TODO Probably need more custom tabs than these
