@@ -16,8 +16,19 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task()
+@app.task(time_limit=settings.SUBMISSION_REGISTRATION_TIMEOUT)
 def register_submission(submission_id: int) -> Optional[dict]:
+    # initial first try with timeouts as the user is waiting
+    return _register_submission(submission_id)
+
+
+@app.task()
+def retry_register_submission(submission_id: int) -> Optional[dict]:
+    # out-of-flow retry, less time critical
+    return _register_submission(submission_id)
+
+
+def _register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
 
     logger.debug("Register submission '%s'", submission)
@@ -95,4 +106,4 @@ def resend_submissions():
         completed_on__gte=resend_time_limit,
     ):
         logger.debug("Resend submission for registration '%s'", submission)
-        register_submission.delay(submission.id)
+        retry_register_submission.delay(submission.id)

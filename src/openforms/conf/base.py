@@ -589,10 +589,8 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
-# Amount of times to retry the celery task before stopping
-SUBMISSION_REGISTRATION_MAX_RETRIES = config(
-    "SUBMISSION_REGISTRATION_MAX_RETRIES", default=10
-)
+# Timeout for the initial registration attempt
+SUBMISSION_REGISTRATION_TIMEOUT = config("SUBMISSION_REGISTRATION_TIMEOUT", default=5)
 
 #
 # DJANGO-HIJACK
