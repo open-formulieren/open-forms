@@ -22,10 +22,13 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     logger.debug("Register submission '%s'", submission)
 
-    if submission.registration_status == RegistrationStatuses.success:
+    if submission.registration_status in (
+        RegistrationStatuses.success,
+        RegistrationStatuses.in_progress,
+    ):
         # It's possible for two instances of this task to run for the same submission
         #  (eg.  A user runs the admin action and the celery beat task runs)
-        # so if the submission has already succeed we just return
+        # so if the submission has already succeed or is currently running we just return
         return
 
     logevent.registration_start(submission)
