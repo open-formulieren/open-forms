@@ -36,6 +36,8 @@ class Plugin(BasePlugin):
     Website: https://www.jccsoftware.nl/
     """
 
+    identifier = "JCC-Plugin"
+
     def __init__(self, wsdl):
         self.client = Client(wsdl)
 

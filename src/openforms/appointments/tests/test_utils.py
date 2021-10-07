@@ -5,12 +5,14 @@ from django.test import TestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
+from timeline_logger.models import TimelineLog
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
 )
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -55,6 +57,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         book_appointment_for_submission(submission)
         submission.refresh_from_db()
         self.assertFalse(AppointmentInfo.objects.exists())
+        self.assertFalse(TimelineLogProxy.objects.exists())
 
     def test_appointment_step_not_applicable(self):
         form = FormFactory.create()
@@ -91,6 +94,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         book_appointment_for_submission(submission)
 
         self.assertFalse(AppointmentInfo.objects.exists())
+        self.assertFalse(TimelineLogProxy.objects.exists())
 
     def test_creating_appointment_with_missing_or_not_filled_in_appointment_information_adds_error_message(
         self,
@@ -169,6 +173,12 @@ class BookAppointmentForSubmissionTest(TestCase):
             _("The following appointment fields should be filled out: {fields}").format(
                 fields="Date of Birth, locationIDAndName"
             ),
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_skip.txt"
+            ).count(),
+            1,
         )
 
     @requests_mock.Mocker()
@@ -253,6 +263,18 @@ class BookAppointmentForSubmissionTest(TestCase):
                 status=AppointmentDetailsStatus.success,
             ).exists()
         )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_success.txt"
+            ).count(),
+            1,
+        )
 
     @requests_mock.Mocker()
     def test_failed_creating_appointment_adds_error_message_to_submission(self, m):
@@ -335,6 +357,18 @@ class BookAppointmentForSubmissionTest(TestCase):
                 submission=submission,
                 status=AppointmentDetailsStatus.failed,
             ).exists()
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_failure.txt"
+            ).count(),
+            1,
         )
 
     @requests_mock.Mocker()
@@ -421,6 +455,19 @@ class BookAppointmentForSubmissionTest(TestCase):
         second_appointment_info = submission.appointment_info
 
         self.assertNotEqual(first_appointment_info.pk, second_appointment_info.pk)
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_failure.txt"
+            ).count(),
+            1,
+        )
 
 
 class UtilsTests(TestCase):

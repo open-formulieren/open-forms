@@ -7,6 +7,7 @@ from django.urls import reverse
 import requests_mock
 from zeep.exceptions import Error as ZeepError
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
@@ -287,6 +288,19 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
             submission.appointment_info.status, AppointmentDetailsStatus.cancelled
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_success.txt"
+            ).count(),
+            1,
+        )
+
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
         submission = SubmissionFactory.from_components(
@@ -314,6 +328,19 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         response = self.client.post(endpoint, data=data)
 
         self.assertEqual(response.status_code, 502)
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_failure.txt"
+            ).count(),
+            1,
+        )
 
     def test_cancel_appointment_returns_403_when_no_appointment_is_in_session(self):
         submission = SubmissionFactory.create()

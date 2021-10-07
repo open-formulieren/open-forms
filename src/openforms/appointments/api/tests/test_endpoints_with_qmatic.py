@@ -4,6 +4,7 @@ from django.urls import reverse
 import requests_mock
 from zds_client import ClientError
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -252,22 +253,36 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
             submission.appointment_info.status, AppointmentDetailsStatus.cancelled
         )
 
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_success.txt"
+            ).count(),
+            1,
+        )
+
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
+        identifier = "123456789"
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"key": "email", "label": "Email", "confirmationRecipient": True}
             ],
             submitted_data={"email": "maykin@media.nl"},
         )
-
+        AppointmentInfoFactory.create(submission=submission, appointment_id=identifier)
         self._add_submission_to_session(submission)
         endpoint = reverse(
             "api:appointments-cancel",
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.delete(f"{self.api_root}appointments/123456789", exc=ClientError)
+        m.delete(f"{self.api_root}appointments/{identifier}", exc=ClientError)
 
         data = {
             "email": "maykin@media.nl",
@@ -276,6 +291,19 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         response = self.client.post(endpoint, data=data)
 
         self.assertEqual(response.status_code, 502)
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_cancel_failure.txt"
+            ).count(),
+            1,
+        )
 
     def test_cancel_appointment_returns_403_when_no_appointment_is_in_session(self):
         submission = SubmissionFactory.create()
