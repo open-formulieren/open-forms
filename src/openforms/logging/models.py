@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
@@ -7,6 +9,8 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
 
+from openforms.forms.models import Form
+from openforms.logging.constants import TimelineLogTags
 from openforms.submissions.models import Submission
 
 
@@ -53,13 +57,19 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_form(self) -> str:
-        if not self.is_submission:
-            return ""
-        return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
+        if self.is_submission:
+            return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
+        elif self.is_form:
+            return f'"{self.content_object}" (ID: {self.content_object.id})'
+        return ""
 
     @property
     def is_submission(self) -> bool:
         return bool(self.content_type == ContentType.objects.get_for_model(Submission))
+
+    @property
+    def is_form(self) -> bool:
+        return bool(self.content_type == ContentType.objects.get_for_model(Form))
 
     @property
     def fmt_plugin(self) -> str:
@@ -70,6 +80,29 @@ class TimelineLogProxy(TimelineLog):
         if not any([plugin_id, plugin_label]):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
+
+    def get_formatted_prefill_fields(self, fields) -> List:
+        formatted_fields = []
+        components = self.content_object.form.iter_components(recursive=True)
+
+        for component in components:
+            for field in fields:
+                try:
+                    if component["prefill"]["attribute"] == field:
+                        formatted_fields.append(f"{component['label']} ({field})")
+                except KeyError:
+                    pass
+
+        return formatted_fields
+
+    @property
+    def fmt_prefill_fields(self) -> str:
+        if not self.extra_data or "prefill_fields" not in self.extra_data:
+            return _("(unknown)")
+        formatted_fields = self.get_formatted_prefill_fields(
+            self.extra_data["prefill_fields"]
+        )
+        return ", ".join(formatted_fields)
 
     @property
     def fmt_url(self) -> str:
@@ -99,3 +132,19 @@ class TimelineLogProxy(TimelineLog):
         return self.get_message()
 
     message.short_description = _("message")
+
+
+class AVGTimelineLogProxyManager(models.Manager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(extra_data__contains={TimelineLogTags.AVG: True})
+
+
+class AVGTimelineLogProxy(TimelineLogProxy):
+
+    objects = AVGTimelineLogProxyManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = _("avg timeline log entry")
+        verbose_name_plural = _("avg timeline log entries")

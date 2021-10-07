@@ -3,10 +3,13 @@ from typing import TYPE_CHECKING, Optional
 
 from django.db.models import Model
 
+from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 
 if TYPE_CHECKING:
+    from openforms.accounts.models import User
     from openforms.appointments.models import AppointmentInfo
+    from openforms.forms.models import Form
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -25,7 +28,8 @@ def _create_log(
         object
     ] = None,  # TODO: define BasePlugin class in openforms.plugins
     error: Optional[Exception] = None,
-    tag_avg: bool = False,
+    tags: Optional[list] = None,
+    user: Optional["User"] = None,
 ):
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
     from openforms.logging.models import TimelineLogProxy
@@ -41,10 +45,20 @@ def _create_log(
     if error:
         extra_data["error"] = str(error)
 
+    if isinstance(tags, list):
+        for tag in tags:
+            extra_data[tag] = True
+
+    if user and not user.is_authenticated:
+        # If user is not authenticated (eg. AnonymousUser) we can not
+        #   save it on the TimelineLogProxy model
+        user = None
+
     TimelineLogProxy.objects.create(
         content_object=object,
         template=f"logging/events/{event}.txt",
         extra_data=extra_data,
+        user=user,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
 
@@ -107,11 +121,13 @@ def pdf_generation_skip(submission: "Submission", submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: "Submission", plugin):
+def prefill_retrieve_success(submission: "Submission", plugin, prefill_fields):
     _create_log(
         submission,
         "prefill_retrieve_success",
+        extra_data={"prefill_fields": prefill_fields},
         plugin=plugin,
+        tags=[TimelineLogTags.AVG],
     )
 
 
@@ -348,6 +364,33 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
         "appointment_cancel_failure",
         plugin=plugin,
         error=error,
+    )
+
+
+def submission_details_view_admin(submission: "Submission", user: "User"):
+    _create_log(
+        submission,
+        "submission_details_view_admin",
+        tags=[TimelineLogTags.AVG],
+        user=user,
+    )
+
+
+def submission_details_view_api(submission: "Submission", user: "User"):
+    _create_log(
+        submission,
+        "submission_details_view_api",
+        tags=[TimelineLogTags.AVG],
+        user=user,
+    )
+
+
+def submission_export_list(form: "Form", user: "User"):
+    _create_log(
+        form,
+        "submission_export_list",
+        tags=[TimelineLogTags.AVG],
+        user=user,
     )
 
 

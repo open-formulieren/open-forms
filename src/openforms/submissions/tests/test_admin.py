@@ -7,6 +7,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 
 from ..constants import RegistrationStatuses
 from ..models import Submission
@@ -82,6 +83,21 @@ class TestSubmissionAdmin(WebTest):
             html=True,
         )
 
+    def test_viewing_submission_details_in_admin_creates_log(self):
+        self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_details_view_admin.txt"
+            ).count(),
+            1,
+        )
+
     def test_export_csv_successfully_exports_csv_file(self):
         response = self.app.get(
             reverse("admin:submissions_submission_changelist"), user=self.user
@@ -102,6 +118,12 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.csv"',
         )
         self.assertIsNotNone(response.content)
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_export_list.txt"
+            ).count(),
+            1,
+        )
 
     def test_export_xlsx_successfully_exports_xlsx_file(self):
         response = self.app.get(
@@ -126,6 +148,12 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.xlsx"',
         )
         self.assertIsNotNone(response.content)
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_export_list.txt"
+            ).count(),
+            1,
+        )
 
     def test_exporting_multiple_forms_fails(self):
         step = FormStepFactory.create()
@@ -150,6 +178,11 @@ class TestSubmissionAdmin(WebTest):
         self.assertEqual(
             response["content-type"],
             "text/html; charset=utf-8",
+        )
+        self.assertFalse(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_export_list.txt"
+            ).exists()
         )
 
     @patch("openforms.registrations.tasks.register_submission.delay")

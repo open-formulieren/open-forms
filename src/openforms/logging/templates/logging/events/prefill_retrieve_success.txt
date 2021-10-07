@@ -1,4 +1,4 @@
 {% load i18n %}
-{% blocktrans trimmed with plugin=log.fmt_plugin lead=log.fmt_lead %}
-   {{ lead }}: Prefill plugin {{ plugin }} reported: Successfully retrieved information.
+{% blocktrans trimmed with plugin=log.fmt_plugin lead=log.fmt_lead fields=log.fmt_prefill_fields %}
+   {{ lead }}: Prefill plugin {{ plugin }} reported: Successfully retrieved information to prefill fields: {{ fields }}
 {% endblocktrans %}

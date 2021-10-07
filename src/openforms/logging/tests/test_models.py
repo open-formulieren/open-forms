@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from freezegun import freeze_time
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.forms.tests.factories import FormFactory
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -17,6 +18,83 @@ class TimelineLogProxyTests(TestCase):
         submission = SubmissionFactory.create()
         log = TimelineLogProxyFactory.create(content_object=submission)
         self.assertTrue(log.is_submission)
+
+    def test_is_form(self):
+        log = TimelineLogProxyFactory.create(content_object=None)
+        self.assertFalse(log.is_form)
+
+        form = FormFactory.create()
+        log = TimelineLogProxyFactory.create(content_object=form)
+        self.assertTrue(log.is_form)
+
+    def test_get_formatted_fields(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email"},
+                {
+                    "key": "theBSN",
+                    "label": "The BSN",
+                    "prefill": {"attribute": "bsn"},
+                    "components": [
+                        {
+                            "key": "theFirstName",
+                            "label": "The First Name",
+                            "prefill": {"attribute": "voornamen"},
+                        }
+                    ],
+                },
+            ]
+        )
+        fields = ["bsn", "voornamen"]
+        log = TimelineLogProxyFactory.create(
+            content_object=submission,
+            user=UserFactory(username="Bob"),
+            extra_data={
+                "plugin_id": "myplugin",
+                "plugin_label": "MyPlugin",
+                "prefill_fields": fields,
+            },
+        )
+        self.assertEqual(
+            log.get_formatted_prefill_fields(fields),
+            ["The BSN (bsn)", "The First Name (voornamen)"],
+        )
+
+    def test_format_fields(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"key": "email", "label": "Email"},
+                {
+                    "key": "theBSN",
+                    "label": "The BSN",
+                    "prefill": {"attribute": "bsn"},
+                    "components": [
+                        {
+                            "key": "theFirstName",
+                            "label": "The First Name",
+                            "prefill": {"attribute": "voornamen"},
+                        }
+                    ],
+                },
+            ]
+        )
+        log = TimelineLogProxyFactory.create(
+            content_object=submission,
+            user=UserFactory(username="Bob"),
+            extra_data={
+                "plugin_id": "myplugin",
+                "plugin_label": "MyPlugin",
+                "prefill_fields": ["bsn", "voornamen"],
+            },
+        )
+        self.assertEqual(
+            log.fmt_prefill_fields, "The BSN (bsn), The First Name (voornamen)"
+        )
+
+    def test_format_form_with_form_content_object(self):
+        form = FormFactory.create(name="MyForm")
+        log = TimelineLogProxyFactory.create(content_object=form)
+        self.assertEqual(f'"MyForm" (ID: {form.id})', log.fmt_form)
 
     @freeze_time("2020-01-02 12:34:00")
     def test_format_accessors(self):

@@ -10,6 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 
 from .factories import SubmissionFactory
 from .mixins import SubmissionsMixin
@@ -36,6 +37,11 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_details_view_api.txt"
+            ).exists()
+        )
 
     def test_retrieve_submission_nothing_submitted(self):
         self._add_submission_to_session(self.submission)
@@ -86,6 +92,12 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 },
             },
         )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_details_view_api.txt"
+            ).count(),
+            1,
+        )
 
     def test_retrieve_submission_optional_steps(self):
         self._add_submission_to_session(self.submission)
@@ -97,3 +109,9 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         step = response.json()["steps"][0]
         self.assertTrue(step["optional"])
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_details_view_api.txt"
+            ).count(),
+            1,
+        )
