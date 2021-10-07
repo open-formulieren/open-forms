@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <soapenv:Body>
+      <samlp:ArtifactResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_1330416516" Version="2.0" IssueInstant="2020-04-09T08:31:46Z" InResponseTo="_1330416516">
+         <saml:Issuer>urn:etoegang:DV:00000001111111111000:entities:9000</saml:Issuer>
+         <samlp:Status>
+            <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+         </samlp:Status>
+         <samlp:Response xmlns:xs="http://www.w3.org/2001/XMLSchema" Destination="https://example.com/eherkenning/acs/" ID="_d4d73890-b5ca-3ca4-ab7b-d078378e3527" InResponseTo="id-jiaDzLL9mR3C3hioH" IssueInstant="2020-04-09T08:31:46Z" Version="2.0">
+            <saml:Issuer>urn:etoegang:DV:00000001111111111000:entities:9000</saml:Issuer>
+            <samlp:Status>
+               <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+            </samlp:Status>
+            <saml:Assertion xmlns:xacml-saml="urn:oasis:xacml:2.0:saml:assertion:schema:os" ID="_ae28e39f-bf7a-32d5-9653-3ad07c0e911e" IssueInstant="2020-04-09T08:31:46Z" Version="2.0">
+               <saml:Issuer>urn:etoegang:DV:00000001111111111000:entities:9000</saml:Issuer>
+               <ds:Signature>
+                  <ds:SignedInfo>
+                     <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                     <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+                     <ds:Reference URI="#_ae28e39f-bf7a-32d5-9653-3ad07c0e911e">
+                        <ds:Transforms>
+                           <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                           <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+                              <ec:InclusiveNamespaces PrefixList="xacml-saml" />
+                           </ds:Transform>
+                        </ds:Transforms>
+                        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                        <ds:DigestValue />
+                     </ds:Reference>
+                  </ds:SignedInfo>
+                  <ds:SignatureValue />
+                  <ds:KeyInfo>
+                     <ds:KeyName />
+                  </ds:KeyInfo>
+               </ds:Signature>
+               <saml:Subject>
+                  <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" NameQualifier="urn:etoegang:EB:00000004000000149000:entities:9009">b964780b-3441-4e57-a027-a59c21c3019d</saml:NameID>
+                  <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                     <saml:SubjectConfirmationData InResponseTo="id-jiaDzLL9mR3C3hioH" NotOnOrAfter="2020-04-09T08:35:46Z" Recipient="https://example.com/eherkenning/acs/" />
+                  </saml:SubjectConfirmation>
+               </saml:Subject>
+               <saml:Conditions NotBefore="2020-04-09T08:31:46Z" NotOnOrAfter="2020-04-09T08:35:46Z">
+                  <saml:AudienceRestriction>
+                     <saml:Audience>urn:etoegang:DV:0000000000000000001:entities:0002</saml:Audience>
+                  </saml:AudienceRestriction>
+               </saml:Conditions>
+               <saml:AuthnStatement AuthnInstant="2020-05-06T10:50:14Z">
+                  <saml:AuthnContext>
+                     <saml:AuthnContextClassRef>urn:etoegang:core:assurance-class:loa3</saml:AuthnContextClassRef>
+                     <saml:AuthenticatingAuthority>urn:etoegang:EB:00000004000000149000:entities:9009</saml:AuthenticatingAuthority>
+                  </saml:AuthnContext>
+               </saml:AuthnStatement>
+               <saml:AttributeStatement>
+                  <saml:Attribute Name="urn:etoegang:core:ServiceID">
+                     <saml:AttributeValue xsi:type="xs:string">urn:etoegang:DV:00000002003214394001:services:5000</saml:AttributeValue>
+                  </saml:Attribute>
+                  <saml:Attribute Name="urn:etoegang:core:ServiceUUID">
+                     <saml:AttributeValue xsi:type="xs:string">87f3035b-b0c2-482a-b693-98316f5f4ba4</saml:AttributeValue>
+                  </saml:Attribute>
+                  <saml:Attribute Name="urn:etoegang:core:ActingSubjectID">
+                     <saml:AttributeValue>{{ encrypted_attribute }}</saml:AttributeValue>
+                  </saml:Attribute>
+               </saml:AttributeStatement>
+            </saml:Assertion>
+         </samlp:Response>
+      </samlp:ArtifactResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
+

@@ -25,6 +25,7 @@ class LogoutTest(APITestCase):
         session = self.client.session
         session[AuthAttribute.bsn] = "123456789"
         session[AuthAttribute.kvk] = "987654321"
+        session[AuthAttribute.pseudo] = "99999999"
         session.save()
 
         self.assertIn(AuthAttribute.bsn, self.client.session)
@@ -36,3 +37,4 @@ class LogoutTest(APITestCase):
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         self.assertNotIn(AuthAttribute.bsn, self.client.session)
         self.assertNotIn(AuthAttribute.kvk, self.client.session)
+        self.assertNotIn(AuthAttribute.pseudo, self.client.session)

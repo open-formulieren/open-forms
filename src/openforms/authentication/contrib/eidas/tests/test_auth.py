@@ -24,7 +24,8 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-EHERKENNING_SERVICE_INDEX = "8888"
+# The settings for the eIDAS service are within the eHerkenning settings
+EIDAS_SERVICE_INDEX = "9999"
 EHERKENNING = {
     "base_url": "https://test-sp.nl",
     "entity_id": "urn:etoegang:DV:00000001111111111000:entities:9000",
@@ -60,26 +61,20 @@ EHERKENNING = {
     "services": [
         {
             "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
-            "attribute_consuming_service_index": EHERKENNING_SERVICE_INDEX,
+            "attribute_consuming_service_index": EIDAS_SERVICE_INDEX,
             "service_name": {
-                "nl": "Test",
-                "en": "Test",
+                "nl": "Test eIDAS",
+                "en": "Test eIDAS",
             },
             "service_description": {
-                "nl": "Test",
-                "en": "Test",
+                "nl": "Test eIDAS",
+                "en": "Test eIDAS",
             },
             "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
             "service_url": "https://test-sp.nl",
             "service_loa": "urn:etoegang:core:assurance-class:loa3",
-            "entity_concerned_types_allowed": [
-                {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:RSIN"},
-                {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
-                {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
-            ],
-            "requested_attributes": [
-                "urn:etoegang:1.11:attribute-represented:KvKnr",
-            ],
+            "entity_concerned_types_allowed": [],
+            "requested_attributes": [],
             "privacy_policy_url": {
                 "nl": "https://test-sp.nl/privacy_policy",
             },
@@ -96,19 +91,19 @@ EHERKENNING = {
 
 @override_settings(
     EHERKENNING=EHERKENNING,
-    EHERKENNING_SERVICE_INDEX=EHERKENNING_SERVICE_INDEX,
+    EIDAS_SERVICE_INDEX=EIDAS_SERVICE_INDEX,
     CORS_ALLOW_ALL_ORIGINS=True,
     IS_HTTPS=True,
 )
 class AuthenticationStep2Tests(TestCase):
-    def test_redirect_to_eherkenning_login(self):
-        form = FormFactory.create(authentication_backends=["eherkenning"])
+    def test_redirect_to_eIDAS_login(self):
+        form = FormFactory.create(authentication_backends=["eidas"])
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"http://testserver{form_path}"
@@ -117,13 +112,15 @@ class AuthenticationStep2Tests(TestCase):
 
         return_url = reverse(
             "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
         return_url_with_param = f"{return_url}?next={form_url}"
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+        # We always get redirected to the /eherkenning/login/ url, but the attr_consuming_service_index differentiates
+        # between the eHerkenning and the eIDAS flow
         self.assertEqual(
-            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param, 'attr_consuming_service_index': '8888'})}",
+            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param, 'attr_consuming_service_index': '9999'})}",
             response.url,
         )
 
@@ -133,13 +130,13 @@ class AuthenticationStep2Tests(TestCase):
         return_value="ONELOGIN_123456",
     )
     def test_authn_request(self, mock_id):
-        form = FormFactory.create(authentication_backends=["eherkenning"])
+        form = FormFactory.create(authentication_backends=["eidas"])
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}"
@@ -149,7 +146,7 @@ class AuthenticationStep2Tests(TestCase):
 
         return_url = reverse(
             "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
 
         self.assertEqual(
@@ -172,12 +169,16 @@ class AuthenticationStep2Tests(TestCase):
                 "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
                 "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
                 "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
-                "AttributeConsumingServiceIndex": "8888",
+                "AttributeConsumingServiceIndex": "9999",
             },
         )
 
 
-@override_settings(EHERKENNING=EHERKENNING, CORS_ALLOW_ALL_ORIGINS=True)
+@override_settings(
+    EHERKENNING=EHERKENNING,
+    EIDAS_SERVICE_INDEX=EIDAS_SERVICE_INDEX,
+    CORS_ALLOW_ALL_ORIGINS=True,
+)
 @Mocker()
 class AuthenticationStep5Tests(TestCase):
     def _create_test_artifact(self, service_entity_id) -> bytes:
@@ -214,7 +215,7 @@ class AuthenticationStep5Tests(TestCase):
                 settings.DJANGO_PROJECT_DIR,
                 "authentication",
                 "contrib",
-                "eherkenning",
+                "eidas",
                 "tests",
                 "data",
                 "ArtifactResponse.xml",
@@ -223,11 +224,11 @@ class AuthenticationStep5Tests(TestCase):
         ) as f:
             artifact_response_success_template = f.read()
 
-        kvk = "123456782"
+        pseudo_id = "123456782"
         encrypted_attribute = OneLogin_Saml2_Utils.generate_name_id(
-            kvk,
+            pseudo_id,
             sp_nq=None,
-            nq="urn:etoegang:1.9:EntityConcernedID:KvKnr",
+            nq="urn:etoegang:1.9:EntityConcernedID:Pseudo",
             sp_format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
             cert=open(settings.EHERKENNING["cert_file"], "r").read(),
         )
@@ -243,7 +244,7 @@ class AuthenticationStep5Tests(TestCase):
             content=artifact_response_soap,
         )
 
-        form = FormFactory.create(authentication_backends=["eherkenning"])
+        form = FormFactory.create(authentication_backends=["eidas"])
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
@@ -252,7 +253,7 @@ class AuthenticationStep5Tests(TestCase):
 
         return_url = reverse(
             "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
         return_url_with_param = f"https://testserver{return_url}?next={form_url}"
 
@@ -272,7 +273,8 @@ class AuthenticationStep5Tests(TestCase):
             form_url,
             status_code=302,
         )
-        self.assertEqual(kvk, self.client.session["kvk"])
+
+        self.assertEqual(pseudo_id, self.client.session["pseudo_id"])
 
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
@@ -312,7 +314,7 @@ class AuthenticationStep5Tests(TestCase):
             content=artifact_response_soap,
         )
 
-        form = FormFactory.create(authentication_backends=["eherkenning"])
+        form = FormFactory.create(authentication_backends=["eidas"])
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
@@ -323,11 +325,12 @@ class AuthenticationStep5Tests(TestCase):
         success_return_url = furl(
             reverse(
                 "authentication:return",
-                kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+                kwargs={"slug": form.slug, "plugin_id": "eidas"},
             )
         )
         success_return_url.add(args={"next": form_url.url})
 
+        # The ACS is the same as for eHerkenning!
         url = furl(reverse("eherkenning:acs")).set(
             {
                 "SAMLart": self._create_test_artifact(
@@ -339,7 +342,7 @@ class AuthenticationStep5Tests(TestCase):
 
         response = self.client.get(url, follow=True)
 
-        form_url.args["_eherkenning-message"] = "login-cancelled"
+        form_url.args["_eidas-message"] = "login-cancelled"
 
         self.assertEquals(
             response.redirect_chain[-1],
