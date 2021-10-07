@@ -6,7 +6,8 @@ import DEFAULT_TABS from "./edit/tabs";
 import * as L from 'leaflet';
 import { RD_CRS } from './rd';
 
-const TextFieldComponent = Formio.Components.components.textfield;
+// Using Hidden Component so we don't get anything 'extra' with our map
+const HiddenComponent = Formio.Components.components.hidden;
 
 const TILES = 'https://geodata.nationaalgeoregister.nl/tiles/service';
 
@@ -35,9 +36,9 @@ const MAP_DEFAULTS = {
 };
 
 
-export default class PdokComponent extends TextFieldComponent {
+export default class PdokComponent extends HiddenComponent {
     static schema(...extend) {
-        return TextFieldComponent.schema({
+        return HiddenComponent.schema({
             type: 'pdok',
             label: 'PDOK kaart',
             key: 'pdokMap',
@@ -70,7 +71,7 @@ export default class PdokComponent extends TextFieldComponent {
         return super.renderElement(value, index) + '<div id="leaflet-map" style="height:400px"></div>';
     }
     //
-    // // TODO Add attach, setValue,  function
+    // TODO Add attach, setValue functions
     //
     attachElement(element, index) {
         super.attachElement(element, index);
