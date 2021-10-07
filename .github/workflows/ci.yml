@@ -165,7 +165,7 @@ jobs:
         with:
           node-version: '12'
       - name: Install spectral
-        run: npm install -g @stoplight/spectral
+        run: npm install -g @stoplight/spectral@5.9.2
       - name: Run OAS linter
         run: spectral lint ./openapi.yaml
 
