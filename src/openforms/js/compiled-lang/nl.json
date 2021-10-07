@@ -94,7 +94,7 @@
   "5OXIff": [
     {
       "type": 0,
-      "value": "Veld waar de geboortedatum voor een afspraak komen te staan"
+      "value": "Veld waar de geboortedatum voor een afspraak komt te staan"
     }
   ],
   "5P+YgL": [
@@ -680,7 +680,7 @@
   "bRe/yq": [
     {
       "type": 0,
-      "value": "There are validation errors"
+      "value": "Er zijn validatiefouten"
     }
   ],
   "bzVhb6": [
@@ -1026,7 +1026,7 @@
   "zUVGyl": [
     {
       "type": 0,
-      "value": "There are validation errors"
+      "value": "Er zijn validatiefouten"
     }
   ]
 }
