@@ -185,7 +185,7 @@ class TestSubmissionAdmin(WebTest):
             ).exists()
         )
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.retry_register_submission.delay")
     def test_resend_submissions_only_resends_failed_submissions(self, task_mock):
         failed = SubmissionFactory.create(
             registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
