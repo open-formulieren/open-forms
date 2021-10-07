@@ -29,3 +29,6 @@ class FieldChoices(DjangoChoices):
     )
     postcode = ChoiceItem("postcode", _("Postal code"))
     woonplaatsNaam = ChoiceItem("woonplaatsNaam", _("Residence name"))
+    gemeenteVanInschrijving = ChoiceItem(
+        "gemeenteVanInschrijving", _("Municipality where registered")
+    )

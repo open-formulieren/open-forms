@@ -28,6 +28,7 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
     ],
     FieldChoices.postcode: Target["verblijfsadres"]["aoa.postcode"],
     FieldChoices.woonplaatsNaam: Target["verblijfsadres"]["wpl.woonplaatsNaam"],
+    FieldChoices.gemeenteVanInschrijving: Target["inp.gemeenteVanInschrijving"],
 }
 
 
@@ -76,7 +77,8 @@ class StufBgPrefill(BasePlugin):
         response_dict = {}
         for attribute in attributes:
             value = glom(data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None)
-            if "@noValue" not in value:
+
+            if value and "@noValue" not in value:
                 response_dict[attribute] = value
 
         return response_dict
