@@ -68,6 +68,9 @@
                     {% if geslachtsnaam %}
                         <ns:geslachtsnaam xsi:nil="true"/>
                     {% endif %}
+                    {% if voorvoegselGeslachtsnaam %}
+                        <ns:voorvoegselGeslachtsnaam xsi:nil="true"/>
+                    {% endif %}
                     {% if voornamen %}
                         <ns:voornamen xsi:nil="true"/>
                     {% endif %}
