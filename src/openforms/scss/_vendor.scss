@@ -2,6 +2,7 @@
 @import '~microscope-sass/lib/typography';
 
 @import './vendor/react-tabs';
+@import './vendor/leaflet';
 
 // this violates a check by postcss-selector-lint, but it's the SDK snippet which has no
 // classnames to target.
