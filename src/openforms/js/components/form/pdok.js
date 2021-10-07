@@ -64,11 +64,7 @@ export default class PdokComponent extends HiddenComponent {
     }
 
     renderElement(value, index) {
-        console.log('In renderElement');
-        if(document.querySelector("#leaflet-map")) {
-            return document.querySelector("#leaflet-map").outerHTML;
-        }
-        return super.renderElement(value, index) + '<div id="leaflet-map"/>';
+        return super.renderElement(value, index) + `<div id="the-pdok-map-${this.id}" style="height: 400px; position: relative;"/>`;
     }
     //
     // TODO Add attach, setValue functions
