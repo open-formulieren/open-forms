@@ -119,8 +119,8 @@ Log settings
 
 .. _installation_config_eherkenning:
 
-DigiD/EHerkenning settings
---------------------------
+DigiD/EHerkenning/eIDAS settings
+--------------------------------
 
 * ``SSL_CERTIFICATE_PATH``: Path to the TLS/SSL certificate on the server.
 * ``SSL_KEY_PATH``: Path to the TLS/SSL key on the server.
@@ -142,6 +142,12 @@ DigiD/EHerkenning settings
 * ``EHERKENNING_SERVICE_DESCRIPTION_EN``: The description (in English) of the service that requires EHerkenning authentication.
 * ``EHERKENNING_ORGANISATION_NAME_NL``: The Dutch name of the organisation that provides the service that requires EHerkenning authentication.
 * ``EHERKENNING_ORGANISATION_NAME_EN``: The English name of the organisation that provides the service that requires EHerkenning authentication.
+* ``EHERKENNING_SERVICE_INDEX``: The index that was specified in the metadata for the eHerkenning service.
+* ``EIDAS_SERVICE_INDEX``: The index that was specified in the metadata for the eIDAS service.
+* ``EIDAS_SERVICE_NAME_NL``: The Dutch name of the service that requires eIDAS authentication.
+* ``EIDAS_SERVICE_NAME_EN``: The Dutch name of the service that requires eIDAS authentication.
+* ``EIDAS_SERVICE_DESCRIPTION_NL``: The description (in Dutch) of the service that requires eIDAS authentication.
+* ``EIDAS_SERVICE_DESCRIPTION_EN``: The description (in English) of the service that requires eIDAS authentication.
 
 Other settings
 --------------
