@@ -20,6 +20,7 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.bsn: Target["inp.bsn"],
     FieldChoices.voornamen: Target["voornamen"],
     FieldChoices.geslachtsnaam: Target["geslachtsnaam"],
+    FieldChoices.voorvoegselGeslachtsnaam: Target["voorvoegselGeslachtsnaam"],
     FieldChoices.straatnaam: Target["verblijfsadres"]["gor.straatnaam"],
     FieldChoices.huisnummer: Target["verblijfsadres"]["aoa.huisnummer"],
     FieldChoices.huisletter: Target["verblijfsadres"]["aoa.huisletter"],
