@@ -13,24 +13,28 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 
 
-@register("eherkenning")
-class EHerkenningAuthentication(BasePlugin):
-    verbose_name = _("eHerkenning")
-    provides_auth = AuthAttribute.kvk
+class AuthenticationBasePlugin(BasePlugin):
+    def _get_attr_consuming_service_index(self) -> str:
+        indices = {
+            "eidas": settings.EIDAS_SERVICE_INDEX,
+            "eherkenning": settings.EHERKENNING_SERVICE_INDEX,
+        }
+        return indices[self.identifier]
 
     def start_login(self, request, form, form_url):
-        """Redirect to the /eherkenning/login endpoint to start the authentication"""
+        """Redirect to the /eherkenning/login endpoint to start the authentication. The distinction between the eIDAS
+        and eHerkenning flow is determined by the AttributeConsumingServiceIndex"""
         login_url = reverse("eherkenning:login", request=request)
 
         auth_return_url = reverse(
             "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+            kwargs={"slug": form.slug, "plugin_id": self.identifier},
         )
         return_url = f"{auth_return_url}?next={form_url}"
 
         auth_return_params = {
             "next": return_url,
-            "attr_consuming_service_index": settings.EHERKENNING_SERVICE_INDEX,
+            "attr_consuming_service_index": self._get_attr_consuming_service_index(),
         }
         url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
@@ -41,6 +45,12 @@ class EHerkenningAuthentication(BasePlugin):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
         return HttpResponseRedirect(form_url)
+
+
+@register("eherkenning")
+class EHerkenningAuthentication(AuthenticationBasePlugin):
+    verbose_name = _("eHerkenning")
+    provides_auth = AuthAttribute.kvk
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(
