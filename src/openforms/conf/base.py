@@ -555,9 +555,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "resend-submissions": {
         "task": "openforms.registrations.tasks.resend_submissions",
-        "schedule": config(
-            "BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60  # every minute
-        ),
+        "schedule": config("BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60 * 5),
     },
     "delete-submissions": {
         "task": "openforms.data_removal.tasks.delete_submissions",
