@@ -80,7 +80,13 @@ export default class PdokComponent extends HiddenComponent {
 
         map.addLayer(tiles);
 
-        L.marker([52.1326332, 5.291266]).addTo(map);
+        // Set inital marker at center
+        let marker = L.marker([52.1326332, 5.291266]).addTo(map);
+
+        map.on('click', (e) => {
+          map.removeLayer(marker);
+          marker = L.marker(e.latlng).addTo(map);
+        });
     }
 
     // TODO Probably need more custom tabs than these
