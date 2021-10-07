@@ -366,12 +366,12 @@ LOGGING = {
     "loggers": {
         "openforms": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True,
         },
         "stuf": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True,
         },
         "django.request": {

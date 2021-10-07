@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 def register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
 
+    logger.debug("Register submission '%s'", submission)
+
     if submission.registration_status == RegistrationStatuses.success:
         # It's possible for two instances of this task to run for the same submission
         #  (eg.  A user runs the admin action and the celery beat task runs)
@@ -113,4 +115,5 @@ def resend_submissions():
         registration_status=RegistrationStatuses.failed,
         completed_on__gte=resend_time_limit,
     ):
+        logger.debug("Resend submission for registration '%s'", submission)
         register_submission.delay(submission.id)
