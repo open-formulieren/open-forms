@@ -221,6 +221,16 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state"):
             del self._execution_state
 
+    def save_registration_status(self, status, result):
+        self.registration_status = status
+        self.registration_result = result
+        self.save(
+            update_fields=[
+                "registration_status",
+                "registration_result",
+            ]
+        )
+
     @property
     def is_completed(self):
         return bool(self.completed_on)
