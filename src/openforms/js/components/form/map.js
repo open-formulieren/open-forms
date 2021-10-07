@@ -62,7 +62,7 @@ export default class Map extends TextFieldComponent {
     }
 
     renderElement(value, index) {
-        return super.renderElement(value, index) + `<div id="the-pdok-map-${this.id}" style="height: 400px; position: relative;"/>`;
+        return super.renderElement(value, index) + `<div id="map-${this.id}" style="height: 400px; position: relative;"/>`;
     }
 
     get inputInfo() {
@@ -77,7 +77,7 @@ export default class Map extends TextFieldComponent {
 
         console.log('In attachElement');
 
-        let map = L.map(`the-pdok-map-${this.id}`, MAP_DEFAULTS);
+        let map = L.map(`map-${this.id}`, MAP_DEFAULTS);
 
         const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
