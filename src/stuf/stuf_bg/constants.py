@@ -21,6 +21,9 @@ class FieldChoices(DjangoChoices):
     bsn = ChoiceItem("bsn", _("BSN"))
     voornamen = ChoiceItem("voornamen", _("First name"))
     geslachtsnaam = ChoiceItem("geslachtsnaam", _("Last name"))
+    voorvoegselGeslachtsnaam = ChoiceItem(
+        "voorvoegselGeslachtsnaam", _("Last name prefix")
+    )
     straatnaam = ChoiceItem("straatnaam", _("Street Name"))
     huisnummer = ChoiceItem("huisnummer", _("House number"))
     huisletter = ChoiceItem("huisletter", _("House letter"))
