@@ -95,7 +95,6 @@ CACHES = {
     },
 }
 
-
 #
 # APPLICATIONS enabled for this project
 #
@@ -148,6 +147,8 @@ INSTALLED_APPS = [
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
     "django_filters",
+    "csp",
+    "cspreports",
     # Project applications.
     "openforms.accounts",
     "openforms.appointments.apps.AppointmentsAppConfig",
@@ -202,6 +203,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -406,7 +408,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
@@ -490,7 +491,6 @@ ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
     "openforms.utils.django_two_factor_auth.should_display_dropdown_menu"
 )
 
-
 #
 # DJANGO-AXES (4.0+)
 #
@@ -541,7 +541,6 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:63
 
 # Add a 30 minutes timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 30 * 60
-
 
 CELERY_BEAT_SCHEDULE = {
     "clear-session-store": {
@@ -641,7 +640,6 @@ if SENTRY_DSN:
 SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
 SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", ENVIRONMENT)
 
-
 #
 # Elastic APM
 #
@@ -659,7 +657,6 @@ else:
     INSTALLED_APPS = INSTALLED_APPS + [
         "elasticapm.contrib.django",
     ]
-
 
 #
 # DJANGO REST FRAMEWORK
@@ -893,14 +890,12 @@ EHERKENNING = {
     "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
 }
 
-
 #
 # Location Client
 #
 OPENFORMS_LOCATION_CLIENT = config(
     "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
 )
-
 
 #
 # Mozilla Django OIDC DB settings
@@ -913,3 +908,25 @@ MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 # Email / payment
 #
 PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
+
+#
+# Django CSP settings
+#
+# NOTE: make sure every value is a tuple or list, and to quote special values like 'self'
+CSP_DEFAULT_SRC = ["'self'"]
+
+# TODO enable these
+# CSP_UPGRADE_INSECURE_REQUESTS = True
+# CSP_BLOCK_ALL_MIXED_CONTENT = True
+# CSP_INCLUDE_NONCE_IN = ["script-src"]
+
+# report to our own django-csp-reports
+CSP_REPORT_URI = reverse_lazy("report_csp")
+CSP_REPORT_ONLY = True
+
+# configure django-csp-reports
+CSP_REPORTS_SAVE = True  # save as model
+CSP_REPORTS_LOG = False  # report to logging
+CSP_REPORTS_LOG_LEVEL = "warning"
+CSP_REPORTS_EMAIL_ADMINS = False
+CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"

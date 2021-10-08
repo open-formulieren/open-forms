@@ -160,6 +160,14 @@ django-cors-headers==3.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+django-csp-reports==1.5
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+django-csp==3.7
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
@@ -253,6 +261,8 @@ django==2.2.24
     #   django-choices
     #   django-cookie-consent
     #   django-cors-headers
+    #   django-csp
+    #   django-csp-reports
     #   django-decorator-include
     #   django-filter
     #   django-formtools
