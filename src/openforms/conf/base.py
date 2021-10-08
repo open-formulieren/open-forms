@@ -203,7 +203,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
-    "csp.middleware.CSPMiddleware",
+    "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -934,17 +934,18 @@ CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
 # CSP_INCLUDE_NONCE_IN = ["script-src"]  # if we inline we should at least have this
 
 # note these are outdated/deprecated django-csp options
-# CSP_BLOCK_ALL_MIXED_CONTENT = True
+# CSP_BLOCK_ALL_MIXED_CONTENT
 # CSP_PLUGIN_TYPES
 # CSP_CHILD_SRC
 
 # report to our own django-csp-reports
+CSP_REPORT_ONLY = True  # danger
 CSP_REPORT_URI = reverse_lazy("report_csp")
-CSP_REPORT_ONLY = True
 
 # configure django-csp-reports
-CSP_REPORTS_SAVE = True  # save as model
-CSP_REPORTS_LOG = False  # report to logging
+CSP_REPORTS_SAVE = False  # save as model
+CSP_REPORTS_LOG = False  # logging
 CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
+CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
