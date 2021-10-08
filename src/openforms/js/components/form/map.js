@@ -3,7 +3,7 @@
  */
 import {Formio} from 'react-formio';
 import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
-import * as leaflet from 'leaflet';
+import * as L from 'leaflet';
 import { RD_CRS } from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -75,18 +75,24 @@ export default class Map extends TextFieldComponent {
     attachElement(element, index) {
         super.attachElement(element, index);
 
-        let map = leaflet.map(`map-${this.id}`, MAP_DEFAULTS);
+        // Prevent exception if container is already initialized
+        const container = L.DomUtil.get(`map-${this.id}`);
+        if (container !== null) {
+            container._leaflet_id = null;
+        }
 
-        const tiles = leaflet.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
+        let map = L.map(`map-${this.id}`, MAP_DEFAULTS);
+
+        const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
         map.addLayer(tiles);
 
         // Set initial marker at center
-        let marker = leaflet.marker([52.1326332, 5.291266]).addTo(map);
+        let marker = L.marker([52.1326332, 5.291266]).addTo(map);
 
         map.on('click', (e) => {
           map.removeLayer(marker);
-          marker = leaflet.marker(e.latlng).addTo(map);
+          marker = L.marker(e.latlng).addTo(map);
         });
     }
 
