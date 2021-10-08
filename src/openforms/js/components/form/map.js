@@ -81,7 +81,7 @@ export default class Map extends TextFieldComponent {
             container._leaflet_id = null;
         }
 
-        let map = L.map(`map-${this.id}`, MAP_DEFAULTS);
+        const map = L.map(`map-${this.id}`, MAP_DEFAULTS);
 
         const tiles = L.tileLayer(TILE_LAYERS.url, TILE_LAYERS.options);
 
