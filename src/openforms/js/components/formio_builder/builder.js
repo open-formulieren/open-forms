@@ -3,6 +3,8 @@ import React, {useRef, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormBuilder} from 'react-formio';
 
+import nlStrings from './translation';
+
 
 const BUILDER_OPTIONS = {
     builder: {
@@ -47,6 +49,10 @@ const BUILDER_OPTIONS = {
         }
     },
     noDefaultSubmitButton: true,
+    language: 'nl',
+    i18n: {
+        nl: nlStrings
+    }
 };
 
 
