@@ -18,6 +18,7 @@ import PasswordField from './components/form/password';
 import NumberField from './components/form/number';
 import LicensePlate from './components/form/licenseplate';
 import CoSignField from './components/form/coSign';
+import NpFamilyMembers from './components/form/np-family-members';
 
 const FormIOModule = {
   components: {
@@ -41,6 +42,7 @@ const FormIOModule = {
     fieldset: FieldSet,
     licenseplate: LicensePlate,
     coSign: CoSignField,
+    npFamilyMembers: NpFamilyMembers,
   },
 };
 

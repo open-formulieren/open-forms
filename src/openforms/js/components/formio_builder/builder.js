@@ -42,6 +42,7 @@ const BUILDER_OPTIONS = {
                 password: true,
                 licenseplate: true,
                 coSign: true,
+                npFamilyMembers: true,
             }
         },
         custom_layout: {
