@@ -2,7 +2,7 @@
  * A form widget to select a location on a Leaflet map.
  */
 import {Formio} from 'react-formio';
-import DEFAULT_TABS from "./edit/tabs";
+import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 import * as leaflet from 'leaflet';
 import { RD_CRS } from './rd';
 
@@ -91,6 +91,6 @@ export default class Map extends TextFieldComponent {
     }
 
     static editForm() {
-        return {components: [DEFAULT_TABS]};
+        return {components: [DEFAULT_SENSITIVE_TABS]};
     }
 }
