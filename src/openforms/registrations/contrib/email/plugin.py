@@ -28,15 +28,18 @@ class EmailRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> None:
         submitted_data = submission.get_merged_data()
 
-        # explicitly get a reference
+        # explicitly get a reference before registering
         set_submission_reference(submission)
 
-        subject = _("[Open Forms] {} - submission {}").format(
-            submission.form.admin_name, submission.public_registration_reference
+        subject = _("[Open Forms] {form_name} - submission {public_reference}").format(
+            form_name=submission.form.admin_name,
+            public_reference=submission.public_registration_reference,
         )
-        template = _("Submission details for {} (submitted on {})").format(
-            submission.form.admin_name,
-            submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
+        template = _(
+            "Submission details for {form_name} (submitted on {datetime})"
+        ).format(
+            form_name=submission.form.admin_name,
+            datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
         )
 
         template += """
@@ -66,7 +69,7 @@ class EmailRegistration(BasePlugin):
                 ).export(attachment_format)
 
                 attachment = (
-                    f"{submission.form.name} - submission.{attachment_format}",
+                    f"{submission.form.admin_name} - submission.{attachment_format}",
                     export_data,
                     mime_type,
                 )
@@ -93,12 +96,17 @@ class EmailRegistration(BasePlugin):
         raise NoSubmissionReference("Email plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
-        subject = _("[Open Forms] {} - submission payment received {}").format(
-            submission.form.admin_name, submission.public_registration_reference
+        subject = _(
+            "[Open Forms] {form_name} - submission payment received {public_reference}"
+        ).format(
+            form_name=submission.form.admin_name,
+            public_reference=submission.public_registration_reference,
         )
-        message = _("Submission payment received for {} (submitted on {})").format(
-            submission.form.admin_name,
-            submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
+        message = _(
+            "Submission payment received for {form_name} (submitted on {datetime})"
+        ).format(
+            form_name=submission.form.admin_name,
+            datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
         )
 
         sanitized = sanitize_content(message)

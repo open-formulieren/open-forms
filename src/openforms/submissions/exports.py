@@ -17,7 +17,7 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
             make_naive(submission.completed_on) if submission.completed_on else None
         )
         submission_data = [
-            submission.form.name,
+            submission.form.admin_name,
             inzending_datum,
         ]
         merged_data = submission.get_merged_data()

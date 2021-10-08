@@ -32,7 +32,9 @@ from ..plugin import EmailRegistration
 class EmailBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create(registration_backend="email")
+        cls.form = FormFactory.create(
+            name="MyName", internal_name="MyInternalName", registration_backend="email"
+        )
         cls.fd = FormDefinitionFactory.create()
         cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
 
@@ -81,7 +83,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -124,7 +126,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.public_registration_reference
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -134,7 +136,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -173,7 +175,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.public_registration_reference
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -183,7 +185,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -213,7 +215,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission payment received {}").format(
-                submission.form.name, submission.public_registration_reference
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -267,7 +269,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -277,7 +279,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -297,11 +299,15 @@ class EmailBackendTests(TestCase):
         self.assertEqual(file2[2], "text/bar")
 
         qs = Submission.objects.filter(pk=submission.pk)
-        self.assertEqual(csv_export[0], f"{submission.form.name} - submission.csv")
+        self.assertEqual(
+            csv_export[0], f"{submission.form.admin_name} - submission.csv"
+        )
         self.assertEqual(csv_export[1], create_submission_export(qs).export("csv"))
         self.assertEqual(csv_export[2], "text/csv")
 
-        self.assertEqual(xlsx_export[0], f"{submission.form.name} - submission.xlsx")
+        self.assertEqual(
+            xlsx_export[0], f"{submission.form.admin_name} - submission.xlsx"
+        )
         self.assertEqual(xlsx_export[1], create_submission_export(qs).export("xlsx"))
         self.assertEqual(
             xlsx_export[2],
@@ -347,7 +353,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -357,7 +363,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
