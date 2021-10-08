@@ -54,6 +54,7 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
     )
 
     def order_id_str(self, obj):
+        # property to stop Django localising the integer
         return str(obj.order_id)
 
     order_id_str.short_description = _("Order ID")
