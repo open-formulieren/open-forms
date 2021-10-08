@@ -12,11 +12,7 @@ const nlStrings = {
   "invalidRowError": "",
   "invalidRowsError": "",
   "unsavedRowsError": "",
-  "Processing file": {
-    " Please wait": {
-      "": ""
-    }
-  },
+  "Processing file, Please wait...": "",
   "File with the same name is already uploaded": "Bestand met dezelfde naam is reeds geupload",
   "File is the wrong type; it must be {{ pattern }}": "Bestand is van het verkeerde type; het moet zijn {{ pattern }}",
   "File is too small; it must be at least {{ size }}": "Bestand is te klein; het moet minimaal {{ size }} zijn",
@@ -24,25 +20,21 @@ const nlStrings = {
   "File Service not provided": "Bestandservice niet opgegeven",
   "File processing has been failed": "Bestandverwerking is mislukt",
   "Starting upload": "Bezig met uploaden",
-  "loading": {
-    "": ""
-  },
+  "loading...": "bezig met laden...",
   "No results found": "Geen resultaten gevonden",
   "No choices to choose from": "Geen opties om te kiezen",
   "Type to search": "Typ om te zoeken",
   "Click to Sign": "Klik om te ondertekenen",
   "No columns provided": "Geen kolommen opgegeven",
   "submitError": "",
-  "Converting PDF": {
-    " Please wait": " Even geduld"
-  },
+  "Converting PDF. Please wait.": "PDF aan het converteren. Even geduld alstublieft",
   "Uploading": "Bezig met uploaden",
   "errorListHotkey": "",
   "Component": "Veld",
   "Save": "Opslaan",
   "Remove": "Verwijderen",
   "Preview": "Voorbeeld",
-  "Drag and Drop a form component": "",
+  "Drag and Drop a form component": "Sleep een component formulier en laat de muisknop los",
   "No Matches Found": "Geen overeenkomsten gevonden",
   "Add/Remove": "Toevoegen/Verwijderen",
   "Day": "Dag",
@@ -55,9 +47,6 @@ const nlStrings = {
   "browse": "bladeren",
   "Switch to file upload": "Overschakelen naar bestandsupload ",
   "Complete": "Afgerond",
-  "No storage has been set for this field": {
-    " File uploads are disabled until storage is set up": ""
-  },
   "File API & FileReader API not supported": "File API en FileReader API worden niet ondersteund",
   "XHR2's FormData is not supported": "XHR2's FormData wordt niet ondersteund",
   "XHR2's upload progress isn't supported": "XHR2's upload voortgang wordt niet ondersteund",
