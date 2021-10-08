@@ -1,3 +1,4 @@
+import logging
 import re
 from functools import partial
 from typing import List
@@ -9,17 +10,21 @@ from openforms.config.models import GlobalConfiguration
 
 from .constants import URL_REGEX
 
+logger = logging.getLogger(__name__)
+
 
 def sanitize_urls(allowlist: List[str], match) -> str:
     parsed = urlparse(match.group())
     if parsed.netloc in allowlist:
         return match.group()
+
+    logger.debug("Sanitized URL from email: %s", match.group())
     return ""
 
 
 def get_system_netloc_allowlist():
     return [
-        # add the BASE_URL to allow the payment link
+        # add the BASE_URL to allow o.a. payments and appointments to link back
         urlsplit(settings.BASE_URL).netloc,
     ]
 
