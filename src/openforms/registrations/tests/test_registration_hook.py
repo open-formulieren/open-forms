@@ -186,7 +186,7 @@ class RegistrationHookTests(TestCase):
 
 
 class ResendSubmissionTest(TestCase):
-    @patch("openforms.registrations.tasks.register_submission.delay")
+    @patch("openforms.registrations.tasks.retry_register_submission.delay")
     def test_resend_submission_task_only_resends_certain_submissions(self, task_mock):
         failed_within_time_limit = SubmissionFactory.create(
             registration_status=RegistrationStatuses.failed, completed_on=timezone.now()

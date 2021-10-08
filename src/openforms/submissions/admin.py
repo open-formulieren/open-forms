@@ -13,7 +13,7 @@ from openforms.logging.logevent import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
-from openforms.registrations.tasks import register_submission
+from openforms.registrations.tasks import retry_register_submission
 
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import export_submissions
@@ -244,7 +244,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             ),
         )
         for submission in submissions:
-            register_submission.delay(submission.id)
+            retry_register_submission.delay(submission.id)
 
     resend_submissions.short_description = _(
         "Resend %(verbose_name_plural)s to the registration backend."

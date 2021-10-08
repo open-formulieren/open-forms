@@ -10,30 +10,36 @@ from openforms.celery import app
 from openforms.logging import logevent
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
-from openforms.utils.celery import maybe_retry_in_workflow
 
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
 
 
-@maybe_retry_in_workflow(
-    timeout=10,
-    retry_for=(RegistrationFailed,),
-)
-@app.task(
-    autoretry_for=(RegistrationFailed,),
-    max_retries=settings.SUBMISSION_REGISTRATION_MAX_RETRIES,
-)
+@app.task(time_limit=settings.SUBMISSION_REGISTRATION_TIMEOUT)
 def register_submission(submission_id: int) -> Optional[dict]:
+    # initial first try with timeouts as the user is waiting
+    return _register_submission(submission_id)
+
+
+@app.task()
+def retry_register_submission(submission_id: int) -> Optional[dict]:
+    # out-of-flow retry, less time critical
+    return _register_submission(submission_id)
+
+
+def _register_submission(submission_id: int) -> Optional[dict]:
     submission = Submission.objects.get(id=submission_id)
 
     logger.debug("Register submission '%s'", submission)
 
-    if submission.registration_status == RegistrationStatuses.success:
+    if submission.registration_status in (
+        RegistrationStatuses.success,
+        RegistrationStatuses.in_progress,
+    ):
         # It's possible for two instances of this task to run for the same submission
         #  (eg.  A user runs the admin action and the celery beat task runs)
-        # so if the submission has already succeed we just return
+        # so if the submission has already succeed or is currently running we just return
         return
 
     logevent.registration_start(submission)
@@ -54,8 +60,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     if not backend:
         logger.info("Form %s has no registration plugin configured, aborting", form)
-        submission.registration_status = RegistrationStatuses.success
-        submission.save(update_fields=["registration_status"])
+        submission.save_registration_status(RegistrationStatuses.success, None)
         logevent.registration_skip(submission)
         return
 
@@ -69,6 +74,9 @@ def register_submission(submission_id: int) -> Optional[dict]:
     try:
         options_serializer.is_valid(raise_exception=True)
     except Exception as e:
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
         logevent.registration_failure(submission, e, plugin)
         raise
 
@@ -77,33 +85,15 @@ def register_submission(submission_id: int) -> Optional[dict]:
         result = plugin.register_submission(
             submission, options_serializer.validated_data
         )
-    except RegistrationFailed as e:
-        formatted_tb = traceback.format_exc()
-        submission.registration_status = RegistrationStatuses.failed
-        submission.registration_result = {"traceback": formatted_tb}
-        submission.save(
-            update_fields=[
-                "registration_status",
-                "registration_result",
-            ]
+    except Exception as e:
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, e, plugin)
         raise
-    except Exception as e:
-        logevent.registration_failure(submission, e, plugin)
-        raise
     else:
-        status = RegistrationStatuses.success
+        submission.save_registration_status(RegistrationStatuses.success, result)
         logevent.registration_success(submission, plugin)
-
-    submission.registration_status = status
-    submission.registration_result = result
-    submission.save(
-        update_fields=[
-            "registration_status",
-            "registration_result",
-        ]
-    )
 
 
 @app.task(ignore_result=True)
@@ -116,4 +106,4 @@ def resend_submissions():
         completed_on__gte=resend_time_limit,
     ):
         logger.debug("Resend submission for registration '%s'", submission)
-        register_submission.delay(submission.id)
+        retry_register_submission.delay(submission.id)
