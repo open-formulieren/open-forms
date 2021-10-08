@@ -912,13 +912,31 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 #
 # Django CSP settings
 #
-# NOTE: make sure every value is a tuple or list, and to quote special values like 'self'
-CSP_DEFAULT_SRC = ["'self'"]
+# explanation of directives: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+# and how to specify them: https://django-csp.readthedocs.io/en/latest/configuration.html
+#
+# NOTE: make sure values are a tuple or list, and to quote special values like 'self'
 
-# TODO enable these
-# CSP_UPGRADE_INSECURE_REQUESTS = True
+CSP_DEFAULT_SRC = [
+    "'self'"
+]  # ideally we'd use BASE_URI but it'd have to be lazy or cause issues
+
+# directives that don't fallback to default-src
+CSP_BASE_URI = ["'self'"]
+
+# CSP_FRAME_ANCESTORS = ["'self'"]  # this will break hosting a form to be framed by a CMS
+# CSP_FRAME_SRC = ["'self'"]  # this will break hosting iframe widgets like maps
+# CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
+# CSP_FORM_ACTION = ["'self'"]  # forms, possibly problematic with payments
+# CSP_SANDBOX # too much
+
+CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
+# CSP_INCLUDE_NONCE_IN = ["script-src"]  # if we inline we should at least have this
+
+# note these are outdated/deprecated django-csp options
 # CSP_BLOCK_ALL_MIXED_CONTENT = True
-# CSP_INCLUDE_NONCE_IN = ["script-src"]
+# CSP_PLUGIN_TYPES
+# CSP_CHILD_SRC
 
 # report to our own django-csp-reports
 CSP_REPORT_URI = reverse_lazy("report_csp")
