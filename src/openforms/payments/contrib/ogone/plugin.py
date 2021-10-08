@@ -88,7 +88,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
     def handle_webhook(self, request):
         # unvalidated data
-        order_id = request.data.get("orderID")
+        order_id = case_insensitive_get(request.data, "orderID")
         if not order_id:
             return HttpResponseBadRequest("missing orderID"), None
 
@@ -124,3 +124,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         if res > 0:
             payment.refresh_from_db()
+
+
+def case_insensitive_get(mapping, key, default=None):
+    if key in mapping:
+        return mapping[key]
+    for k in mapping:
+        if k.upper() == key.upper():
+            return mapping[k]
+    return default
