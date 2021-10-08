@@ -28,12 +28,12 @@ module.exports = {
                 // Check out https://github.com/acornjs/acorn/tree/master/acorn#interface for additional options
             }
         },
-        lngs: ['en','nl'],
+        lngs: ['nl'],
         ns: [
             'locale',
             'resource'
         ],
-        defaultLng: 'en',
+        defaultLng: 'nl',
         defaultNs: 'resource',
         defaultValue: '_NOT_TRANSLATED_',
         resource: {
