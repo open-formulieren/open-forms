@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext_lazy as _

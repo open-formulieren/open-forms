@@ -17,12 +17,12 @@ from .factories import SubmissionPaymentFactory
 
 
 class Plugin(BasePlugin):
-    configuration_options = serializers.Serializer()
+    configuration_options = serializers.Serializer
 
     def register_submission(self, submission, options):
         pass
 
-    def update_payment_status(self, submission: Submission):
+    def update_payment_status(self, submission: Submission, options):
         pass
 
     def get_reference_from_result(self, result):
@@ -77,7 +77,7 @@ class UpdatePaymentTests(TestCase):
         # now check if we update
         with patch.object(self.plugin, "update_payment_status") as update_mock:
             update_submission_payment_registration(submission)
-            update_mock.assert_called_once_with(submission)
+            update_mock.assert_called_once_with(submission, dict())
 
         payment.refresh_from_db()
         submission = payment.submission

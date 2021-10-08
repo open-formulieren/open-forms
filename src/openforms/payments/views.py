@@ -301,6 +301,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     },
 )
 class PaymentWebhookView(PaymentFlowBaseView):
+    parser_classes = (FormParser, MultiPartParser)
+
     def _handle_webhook(self, request, *args, **kwargs):
         try:
             plugin = register[kwargs["plugin_id"]]
@@ -315,6 +317,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if payment:
             logevent.payment_flow_webhook(payment, plugin)
             update_submission_payment_registration(payment.submission)
+
         return HttpResponse("")
 
     def get(self, request, *args, **kwargs):
@@ -352,7 +355,9 @@ class PaymentLinkView(DetailView):
         context = super().get_context_data(**kwargs)
 
         submission = self.get_object()
-        if not submission.payment_user_has_paid:
+        context["price"] = submission.form.product.price
+
+        if submission.payment_required and not submission.payment_user_has_paid:
             plugin_id = submission.form.payment_backend
             plugin = register[plugin_id]
             payment = SubmissionPayment.objects.create_for(

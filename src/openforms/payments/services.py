@@ -5,6 +5,7 @@ from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
+from ..submissions.tasks.emails import send_confirmation_email_after_payment_timeout
 from .constants import PaymentStatus
 
 
@@ -30,8 +31,13 @@ def update_submission_payment_registration(submission: Submission):
         if not payments:
             return
 
+        options_serializer = plugin.configuration_options(
+            data=submission.form.registration_backend_options
+        )
+        options_serializer.is_valid(raise_exception=True)
+
         try:
-            plugin.update_payment_status(submission)
+            plugin.update_payment_status(submission, options_serializer.validated_data)
             payments.update(status=PaymentStatus.registered)
         except Exception as e:
             for p in payments:
@@ -40,3 +46,5 @@ def update_submission_payment_registration(submission: Submission):
         else:
             for p in payments:
                 logevent.payment_register_success(p, plugin)
+
+        send_confirmation_email_after_payment_timeout.delay(submission.id)

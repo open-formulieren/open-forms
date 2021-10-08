@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 from openforms.celery import app
 from openforms.logging import logevent
 
@@ -10,14 +13,39 @@ __all__ = ["maybe_send_confirmation_email"]
 @app.task(bind=True, ignore_result=True)
 def maybe_send_confirmation_email(task, submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
+    try:
+        # access the reverse of the one2one
+        submission.form.confirmation_email_template
+    except (AttributeError, ObjectDoesNotExist):
+        logevent.confirmation_email_skip(submission)
+        return
 
-    logevent.confirmation_email_start(submission)
+    if submission.confirmation_email_sent:
+        return
 
-    if hasattr(submission.form, "confirmation_email_template"):
+    if submission.payment_required and not submission.payment_user_has_paid:
+        # wait a while and check again
+        send_confirmation_email_after_payment_timeout.apply_async(
+            args=(submission.id,), countdown=settings.PAYMENT_CONFIRMATION_EMAIL_TIMEOUT
+        )
+    else:
+        logevent.confirmation_email_start(submission)
         try:
             send_confirmation_email(submission)
         except Exception as e:
             logevent.confirmation_email_failure(submission, e)
             raise
-    else:
-        logevent.confirmation_email_skip(submission)
+
+
+@app.task(bind=True, ignore_result=True)
+def send_confirmation_email_after_payment_timeout(task, submission_id: int) -> None:
+    submission = Submission.objects.get(id=submission_id)
+    if submission.confirmation_email_sent:
+        return
+
+    logevent.confirmation_email_start(submission)
+    try:
+        send_confirmation_email(submission)
+    except Exception as e:
+        logevent.confirmation_email_failure(submission, e)
+        raise

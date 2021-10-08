@@ -1,9 +1,12 @@
 from datetime import datetime
+from decimal import Decimal
 
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+from freezegun import freeze_time
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
@@ -25,14 +28,16 @@ from ..constants import AttachmentFormat
 from ..plugin import EmailRegistration
 
 
+@override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
 class EmailBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create(registration_backend="email")
+        cls.form = FormFactory.create(
+            name="MyName", internal_name="MyInternalName", registration_backend="email"
+        )
         cls.fd = FormDefinitionFactory.create()
         cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
 
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend(self):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
@@ -68,7 +73,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -78,7 +83,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -95,7 +100,6 @@ class EmailBackendTests(TestCase):
         self.assertEqual(file2[1], "content")  # this is text now
         self.assertEqual(file2[2], "text/bar")
 
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_strip_out_urls(self):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
@@ -122,7 +126,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -132,13 +136,12 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
         self.assertNotIn("https://someurl.com", message.body)
 
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_keep_allowed_urls(self):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["https://allowed.com"]
@@ -162,6 +165,9 @@ class EmailBackendTests(TestCase):
         email_submission = EmailRegistration("email")
         email_submission.register_submission(submission, email_form_options)
 
+        # Verify we've generated a public_registration_reference
+        self.assertNotEqual(submission.public_registration_reference, "")
+
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
@@ -169,7 +175,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -179,11 +185,41 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
         self.assertNotIn("https://allowed.com", message.body)
+
+    @freeze_time("2021-01-01 10:00")
+    def test_register_and_update_paid_product(self):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        self.assertTrue(submission.payment_required)
+
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+        )
+        email_submission = EmailRegistration("email")
+        email_submission.update_payment_status(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(
+            message.subject,
+            _("[Open Forms] {} - submission payment received {}").format(
+                submission.form.admin_name, submission.public_registration_reference
+            ),
+        )
+        self.assertEqual(message.from_email, "info@open-forms.nl")
+        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
     def test_no_reference_can_be_extracted(self):
         submission = SubmissionFactory.create(
@@ -233,7 +269,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -243,7 +279,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -263,11 +299,15 @@ class EmailBackendTests(TestCase):
         self.assertEqual(file2[2], "text/bar")
 
         qs = Submission.objects.filter(pk=submission.pk)
-        self.assertEqual(csv_export[0], f"{submission.form.name} - submission.csv")
+        self.assertEqual(
+            csv_export[0], f"{submission.form.admin_name} - submission.csv"
+        )
         self.assertEqual(csv_export[1], create_submission_export(qs).export("csv"))
         self.assertEqual(csv_export[2], "text/csv")
 
-        self.assertEqual(xlsx_export[0], f"{submission.form.name} - submission.xlsx")
+        self.assertEqual(
+            xlsx_export[0], f"{submission.form.admin_name} - submission.xlsx"
+        )
         self.assertEqual(xlsx_export[1], create_submission_export(qs).export("xlsx"))
         self.assertEqual(
             xlsx_export[2],
@@ -313,7 +353,7 @@ class EmailBackendTests(TestCase):
         self.assertEqual(
             message.subject,
             _("[Open Forms] {} - submission {}").format(
-                submission.form.admin_name, submission.uuid
+                submission.form.admin_name, submission.public_registration_reference
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -323,7 +363,7 @@ class EmailBackendTests(TestCase):
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
             _("Submission details for {} (submitted on {})").format(
-                self.form.name, "12:00:00 01-01-2021"
+                self.form.admin_name, "12:00:00 01-01-2021"
             ),
             message.body,
         )

@@ -8,6 +8,7 @@ from furl import furl
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ....registry import register
+from ....tests.factories import SubmissionPaymentFactory
 from ..constants import OgoneStatus, PaymentStatus
 from ..plugin import RETURN_ACTION_PARAM
 from ..signing import calculate_sha_out
@@ -108,6 +109,54 @@ class OgoneTests(TestCase):
         self.assertEqual(loc.args["of_payment_id"], str(payment.uuid))
 
         # check payment
+        submission.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.completed)
+
+        self.assertEqual(submission.payment_user_has_paid, True)
+
+    def test_webhook(self):
+        merchant = OgoneMerchantFactory.create(
+            pspid="psp123",
+        )
+        submission = SubmissionFactory.create(
+            form__slug="myform",
+            form__payment_backend="ogone-legacy",
+            form__payment_backend_options={"merchant_id": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+
+        self.assertEqual(submission.payment_required, True)
+        self.assertEqual(submission.payment_user_has_paid, False)
+
+        plugin = register["ogone-legacy"]
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        request = factory.get("/foo")
+
+        # start url
+        url = plugin.get_webhook_url(request)
+
+        # bad without data
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 400)
+
+        # NOTE orderID is badly cased
+        ogone_params = {
+            "orderID": payment.order_id,
+            "STATUS": OgoneStatus.payment_requested,
+            "PAYID": 1234,
+            "NCERROR": 0,
+        }
+        ogone_params["SHASIGN"] = calculate_sha_out(
+            ogone_params, merchant.sha_out_passphrase, merchant.hash_algorithm
+        )
+        # good
+        response = self.client.post(url, ogone_params)
+        self.assertEqual(response.status_code, 200)
+
         submission.refresh_from_db()
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)

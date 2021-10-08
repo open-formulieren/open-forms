@@ -1,9 +1,12 @@
 from copy import deepcopy
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
+from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from openforms.appointments.constants import AppointmentDetailsStatus
 from openforms.appointments.tests.factories import AppointmentInfoFactory
@@ -16,6 +19,9 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.tests.utils import NOOP_CACHES
 
+from ...payments.constants import PaymentStatus
+from ...payments.tests.factories import SubmissionPaymentFactory
+from ...utils.urls import build_absolute_uri
 from ..models import ConfirmationEmailTemplate
 
 NESTED_COMPONENT_CONF = {
@@ -256,3 +262,64 @@ class ConfirmationEmailTests(TestCase):
             "</a>",
             rendered_content,
         )
+
+
+@override_settings(
+    CACHES=NOOP_CACHES,
+)
+class PaymentConfirmationEmailTests(TestCase):
+    def test_email_payment_not_required(self):
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        submission = SubmissionFactory.create()
+        self.assertFalse(submission.payment_required)
+        self.assertFalse(submission.payment_user_has_paid)
+
+        rendered_content = email.render(submission)
+
+        self.assertNotIn(_("Payment of"), rendered_content)
+
+    def test_email_payment_incomplete(self):
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        submission = SubmissionFactory.create(
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        self.assertTrue(submission.payment_required)
+        self.assertFalse(submission.payment_user_has_paid)
+
+        rendered_content = email.render(submission)
+
+        # show amount
+        self.assertIn(_("Payment of"), rendered_content)
+        self.assertIn("12.34", rendered_content)
+
+        print(rendered_content)
+
+        # show link
+        url = build_absolute_uri(
+            reverse("payments:link", kwargs={"uuid": submission.uuid})
+        )
+        self.assertIn(url, rendered_content)
+
+    def test_email_payment_completed(self):
+        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        submission = SubmissionFactory.create(
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.completed
+        )
+
+        self.assertTrue(submission.payment_required)
+        self.assertTrue(submission.payment_user_has_paid)
+
+        rendered_content = email.render(submission)
+
+        # still show amount
+        self.assertIn(_("Payment of"), rendered_content)
+        self.assertIn("12.34", rendered_content)
+
+        # no payment link
+        url = reverse("payments:link", kwargs={"uuid": submission.uuid})
+        self.assertNotIn(url, rendered_content)

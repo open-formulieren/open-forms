@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from ..data import OgoneRequestParams
+from ..plugin import case_insensitive_get
 from ..signing import calculate_sha_in, calculate_sha_out
 
 
@@ -59,3 +60,16 @@ class OgoneUtilsTest(TestCase):
         actual = calculate_sha_out(data, passphrase, "sha512")
         expected = data["SHASIGN"]
         self.assertEqual(expected, actual)
+
+    def test_case_insensitive_get(self):
+        self.assertEqual(123, case_insensitive_get({"foo": 123}, "foo"))
+        self.assertEqual(123, case_insensitive_get({"foo": 123}, "FOO"))
+        self.assertEqual(123, case_insensitive_get({"FOO": 123}, "foo"))
+        self.assertEqual(123, case_insensitive_get({"fOO": 123}, "Foo"))
+
+        # defined first
+        self.assertEqual(123, case_insensitive_get({"foo": 123, "FOO": 321}, "foo"))
+
+        # default
+        self.assertEqual(None, case_insensitive_get({"foo": 123}, "bar"))
+        self.assertEqual(321, case_insensitive_get({"foo": 123}, "bar", default=321))

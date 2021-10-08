@@ -94,4 +94,7 @@ def send_confirmation_email(submission: Submission):
         html_message=content,
     )
 
+    submission.confirmation_email_sent = True
+    submission.save(update_fields=("confirmation_email_sent",))
+
     logevent.confirmation_email_success(submission)

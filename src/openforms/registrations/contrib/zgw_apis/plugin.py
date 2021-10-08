@@ -127,5 +127,5 @@ class ZGWRegistration(BasePlugin):
         zaak = result["zaak"]
         return zaak["identificatie"]
 
-    def update_payment_status(self, submission: "Submission"):
+    def update_payment_status(self, submission: "Submission", options: dict):
         set_zaak_payment(submission.registration_result["zaak"]["url"])

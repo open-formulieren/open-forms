@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from furl import furl
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from openforms.logging import logevent
 from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -50,8 +51,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         return_url = self.get_return_url(request, payment)
 
+        description = (
+            f"{_('Submission')}: {payment.submission.public_registration_reference}"
+        )
+
         info = client.get_payment_info(
-            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM
+            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM, description
         )
         return info
 
@@ -84,11 +89,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
     def handle_webhook(self, request):
         # unvalidated data
-        order_id = request.data.get("ORDERID")
+        order_id = case_insensitive_get(request.data, "orderID")
         if not order_id:
-            return HttpResponseBadRequest("missing ORDERID")
+            # we use ParseError in this method because serializers.ValidationError triggers exception serializers
+            raise ParseError("missing orderID")
 
-        payment = get_object_or_404(SubmissionPayment, remote_order_id=order_id)
+        payment = get_object_or_404(SubmissionPayment, order_id=order_id)
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
         )
@@ -99,9 +105,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
             logevent.payment_flow_failure(payment, self, e)
-            return HttpResponseBadRequest("bad shasign")
+            # see note about ParseError above
+            raise ParseError("bad shasign")
 
         self.apply_status(payment, params.STATUS)
+
         return payment
 
     def apply_status(self, payment, ogone_status) -> None:
@@ -119,3 +127,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         if res > 0:
             payment.refresh_from_db()
+
+
+def case_insensitive_get(mapping, key, default=None):
+    if key in mapping:
+        return mapping[key]
+    for k in mapping:
+        if k.upper() == key.upper():
+            return mapping[k]
+    return default

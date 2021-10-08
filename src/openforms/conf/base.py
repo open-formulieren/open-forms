@@ -232,6 +232,7 @@ TEMPLATES = [
             "builtins": [
                 "openforms.emails.templatetags.appointments",
                 "openforms.emails.templatetags.form_summary",
+                "openforms.emails.templatetags.payment",
                 "openforms.config.templatetags.privacy_policy",
             ],
         },
@@ -911,3 +912,8 @@ OPENFORMS_LOCATION_CLIENT = config(
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
 MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
 MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
+
+#
+# Email / payment
+#
+PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15

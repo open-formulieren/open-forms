@@ -55,7 +55,7 @@ class BasePlugin(ABC):
         """
         raise NotImplementedError()
 
-    def update_payment_status(self, submission: "Submission"):
+    def update_payment_status(self, submission: "Submission", options: dict):
         raise NotImplementedError()
 
     def get_label(self):

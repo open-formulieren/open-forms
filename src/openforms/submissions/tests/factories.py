@@ -36,18 +36,22 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             ),
         )
         registration_failed = factory.Trait(
+            completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.failed,
         )
         registration_success = factory.Trait(
+            completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.success,
         )
         registration_pending = factory.Trait(
+            completed=True,
             last_register_date=None,
             registration_status=RegistrationStatuses.pending,
         )
         registration_in_progress = factory.Trait(
+            completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.in_progress,
         )
