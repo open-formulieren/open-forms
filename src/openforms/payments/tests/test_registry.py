@@ -20,7 +20,7 @@ class Plugin(BasePlugin):
         return HttpResponseRedirect(payment.form_url)
 
     def handle_webhook(self, request):
-        return None, None
+        return None
 
 
 class RegistryTests(TestCase):

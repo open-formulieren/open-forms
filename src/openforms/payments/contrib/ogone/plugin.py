@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from furl import furl
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from openforms.logging import logevent
 from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -90,7 +91,8 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         # unvalidated data
         order_id = case_insensitive_get(request.data, "orderID")
         if not order_id:
-            return HttpResponseBadRequest("missing orderID"), None
+            # we use ParseError in this method because serializers.ValidationError triggers exception serializers
+            raise ParseError("missing orderID")
 
         payment = get_object_or_404(SubmissionPayment, order_id=order_id)
         merchant = get_object_or_404(
@@ -103,11 +105,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
             logevent.payment_flow_failure(payment, self, e)
-            return HttpResponseBadRequest("bad shasign"), None
+            # see note about ParseError above
+            raise ParseError("bad shasign")
 
         self.apply_status(payment, params.STATUS)
 
-        return None, payment
+        return payment
 
     def apply_status(self, payment, ogone_status) -> None:
         if payment.status in PaymentStatus.is_final:

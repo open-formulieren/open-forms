@@ -313,12 +313,12 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if plugin.webhook_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
-        response, payment = plugin.handle_webhook(request)
+        payment = plugin.handle_webhook(request)
         if payment:
             logevent.payment_flow_webhook(payment, plugin)
             update_submission_payment_registration(payment.submission)
 
-        return response or HttpResponse("")
+        return HttpResponse("")
 
     def get(self, request, *args, **kwargs):
         return self._handle_webhook(request, *args, **kwargs)
