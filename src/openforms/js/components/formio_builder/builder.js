@@ -3,7 +3,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormBuilder} from 'react-formio';
 
-import nlStrings from './translation';
+import {nlStrings} from './translation';
 
 
 const BUILDER_OPTIONS = {

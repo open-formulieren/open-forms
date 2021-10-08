@@ -1,6 +1,7 @@
 import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
+import  {translatable} from '../../formio_builder/translation';
 
 /**
  * Define the tabs available when editing components in the form builder.
@@ -8,7 +9,7 @@ import {getFullyQualifiedUrl} from '../../../utils/urls';
 
 const BASIC = {
     key: 'basic',
-    label: 'Basic',
+    label: translatable('Basic'),
     components: [
         {
             type: 'textfield',
@@ -123,7 +124,7 @@ const CHOICES_BASIC = {
 
 const LOCATION = {
     key: 'location',
-    label: 'Location',
+    label: translatable('Location'),
     components: [
 
         {
