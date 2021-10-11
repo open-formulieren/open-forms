@@ -8,7 +8,9 @@ The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
 from unittest.mock import patch
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.core import mail
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -24,6 +26,7 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from ..constants import SUBMISSIONS_SESSION_KEY
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
+from ..tokens import submission_resume_token_generator
 
 
 class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
@@ -111,3 +114,16 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         email = mail.outbox[0]
         self.assertEqual(email.to, ["hello@open-forms.nl"])
         self.assertEqual(email.subject, _("Your form submission"))
+
+        submission.refresh_from_db()
+        token = submission_resume_token_generator.make_token(submission)
+        resume_path = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": token,
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_resume_url = urljoin(settings.BASE_URL, resume_path)
+
+        self.assertIn(expected_resume_url, email.body)

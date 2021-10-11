@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 from typing import Optional
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -14,6 +15,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
+from ..tokens import submission_resume_token_generator
 
 from ...forms.validators import validate_not_maintainance_mode
 from ..constants import ProcessingResults, ProcessingStatuses
@@ -282,10 +284,20 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         return instance
 
     def notify_suspension(self, instance: Submission, email: str):
-        logger.info("TODO: properly implement sending e-mail with magic link")
+        token = submission_resume_token_generator.make_token(instance)
+
+        resume_path = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": token,
+                "submission_uuid": instance.uuid,
+            },
+        )
+        resume_url = urljoin(settings.BASE_URL, resume_path)
+
         send_mail(
             _("Your form submission"),
-            "Submission is suspended. Resume here: <link>",
+            f"Submission is suspended. Resume here: {resume_url}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
         )

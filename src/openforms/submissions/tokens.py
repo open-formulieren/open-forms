@@ -2,6 +2,7 @@ from typing import List
 
 from django.conf import settings
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.tokens import BaseTokenGenerator
 
@@ -54,5 +55,26 @@ class SubmissionStatusTokenGenerator(BaseTokenGenerator):
         return [str(getattr(submission, attr)) for attr in attributes]
 
 
+class SubmissionResumeTokenGenerator(BaseTokenGenerator):
+    key_salt = "openforms.submissions.tokens.SubmissionStatusTokenGenerator"
+
+    def get_token_timeout_days(self, submission: Submission) -> int:
+        """
+        Number of days before the submission would be removed
+        """
+        return submission.form.incomplete_submissions_removal_limit or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+
+    def get_hash_value_parts(self, submission: Submission) -> List[str]:
+        """
+        Obtain the attribute values that mutate to invalidate the token.
+        """
+        attributes = [
+            "uuid",
+            "suspended_on",
+        ]
+        return [str(getattr(submission, attr)) for attr in attributes]
+
+
 submission_report_token_generator = SubmissionReportTokenGenerator()
 submission_status_token_generator = SubmissionStatusTokenGenerator()
+submission_resume_token_generator = SubmissionResumeTokenGenerator()
