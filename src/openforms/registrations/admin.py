@@ -28,7 +28,7 @@ class TestPluginAdminView(TemplateView):
 
         for plugin in register.items():
             context = {'name': plugin[0], 'test': plugin[1].test_config()}
-            # exclude email plugin from plugins[], sice email plugin is test on another page
+            # exclude email plugin from plugins[], since email plugin is test on another page
             plugins.append(context) if context['name'] != 'email' else None
 
         return {'plugins': plugins}
