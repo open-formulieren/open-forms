@@ -11,7 +11,7 @@ module.exports = {
     options: {
         debug: true,
         func: {
-            list: ['i18next.t', 'i18n.t', 'ctx.t', 'this.t'],
+            list: ['i18next.t', 'i18n.t', 'ctx.t', 'this.t', 'translatable'],
             extensions: ['.js']
         },
         trans: {

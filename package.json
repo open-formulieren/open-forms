@@ -13,7 +13,8 @@
     "makemessages-en": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "makemessages-nl": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/nl.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "makemessages": "npm run makemessages-nl && npm run makemessages-en",
-    "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang"
+    "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang",
+    "scan-js": "i18next-scanner 'src/**/*.js'"
   },
   "repository": {
     "type": "git",
