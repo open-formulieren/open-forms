@@ -5,6 +5,8 @@ from urllib.parse import urljoin
 from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
 
+from furl import furl
+
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.submissions.utils import add_submmission_to_session
@@ -37,9 +39,11 @@ class ResumeSubmissionView(RedirectView):
         if not config.sdk_url:
             raise RuntimeError("No SDK URL configured")
 
-        redirect_url = urljoin(
-            config.sdk_url,
-            f"stap/{submission.get_last_completed_step().form_step.form_definition.slug}",
-        )
+        f = furl(config.sdk_url)
+        # furl adds paths with the /= operator
+        f /= "stap"
+        f /= submission.get_last_completed_step().form_step.form_definition.slug
+        # Add the submission uuid to the query param
+        f.add({"submission_uuid": submission.uuid})
 
-        return redirect_url
+        return f.url

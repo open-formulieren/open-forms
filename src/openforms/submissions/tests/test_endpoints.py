@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from freezegun import freeze_time
+from furl import furl
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
@@ -54,10 +55,14 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        expected_redirect_url = urljoin(
-            config.sdk_url,
-            f"stap/{submission.get_last_completed_step().form_step.form_definition.slug}",
-        )
+        f = furl(config.sdk_url)
+        # furl adds paths with the /= operator
+        f /= "stap"
+        f /= submission.get_last_completed_step().form_step.form_definition.slug
+        # Add the submission uuid to the query param
+        f.add({"submission_uuid": submission.uuid})
+
+        expected_redirect_url = f.url
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )
