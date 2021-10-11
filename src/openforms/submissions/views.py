@@ -39,8 +39,7 @@ class ResumeSubmissionView(RedirectView):
 
         redirect_url = urljoin(
             config.sdk_url,
-            "stap",
-            submission.get_last_completed_step().form_step.form_definition.slug,
+            f"stap/{submission.get_last_completed_step().form_step.form_definition.slug}",
         )
 
         return redirect_url

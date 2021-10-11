@@ -56,8 +56,7 @@ class SubmissionResumeViewTests(TestCase):
 
         expected_redirect_url = urljoin(
             config.sdk_url,
-            "stap",
-            submission.get_last_completed_step().form_step.form_definition.slug,
+            f"stap/{submission.get_last_completed_step().form_step.form_definition.slug}",
         )
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
