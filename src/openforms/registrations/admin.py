@@ -1,11 +1,8 @@
 from .fields import RegistrationBackendChoiceField
 from django.contrib import admin
-from .contrib.zgw_apis.models import TestPlugin
-from .contrib.zgw_apis.plugin import ZGWRegistration as zwgr
-from .contrib.stuf_zds.plugin import StufZDSRegistration as szr
-from .contrib.objects_api.plugin import ObjectsAPIRegistration as oar
-from .contrib.email.plugin import EmailRegistration as er 
-from .contrib.demo.plugin import DemoFailRegistration as dfr
+from django.views.generic import TemplateView
+
+from openforms.registrations.registry import register
 
 
 class RegistrationBackendFieldMixin:
@@ -21,20 +18,17 @@ class RegistrationBackendFieldMixin:
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
-class TestPluginAdmin(admin.ModelAdmin):
-    # list_display = ('name', 'status')
-    # actions = [test_plugin]
-    change_list_template = 'admin/plugin_tester.html'
+class TestPluginAdminView(TemplateView):
+    template_name = 'admin/plugin_tester.html'
+    title = "Plugin Tester"
 
-    def changelist_view(self, request, extra_context=None):
-        context = extra_context or {}
-        context = {'plugins': [
-            {'name': 'ZGW API', 'test': zwgr.test_config()},
-            {'name': 'StUF-ZDS', 'test': szr.test_config()},
-            {'name': 'Objects API', 'test': oar.test_config()},
-            # {'name': 'Local', 'test': dfr.test_config()},
-        ], 'email': {'name': 'Email', 'test': er.test_config()},}
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        plugins = []
 
-        return super(TestPluginAdmin, self).changelist_view(request, extra_context=context)
-  
-admin.site.register(TestPlugin, TestPluginAdmin)
+        for plugin in register.items():
+            context = {'name': plugin[0], 'test': plugin[1].test_config()}
+            # exclude email plugin from plugins[], sice email plugin is test on another page
+            plugins.append(context) if context['name'] != 'email' else None
+
+        return {'plugins': plugins}

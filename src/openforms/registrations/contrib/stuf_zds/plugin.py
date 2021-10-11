@@ -177,8 +177,7 @@ class StufZDSRegistration(BasePlugin):
 
         client.set_zaak_payment(submission.registration_result["zaak"])
 
-    def test_config():
-        test = []
+    def test_config(self):
         service = SoapService()
         options = {'omschrijving': 'zaak omschrijving', 'referentienummer': '2637485'}
 
@@ -191,9 +190,7 @@ class StufZDSRegistration(BasePlugin):
             # context = client.create_document_identificatie()
 
             # print('coonntteexxxtt', context)
-
-            test.append({'completed': False, 'error': 'In behandeling', 'msg': 'Iets ging fout', 'name': 'name'})
         except Exception as e:
-            test.append({'completed': False, 'error': 'Geen SOA services toegevoegd', 'msg': 'Geen SOA services toegevoegd', 'name': ''})
+            return [str(e)]
 
-        return test
+        return True

@@ -62,7 +62,7 @@ class BasePlugin(ABC):
         return self.verbose_name
 
     @abstractmethod
-    def test_config(self):
+    def test_config(self) -> bool:
         """
         plugins tester
         """

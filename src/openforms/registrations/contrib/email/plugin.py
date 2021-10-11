@@ -64,7 +64,5 @@ class EmailRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission"):
         pass
 
-    def test_config():
-        test = {'completed': True, 'error': 'Zie plugin test resultaat op de test email backend pagina'}
-        
-        return test
+    def test_config(self):
+        return True

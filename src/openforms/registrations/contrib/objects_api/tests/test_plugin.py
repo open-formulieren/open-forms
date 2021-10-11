@@ -13,20 +13,14 @@ class OrcPluginTesterTest(TestCase):
         drc_client = self.oac.drc_service.build_client()
         orc_client = self.oac.objects_service.build_client()
 
-        self.lients = [{'type': 'object', 'client': orc_client},
-                   {'type': 'document', 'client': drc_client},
-                ]
+        self.clients = [{'type': 'object', 'client': orc_client},
+                        {'type': 'document', 'client': drc_client},
+                        ]
 
     def test_zgw_plugin(self):
-        self.assertEqual(self.documents_client.base_url, 'https://documenten.nl/api/v1/')
-        self.assertEqual(self.orc_client.base_url, 'https://test.openzaak.nl/objecten/api/v1/')
 
-        for i, client in enumerate(self.clients):
+        for client in self.clients:
             try:
-                client['client'].retrieve(client['type'], client['client'].base_url)
-                try:
-                    self.assertEqual(oar.test_config(), [])
-                except Exception as e:
-                    self.assertEqual(oar.test_config()[i]['error'], str(e))
+                self.assertEqual(client['client'].retrieve(client['type'], client['client'].base_url), True)
             except Exception as e:
-                pass
+                self.assertEqual(client['client'].retrieve(client['type'], client['client'].base_url), [str(e)])

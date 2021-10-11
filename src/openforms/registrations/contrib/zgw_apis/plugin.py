@@ -25,6 +25,7 @@ from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
+from openforms.registrations.registry import register
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -130,8 +131,7 @@ class ZGWRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission"):
         set_zaak_payment(submission.registration_result["zaak"]["url"])
 
-    def test_config():
-        test = []
+    def test_config(self):
         config = ZgwConfig.get_solo()
 
         # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
@@ -140,17 +140,16 @@ class ZGWRegistration(BasePlugin):
             documents_client = config.drc_service.build_client()
             zaaktypen_client = config.ztc_service.build_client()
 
-            clients = [{'name': 'ZRC (Zaken)', 'type': 'zaak', 'client': zaken_client},
-                       {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': documents_client},
-                       {'name': 'ZTC (Zaaktypen)', 'type': 'zaaktype', 'client': zaaktypen_client}]
+            clients = [{'type': 'zaak', 'client': zaken_client},
+                       {'type': 'document', 'client': documents_client},
+                       {'type': 'zaaktype', 'client': zaaktypen_client}]
 
             for client in clients:
                 try:
                     client['client'].retrieve(client['type'], client['client'].base_url)
-                    # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
                 except Exception as e:
-                    test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
-        except Exception as e:
-            test.append({'completed': False, 'error': 'Geen services toegevoegd', 'msg': 'Geen services toegevoegd', 'name': ''})
+                    return [str(e)]
+        except Exception:
+            return ['Geen services toegevoegd']
 
-        return test
+        return True

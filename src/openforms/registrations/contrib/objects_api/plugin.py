@@ -86,25 +86,23 @@ class ObjectsAPIRegistration(BasePlugin):
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")
 
-    def test_config():
-        test = []
+    def test_config(self):
         config = ObjectsAPIConfig.get_solo()
 
-        # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
+        # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the plugin configuration
         try:
             drc_client = config.drc_service.build_client()
             orc_client = config.objects_service.build_client()
 
-            clients = [{'name': 'ORC (Overige)', 'type': 'object', 'client': orc_client},
-                       {'name': 'DRC (Informatieobjecten)', 'type': 'document', 'client': drc_client},
-                       ]
+            clients = [{'type': 'object', 'client': orc_client},
+                       {'type': 'document', 'client': drc_client}]
+
             for client in clients:
                 try:
                     client['client'].retrieve(client['type'], client['client'].base_url)
-                    # test.append({'completed': True, 'error': None, 'msg': 'De plug-in werkt naar behoren', 'name': client['name']})
                 except Exception as e:
-                    test.append({'completed': False, 'error': str(e), 'msg': 'Iets ging fout', 'name': client['name']})
+                    return [str(e)]
         except Exception as e:
-            test.append({'completed': False, 'error': 'Geen services toegevoegd', 'msg': 'Geen services toegevoegd', 'name': ''})
+            return ['Geen services toegevoegd']
 
-        return test
+        return True

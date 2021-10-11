@@ -12,6 +12,7 @@ from decorator_include import decorator_include
 
 from openforms.emails.admin import EmailTestAdminView
 from openforms.utils.views import ErrorDetailView
+from openforms.registrations.admin import TestPluginAdminView
 
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
@@ -33,6 +34,11 @@ urlpatterns = [
         "admin/email/test/",
         admin.site.admin_view(EmailTestAdminView.as_view()),
         name="admin_email_test",
+    ),
+    path(
+        "admin/testplugin/",
+        admin.site.admin_view(TestPluginAdminView.as_view()),
+        name="plugin_tester",
     ),
     path("admin/hijack/", include("hijack.urls")),
     path("admin/", admin.site.urls),

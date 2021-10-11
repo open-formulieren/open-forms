@@ -13,21 +13,14 @@ class ZgwPluginTesterTest(TestCase):
         self.zaaktypen_client = self.zgw.ztc_service.build_client()
 
         self.clients = [{'type': 'zaak', 'client': self.zaken_client},
-                   {'type': 'document', 'client': self.documents_client},
-                   {'type': 'zaaktype', 'client': self.zaaktypen_client}]
+                        {'type': 'document', 'client': self.drc_client},
+                        {'type': 'zaaktype', 'client': self.drc_clzaaktypen_clientient},
+                        ]
 
     def test_zgw_plugin(self):
-        self.assertEqual(self.zaken_client.base_url, 'https://zaken.nl/api/v1/')
-        self.assertEqual(self.documents_client.base_url, 'https://documenten.nl/api/v1/')
-        self.assertEqual(self.zaaktypen_client.base_url, 'https://catalogus.nl/api/v1/')
 
-        for i, client in enumerate(self.clients):
+        for client in self.clients:
             try:
-                client['client'].retrieve(client['type'], client['client'].base_url)
-                try:
-                    self.assertEqual(zwgr.test_config(), [])
-                except Exception as e:
-                    self.assertEqual(zwgr.test_config()[i]['error'], str(e))
+                self.assertEqual(client['client'].retrieve(client['type'], client['client'].base_url), True)
             except Exception as e:
-                pass
-
+                self.assertEqual(client['client'].retrieve(client['type'], client['client'].base_url), [str(e)])

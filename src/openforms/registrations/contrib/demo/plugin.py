@@ -3,6 +3,7 @@ from typing import NoReturn
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.submissions.models import Submission
+from openforms.config.models import GlobalConfiguration
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
@@ -26,8 +27,13 @@ class DemoRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission"):
         print(submission)
 
-    def test_config(self) -> None:
-        print("test plugin")
+    def test_config(self):
+        try:
+            GlobalConfiguration.get_solo().enable_demo_plugins
+        except Exception as e:
+            return [str(e)]
+
+        return True
 
 
 @register("failing-demo")
@@ -45,9 +51,10 @@ class DemoFailRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission"):
         pass
 
-    def test_config():
-        test = []
+    def test_config(self):
+        try:
+            GlobalConfiguration.get_solo().enable_demo_plugins
+        except Exception as e:
+            return [str(e)]
 
-        test.append({'completed': False, 'error': 'geen fout melding', 'msg': 'Iets ging fout', 'name': 'name'})
-        
-        return test
+        return True

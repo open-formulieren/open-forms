@@ -3,11 +3,10 @@
 
  {% comment %} {% block object-tools %} {% endcomment %}
  {% block content %}
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         .plugins-container{
             width: 100%;
-            heigth: auto;
+            height: auto;
             display: flex;
             justify-content: flex-start;
             align-items: center;
@@ -15,34 +14,21 @@
         }
         table{
             width: 90%;
-            heigth: auto;
-            {% comment %} display: flex;
-            justify-content: flex-start;
-            flex-direction: column;
-            align-items: center; {% endcomment %}
             border-collapse: collapse;
-        }
-        tbody{
-            width: 100%;
-            {% comment %} display: flex;
-            justify-content: space-around;
-            align-items: center; {% endcomment %}
         }
         .plugin-table tr{
             width: 100%;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            {% comment %} display: flex;
-            flex-direction: column; {% endcomment %}
         }
-        .plugin-table th{
+        tr:nth-child(even) {
+            background-color: #ddd;
+        }
+        .plugin-table th, .plugin-table td{
             width: 30%;
             text-align: left;
             font-size: 18px;
         }
         .plugin-table td{
-            text-align: left;
-            font-size: 18px;
             padding-top:20px;
         }
         .email-test-btn{
@@ -64,15 +50,15 @@
             </tr>
             {% for plugin in plugins %}
                 <tr>
-                    <td><strong>{{plugin.name}}</strong></td>
-                    {% if plugin.test|length == 0 %}
-                        <td><i class="fa fa-check-circle" style="font-size:24px;color:green;"></i></td>
+                    <td><strong>{{plugin.name | capfirst}}</strong></td>
+                    {% if plugin.test == True%}
+                        <td><div style='border-radius:100%;width:15px;height:15px;background-color:green'></div></td>
                         <td style="font-size:20px;color:green;">De plug-in werkt naar behoren</td>
                     {% else %}
-                        <td><i class="fa fa-times-circle" style="font-size:24px;color:red;"></i></td>
+                        <td><div style='border-radius:100%;width:15px;height:15px;background-color:red'></div></td>
                         <td>
-                            {% for e in plugin.test %}
-                                <p style='margin-bottom:10px;color: orange;'><strong style='color:black;padding-right:10px;'>{{e.name}}:</strong>{{e.error}}</p>
+                            {% for error in plugin.test %}
+                                <p style='margin-bottom:10px;color: orange;'>{{error}}</p>
                             {% endfor %}
                         </td>
                     {% endif %}
@@ -80,14 +66,12 @@
                 </tr>
             {% endfor %}
             <tr>
-                <td><strong>{{email.name}}</strong></td>
+                <td><strong>Email</strong></td>
                 <td><a href='/admin/email/test/'><button class='email-test-btn'>Test Email Plugin</button></a></td>
-                <td style="font-size:20px">{{email.test.error}}</td>
+                <td style="font-size:20px">Zie plugin test resultaat op de test email backend pagina</td>
             </tr>
         </table>
     </div>
-
-    <script src="" async defer></script>
 
     {{ block.super }}
  {% endblock content %} 
