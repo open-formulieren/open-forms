@@ -6,7 +6,11 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.tokens import BaseTokenGenerator
 
-__all__ = ["submission_status_token_generator", "submission_report_token_generator"]
+__all__ = [
+    "submission_status_token_generator",
+    "submission_report_token_generator",
+    "submission_resume_token_generator",
+]
 
 
 class SubmissionReportTokenGenerator(BaseTokenGenerator):
@@ -56,13 +60,16 @@ class SubmissionStatusTokenGenerator(BaseTokenGenerator):
 
 
 class SubmissionResumeTokenGenerator(BaseTokenGenerator):
-    key_salt = "openforms.submissions.tokens.SubmissionStatusTokenGenerator"
+    key_salt = "openforms.submissions.tokens.SubmissionResumeTokenGenerator"
 
     def get_token_timeout_days(self, submission: Submission) -> int:
         """
         Number of days before the submission would be removed
         """
-        return submission.form.incomplete_submissions_removal_limit or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        return (
+            submission.form.incomplete_submissions_removal_limit
+            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        )
 
     def get_hash_value_parts(self, submission: Submission) -> List[str]:
         """
@@ -70,6 +77,7 @@ class SubmissionResumeTokenGenerator(BaseTokenGenerator):
         """
         attributes = [
             "uuid",
+            "created_on",
             "suspended_on",
         ]
         return [str(getattr(submission, attr)) for attr in attributes]

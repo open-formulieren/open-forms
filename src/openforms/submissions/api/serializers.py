@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -15,12 +16,13 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
-from ..tokens import submission_resume_token_generator
 
+from ...config.models import GlobalConfiguration
 from ...forms.validators import validate_not_maintainance_mode
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
+from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
 
 logger = logging.getLogger(__name__)
@@ -295,9 +297,17 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         )
         resume_url = urljoin(settings.BASE_URL, resume_path)
 
+        days_until_removal = (
+            instance.form.incomplete_submissions_removal_limit
+            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        )
+        datetime_removed = instance.created_on + timedelta(days=days_until_removal)
+        email_body = _(
+            "Submission is suspended. Until {date} it can be resumed here: {resume_url}"
+        ).format(date=datetime_removed.date(), resume_url=resume_url)
         send_mail(
             _("Your form submission"),
-            f"Submission is suspended. Resume here: {resume_url}",
+            email_body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
         )

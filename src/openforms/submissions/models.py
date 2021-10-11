@@ -69,6 +69,34 @@ class SubmissionState:
         )
         return next(candidates, None)
 
+    def get_last_completed_step(self) -> Optional["SubmissionStep"]:
+        """
+        Determine the last step that was fill out.
+
+        The last completed step is the step that:
+        - is the last submitted step
+        - is applicable
+
+        It does not consider "skipped" steps.
+
+        If there are no more steps, the result is None.
+        """
+        completed_steps = sorted(
+            [step for step in self.submission_steps if step.completed],
+            key=lambda step: step.modified,
+        )
+        offset = (
+            0
+            if not completed_steps
+            else self.submission_steps.index(completed_steps[-1])
+        )
+        candidates = (
+            step
+            for step in self.submission_steps[offset:]
+            if step.completed and step.is_applicable
+        )
+        return next(candidates, None)
+
     def get_submission_step(self, form_step_uuid: str) -> Optional["SubmissionStep"]:
         return next(
             (
@@ -331,6 +359,13 @@ class Submission(models.Model):
         """
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
+
+    def get_last_completed_step(self) -> Optional["SubmissionStep"]:
+        """
+        Determine which is the next step for the current submission.
+        """
+        submission_state = self.load_execution_state()
+        return submission_state.get_last_completed_step()
 
     def get_ordered_data_with_component_type(self) -> OrderedDict:
         ordered_data = OrderedDict()

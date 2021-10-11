@@ -7,6 +7,7 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+from datetime import timedelta
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -23,10 +24,11 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
+from ...config.models import GlobalConfiguration
 from ..constants import SUBMISSIONS_SESSION_KEY
+from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
-from ..tokens import submission_resume_token_generator
 
 
 class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
@@ -127,3 +129,11 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         expected_resume_url = urljoin(settings.BASE_URL, resume_path)
 
         self.assertIn(expected_resume_url, email.body)
+
+        days_until_removal = (
+            submission.form.incomplete_submissions_removal_limit
+            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        )
+        datetime_removed = submission.created_on + timedelta(days=days_until_removal)
+
+        self.assertIn(str(datetime_removed.date()), email.body)
