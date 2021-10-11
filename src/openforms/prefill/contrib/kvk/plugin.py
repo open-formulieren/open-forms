@@ -10,6 +10,7 @@ from zds_client import ClientError
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.kvk.client import KVKClient, KVKClientError
 from openforms.submissions.models import Submission
+from openforms.contrib.kvk.models import KVKConfig
 
 from ...base import BasePlugin
 from ...registry import register
@@ -75,3 +76,14 @@ class KVK_KVKNumberPrefill(BasePlugin):
     def get_query_param(self):
         assert self.query_param
         return self.query_param
+
+    def test_config(self):
+        config = KVKConfig.get_solo()
+
+        if not config.service:
+            return ['Geen service gedefinieerd voor KvK client ']
+
+        client = config.service.build_client()
+        print('kvk client', client)
+
+        return True

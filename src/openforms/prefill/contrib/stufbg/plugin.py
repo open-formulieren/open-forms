@@ -74,3 +74,6 @@ class StufBgPrefill(BasePlugin):
                 response_dict[attribute] = value
 
         return response_dict
+
+    def test_config(self):
+        return True

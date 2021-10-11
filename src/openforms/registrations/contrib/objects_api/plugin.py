@@ -90,19 +90,19 @@ class ObjectsAPIRegistration(BasePlugin):
         config = ObjectsAPIConfig.get_solo()
 
         # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the plugin configuration
-        try:
-            drc_client = config.drc_service.build_client()
-            orc_client = config.objects_service.build_client()
+        if not config.drc_service and not config.objects_service:
+            return ['Geen service gedefinieerd voor Object api']
 
-            clients = [{'type': 'object', 'client': orc_client},
-                       {'type': 'document', 'client': drc_client}]
+        drc_client = config.drc_service.build_client()
+        orc_client = config.objects_service.build_client()
 
-            for client in clients:
-                try:
-                    client['client'].retrieve(client['type'], client['client'].base_url)
-                except Exception as e:
-                    return [str(e)]
-        except Exception as e:
-            return ['Geen services toegevoegd']
+        clients = [{'type': 'object', 'client': orc_client},
+                   {'type': 'document', 'client': drc_client}]
+
+        for client in clients:
+            try:
+                client['client'].retrieve(client['type'], client['client'].base_url)
+            except Exception as e:
+                return [str(e)]
 
         return True

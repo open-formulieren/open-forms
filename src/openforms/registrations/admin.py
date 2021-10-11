@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from openforms.registrations.registry import register
+from openforms.prefill.registry import register as pr
 
 
 class RegistrationBackendFieldMixin:
@@ -24,11 +25,10 @@ class TestPluginAdminView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        plugins = []
-
-        for plugin in register.items():
-            context = {'name': plugin[0], 'test': plugin[1].test_config()}
+        plugins = [
+            {'pname': 'Prefills Plugins', 'data': [{'name': p[0], 'test': p[1].test_config()} for p in pr.items()]},
             # exclude email plugin from plugins[], since email plugin is test on another page
-            plugins.append(context) if context['name'] != 'email' else None
+            {'pname': 'registrations Plugins', 'data': [{'name': p[0], 'test': p[1].test_config()} for p in register.items() if p[0] != 'email']}            # }
+        ]
 
         return {'plugins': plugins}

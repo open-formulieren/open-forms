@@ -133,23 +133,24 @@ class ZGWRegistration(BasePlugin):
 
     def test_config(self):
         config = ZgwConfig.get_solo()
+        print('servicess', config.__dict__)
 
         # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
-        try:
-            zaken_client = config.zrc_service.build_client()
-            documents_client = config.drc_service.build_client()
-            zaaktypen_client = config.ztc_service.build_client()
+        if not config.zrc_service and not config.drc_service and config.ztc_service:
+            return ['Geen service gedefinieerd voor ZGW-client']
 
-            clients = [{'type': 'zaak', 'client': zaken_client},
-                       {'type': 'document', 'client': documents_client},
-                       {'type': 'zaaktype', 'client': zaaktypen_client}]
+        zaken_client = config.zrc_service.build_client()
+        documents_client = config.drc_service.build_client()
+        zaaktypen_client = config.ztc_service.build_client()
 
-            for client in clients:
-                try:
-                    client['client'].retrieve(client['type'], client['client'].base_url)
-                except Exception as e:
-                    return [str(e)]
-        except Exception:
-            return ['Geen services toegevoegd']
+        clients = [{'type': 'zaak', 'client': zaken_client},
+                   {'type': 'document', 'client': documents_client},
+                   {'type': 'zaaktype', 'client': zaaktypen_client}]
+
+        for client in clients:
+            try:
+                client['client'].retrieve(client['type'], client['client'].base_url)
+            except Exception as e:
+                return [str(e)]
 
         return True

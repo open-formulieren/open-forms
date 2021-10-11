@@ -63,3 +63,6 @@ class HaalCentraalPrefill(BasePlugin):
                     f"missing expected attribute '{attr}' in backend response"
                 )
         return values
+
+    def test_config(self):
+        return True
