@@ -241,6 +241,7 @@ function reducer(draft, action) {
                         },
                     },
                     isNew: false,
+                    validationErrors: [],
                 };
             }
             break;
