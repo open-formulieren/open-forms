@@ -43,6 +43,12 @@ const BASIC = {
             label: 'Is Sensitive Data',
             tooltip: 'The data entered in this component will be removed in accordance with the privacy settings.'
         },
+        {
+            label: 'Default Value',
+            key: 'defaultValue',
+            tooltip: 'This will be the initial value for this field, before user interaction.',
+            input: true
+        },
     ]
 };
 
@@ -84,11 +90,6 @@ const CHOICES_BASIC = {
     components: [
         ...BASIC.components,
         {
-            label: 'Default Value',
-            key: 'defaultValue',
-            tooltip: 'This will be the initial value for this field, before user interaction.',
-            input: true
-        }, {
             type: 'datagrid',
             input: true,
             label: 'Values',
