@@ -41,6 +41,18 @@ class SubmissionState:
     form_steps: List[FormStep]
     submission_steps: List["SubmissionStep"]
 
+    def _get_step_offset(self):
+        completed_steps = sorted(
+            [step for step in self.submission_steps if step.completed],
+            key=lambda step: step.modified,
+        )
+        offset = (
+            0
+            if not completed_steps
+            else self.submission_steps.index(completed_steps[-1])
+        )
+        return offset
+
     def get_next_step(self) -> Optional["SubmissionStep"]:
         """
         Determine the next logical step to fill out.
@@ -53,15 +65,7 @@ class SubmissionState:
 
         If there are no more steps, the result is None.
         """
-        completed_steps = sorted(
-            [step for step in self.submission_steps if step.completed],
-            key=lambda step: step.modified,
-        )
-        offset = (
-            0
-            if not completed_steps
-            else self.submission_steps.index(completed_steps[-1])
-        )
+        offset = self._get_step_offset()
         candidates = (
             step
             for step in self.submission_steps[offset:]
@@ -81,15 +85,7 @@ class SubmissionState:
 
         If there are no more steps, the result is None.
         """
-        completed_steps = sorted(
-            [step for step in self.submission_steps if step.completed],
-            key=lambda step: step.modified,
-        )
-        offset = (
-            0
-            if not completed_steps
-            else self.submission_steps.index(completed_steps[-1])
-        )
+        offset = self._get_step_offset()
         candidates = (
             step
             for step in self.submission_steps[offset:]
