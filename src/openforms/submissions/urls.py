@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import ResumeSubmissionView
 
-app_name = "appointments"
+app_name = "submissions"
 
 urlpatterns = [
     path(

@@ -14,11 +14,11 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
+from openforms.forms.validators import validate_not_maintainance_mode
 
-from ...config.models import GlobalConfiguration
-from ...forms.validators import validate_not_maintainance_mode
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload

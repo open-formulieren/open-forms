@@ -24,7 +24,7 @@ class ResumeSubmissionView(RedirectView):
             logger.debug(
                 "Called endpoint with an invalid submission uuid: %s", submission_uuid
             )
-            raise PermissionDenied("Cancel url is not valid")
+            raise PermissionDenied("Resume url is not valid")
 
         # Check that the token is valid
         valid = submission_resume_token_generator.check_token(submission, token)
