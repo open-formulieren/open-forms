@@ -60,7 +60,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@8be1e9aa52ac9562e37d59ca8a178881de8c015a#egg=digid_eherkenning
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@830bed9920471d3ff87a72edfb48c24fe7f036bb#egg=digid_eherkenning
     # via -r requirements/base.in
 django-admin-index==1.5.0
     # via -r requirements/base.in
