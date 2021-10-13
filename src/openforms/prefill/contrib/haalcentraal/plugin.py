@@ -65,4 +65,15 @@ class HaalCentraalPrefill(BasePlugin):
         return values
 
     def test_config(self):
+        config = HaalCentraalConfig.get_solo()
+
+        if not config.service:
+            return ['Geen service gedefinieerd voor HallCentraal clent']
+
+        client = config.service.build_client()
+        try:
+            client.retrieve('ingeschrevenpersonen', client.base_url)
+        except Exception as e:
+            return [str(e)]
+
         return True

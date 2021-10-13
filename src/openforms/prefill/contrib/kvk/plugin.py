@@ -81,9 +81,13 @@ class KVK_KVKNumberPrefill(BasePlugin):
         config = KVKConfig.get_solo()
 
         if not config.service:
-            return ['Geen service gedefinieerd voor KvK client ']
+            return ['Geen service gedefinieerd voor KvK client']
 
         client = config.service.build_client()
-        print('kvk client', client)
+        try:
+            data = client.retrieve(client, client.base_url)
+            print('kvk client', data)
+        except Exception as e:
+            return [str(e)]
 
         return True

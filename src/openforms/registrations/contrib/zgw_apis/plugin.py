@@ -133,7 +133,6 @@ class ZGWRegistration(BasePlugin):
 
     def test_config(self):
         config = ZgwConfig.get_solo()
-        print('servicess', config.__dict__)
 
         # catch 'NoneType' object has no attribute 'build_client' if no service added yet to the ZGW api configuration
         if not config.zrc_service and not config.drc_service and config.ztc_service:

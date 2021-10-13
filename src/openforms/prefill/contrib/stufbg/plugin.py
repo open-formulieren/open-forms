@@ -76,4 +76,14 @@ class StufBgPrefill(BasePlugin):
         return response_dict
 
     def test_config(self):
+        config = StufBGConfig.get_solo()
+
+        if not config.service:
+            return ['Geen service gedefinieerd voor STUF BAG client (endpoint for StUF-ZDS from the clien)']
+
+        client = config.service
+        # print('bag client', client)
+        # print('password not hash', config._state.fields_cache['service'].__dict__)
+        # print('stuf bag', config._state.fields_cache['service'])
+        print('get client', dir(config.get_client().service))
         return True

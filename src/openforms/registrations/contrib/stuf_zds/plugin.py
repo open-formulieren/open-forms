@@ -193,4 +193,4 @@ class StufZDSRegistration(BasePlugin):
         except Exception as e:
             return [str(e)]
 
-        return True
+        return ['Retrieve method moet geimplementeerd worden']

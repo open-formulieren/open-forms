@@ -117,3 +117,6 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         if res > 0:
             payment.refresh_from_db()
+
+    def test_config(self):
+        return True

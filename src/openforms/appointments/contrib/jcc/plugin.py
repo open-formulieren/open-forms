@@ -22,6 +22,8 @@ from ...exceptions import (
 )
 from ...utils import create_base64_qrcode
 
+from openforms.appointments.models import AppointmentsConfig
+
 logger = logging.getLogger(__name__)
 
 
@@ -266,3 +268,9 @@ class Plugin(BasePlugin):
 
         except (ZeepError, RequestException, AttributeError) as e:
             raise AppointmentException(e)
+
+    def test_config(self):
+        client = AppointmentsConfig.get_solo().config_path
+        # print('jcc client', client.__dir__)
+
+        return ['Nog niet geimplementeerd']
