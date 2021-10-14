@@ -10,6 +10,7 @@ class IbanField extends TextField {
             type: 'iban',
             label: 'IBAN',
             key: 'iban',
+            validateOn: 'blur',
         }, ...extend);
     }
 
