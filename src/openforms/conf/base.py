@@ -572,6 +572,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.submissions.tasks.cleanup_on_completion_results",
         "schedule": crontab(minute=45, hour=4),
     },
+    "cleanup_csp_reports": {
+        "task": "openforms.utils.tasks.cleanup_csp_reports",
+        "schedule": crontab(hour=4),
+    },
 }
 
 CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
