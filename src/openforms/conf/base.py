@@ -942,8 +942,10 @@ CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
 CSP_REPORT_ONLY = True  # danger
 CSP_REPORT_URI = reverse_lazy("report_csp")
 
-# configure django-csp-reports
-CSP_REPORTS_SAVE = False  # save as model
+#
+# Django CSP-report settings
+#
+CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", False)  # save as model
 CSP_REPORTS_LOG = False  # logging
 CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
