@@ -28,7 +28,7 @@ from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
-from ...emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 

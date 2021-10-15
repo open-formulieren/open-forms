@@ -87,6 +87,15 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         ),
     )
+    send_custom_confirmation_email = models.BooleanField(
+        _("send custom confirmation email"),
+        default=False,
+        help_text=_(
+            "Whether the custom confirmation email linked to the form should be sent.  "
+            "Note: If this is not checked the default confirmation email specified in the global"
+            "confirmation will be sent."
+        ),
+    )
     begin_text = models.CharField(
         _("begin text"),
         max_length=50,
