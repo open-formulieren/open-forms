@@ -40,7 +40,7 @@ class DemoBaseAuthentication(BasePlugin):
     verbose_name = _("Demo")
     return_method = "POST"
     form_class: type = NotImplemented
-    auth_attribute: str = NotImplemented
+    provides_auth: str = NotImplemented
     is_demo_plugin = True
 
     def start_login(
@@ -60,7 +60,7 @@ class DemoBaseAuthentication(BasePlugin):
         if not submited.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session[self.auth_attribute] = submited.cleaned_data[self.form_field]
+        request.session[self.provides_auth] = submited.cleaned_data[self.form_field]
 
         return HttpResponseRedirect(submited.cleaned_data["next"])
 
@@ -69,13 +69,19 @@ class DemoBaseAuthentication(BasePlugin):
 class DemoBSNAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo BSN")
     form_class = BSNForm
-    auth_attribute = AuthAttribute.bsn
+    provides_auth = AuthAttribute.bsn
     form_field = "bsn"
+
+    # client requested this to no longer be demo (Github #805)
+    is_demo_plugin = False
 
 
 @register("demo-kvk")
 class DemoKVKAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo KvK number")
     form_class = KVKForm
-    auth_attribute = AuthAttribute.kvk
+    provides_auth = AuthAttribute.kvk
     form_field = "kvk"
+
+    # client requested this to no longer be demo (Github #805)
+    is_demo_plugin = False
