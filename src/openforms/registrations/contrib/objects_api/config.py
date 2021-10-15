@@ -29,17 +29,33 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
     )
     informatieobjecttype_submission_report = serializers.URLField(
-        label=_("submission report informatieobjecttype"),
+        label=_("submission report PDF informatieobjecttype"),
         help_text=_(
-            "URL that points to the Informatieobjecttype in the Documenten API "
-            "to be used for the submission report"
+            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report PDF"
+        ),
+        required=False,
+    )
+    upload_submission_csv = serializers.BooleanField(
+        label=_("Upload submission CSV"),
+        help_text=_(
+            "Indicates whether or not the submission CSV should be uploaded as "
+            "a Document in Documenten API and attached to the ProductAanvraag"
+        ),
+        default=False,
+    )
+    informatieobjecttype_submission_csv = serializers.URLField(
+        label=_("submission report CSV informatieobjecttype"),
+        help_text=_(
+            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report CSV"
         ),
         required=False,
     )
     informatieobjecttype_attachment = serializers.URLField(
         label=_("attachment informatieobjecttype"),
         help_text=_(
-            "URL that points to the Informatieobjecttype in the Documenten API "
+            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
             "to be used for the submission attachments"
         ),
         required=False,
