@@ -672,6 +672,9 @@ throttle_rate_anon = (
 throttle_rate_user = (
     config("THROTTLE_RATE_USER", default="10000/hour") if ENABLE_THROTTLING else None
 )
+throttle_rate_polling = (
+    config("THROTTLE_RATE_POLLING", default="50000/hour") if ENABLE_THROTTLING else None
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -693,6 +696,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "anon": throttle_rate_anon,
         "user": throttle_rate_user,
+        "polling": throttle_rate_polling,
     },
     # required to get the right IP addres for throttling depending on the amount of
     # reverse proxies (X-Forwarded-For).
