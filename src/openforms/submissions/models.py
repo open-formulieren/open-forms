@@ -488,6 +488,10 @@ class SubmissionStep(models.Model):
 
     @property
     def can_submit(self) -> bool:
+        if not self.submission.form.can_submit:
+            # If we can't submit the form this overrides
+            #   any checks/evaluations/logic
+            return False
         return self._can_submit
 
     @property

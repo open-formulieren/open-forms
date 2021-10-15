@@ -308,3 +308,9 @@ class TestSubmission(TestCase):
                 },
             },
         )
+
+    def test_can_submit_returns_false_when_form_can_not_be_submitted(self):
+        submission_step = SubmissionStepFactory.create(
+            submission__form__can_submit=False
+        )
+        self.assertFalse(submission_step.can_submit)
