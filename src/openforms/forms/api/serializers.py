@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
@@ -11,8 +12,15 @@ from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
+from openforms.authentication.api.fields import LoginOptionsReadOnlyField
+from openforms.authentication.registry import register as auth_register
+from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
+from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.payments.api.fields import PaymentOptionsReadOnlyField
+from openforms.payments.registry import register as payment_register
 from openforms.prefill import apply_prefill
 from openforms.products.models import Product
+from openforms.submissions.api.fields import URLRelatedField
 from openforms.registrations.registry import register as registration_register
 from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
@@ -140,6 +148,7 @@ class FormSerializer(serializers.ModelSerializer):
     submissions_removal_options = SubmissionsRemovalOptionsSerializer(
         source="*", required=False
     )
+    confirmation_email_template = ConfirmationEmailTemplateSerializer(required=False)
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
@@ -169,6 +178,7 @@ class FormSerializer(serializers.ModelSerializer):
             "submission_confirmation_template",
             "can_submit",
             "submissions_removal_options",
+            "confirmation_email_template",
         )
         extra_kwargs = {
             "uuid": {
@@ -180,6 +190,43 @@ class FormSerializer(serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+
+    def create(self, validated_data):
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().create(validated_data)
+
+        if confirmation_email_template:
+            ConfirmationEmailTemplate.objects.create(
+                form=instance, **confirmation_email_template
+            )
+
+        return instance
+
+    def update(self, instance, validated_data):
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().update(instance, validated_data)
+
+        if confirmation_email_template:
+            try:
+                # First try updating the current confirmation email template
+                instance.confirmation_email_template.subject = (
+                    confirmation_email_template["subject"]
+                )
+                instance.confirmation_email_template.content = (
+                    confirmation_email_template["content"]
+                )
+                instance.confirmation_email_template.save()
+            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
+                # If one does not exist then create it
+                ConfirmationEmailTemplate.objects.create(
+                    form=instance, **confirmation_email_template
+                )
+
+        return instance
 
     def get_fields(self):
         fields = super().get_fields()
@@ -227,6 +274,7 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
+        del fields["confirmation_email_template"]
         fields["authentication_backends"].write_only = False
         return fields
 

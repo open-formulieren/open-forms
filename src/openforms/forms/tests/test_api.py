@@ -28,6 +28,7 @@ from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
+from ...emails.tests.factories import ConfirmationEmailTemplateFactory
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -590,6 +591,90 @@ class FormsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_form_with_confirmation_email_template_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content",
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.confirmation_email_template.subject, "The subject")
+        self.assertEqual(form.confirmation_email_template.content, "The content")
+
+    def test_creating_a_confirmation_email_template_for_an_existing_form(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content",
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.confirmation_email_template.subject, "The subject")
+        self.assertEqual(form.confirmation_email_template.content, "The content")
+
+    def test_updating_a_confirmation_email_template(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "Updated subject",
+                "content": "Updated content",
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.confirmation_email_template.subject, "Updated subject")
+        self.assertEqual(form.confirmation_email_template.content, "Updated content")
+
+    def test_getting_a_form_with_a_confirmation_email_template(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["confirmationEmailTemplate"],
+            {"subject": "Initial subject", "content": "Initial content"},
+        )
 
 
 class FormsStepsAPITests(APITestCase):
