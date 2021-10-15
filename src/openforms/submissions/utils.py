@@ -4,8 +4,10 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
+from django.core.exceptions import ObjectDoesNotExist
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
@@ -72,8 +74,6 @@ def remove_submission_uploads_from_session(
 
 
 def send_confirmation_email(submission: Submission):
-    email_template = submission.form.confirmation_email_template
-
     to_emails = submission.get_email_confirmation_recipients(submission.data)
     if not to_emails:
         logger.warning(
@@ -84,8 +84,15 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    html_content = email_template.render(submission)
-    text_content = email_template.render(submission, {"rendering_text": True})
+    try:
+        email_template = submission.form.confirmation_email_template
+        html_content = email_template.render(submission)
+        text_content = email_template.render(submission, {"rendering_text": True})
+    except (AttributeError, ObjectDoesNotExist):
+        config = GlobalConfiguration.get_solo()
+        # TODO Update these
+        subject = config.confirmation_email_subject
+        content = config.render_confirmation_email_content(submission)
 
     # post process since the mail template has html markup and django escaped entities
     text_content = strip_tags_plus(text_content)

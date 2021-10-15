@@ -1,8 +1,10 @@
 from typing import Any, Dict
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import Context, Template
 from django.urls import reverse
+from django.template import Template, TemplateSyntaxError
 from django.utils.translation import gettext_lazy as _
 
 from openforms.appointments.models import AppointmentInfo
@@ -10,6 +12,7 @@ from openforms.submissions.models import Submission
 
 from ..utils.urls import build_absolute_uri
 from .validators import DjangoTemplateValidator
+from .utils import render_confirmation_email
 
 
 class ConfirmationEmailTemplate(models.Model):
@@ -82,3 +85,7 @@ class ConfirmationEmailTemplate(models.Model):
         rendered_content = Template(self.content).render(Context(context))
 
         return rendered_content
+
+    # TODO Should be like
+    # def render(self, submission: Submission):
+    #     return render_confirmation_email(submission, self.content)

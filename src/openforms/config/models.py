@@ -37,6 +37,23 @@ class GlobalConfiguration(SingletonModel):
         default="Thank you for submitting this form.",
     )
 
+    confirmation_email_subject = models.CharField(
+        _("subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the confirmation email message. Can be overriden on the form level"
+        ),
+        blank=True,
+    )
+
+    confirmation_email_content = models.TextField(
+        _("content"),
+        help_text=_(
+            "Content of the confirmation email message. Can be overriden on the form level"
+        ),
+        blank=True,
+    )
+
     allow_empty_initiator = models.BooleanField(
         _("allow empty initiator"),
         default=False,
@@ -401,3 +418,9 @@ class GlobalConfiguration(SingletonModel):
         rendered_content = Template(template).render(Context({}))
 
         return rendered_content
+
+    def render_confirmation_email_content(self, submission):
+        # Import locally to avoid circular import
+        from openforms.emails.utils import render_confirmation_email
+
+        return render_confirmation_email(submission, self.confirmation_email_content)

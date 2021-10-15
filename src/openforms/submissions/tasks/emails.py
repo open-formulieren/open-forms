@@ -7,6 +7,7 @@ from django.db import DatabaseError, transaction
 from celery_once import QueueOnce
 
 from openforms.celery import app
+from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 
 from ..models import Submission
@@ -86,8 +87,13 @@ def send_confirmation_email(submission_id: int) -> None:
         # access the reverse of the one2one
         submission.form.confirmation_email_template
     except (AttributeError, ObjectDoesNotExist):
-        logevent.confirmation_email_skip(submission)
-        return
+        config = GlobalConfiguration.get_solo()
+        if (
+            not config.confirmation_email_subject
+            or not config.confirmation_email_content
+        ):
+            logevent.confirmation_email_skip(submission)
+            return
 
     logevent.confirmation_email_start(submission)
     try:

@@ -2,17 +2,23 @@ import logging
 import re
 from functools import partial
 from html import unescape
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple, Dict
 from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
+from django.template import Context, Template
+from django.template.loader import get_template
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.core.exceptions import SuspiciousOperation
 from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
 from lxml.html import fromstring, tostring
 
+from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
+from openforms.utils.urls import build_absolute_uri
 from openforms.utils.email import send_mail_plus
 
 from .constants import URL_REGEX
@@ -173,3 +179,42 @@ def unwrap_anchors(html_str: str) -> str:
         link.text += f" ({url})"
 
     return tostring(root, encoding="utf8").decode("utf8")
+
+
+def get_confirmation_email_context_data(submission) -> Dict[str, Any]:
+    context = {
+        # use private variables that can't be accessed in the template data, so that
+        # template designers can't call the .delete method, for example. Variables
+        # starting with underscores are blocked by the Django template engine.
+        "_submission": submission,
+        "_form": submission.form,  # should be the same as self.form
+        **submission.data,
+        "public_reference": submission.public_registration_reference,
+    }
+    if submission.payment_required:
+        context["payment_required"] = True
+        context["payment_user_has_paid"] = submission.payment_user_has_paid
+        context["payment_url"] = build_absolute_uri(
+            reverse("payments:link", kwargs={"uuid": submission.uuid})
+        )
+        context["payment_price"] = str(submission.form.product.price)
+
+    try:
+        context["_appointment_id"] = submission.appointment_info.appointment_id
+    except AppointmentInfo.DoesNotExist:
+        pass
+
+    return context
+
+
+def render_confirmation_email(submission, content):
+    context = get_confirmation_email_context_data(submission)
+
+    # render the e-mail body - the template from this model.
+    rendered_content = Template(content).render(Context(context))
+
+    sanitized = sanitize_content(rendered_content)
+
+    # render the content in the system-controlled wrapper template
+    default_template = get_template("confirmation_mail.html")
+    return default_template.render({"body": mark_safe(sanitized)})
