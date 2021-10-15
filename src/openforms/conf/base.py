@@ -667,10 +667,10 @@ else:
 ENABLE_THROTTLING = config("ENABLE_THROTTLING", default=True)
 
 throttle_rate_anon = (
-    config("THROTTLE_RATE_ANON", default="1000/hour") if ENABLE_THROTTLING else None
+    config("THROTTLE_RATE_ANON", default="2500/hour") if ENABLE_THROTTLING else None
 )
 throttle_rate_user = (
-    config("THROTTLE_RATE_USER", default="10000/hour") if ENABLE_THROTTLING else None
+    config("THROTTLE_RATE_USER", default="15000/hour") if ENABLE_THROTTLING else None
 )
 throttle_rate_polling = (
     config("THROTTLE_RATE_POLLING", default="50000/hour") if ENABLE_THROTTLING else None
