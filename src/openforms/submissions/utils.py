@@ -85,6 +85,9 @@ def send_confirmation_email(submission: Submission):
         return
 
     try:
+        if not submission.form.send_custom_confirmation_email:
+            # Raise our own attribute error so the global confirmation email is sent
+            raise AttributeError("Form should not send it's own confirmation email")
         email_template = submission.form.confirmation_email_template
         html_content = email_template.render(submission)
         text_content = email_template.render(submission, {"rendering_text": True})
