@@ -38,20 +38,33 @@ class GlobalConfiguration(SingletonModel):
     )
 
     confirmation_email_subject = models.CharField(
-        _("subject"),
+        _("confirmation email subject"),
         max_length=1000,
         help_text=_(
-            "Subject of the confirmation email message. Can be overriden on the form level"
+            "Subject of the confirmation email message. Can be overridden on the form level"
         ),
-        blank=True,
+        default="Bevestiging van uw inzending",
     )
 
     confirmation_email_content = models.TextField(
-        _("content"),
+        _("confirmation email content"),
         help_text=_(
-            "Content of the confirmation email message. Can be overriden on the form level"
+            "Content of the confirmation email message. Can be overridden on the form level"
         ),
-        blank=True,
+        default="""
+        Geachte heer/mevrouw,
+
+        Wij hebben uw inzending, met referentienummer {{ public_reference }}, in goede orde ontvangen.
+
+        {% summary %}
+
+        {% appointment_information %}
+
+        {% get_appointment_links as links %}
+        Cancel Appointment: {{ links.cancel_url|urlize }}
+
+        {% payment_status %}
+        """,
     )
 
     allow_empty_initiator = models.BooleanField(
