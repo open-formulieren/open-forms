@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 
 from openforms.products.tests.factories import ProductFactory
 
+from ...payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from ...submissions.tests.form_logic.factories import FormLogicFactory
 from ..models import Form, FormDefinition, FormLogic, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -98,10 +99,14 @@ class ImportExportTests(TestCase):
 
     def test_import(self):
         product = ProductFactory.create()
+        merchant = OgoneMerchantFactory.create()
         form = FormFactory.create(
             product=product,
             authentication_backends=["digid"],
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["foo@bar.baz"]},
             payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": merchant.id},
         )
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -132,11 +137,17 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(forms.last().uuid, str(form.uuid))
         self.assertEqual(forms.last().active, False)
         self.assertEqual(forms.last().registration_backend, form.registration_backend)
+        self.assertEqual(
+            forms.last().registration_backend_options, form.registration_backend_options
+        )
         self.assertEqual(forms.last().name, form.name)
         self.assertIsNone(forms.last().product)
         self.assertEqual(forms.last().slug, old_form_slug)
         self.assertEqual(forms.last().authentication_backends, ["digid"])
         self.assertEqual(forms.last().payment_backend, "ogone-legacy")
+        self.assertEqual(
+            forms.last().payment_backend_options, {"merchant_id": merchant.id}
+        )
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()
