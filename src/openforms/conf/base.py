@@ -694,8 +694,10 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ),
     "DEFAULT_THROTTLE_RATES": {
+        # used by regular throttle classes
         "anon": throttle_rate_anon,
         "user": throttle_rate_user,
+        # used by custom throttle class
         "polling": throttle_rate_polling,
     },
     # required to get the right IP addres for throttling depending on the amount of
