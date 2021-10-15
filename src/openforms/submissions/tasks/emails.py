@@ -83,17 +83,25 @@ def send_confirmation_email(submission_id: int) -> None:
     if submission.confirmation_email_sent:
         return
 
-    try:
-        # access the reverse of the one2one
-        submission.form.confirmation_email_template
-    except (AttributeError, ObjectDoesNotExist):
-        config = GlobalConfiguration.get_solo()
-        if (
-            not config.confirmation_email_subject
-            or not config.confirmation_email_content
-        ):
-            logevent.confirmation_email_skip(submission)
-            return
+    if submission.payment_required and not submission.payment_user_has_paid:
+        # wait a while and check again
+        send_confirmation_email_after_payment_timeout.apply_async(
+            args=(submission.id,), countdown=settings.PAYMENT_CONFIRMATION_EMAIL_TIMEOUT
+        )
+    else:
+        logevent.confirmation_email_start(submission)
+        try:
+            send_confirmation_email(submission)
+        except Exception as e:
+            logevent.confirmation_email_failure(submission, e)
+            raise
+
+
+@app.task(bind=True, ignore_result=True)
+def send_confirmation_email_after_payment_timeout(task, submission_id: int) -> None:
+    submission = Submission.objects.get(id=submission_id)
+    if submission.confirmation_email_sent:
+        return
 
     logevent.confirmation_email_start(submission)
     try:
