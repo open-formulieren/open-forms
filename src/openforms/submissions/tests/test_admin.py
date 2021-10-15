@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.urls import reverse
 from django.utils import timezone
 
+import tablib
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
@@ -118,6 +119,8 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.csv"',
         )
         self.assertIsNotNone(response.content)
+        tablib.Dataset().load(response.content.decode("utf8"), format="csv")
+
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/submission_export_list.txt"
@@ -148,6 +151,8 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.xlsx"',
         )
         self.assertIsNotNone(response.content)
+        tablib.Dataset().load(response.content, format="xlsx")
+
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/submission_export_list.txt"

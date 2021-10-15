@@ -1,9 +1,24 @@
-from django.http import FileResponse
+import dataclasses
+
+from django.http import FileResponse, HttpResponse
 from django.utils.timezone import make_naive
 
 import tablib
 
 from .query import SubmissionQuerySet
+
+
+@dataclasses.dataclass
+class FileType:
+    extension: str
+    content_type: str
+
+
+class ExportFileTypes:
+    CSV = FileType("csv", "text/csv")
+    XLSX = FileType(
+        "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 
 def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
@@ -27,13 +42,16 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
     return data
 
 
-def export_submissions(queryset: SubmissionQuerySet, file_type: str) -> FileResponse:
+def export_submissions(
+    queryset: SubmissionQuerySet, file_type: FileType
+) -> FileResponse:
     export_data = create_submission_export(queryset)
+    filename = f"submissions_export.{file_type.extension}"
 
-    filename = f"submissions_export.{file_type}"
-    response = FileResponse(
-        export_data.export(file_type), filename=filename, as_attachment=True
+    response = HttpResponse(
+        export_data.export(file_type.extension),
+        content_type=file_type.content_type,
     )
-    response.set_headers(response.streaming_content)
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
     return response
