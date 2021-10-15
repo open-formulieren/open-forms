@@ -1,7 +1,6 @@
 import json
 import uuid
 from io import BytesIO
-from unittest import expectedFailure
 from unittest.mock import patch
 from zipfile import ZipFile
 
@@ -12,14 +11,23 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    TokenFactory,
+    UserFactory,
+)
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
+from ...payments.base import BasePlugin as PaymentBasePlugin
+from ...payments.registry import Registry as PaymentRegistry
+from ...registrations.base import BasePlugin as RegistrationBasePlugin
+from ...registrations.registry import Registry as RegistrationRegistry
+from ...registrations.tests.utils import patch_registry
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -1754,3 +1762,140 @@ class CopyFormAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class EmailOptionsSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class RegistrationPlugin(RegistrationBasePlugin):
+    configuration_options = EmailOptionsSerializer
+
+    def register_submission(self, submission, options):
+        pass
+
+    def get_reference_from_result(self, result: dict) -> None:
+        pass
+
+
+class PaymentPlugin(PaymentBasePlugin):
+    configuration_options = EmailOptionsSerializer
+
+
+class FormPluginOptionTest(APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = StaffUserFactory()
+        self.client.force_login(self.user)
+
+    def test_registration_backend_options(self):
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        model_field = Form._meta.get_field("registration_backend")
+
+        register = RegistrationRegistry()
+        register("test")(RegistrationPlugin)
+
+        patcher = patch(
+            "openforms.forms.api.serializers.registration_register", new=register
+        )
+        with patcher, patch_registry(model_field, register):
+            with self.subTest("blank"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "registration_backend": "",
+                        "registration_backend_options": None,
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                form.refresh_from_db()
+                self.assertEqual(form.registration_backend, "")
+                self.assertEqual(form.registration_backend_options, None)
+
+            with self.subTest("valid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "registration_backend": "test",
+                        "registration_backend_options": {"email": "foo@bar.baz"},
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                form.refresh_from_db()
+                self.assertEqual(form.registration_backend, "test")
+                self.assertEqual(
+                    form.registration_backend_options, {"email": "foo@bar.baz"}
+                )
+
+            with self.subTest("invalid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "registration_backend": "test",
+                        "registration_backend_options": {"email": "not_email_address"},
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+                json = response.json()
+                self.assertEqual(json["code"], "invalid")
+                self.assertEqual(
+                    json["invalidParams"][0]["name"], "registrationBackendOptions.email"
+                )
+
+    def test_payment_backend_options(self):
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        model_field = Form._meta.get_field("payment_backend")
+
+        register = PaymentRegistry()
+        register("test")(PaymentPlugin)
+
+        patcher = patch(
+            "openforms.forms.api.serializers.payment_register", new=register
+        )
+        with patcher, patch_registry(model_field, register):
+            with self.subTest("blank"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "payment_backend": "",
+                        "payment_backend_options": None,
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                form.refresh_from_db()
+                self.assertEqual(form.payment_backend, "")
+                self.assertEqual(form.payment_backend_options, None)
+
+            with self.subTest("valid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "payment_backend": "test",
+                        "payment_backend_options": {"email": "foo@bar.baz"},
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                form.refresh_from_db()
+                self.assertEqual(form.payment_backend, "test")
+                self.assertEqual(form.payment_backend_options, {"email": "foo@bar.baz"})
+
+            with self.subTest("invalid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "payment_backend": "test",
+                        "payment_backend_options": {"email": "not_email_address"},
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+                json = response.json()
+                self.assertEqual(json["code"], "invalid")
+                self.assertEqual(
+                    json["invalidParams"][0]["name"], "paymentBackendOptions.email"
+                )
