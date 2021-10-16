@@ -110,7 +110,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@02ac61c42f6dd2f229ba9f0f687fa1a4160511be#egg=digid_eherkenning
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@830bed9920471d3ff87a72edfb48c24fe7f036bb#egg=digid_eherkenning
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -410,6 +410,7 @@ lxml==4.6.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pyquery
+    #   python3-saml
     #   xmlsec
     #   zeep
 markdown==3.3.4
@@ -511,6 +512,7 @@ pyopenssl==19.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   josepy
+    #   python3-saml
 pyparsing==2.4.7
     # via packaging
 pyphen==0.10.0
@@ -542,7 +544,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-git+https://github.com/maykinmedia/python3-saml.git@58fd3ad798510c7ced110040d2fd0e6ad40d02da#egg=python3_saml
+git+https://github.com/maykinmedia/python3-saml.git@22f847d386674d3f6ee360c0202ef51bd9820846#egg=python3_saml
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
