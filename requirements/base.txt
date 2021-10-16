@@ -90,6 +90,10 @@ django-cookie-consent==0.2.6
     # via -r requirements/base.in
 django-cors-headers==3.7.0
     # via -r requirements/base.in
+django-csp-reports==1.5
+    # via -r requirements/base.in
+django-csp==3.7
+    # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
 django-filter==2.4.0
@@ -138,6 +142,8 @@ django==2.2.24
     #   django-choices
     #   django-cookie-consent
     #   django-cors-headers
+    #   django-csp
+    #   django-csp-reports
     #   django-decorator-include
     #   django-filter
     #   django-formtools

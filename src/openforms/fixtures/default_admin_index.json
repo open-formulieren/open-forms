@@ -229,6 +229,10 @@
                 "logitem"
             ],
             [
+                "cspreports",
+                "cspreport"
+            ],
+            [
                 "django_yubin",
                 "log"
             ],

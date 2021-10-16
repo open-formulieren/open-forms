@@ -1,0 +1,33 @@
+CSP report summary
+==================
+Start: {{ since }}
+End: {{ to }}
+Total number of reports: {{ total_count }}
+Total number of valid reports: {{ valid_count }}
+Total number of invalid reports: {{ invalid_count }}
+{% if sources %}
+Violation sources
+=================
+{% for info in sources %}
+{{ info.root_uri }}: {{ info.count }}
+----------------------------------------
+{% for example in info.examples %}{{ example|safe }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if blocks %}
+Blocked URIs
+============
+{% for info in blocks %}
+{{ info.root_uri }}: {{ info.count }}
+----------------------------------------
+{% for example in info.examples %}{{ example|safe }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if invalid_reports %}
+Invalid reports
+===============
+{% for example in invalid_reports %}{{ example|safe }}
+{% endfor %}
+{% endif %}

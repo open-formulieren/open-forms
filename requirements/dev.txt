@@ -191,6 +191,14 @@ django-cors-headers==3.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-csp-reports==1.5
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-csp==3.7
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-debug-toolbar==3.2.1
     # via -r requirements/dev.in
 django-decorator-include==3.0
@@ -297,6 +305,8 @@ django==2.2.24
     #   django-choices
     #   django-cookie-consent
     #   django-cors-headers
+    #   django-csp
+    #   django-csp-reports
     #   django-debug-toolbar
     #   django-decorator-include
     #   django-filter

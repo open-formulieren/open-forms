@@ -20,3 +20,10 @@ def clear_session_store():
 def send_emails() -> None:
     logger.debug("Processing e-mail queue")
     management.call_command("send_mail")
+
+
+@app.task(ignore_result=True)
+def cleanup_csp_reports() -> None:
+    logger.debug("Cleanup CSP reports")
+    # remove CSP reports older then a week
+    management.call_command("clean_cspreports")

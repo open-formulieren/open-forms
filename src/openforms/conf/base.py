@@ -95,7 +95,6 @@ CACHES = {
     },
 }
 
-
 #
 # APPLICATIONS enabled for this project
 #
@@ -148,6 +147,8 @@ INSTALLED_APPS = [
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
     "django_filters",
+    "csp",
+    "cspreports",
     # Project applications.
     "openforms.accounts",
     "openforms.appointments.apps.AppointmentsAppConfig",
@@ -203,6 +204,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -407,7 +409,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
@@ -491,7 +492,6 @@ ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
     "openforms.utils.django_two_factor_auth.should_display_dropdown_menu"
 )
 
-
 #
 # DJANGO-AXES (4.0+)
 #
@@ -543,7 +543,6 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:63
 # Add a 30 minutes timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 30 * 60
 
-
 CELERY_BEAT_SCHEDULE = {
     "clear-session-store": {
         "task": "openforms.utils.tasks.clear_session_store",
@@ -573,6 +572,10 @@ CELERY_BEAT_SCHEDULE = {
     "cleanup_on_completion_results": {
         "task": "openforms.submissions.tasks.cleanup_on_completion_results",
         "schedule": crontab(minute=45, hour=4),
+    },
+    "cleanup_csp_reports": {
+        "task": "openforms.utils.tasks.cleanup_csp_reports",
+        "schedule": crontab(hour=4),
     },
 }
 
@@ -642,7 +645,6 @@ if SENTRY_DSN:
 SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
 SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", ENVIRONMENT)
 
-
 #
 # Elastic APM
 #
@@ -660,7 +662,6 @@ else:
     INSTALLED_APPS = INSTALLED_APPS + [
         "elasticapm.contrib.django",
     ]
-
 
 #
 # DJANGO REST FRAMEWORK
@@ -930,14 +931,12 @@ EHERKENNING = {
     ],
 }
 
-
 #
 # Location Client
 #
 OPENFORMS_LOCATION_CLIENT = config(
     "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
 )
-
 
 #
 # Mozilla Django OIDC DB settings
@@ -950,3 +949,46 @@ MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 # Email / payment
 #
 PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
+
+#
+# Django CSP settings
+#
+# explanation of directives: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+# and how to specify them: https://django-csp.readthedocs.io/en/latest/configuration.html
+#
+# NOTE: make sure values are a tuple or list, and to quote special values like 'self'
+
+CSP_DEFAULT_SRC = [
+    "'self'"
+]  # ideally we'd use BASE_URI but it'd have to be lazy or cause issues
+
+# directives that don't fallback to default-src
+CSP_BASE_URI = ["'self'"]
+
+# CSP_FRAME_ANCESTORS = ["'self'"]  # this will break hosting a form to be framed by a CMS
+# CSP_FRAME_SRC = ["'self'"]  # this will break hosting iframe widgets like maps
+# CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
+# CSP_FORM_ACTION = ["'self'"]  # forms, possibly problematic with payments
+# CSP_SANDBOX # too much
+
+CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
+# CSP_INCLUDE_NONCE_IN = ["script-src"]  # if we inline we should at least have this
+
+# note these are outdated/deprecated django-csp options
+# CSP_BLOCK_ALL_MIXED_CONTENT
+# CSP_PLUGIN_TYPES
+# CSP_CHILD_SRC
+
+# report to our own django-csp-reports
+CSP_REPORT_ONLY = True  # danger
+CSP_REPORT_URI = reverse_lazy("report_csp")
+
+#
+# Django CSP-report settings
+#
+CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", False)  # save as model
+CSP_REPORTS_LOG = False  # logging
+CSP_REPORTS_LOG_LEVEL = "warning"
+CSP_REPORTS_EMAIL_ADMINS = False
+CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
+CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
