@@ -16,7 +16,7 @@ from openforms.payments.models import SubmissionPayment
 from openforms.registrations.tasks import retry_register_submission
 
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
-from .exports import export_submissions
+from .exports import ExportFileTypes, export_submissions
 from .models import (
     Submission,
     SubmissionFileAttachment,
@@ -216,14 +216,14 @@ class SubmissionAdmin(admin.ModelAdmin):
         return export_submissions(queryset, file_type)
 
     def export_csv(self, request, queryset):
-        return self._export(request, queryset, "csv")
+        return self._export(request, queryset, ExportFileTypes.CSV)
 
     export_csv.short_description = _(
         "Export selected %(verbose_name_plural)s as CSV-file."
     )
 
     def export_xlsx(self, request, queryset):
-        return self._export(request, queryset, "xlsx")
+        return self._export(request, queryset, ExportFileTypes.XLSX)
 
     export_xlsx.short_description = _(
         "Export selected %(verbose_name_plural)s as Excel-file."
