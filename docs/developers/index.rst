@@ -17,3 +17,4 @@ integrating with Open Forms.
    profiling
    i18n
    tokens
+   npm
