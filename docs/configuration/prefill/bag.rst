@@ -25,7 +25,7 @@ Configuration
    * **Authorization type**: API key
    * **Header key**: X-Api-Key
    * **Header value**: *The BAG API key obtained in step 1*
-   * **OAS**: ``https://raw.githubusercontent.com/lvbag/BAG-API/master/Technische%20specificatie/Yaml's/BAG%20API%20Individuele%20Bevragingen/resolved/individuelebevragingen/v2/adressen.yaml``
+   * **OAS**: ``https://raw.githubusercontent.com/lvbag/BAG-API/master/Technische%20specificatie/Archief/Yaml's/BAG%20API%20Individuele%20Bevragingen/resolved/individuelebevragingen/v2/adressen.yaml``
 
 4. Click **Save**
 5. Navigate to **Configuration** > **BAG configuration**
