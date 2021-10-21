@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from decorator_include import decorator_include
 
 from openforms.emails.admin import EmailTestAdminView
+from openforms.emails.views import EmailWrapperTestView
 from openforms.utils.views import ErrorDetailView
 
 handler500 = "openforms.utils.views.server_error"
@@ -76,6 +77,15 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
     urlpatterns = [
         path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
+
+if settings.DEBUG:
+    urlpatterns += [
+        path(
+            "dev/email/wrapper",
+            EmailWrapperTestView.as_view(),
+            name="dev-email-wrapper",
+        )
+    ]
 
 if apps.is_installed("rosetta"):
     urlpatterns = [path("admin/rosetta/", include("rosetta.urls"))] + urlpatterns
