@@ -75,11 +75,7 @@ class ConfirmationEmailTemplate(models.Model):
         # render the e-mail body - the template from this model.
         rendered_content = Template(self.content).render(Context(context))
 
-        sanitized = sanitize_content(rendered_content)
-
-        # render the content in the system-controlled wrapper template
-        default_template = get_template("confirmation_mail.html")
-        return default_template.render({"body": mark_safe(sanitized)})
+        return rendered_content
 
     def clean(self):
         try:

@@ -81,7 +81,8 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertIn("<table", message_html)
         self.assertIn(
             _("Submission details for {form_name} (submitted on {datetime})").format(
                 form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
@@ -135,7 +136,8 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertIn("<table", message_html)
         self.assertIn(
             _("Submission details for {form_name} (submitted on {datetime})").format(
                 form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
@@ -185,7 +187,8 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertIn("<table", message_html)
         self.assertIn(
             _("Submission details for {form_name} (submitted on {datetime})").format(
                 form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
@@ -283,7 +286,8 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertIn("<table", message_html)
         self.assertIn(
             _("Submission details for {form_name} (submitted on {datetime})").format(
                 form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
@@ -368,7 +372,8 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertIn("<table", message_html)
         self.assertIn(
             _("Submission details for {form_name} (submitted on {datetime})").format(
                 form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"

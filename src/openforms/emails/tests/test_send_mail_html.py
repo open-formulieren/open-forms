@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.core import mail
 from django.test import TestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
 
 
@@ -10,9 +12,9 @@ class HTMLEmailWrapperTest(TestCase):
         attachments = [("file.bin", b"content", "application/foo")]
         send_mail_html(
             "My Subject",
-            ["foo@bar.baz"],
-            "foo@sender.com",
             body,
+            "foo@sender.com",
+            ["foo@bar.baz"],
             attachment_tuples=attachments,
         )
 
@@ -40,3 +42,50 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(file[0], "file.bin")
         self.assertEqual(file[1], b"content")  # still bytes
         self.assertEqual(file[2], "application/foo")
+
+    def test_strip_non_allowed_urls(self):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["allowed.com"]
+        config.save()
+
+        body = "<p>test https://google.com https://www.google.com https://allowed.com test</p>"
+        body += settings.BASE_URL
+
+        send_mail_html(
+            "My Subject",
+            body,
+            "foo@sender.com",
+            ["foo@bar.baz"],
+        )
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        message_html = message.alternatives[0][0]
+
+        self.assertNotIn("google.com", message_html)
+        self.assertIn("https://allowed.com", message_html)
+        self.assertIn(settings.BASE_URL, message_html)
+
+    def test_strip_non_allowed_urls_without_config_strips_all_urls_execpt_base_url(
+        self,
+    ):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = []
+        config.save()
+
+        body = "<p>test https://google.com https://www.google.com https://allowed.com test</p>"
+        body += settings.BASE_URL
+        send_mail_html(
+            "My Subject",
+            body,
+            "foo@sender.com",
+            ["foo@bar.baz"],
+        )
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        message_html = message.alternatives[0][0]
+
+        self.assertNotIn("google.com", message_html)
+        self.assertNotIn("allowed.com", message_html)
+        self.assertIn(settings.BASE_URL, message_html)

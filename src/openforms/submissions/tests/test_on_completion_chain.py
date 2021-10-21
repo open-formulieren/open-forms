@@ -44,7 +44,7 @@ class OnCompletionTests(TestCase):
 
         submission.refresh_from_db()
         for task_id in submission.on_completion_task_ids:
-            with self.subTest(task_id=task_id):
+            with self.subTest(f"{task_id}"):
                 try:
                     uuid.UUID(task_id)
                 except ValueError:

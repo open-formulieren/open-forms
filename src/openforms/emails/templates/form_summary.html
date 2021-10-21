@@ -1,14 +1,15 @@
 {% load i18n %}
-
+{% if summary_data %}
 <table>
     <tr>
         <th>{% trans "Field" %}</th>
         <th>{% trans "Response" %}</th>
     </tr>
-    {% for key, value in data.items %}
+    {% for key, value in summary_data.items %}
         <tr>
             <th>{{ key }}</th>
             <th>{% display_value value %}</th>
         </tr>
     {% endfor %}
 </table>
+{% endif %}

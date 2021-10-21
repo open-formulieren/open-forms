@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -66,4 +67,4 @@ class BasePluginTests(TestCase):
             },
         )
         cancel_url = f"https://example.com{cancel_path}"
-        self.assertEqual({"cancel_url": cancel_url}, result)
+        self.assertEqual([(_("Cancel Appointment"), cancel_url)], result)

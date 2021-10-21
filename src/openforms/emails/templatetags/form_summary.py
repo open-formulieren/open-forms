@@ -9,6 +9,7 @@ register = template.Library()
 
 @register.inclusion_tag("form_summary.html", takes_context=True)
 def summary(context):
+    d = filter_data_to_show_in_email(context.flatten())
     return filter_data_to_show_in_email(context.flatten())
 
 
@@ -30,7 +31,7 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     for property_key, property_label in data_to_show_in_email:
         if property_key in context:
             filtered_data[property_label] = context[property_key]
-    return {"data": filtered_data}
+    return {"summary_data": filtered_data}
 
 
 @register.simple_tag()

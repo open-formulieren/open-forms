@@ -3,10 +3,10 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
-from django.core.mail import send_mail
 
 from openforms.logging import logevent
 
+from ..emails.utils import send_mail_html
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 
@@ -85,13 +85,12 @@ def send_confirmation_email(submission: Submission):
 
     content = email_template.render(submission)
 
-    send_mail(
+    send_mail_html(
         email_template.subject,
         content,
         settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
         to_emails,
         fail_silently=False,
-        html_message=content,
     )
 
     submission.confirmation_email_sent = True

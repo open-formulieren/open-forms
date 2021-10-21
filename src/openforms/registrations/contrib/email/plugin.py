@@ -7,7 +7,7 @@ from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from openforms.emails.utils import sanitize_content
+from openforms.emails.utils import sanitize_content, send_mail_html
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks.registration import set_submission_reference
@@ -52,10 +52,6 @@ class EmailRegistration(BasePlugin):
         rendered_content = Template(template).render(
             Context({"submitted_data": submitted_data})
         )
-        sanitized = sanitize_content(rendered_content)
-
-        default_template = get_template("confirmation_mail.html")
-        content = default_template.render({"body": mark_safe(sanitized)})
 
         attachments = submission.attachments.as_mail_tuples()
 
@@ -82,14 +78,13 @@ class EmailRegistration(BasePlugin):
 
             extra_attachments.append(attachment)
 
-        send_mail_plus(
+        send_mail_html(
             subject,
-            content,
+            rendered_content,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],
             fail_silently=False,
-            html_message=content,
-            attachments=attachments + extra_attachments,
+            attachment_tuples=attachments + extra_attachments,
         )
 
     def get_reference_from_result(self, result: None) -> NoReturn:
@@ -109,16 +104,10 @@ class EmailRegistration(BasePlugin):
             datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
         )
 
-        sanitized = sanitize_content(message)
-
-        default_template = get_template("confirmation_mail.html")
-        content = default_template.render({"body": mark_safe(sanitized)})
-
-        send_mail_plus(
+        send_mail_html(
             subject,
-            content,
+            message,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],
             fail_silently=False,
-            html_message=content,
         )

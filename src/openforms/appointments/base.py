@@ -227,7 +227,7 @@ class BasePlugin:
             "appointments/appointment_details.html", {"appointment": details}
         )
 
-    def get_appointment_links(self, submission: Submission) -> Dict[str, str]:
+    def get_appointment_links(self, submission: Submission) -> List[Dict[str, str]]:
 
         token = submission_appointment_token_generator.make_token(submission)
 
@@ -240,4 +240,4 @@ class BasePlugin:
         )
         cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
-        return {"cancel_url": cancel_url}
+        return [(_("Cancel Appointment"), cancel_url)]

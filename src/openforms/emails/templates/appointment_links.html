@@ -1,0 +1,7 @@
+{% if appointment_links %}
+    <p>
+    {% for label, url in appointment_links %}
+        {{ label }}: {{ url|urlize }}<br>
+    {% endfor %}
+    </p>
+{% endif %}

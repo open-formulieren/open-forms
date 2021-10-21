@@ -68,47 +68,6 @@ class ConfirmationEmailTests(TestCase):
         with self.assertRaises(ValidationError):
             email.clean()
 
-    def test_strip_non_allowed_urls(self):
-        config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["allowed.com"]
-        config.save()
-        email = ConfirmationEmailTemplate(
-            content="test https://google.com https://www.google.com https://allowed.com test"
-        )
-
-        rendered = email.render(SubmissionFactory.build())
-
-        self.assertNotIn("google.com", rendered)
-        self.assertIn("https://allowed.com", rendered)
-
-    def test_strip_non_allowed_urls_from_context(self):
-        form_step = FormStepFactory.create()
-        subm_step = SubmissionStepFactory.create(
-            data={"url1": "https://allowed.com", "url2": "https://google.com"},
-            form_step=form_step,
-            submission__form=form_step.form,
-        )
-        config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["allowed.com"]
-        config.save()
-
-        email = ConfirmationEmailTemplate(content="test {{url1}} {{url2}} test")
-
-        rendered = email.render(subm_step.submission)
-
-        self.assertNotIn("google.com", rendered)
-        self.assertIn("https://allowed.com", rendered)
-
-    def test_strip_non_allowed_urls_without_config_strips_all_urls(self):
-        email = ConfirmationEmailTemplate(
-            content="test https://google.com https://www.google.com https://allowed.com test"
-        )
-
-        rendered = email.render(SubmissionFactory.build())
-
-        self.assertNotIn("google.com", rendered)
-        self.assertNotIn("allowed.com", rendered)
-
     def test_cant_delete_model_instances(self):
         form_step = FormStepFactory.create()
         subm_step = SubmissionStepFactory.create(
@@ -234,14 +193,17 @@ class ConfirmationEmailTests(TestCase):
         self.assertEqual(empty_rendered_content, rendered_content)
 
     @patch("openforms.emails.templatetags.appointments.get_client")
-    def test_get_appointment_links(self, get_client_mock):
+    def test_appointment_links(self, get_client_mock):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["fake.nl"]
         config.save()
 
-        get_client_mock.return_value.get_appointment_links.return_value = {
-            "cancel_url": "http://fake.nl/api/v1/submission-uuid/token/verify/"
-        }
+        get_client_mock.return_value.get_appointment_links.return_value = [
+            (
+                "Cancel Appointment",
+                "http://fake.nl/api/v1/submission-uuid/token/verify/",
+            ),
+        ]
         submission = SubmissionFactory.create()
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
@@ -250,8 +212,7 @@ class ConfirmationEmailTests(TestCase):
         )
         email = ConfirmationEmailTemplate(
             content="""
-        {% get_appointment_links as links %}
-        {{ links.cancel_url|urlize }}
+        {% appointment_links %}
         """
         )
         rendered_content = email.render(submission)
@@ -262,6 +223,7 @@ class ConfirmationEmailTests(TestCase):
             "</a>",
             rendered_content,
         )
+        self.assertIn("Cancel Appointment", rendered_content)
 
 
 @override_settings(
@@ -269,7 +231,7 @@ class ConfirmationEmailTests(TestCase):
 )
 class PaymentConfirmationEmailTests(TestCase):
     def test_email_payment_not_required(self):
-        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create()
         self.assertFalse(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
@@ -288,7 +250,7 @@ class PaymentConfirmationEmailTests(TestCase):
                 )
 
     def test_email_payment_incomplete(self):
-        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create(
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
@@ -311,7 +273,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertIn(url, rendered_content)
 
     def test_email_payment_completed(self):
-        email = ConfirmationEmailTemplate(content="test {% payment_status %}")
+        email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create(
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",

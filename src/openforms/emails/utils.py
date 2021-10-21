@@ -57,9 +57,9 @@ AttachmentsType = Optional[Sequence[Tuple[str, str, Any]]]
 
 def send_mail_html(
     subject: str,
-    recipient_list: List[str],
-    from_email: str,
     html_body: str,
+    from_email: str,
+    recipient_list: List[str],
     attachment_tuples: AttachmentsType = None,
     fail_silently: bool = False,
 ) -> None:
