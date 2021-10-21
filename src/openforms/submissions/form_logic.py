@@ -29,7 +29,10 @@ def set_property_value(
 
 
 def evaluate_form_logic(
-    submission: "Submission", step: "SubmissionStep", data: Dict[str, Any]
+    submission: "Submission",
+    step: "SubmissionStep",
+    data: Dict[str, Any],
+    dirty=False,
 ) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
@@ -74,6 +77,19 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
+
+    if dirty:
+        # only keep the changes in the data, so that old values do not overwrite otherwise
+        # debounced client-side data changes
+        data_diff = {}
+        for key, new_value in step.data.items():
+            original_value = data.get(key)
+            if new_value == original_value:
+                continue
+            data_diff[key] = new_value
+
+        # only return the 'overrides'
+        step.data = data_diff
 
     step._form_logic_evaluated = True
 
