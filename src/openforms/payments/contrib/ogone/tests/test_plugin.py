@@ -83,7 +83,7 @@ class OgoneTests(TestCase):
         url = plugin.get_return_url(request, payment)
 
         ogone_params = {
-            "ORDERID": payment.order_id,
+            "ORDERID": payment.public_order_id,
             "STATUS": OgoneStatus.payment_requested,
             "GIROPAY_ACCOUNT_NUMBER": "1",  # hashed but not interesting
             "UNKNOWN_PARAM": "1",  # not hashed
@@ -145,7 +145,7 @@ class OgoneTests(TestCase):
 
         # NOTE orderID is badly cased
         ogone_params = {
-            "orderID": payment.order_id,
+            "orderID": payment.public_order_id,
             "STATUS": OgoneStatus.payment_requested,
             "PAYID": 1234,
             "NCERROR": 0,

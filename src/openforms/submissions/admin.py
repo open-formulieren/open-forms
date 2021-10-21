@@ -94,7 +94,7 @@ class SubmissionPaymentInline(admin.StackedInline):
         "submission",
         "plugin_id",
         "form_url",
-        "order_id_str",
+        "public_order_id",
         "amount",
         "status",
     )
@@ -105,13 +105,6 @@ class SubmissionPaymentInline(admin.StackedInline):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-    def order_id_str(self, obj):
-        # property to stop Django localising the integer
-        return str(obj.order_id)
-
-    order_id_str.short_description = _("Order ID")
-    order_id_str.admin_order_field = "order_id"
 
 
 class SubmissionLogInline(GenericTabularInline):

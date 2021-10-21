@@ -14,6 +14,7 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
     form_url = "http://test/form/url"
     order_id = factory.Sequence(lambda n: int(f"2020{n:05}"))
     amount = Decimal("10.00")
+    public_order_id = factory.LazyAttribute(lambda obj: f"ref{obj.order_id}")
 
     class Meta:
         model = SubmissionPayment

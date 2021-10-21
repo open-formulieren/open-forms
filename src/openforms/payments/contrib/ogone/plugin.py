@@ -56,7 +56,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         )
 
         info = client.get_payment_info(
-            payment.order_id, amount_cents, return_url, RETURN_ACTION_PARAM, description
+            payment.public_order_id,
+            amount_cents,
+            return_url,
+            RETURN_ACTION_PARAM,
+            description,
         )
         return info
 
@@ -94,7 +98,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             # we use ParseError in this method because serializers.ValidationError triggers exception serializers
             raise ParseError("missing orderID")
 
-        payment = get_object_or_404(SubmissionPayment, order_id=order_id)
+        payment = get_object_or_404(SubmissionPayment, public_order_id=order_id)
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
         )

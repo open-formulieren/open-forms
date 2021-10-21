@@ -28,6 +28,7 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "plugin_options",
         "form_url",
         "order_id",
+        "public_order_id",
         "amount",
         "status",
     )
@@ -41,21 +42,14 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "created",
         "submission",
         "plugin_id",
-        "order_id_str",
+        "public_order_id",
         "amount",
         "status",
     )
     list_filter = ("status",)
     search_fields = (
-        "order_id",
+        "public_order_id",
         "submission__uuid",
         "uuid",
         "form_url",
     )
-
-    def order_id_str(self, obj):
-        # property to stop Django localising the integer
-        return str(obj.order_id)
-
-    order_id_str.short_description = _("Order ID")
-    order_id_str.admin_order_field = "order_id"

@@ -1,5 +1,5 @@
 from django.contrib.postgres.fields import JSONField
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template import Context, Template
 from django.utils.encoding import force_str
@@ -10,6 +10,7 @@ from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
 from openforms.data_removal.constants import RemovalMethods
+from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
@@ -189,6 +190,18 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "Amount of time in minutes a user filling in a form can be inactive for before being logged out"
         ),
+    )
+
+    # global payment settings
+    payment_order_id_prefix = models.CharField(
+        _("Payment Order ID prefix"),
+        max_length=16,
+        default="{year}",
+        blank=True,
+        help_text=_(
+            "Prefix to apply to generated numerical order IDs. Alpha-numerical only, supports placeholder {year}."
+        ),
+        validators=[validate_payment_order_id_prefix],
     )
 
     # analytics/tracking
