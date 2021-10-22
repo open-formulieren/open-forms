@@ -9,7 +9,6 @@ register = template.Library()
 
 @register.inclusion_tag("form_summary.html", takes_context=True)
 def summary(context):
-    d = filter_data_to_show_in_email(context.flatten())
     return filter_data_to_show_in_email(context.flatten())
 
 
