@@ -57,7 +57,8 @@ class SubmissionPaymentManager(models.Manager):
         max_order_id = agg["order_id__max"] or ORDER_ID_START
         return max_order_id + 1
 
-    def create_public_order_id_for(self, payment: "SubmissionPayment") -> str:
+    @staticmethod
+    def create_public_order_id_for(payment: "SubmissionPayment") -> str:
         config = GlobalConfiguration.get_solo()
         prefix = config.payment_order_id_prefix
         prefix = prefix.replace("{year}", str(payment.created.year))
