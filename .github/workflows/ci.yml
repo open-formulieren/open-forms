@@ -48,7 +48,7 @@ jobs:
       - name: Install OS dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext
 
       - name: Start CI docker services
         run: |
@@ -67,6 +67,7 @@ jobs:
 
       - name: Run tests
         run: |
+          python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           coverage run src/manage.py test src
         env:
