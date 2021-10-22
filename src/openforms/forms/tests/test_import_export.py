@@ -5,10 +5,10 @@ import zipfile
 from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings
 
+from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
+from openforms.submissions.tests.form_logic.factories import FormLogicFactory
 
-from ...payments.contrib.ogone.tests.factories import OgoneMerchantFactory
-from ...submissions.tests.form_logic.factories import FormLogicFactory
 from ..models import Form, FormDefinition, FormLogic, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
