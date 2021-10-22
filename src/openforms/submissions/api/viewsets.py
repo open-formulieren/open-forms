@@ -129,7 +129,13 @@ class SubmissionViewSet(
         status endpoint that a retry is needed, the ID is added back to the session.
         """
         submission = self.get_object()
-        validate_submission_completion(submission, request=request)
+        validation_serializer = validate_submission_completion(
+            submission, request=request
+        )
+        if validation_serializer is not None:
+            return Response(
+                validation_serializer.data, status=status.HTTP_400_BAD_REQUEST
+            )
 
         submission.completed_on = timezone.now()
         submission.save()

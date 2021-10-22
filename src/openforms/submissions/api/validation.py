@@ -1,5 +1,11 @@
+"""
+Perform submission-level validation.
+
+TODO: refactor/rework the entire way we _run_ the validations and communicate them back
+to the frontend.
+"""
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 from rest_framework import serializers
 from rest_framework.request import Request
@@ -15,16 +21,18 @@ class InvalidCompletion:
     incomplete_steps: List[SubmissionStep] = field(default_factory=list)
     request: Request = None
 
-    def is_valid(self, raise_exception=False):
-        invalid = any([self.incomplete_steps])
-        if not raise_exception:
-            return not invalid
+    def validate(self) -> Optional["CompletionValidationSerializer"]:
+        checks = [
+            any([self.incomplete_steps]),
+            self.submission.form.can_submit is False,
+        ]
+        invalid = any(checks)
+        if not invalid:
+            return None
 
-        if invalid:
-            serializer = CompletionValidationSerializer(
-                instance=self, context={"request": self.request}
-            )
-            raise serializers.ValidationError(serializer.data)
+        return CompletionValidationSerializer(
+            instance=self, context={"request": self.request}
+        )
 
 
 class IncompleteStepSerializer(serializers.Serializer):
@@ -40,9 +48,15 @@ class IncompleteStepSerializer(serializers.Serializer):
 
 class CompletionValidationSerializer(serializers.Serializer):
     incomplete_steps = IncompleteStepSerializer(many=True)
+    can_submit = serializers.BooleanField(
+        source="submission.form.can_submit",
+        read_only=True,
+    )
 
 
-def validate_submission_completion(submission: Submission, request=None):
+def validate_submission_completion(
+    submission: Submission, request=None
+) -> Optional[CompletionValidationSerializer]:
     # check that all required steps are completed
     state = submission.load_execution_state()
 
@@ -61,4 +75,4 @@ def validate_submission_completion(submission: Submission, request=None):
         incomplete_steps=incomplete_steps,
         request=request,
     )
-    completion.is_valid(raise_exception=True)
+    return completion.validate()
