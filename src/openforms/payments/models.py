@@ -11,12 +11,14 @@ from django.utils.translation import gettext_lazy as _
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.utils.fields import StringUUIDField
 
+from ..config.models import GlobalConfiguration
 from .constants import PaymentStatus
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-RE_INVOICE_NUMBER = re.compile(r"(?P<year>20\d{2})(?P<number>\d+)$")
+ORDER_ID_START = 100
+ORDER_ID_PAD_LENGTH = 6
 
 
 class SubmissionPaymentManager(models.Manager):
@@ -42,24 +44,26 @@ class SubmissionPaymentManager(models.Manager):
         while True:
             try:
                 with transaction.atomic():
-                    payment.order_id = self.get_next_order_id(payment)
-                    payment.save(update_fields=("order_id",))
+                    payment.order_id = self.get_next_order_id()
+                    payment.public_order_id = self.create_public_order_id_for(payment)
+                    payment.save(update_fields=("order_id", "public_order_id"))
                     break
             except IntegrityError:
                 # race condition on unique order_id
                 continue
         return payment
 
-    def get_next_order_id(self, payment):
-        prefix = payment.created.year
+    def get_next_order_id(self) -> int:
         agg = self.aggregate(Max("order_id"))
-        max_order_id = str(agg["order_id__max"] or "202000000")
-        match = RE_INVOICE_NUMBER.match(max_order_id)
-        if not match:
-            raise ValueError("Invalid invoice number for invoice %d", payment.pk)
-        max_number = int(match.group("number"))
-        next_number = "{:05d}".format(max_number + 1)
-        return int(f"{prefix}{next_number}")
+        max_order_id = agg["order_id__max"] or ORDER_ID_START
+        return max_order_id + 1
+
+    def create_public_order_id_for(self, payment: "SubmissionPayment") -> str:
+        config = GlobalConfiguration.get_solo()
+        prefix = config.payment_order_id_prefix
+        prefix = prefix.replace("{year}", str(payment.created.year))
+        order_id = str(payment.order_id).rjust(ORDER_ID_PAD_LENGTH, "0")
+        return prefix + order_id
 
 
 class SubmissionPaymentQuerySet(models.QuerySet):
@@ -87,6 +91,13 @@ class SubmissionPayment(models.Model):
         unique=True,
         null=True,
         help_text=_("Unique tracking across backend"),
+    )
+    public_order_id = models.CharField(
+        _("payment status"),
+        max_length=32,
+        blank=True,
+        unique=True,
+        help_text=_("Status of the payment process in the configured backend."),
     )
     amount = models.DecimalField(
         _("payment amount"),
