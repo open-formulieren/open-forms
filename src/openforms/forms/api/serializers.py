@@ -12,6 +12,7 @@ from ...authentication.api.fields import LoginOptionsReadOnlyField
 from ...authentication.registry import register as auth_register
 from ...payments.api.fields import PaymentOptionsReadOnlyField
 from ...payments.registry import register as payment_register
+from ...registrations.registry import register as registration_register
 from ...submissions.api.fields import URLRelatedField
 from ..constants import LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
@@ -182,6 +183,38 @@ class FormSerializer(serializers.ModelSerializer):
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
         return fields
+
+    def validate(self, attrs):
+        super().validate(attrs)
+        self.validate_backend_options(
+            attrs,
+            "registration_backend",
+            "registration_backend_options",
+            registration_register,
+        )
+        self.validate_backend_options(
+            attrs, "payment_backend", "payment_backend_options", payment_register
+        )
+        return attrs
+
+    def validate_backend_options(self, attrs, backend_field, options_field, registry):
+        plugin_id = attrs.get(backend_field)
+        options = attrs.get(options_field)
+        if not plugin_id:
+            return
+        plugin = registry[plugin_id]
+        if not plugin.configuration_options:
+            return
+
+        serializer = plugin.configuration_options(data=options)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            # wrap detail in dict so we can attach it to the field
+            # DRF will create the .invalidParams with a dotted path to nested fields
+            # like registrationBackendOptions.toEmails.0 if the first email was invalid
+            detail = {options_field: e.detail}
+            raise serializers.ValidationError(detail) from e
 
 
 class FormExportSerializer(FormSerializer):
