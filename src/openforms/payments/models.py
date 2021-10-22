@@ -1,4 +1,3 @@
-import re
 import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING
@@ -96,7 +95,6 @@ class SubmissionPayment(models.Model):
         _("payment status"),
         max_length=32,
         blank=True,
-        unique=True,
         help_text=_("Status of the payment process in the configured backend."),
     )
     amount = models.DecimalField(
@@ -114,6 +112,17 @@ class SubmissionPayment(models.Model):
         help_text=_("Status of the payment process in the configured backend."),
     )
     objects = SubmissionPaymentManager.from_queryset(SubmissionPaymentQuerySet)()
+
+    class Meta:
+        verbose_name = _("submission payment details")
+        verbose_name_plural = _("submission payment details")
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_public_order_id",
+                fields=("public_order_id",),
+                condition=~models.Q(public_order_id=""),
+            )
+        ]
 
     def __str__(self):
         return f"#{self.order_id} '{self.get_status_display()}' {self.amount}"
