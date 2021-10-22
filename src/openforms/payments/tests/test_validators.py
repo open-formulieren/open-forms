@@ -4,31 +4,32 @@ from django.test import TestCase
 from openforms.payments.validators import validate_payment_order_id_prefix
 
 
-class RegistryTests(TestCase):
-    def test_validate_payment_order_id_prefix(self):
-        validate_payment_order_id_prefix("")
-        validate_payment_order_id_prefix("ab")
-        validate_payment_order_id_prefix("12")
-        validate_payment_order_id_prefix("ab12")
+class PaymentOrderIDValidatorTests(TestCase):
+    def test_valid_prefixes(self):
+        valid = [
+            "",
+            "ab",
+            "12",
+            "ab12",
+            # placeholder
+            "{year}" "aa{year}" "a1{year}a1",
+        ]
 
-        validate_payment_order_id_prefix("{year}")
-        validate_payment_order_id_prefix("aa{year}")
-        validate_payment_order_id_prefix("a1{year}a1")
+        for value in valid:
+            with self.subTest(value=value):
+                validate_payment_order_id_prefix(value)
 
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix(" ")
+    def test_raises_for_invalid_prefixes(self):
+        invalid = [
+            " ",
+            "aa ",
+            " aa",
+            "a-2",
+            "{yearrr",
+            "{bad}",
+        ]
 
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix("aa ")
-
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix(" aa")
-
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix("a-2")
-
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix("{yearrr")
-
-        with self.assertRaises(ValidationError):
-            validate_payment_order_id_prefix("{bad}")
+        for value in invalid:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    validate_payment_order_id_prefix(value)
