@@ -56,28 +56,25 @@ def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
 
 def create_document(
     name: str,
-    submission_report: SubmissionReport,
+    base64_body: str,
     options: dict,
     get_drc=default_get_drc,
 ) -> dict:
     client = get_drc().build_client()
     today = date.today().isoformat()
 
-    submission_report.content.seek(0)
-    base64_body = b64encode(submission_report.content.read()).decode()
-
     data = {
         "informatieobjecttype": options["informatieobjecttype"],
         "bronorganisatie": options["organisatie_rsin"],
         "creatiedatum": today,
         "titel": name,
-        "auteur": "open-forms",
-        "taal": "nld",
-        "formaat": "application/pdf",
+        "auteur": options["author"],
+        "taal": options["language"],
+        "formaat": options["format"],
         "inhoud": base64_body,
-        "status": "definitief",
-        "bestandsnaam": f"open-forms-{name}.pdf",
-        "beschrijving": "Ingezonden formulier",
+        "status": options["status"],
+        "bestandsnaam": options["filename"],
+        "beschrijving": options["description"],
     }
     if "vertrouwelijkheidaanduiding" in options:
         data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
@@ -86,7 +83,52 @@ def create_document(
     return informatieobject
 
 
-def create_attachment(
+def create_report_document(
+    name: str,
+    submission_report: SubmissionReport,
+    options: dict,
+    get_drc=default_get_drc,
+) -> dict:
+    submission_report.content.seek(0)
+    base64_body = b64encode(submission_report.content.read()).decode()
+
+    document_options = {
+        "author": "open-forms",
+        "language": "nld",
+        "format": "application/pdf",
+        "status": "definitief",
+        "filename": f"open-forms-{name}.pdf",
+        "description": "Ingezonden formulier",
+    }
+
+    options = {**options, **document_options}
+
+    return create_document(name, base64_body, options, get_drc=get_drc)
+
+
+def create_csv_document(
+    name: str,
+    csv_data: str,
+    options: dict,
+    get_drc=default_get_drc,
+) -> dict:
+    base64_body = b64encode(csv_data.encode()).decode()
+
+    document_options = {
+        "author": "open-forms",
+        "language": "nld",
+        "format": "text/csv",
+        "status": "definitief",
+        "filename": f"open-forms-{name}.csv",
+        "description": "Ingezonden formulierdata",
+    }
+
+    options = {**options, **document_options}
+
+    return create_document(name, base64_body, options, get_drc=get_drc)
+
+
+def create_attachment_document(
     name: str,
     submission_attachment: SubmissionFileAttachment,
     options: dict,
@@ -98,24 +140,18 @@ def create_attachment(
     submission_attachment.content.seek(0)
     base64_body = b64encode(submission_attachment.content.read()).decode()
 
-    data = {
-        "informatieobjecttype": options["informatieobjecttype"],
-        "bronorganisatie": options["organisatie_rsin"],
-        "creatiedatum": today,
-        "titel": name,
-        "auteur": "open-forms",
-        "taal": "nld",
-        "formaat": submission_attachment.content_type,
-        "inhoud": base64_body,
+    document_options = {
+        "author": "open-forms",
+        "language": "nld",
+        "format": submission_attachment.content_type,
         "status": "definitief",
-        "bestandsnaam": submission_attachment.get_display_name(),
-        "beschrijving": "Bijgevoegd document",
+        "filename": submission_attachment.get_display_name(),
+        "description": "Bijgevoegd document",
     }
-    if "vertrouwelijkheidaanduiding" in options:
-        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
 
-    informatieobject = client.create("enkelvoudiginformatieobject", data)
-    return informatieobject
+    options = {**options, **document_options}
+
+    return create_document(name, base64_body, options, get_drc=get_drc)
 
 
 def relate_document(zaak_url: str, document_url: str) -> dict:

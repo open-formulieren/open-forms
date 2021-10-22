@@ -12,8 +12,8 @@ from openforms.registrations.constants import (
 )
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.service import (
-    create_attachment,
-    create_document,
+    create_attachment_document,
+    create_report_document,
     create_rol,
     create_status,
     create_zaak,
@@ -81,7 +81,7 @@ class ZGWRegistration(BasePlugin):
         zaak = create_zaak(options, payment_required=submission.payment_required)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
-        document = create_document(
+        document = create_report_document(
             submission.form.admin_name, submission_report, options
         )
         relate_document(zaak["url"], document["url"])
@@ -95,7 +95,7 @@ class ZGWRegistration(BasePlugin):
         status = create_status(zaak)
 
         for attachment in submission.attachments:
-            attachment = create_attachment(
+            attachment = create_attachment_document(
                 submission.form.admin_name, attachment, options
             )
             relate_document(zaak["url"], attachment["url"])

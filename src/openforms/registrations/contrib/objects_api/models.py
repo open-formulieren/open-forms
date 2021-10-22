@@ -61,8 +61,17 @@ class ObjectsAPIConfig(SingletonModel):
         max_length=1000,
         blank=True,
         help_text=_(
-            "Default URL of the INFORMATIEOBJECTTYPE for the submission "
-            "report in the Catalogi API"
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report PDF"
+        ),
+    )
+    informatieobjecttype_submission_csv = models.URLField(
+        _("submission report CSV informatieobjecttype"),
+        max_length=1000,
+        blank=True,
+        help_text=_(
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report CSV"
         ),
     )
     informatieobjecttype_attachment = models.URLField(
@@ -70,8 +79,8 @@ class ObjectsAPIConfig(SingletonModel):
         max_length=1000,
         blank=True,
         help_text=_(
-            "Default URL of the INFORMATIEOBJECTTYPE for the submission "
-            "attachments in the Catalogi API"
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission attachments"
         ),
     )
     organisatie_rsin = models.CharField(
@@ -92,6 +101,10 @@ class ObjectsAPIConfig(SingletonModel):
         options.setdefault(
             "informatieobjecttype_submission_report",
             self.informatieobjecttype_submission_report,
+        )
+        options.setdefault(
+            "informatieobjecttype_submission_csv",
+            self.informatieobjecttype_submission_csv,
         )
         options.setdefault(
             "informatieobjecttype_attachment", self.informatieobjecttype_attachment

@@ -96,6 +96,16 @@ Objects API. The top-level has meta-data about the form submission, and the
                  "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/230bab4a-4b51-40c6-91b2-f2022008a7f8"
                ]
              },
+             "csv_url": {
+               "$id": "#/properties/csv_url",
+               "type": "string",
+               "title": "URL van een document (in een Documenten API) dat de CSV met ingezonden formulierdata bevat",
+               "format": "uri",
+               "default": "",
+               "examples": [
+                 "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/aeaba696-4968-46a6-8b1e-016f503ed88d"
+               ]
+             },
              "attachments": {
                "$id": "#/properties/attachments",
                "type": "array",
@@ -177,7 +187,9 @@ To configure the Objects API follow these steps:
    * **Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API *For example:* ``1``
    * **Productaanvraag type**: Fill in the type of ProductAanvraag *For example:* ``terugbelnotitie``
    * **Submission report informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/1/``
-   * **Attachment informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/2/``
+   * **Upload submission CSV**: Indicate whether or not the submission CSV should be uploaded to the Documenten API by default (can be overridden per form)
+   * **Submission report CSV informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report CSV in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/2/``
+   * **Attachment informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/3/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
 

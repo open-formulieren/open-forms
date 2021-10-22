@@ -8,9 +8,11 @@ from zgw_consumers.models import Service
 
 # "Borrow" the functions from another plugin.
 from openforms.registrations.contrib.zgw_apis.service import (
-    create_attachment,
-    create_document,
+    create_attachment_document,
+    create_csv_document,
+    create_report_document,
 )
+from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission, SubmissionReport
 
 from ...base import BasePlugin
@@ -41,7 +43,7 @@ class ObjectsAPIRegistration(BasePlugin):
         submission_report_options["informatieobjecttype"] = options[
             "informatieobjecttype_submission_report"
         ]
-        document = create_document(
+        document = create_report_document(
             submission.form.admin_name,
             submission_report,
             submission_report_options,
@@ -54,7 +56,7 @@ class ObjectsAPIRegistration(BasePlugin):
         ]
         attachments = []
         for attachment in submission.attachments:
-            attachment_document = create_attachment(
+            attachment_document = create_attachment_document(
                 submission.form.admin_name,
                 attachment,
                 attachment_options,
@@ -71,6 +73,26 @@ class ObjectsAPIRegistration(BasePlugin):
             "attachments": attachments,
             "pdf_url": document["url"],
         }
+
+        if (
+            options.get("upload_submission_csv", False)
+            and options["informatieobjecttype_submission_csv"]
+        ):
+            submission_csv_options = deepcopy(options)
+            submission_csv_options["informatieobjecttype"] = options[
+                "informatieobjecttype_submission_csv"
+            ]
+            submission_csv = create_submission_export(
+                Submission.objects.filter(pk=submission.pk)
+            ).export("csv")
+
+            submission_csv_document = create_csv_document(
+                f"{submission.form.admin_name} (csv)",
+                submission_csv,
+                submission_csv_options,
+                get_drc=get_drc,
+            )
+            object_data["csv_url"] = submission_csv_document["url"]
 
         if submission.bsn:
             object_data["bsn"] = submission.bsn

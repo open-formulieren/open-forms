@@ -64,8 +64,9 @@
     border: unset;
   }
 
-  .form-group {
+  .form-group:not(.field-object) {
     margin-bottom: unset;
+    clear: both;
   }
 
   .glyphicon {
