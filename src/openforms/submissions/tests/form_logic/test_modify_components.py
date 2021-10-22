@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...form_logic import evaluate_form_logic
@@ -829,6 +830,58 @@ class StepModificationTests(TestCase):
             evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertFalse(submission_step.can_submit)
+
+    def test_dirty_data_only_diff_data_returned(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "changingKey",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "name"},
+                    "john",
+                ]
+            },
+            actions=[
+                {
+                    "component": "changingKey",
+                    "action": {
+                        "name": "Set value",
+                        "type": LogicActionTypes.value,
+                        "value": "changed",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=step, data=None
+        )
+        dirty_data = {
+            "name": "john",
+            "changingKey": "original",
+        }
+
+        evaluate_form_logic(submission, submission_step, dirty_data)
+
+        self.assertEqual(
+            submission_step.data,
+            {"changingKey": "changed"},
+        )
 
 
 class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
