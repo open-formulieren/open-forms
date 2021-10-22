@@ -669,10 +669,13 @@ else:
 ENABLE_THROTTLING = config("ENABLE_THROTTLING", default=True)
 
 throttle_rate_anon = (
-    config("THROTTLE_RATE_ANON", default="1000/hour") if ENABLE_THROTTLING else None
+    config("THROTTLE_RATE_ANON", default="2500/hour") if ENABLE_THROTTLING else None
 )
 throttle_rate_user = (
-    config("THROTTLE_RATE_USER", default="10000/hour") if ENABLE_THROTTLING else None
+    config("THROTTLE_RATE_USER", default="15000/hour") if ENABLE_THROTTLING else None
+)
+throttle_rate_polling = (
+    config("THROTTLE_RATE_POLLING", default="50000/hour") if ENABLE_THROTTLING else None
 )
 
 REST_FRAMEWORK = {
@@ -693,8 +696,11 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ),
     "DEFAULT_THROTTLE_RATES": {
+        # used by regular throttle classes
         "anon": throttle_rate_anon,
         "user": throttle_rate_user,
+        # used by custom throttle class
+        "polling": throttle_rate_polling,
     },
     # required to get the right IP addres for throttling depending on the amount of
     # reverse proxies (X-Forwarded-For).

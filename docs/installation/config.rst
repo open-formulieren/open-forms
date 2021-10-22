@@ -213,12 +213,17 @@ Other settings
 * ``ENABLE_THROTTLING``: Enable or disable request throttling (to protect against (D)DOS, for example). Default enabled.
 
 * ``THROTTLE_RATE_ANON``: Default throttle rate for anonymous users (this includes the
-  end-users filling out (embedded) forms using the SDK!). Defaults to ``1000/hour``. Note
+  end-users filling out (embedded) forms using the SDK!). Defaults to ``2500/hour``. Note
   that if throttling is disabled altogether, this configuration parameter has no effect.
 
 * ``THROTTLE_RATE_USER``: Default throttle rate for authenticated users (typicall users
-  logged in to the admin interface). Defaults to ``10000/hour``. Note that if throttling
+  logged in to the admin interface). Defaults to ``15000/hour``. Note that if throttling
   is disabled altogether, this configuration parameter has no effect.
+
+* ``THROTTLE_RATE_POLLING``: Throttle rate for endpoints that are polled frequently. If
+  you're authenticated as staff user, the throttling is bypassed completely. Defaults
+  to ``50000/hour``. Note that if throttling is disabled altogether, this configuration
+  parameter has no effect.
 
 * ``TWO_FACTOR_FORCE_OTP_ADMIN``: Enforce 2 Factor Authentication in the admin or not.
   Default ``True``. You'll probably want to disable this when using OIDC.

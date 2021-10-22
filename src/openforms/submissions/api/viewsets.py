@@ -19,6 +19,7 @@ from openforms.logging import logevent
 from openforms.logging.logevent import submission_details_view_api
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -177,6 +178,7 @@ class SubmissionViewSet(
         methods=["get"],
         url_path=r"(?P<token>[a-z0-9]{1,3}-[\w]{20})/status",
         permission_classes=(SubmissionStatusPermission,),
+        throttle_classes=[PollingRateThrottle],
     )
     def status(self, request, *args, **kwargs):
         """
@@ -326,7 +328,12 @@ class SubmissionStepViewSet(
         request=FormDataSerializer,
         responses={200: SubmissionStateLogicSerializer},
     )
-    @action(detail=True, methods=["post"], url_path="_check_logic")
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="_check_logic",
+        throttle_classes=[PollingRateThrottle],
+    )
     def logic_check(self, request, *args, **kwargs):
         submission_step = self.get_object()
 
