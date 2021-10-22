@@ -1,18 +1,15 @@
 from typing import Any, Dict
 
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.template import Context, Template, TemplateSyntaxError
-from django.template.loader import get_template
+from django.template import Context, Template
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
 from ..utils.urls import build_absolute_uri
-from .utils import sanitize_content
+from .validators import DjangoTemplateValidator
 
 
 class ConfirmationEmailTemplate(models.Model):
@@ -25,6 +22,14 @@ class ConfirmationEmailTemplate(models.Model):
             "The content of the email message can contain variables that will be "
             "templated from the submitted form data."
         ),
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "appointment_information",
+                    "payment_information",
+                ]
+            )
+        ],
     )
     form = models.OneToOneField(
         "forms.Form",
@@ -77,9 +82,6 @@ class ConfirmationEmailTemplate(models.Model):
 
         return rendered_content
 
-    def clean(self):
-        try:
-            Template(self.content)
-        except TemplateSyntaxError as e:
-            raise ValidationError(e)
-        return super().clean()
+    # def clean(self):
+    #     self.validate_content()
+    #     return super().clean()

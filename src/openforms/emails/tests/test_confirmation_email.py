@@ -62,11 +62,19 @@ NESTED_COMPONENT_CONF = {
 
 @override_settings(CACHES=NOOP_CACHES)
 class ConfirmationEmailTests(TestCase):
-    def test_validate_content_can_be_parsed(self):
-        email = ConfirmationEmailTemplate(content="{{{}}}")
+    def test_validate_content_syntax(self):
+        email = ConfirmationEmailTemplate(subject="foo", content="{{{}}}")
 
-        with self.assertRaises(ValidationError):
-            email.clean()
+        with self.assertRaisesRegex(ValidationError, "Could not parse the remainder:"):
+            email.full_clean()
+
+    def test_validate_content_required_tags(self):
+        email = ConfirmationEmailTemplate(subject="foo", content="no tags here")
+        with self.assertRaisesRegex(
+            ValidationError,
+            "Missing required template-tag {% appointment_information %}",
+        ):
+            email.full_clean()
 
     def test_cant_delete_model_instances(self):
         form_step = FormStepFactory.create()
