@@ -1,4 +1,4 @@
-from celery import chain
+from celery import chain, group
 from celery.result import AsyncResult
 
 from openforms.celery import app
@@ -7,6 +7,7 @@ from ..models import Submission
 from .appointments import *  # noqa
 from .cleanup import *  # noqa
 from .emails import *  # noqa
+from .payments import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
@@ -72,7 +73,7 @@ def on_completion(submission_id: int) -> None:
     Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
 
 
-@app.task()
+@app.task(ignore_result=False)
 def finalize_completion(submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.
@@ -84,3 +85,37 @@ def finalize_completion(submission_id: int) -> None:
     """
     send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
     send_confirmation_email_task.delay()
+
+
+@app.task(ignore_result=True)
+def on_completion_retry(submission_id: int) -> None:
+    """
+    Celery chain of tasks to execute on a submission completion processing retry.
+
+    This differs from :func:`on_completion` in that it has a different "starting point"
+    and invokes some extra tasks or skips other tasks. It focuses on tasks that
+    typically fail downstream in external systems outside of our own control,
+    such as registration backends, appointment booking sytems.
+
+    .. note::
+
+        The retry workflow may only need to execute a part of the entire flow, but
+        we still consider this an atomic unit/entrypoint to manage the dependencies
+        properly. It's important that the individual celery tasks making up the
+        workflow are idempotent and exit succesfully when nothing needs to be done!
+
+    """
+    register_submission_task = register_submission.si(submission_id)
+    update_appointment_task = maybe_update_appointment.si(submission_id)
+    update_payments_task = update_submission_payment_status.si(submission_id)
+
+    retry_chain = chain(
+        register_submission_task,
+        group(
+            update_appointment_task,
+            update_payments_task,
+        ),
+    )
+
+    # schedule the entire chain to celery
+    retry_chain.delay()
