@@ -12,7 +12,7 @@
             {% blocktrans trimmed %}
                 Payment of &euro;{{ payment_price }} is required.
             {% endblocktrans %}
-            {% trans "Open payment page" %}: {{ payment_url }}
+            {% trans "Open payment page" %}: {{ payment_url|urlize }}
         </p>
     {% endif %}
 {% endif %}

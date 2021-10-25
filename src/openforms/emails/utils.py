@@ -106,8 +106,9 @@ NEWLINE_CHARS = (
 
 def strip_tags_plus(text):
     # copied and modified from https://bitbucket.org/maykinmedia/werkbezoek/src/develop/src/werkbezoek/utils/email.py
-    stripped_text = django_strip_tags(text)
-    lines = stripped_text.splitlines()
+    text = unwrap_anchors(text)
+    text = django_strip_tags(text)
+    lines = text.splitlines()
     transformed_lines = transform_lines(lines)
     deduplicated_newlines = deduplicate_newlines(transformed_lines)
 
@@ -142,3 +143,20 @@ def deduplicate_newlines(lines):
         deduplicated_newlines.append(line)
 
     return deduplicated_newlines
+
+
+def unwrap_anchors(html_str):
+    """
+    ugly util to append the href inside the anchor text so we can use strip-tags
+    """
+    from lxml.html import fromstring, tostring
+
+    root = fromstring(html_str)
+
+    for link in root.xpath("//a"):
+        url = link.attrib.get("href", None)
+        if not url:
+            continue
+        link.text += f" ({url})"
+
+    return tostring(root, encoding="utf8").decode("utf8")

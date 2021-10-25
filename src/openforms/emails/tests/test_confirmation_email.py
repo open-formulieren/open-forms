@@ -34,6 +34,7 @@ from ...payments.tests.factories import SubmissionPaymentFactory
 from ...submissions.utils import send_confirmation_email
 from ...utils.urls import build_absolute_uri
 from ..models import ConfirmationEmailTemplate
+from ..utils import unwrap_anchors
 
 NESTED_COMPONENT_CONF = {
     "display": "form",
@@ -346,6 +347,8 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
 
     <p>Wij hebben uw inzending, met referentienummer {{ public_reference }}, in goede orde ontvangen.</p>
 
+    <p>Kijk voor meer informatie op <a href="http://gemeente.nl">de homepage</a></p>
+
     {% summary %}
 
     {% appointment_information %}
@@ -365,6 +368,10 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
         return_value=TestAppointmentPlugin(),
     )
     def test_send_confirmation_mail_text_kitchensink(self, appointment_client_mock):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["gemeente.nl"]
+        config.save()
+
         conf = deepcopy(NESTED_COMPONENT_CONF)
         conf["components"].append(
             {
@@ -439,6 +446,8 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
 
             Wij hebben uw inzending, met referentienummer {ref}, in goede orde ontvangen.
 
+            Kijk voor meer informatie op de homepage (#URL#)
+
             Samenvatting:
 
             - Name: Foo
@@ -481,6 +490,10 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
             text = message.body.rstrip()
             text = re.sub(url_exp, "#URL#", text)
             self.assertEquals(expected_text, text)
+            self.assertNotIn("<a ", text)
+            self.assertNotIn("<td ", text)
+            self.assertNotIn("<p ", text)
+            self.assertNotIn("<br ", text)
 
         with self.subTest("html"):
             # html alternative
@@ -489,3 +502,17 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
             message_html = message.alternatives[0][0]
 
             print(message_html)
+
+            self.assertIn("<td>Name</td>", message_html)
+            self.assertIn("<td>Foo</td>", message_html)
+            self.assertIn('<a href="http://gemeente.nl">', message_html)
+
+
+class UtilsTest(TestCase):
+    def test_unwrap_anchors(self):
+        input = '<p>foo <a href="http://example.com/">text</a> bar</p>'
+        actual = unwrap_anchors(input)
+        # expected = "foo text(http://example.com/) bar"
+        expected = '<p>foo <a href="http://example.com/">text (http://example.com/)</a> bar</p>'
+
+        self.assertEqual(expected, actual)
