@@ -232,12 +232,13 @@ class Submission(models.Model):
     def save_registration_status(self, status, result):
         self.registration_status = status
         self.registration_result = result
-        self.save(
-            update_fields=[
-                "registration_status",
-                "registration_result",
-            ]
-        )
+        update_fields = ["registration_status", "registration_result"]
+
+        if status == RegistrationStatuses.failed:
+            self.needs_on_completion_retry = True
+            update_fields += ["needs_on_completion_retry"]
+
+        self.save(update_fields=update_fields)
 
     @property
     def is_completed(self):

@@ -16,7 +16,11 @@ def clear_session_store():
     management.call_command("clearsessions")
 
 
-@app.task(base=QueueOnce, ignore_result=True)
+@app.task(
+    base=QueueOnce,
+    ignore_result=True,
+    once={"graceful": True},  # do not spam error monitoring
+)
 def send_emails() -> None:
     logger.debug("Processing e-mail queue")
     management.call_command("send_mail")

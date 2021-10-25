@@ -593,9 +593,6 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
-# Timeout for the initial registration attempt
-SUBMISSION_REGISTRATION_TIMEOUT = config("SUBMISSION_REGISTRATION_TIMEOUT", default=10)
-
 #
 # DJANGO-HIJACK
 #

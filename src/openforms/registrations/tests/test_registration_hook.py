@@ -111,10 +111,42 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
-            with self.assertRaises(RegistrationFailed):
+            register_submission(self.submission.id)
+
+        self.submission.refresh_from_db()
+        self.assertTrue(self.submission.needs_on_completion_retry)
+        self.assertEqual(
+            self.submission.registration_status, RegistrationStatuses.failed
+        )
+        tb = self.submission.registration_result["traceback"]
+        self.assertIn("Can't divide by zero", tb)
+        self.assertEqual(self.submission.last_register_date, timezone.now())
+
+    @freeze_time("2021-08-04T12:00:00+02:00")
+    def test_failing_registration_with_bugged_plugin(self):
+        register = Registry()
+
+        # register the callback, including the assertions
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                # plugin errors with unexected exception (= not converted into RegistrationFailed)
+                raise ZeroDivisionError("Can't divide by zero")
+
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with patch_registry(model_field, register):
+            with self.assertRaises(ZeroDivisionError):
                 register_submission(self.submission.id)
 
         self.submission.refresh_from_db()
+        self.assertTrue(self.submission.needs_on_completion_retry)
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
@@ -184,9 +216,15 @@ class RegistrationHookTests(TestCase):
         )
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
+    def test_submission_is_not_completed_yet(self):
+        submission = SubmissionFactory.create(completed=False)
+
+        with self.assertRaises(RegistrationFailed):
+            register_submission(submission.id)
+
 
 class ResendSubmissionTest(TestCase):
-    @patch("openforms.registrations.tasks.retry_register_submission.delay")
+    @patch("openforms.registrations.tasks.register_submission.delay")
     def test_resend_submission_task_only_resends_certain_submissions(self, task_mock):
         failed_within_time_limit = SubmissionFactory.create(
             registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
