@@ -12,9 +12,9 @@
     <tr>
         <td>{% trans "Location" %}</td>
         <td>
-            {{ appointment.location.name }}<br />
-            {{ appointment.location.address }}<br />
-            {{ appointment.location.postalcode }} {{ appointment.location.city }}
+            {{ appointment.location.name }}
+            {% if appointment.location.address %}<br />{{ appointment.location.address }}{% endif %}
+            {% if appointment.location.city %}<br />{{ appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
         </td>
     </tr>
     <tr>

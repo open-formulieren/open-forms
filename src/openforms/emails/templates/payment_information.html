@@ -1,5 +1,6 @@
 {%  load i18n %}
 {% if payment_required %}
+    <h1>{% trans "Payment information" %}</h1>
     {% if payment_user_has_paid %}
         <p>
             {% blocktrans trimmed %}
@@ -11,7 +12,7 @@
             {% blocktrans trimmed %}
                 Payment of &euro;{{ payment_price }} is required.
             {% endblocktrans %}
-            <a href="{{ payment_url }}">{% trans "Open payment page" %}</a>
+            {% trans "Open payment page" %}: {{ payment_url }}
         </p>
     {% endif %}
 {% endif %}

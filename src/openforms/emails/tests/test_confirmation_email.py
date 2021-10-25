@@ -1,7 +1,11 @@
+import inspect
+import re
 from copy import deepcopy
+from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
@@ -19,8 +23,15 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.tests.utils import NOOP_CACHES
 
+from ...appointments.base import (
+    AppointmentDetails,
+    AppointmentLocation,
+    AppointmentProduct,
+    BasePlugin,
+)
 from ...payments.constants import PaymentStatus
 from ...payments.tests.factories import SubmissionPaymentFactory
+from ...submissions.utils import send_confirmation_email
 from ...utils.urls import build_absolute_uri
 from ..models import ConfirmationEmailTemplate
 
@@ -53,6 +64,7 @@ NESTED_COMPONENT_CONF = {
                     "type": "email",
                     "label": "Email",
                     "showInEmail": False,
+                    "confirmationRecipient": True,
                 },
             ],
         }
@@ -108,10 +120,10 @@ class ConfirmationEmailTests(TestCase):
         email = ConfirmationEmailTemplate(content="{% summary %}")
         rendered_content = email.render(submission)
 
-        self.assertIn("<th>Name</th>", rendered_content)
-        self.assertIn("<th>Jane</th>", rendered_content)
-        self.assertIn("<th>Last name</th>", rendered_content)
-        self.assertIn("<th>Doe</th>", rendered_content)
+        self.assertIn("<td>Name</td>", rendered_content)
+        self.assertIn("<td>Jane</td>", rendered_content)
+        self.assertIn("<td>Last name</td>", rendered_content)
+        self.assertIn("<td>Doe</td>", rendered_content)
 
     def test_attachment(self):
         conf = deepcopy(NESTED_COMPONENT_CONF)
@@ -156,12 +168,12 @@ class ConfirmationEmailTests(TestCase):
         email = ConfirmationEmailTemplate(content="{% summary %}")
         rendered_content = email.render(submission)
 
-        self.assertIn("<th>Name</th>", rendered_content)
-        self.assertIn("<th>Jane</th>", rendered_content)
-        self.assertIn("<th>Last name</th>", rendered_content)
-        self.assertIn("<th>Doe</th>", rendered_content)
-        self.assertIn("<th>File</th>", rendered_content)
-        self.assertIn("<th>my-image.jpg</th>", rendered_content)
+        self.assertIn("<td>Name</td>", rendered_content)
+        self.assertIn("<td>Jane</td>", rendered_content)
+        self.assertIn("<td>Last name</td>", rendered_content)
+        self.assertIn("<td>Doe</td>", rendered_content)
+        self.assertIn("<td>File</td>", rendered_content)
+        self.assertIn("<td>my-image.jpg</td>", rendered_content)
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
@@ -304,3 +316,176 @@ class PaymentConfirmationEmailTests(TestCase):
         # no payment link
         url = reverse("payments:link", kwargs={"uuid": submission.uuid})
         self.assertNotIn(url, rendered_content)
+
+
+class TestAppointmentPlugin(BasePlugin):
+    def get_appointment_details(self, identifier: str):
+        return AppointmentDetails(
+            identifier=identifier,
+            products=[
+                AppointmentProduct(identifier="1", name="Test product 1 & 2"),
+                AppointmentProduct(identifier="2", name="Test product 3"),
+            ],
+            location=AppointmentLocation(
+                identifier="1",
+                name="Test location",
+                city="Teststad",
+                postalcode="1234ab",
+            ),
+            start_at=datetime(2021, 1, 1, 12, 0),
+            end_at=datetime(2021, 1, 1, 12, 15),
+            remarks="Remarks",
+            other={"Some": "<h1>Data</h1>"},
+        )
+
+
+@override_settings(DEFAULT_FROM_EMAIL="foo@sender.com")
+class ConfirmationEmailRenderingIntegrationTest(TestCase):
+    template = """
+    <p>Geachte heer/mevrouw,</p>
+
+    <p>Wij hebben uw inzending, met referentienummer {{ public_reference }}, in goede orde ontvangen.</p>
+
+    {% summary %}
+
+    {% appointment_information %}
+
+    {% appointment_links %}
+
+    {% payment_information %}
+
+    <p>Met vriendelijke groet,</p>
+
+    <p>Open Formulieren</p>
+    """
+    maxDiff = None
+
+    @patch(
+        "openforms.emails.templatetags.appointments.get_client",
+        return_value=TestAppointmentPlugin(),
+    )
+    def test_send_confirmation_mail_text_kitchensink(self, appointment_client_mock):
+        conf = deepcopy(NESTED_COMPONENT_CONF)
+        conf["components"].append(
+            {
+                "id": "erttrr",
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "showInEmail": True,
+            }
+        )
+
+        submission = SubmissionFactory.from_components(
+            conf["components"],
+            {
+                "name": "Foo",
+                "lastName": "de Bar & de Baas",
+                "email": "foo@bar.baz",
+                "file": [
+                    {
+                        "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                        "data": {
+                            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                            "form": "",
+                            "name": "my-image.jpg",
+                            "size": 46114,
+                            "baseUrl": "http://server/form",
+                            "project": "",
+                        },
+                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "my-image.jpg",
+                    }
+                ],
+            },
+            registration_success=True,
+            public_registration_reference="xyz123",
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        AppointmentInfoFactory.create(
+            status=AppointmentDetailsStatus.success,
+            appointment_id="123456789",
+            submission=submission,
+        )
+        self.assertTrue(submission.payment_required)
+        self.assertFalse(submission.payment_user_has_paid)
+
+        template = inspect.cleandoc(self.template)
+        ConfirmationEmailTemplate(
+            form=submission.form, subject="My Subject", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "My Subject")
+        self.assertEqual(message.recipients(), ["foo@bar.baz"])
+        self.assertEqual(message.from_email, "foo@sender.com")
+
+        ref = submission.public_registration_reference
+
+        url_exp = r"https?://[a-z0-9:/._-]+"
+
+        with self.subTest("text"):
+            expected_text = inspect.cleandoc(
+                f"""
+            Geachte heer/mevrouw,
+
+            Wij hebben uw inzending, met referentienummer {ref}, in goede orde ontvangen.
+
+            Samenvatting:
+
+            - Name: Foo
+            - Last name: de Bar & de Baas
+            - File: my-image.jpg
+
+            Producten:
+
+            - Test product 1 & 2
+            - Test product 3
+
+            Locatie:
+
+            Test location
+            1234ab Teststad
+
+            Datum en tijd:
+
+            1 januari 2021, 12:00 - 12:15
+
+            Opmerkingen:
+
+            Remarks
+
+            - Some: Data
+
+            Cancel Appointment: #URL#
+
+            Payment of € 12.34 is required.
+
+            Open payment page: #URL#
+
+            Met vriendelijke groet,
+
+            Open Formulieren
+            """
+            ).lstrip()
+
+            # process to keep tests sane (random tokens)
+            text = message.body.rstrip()
+            text = re.sub(url_exp, "#URL#", text)
+            self.assertEquals(expected_text, text)
+
+        with self.subTest("html"):
+            # html alternative
+            self.assertEqual(len(message.alternatives), 1)
+
+            message_html = message.alternatives[0][0]
+
+            print(message_html)

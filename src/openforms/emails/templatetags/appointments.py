@@ -1,4 +1,5 @@
 from django import template
+from django.template.loader import get_template
 
 from openforms.appointments.utils import get_client
 
@@ -13,13 +14,20 @@ def appointment_information(context):
         return ""
 
     client = get_client()
-    return client.get_appointment_details_html(appointment_id)
+    return client.get_appointment_details_markup(
+        appointment_id, as_text=context.get("rendering_text")
+    )
 
 
-@register.inclusion_tag("appointment_links.html", takes_context=True)
+@register.simple_tag(takes_context=True)
 def appointment_links(context):
+    if context.get("rendering_text"):
+        name = "appointment_links.txt"
+    else:
+        name = "appointment_links.html"
+
     client = get_client()
     tag_context = {
         "appointment_links": client.get_appointment_links(context["_submission"]),
     }
-    return tag_context
+    return get_template(name).render(tag_context)

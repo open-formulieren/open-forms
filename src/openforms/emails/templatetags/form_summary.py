@@ -1,15 +1,20 @@
 from typing import Any
 
 from django import template
+from django.template.loader import get_template
 
 from openforms.forms.models import FormDefinition
 
 register = template.Library()
 
 
-@register.inclusion_tag("form_summary.html", takes_context=True)
+@register.simple_tag(takes_context=True)
 def summary(context):
-    return filter_data_to_show_in_email(context.flatten())
+    if context.get("rendering_text"):
+        name = "form_summary.txt"
+    else:
+        name = "form_summary.html"
+    return get_template(name).render(filter_data_to_show_in_email(context.flatten()))
 
 
 def filter_data_to_show_in_email(context: dict) -> dict:

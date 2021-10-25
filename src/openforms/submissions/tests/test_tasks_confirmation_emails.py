@@ -161,12 +161,12 @@ class ConfirmationEmailTests(TestCase):
         self.assertEqual(mime_type, "text/html")
         self.assertIn("<table", html_message)
         self.assertIn("Information filled in: foovalue and barvalue.", html_message)
-        self.assertIn("<th>Bar</th>", html_message)
-        self.assertIn("<th>barvalue</th>", html_message)
-        self.assertIn("<th>Foo</th>", html_message)
-        self.assertIn("<th>foovalue</th>", html_message)
-        self.assertNotIn("<th>Hello</th>", html_message)
-        self.assertNotIn("<th>hellovalue</th>", html_message)
+        self.assertIn("<td>Bar</td>", html_message)
+        self.assertIn("<td>barvalue</td>", html_message)
+        self.assertIn("<td>Foo</td>", html_message)
+        self.assertIn("<td>foovalue</td>", html_message)
+        self.assertNotIn("<td>Hello</td>", html_message)
+        self.assertNotIn("<td>hellovalue</td>", html_message)
 
     def test_complete_submission_send_confirmation_email_to_many_recipients(self):
         submission = SubmissionFactory.from_components(

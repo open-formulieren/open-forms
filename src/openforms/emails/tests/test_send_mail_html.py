@@ -26,7 +26,7 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(message.from_email, "foo@sender.com")
 
         # text
-        self.assertEquals(message.body, "My Message")
+        self.assertEquals(message.body, "My Message\n")
         self.assertNotIn("<p>", message.body)
 
         # html alternative

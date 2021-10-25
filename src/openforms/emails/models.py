@@ -74,14 +74,11 @@ class ConfirmationEmailTemplate(models.Model):
 
         return context
 
-    def render(self, submission: Submission):
+    def render(self, submission: Submission, extra_context=None):
         context = self.get_context_data(submission)
-
+        if extra_context:
+            context.update(extra_context)
         # render the e-mail body - the template from this model.
         rendered_content = Template(self.content).render(Context(context))
 
         return rendered_content
-
-    # def clean(self):
-    #     self.validate_content()
-    #     return super().clean()

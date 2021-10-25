@@ -216,16 +216,19 @@ class BasePlugin:
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_appointment_details_html(self, identifier: str) -> str:
+    def get_appointment_details_markup(self, identifier: str, as_text=False) -> str:
         """
         Returns an HTML version of the appointment details that can be used in
         a mail or webpage.
         """
         details = self.get_appointment_details(identifier)
 
-        return render_to_string(
-            "appointments/appointment_details.html", {"appointment": details}
-        )
+        if as_text:
+            template_name = "appointments/appointment_details.txt"
+        else:
+            template_name = "appointments/appointment_details.html"
+
+        return render_to_string(template_name, {"appointment": details})
 
     def get_appointment_links(self, submission: Submission) -> List[Dict[str, str]]:
 

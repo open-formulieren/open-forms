@@ -1,0 +1,20 @@
+{% load i18n %}{% trans "Products" %}:
+{% for product in appointment.products %}
+- {{ product.name|safe }}{% endfor %}
+
+
+{% trans "Location" %}:
+
+{{ appointment.location.name|safe }}{% if appointment.location.address %}
+{{ appointment.location.address|safe }}{% endif %}{% if appointment.location.city %}
+{{ appointment.location.postalcode|safe }} {{ appointment.location.city|safe }}{% endif %}
+
+{% trans "Date and time" %}:
+
+{{ appointment.start_at.date }}, {{ appointment.start_at.time }}{% if appointment.end_at %} - {{ appointment.end_at.time }}{% endif %}
+
+{% trans "Remarks" %}:
+
+{{ appointment.remarks|safe }}
+{% if appointment.other %}{% for key, value in appointment.other.items %}
+- {{ key|safe }}: {{ value|safe }}{% endfor %}{% endif %}
