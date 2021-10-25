@@ -5,9 +5,14 @@ The public exports in this module can be called by other apps in this project.
 Implementation details remain private to the appointments app and should not be used
 outside of this app.
 """
+import logging
+
 from openforms.submissions.models import Submission
 
 from .exceptions import AppointmentRegistrationFailed, AppointmentUpdateFailed
+from .models import AppointmentInfo
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "AppointmentRegistrationFailed",
@@ -34,5 +39,17 @@ def register_appointment(submission: Submission) -> None:
       failure to the caller so that it can retry if needed.
     """
     from .utils import book_appointment_for_submission
+
+    try:
+        appointment_id = submission.appointment_info.appointment_id
+    except AppointmentInfo.DoesNotExist:
+        pass
+    else:
+        # idempotency - do not register a new appointment if there already is one.
+        if appointment_id:
+            logger.info(
+                "Submission %s already has an appointment ID, aborting.", submission.pk
+            )
+            return
 
     book_appointment_for_submission(submission)

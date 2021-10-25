@@ -72,8 +72,8 @@ def on_completion(submission_id: int) -> None:
     Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
 
 
-@app.task(bind=True)
-def finalize_completion(task, submission_id: int) -> None:
+@app.task()
+def finalize_completion(submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.
 

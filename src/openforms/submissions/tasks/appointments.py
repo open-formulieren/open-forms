@@ -6,7 +6,6 @@ from openforms.appointments.service import (
     register_appointment,
 )
 from openforms.celery import app
-from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..models import Submission
 
@@ -18,25 +17,18 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
+def update_appointment(submission: Submission):
+    # placeholder until real function is implemented
+    # TODO: implement
+    pass
+
+
 class AppointmentRegistrationAborted(Exception):
     pass
 
 
-def should_retry_appointment_registration(exception, task) -> bool:
-    if not exception.should_retry:
-        raise AppointmentRegistrationAborted(
-            "Could not register appointment"
-        ) from exception
-    return True
-
-
-@maybe_retry_in_workflow(
-    timeout=10,
-    retry_for=(AppointmentRegistrationFailed,),
-    should_retry=should_retry_appointment_registration,
-)
-@app.task(bind=True, max_retries=3)
-def maybe_register_appointment(task, submission_id: int) -> None:
+@app.task()
+def maybe_register_appointment(submission_id: int) -> None:
     """
     Register an appointment for the submission IF relevant.
 
@@ -49,15 +41,30 @@ def maybe_register_appointment(task, submission_id: int) -> None:
     """
     logger.info("Registering appointment for submission %d (if needed!)", submission_id)
     submission = Submission.objects.get(id=submission_id)
-    register_appointment(submission)
+    try:
+        register_appointment(submission)
+    except AppointmentRegistrationFailed as exc:
+        logger.info(
+            "Appoinment registration failed. The should_retry flag is set to: %r",
+            exc.should_retry,
+        )
+        # some user-error that can't be retried automatically, we _fail_ the task here
+        # to signal that downstream processing should not proceed.
+        if not exc.should_retry:
+            raise AppointmentRegistrationAborted(
+                "Could not register appointment"
+            ) from exc
+
+        else:
+            submission.needs_on_completion_retry = True
+            submission.save(update_fields=["needs_on_completion_retry"])
+            # the registration flow can signal that registration failed, but that should not
+            # hold up the entire parent chain (completion or completion_retry).
+            return
 
 
-@maybe_retry_in_workflow(
-    timeout=10,
-    retry_for=(AppointmentUpdateFailed,),
-)
-@app.task(bind=True, max_retries=3)
-def maybe_update_appointment(task, submission_id: int) -> None:
+@app.task()
+def maybe_update_appointment(submission_id: int) -> None:
     """
     Check the submission state and update the appointment with the internal reference.
 
@@ -70,4 +77,9 @@ def maybe_update_appointment(task, submission_id: int) -> None:
     """
     submission = Submission.objects.get(id=submission_id)
     logger.info("Updating appointment for submission %d (if needed!)", submission_id)
-    pass  # TODO: implement!
+    try:
+        update_appointment(submission)
+    except AppointmentUpdateFailed:
+        submission.needs_on_completion_retry = True
+        submission.save(update_fields=["needs_on_completion_retry"])
+        return

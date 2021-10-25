@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
-from timeline_logger.models import TimelineLog
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -17,13 +16,11 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from stuf.tests.factories import SoapServiceFactory
 
 from ..constants import AppointmentDetailsStatus
-from ..contrib.jcc.models import JccConfig
 from ..contrib.jcc.tests.test_plugin import mock_response
 from ..exceptions import AppointmentCreateFailed
-from ..models import AppointmentInfo, AppointmentsConfig
+from ..models import AppointmentInfo
 from ..service import AppointmentRegistrationFailed
 from ..utils import (
     book_appointment_for_submission,
@@ -31,26 +28,15 @@ from ..utils import (
     get_formatted_phone_number,
 )
 from .factories import AppointmentInfoFactory
+from .utils import setup_jcc
 
 
 class BookAppointmentForSubmissionTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
-        appointments_config.save()
+        super().setUpTestData()
 
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        setup_jcc()
 
     def test_creating_appointment_with_no_appointment_information_does_nothing(self):
         submission = SubmissionFactory.create()

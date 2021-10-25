@@ -30,6 +30,40 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = FormDefinition
 
+    class Params:
+        is_appointment = factory.Trait(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "product",
+                        "appointments": {"showProducts": True},
+                        "label": "Product",
+                    },
+                    {
+                        "key": "location",
+                        "appointments": {"showLocations": True},
+                        "label": "Location",
+                    },
+                    {
+                        "key": "time",
+                        "appointments": {"showTimes": True},
+                        "label": "Time",
+                    },
+                    {
+                        "key": "lastName",
+                        "appointments": {"lastName": True},
+                        "label": "Last Name",
+                    },
+                    {
+                        "key": "birthDate",
+                        "appointments": {"birthDate": True},
+                        "label": "Date of Birth",
+                    },
+                ],
+            }
+        )
+
 
 class FormStepFactory(factory.django.DjangoModelFactory):
     form_definition = factory.SubFactory(FormDefinitionFactory)
