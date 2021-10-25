@@ -553,9 +553,9 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.send_emails",
         "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
-    "resend-submissions": {
-        "task": "openforms.registrations.tasks.resend_submissions",
-        "schedule": config("BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60 * 5),
+    "retry-submissions-processing": {
+        "task": "openforms.submissions.tasks.retry_processing_submissions",
+        "schedule": config("RETRY_SUBMISSIONS_INTERVAL", default=60 * 5),
     },
     "delete-submissions": {
         "task": "openforms.data_removal.tasks.delete_submissions",
@@ -579,8 +579,8 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
-    "CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT", default=48  # hours
+RETRY_SUBMISSIONS_TIME_LIMIT = config(
+    "RETRY_SUBMISSIONS_TIME_LIMIT", default=48  # hours
 )
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with

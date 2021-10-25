@@ -109,17 +109,3 @@ def register_submission(submission_id: int) -> Optional[dict]:
     else:
         submission.save_registration_status(RegistrationStatuses.success, result)
         logevent.registration_success(submission, plugin)
-
-
-@app.task(ignore_result=True)
-def resend_submissions():
-    # TODO: refactor to retry_completion_chain
-    resend_time_limit = timezone.now() - timedelta(
-        hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT
-    )
-    for submission in Submission.objects.filter(
-        registration_status=RegistrationStatuses.failed,
-        completed_on__gte=resend_time_limit,
-    ):
-        logger.debug("Resend submission for registration '%s'", submission)
-        register_submission.delay(submission.id)

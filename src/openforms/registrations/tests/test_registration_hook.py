@@ -2,9 +2,7 @@
 Test the registration hook on submissions.
 """
 from datetime import timedelta
-from unittest.mock import patch
 
-from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
@@ -20,7 +18,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
-from ..tasks import register_submission, resend_submissions
+from ..tasks import register_submission
 from .utils import patch_registry
 
 
@@ -221,31 +219,3 @@ class RegistrationHookTests(TestCase):
 
         with self.assertRaises(RegistrationFailed):
             register_submission(submission.id)
-
-
-class ResendSubmissionTest(TestCase):
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_resend_submission_task_only_resends_certain_submissions(self, task_mock):
-        failed_within_time_limit = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
-        )
-        # Outside time limit
-        SubmissionFactory.create(
-            registration_status=RegistrationStatuses.failed,
-            completed_on=(
-                timezone.now()
-                - timedelta(
-                    hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT + 1
-                )
-            ),
-        )
-        # Not failed
-        SubmissionFactory.create(
-            registration_status=RegistrationStatuses.pending,
-            completed_on=timezone.now(),
-        )
-
-        resend_submissions()
-
-        self.assertEqual(task_mock.call_count, 1)
-        task_mock.assert_called_once_with(failed_within_time_limit.id)

@@ -1,3 +1,9 @@
+import logging
+from datetime import timedelta
+
+from django.conf import settings
+from django.utils import timezone
+
 from celery import chain, group
 from celery.result import AsyncResult
 
@@ -11,6 +17,8 @@ from .payments import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
+
+logger = logging.getLogger(__name__)
 
 
 def on_completion(submission_id: int) -> None:
@@ -118,3 +126,20 @@ def on_completion_retry(submission_id: int) -> chain:
 
     # schedule the entire chain to celery
     return retry_chain
+
+
+@app.task(ignore_result=True)
+def retry_processing_submissions():
+    """
+    Retry submissions that have failed processing before and are recent enough.
+    """
+    retry_time_limit = timezone.now() - timedelta(
+        hours=settings.RETRY_SUBMISSIONS_TIME_LIMIT
+    )
+    for submission in Submission.objects.filter(
+        needs_on_completion_retry=True,
+        completed_on__gte=retry_time_limit,
+    ):
+        logger.debug("Resend submission for registration '%s'", submission)
+        retry_chain = on_completion_retry(submission.id)
+        retry_chain.delay()
