@@ -13,7 +13,7 @@ def get_wrapper_context(html_content=""):
         "content": mark_safe(html_content),
         "main_website_url": config.main_website,
         "style": {
-            # do we even have tokens for header? lets re-use footer for know
+            # do we even have tokens for header? lets re-use footer for now
             "header": {
                 "color": glom(design_token, "footer.color.value", default="black"),
                 "background": glom(
