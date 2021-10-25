@@ -190,14 +190,19 @@ class TestSubmissionAdmin(WebTest):
             ).exists()
         )
 
-    @patch("openforms.registrations.tasks.register_submission.delay")
-    def test_resend_submissions_only_resends_failed_submissions(self, task_mock):
+    @patch("openforms.submissions.admin.on_completion_retry")
+    def test_retry_processing_submissions_only_resends_failed_submissions(
+        self, on_completion_retry_mock
+    ):
         failed = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.failed, completed_on=timezone.now()
+            needs_on_completion_retry=True,
+            completed=True,
+            registration_status=RegistrationStatuses.failed,
         )
         not_failed = SubmissionFactory.create(
+            needs_on_completion_retry=False,
+            completed=True,
             registration_status=RegistrationStatuses.pending,
-            completed_on=timezone.now(),
         )
 
         response = self.app.get(
@@ -205,10 +210,10 @@ class TestSubmissionAdmin(WebTest):
         )
 
         form = response.forms["changelist-form"]
-        form["action"] = "resend_submissions"
+        form["action"] = "retry_processing_submissions"
         form["_selected_action"] = [str(failed.pk), str(not_failed.pk)]
 
         form.submit()
 
-        self.assertEqual(task_mock.call_count, 1)
-        task_mock.assert_called_once_with(failed.id)
+        on_completion_retry_mock.assert_called_once_with(failed.id)
+        on_completion_retry_mock.return_value.delay.assert_called_once()

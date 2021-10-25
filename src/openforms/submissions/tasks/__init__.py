@@ -87,8 +87,7 @@ def finalize_completion(submission_id: int) -> None:
     send_confirmation_email_task.delay()
 
 
-@app.task(ignore_result=True)
-def on_completion_retry(submission_id: int) -> None:
+def on_completion_retry(submission_id: int) -> chain:
     """
     Celery chain of tasks to execute on a submission completion processing retry.
 
@@ -118,4 +117,4 @@ def on_completion_retry(submission_id: int) -> None:
     )
 
     # schedule the entire chain to celery
-    retry_chain.delay()
+    return retry_chain
