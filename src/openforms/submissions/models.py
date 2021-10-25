@@ -196,6 +196,14 @@ class Submission(models.Model):
             "state of the async jobs."
         ),
     )
+    needs_on_completion_retry = models.BooleanField(
+        _("needs on_completion retry"),
+        default=False,
+        help_text=_(
+            "Flag to track if the on_completion_retry chain should be invoked. "
+            "This is scheduled via celery-beat."
+        ),
+    )
 
     objects = SubmissionQuerySet.as_manager()
 
