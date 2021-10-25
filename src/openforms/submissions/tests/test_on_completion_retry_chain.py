@@ -9,7 +9,8 @@ from django.utils import timezone
 
 from privates.test import temp_private_root
 
-from openforms.appointments.tests.utils import setup_jcc
+from openforms.appointments.service import AppointmentUpdateFailed
+from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
 
@@ -20,8 +21,88 @@ from ..tasks.appointments import AppointmentRegistrationAborted
 from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 
 
-class OnCompletionRetryTests(TestCase):
-    pass
+@temp_private_root()
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class OnCompletionRetryFailedUpdateAppointmentTests(TestCase):
+    """
+    Test the various retry branches if the appointment update failed.
+
+    In this scenario, initial backend registration succeeded, but updating the
+    appointment with those results failed.
+
+    The retry workflow may not register the submission with the backend again,
+    it may not register the appoinment again but it must try to update the appointment.
+    """
+
+    @patch("openforms.submissions.tasks.appointments.update_appointment")
+    def test_update_succeeds(self, mock_update_appointment):
+        submission = SubmissionFactory.create(
+            completed=True,
+            needs_on_completion_retry=True,
+            registration_success=True,
+            form__registration_backend="zgw-create-zaak",
+            registration_result={
+                "zaak": {
+                    "identificatie": "ZAAK-123",
+                }
+            },
+            public_registration_reference="ZAAK-123",
+        )
+        original_register_date = submission.last_register_date
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+        )
+
+        # invoke the chain
+        on_completion_retry(submission.id)()
+
+        mock_update_appointment.assert_called_once_with(submission)
+        submission.refresh_from_db()
+        # check that the registration did not run again (idemptotent, a side effect is
+        # that last_register_date is updated if it runs)
+        self.assertEqual(submission.last_register_date, original_register_date)
+        self.assertFalse(submission.needs_on_completion_retry)
+
+    @patch("openforms.submissions.tasks.appointments.update_appointment")
+    def test_update_fails_again(self, mock_update_appointment):
+        submission = SubmissionFactory.create(
+            completed=True,
+            needs_on_completion_retry=True,
+            registration_success=True,
+            form__registration_backend="zgw-create-zaak",
+            registration_result={
+                "zaak": {
+                    "identificatie": "ZAAK-123",
+                }
+            },
+            public_registration_reference="ZAAK-123",
+        )
+        original_register_date = submission.last_register_date
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+        )
+        mock_update_appointment.side_effect = AppointmentUpdateFailed("nope")
+
+        # invoke the chain
+        chain = on_completion_retry(submission.id)
+        with self.assertRaises(AppointmentUpdateFailed):
+            chain()
+
+        mock_update_appointment.assert_called_once_with(submission)
+        submission.refresh_from_db()
+        # check that the registration did not run again (idemptotent, a side effect is
+        # that last_register_date is updated if it runs)
+        self.assertEqual(submission.last_register_date, original_register_date)
+        # it failed again, so we must keep re-trying
+        self.assertTrue(submission.needs_on_completion_retry)
+
+
+class OnCompletionRetryFailedRegistrationTests(TestCase):
+    """
+    Test the various retry branches if the backend registration failed.
+    """
 
 
 class RetrySubmissionTest(TestCase):
