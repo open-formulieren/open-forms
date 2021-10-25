@@ -1,5 +1,7 @@
 import logging
 
+from celery_once import QueueOnce
+
 from openforms.appointments.service import (
     AppointmentRegistrationFailed,
     AppointmentUpdateFailed,
@@ -27,7 +29,11 @@ class AppointmentRegistrationAborted(Exception):
     pass
 
 
-@app.task()
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
+)
 def maybe_register_appointment(submission_id: int) -> None:
     """
     Register an appointment for the submission IF relevant.
@@ -63,7 +69,11 @@ def maybe_register_appointment(submission_id: int) -> None:
             return
 
 
-@app.task()
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
+)
 def maybe_update_appointment(submission_id: int) -> None:
     """
     Check the submission state and update the appointment with the internal reference.
@@ -76,10 +86,15 @@ def maybe_update_appointment(submission_id: int) -> None:
     attempted and after the "final" reference was obtained.
     """
     submission = Submission.objects.get(id=submission_id)
+    is_retrying = submission.needs_on_completion_retry
     logger.info("Updating appointment for submission %d (if needed!)", submission_id)
     try:
         update_appointment(submission)
     except AppointmentUpdateFailed:
+        # if we're in the retry workflow, tasks must hard-fail to keep the retry flag
+        # on.
+        if is_retrying:
+            raise
         submission.needs_on_completion_retry = True
         submission.save(update_fields=["needs_on_completion_retry"])
         return

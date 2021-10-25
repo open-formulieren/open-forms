@@ -1,9 +1,7 @@
 import logging
 import traceback
-from datetime import timedelta
 from typing import Optional
 
-from django.conf import settings
 from django.utils import timezone
 
 from celery_once import QueueOnce
