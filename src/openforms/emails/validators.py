@@ -3,9 +3,11 @@ from typing import List, Optional
 
 from django.core.exceptions import ValidationError
 from django.template import Context, Template, TemplateSyntaxError
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext as _
 
 
+@deconstructible
 class DjangoTemplateValidator:
     def __init__(self, required_template_tags: Optional[List[str]] = None):
         self.required_template_tags = required_template_tags
@@ -13,7 +15,6 @@ class DjangoTemplateValidator:
     def __call__(self, value: str) -> None:
         self.check_syntax_errors(value)
         self.check_required_tags(value)
-        # raise ValidationError("boosh", code="syntax_error")
 
     def check_required_tags(self, value):
         if not self.required_template_tags:
