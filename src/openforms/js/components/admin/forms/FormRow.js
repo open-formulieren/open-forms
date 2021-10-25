@@ -2,16 +2,13 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import {PrefixContext} from './Context';
 import {ValidationErrorContext} from './ValidationErrors';
-import Field from './Field';
 
 
 const FormRow = ({ fields=[], children }) => {
     const fieldClasses = fields.map(field => `field-${field}`);
 
     let hasErrors = false;
-    const prefix = useContext(PrefixContext);
     const validationErrors = useContext(ValidationErrorContext);
 
     // process (validation) errors here
@@ -20,7 +17,19 @@ const FormRow = ({ fields=[], children }) => {
         const {name} = child.props;
         if (!name) return child;
 
-        const childErrors = validationErrors.filter( ([key]) => key === name);
+        const childErrors = validationErrors.filter( ([key]) => {
+            if (key === name) return true;
+            const splitName = name.split('.');
+            const splitKey = key.split('.');
+            if (splitName.length <= splitKey.length) {
+                for (let index = 0; index < splitName.length; index++) {
+                    if (splitName[index] !== splitKey[index]) return false;
+                }
+                return true;
+            }
+            return false;
+        });
+
         if (childErrors.length > 0) {
             hasErrors = true;
         }

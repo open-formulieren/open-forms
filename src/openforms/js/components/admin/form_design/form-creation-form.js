@@ -8,7 +8,6 @@ import useAsync from 'react-use/esm/useAsync';
 import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {FormException} from '../../../utils/exception';
 import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
 import FAIcon from '../FAIcon';
 import Field from '../forms/Field';
@@ -115,6 +114,26 @@ const newStepData = {
     },
     isNew: true,
     validationErrors: [],
+};
+
+// Maps in which Tab the different form fields are displayed.
+const FORM_FIELDS_TO_TAB_NAMES = {
+    name: 'form',
+    internalName: 'form',
+    uuid: 'form',
+    slug: 'form',
+    showProgressIndicator: 'form',
+    active: 'form',
+    isDeleted: 'form',
+    maintenanceMode: 'form',
+    submissionConfirmationTemplate: 'submission-confirmation',
+    canSubmit: 'form',
+    registrationBackend: 'registration',
+    registrationBackendOptions: 'registration',
+    product: 'product',
+    paymentBackend: 'payment',
+    paymentBackendOptions: 'payment',
+    submissionsRemovalOptions: 'submission-removal-options',
 };
 
 
@@ -397,17 +416,18 @@ function reducer(draft, action) {
          * Validation error handling
          */
         case 'PROCESS_VALIDATION_ERRORS': {
-            const {tab, fieldPrefix, errors} = action.payload;
+            const {fieldPrefix, errors} = action.payload;
             // process the errors with their field names
+            const tabsWithErrors = []
             const prefixedErrors = errors.map( err => {
+                const fieldName = err.name.split('.')[0];
+                if (!tabsWithErrors.includes(fieldName)) tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
                 const key = `${fieldPrefix}.${err.name}`;
                 return [key, err.reason];
             });
             draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
             // keep track of which tabs have errors
-            if (!draft.tabsWithErrors.includes(tab)) {
-                draft.tabsWithErrors.push(tab);
-            }
+            draft.tabsWithErrors = [...draft.tabsWithErrors, ...tabsWithErrors];
             draft.submitting = false;
             break;
         }
@@ -417,6 +437,8 @@ function reducer(draft, action) {
         case 'SUBMIT_STARTED': {
             draft.submitting = true;
             draft.errors = {};
+            draft.validationErrors = [];
+            draft.tabsWithErrors = [];
             break;
         }
         case 'SET_FETCH_ERRORS': {
@@ -672,7 +694,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 dispatch({
                     type: 'PROCESS_VALIDATION_ERRORS',
                     payload: {
-                        tab: 'form',
                         fieldPrefix: 'form',
                         errors: e.errors,
                     },
@@ -799,22 +820,22 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
                         <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
                         <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
                         <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
                     </Tab>
                     <Tab>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('product')}>
                         <FormattedMessage defaultMessage="Product" description="Product tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('payment')}>
                         <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
                         <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
                     </Tab>
                     <Tab>
