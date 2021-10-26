@@ -117,10 +117,18 @@ def on_completion_retry(submission_id: int) -> chain:
     TODO: see if we can find a way to surpress exceptions from being sent to error
     monitoring _if and only if_ they're part of this particular workflow.
     """
-    register_submission_task = register_submission.si(submission_id)
-    update_appointment_task = maybe_update_appointment.si(submission_id)
-    update_payments_task = update_submission_payment_status.si(submission_id)
-    finalize_completion_retry_task = finalize_completion_retry.si(submission_id)
+    register_submission_task = register_submission.si(submission_id).set(
+        ignore_result=True
+    )
+    update_appointment_task = maybe_update_appointment.si(submission_id).set(
+        ignore_result=True
+    )
+    update_payments_task = update_submission_payment_status.si(submission_id).set(
+        ignore_result=True
+    )
+    finalize_completion_retry_task = finalize_completion_retry.si(submission_id).set(
+        ignore_result=True
+    )
 
     retry_chain = chain(
         register_submission_task,
