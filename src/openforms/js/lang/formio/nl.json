@@ -177,5 +177,6 @@
   "Content": "",
   "Columns": "",
   "Field Set": "",
-  "Text Field": ""
+  "Text Field": "",
+  "required": "verplicht"
 }
