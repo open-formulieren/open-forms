@@ -22,7 +22,7 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
     @classmethod
     def for_backend(cls, plugin_id, options=None, **kwargs):
         options = options or {"non-empty": True}
-        payment = SubmissionPaymentFactory.create(
+        payment = cls.create(
             plugin_id=plugin_id,
             plugin_options=options,
             submission__form__payment_backend=plugin_id,
@@ -33,7 +33,7 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
 
     @classmethod
     def for_submission(cls, submission, **kwargs):
-        payment = SubmissionPaymentFactory.create(
+        payment = cls.create(
             submission=submission,
             plugin_id=submission.form.payment_backend,
             plugin_options=submission.form.payment_backend_options,

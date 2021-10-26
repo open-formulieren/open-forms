@@ -22,10 +22,14 @@ def update_submission_payment_status(submission_id: int):
         "Updating payment information for submission %d (if needed!)", submission_id
     )
     submission = Submission.objects.get(id=submission_id)
+    is_retrying = submission.needs_on_completion_retry
     try:
         update_submission_payment_registration(submission)
     except Exception as exc:
         logger.info("Updating submission payment registration failed", exc_info=exc)
         submission.needs_on_completion_retry = True
         submission.save(update_fields=["needs_on_completion_retry"])
+        # re-raise if we're in the retry workflow to break the entire chain
+        if is_retrying:
+            raise
         return

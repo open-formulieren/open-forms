@@ -25,11 +25,11 @@ from weasyprint import HTML
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
 from openforms.forms.models import FormStep
+from openforms.payments.constants import PaymentStatus
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
-from ..payments.constants import PaymentStatus
 from .constants import RegistrationStatuses
 from .query import SubmissionQuerySet
 
