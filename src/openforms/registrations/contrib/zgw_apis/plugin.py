@@ -78,7 +78,11 @@ class ZGWRegistration(BasePlugin):
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
 
-        zaak = create_zaak(options, payment_required=submission.payment_required)
+        zaak = create_zaak(
+            options,
+            payment_required=submission.payment_required,
+            existing_reference=submission.public_registration_reference,
+        )
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         document = create_report_document(
