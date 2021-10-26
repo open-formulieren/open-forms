@@ -202,6 +202,11 @@ Other settings
   disabling SSL certificate verification. Example:
   ``EXTRA_VERIFY_CERTS=/etc/ssl/root1.crt,/etc/ssl/root2.crt``.
 
+* ``DEFAULT_TIMEOUT_REQUESTS``: The default timeout duration (in seconds) when calling
+  external APIs/services. Defaults to ``10.0``. Requests taking longer than this
+  duration are aborted and errors bubble up. Specific calls may use an explicitly
+  provided timeout, which is not affected by this setting.
+
 * ``CURL_CA_BUNDLE``: If this variable is set to an empty string, it disables SSL/TLS
   certificate verification. More information about why can be found on this
   `stackoverflow post <https://stackoverflow.com/a/48391751/7146757>`_. Even calls from
