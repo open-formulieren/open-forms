@@ -40,6 +40,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
     to the underlying registration backend (if set).
     """
     submission = Submission.objects.get(id=submission_id)
+    is_retrying = submission.needs_on_completion_retry
 
     logger.debug("Register submission '%s'", submission)
 
@@ -96,6 +97,10 @@ def register_submission(submission_id: int) -> Optional[dict]:
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, e, plugin)
+        # if we're inside the retry workflow, continued failures should abort the entire
+        # chain so downstream tasks don't run with incorrect/outdated/missing data
+        if is_retrying:
+            raise
         return
     # unexpected exceptions should fail the entire chain and show up in error monitoring
     except Exception as e:
