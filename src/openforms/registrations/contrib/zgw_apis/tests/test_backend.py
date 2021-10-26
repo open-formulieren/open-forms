@@ -218,6 +218,7 @@ class ZGWBackendTests(TestCase):
 
         create_zaak = m.request_history[1]
         create_zaak_body = create_zaak.json()
+        self.assertNotIn("kenmerken", create_zaak_body)
         self.assertEqual(create_zaak.method, "POST")
         self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
         self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
@@ -316,6 +317,41 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+    def test_retried_registration_with_internal_reference(self, m):
+        """
+        Assert that the internal reference is included in the "kenmerken".
+        """
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            registration_in_progress=True,
+            needs_on_completion_retry=True,
+            public_registration_reference="OF-1234",
+            components_list=[{"key": "dummy"}],
+        )
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+        )
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.register_submission(submission, zgw_form_options)
+
+        create_zaak = m.request_history[1]
+        create_zaak_body = create_zaak.json()
+
+        self.assertEqual(
+            create_zaak_body["kenmerken"],
+            [
+                {
+                    "kenmerk": "OF-1234",
+                    "bron": "Open Formulieren",
+                }
+            ],
         )
 
     @freeze_time("2021-01-01 10:00")
