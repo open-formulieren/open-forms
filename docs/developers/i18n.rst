@@ -9,8 +9,27 @@ Backend
 
 For the backend, see the Django `i18n documentation`_.
 
-
 .. _i18n documentation: https://docs.djangoproject.com/en/2.2/topics/i18n/translation/
+
+.. _`Forms Admin`:
+
+Forms Admin
+-----------
+
+FormIO uses `i18next <https://www.i18next.com/>`_ to manage the translations. The configuration options for
+``i18next`` can be passed to FormIO through the `i18n` option of the ``FormBuilder``. Example:
+
+.. code-block::
+
+    <FormBuilder
+        ...
+        options={ {language: 'nl', i18n: {'English example': 'Nederlands voorbeeld'}} }
+    />
+
+Any string that appears in the ``FormBuilder`` needs to be added **manually** to the JSON translation file,
+since we don't yet have a mechanism to extract them from the source code. The translation file can be found at this
+path: ``src/openforms/js/lang/formio/nl.json``.
+
 
 Frontend
 ========
@@ -42,3 +61,12 @@ Edit these files with the correct translations, and then compile them:
     npm run compilemessages
 
 .. _react-intl: https://formatjs.io/docs/getting-started/installation
+
+FormIO
+------
+
+The strings used in the FormIO widgets have to be translated using the ``i18next`` mechanism. This happens in the same
+way as for the ``FormBuilder`` (see :ref:`Forms Admin`), but here the translations are passed to the ``FormIOWrapper``
+(``src/components/FormStep.js``). The translations are managed by the backend and the frontend fetches them.
+Therefore, if there are strings that are not yet translated, they have to be added to this translation file:
+``src/openforms/js/lang/formio/nl.json``.
