@@ -6,6 +6,7 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
 from ..tasks import maybe_send_confirmation_email
@@ -15,6 +16,32 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 
 @temp_private_root()
 class ConfirmationEmailTests(TestCase):
+    def test_task_without_mail_template(self):
+        submission = SubmissionFactory.create()
+        assert (
+            not ConfirmationEmailTemplate.objects.exists()
+        ), "There should not be any mail templates"
+
+        maybe_send_confirmation_email(submission.id)
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_task_with_unexpected_failure(self):
+        class CustomError(Exception):
+            pass
+
+        submission = SubmissionFactory.create()
+        ConfirmationEmailTemplateFactory.create(form=submission.form)
+
+        patcher = patch(
+            "openforms.submissions.tasks.emails.send_confirmation_email",
+            side_effect=CustomError("oops"),
+        )
+        with patcher, self.assertRaises(CustomError):
+            maybe_send_confirmation_email(submission.id)
+
+        self.assertEqual(len(mail.outbox), 0)
+
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_completed_submission_send_confirmation_email(self):
         submission = SubmissionFactory.from_components(
