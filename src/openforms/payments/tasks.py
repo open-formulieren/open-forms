@@ -4,6 +4,7 @@ from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.submissions.models import Submission
+from openforms.submissions.tasks.emails import send_confirmation_email
 
 from .services import update_submission_payment_registration
 
@@ -33,3 +34,6 @@ def update_submission_payment_status(submission_id: int):
         if is_retrying:
             raise
         return
+
+    # if this properly executed, we can schedule "instant" confirmation e-mail delivery
+    send_confirmation_email.delay(submission_id)

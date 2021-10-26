@@ -5,7 +5,6 @@ from openforms.registrations.registry import register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
-from ..submissions.tasks.emails import send_confirmation_email_after_payment_timeout
 from .constants import PaymentStatus
 
 __all__ = ["update_submission_payment_registration"]
@@ -47,5 +46,3 @@ def update_submission_payment_registration(submission: Submission):
         else:
             for p in payments:
                 logevent.payment_register_success(p, plugin)
-
-        send_confirmation_email_after_payment_timeout.delay(submission.id)
