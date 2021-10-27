@@ -276,7 +276,16 @@ class PaymentConfirmationEmailTests(TestCase):
 
         rendered_content = email.render(submission)
 
-        self.assertNotIn(_("Payment of"), rendered_content)
+        literals = [
+            _("Payment of &euro;%(payment_price)s received."),
+            _("Payment of &euro;%(payment_price)s is required."),
+        ]
+        for literal in literals:
+            with self.subTest(literal=literal):
+                self.assertNotIn(
+                    literal % {"payment_price": submission.form.product.price},
+                    rendered_content,
+                )
 
     def test_email_payment_incomplete(self):
         email = ConfirmationEmailTemplate(content="test {% payment_status %}")
@@ -290,8 +299,10 @@ class PaymentConfirmationEmailTests(TestCase):
         rendered_content = email.render(submission)
 
         # show amount
-        self.assertIn(_("Payment of"), rendered_content)
-        self.assertIn("12.34", rendered_content)
+        literal = _("Payment of &euro;%(payment_price)s is required.") % {
+            "payment_price": submission.form.product.price
+        }
+        self.assertIn(literal, rendered_content)
 
         # show link
         url = build_absolute_uri(
@@ -315,8 +326,10 @@ class PaymentConfirmationEmailTests(TestCase):
         rendered_content = email.render(submission)
 
         # still show amount
-        self.assertIn(_("Payment of"), rendered_content)
-        self.assertIn("12.34", rendered_content)
+        literal = _("Payment of &euro;%(payment_price)s received.") % {
+            "payment_price": submission.form.product.price
+        }
+        self.assertIn(literal, rendered_content)
 
         # no payment link
         url = reverse("payments:link", kwargs={"uuid": submission.uuid})
