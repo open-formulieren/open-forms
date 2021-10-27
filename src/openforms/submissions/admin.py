@@ -115,6 +115,12 @@ class SubmissionLogInline(GenericTabularInline):
     readonly_fields = ("get_message",)
     template = "logging/admin_inline.html"
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.prefetch_related(
+            "content_object", "content_object__form"
+        ).select_related("user")
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -153,6 +159,11 @@ class SubmissionAdmin(admin.ModelAdmin):
         "confirmation_email_sent",
     ]
     actions = ["export_csv", "export_xlsx", "retry_processing_submissions"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.select_related("form")
+        return qs
 
     def successfully_processed(self, obj) -> Optional[bool]:
         if obj.registration_status == RegistrationStatuses.pending:
