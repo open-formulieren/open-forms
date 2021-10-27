@@ -127,7 +127,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             appointment_data["clientDateOfBirth"]["value"], "%Y-%m-%d"
         ).date(),
         phonenumber=get_formatted_phone_number(
-            appointment_data.get("clientPhoneNumber")
+            appointment_data.get("clientPhoneNumber", {}).get("value")
         ),
     )
     start_at = datetime.strptime(
