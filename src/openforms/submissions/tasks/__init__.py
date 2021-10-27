@@ -1,4 +1,10 @@
-from celery import chain
+import logging
+from datetime import timedelta
+
+from django.conf import settings
+from django.utils import timezone
+
+from celery import chain, group
 from celery.result import AsyncResult
 
 from openforms.celery import app
@@ -7,9 +13,12 @@ from ..models import Submission
 from .appointments import *  # noqa
 from .cleanup import *  # noqa
 from .emails import *  # noqa
+from .payments import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
+
+logger = logging.getLogger(__name__)
 
 
 def on_completion(submission_id: int) -> None:
@@ -72,8 +81,8 @@ def on_completion(submission_id: int) -> None:
     Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
 
 
-@app.task(bind=True)
-def finalize_completion(task, submission_id: int) -> None:
+@app.task(ignore_result=False)
+def finalize_completion(submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.
 
@@ -84,3 +93,68 @@ def finalize_completion(task, submission_id: int) -> None:
     """
     send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
     send_confirmation_email_task.delay()
+
+
+def on_completion_retry(submission_id: int) -> chain:
+    """
+    Celery chain of tasks to execute on a submission completion processing retry.
+
+    This differs from :func:`on_completion` in that it has a different "starting point"
+    and invokes some extra tasks or skips other tasks. It focuses on tasks that
+    typically fail downstream in external systems outside of our own control,
+    such as registration backends, appointment booking sytems.
+
+    .. note::
+
+        The retry workflow may only need to execute a part of the entire flow, but
+        we still consider this an atomic unit/entrypoint to manage the dependencies
+        properly. It's important that the individual celery tasks making up the
+        workflow are idempotent and exit succesfully when nothing needs to be done!
+
+    TODO: the results should be forgotten as part of the retry flow to not flood the
+    result backend!
+
+    TODO: see if we can find a way to surpress exceptions from being sent to error
+    monitoring _if and only if_ they're part of this particular workflow.
+    """
+    register_submission_task = register_submission.si(submission_id).set(
+        ignore_result=True
+    )
+    update_appointment_task = maybe_update_appointment.si(submission_id).set(
+        ignore_result=True
+    )
+    update_payments_task = update_submission_payment_status.si(submission_id).set(
+        ignore_result=True
+    )
+    finalize_completion_retry_task = finalize_completion_retry.si(submission_id).set(
+        ignore_result=True
+    )
+
+    retry_chain = chain(
+        register_submission_task,
+        group(
+            update_appointment_task,
+            update_payments_task,
+        ),
+        finalize_completion_retry_task,
+    )
+
+    # schedule the entire chain to celery
+    return retry_chain
+
+
+@app.task(ignore_result=True)
+def retry_processing_submissions():
+    """
+    Retry submissions that have failed processing before and are recent enough.
+    """
+    retry_time_limit = timezone.now() - timedelta(
+        hours=settings.RETRY_SUBMISSIONS_TIME_LIMIT
+    )
+    for submission in Submission.objects.filter(
+        needs_on_completion_retry=True,
+        completed_on__gte=retry_time_limit,
+    ):
+        logger.debug("Resend submission for registration '%s'", submission)
+        retry_chain = on_completion_retry(submission.id)
+        retry_chain.delay()

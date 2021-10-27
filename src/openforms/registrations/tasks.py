@@ -1,10 +1,10 @@
 import logging
 import traceback
-from datetime import timedelta
 from typing import Optional
 
-from django.conf import settings
 from django.utils import timezone
+
+from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.logging import logevent
@@ -16,30 +16,36 @@ from .exceptions import RegistrationFailed
 logger = logging.getLogger(__name__)
 
 
-@app.task(time_limit=settings.SUBMISSION_REGISTRATION_TIMEOUT)
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
+)
 def register_submission(submission_id: int) -> Optional[dict]:
-    # initial first try with timeouts as the user is waiting
-    return _register_submission(submission_id)
+    """
+    Attempt to register the submission with the configured backend.
 
+    Note that there are different triggers that can kick off this task:
 
-@app.task()
-def retry_register_submission(submission_id: int) -> Optional[dict]:
-    # out-of-flow retry, less time critical
-    return _register_submission(submission_id)
+    * form submission :func:`openforms.submissions.tasks.on_completion` flow
+    * celery beat retry flow
+    * admin action to retry the submission
 
+    We should only allow a single registration attempt to run at a given time for a
+    given submission. This is achieved through the :class:`QueueOnce` task base class
+    from celery-once. While the task is already scheduled, subsequent schedule requests
+    will not schedule the task _again_ to celery.
 
-def _register_submission(submission_id: int) -> Optional[dict]:
+    Submission registration is only executed for "completed" forms, and is delegated
+    to the underlying registration backend (if set).
+    """
     submission = Submission.objects.get(id=submission_id)
+    is_retrying = submission.needs_on_completion_retry
 
     logger.debug("Register submission '%s'", submission)
 
-    if submission.registration_status in (
-        RegistrationStatuses.success,
-        RegistrationStatuses.in_progress,
-    ):
-        # It's possible for two instances of this task to run for the same submission
-        #  (eg.  A user runs the admin action and the celery beat task runs)
-        # so if the submission has already succeed or is currently running we just return
+    if submission.registration_status == RegistrationStatuses.success:
+        # if it's already succesfully registered, do not overwrite that.
         return
 
     logevent.registration_start(submission)
@@ -85,25 +91,39 @@ def _register_submission(submission_id: int) -> Optional[dict]:
         result = plugin.register_submission(
             submission, options_serializer.validated_data
         )
+    # downstream tasks can still execute, so we return rather than failing.
+    except RegistrationFailed as e:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' failed",
+            plugin,
+            submission,
+        )
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+        logevent.registration_failure(submission, e, plugin)
+        # if we're inside the retry workflow, continued failures should abort the entire
+        # chain so downstream tasks don't run with incorrect/outdated/missing data
+        if is_retrying:
+            raise
+        return
+    # unexpected exceptions should fail the entire chain and show up in error monitoring
     except Exception as e:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' unexpectedly errored",
+            plugin,
+            submission,
+        )
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, e, plugin)
         raise
     else:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' succeeded",
+            plugin,
+            submission,
+        )
         submission.save_registration_status(RegistrationStatuses.success, result)
         logevent.registration_success(submission, plugin)
-
-
-@app.task(ignore_result=True)
-def resend_submissions():
-    resend_time_limit = timezone.now() - timedelta(
-        hours=settings.CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT
-    )
-    for submission in Submission.objects.filter(
-        registration_status=RegistrationStatuses.failed,
-        completed_on__gte=resend_time_limit,
-    ):
-        logger.debug("Resend submission for registration '%s'", submission)
-        retry_register_submission.delay(submission.id)

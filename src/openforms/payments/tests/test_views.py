@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from furl import furl
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -34,7 +35,7 @@ class ViewsTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
-    @patch("openforms.payments.views.update_submission_payment_registration")
+    @patch("openforms.payments.views.update_submission_payment_status.delay")
     def test_views(self, update_payments_mock):
         register = Registry()
         register("plugin1")(Plugin)
@@ -101,34 +102,51 @@ class ViewsTests(TestCase):
         with self.subTest("return ok"):
             update_payments_mock.reset_mock()
 
-            response = self.client.get(url)
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.get(url)
+
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
-            update_payments_mock.assert_called_once_with(submission)
+            update_payments_mock.assert_called_once_with(submission.id)
 
         with self.subTest("return bad method"):
-            response = self.client.post(url)
+            update_payments_mock.reset_mock()
+
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.post(url)
+
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
+            update_payments_mock.assert_not_called()
 
         with self.subTest("return bad plugin"):
+            update_payments_mock.reset_mock()
             bad_payment = SubmissionPaymentFactory.for_backend(
                 "bad_plugin", form_url="http://allowed.foo"
             )
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
-            response = self.client.get(bad_url)
+
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.get(bad_url)
+
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
+            update_payments_mock.assert_not_called()
 
         with self.subTest("return bad redirect"):
+            update_payments_mock.reset_mock()
             bad_payment = SubmissionPaymentFactory.for_backend(
                 "plugin1", form_url="http://buzz.bazz"
             )
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
-            response = self.client.get(bad_url)
+
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.get(bad_url)
+
             self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
+            update_payments_mock.assert_not_called()
 
         # check the webhook view
         url = plugin.get_webhook_url(base_request)
@@ -139,19 +157,31 @@ class ViewsTests(TestCase):
         ):
             update_payments_mock.reset_mock()
 
-            response = self.client.post(url)
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.post(url)
+
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 200)
 
-            update_payments_mock.assert_called_once_with(submission)
+            update_payments_mock.assert_called_once_with(submission.id)
 
         with self.subTest("webhook bad method"):
-            response = self.client.get(url)
+            update_payments_mock.reset_mock()
+
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.get(url)
+
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "POST")
+            update_payments_mock.assert_not_called()
 
         with self.subTest("webhook bad plugin"):
+            update_payments_mock.reset_mock()
             bad_url = bad_plugin.get_webhook_url(base_request)
-            response = self.client.get(bad_url)
+
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.get(bad_url)
+
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
+            update_payments_mock.assert_not_called()

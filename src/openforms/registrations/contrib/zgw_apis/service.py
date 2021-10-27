@@ -13,7 +13,11 @@ from openforms.submissions.models import SubmissionFileAttachment, SubmissionRep
 logger = logging.getLogger(__name__)
 
 
-def create_zaak(options: dict, payment_required: bool = False) -> dict:
+def create_zaak(
+    options: dict,
+    payment_required: bool = False,
+    existing_reference: str = "",
+) -> dict:
     config = ZgwConfig.get_solo()
     client = config.zrc_service.build_client()
     today = date.today().isoformat()
@@ -29,6 +33,15 @@ def create_zaak(options: dict, payment_required: bool = False) -> dict:
     }
     if "vertrouwelijkheidaanduiding" in options:
         data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
+
+    # add existing (internal) reference if it exists
+    if existing_reference:
+        data["kenmerken"] = [
+            {
+                "kenmerk": existing_reference,
+                "bron": "Open Formulieren",  # XXX: only 40 chars, what's supposed to go here?
+            }
+        ]
 
     zaak = client.create("zaak", data)
     return zaak

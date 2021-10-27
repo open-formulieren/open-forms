@@ -25,11 +25,11 @@ from weasyprint import HTML
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
 from openforms.forms.models import FormStep
+from openforms.payments.constants import PaymentStatus
 from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
-from ..payments.constants import PaymentStatus
 from .constants import RegistrationStatuses
 from .query import SubmissionQuerySet
 
@@ -196,6 +196,14 @@ class Submission(models.Model):
             "state of the async jobs."
         ),
     )
+    needs_on_completion_retry = models.BooleanField(
+        _("needs on_completion retry"),
+        default=False,
+        help_text=_(
+            "Flag to track if the on_completion_retry chain should be invoked. "
+            "This is scheduled via celery-beat."
+        ),
+    )
 
     objects = SubmissionQuerySet.as_manager()
 
@@ -224,12 +232,13 @@ class Submission(models.Model):
     def save_registration_status(self, status, result):
         self.registration_status = status
         self.registration_result = result
-        self.save(
-            update_fields=[
-                "registration_status",
-                "registration_result",
-            ]
-        )
+        update_fields = ["registration_status", "registration_result"]
+
+        if status == RegistrationStatuses.failed:
+            self.needs_on_completion_retry = True
+            update_fields += ["needs_on_completion_retry"]
+
+        self.save(update_fields=update_fields)
 
     @property
     def is_completed(self):

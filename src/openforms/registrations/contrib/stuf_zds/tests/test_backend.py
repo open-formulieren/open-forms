@@ -395,6 +395,76 @@ class StufZDSPluginTests(StufTestBase):
             6,
         )
 
+    @patch("celery.app.task.Task.request")
+    def test_retried_registration_with_internal_reference(self, m, mock_task):
+        """
+        Assert that the internal reference is included in the "kenmerken".
+        """
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            registration_in_progress=True,
+            needs_on_completion_retry=True,
+            public_registration_reference="OF-1234",
+            components_list=[{"key": "dummy"}],
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        result = plugin.register_submission(submission, form_options)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:kenmerk/zkn:kenmerk": "OF-1234",
+                "//zkn:object/zkn:kenmerk/zkn:bron": "Open Formulieren",
+            },
+        )
+
     def test_reference_can_be_extracted(self, m):
         submission = SubmissionFactory.create(
             form__registration_backend="stuf-zds-create-zaak",

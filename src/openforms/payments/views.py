@@ -1,6 +1,7 @@
 import logging
 
 from django import forms
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -25,7 +26,7 @@ from openforms.utils.redirect import allow_redirect_url
 from .api.serializers import PaymentInfoSerializer
 from .models import SubmissionPayment
 from .registry import register
-from .services import update_submission_payment_registration
+from .tasks import update_submission_payment_status
 
 logger = logging.getLogger(__name__)
 
@@ -205,6 +206,10 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         method essentially relays the django 'dispatch' to the relevant payment
         plugin. We must define ``get`` and ``post`` to have them properly show up and
         be documented in the OAS.
+
+        TODO: check with Bart if we should wrap this in a transaction.atomic block
+        or not - it depends on if the payment provider will re-deliver the webhook/return
+        path if something goes wrong on our end.
         """
         payment = self.get_object()
         try:
@@ -240,7 +245,9 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                 )
                 raise ParseError(detail="redirect not allowed")
 
-        update_submission_payment_registration(payment.submission)
+        transaction.on_commit(
+            lambda: update_submission_payment_status.delay(payment.submission.id)
+        )
 
         return response
 
@@ -316,7 +323,9 @@ class PaymentWebhookView(PaymentFlowBaseView):
         payment = plugin.handle_webhook(request)
         if payment:
             logevent.payment_flow_webhook(payment, plugin)
-            update_submission_payment_registration(payment.submission)
+            transaction.on_commit(
+                lambda: update_submission_payment_status.delay(payment.submission.id)
+            )
 
         return HttpResponse("")
 

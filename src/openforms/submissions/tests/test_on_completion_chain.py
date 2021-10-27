@@ -5,7 +5,10 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.appointments.service import AppointmentRegistrationFailed
+from openforms.appointments.tests.utils import setup_jcc
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.tests.factories import FormDefinitionFactory
 
 from ..models import SubmissionReport, TemporaryFileUpload
 from ..tasks import on_completion
@@ -57,3 +60,18 @@ class OnCompletionTests(TestCase):
         self.assertEqual(
             len(mail.outbox), 2
         )  # registration backend + confirmation email
+
+    def test_submission_form_with_incomplete_appointment(self):
+        setup_jcc()
+        components = FormDefinitionFactory.build(is_appointment=True).configuration[
+            "components"
+        ]
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            form__registration_backend="",
+            components_list=components,
+            submitted_data={"product": {"identifier": "79", "name": "Paspoort"}},
+        )
+
+        with self.assertRaises(AppointmentRegistrationFailed):
+            on_completion(submission.id)

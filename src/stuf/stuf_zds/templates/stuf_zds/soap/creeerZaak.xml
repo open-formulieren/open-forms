@@ -16,6 +16,12 @@
     <ZKN:object StUF:verwerkingssoort="T" StUF:entiteittype="ZAK">
         <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
         <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+        {% for kenmerk in kenmerken %}
+        <ZKN:kenmerk>
+            <ZKN:kenmerk>{{ kenmerk }}</ZKN:kenmerk>
+            <ZKN:bron>Open Formulieren</ZKN:bron>
+        </ZKN:kenmerk>
+        {% endfor %}
         <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
         <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
         {% if betalings_indicatie %}<ZKN:betalingsIndicatie>{{ betalings_indicatie }}</ZKN:betalingsIndicatie>{% endif %}

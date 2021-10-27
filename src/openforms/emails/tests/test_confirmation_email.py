@@ -293,8 +293,6 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertIn(_("Payment of"), rendered_content)
         self.assertIn("12.34", rendered_content)
 
-        print(rendered_content)
-
         # show link
         url = build_absolute_uri(
             reverse("payments:link", kwargs={"uuid": submission.uuid})

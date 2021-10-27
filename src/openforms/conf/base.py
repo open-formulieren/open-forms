@@ -477,6 +477,10 @@ TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
     "TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS", default=2
 )
 
+# a custom default timeout for the requests library, added via monkeypatch in
+# :mod:`openforms.setup`. Value is in seconds.
+DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #
@@ -553,9 +557,9 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.send_emails",
         "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
-    "resend-submissions": {
-        "task": "openforms.registrations.tasks.resend_submissions",
-        "schedule": config("BEAT_RESEND_SUBMISSIONS_INTERVAL", default=60 * 5),
+    "retry-submissions-processing": {
+        "task": "openforms.submissions.tasks.retry_processing_submissions",
+        "schedule": config("RETRY_SUBMISSIONS_INTERVAL", default=60 * 5),
     },
     "delete-submissions": {
         "task": "openforms.data_removal.tasks.delete_submissions",
@@ -579,8 +583,8 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT = config(
-    "CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT", default=48  # hours
+RETRY_SUBMISSIONS_TIME_LIMIT = config(
+    "RETRY_SUBMISSIONS_TIME_LIMIT", default=48  # hours
 )
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with
@@ -592,9 +596,6 @@ CELERY_TASK_ACKS_LATE = True
 # operation, leading to idle workers and backed-up workers. The `-O fair` option
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-
-# Timeout for the initial registration attempt
-SUBMISSION_REGISTRATION_TIMEOUT = config("SUBMISSION_REGISTRATION_TIMEOUT", default=10)
 
 #
 # DJANGO-HIJACK

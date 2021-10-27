@@ -140,8 +140,10 @@ class OgoneTests(TestCase):
         url = plugin.get_webhook_url(request)
 
         # bad without data
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 400)
+        with self.subTest("bad call, no request data"):
+            response = self.client.post(url)
+
+            self.assertEqual(response.status_code, 400)
 
         # NOTE orderID is badly cased
         ogone_params = {
@@ -153,12 +155,14 @@ class OgoneTests(TestCase):
         ogone_params["SHASIGN"] = calculate_sha_out(
             ogone_params, merchant.sha_out_passphrase, merchant.hash_algorithm
         )
+
         # good
-        response = self.client.post(url, ogone_params)
-        self.assertEqual(response.status_code, 200)
+        with self.subTest("valid call"):
+            response = self.client.post(url, ogone_params)
 
-        submission.refresh_from_db()
-        payment.refresh_from_db()
-        self.assertEqual(payment.status, PaymentStatus.completed)
+            self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(submission.payment_user_has_paid, True)
+            submission.refresh_from_db()
+            payment.refresh_from_db()
+            self.assertEqual(payment.status, PaymentStatus.completed)
+            self.assertEqual(submission.payment_user_has_paid, True)

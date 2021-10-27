@@ -19,6 +19,7 @@ from django.utils.http import is_safe_url
 
 import defusedxml
 from dotenv import load_dotenv
+from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
 _certs_initialized = False
@@ -38,6 +39,7 @@ def setup_env():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
 
     load_self_signed_certs()
+    monkeypatch_requests()
 
 
 def load_self_signed_certs() -> None:
@@ -71,3 +73,22 @@ def monkeypatch_cookie_consent():
         return self.request.headers.get("referer") or default
 
     CookieGroupBaseProcessView.get_success_url = get_success_url
+
+
+def monkeypatch_requests():
+    """
+    Add a default timeout for any requests calls.
+    """
+    if hasattr(Session, "_original_request"):
+        logger.debug(
+            "Session is already patched OR has an ``_original_request`` attribute."
+        )
+        return
+
+    Session._original_request = Session.request
+
+    def new_request(self, *args, **kwargs):
+        kwargs.setdefault("timeout", settings.DEFAULT_TIMEOUT_REQUESTS)
+        return self._original_request(*args, **kwargs)
+
+    Session.request = new_request

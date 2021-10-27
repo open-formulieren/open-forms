@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.template.defaultfilters import filesizeformat
@@ -13,7 +15,6 @@ from openforms.logging.logevent import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
-from openforms.registrations.tasks import retry_register_submission
 
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
@@ -24,6 +25,7 @@ from .models import (
     SubmissionStep,
     TemporaryFileUpload,
 )
+from .tasks import on_completion_retry
 
 
 class SubmissionTypeListFilter(admin.ListFilter):
@@ -130,6 +132,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "form",
         "registration_status",
         "last_register_date",
+        "successfully_processed",
         "created_on",
         "completed_on",
     )
@@ -149,7 +152,15 @@ class SubmissionAdmin(admin.ModelAdmin):
         "on_completion_task_ids",
         "confirmation_email_sent",
     ]
-    actions = ["export_csv", "export_xlsx", "resend_submissions"]
+    actions = ["export_csv", "export_xlsx", "retry_processing_submissions"]
+
+    def successfully_processed(self, obj) -> Optional[bool]:
+        if obj.registration_status == RegistrationStatuses.pending:
+            return None
+        return not obj.needs_on_completion_retry
+
+    successfully_processed.boolean = True
+    successfully_processed.short_description = _("Succesfully processed")
 
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
@@ -222,13 +233,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         "Export selected %(verbose_name_plural)s as Excel-file."
     )
 
-    def resend_submissions(self, request, queryset):
-        submissions = queryset.filter(registration_status=RegistrationStatuses.failed)
+    def retry_processing_submissions(self, request, queryset):
+        submissions = queryset.filter(needs_on_completion_retry=True)
         messages.success(
             request,
             ngettext(
-                "Resending {count} {verbose_name} to registration backend",
-                "Resending {count} {verbose_name_plural} to registration backend",
+                "Retrying processing flow for {count} {verbose_name}",
+                "Retrying processing flow for {count} {verbose_name_plural}",
                 submissions.count(),
             ).format(
                 count=submissions.count(),
@@ -237,10 +248,10 @@ class SubmissionAdmin(admin.ModelAdmin):
             ),
         )
         for submission in submissions:
-            retry_register_submission.delay(submission.id)
+            on_completion_retry(submission.id).delay()
 
-    resend_submissions.short_description = _(
-        "Resend %(verbose_name_plural)s to the registration backend."
+    retry_processing_submissions.short_description = _(
+        "Retry processing %(verbose_name_plural)s."
     )
 
 

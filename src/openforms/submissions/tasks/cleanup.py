@@ -12,7 +12,7 @@ from ..models import Submission
 from ..status import SubmissionProcessingStatus
 from ..tokens import submission_status_token_generator
 
-__all__ = ["cleanup_on_completion_results"]
+__all__ = ["cleanup_on_completion_results", "finalize_completion_retry"]
 
 
 # sync this with the token generator - after this number of days tokens are invalidated
@@ -57,3 +57,19 @@ def cleanup_on_completion_results():
             processing_status.forget_results()
             submission.on_completion_task_ids = []
             submission.save(update_fields=["on_completion_task_ids"])
+
+
+@app.task(ignore_result=True)
+def finalize_completion_retry(submission_id: int):
+    """
+    Finalize of the on_completion_retry workflow.
+
+    This task must be called last and mark the submission as not requiring any retries
+    anymore. Tasks being retried that fail again should result in a celery failure
+    to prevent this finalizer from running.
+
+    All other internal state will have been updated by the specific (sub)tasks.
+    """
+    submission = Submission.objects.get(id=submission_id)
+    submission.needs_on_completion_retry = False
+    submission.save(update_fields=["needs_on_completion_retry"])

@@ -6,15 +6,43 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
 from ..tasks import maybe_send_confirmation_email
-from ..tasks.emails import send_confirmation_email_after_payment_timeout
+from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 @temp_private_root()
 class ConfirmationEmailTests(TestCase):
+    def test_task_without_mail_template(self):
+        submission = SubmissionFactory.create()
+        assert (
+            not ConfirmationEmailTemplate.objects.exists()
+        ), "There should not be any mail templates"
+
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_task_with_unexpected_failure(self):
+        class CustomError(Exception):
+            pass
+
+        submission = SubmissionFactory.create()
+        ConfirmationEmailTemplateFactory.create(form=submission.form)
+
+        patcher = patch(
+            "openforms.submissions.tasks.emails._send_confirmation_email",
+            side_effect=CustomError("oops"),
+        )
+        with patcher, self.assertRaises(CustomError):
+            send_confirmation_email(submission.id)
+
+        self.assertEqual(len(mail.outbox), 0)
+
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_completed_submission_send_confirmation_email(self):
         submission = SubmissionFactory.from_components(
@@ -43,7 +71,8 @@ class ConfirmationEmailTests(TestCase):
         )
 
         # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -70,7 +99,8 @@ class ConfirmationEmailTests(TestCase):
         )
 
         # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -107,7 +137,8 @@ class ConfirmationEmailTests(TestCase):
         )
 
         # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -166,7 +197,8 @@ class ConfirmationEmailTests(TestCase):
         )
 
         # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -198,9 +230,7 @@ class ConfirmationEmailTests(TestCase):
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
         self.assertTrue(submission.payment_required)
 
-        with patch.object(
-            send_confirmation_email_after_payment_timeout, "apply_async"
-        ) as mock_apply_async:
+        with patch.object(send_confirmation_email, "apply_async") as mock_apply_async:
             # "execute" the celery task
             maybe_send_confirmation_email(submission.id)
 
@@ -227,7 +257,7 @@ class ConfirmationEmailTests(TestCase):
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
 
         # "execute" the celery task
-        send_confirmation_email_after_payment_timeout(submission.id)
+        send_confirmation_email(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -254,7 +284,8 @@ class ConfirmationEmailTests(TestCase):
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
 
         # "execute" the celery task
-        maybe_send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -279,7 +310,8 @@ class ConfirmationEmailTests(TestCase):
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
 
         # "execute" the celery task
-        send_confirmation_email_after_payment_timeout(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            send_confirmation_email(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)

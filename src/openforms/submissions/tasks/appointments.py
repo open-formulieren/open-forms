@@ -1,12 +1,13 @@
 import logging
 
+from celery_once import QueueOnce
+
 from openforms.appointments.service import (
     AppointmentRegistrationFailed,
     AppointmentUpdateFailed,
     register_appointment,
 )
 from openforms.celery import app
-from openforms.utils.celery import maybe_retry_in_workflow
 
 from ..models import Submission
 
@@ -18,25 +19,18 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-class AppointmentRegistrationAborted(Exception):
+def update_appointment(submission: Submission):
+    # placeholder until real function is implemented
+    # TODO: implement
     pass
 
 
-def should_retry_appointment_registration(exception, task) -> bool:
-    if not exception.should_retry:
-        raise AppointmentRegistrationAborted(
-            "Could not register appointment"
-        ) from exception
-    return True
-
-
-@maybe_retry_in_workflow(
-    timeout=10,
-    retry_for=(AppointmentRegistrationFailed,),
-    should_retry=should_retry_appointment_registration,
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
 )
-@app.task(bind=True, max_retries=3)
-def maybe_register_appointment(task, submission_id: int) -> None:
+def maybe_register_appointment(submission_id: int) -> None:
     """
     Register an appointment for the submission IF relevant.
 
@@ -49,15 +43,23 @@ def maybe_register_appointment(task, submission_id: int) -> None:
     """
     logger.info("Registering appointment for submission %d (if needed!)", submission_id)
     submission = Submission.objects.get(id=submission_id)
-    register_appointment(submission)
+    try:
+        register_appointment(submission)
+    except AppointmentRegistrationFailed as exc:
+        logger.info(
+            "Appoinment registration failed, aborting workflow.",
+            exc_info=exc,
+            extra={"submission": submission_id},
+        )
+        raise
 
 
-@maybe_retry_in_workflow(
-    timeout=10,
-    retry_for=(AppointmentUpdateFailed,),
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
 )
-@app.task(bind=True, max_retries=3)
-def maybe_update_appointment(task, submission_id: int) -> None:
+def maybe_update_appointment(submission_id: int) -> None:
     """
     Check the submission state and update the appointment with the internal reference.
 
@@ -69,5 +71,15 @@ def maybe_update_appointment(task, submission_id: int) -> None:
     attempted and after the "final" reference was obtained.
     """
     submission = Submission.objects.get(id=submission_id)
+    is_retrying = submission.needs_on_completion_retry
     logger.info("Updating appointment for submission %d (if needed!)", submission_id)
-    pass  # TODO: implement!
+    try:
+        update_appointment(submission)
+    except AppointmentUpdateFailed:
+        # if we're in the retry workflow, tasks must hard-fail to keep the retry flag
+        # on.
+        if is_retrying:
+            raise
+        submission.needs_on_completion_retry = True
+        submission.save(update_fields=["needs_on_completion_retry"])
+        return

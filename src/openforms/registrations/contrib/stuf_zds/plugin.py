@@ -132,6 +132,9 @@ class StufZDSRegistration(BasePlugin):
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
 
+        if submission.public_registration_reference:
+            zaak_data.update({"kenmerken": [submission.public_registration_reference]})
+
         client.create_zaak(zaak_id, zaak_data, extra_data)
 
         doc_id = client.create_document_identificatie()

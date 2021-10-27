@@ -149,6 +149,23 @@ DigiD/EHerkenning/eIDAS settings
 * ``EIDAS_SERVICE_DESCRIPTION_NL``: The description (in Dutch) of the service that requires eIDAS authentication.
 * ``EIDAS_SERVICE_DESCRIPTION_EN``: The description (in English) of the service that requires eIDAS authentication.
 
+Processing of submissions
+-------------------------
+
+Submissions are :ref:`processed <developers_submissions>` in the background after the
+end-user has submitted the form data. This can fail because of external factors, and
+Open Forms has an automatic-retry mechanism.
+
+The following settings allow you to tweak the parameters of this mechanism.
+
+* ``RETRY_SUBMISSIONS_INTERVAL``: the interval (in seconds) of retrying. Defaults to
+  every 300s (5 min).
+
+* ``RETRY_SUBMISSIONS_TIME_LIMIT``: the time limit from when the submission was
+  submitted that automatic retries will continue. After this time limit has elapsed,
+  there are no automatic retries anymore, but manual retries are still available.
+  Defaults to ``48`` hours.
+
 Other settings
 --------------
 
@@ -185,6 +202,11 @@ Other settings
   disabling SSL certificate verification. Example:
   ``EXTRA_VERIFY_CERTS=/etc/ssl/root1.crt,/etc/ssl/root2.crt``.
 
+* ``DEFAULT_TIMEOUT_REQUESTS``: The default timeout duration (in seconds) when calling
+  external APIs/services. Defaults to ``10.0``. Requests taking longer than this
+  duration are aborted and errors bubble up. Specific calls may use an explicitly
+  provided timeout, which is not affected by this setting.
+
 * ``CURL_CA_BUNDLE``: If this variable is set to an empty string, it disables SSL/TLS
   certificate verification. More information about why can be found on this
   `stackoverflow post <https://stackoverflow.com/a/48391751/7146757>`_. Even calls from
@@ -193,15 +215,6 @@ Other settings
 
 * ``BEAT_SEND_EMAIL_INTERVAL``: the interval (in seconds) of sending queued e-mails,
   defaults to ``20``.
-
-* ``BEAT_RESEND_SUBMISSIONS_INTERVAL``: the interval (in seconds) of resending failed submissions
-  to the registration backend, defaults to ``60``.
-
-* ``CELERY_BEAT_RESEND_SUBMISSIONS_TIME_LIMIT``: the time limit (in hours) from when a failed submission is completed
-  that it will automatically be resent to the registration backend, defaults to ``48``.
-
-* ``SUBMISSION_REGISTRATION_MAX_RETRIES``: the number of times a failed submission will be resent to
-  the registration backend when not successful, defaults to ``10``.
 
 * ``SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS``: Configure how many days the URL to the submission report is usable.
 
