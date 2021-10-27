@@ -93,6 +93,11 @@ def register_submission(submission_id: int) -> Optional[dict]:
         )
     # downstream tasks can still execute, so we return rather than failing.
     except RegistrationFailed as e:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' failed",
+            plugin,
+            submission,
+        )
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
@@ -104,11 +109,21 @@ def register_submission(submission_id: int) -> Optional[dict]:
         return
     # unexpected exceptions should fail the entire chain and show up in error monitoring
     except Exception as e:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' unexpectedly errored",
+            plugin,
+            submission,
+        )
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, e, plugin)
         raise
     else:
+        logger.debug(
+            "Registration using plugin '%r' for submission '%s' succeeded",
+            plugin,
+            submission,
+        )
         submission.save_registration_status(RegistrationStatuses.success, result)
         logevent.registration_success(submission, plugin)
