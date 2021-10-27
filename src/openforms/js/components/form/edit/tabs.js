@@ -84,6 +84,31 @@ const TEXT_BASIC = {
     ]
 };
 
+
+const FIELDSET_BASIC = {
+    key: 'display',
+    label: 'Display',
+    components: [
+        {
+            type: 'textfield',
+            key: 'label',
+            label: 'Label'
+        },
+        {
+            type: 'textfield',
+            key: 'key',
+            label: 'Property Name'
+        },
+        {
+            type: 'checkbox',
+            key: 'hidden',
+            label: 'Hidden',
+            tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
+        }
+    ]
+};
+
+
 const CHOICES_BASIC = {
     key: 'basic',
     label: 'Basic',
@@ -383,6 +408,7 @@ const DEFAULT_CHOICES_TABS = {
 
 export {
     DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_CHOICES_TABS, DEFAULT_SENSITIVE_TABS,
-    BASIC, TEXT_BASIC, SENSITIVE_BASIC, LOCATION, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION
+    BASIC, TEXT_BASIC, SENSITIVE_BASIC, LOCATION, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION,
+    FIELDSET_BASIC
 };
 export default DEFAULT_TABS;
