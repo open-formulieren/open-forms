@@ -614,6 +614,81 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
+    def test_change_component_with_nested_components(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "Cat1",
+                        "type": "fieldset",
+                        "label": "Cat 1",
+                        "legend": "Cat 1",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "key": "CatBirthDate",
+                                "type": "date",
+                                "format": "dd-MM-yyyy",
+                                "hidden": False,
+                            },
+                            {
+                                "key": "addAnotherCat",
+                                "type": "radio",
+                                "hidden": False,
+                                "values": [
+                                    {"label": "Yes", "value": "yes"},
+                                    {"label": "No", "value": "no"},
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "key": "Cat2",
+                        "type": "fieldset",
+                        "label": "Cat 2",
+                        "legend": "Cat 2",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "key": "CatBirthDate2",
+                                "type": "date",
+                                "format": "dd-MM-yyyy",
+                                "hidden": False,
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!=": [{"var": "addAnotherCat"}, "yes"]},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "Cat2",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={},
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step, submission.data
+        )
+
 
 class StepModificationTests(TestCase):
     def test_next_button_disabled(self):
