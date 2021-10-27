@@ -31,15 +31,15 @@ class AppointmentRegistrationTaskTests(TestCase):
         with patch(
             "openforms.submissions.tasks.appointments.register_appointment"
         ) as mock_register:
-            mock_register.side_effect = AppointmentRegistrationFailed(
-                "Failed", should_retry=True
-            )
-            maybe_register_appointment(submission.id)
+            mock_register.side_effect = AppointmentRegistrationFailed("Failed")
+            with self.assertRaises(AppointmentRegistrationFailed):
+                maybe_register_appointment(submission.id)
 
         mock_register.assert_called_once()
 
         submission.refresh_from_db()
-        self.assertTrue(submission.needs_on_completion_retry)
+        # NO automatic retry - user gets feedback and needs to correct/retry
+        self.assertFalse(submission.needs_on_completion_retry)
 
 
 class AppointmentUpdateTaskTests(TestCase):

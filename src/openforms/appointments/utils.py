@@ -109,8 +109,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             submission=submission,
         )
         raise AppointmentRegistrationFailed(
-            "No registration attempted because of incomplete information. ",
-            should_retry=False,
+            "No registration attempted because of incomplete information. "
         )
 
     product = AppointmentProduct(
@@ -148,15 +147,18 @@ def book_appointment_for_submission(submission: Submission) -> None:
         )
         appointment_register_success(appointment_info, client)
     except AppointmentCreateFailed as e:
+        # This is displayed to the end-user!
+        error_information = _(
+            "A technical error occurred while we tried to book your appointment. "
+            "Please verify if all the data is correct or try again later."
+        )
         appointment_info = AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.failed,
-            error_information="Failed to make appointment",
+            error_information=error_information,
             submission=submission,
         )
         appointment_register_failure(appointment_info, client, e)
-        raise AppointmentRegistrationFailed(
-            "Unable to create appointment", should_retry=True
-        ) from e
+        raise AppointmentRegistrationFailed("Unable to create appointment") from e
 
 
 def create_base64_qrcode(text):

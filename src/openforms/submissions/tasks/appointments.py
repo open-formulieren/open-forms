@@ -25,10 +25,6 @@ def update_appointment(submission: Submission):
     pass
 
 
-class AppointmentRegistrationAborted(Exception):
-    pass
-
-
 @app.task(
     base=QueueOnce,
     ignore_result=False,
@@ -51,22 +47,11 @@ def maybe_register_appointment(submission_id: int) -> None:
         register_appointment(submission)
     except AppointmentRegistrationFailed as exc:
         logger.info(
-            "Appoinment registration failed. The should_retry flag is set to: %r",
-            exc.should_retry,
+            "Appoinment registration failed, aborting workflow.",
+            exc_info=exc,
+            extra={"submission": submission_id},
         )
-        # some user-error that can't be retried automatically, we _fail_ the task here
-        # to signal that downstream processing should not proceed.
-        if not exc.should_retry:
-            raise AppointmentRegistrationAborted(
-                "Could not register appointment"
-            ) from exc
-
-        else:
-            submission.needs_on_completion_retry = True
-            submission.save(update_fields=["needs_on_completion_retry"])
-            # the registration flow can signal that registration failed, but that should not
-            # hold up the entire parent chain (completion or completion_retry).
-            return
+        raise
 
 
 @app.task(

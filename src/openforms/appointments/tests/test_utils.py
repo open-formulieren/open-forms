@@ -1,6 +1,3 @@
-import os
-
-from django.conf import settings
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
@@ -146,8 +143,6 @@ class BookAppointmentForSubmissionTest(TestCase):
 
         with self.assertRaises(AppointmentRegistrationFailed) as cm:
             book_appointment_for_submission(submission)
-
-        self.assertFalse(cm.exception.should_retry)
 
         info = AppointmentInfo.objects.filter(
             submission=submission,
@@ -339,7 +334,6 @@ class BookAppointmentForSubmissionTest(TestCase):
 
         self.assertTrue(
             AppointmentInfo.objects.filter(
-                error_information="Failed to make appointment",
                 submission=submission,
                 status=AppointmentDetailsStatus.failed,
             ).exists()

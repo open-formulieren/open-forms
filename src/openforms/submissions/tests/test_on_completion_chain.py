@@ -5,13 +5,13 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.appointments.service import AppointmentRegistrationFailed
 from openforms.appointments.tests.utils import setup_jcc
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
 
 from ..models import SubmissionReport, TemporaryFileUpload
 from ..tasks import on_completion
-from ..tasks.appointments import AppointmentRegistrationAborted
 from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 
 
@@ -73,5 +73,5 @@ class OnCompletionTests(TestCase):
             submitted_data={"product": {"identifier": "79", "name": "Paspoort"}},
         )
 
-        with self.assertRaises(AppointmentRegistrationAborted):
+        with self.assertRaises(AppointmentRegistrationFailed):
             on_completion(submission.id)

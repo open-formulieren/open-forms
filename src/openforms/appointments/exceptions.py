@@ -17,9 +17,7 @@ class AppointmentCreateFailed(AppointmentException):
 
 
 class AppointmentInteractionFailed(AppointmentException):
-    def __init__(self, *args, **kwargs):
-        self.should_retry = kwargs.pop("should_retry", False)
-        super().__init__(*args, **kwargs)
+    pass
 
 
 class AppointmentRegistrationFailed(AppointmentInteractionFailed):
