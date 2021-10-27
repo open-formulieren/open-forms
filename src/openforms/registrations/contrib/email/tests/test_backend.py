@@ -72,9 +72,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _("[Open Forms] {form_name} - submission {public_reference}").format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -83,8 +83,8 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            _("Submission details for {form} (submitted on {date})").format(
-                form=self.form.admin_name, date="12:00:00 01-01-2021"
+            _("Submission details for {form_name} (submitted on {datetime})").format(
+                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -126,9 +126,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _("[Open Forms] {form_name} - submission {public_reference}").format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -137,8 +137,8 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            _("Submission details for {form} (submitted on {date})").format(
-                form=self.form.admin_name, date="12:00:00 01-01-2021"
+            _("Submission details for {form_name} (submitted on {datetime})").format(
+                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -176,9 +176,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _("[Open Forms] {form_name} - submission {public_reference}").format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -187,8 +187,8 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            _("Submission details for {form} (submitted on {date})").format(
-                form=self.form.admin_name, date="12:00:00 01-01-2021"
+            _("Submission details for {form_name} (submitted on {datetime})").format(
+                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -217,9 +217,11 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission payment received {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _(
+                "[Open Forms] {form_name} - submission payment received {public_reference}"
+            ).format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -272,9 +274,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _("[Open Forms] {form_name} - submission {public_reference}").format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -283,8 +285,8 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            _("Submission details for {form} (submitted on {date})").format(
-                form=self.form.admin_name, date="12:00:00 01-01-2021"
+            _("Submission details for {form_name} (submitted on {datetime})").format(
+                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
             ),
             message.body,
         )
@@ -357,9 +359,9 @@ class EmailBackendTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form} - submission {ref}").format(
-                form=submission.form.admin_name,
-                ref=submission.public_registration_reference,
+            _("[Open Forms] {form_name} - submission {public_reference}").format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
             ),
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
@@ -368,8 +370,8 @@ class EmailBackendTests(TestCase):
         # Check that the template is used
         self.assertIn('<table border="0">', message.body)
         self.assertIn(
-            _("Submission details for {form} (submitted on {date})").format(
-                form=self.form.admin_name, date="12:00:00 01-01-2021"
+            _("Submission details for {form_name} (submitted on {datetime})").format(
+                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
             ),
             message.body,
         )
