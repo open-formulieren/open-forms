@@ -18,7 +18,7 @@ def set_property_value(
 ) -> JSONObject:
     for index, component in enumerate(configuration["components"]):
         if "components" in component:
-            configuration = set_property_value(
+            configuration["components"][index] = set_property_value(
                 component, component_key, property_name, property_value
             )
 
