@@ -109,6 +109,46 @@ The configuration in the admin requires this to be provided as JSON, for example
 
 .. _style dictionary: https://amzn.github.io/style-dictionary/
 
+
+Additional design token values examples
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For 'inverted logos' it is possible to change the background colour of the header. The design token values have to be
+set to:
+
+.. code-block:: json
+
+    {
+      "page-header": {
+        "background": {
+          "value": "#35a7cc"
+        }
+      }
+    }
+
+This gives:
+
+.. image:: _assets/background-colour.png
+
+For wider logos, it is possible to increase the size with the following design token values:
+
+.. code-block:: json
+
+    {
+      "logo-header": {
+        "width": {
+          "value": "400px"
+        },
+        "height": {
+          "value": "75px"
+        }
+      }
+    }
+
+Which gives:
+
+.. image:: _assets/logo-size.png
+
 Configuration with CNAME DNS records
 ====================================
 
