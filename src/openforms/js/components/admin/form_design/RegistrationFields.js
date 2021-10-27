@@ -8,6 +8,38 @@ import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
 import Form from '@rjsf/core';
 
+const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) => {
+    let extraErrors = {};
+    for (let [key, msg] of errors) {
+        // The key is usually in the format form.field.rjsffield or form.field.rjsffield.index (in the case of an array field)
+        const splitKey = key.split('.');
+        // If there is no 'index' in the key, the <Field> component can handle displaying the errors
+        if (splitKey.length < 4) continue;
+        // Format errors for rjsf array fields
+        if (schema.properties[splitKey[2]]) {
+            if (!extraErrors[splitKey[2]]) extraErrors[splitKey[2]] = {};
+            extraErrors[splitKey[2]][splitKey[3]] = {__errors: [msg]};
+        }
+    }
+
+    return (
+        <Field
+            name={name}
+            label={label}
+            errors={extraErrors ?  [] : errors}
+        >
+            <Form
+                schema={schema}
+                formData={formData}
+                onChange={onChange}
+                children={true}
+                extraErrors={extraErrors}
+                showErrorList={false}
+            />
+        </Field>
+    );
+};
+
 
 const RegistrationFields = ({
     backends=[],
@@ -49,17 +81,13 @@ const RegistrationFields = ({
             </FormRow>
             {hasOptionsForm
                 ? (<FormRow>
-                    <Field
+                    <FormRjsfWrapper
                         name="form.registrationBackendOptions"
                         label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
-                    >
-                        <Form
-                            schema={backend.schema}
-                            formData={backendOptions}
-                            onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
-                            children={true}
-                        />
-                    </Field>
+                        schema={backend.schema}
+                        formData={backendOptions}
+                        onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
+                    />
                 </FormRow> )
                 : null
             }

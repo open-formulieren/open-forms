@@ -35,13 +35,12 @@ const FormRow = ({ fields=[], children }) => {
         }
         return React.cloneElement(
             child,
-            {errors: childErrors.map(([key, msg]) => msg)}
+            {errors: childErrors}
         );
     });
 
     const className = classNames(
         'form-row',
-        {'errors': processedChildren.length === 1 && hasErrors},
         ...fieldClasses,
     );
     return (

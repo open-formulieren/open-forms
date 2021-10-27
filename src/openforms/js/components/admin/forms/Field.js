@@ -25,6 +25,7 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children, 
     }
 
     const hasErrors = Boolean(errors && errors.length);
+    const formattedErrors = errors.map(([key, msg]) => msg);
     const className = classNames(
         {'fieldBox': fieldBox},
         {'errors': hasErrors},
@@ -32,9 +33,9 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children, 
 
     return (
         <>
-            { !fieldBox && hasErrors ? <ErrorList>{errors}</ErrorList> : null }
+            { !fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null }
             <div className={className}>
-                { fieldBox && hasErrors ? <ErrorList>{errors}</ErrorList> : null }
+                { fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null }
                 <label className={ required ? 'required': '' } htmlFor={htmlFor}>{label}</label>
                 {modifiedChildren}
                 { helpText ? <div className="help">{helpText}</div> : null }
@@ -50,7 +51,7 @@ Field.propTypes = {
     helpText: PropTypes.node,
     required: PropTypes.bool,
     errors: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.array])),
         PropTypes.string,
     ]),
     fieldBox: PropTypes.bool,
