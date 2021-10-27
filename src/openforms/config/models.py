@@ -169,7 +169,8 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "Values of various style parameters, such as border radii, background "
             "colors... Note that this is advanced usage. Any available but un-specified "
-            "values will use fallback default values."
+            "values will use fallback default values. See https://open-forms.readthedocs.io/en/latest"
+            "/installation/form_hosting.html#run-time-configuration for documentation."
         ),
     )
 
