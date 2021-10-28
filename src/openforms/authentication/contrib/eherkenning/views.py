@@ -73,12 +73,14 @@ class eHerkenningAssertionConsumerServiceView(
         client = eHerkenningClient()
         try:
             response = client.artifact_resolve(request, saml_art)
+            logger.debug(response.pretty_print())
         except OneLogin_Saml2_ValidationError as exc:
             if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
                 failure_url = self.get_failure_url(
                     MESSAGE_PARAMETER % {"plugin_id": plugin_id}, LOGIN_CANCELLED
                 )
             else:
+                logger.error(exc)
                 failure_url = self.get_failure_url(
                     MESSAGE_PARAMETER % {"plugin_id": plugin_id}, GENERIC_LOGIN_ERROR
                 )
@@ -87,6 +89,7 @@ class eHerkenningAssertionConsumerServiceView(
         try:
             attributes = response.get_attributes()
         except OneLogin_Saml2_ValidationError as exc:
+            logger.error(exc)
             failure_url = self.get_failure_url(
                 MESSAGE_PARAMETER % {"plugin_id": plugin_id}, GENERIC_LOGIN_ERROR
             )
