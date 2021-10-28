@@ -208,8 +208,8 @@ class Submission(models.Model):
     objects = SubmissionQuerySet.as_manager()
 
     class Meta:
-        verbose_name = _("Submission")
-        verbose_name_plural = _("Submissions")
+        verbose_name = _("submission")
+        verbose_name_plural = _("submissions")
         constraints = [
             models.UniqueConstraint(
                 fields=("public_registration_reference",),

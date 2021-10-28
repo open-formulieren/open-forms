@@ -1,3 +1,4 @@
+from django.template.defaultfilters import capfirst
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
@@ -104,8 +105,10 @@ class TimelineLogProxyTests(TestCase):
             user=UserFactory(username="Bob"),
             extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin"},
         )
+
         self.assertEqual(
-            f"[2020-01-02 13:34:00 CET] (Submission {submission.id})", log.fmt_lead
+            f"[2020-01-02 13:34:00 CET] ({capfirst(_('submission'))} {submission.id})",
+            log.fmt_lead,
         )
         self.assertEqual(f'"MyForm" (ID: {submission.form.id})', log.fmt_form)
         self.assertEqual(_("User") + ' "Bob"', log.fmt_user)

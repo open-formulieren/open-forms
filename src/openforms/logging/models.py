@@ -2,6 +2,7 @@ from typing import List
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.template.defaultfilters import capfirst
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -47,7 +48,8 @@ class TimelineLogProxy(TimelineLog):
     def fmt_sub(self) -> str:
         if not self.is_submission:
             return ""
-        return f"Submission {self.content_object.id}"
+        prefix = capfirst(Submission._meta.verbose_name)
+        return f"{prefix} {self.content_object.id}"
 
     @property
     def fmt_user(self) -> str:

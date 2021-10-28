@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-28 11:39+0200\n"
+"POT-Creation-Date: 2021-10-28 11:47+0200\n"
 "PO-Revision-Date: 2021-10-27 20:07+0020\n"
 "Last-Translator: b'Sergei Maertens <sergei@maykinmedia.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -692,7 +692,6 @@ msgid "Email security configuration"
 msgstr "E-mail beveiligingsconfiguratie"
 
 #: openforms/config/admin.py:21 openforms/submissions/admin.py:67
-#: openforms/submissions/models.py:212
 msgid "Submissions"
 msgstr "Inzendingen"
 
@@ -2287,42 +2286,42 @@ msgstr "Logboek"
 msgid "AVG"
 msgstr "AVG"
 
-#: openforms/logging/models.py:27
+#: openforms/logging/models.py:28
 #: openforms/logging/templates/logging/admin_list.html:29
 msgid "timeline log entry"
 msgstr "tijdlijn logboekvermelding"
 
-#: openforms/logging/models.py:28
+#: openforms/logging/models.py:29
 #: openforms/logging/templates/logging/admin_list.html:29
 msgid "timeline log entries"
 msgstr "tijdlijn logboekvermeldingen "
 
-#: openforms/logging/models.py:55
+#: openforms/logging/models.py:57
 msgid "User"
 msgstr "Gebruiker"
 
-#: openforms/logging/models.py:56
+#: openforms/logging/models.py:58
 msgid "Anonymous user"
 msgstr "Anonieme gebruiker"
 
-#: openforms/logging/models.py:77 openforms/logging/models.py:101
-#: openforms/logging/models.py:110
+#: openforms/logging/models.py:79 openforms/logging/models.py:103
+#: openforms/logging/models.py:112
 msgid "(unknown)"
 msgstr "(onbekend)"
 
-#: openforms/logging/models.py:129
+#: openforms/logging/models.py:131
 msgid "content object"
 msgstr "object"
 
-#: openforms/logging/models.py:134
+#: openforms/logging/models.py:136
 msgid "message"
 msgstr "bericht"
 
-#: openforms/logging/models.py:149
+#: openforms/logging/models.py:151
 msgid "avg timeline log entry"
 msgstr "AVG logboekvermelding"
 
-#: openforms/logging/models.py:150
+#: openforms/logging/models.py:152
 msgid "avg timeline log entries"
 msgstr "AVG logboekvermeldingen "
 
@@ -3943,9 +3942,14 @@ msgstr ""
 "Vlag die aangeeft of een nieuwe verwerkingspoging nodig is. Dit wordt "
 "automatisch uitgevoerd op de achtergrond."
 
-#: openforms/submissions/models.py:211
-msgid "Submission"
-msgstr "Inzending"
+#: openforms/submissions/models.py:211 openforms/submissions/models.py:523
+#: openforms/submissions/models.py:682
+msgid "submission"
+msgstr "inzending"
+
+#: openforms/submissions/models.py:212
+msgid "submissions"
+msgstr "inzendingen"
 
 #: openforms/submissions/models.py:222
 #, python-brace-format
@@ -3992,10 +3996,6 @@ msgstr "Titel van het document"
 #: openforms/submissions/models.py:516
 msgid "Content of the submission report"
 msgstr "Inhoud van het document"
-
-#: openforms/submissions/models.py:523 openforms/submissions/models.py:682
-msgid "submission"
-msgstr "inzending"
 
 #: openforms/submissions/models.py:524
 msgid "Submission the report is about."
