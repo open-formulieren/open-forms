@@ -87,16 +87,16 @@ class SubmissionPayment(models.Model):
     )
     form_url = models.URLField(_("Form URL"), max_length=255)
     order_id = models.BigIntegerField(
-        _("Order ID"),
+        _("Order ID (internal)"),
         unique=True,
         null=True,
         help_text=_("Unique tracking across backend"),
     )
     public_order_id = models.CharField(
-        _("payment status"),
+        _("Order ID"),
         max_length=32,
         blank=True,
-        help_text=_("Status of the payment process in the configured backend."),
+        help_text=_("Order ID stored with payment provider."),
     )
     amount = models.DecimalField(
         _("payment amount"),

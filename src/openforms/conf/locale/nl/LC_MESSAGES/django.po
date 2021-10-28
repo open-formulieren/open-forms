@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-27 20:14+0200\n"
+"POT-Creation-Date: 2021-10-28 11:39+0200\n"
 "PO-Revision-Date: 2021-10-27 20:07+0020\n"
 "Last-Translator: b'Sergei Maertens <sergei@maykinmedia.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -2773,20 +2773,20 @@ msgid "Form URL"
 msgstr "Formulier URL"
 
 #: openforms/payments/models.py:90
-msgid "Order ID"
-msgstr "Bestelling ID"
+msgid "Order ID (internal)"
+msgstr "Order ID (intern)"
 
 #: openforms/payments/models.py:93
 msgid "Unique tracking across backend"
-msgstr "Unieke ID die wordt meegegeven aan andere systemen."
+msgstr "Unieke ID over externe systemen heen."
 
-#: openforms/payments/models.py:96 openforms/payments/models.py:109
-msgid "payment status"
-msgstr "betaalstatus"
+#: openforms/payments/models.py:96
+msgid "Order ID"
+msgstr "Bestelling ID"
 
-#: openforms/payments/models.py:99 openforms/payments/models.py:113
-msgid "Status of the payment process in the configured backend."
-msgstr "Status van het betalingsproces in de geconfigureerde back-end."
+#: openforms/payments/models.py:99
+msgid "Order ID stored with payment provider."
+msgstr "Bestelling ID meegestuurd naar externe betaalprovider."
 
 #: openforms/payments/models.py:102 openforms/submissions/api/serializers.py:86
 msgid "payment amount"
@@ -2795,6 +2795,14 @@ msgstr "bedrag"
 #: openforms/payments/models.py:106
 msgid "Total payment amount."
 msgstr "Totaal bedrag."
+
+#: openforms/payments/models.py:109
+msgid "payment status"
+msgstr "betaalstatus"
+
+#: openforms/payments/models.py:113
+msgid "Status of the payment process in the configured backend."
+msgstr "Status van het betalingsproces in de geconfigureerde back-end."
 
 #: openforms/payments/models.py:118 openforms/payments/models.py:119
 msgid "submission payment details"
