@@ -8,7 +8,7 @@ import { RD_CRS } from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;
 
-const TILES = 'https://geodata.nationaalgeoregister.nl/tiles/service';
+const TILES = 'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard';
 
 const ATTRIBUTION = `
     Kaartgegevens &copy;
@@ -17,7 +17,7 @@ const ATTRIBUTION = `
 `;
 
 const TILE_LAYERS = {
-    url: `${TILES}/wmts/brtachtergrondkaart/EPSG:28992/{z}/{x}/{y}.png`,
+    url: `${TILES}/EPSG:28992/{z}/{x}/{y}.png`,
     options: {
         minZoom: 1,
         maxZoom: 13,
