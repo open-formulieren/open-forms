@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpResponseRedirect
 
 from digid_eherkenning.backends import BaseSaml2Backend
@@ -10,6 +12,8 @@ from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+
+logger = logging.getLogger(__name__)
 
 
 class BSNNotPresentError(Exception):
@@ -38,12 +42,14 @@ class DigiDAssertionConsumerServiceView(
 
         try:
             response = client.artifact_resolve(request, saml_art)
+            logger.debug(response.pretty_print())
         except OneLogin_Saml2_ValidationError as exc:
             if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
                 failure_url = self.get_failure_url(
                     DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED
                 )
             else:
+                logger.error(exc)
                 failure_url = self.get_failure_url(
                     DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
                 )
@@ -52,6 +58,7 @@ class DigiDAssertionConsumerServiceView(
         try:
             name_id = response.get_nameid()
         except OneLogin_Saml2_ValidationError as exc:
+            logger.error(exc)
             failure_url = self.get_failure_url(
                 DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
             )
