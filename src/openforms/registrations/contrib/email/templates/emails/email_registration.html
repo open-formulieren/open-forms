@@ -1,0 +1,16 @@
+{% load i18n %}
+<p>{% blocktrans trimmed %}
+    Submission details for {{form_name}} (submitted on {{datetime}})
+{% endblocktrans %}</p>
+<table>
+    <tr>
+        <th>{% trans "Field" %}</th>
+        <th>{% trans "Response" %}</th>
+    </tr>
+    {% for key, value in submitted_data.items %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{% display_value value %}</td>
+        </tr>
+    {% endfor %}
+</table>

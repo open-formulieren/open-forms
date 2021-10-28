@@ -1,17 +1,16 @@
+import html
 from mimetypes import types_map
 from typing import NoReturn
 
 from django.conf import settings
-from django.template import Context, Template
 from django.template.loader import get_template
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from openforms.emails.utils import sanitize_content, send_mail_html
+from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks.registration import set_submission_reference
-from openforms.utils.email import send_mail_plus
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference
@@ -35,23 +34,24 @@ class EmailRegistration(BasePlugin):
             form_name=submission.form.admin_name,
             public_reference=submission.public_registration_reference,
         )
-        template = _(
-            "Submission details for {form_name} (submitted on {datetime})"
-        ).format(
-            form_name=submission.form.admin_name,
-            datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
-        )
 
-        template += """
-            {% for field, value in submitted_data.items %}
-                {{field}}: {% display_value value %}
-            {% endfor %}
-        """
+        context = {
+            "form_name": submission.form.admin_name,
+            "public_reference": submission.public_registration_reference,
+            "datetime": submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
+            "submitted_data": submitted_data,
+        }
 
-        # render the e-mail body - the template from this model.
-        rendered_content = Template(template).render(
-            Context({"submitted_data": submitted_data})
-        )
+        html_template = get_template("emails/email_registration.html")
+        text_template = get_template("emails/email_registration.txt")
+
+        html_content = html_template.render(context)
+        context["rendering_text"] = True
+        text_content = text_template.render(context)
+
+        # post process since the mail template has html markup and django escaped entities
+        text_content = strip_tags_plus(text_content)
+        text_content = html.unescape(text_content)
 
         attachments = submission.attachments.as_mail_tuples()
 
@@ -69,22 +69,23 @@ class EmailRegistration(BasePlugin):
                     export_data,
                     mime_type,
                 )
+                extra_attachments.append(attachment)
             elif attachment_format == AttachmentFormat.pdf:
                 attachment = (
                     submission.report.title,
                     submission.report.content.read(),
                     mime_type,
                 )
-
-            extra_attachments.append(attachment)
+                extra_attachments.append(attachment)
 
         send_mail_html(
             subject,
-            rendered_content,
+            html_content,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],
             fail_silently=False,
             attachment_tuples=attachments + extra_attachments,
+            text_message=text_content,
         )
 
     def get_reference_from_result(self, result: None) -> NoReturn:
@@ -104,9 +105,11 @@ class EmailRegistration(BasePlugin):
             datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
         )
 
+        html_message = format_html("<p>{}</p>", message)
+
         send_mail_html(
             subject,
-            message,
+            html_message,
             settings.DEFAULT_FROM_EMAIL,
             options["to_emails"],
             fail_silently=False,

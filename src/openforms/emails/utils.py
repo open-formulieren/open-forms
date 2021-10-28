@@ -65,12 +65,13 @@ def send_mail_html(
     fail_silently: bool = False,
     text_message: str = None,
 ) -> None:
-    # sanitize
-    html_body = sanitize_content(html_body)
-
     # render versions
     if not text_message:
         text_message = strip_tags_plus(html_body)
+
+    # sanitize
+    html_body = sanitize_content(html_body)
+    text_message = sanitize_content(text_message)
 
     template = get_template("emails/wrapper.html")
     wrapper_context = get_wrapper_context(html_body)

@@ -1,0 +1,5 @@
+{% load i18n %}{% blocktrans trimmed %}
+    Submission details for {{form_name}} (submitted on {{datetime}})
+{% endblocktrans %}
+{% for key, value in submitted_data.items %}
+- {{ key|safe }}: {% display_value value %}{% endfor %}
