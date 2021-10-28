@@ -675,7 +675,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-git+https://github.com/maykinmedia/python3-saml.git@22f847d386674d3f6ee360c0202ef51bd9820846#egg=python3_saml
+git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d#egg=python3_saml
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
