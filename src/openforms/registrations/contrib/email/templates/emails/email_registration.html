@@ -4,13 +4,13 @@
 {% endblocktrans %}</p>
 <table>
     <tr>
-        <th>{% trans "Field" %}</th>
-        <th>{% trans "Response" %}</th>
+        <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
+        <th style="padding: 1px; text-align: left;">{% trans "Response" %}</th>
     </tr>
     {% for key, value in submitted_data.items %}
         <tr>
-            <td>{{ key }}</td>
-            <td>{% display_value value %}</td>
+            <td style="padding: 2px; padding-right: 10px;">{{ key }}:</td>
+            <td style="padding: 2px;">{% display_value value %}</td>
         </tr>
     {% endfor %}
 </table>

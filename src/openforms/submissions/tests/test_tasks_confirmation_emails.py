@@ -9,13 +9,14 @@ from privates.test import temp_private_root
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
+from ...utils.tests.html_assert import HTMLAssertMixin
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 @temp_private_root()
-class ConfirmationEmailTests(TestCase):
+class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_task_without_mail_template(self):
         submission = SubmissionFactory.create()
         assert (
@@ -153,6 +154,7 @@ class ConfirmationEmailTests(TestCase):
         self.assertIn("barvalue", message.body)
         self.assertIn("Foo", message.body)
         self.assertIn("foovalue", message.body)
+
         self.assertNotIn("Hello", message.body)
         self.assertNotIn("hellovalue", message.body)
 
@@ -161,12 +163,13 @@ class ConfirmationEmailTests(TestCase):
         self.assertEqual(mime_type, "text/html")
         self.assertIn("<table", html_message)
         self.assertIn("Information filled in: foovalue and barvalue.", html_message)
-        self.assertIn("<td>Bar</td>", html_message)
-        self.assertIn("<td>barvalue</td>", html_message)
-        self.assertIn("<td>Foo</td>", html_message)
-        self.assertIn("<td>foovalue</td>", html_message)
-        self.assertNotIn("<td>Hello</td>", html_message)
-        self.assertNotIn("<td>hellovalue</td>", html_message)
+        self.assertTagWithTextIn("td", "Bar", html_message)
+        self.assertTagWithTextIn("td", "barvalue", html_message)
+        self.assertTagWithTextIn("td", "Foo", html_message)
+        self.assertTagWithTextIn("td", "foovalue", html_message)
+
+        self.assertNotTagWithTextIn("td", "Hello", html_message)
+        self.assertNotTagWithTextIn("td", "hellovalue", html_message)
 
     def test_complete_submission_send_confirmation_email_to_many_recipients(self):
         submission = SubmissionFactory.from_components(

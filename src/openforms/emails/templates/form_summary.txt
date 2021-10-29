@@ -1,3 +1,3 @@
 {% load i18n %}{% trans "Summary" %}:
-{% for key, value in summary_data.items %}
+{% for key, value in submitted_data.items %}
 - {{ key|safe }}: {% display_value value %}{% endfor %}

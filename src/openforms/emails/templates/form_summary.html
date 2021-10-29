@@ -1,15 +1,15 @@
 {% load i18n %}
-{% if summary_data %}
-    <h1>{% trans "Summary" %}</h1>
+{% if submitted_data %}
+    <p><b>{% trans "Summary" %}</b></p>
 <table>
     <tr>
-        <th>{% trans "Field" %}</th>
-        <th>{% trans "Response" %}</th>
+        <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
+        <th style="padding: 1px; text-align: left;">{% trans "Response" %}</th>
     </tr>
-    {% for key, value in summary_data.items %}
+    {% for key, value in submitted_data.items %}
         <tr>
-            <td>{{ key }}</td>
-            <td>{% display_value value %}</td>
+            <td style="padding: 2px; padding-right: 10px;">{{ key }}:</td>
+            <td style="padding: 2px;">{% display_value value %}</td>
         </tr>
     {% endfor %}
 </table>

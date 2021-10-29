@@ -80,7 +80,7 @@ def send_mail_html(
     send_mail_plus(
         subject,
         text_message,
-        from_email,  # TODO: add config option to specify sender e-mail
+        from_email,
         recipient_list,
         html_message=html_message,
         fail_silently=fail_silently,

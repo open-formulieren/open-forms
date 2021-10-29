@@ -32,7 +32,7 @@
     {% if appointment.other %}
         {% for key, value in appointment.other.items %}
             <tr>
-                <td>{{ key|safe }}</td>
+                <td>{{ key|safe }}:</td>
                 <td>{{ value|safe }}</td>
             </tr>
         {% endfor %}

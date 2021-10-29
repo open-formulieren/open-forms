@@ -35,7 +35,7 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     for property_key, property_label in data_to_show_in_email:
         if property_key in context:
             filtered_data[property_label] = context[property_key]
-    return {"summary_data": filtered_data}
+    return {"submitted_data": filtered_data}
 
 
 @register.simple_tag()

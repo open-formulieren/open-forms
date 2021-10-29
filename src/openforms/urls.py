@@ -84,7 +84,12 @@ if settings.DEBUG:
             "dev/email/wrapper",
             EmailWrapperTestView.as_view(),
             name="dev-email-wrapper",
-        )
+        ),
+        path(
+            "dev/email/confirmation/<int:submission_id>",
+            EmailWrapperTestView.as_view(),
+            name="dev-email-wrapper",
+        ),
     ]
 
 if apps.is_installed("rosetta"):

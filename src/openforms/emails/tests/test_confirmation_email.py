@@ -32,6 +32,7 @@ from ...appointments.base import (
 from ...payments.constants import PaymentStatus
 from ...payments.tests.factories import SubmissionPaymentFactory
 from ...submissions.utils import send_confirmation_email
+from ...utils.tests.html_assert import HTMLAssertMixin
 from ...utils.urls import build_absolute_uri
 from ..models import ConfirmationEmailTemplate
 from ..utils import unwrap_anchors
@@ -74,7 +75,7 @@ NESTED_COMPONENT_CONF = {
 
 
 @override_settings(CACHES=NOOP_CACHES)
-class ConfirmationEmailTests(TestCase):
+class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_validate_content_syntax(self):
         email = ConfirmationEmailTemplate(subject="foo", content="{{{}}}")
 
@@ -121,10 +122,10 @@ class ConfirmationEmailTests(TestCase):
         email = ConfirmationEmailTemplate(content="{% summary %}")
         rendered_content = email.render(submission)
 
-        self.assertIn("<td>Name</td>", rendered_content)
-        self.assertIn("<td>Jane</td>", rendered_content)
-        self.assertIn("<td>Last name</td>", rendered_content)
-        self.assertIn("<td>Doe</td>", rendered_content)
+        self.assertTagWithTextIn("td", "Name", rendered_content)
+        self.assertTagWithTextIn("td", "Jane", rendered_content)
+        self.assertTagWithTextIn("td", "Last name", rendered_content)
+        self.assertTagWithTextIn("td", "Doe", rendered_content)
 
     def test_attachment(self):
         conf = deepcopy(NESTED_COMPONENT_CONF)
@@ -169,12 +170,12 @@ class ConfirmationEmailTests(TestCase):
         email = ConfirmationEmailTemplate(content="{% summary %}")
         rendered_content = email.render(submission)
 
-        self.assertIn("<td>Name</td>", rendered_content)
-        self.assertIn("<td>Jane</td>", rendered_content)
-        self.assertIn("<td>Last name</td>", rendered_content)
-        self.assertIn("<td>Doe</td>", rendered_content)
-        self.assertIn("<td>File</td>", rendered_content)
-        self.assertIn("<td>my-image.jpg</td>", rendered_content)
+        self.assertTagWithTextIn("td", "Name", rendered_content)
+        self.assertTagWithTextIn("td", "Jane", rendered_content)
+        self.assertTagWithTextIn("td", "Last name", rendered_content)
+        self.assertTagWithTextIn("td", "Doe", rendered_content)
+        self.assertTagWithTextIn("td", "File", rendered_content)
+        self.assertTagWithTextIn("td", "my-image.jpg", rendered_content)
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
@@ -341,7 +342,7 @@ class TestAppointmentPlugin(BasePlugin):
 
 
 @override_settings(DEFAULT_FROM_EMAIL="foo@sender.com")
-class ConfirmationEmailRenderingIntegrationTest(TestCase):
+class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
     template = """
     <p>Geachte heer/mevrouw,</p>
 
@@ -454,7 +455,7 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
             - Last name: de Bar & de Baas
             - File: my-image.jpg
 
-            Producten:
+            Products:
 
             - Test product 1 & 2
             - Test product 3
@@ -464,11 +465,11 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
             Test location
             1234ab Teststad
 
-            Datum en tijd:
+            Date and time:
 
             1 januari 2021, 12:00 - 12:15
 
-            Opmerkingen:
+            Remarks:
 
             Remarks
 
@@ -501,10 +502,8 @@ class ConfirmationEmailRenderingIntegrationTest(TestCase):
 
             message_html = message.alternatives[0][0]
 
-            print(message_html)
-
-            self.assertIn("<td>Name</td>", message_html)
-            self.assertIn("<td>Foo</td>", message_html)
+            self.assertTagWithTextIn("td", "Name", message_html)
+            self.assertTagWithTextIn("td", "Foo", message_html)
             self.assertIn('<a href="http://gemeente.nl">', message_html)
 
 

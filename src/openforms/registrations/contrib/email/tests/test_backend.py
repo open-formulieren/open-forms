@@ -22,6 +22,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat
@@ -29,7 +30,7 @@ from ..plugin import EmailRegistration
 
 
 @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-class EmailBackendTests(TestCase):
+class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(
@@ -104,10 +105,10 @@ class EmailBackendTests(TestCase):
         self.assertIn("foo: bar", message.body)
         self.assertIn("some_list: value1, value2", message.body)
 
-        self.assertIn("<td>foo</td>", message_html)
-        self.assertIn("<td>bar</td>", message_html)
-        self.assertIn("<td>some_list</td>", message_html)
-        self.assertIn("<td>value1, value2</td>", message_html)
+        self.assertTagWithTextIn("td", "foo", message_html)
+        self.assertTagWithTextIn("td", "bar", message_html)
+        self.assertTagWithTextIn("td", "some_list", message_html)
+        self.assertTagWithTextIn("td", "value1, value2", message_html)
 
         self.assertEqual(len(message.attachments), 2)
         file1, file2 = message.attachments
