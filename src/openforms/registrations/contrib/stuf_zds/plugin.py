@@ -13,8 +13,10 @@ from openforms.registrations.constants import (
 )
 from openforms.registrations.registry import register
 from openforms.submissions.mapping import (
+    SKIP,
     FieldConf,
     apply_data_mapping,
+    get_component,
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
@@ -95,6 +97,13 @@ class PartialDate:
             )
 
 
+def _point_coordinate(value):
+    if not value or not isinstance(value, list) or len(value) != 2:
+        return SKIP
+    # cast to str because floats would get localized in the template
+    return {"lat": str(value[0]), "lng": str(value[1])}
+
+
 @register("stuf-zds-create-zaak")
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
@@ -110,6 +119,9 @@ class StufZDSRegistration(BasePlugin):
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         "initiator.bsn": FieldConf(submission_field="bsn"),
         "initiator.kvk": FieldConf(submission_field="kvk"),
+        "lokatie": FieldConf(
+            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
+        ),
     }
 
     def register_submission(
@@ -128,6 +140,13 @@ class StufZDSRegistration(BasePlugin):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
+        if zaak_data.get("lokatie"):
+            zaak_data["lokatie"]["key"] = get_component(
+                submission,
+                RegistrationAttribute.locatie_coordinaat,
+                REGISTRATION_ATTRIBUTE,
+            )["key"]
+
         extra_data = get_unmapped_data(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )

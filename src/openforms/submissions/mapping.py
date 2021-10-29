@@ -152,3 +152,10 @@ def get_unmapped_data(
             data.pop(data_key, None)
 
     return data
+
+
+def get_component(submission, registration_attribute: str, component_attribute: str):
+    for component in submission.form.iter_components(recursive=True):
+        attribute = glom(component, component_attribute, default=None)
+        if attribute == registration_attribute:
+            return component
