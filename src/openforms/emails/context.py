@@ -12,28 +12,34 @@ def get_wrapper_context(html_content=""):
     ctx = {
         "content": mark_safe(html_content),
         "main_website_url": config.main_website,
-        "style": {
-            # do we even have tokens for header? lets re-use footer for now
-            "header": {
-                "color": glom(design_token, "footer.color.value", default="black"),
-                "background": glom(
-                    design_token, "footer.background.value", default="orange"
-                ),
-            },
-            "footer": {
-                "color": glom(design_token, "footer.color.value", default="black"),
-                "background": glom(
-                    design_token, "footer.background.value", default="orange"
-                ),
-            },
-            "layout": {
-                "background": glom(
-                    design_token, "layout.background.value", default="#e6e6e6"
-                )
-            },
-        },
+        "style": _get_design_token_values(design_token),
     }
     if config.logo:
         ctx["logo_url"] = build_absolute_uri(config.logo.url)
 
     return ctx
+
+
+def _get_design_token_values(token):
+    """
+    convert and apply defaults for use in template
+    """
+    return {
+        "header": {
+            "color": glom(token, "page-header.color.value", default="black"),
+            "background": glom(
+                token, "page-header.background.value", default="#2980b9"
+            ),
+        },
+        "logo": {
+            "height": glom(token, "logo-header.height.value", default="auto"),
+            "width": glom(token, "logo-header.width.value", default="auto"),
+        },
+        "footer": {
+            "color": glom(token, "footer.color.value", default="black"),
+            "background": glom(token, "footer.background.value", default="#2980b9"),
+        },
+        "layout": {
+            "background": glom(token, "layout.background.value", default="#e6e6e6")
+        },
+    }
