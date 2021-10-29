@@ -90,15 +90,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertNotIn("<table", message.body)
 
         self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
+            "Submission details for %(form_name)s (submitted on %(datetime)s)"
+            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
             message_html,
         )
         self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
+            "Submission details for %(form_name)s (submitted on %(datetime)s)"
+            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
             message.body,
         )
 

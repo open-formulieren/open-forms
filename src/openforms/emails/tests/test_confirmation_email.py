@@ -439,6 +439,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         ref = submission.public_registration_reference
 
         url_exp = r"https?://[a-z0-9:/._-]+"
+        pay_line = _("Payment of € {payment_price} is required.").format(
+            payment_price="12.34"
+        )
 
         with self.subTest("text"):
             expected_text = inspect.cleandoc(
@@ -449,37 +452,37 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             Kijk voor meer informatie op de homepage (#URL#)
 
-            Samenvatting:
+            {_("Summary")}:
 
             - Name: Foo
             - Last name: de Bar & de Baas
             - File: my-image.jpg
 
-            Products:
+            {_("Products")}:
 
             - Test product 1 & 2
             - Test product 3
 
-            Locatie:
+            {_("Location")}:
 
             Test location
             1234ab Teststad
 
-            Date and time:
+            {_("Date and time")}:
 
             1 januari 2021, 12:00 - 12:15
 
-            Remarks:
+            {_("Remarks")}:
 
             Remarks
 
             - Some: Data
 
-            Cancel Appointment: #URL#
+            {_("Cancel Appointment")}: #URL#
 
-            Payment of € 12.34 is required.
+            {pay_line}
 
-            Open payment page: #URL#
+            {_("Open payment page")}: #URL#
 
             Met vriendelijke groet,
 
