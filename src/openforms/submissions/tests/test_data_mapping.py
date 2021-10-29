@@ -122,6 +122,40 @@ class MappingTests(TestCase):
         }
         self.assertEqual(actual, expected)
 
+    def test_simple_target_dict(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+            "persoon.achternaam": "xyz_achternaam",
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+                {"key": "achternaam", "mapping_attr": "xyz_achternaam"},
+            ],
+            submitted_data={"voornaam": "Foo", "achternaam": "Bar"},
+        )
+        # use existing dict
+        target_dict = {
+            "extra": 1,
+            "persoon": {
+                "voornaam": "Bazz",
+                "bijnaam": "Buzz",
+            },
+        }
+        actual = apply_data_mapping(
+            submission, mapping, "mapping_attr", target_dict=target_dict
+        )
+        # submission should be glommed into the target
+        expected = {
+            "extra": 1,
+            "persoon": {
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "bijnaam": "Buzz",
+            },
+        }
+        self.assertEqual(actual, expected)
+
     def test_skip_missing(self):
         mapping = {
             "persoon.voornaam": "xyz_voornaam",

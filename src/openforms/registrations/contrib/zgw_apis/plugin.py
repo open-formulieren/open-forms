@@ -21,7 +21,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     set_zaak_payment,
 )
 from openforms.registrations.registry import register
-from openforms.submissions.mapping import FieldConf, apply_data_mapping
+from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
@@ -49,6 +49,12 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
 
+def _point_coordinate(value):
+    if not value or not isinstance(value, list) or len(value) != 2:
+        return SKIP
+    return {"type": "Point", "coordinates": [value[0], value[1]]}
+
+
 @register("zgw-create-zaak")
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
@@ -61,6 +67,11 @@ class ZGWRegistration(BasePlugin):
         "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         "betrokkeneIdentificatie.inpBsn": FieldConf(submission_field="bsn"),
+    }
+    zaak_mapping = {
+        "zaakgeometrie": FieldConf(
+            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
+        ),
     }
 
     def register_submission(
@@ -78,10 +89,14 @@ class ZGWRegistration(BasePlugin):
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
 
+        zaak_data = apply_data_mapping(
+            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
+        )
         zaak = create_zaak(
             options,
             payment_required=submission.payment_required,
             existing_reference=submission.public_registration_reference,
+            **zaak_data
         )
 
         submission_report = SubmissionReport.objects.get(submission=submission)

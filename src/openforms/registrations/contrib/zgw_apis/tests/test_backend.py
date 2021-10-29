@@ -178,12 +178,19 @@ class ZGWBackendTests(TestCase):
                         "attribute": RegistrationAttribute.initiator_geboortedatum,
                     },
                 },
+                {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
             ],
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
             },
             bsn="111222333",
             form__product__price=Decimal("0"),
@@ -234,6 +241,11 @@ class ZGWBackendTests(TestCase):
             create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
         self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
+
+        self.assertEqual(
+            create_zaak_body["zaakgeometrie"],
+            {"type": "Point", "coordinates": [52.36673378967122, 4.893164274470299]},
+        )
 
         create_eio = m.request_history[3]
         create_eio_body = create_eio.json()

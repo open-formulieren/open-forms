@@ -20,3 +20,4 @@ class RegistrationAttribute(DjangoChoices):
     initiator_aanschrijfwijze = ChoiceItem(
         "initiator_aanschrijfwijze", _("Initiator > Aanschrijfwijze")
     )
+    locatie_coordinaat = ChoiceItem("locatie_coordinaat", _("Location > Coordinate"))

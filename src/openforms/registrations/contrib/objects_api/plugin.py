@@ -13,9 +13,11 @@ from openforms.registrations.contrib.zgw_apis.service import (
     create_report_document,
 )
 from openforms.submissions.exports import create_submission_export
+from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 
 from ...base import BasePlugin
+from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .config import ObjectsAPIOptionsSerializer
@@ -27,10 +29,22 @@ def get_drc() -> Service:
     return config.drc_service
 
 
+def _point_coordinate(value):
+    if not value or not isinstance(value, list) or len(value) != 2:
+        return SKIP
+    return {"type": "Point", "coordinates": [value[0], value[1]]}
+
+
 @register("objects_api")
 class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
+
+    object_mapping = {
+        "record.geometry": FieldConf(
+            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
+        ),
+    }
 
     def register_submission(
         self, submission: Submission, options: dict
@@ -100,17 +114,19 @@ class ObjectsAPIRegistration(BasePlugin):
         if submission.kvk:
             object_data["kvk"] = submission.kvk
 
-        created_object = objects_client.create(
-            "object",
-            {
-                "type": options["objecttype"],
-                "record": {
-                    "typeVersion": options["objecttype_version"],
-                    "data": object_data,
-                    "startAt": date.today().isoformat(),
-                },
+        object_data = {
+            "type": options["objecttype"],
+            "record": {
+                "typeVersion": options["objecttype_version"],
+                "data": object_data,
+                "startAt": date.today().isoformat(),
             },
+        }
+        apply_data_mapping(
+            submission, self.object_mapping, REGISTRATION_ATTRIBUTE, object_data
         )
+
+        created_object = objects_client.create("object", object_data)
         return created_object
 
     def get_reference_from_result(self, result: None) -> NoReturn:

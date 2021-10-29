@@ -37,6 +37,7 @@ def apply_data_mapping(
     submission: Submission,
     mapping_config: Mapping[str, Union[str, FieldConf]],
     component_attribute: str,
+    target_dict: dict = None,
 ) -> dict:
     """
     apply mapping to data and build new data structure based on mapped attributes on the formio component configuration
@@ -79,7 +80,8 @@ def apply_data_mapping(
         }
 
     """
-    target_dict = dict()
+    if target_dict is None:
+        target_dict = dict()
 
     # build a lookup, also implicitly de-duplicates assigned attributes
     attr_key_lookup = dict()

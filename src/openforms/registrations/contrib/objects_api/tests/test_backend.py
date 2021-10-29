@@ -70,12 +70,19 @@ class ObjectsAPIBackendTests(TestCase):
                         "attribute": RegistrationAttribute.initiator_geboortedatum,
                     },
                 },
+                {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
             ],
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
             },
         )
 
@@ -107,7 +114,10 @@ class ObjectsAPIBackendTests(TestCase):
                     "attachments": [],
                     "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
                 },
-                "geometry": {"type": "Point", "coordinates": [0, 0]},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
                 "startAt": date.today().isoformat(),
                 "endAt": date.today().isoformat(),
                 "registrationAt": date.today().isoformat(),
@@ -218,6 +228,10 @@ class ObjectsAPIBackendTests(TestCase):
                     "csv_url": expected_csv_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
             },
         }
 
