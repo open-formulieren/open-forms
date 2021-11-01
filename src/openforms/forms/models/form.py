@@ -236,7 +236,7 @@ class Form(models.Model):
         choices = dict(registration_register.get_choices())
         return choices.get(
             self.registration_backend,
-            _("{backend} (invalid)").format(backend=self.registration_backend),
+            "-",
         )
 
     get_registration_backend_display.short_description = _("registration backend")
