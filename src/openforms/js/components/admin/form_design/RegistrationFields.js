@@ -1,25 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
+import Form from '@rjsf/core';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
-import Form from '@rjsf/core';
 
 const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) => {
     let extraErrors = {};
-    for (let [key, msg] of errors) {
-        // The key is usually in the format form.field.rjsffield or form.field.rjsffield.index (in the case of an array field)
-        const splitKey = key.split('.');
-        // If there is no 'index' in the key, the <Field> component can handle displaying the errors
-        if (splitKey.length < 4) continue;
-        // Format errors for rjsf array fields
-        if (schema.properties[splitKey[2]]) {
-            if (!extraErrors[splitKey[2]]) extraErrors[splitKey[2]] = {};
-            extraErrors[splitKey[2]][splitKey[3]] = {__errors: [msg]};
+
+    // add backend validation errors in the correct format. RJSF takes nested objects,
+    // even for array types.
+    for (const [key, msg] of errors) {
+        const bits = key.split('.');
+        // create the nested structure. we can't use lodash, since it creates arrays for
+        // indices rather than nested objects.
+        let errObj = extraErrors;
+        for (const pathBit of bits) {
+            if (pathBit === '__proto__' || pathBit === 'prototype') throw new Error('Prototype polution!');
+            if (!errObj[pathBit]) errObj[pathBit] = {};
+            errObj = errObj[pathBit];
         }
+        if (!errObj.__errors) errObj.__errors = [];
+        errObj.__errors.push(msg);
     }
 
     return (
@@ -38,6 +43,19 @@ const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) =>
             />
         </Field>
     );
+};
+
+FormRjsfWrapper.propTypes = {
+    name: PropTypes.string.isRequired,
+    label: PropTypes.node.isRequired,
+    schema: PropTypes.shape({
+        type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
+        properties: PropTypes.object,
+        required: PropTypes.arrayOf(PropTypes.string),
+    }),
+    formData: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
+    errors: PropTypes.array,
 };
 
 

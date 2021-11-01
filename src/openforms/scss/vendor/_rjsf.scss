@@ -1,0 +1,21 @@
+@import '../vars';
+
+.rjsf {
+  // reset default error color
+  @at-root .form-row.errors & {
+    input {
+      border-color: #ccc;
+    }
+
+    .field.has-error {
+      input {
+        border-color: $color-error;
+      }
+    }
+  }
+
+  .error-detail {
+    padding-left: 0;
+    margin-left: 0;
+  }
+}

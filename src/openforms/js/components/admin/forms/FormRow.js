@@ -17,18 +17,22 @@ const FormRow = ({ fields=[], children }) => {
         const {name} = child.props;
         if (!name) return child;
 
-        const childErrors = validationErrors.filter( ([key]) => {
-            if (key === name) return true;
-            const splitName = name.split('.');
-            const splitKey = key.split('.');
-            if (splitName.length <= splitKey.length) {
-                for (let index = 0; index < splitName.length; index++) {
-                    if (splitName[index] !== splitKey[index]) return false;
+        const childErrors = validationErrors
+            .map( ([key, err]) => {
+                // exact match on field & error key
+                if (key === name) return [key, err];
+
+                // check for nested errors
+                const prefix = `${name}.`;
+                if (key.startsWith(prefix)) {
+                    const nestedKey = key.replace(prefix, '', 1);
+                    return [nestedKey, err];
                 }
-                return true;
-            }
-            return false;
-        });
+                // not a relevant child error, return null which is filtered out later
+                return null;
+            })
+            // filter out falsy values
+            .filter(err => err);
 
         if (childErrors.length > 0) {
             hasErrors = true;
@@ -41,6 +45,7 @@ const FormRow = ({ fields=[], children }) => {
 
     const className = classNames(
         'form-row',
+        {'errors': processedChildren.length === 1 && hasErrors},
         ...fieldClasses,
     );
     return (
