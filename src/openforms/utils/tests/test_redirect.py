@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
 from ..redirect import allow_redirect_url
+from ..validators import AllowedRedirectValidator
 
 
 class RedirectTests(TestCase):
@@ -38,3 +40,17 @@ class RedirectTests(TestCase):
             self.assertEqual(allow_redirect_url("http://foo.bar/bazz"), True)
             self.assertEqual(allow_redirect_url("https://foo.bar"), True)
             self.assertEqual(allow_redirect_url("http://bazz.buzz"), False)
+
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False,
+        CORS_ALLOWED_ORIGINS=["http://foo.bar"],
+        CORS_ALLOWED_ORIGIN_REGEXES=[],
+    )
+    def test_validator(self):
+        validator = AllowedRedirectValidator()
+        validator("http://foo.bar")
+
+        with self.assertRaisesMessage(
+            ValidationError, "URL is not on the domain whitelist"
+        ):
+            validator("http://bazz.buzz")

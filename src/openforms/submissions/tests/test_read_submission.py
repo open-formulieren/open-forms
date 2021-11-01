@@ -71,6 +71,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "id": str(self.submission.uuid),
                 "url": f"http://testserver{self.endpoint}",
                 "form": f"http://testserver{form_path}",
+                "formUrl": "",
                 "steps": [
                     {
                         "id": str(self.step.uuid),

@@ -28,7 +28,9 @@ SESSION_CACHES = deepcopy(NOOP_CACHES)
 SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
 
 
-@override_settings(CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session")
+@override_settings(
+    CORS_ALLOW_ALL_ORIGINS=True, CACHES=SESSION_CACHES, SESSION_CACHE_ALIAS="session"
+)
 class FormUserSessionExpiryTests(APITestCase):
     """
     Session expiry tests for non-admin users.
@@ -61,6 +63,7 @@ class FormUserSessionExpiryTests(APITestCase):
         with self.subTest(part="start submission"):
             body = {
                 "form": f"http://testserver{self.form_url}",
+                "formUrl": "http://testserver.com/my-form",
             }
             with freeze_time("2021-07-29T14:00:00Z"):
                 response = self.client.post(reverse("api:submission-list"), body)
@@ -115,6 +118,7 @@ class FormUserSessionExpiryTests(APITestCase):
         with self.subTest(part="start submission"):
             body = {
                 "form": f"http://testserver{self.form_url}",
+                "formUrl": "http://testserver.com/my-form",
             }
             with freeze_time("2021-07-29T14:00:00Z"):
                 response = self.client.post(reverse("api:submission-list"), body)

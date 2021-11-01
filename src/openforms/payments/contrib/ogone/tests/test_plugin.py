@@ -30,6 +30,7 @@ class OgoneTests(TestCase):
             form__payment_backend="ogone-legacy",
             form__payment_backend_options={"merchant_id": merchant.id},
             form__product__price=Decimal("11.35"),
+            form_url="http://foo.bar",
         )
 
         self.assertEqual(submission.payment_required, True)
@@ -43,15 +44,9 @@ class OgoneTests(TestCase):
 
         # start url
         url = plugin.get_start_url(request, submission)
-        next_url = quote("http://foo.bar")
-
-        # bad without ?next=
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["detail"], "missing 'next' parameter")
 
         # good
-        response = self.client.post(f"{url}?next={next_url}")
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
 
         data = response.json()

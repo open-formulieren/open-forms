@@ -11,7 +11,6 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
     plugin_id = "demo"
     plugin_options = {"foo": 123}
-    form_url = "http://test/form/url"
     order_id = factory.Sequence(lambda n: int(f"2020{n:05}"))
     amount = Decimal("10.00")
     public_order_id = factory.LazyAttribute(lambda obj: f"ref{obj.order_id}")

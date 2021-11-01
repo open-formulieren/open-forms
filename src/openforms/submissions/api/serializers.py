@@ -146,6 +146,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "next_step",
             "can_submit",
             "payment",
+            "form_url",
         )
         extra_kwargs = {
             "id": {
@@ -163,6 +164,9 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "validators": [
                     validate_not_maintainance_mode,
                 ],
+            },
+            "form_url": {
+                "required": True,
             },
         }
 

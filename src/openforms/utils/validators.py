@@ -5,6 +5,8 @@ from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 
+from openforms.utils.redirect import allow_redirect_url
+
 validate_digits = RegexValidator(
     regex="^[0-9]+$", message=_("Expected a numerical value.")
 )
@@ -74,4 +76,14 @@ class UniqueValuesValidator:
     def __call__(self, value: List[str]):
         uniq = set(value)
         if len(uniq) != len(value):
+            raise ValidationError(self.message, code=self.code)
+
+
+@deconstructible
+class AllowedRedirectValidator:
+    message = _("URL is not on the domain whitelist")
+    code = "invalid"
+
+    def __call__(self, value: str):
+        if not allow_redirect_url(value):
             raise ValidationError(self.message, code=self.code)

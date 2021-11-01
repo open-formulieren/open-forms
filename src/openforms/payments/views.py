@@ -115,23 +115,22 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         if plugin_id != submission.form.payment_backend:
             raise ParseError(detail="plugin not allowed")
 
-        form_url = request.query_params.get("next")
-        if not form_url:
-            raise ParseError(detail="missing 'next' parameter")
-
-        if not allow_redirect_url(form_url):
-            logger.warning(
-                "blocked payment start with non-allowed redirect to '%(form_url)s'",
-                {"form_url": form_url},
-            )
-            raise ParseError(detail="redirect not allowed")
+        # form_url = request.query_params.get("next")
+        # if not form_url:
+        #     raise ParseError(detail="missing 'next' parameter")
+        #
+        # if not allow_redirect_url(form_url):
+        #     logger.warning(
+        #         "blocked payment start with non-allowed redirect to '%(form_url)s'",
+        #         {"form_url": form_url},
+        #     )
+        #     raise ParseError(detail="redirect not allowed")
 
         payment = SubmissionPayment.objects.create_for(
             submission,
             plugin_id,
             submission.form.payment_backend_options,
             submission.form.product.price,
-            form_url,
         )
 
         info = plugin.start_payment(request, payment)

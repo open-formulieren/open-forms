@@ -10,6 +10,8 @@ Functional requirements are:
 * data of different submissions should not affect each other
 * "login" makes no sense, as we are usually dealing with anonymous users
 """
+from django.test import override_settings
+
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -21,6 +23,11 @@ from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission
 
 
+@override_settings(
+    CORS_ALLOW_ALL_ORIGINS=False,
+    ALLOWED_HOSTS=["*"],
+    CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+)
 class SubmissionStartTests(APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
@@ -37,10 +44,11 @@ class SubmissionStartTests(APITestCase):
 
     def test_start_submission(self):
         body = {
-            "form": f"http://testserver{self.form_url}",
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
         }
 
-        response = self.client.post(self.endpoint, body)
+        response = self.client.post(self.endpoint, body, HTTP_HOST="testserver.com")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
@@ -52,8 +60,8 @@ class SubmissionStartTests(APITestCase):
         response_json = response.json()
         expected = {
             "id": submission.uuid,
-            "form": f"http://testserver{self.form_url}",
-            "nextStep": f"http://testserver{submission_step_url}",
+            "form": f"http://testserver.com{self.form_url}",
+            "nextStep": f"http://testserver.com{submission_step_url}",
         }
         for key, value in expected.items():
             with self.subTest(key=key, value=value):
@@ -68,7 +76,8 @@ class SubmissionStartTests(APITestCase):
 
     def test_start_second_submission(self):
         body = {
-            "form": f"http://testserver{self.form_url}",
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
         }
 
         with self.subTest(state="first submission"):
@@ -96,7 +105,8 @@ class SubmissionStartTests(APITestCase):
         session.save()
 
         body = {
-            "form": f"http://testserver{self.form_url}",
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
         }
 
         response = self.client.post(self.endpoint, body)
@@ -111,7 +121,28 @@ class SubmissionStartTests(APITestCase):
 
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         body = {
-            "form": f"http://testserver{form_url}",
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_start_submission_blank_form_url(self):
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_start_submission_bad_form_url(self):
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://badserver.com/my-form",
         }
 
         response = self.client.post(self.endpoint, body)
