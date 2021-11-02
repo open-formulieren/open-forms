@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict
 from json_logic import jsonLogic
 
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models.form import FormLogic
+from openforms.forms.models import FormDefinition, FormLogic
 from openforms.prefill import JSONObject
 
 if TYPE_CHECKING:
@@ -16,14 +16,17 @@ def set_property_value(
     property_name: str,
     property_value: str,
 ) -> JSONObject:
-    for index, component in enumerate(configuration["components"]):
-        if "components" in component:
-            configuration = set_property_value(
-                component, component_key, property_name, property_value
-            )
+    # use :class:`FormDefinition` for the iter_components method
+    form_definition = FormDefinition()
 
+    # iter over the (nested) components, and when we find the specified key, mutate it and break
+    # out of the loop
+    for component in form_definition.iter_components(
+        configuration=configuration, recursive=True
+    ):
         if component["key"] == component_key:
-            configuration["components"][index][property_name] = property_value
+            component[property_name] = property_value
+            break
 
     return configuration
 
