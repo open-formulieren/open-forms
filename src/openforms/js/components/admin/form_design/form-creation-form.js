@@ -134,6 +134,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     paymentBackend: 'payment',
     paymentBackendOptions: 'payment',
     submissionsRemovalOptions: 'submission-removal-options',
+    literals: 'literals',
 };
 
 
@@ -422,7 +423,13 @@ function reducer(draft, action) {
             const prefixedErrors = errors.map( err => {
                 const fieldName = err.name.split('.')[0];
                 if (!tabsWithErrors.includes(fieldName)) tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-                const key = `${fieldPrefix}.${err.name}`;
+                let key;
+                // literals are tracked separately in the state
+                if (fieldPrefix === 'form' && fieldName === 'literals') {
+                    key = err.name;
+                } else {
+                    key = `${fieldPrefix}.${err.name}`;
+                }
                 return [key, err.reason];
             });
             draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
@@ -826,7 +833,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
                         <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
                     <Tab hasErrors={state.tabsWithErrors.includes('product')}>
