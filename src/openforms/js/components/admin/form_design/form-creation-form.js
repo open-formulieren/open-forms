@@ -890,7 +890,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation template" description="Submission confirmation fieldset title" />}>
                         <FormRow>
                             <Field
-                                name="SubmissionConfirmationTemplate"
+                                name="form.submissionConfirmationTemplate"
                                 label={<FormattedMessage defaultMessage="Submission page content" description="Confirmation template label" />}
                                 helpText={
                                     <FormattedMessage
@@ -898,7 +898,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                         description="Confirmation template help text"
                                     />
                                 }
-                                errors={state.errors.submissionConfirmationTemplate}
+                                // errors={state.errors.submissionConfirmationTemplate}
                             >
                                 <TinyMCEEditor
                                     content={state.form.submissionConfirmationTemplate}
