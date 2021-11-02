@@ -4,16 +4,16 @@ from drf_polymorphic.serializers import PolymorphicSerializer
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.authentication.api.fields import LoginOptionsReadOnlyField
+from openforms.authentication.registry import register as auth_register
+from openforms.payments.api.fields import PaymentOptionsReadOnlyField
+from openforms.payments.registry import register as payment_register
 from openforms.prefill import apply_prefill
 from openforms.products.models import Product
+from openforms.registrations.registry import register as registration_register
+from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.json_logic import JsonLogicTest
 
-from ...authentication.api.fields import LoginOptionsReadOnlyField
-from ...authentication.registry import register as auth_register
-from ...payments.api.fields import PaymentOptionsReadOnlyField
-from ...payments.registry import register as payment_register
-from ...registrations.registry import register as registration_register
-from ...submissions.api.fields import URLRelatedField
 from ..constants import LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
