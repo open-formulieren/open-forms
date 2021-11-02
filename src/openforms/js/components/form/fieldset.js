@@ -1,7 +1,29 @@
 import {Formio} from 'formiojs';
-import {FIELDSET_BASIC} from './edit/tabs';
 
 const FormioFieldSet = Formio.Components.components.fieldset;
+
+const FIELDSET_BASIC = {
+    key: 'display',
+    label: 'Display',
+    components: [
+        {
+            type: 'textfield',
+            key: 'label',
+            label: 'Label'
+        },
+        {
+            type: 'textfield',
+            key: 'key',
+            label: 'Property Name'
+        },
+        {
+            type: 'checkbox',
+            key: 'hidden',
+            label: 'Hidden',
+            tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
+        }
+    ]
+};
 
 class FieldSet extends FormioFieldSet {
     constructor(component, options, data) {
@@ -21,10 +43,7 @@ class FieldSet extends FormioFieldSet {
             FIELDSET_BASIC,
             // The 'API' tab is removed, since the only useful attribute it contained was the 'key', but we
             // have this field in the FIELDSET_BASIC tab.
-            // TODO: can these tabs below be removed?
-            parentEditForm.components[0].components[2], // Conditions tab
-            parentEditForm.components[0].components[3], // Logic tab
-            parentEditForm.components[0].components[4], // Layout tab
+            // The Conditions, Logic and Layout tabs have also been removed since they are not used
         ];
         return parentEditForm;
     }
