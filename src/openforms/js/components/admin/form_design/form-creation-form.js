@@ -1,6 +1,7 @@
 import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
+import groupBy from 'lodash/groupBy';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -163,12 +164,6 @@ function reducer(draft, action) {
             switch (prefix) {
                 case 'form': {
                     set(draft.form, fieldName, value);
-                    // remove any validation errors
-                    // TODO: figure out which tabs to clear from FORM_FIELDS_TO_TAB_NAMES
-                    draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
-                    if (!draft.validationErrors.length && draft.tabsWithErrors.includes('form')) {
-                        draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form');
-                    }
                     break;
                 }
                 case 'literals': {
@@ -179,6 +174,16 @@ function reducer(draft, action) {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
             }
+
+            // remove any validation errors
+            draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
+
+            // check which tabs still need the marker and which don't
+            const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
+                const [prefix, fieldPrefix] = key.split('.');
+                return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
+            });
+            draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId in errorsPerTab);
             break;
         }
         case 'PLUGINS_LOADED': {
