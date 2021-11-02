@@ -130,9 +130,9 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     canSubmit: 'form',
     registrationBackend: 'registration',
     registrationBackendOptions: 'registration',
-    product: 'product',
-    paymentBackend: 'payment',
-    paymentBackendOptions: 'payment',
+    product: 'product-payment',
+    paymentBackend: 'product-payment',
+    paymentBackendOptions: 'product-payment',
     submissionsRemovalOptions: 'submission-removal-options',
     literals: 'literals',
 };
@@ -836,11 +836,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('product')}>
-                        <FormattedMessage defaultMessage="Product" description="Product tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('payment')}>
-                        <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
+                        <FormattedMessage defaultMessage="Product & payment" description="Product & payments tab title" />
                     </Tab>
                     <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
                         <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
@@ -933,9 +930,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
-                </TabPanel>
-
-                <TabPanel>
                     <PaymentFields
                         backends={state.availablePaymentBackends}
                         selectedBackend={state.form.paymentBackend}

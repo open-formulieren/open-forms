@@ -679,6 +679,11 @@
     "description": "Form step name label",
     "originalDefault": "Step name"
   },
+  "qUYLVg": {
+    "defaultMessage": "Product & payment",
+    "description": "Product & payments tab title",
+    "originalDefault": "Product & payment"
+  },
   "qYZ81s": {
     "defaultMessage": "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Errored Submissions Removal Method help text",
@@ -699,11 +704,6 @@
     "description": "\"component\" operand type",
     "originalDefault": "the field"
   },
-  "ru7KD+": {
-    "defaultMessage": "Betaling",
-    "description": "Payment tab title",
-    "originalDefault": "Payment"
-  },
   "t99ynC": {
     "defaultMessage": "Veld waar de achternaam voor een afspraak komt te staan",
     "description": "Last Name Component field help text",
@@ -713,11 +713,6 @@
     "defaultMessage": "Formulier configureren",
     "description": "Change form page title",
     "originalDefault": "Change form"
-  },
-  "tsM2D7": {
-    "defaultMessage": "Product",
-    "description": "Product tab title",
-    "originalDefault": "Product"
   },
   "uBO/Al": {
     "defaultMessage": "Kies een stap om te bekijken of aan te passen.",

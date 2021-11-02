@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
+import Form from '@rjsf/core';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
-import Form from '@rjsf/core';
 
 
 const PaymentFields = ({
