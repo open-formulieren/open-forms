@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
-import Form from '@rjsf/core';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
+import FormRjsfWrapper from '../RJSFWrapper';
 
 
 const PaymentFields = ({
@@ -38,22 +38,17 @@ const PaymentFields = ({
                     />
                 </Field>
             </FormRow>
-
             {
                 hasOptionsForm
                 ? (
                     <FormRow>
-                        <Field
+                        <FormRjsfWrapper
                             name="form.paymentBackendOptions"
                             label={<FormattedMessage description="Payment backend options label" defaultMessage="Payment backend options" />}
-                        >
-                            <Form
-                                schema={backend.schema}
-                                formData={backendOptions}
-                                onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
-                                children={true}
-                            />
-                        </Field>
+                            schema={backend.schema}
+                            formData={backendOptions}
+                            onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
+                        />
                     </FormRow>
                 )
                 : null
