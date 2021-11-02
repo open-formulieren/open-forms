@@ -157,12 +157,14 @@ function reducer(draft, action) {
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             // names are prefixed like `form.foo` and `literals.bar`
-            const [prefix, fieldName] = name.split('.');
+            const [prefix, ...rest] = name.split('.');
+            const fieldName = rest.join('.');
 
             switch (prefix) {
                 case 'form': {
-                    draft.form[fieldName] = value;
+                    set(draft.form, fieldName, value);
                     // remove any validation errors
+                    // TODO: figure out which tabs to clear from FORM_FIELDS_TO_TAB_NAMES
                     draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
                     if (!draft.validationErrors.length && draft.tabsWithErrors.includes('form')) {
                         draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form');
@@ -173,9 +175,6 @@ function reducer(draft, action) {
                     draft.literals[fieldName].value = value;
                     break;
                 }
-                case 'submissionsRemovalOptions':
-                    draft.form.submissionsRemovalOptions[fieldName] = value;
-                    break;
                 default: {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }

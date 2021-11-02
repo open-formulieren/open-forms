@@ -41,7 +41,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
         <Fieldset>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.successfulSubmissionsRemovalLimit"
+                    name="form.submissionsRemovalOptions.successfulSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
                                 description="Successful Submissions Removal Limit field label"
@@ -64,7 +64,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.successfulSubmissionsRemovalMethod"
+                    name="form.submissionsRemovalOptions.successfulSubmissionsRemovalMethod"
                     label={
                         <FormattedMessage
                             defaultMessage="Successful Submissions Removal Method field label"
@@ -79,7 +79,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                     }
                 >
                     <Select
-                        name="submissionsRemovalOptions.successfulSubmissionsRemovalMethod"
+                        name="form.submissionsRemovalOptions.successfulSubmissionsRemovalMethod"
                         choices={removalMethods}
                         value={successfulSubmissionsRemovalMethod || ""}
                         onChange={onChange}
@@ -89,7 +89,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.incompleteSubmissionsRemovalLimit"
+                    name="form.submissionsRemovalOptions.incompleteSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
                                 description="Incomplete Submissions Removal Limit field label"
@@ -112,7 +112,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.incompleteSubmissionsRemovalMethod"
+                    name="form.submissionsRemovalOptions.incompleteSubmissionsRemovalMethod"
                     label={
                         <FormattedMessage
                             defaultMessage="Incomplete Submissions Removal Method"
@@ -127,7 +127,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                     }
                 >
                     <Select
-                        name="submissionsRemovalOptions.incompleteSubmissionsRemovalMethod"
+                        name="form.submissionsRemovalOptions.incompleteSubmissionsRemovalMethod"
                         choices={removalMethods}
                         value={incompleteSubmissionsRemovalMethod || ""}
                         onChange={onChange}
@@ -137,7 +137,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.erroredSubmissionsRemovalLimit"
+                    name="form.submissionsRemovalOptions.erroredSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
                                 description="Errored Submissions Removal Limit field label"
@@ -160,7 +160,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.erroredSubmissionsRemovalMethod"
+                    name="form.submissionsRemovalOptions.erroredSubmissionsRemovalMethod"
                     label={
                         <FormattedMessage
                             defaultMessage="Errored Submissions Removal Method"
@@ -175,7 +175,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                     }
                 >
                     <Select
-                        name="submissionsRemovalOptions.erroredSubmissionsRemovalMethod"
+                        name="form.submissionsRemovalOptions.erroredSubmissionsRemovalMethod"
                         choices={removalMethods}
                         value={erroredSubmissionsRemovalMethod || ""}
                         onChange={onChange}
@@ -185,7 +185,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             </FormRow>
             <FormRow>
                 <Field
-                    name="submissionsRemovalOptions.allSubmissionsRemovalLimit"
+                    name="form.submissionsRemovalOptions.allSubmissionsRemovalLimit"
                     label={
                         <FormattedMessage
                                 description="All Submissions Removal Limit field label"
