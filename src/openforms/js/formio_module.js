@@ -12,6 +12,7 @@ import SelectField from './components/form/select';
 import RadioField from './components/form/radio';
 import SelectBoxesField from './components/form/selectBoxes';
 import EmailField from './components/form/email';
+import FieldSet from './components/form/fieldset';
 import Map from './components/form/map';
 
 const FormIOModule = {
@@ -31,6 +32,7 @@ const FormIOModule = {
     selectboxes: SelectBoxesField,
     email: EmailField,
     map: Map,
+    fieldset: FieldSet,
   },
 };
 
