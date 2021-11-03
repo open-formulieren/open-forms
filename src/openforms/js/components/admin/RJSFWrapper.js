@@ -8,8 +8,17 @@ import Field from './forms/Field';
 const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) => {
     let extraErrors = {};
 
-    // add backend validation errors in the correct format. RJSF takes nested objects,
-    // even for array types.
+    /*
+    add backend validation errors in the correct format. RJSF takes nested objects,
+    even for array types, for example:
+
+        const extraErrors = {
+            'toEmails': {
+                0: {__errors: ['error 1']},
+            },
+        };
+
+    */
     for (const [key, msg] of errors) {
         const bits = key.split('.');
         // create the nested structure. we can't use lodash, since it creates arrays for
