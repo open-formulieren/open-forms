@@ -176,7 +176,7 @@ function reducer(draft, action) {
             }
 
             // remove any validation errors
-            draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
+            draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(name));
 
             // check which tabs still need the marker and which don't
             const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
