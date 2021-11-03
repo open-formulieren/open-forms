@@ -1,6 +1,7 @@
 import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
+import groupBy from 'lodash/groupBy';
 import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -130,10 +131,11 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     canSubmit: 'form',
     registrationBackend: 'registration',
     registrationBackendOptions: 'registration',
-    product: 'product',
-    paymentBackend: 'payment',
-    paymentBackendOptions: 'payment',
+    product: 'product-payment',
+    paymentBackend: 'product-payment',
+    paymentBackendOptions: 'product-payment',
     submissionsRemovalOptions: 'submission-removal-options',
+    literals: 'literals',
 };
 
 
@@ -156,29 +158,32 @@ function reducer(draft, action) {
         case 'FIELD_CHANGED': {
             const { name, value } = action.payload;
             // names are prefixed like `form.foo` and `literals.bar`
-            const [prefix, fieldName] = name.split('.');
+            const [prefix, ...rest] = name.split('.');
+            const fieldName = rest.join('.');
 
             switch (prefix) {
                 case 'form': {
-                    draft.form[fieldName] = value;
-                    // remove any validation errors
-                    draft.validationErrors = draft.validationErrors.filter(([key]) => key !== name);
-                    if (!draft.validationErrors.length && draft.tabsWithErrors.includes('form')) {
-                        draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form');
-                    }
+                    set(draft.form, fieldName, value);
                     break;
                 }
                 case 'literals': {
                     draft.literals[fieldName].value = value;
                     break;
                 }
-                case 'submissionsRemovalOptions':
-                    draft.form.submissionsRemovalOptions[fieldName] = value;
-                    break;
                 default: {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
             }
+
+            // remove any validation errors
+            draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(name));
+
+            // check which tabs still need the marker and which don't
+            const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
+                const [prefix, fieldPrefix] = key.split('.');
+                return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
+            });
+            draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId in errorsPerTab);
             break;
         }
         case 'PLUGINS_LOADED': {
@@ -422,7 +427,13 @@ function reducer(draft, action) {
             const prefixedErrors = errors.map( err => {
                 const fieldName = err.name.split('.')[0];
                 if (!tabsWithErrors.includes(fieldName)) tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-                const key = `${fieldPrefix}.${err.name}`;
+                let key;
+                // literals are tracked separately in the state
+                if (fieldPrefix === 'form' && fieldName === 'literals') {
+                    key = err.name;
+                } else {
+                    key = `${fieldPrefix}.${err.name}`;
+                }
                 return [key, err.reason];
             });
             draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
@@ -826,14 +837,11 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
                         <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
                         <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
                     </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('product')}>
-                        <FormattedMessage defaultMessage="Product" description="Product tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('payment')}>
-                        <FormattedMessage defaultMessage="Payment" description="Payment tab title" />
+                    <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
+                        <FormattedMessage defaultMessage="Product & payment" description="Product & payments tab title" />
                     </Tab>
                     <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
                         <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
@@ -890,7 +898,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation template" description="Submission confirmation fieldset title" />}>
                         <FormRow>
                             <Field
-                                name="SubmissionConfirmationTemplate"
+                                name="form.submissionConfirmationTemplate"
                                 label={<FormattedMessage defaultMessage="Submission page content" description="Confirmation template label" />}
                                 helpText={
                                     <FormattedMessage
@@ -898,7 +906,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                         description="Confirmation template help text"
                                     />
                                 }
-                                errors={state.errors.submissionConfirmationTemplate}
+                                // errors={state.errors.submissionConfirmationTemplate}
                             >
                                 <TinyMCEEditor
                                     content={state.form.submissionConfirmationTemplate}
@@ -926,9 +934,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
-                </TabPanel>
-
-                <TabPanel>
                     <PaymentFields
                         backends={state.availablePaymentBackends}
                         selectedBackend={state.form.paymentBackend}

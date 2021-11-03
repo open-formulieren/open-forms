@@ -6,7 +6,7 @@ import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
-import Form from '@rjsf/core';
+import FormRjsfWrapper from '../RJSFWrapper';
 
 
 const PaymentFields = ({
@@ -38,22 +38,17 @@ const PaymentFields = ({
                     />
                 </Field>
             </FormRow>
-
             {
                 hasOptionsForm
                 ? (
                     <FormRow>
-                        <Field
+                        <FormRjsfWrapper
                             name="form.paymentBackendOptions"
                             label={<FormattedMessage description="Payment backend options label" defaultMessage="Payment backend options" />}
-                        >
-                            <Form
-                                schema={backend.schema}
-                                formData={backendOptions}
-                                onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
-                                children={true}
-                            />
-                        </Field>
+                            schema={backend.schema}
+                            formData={backendOptions}
+                            onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
+                        />
                     </FormRow>
                 )
                 : null

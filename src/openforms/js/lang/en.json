@@ -679,6 +679,11 @@
     "description": "Form step name label",
     "originalDefault": "Step name"
   },
+  "qUYLVg": {
+    "defaultMessage": "Product & payment",
+    "description": "Product & payments tab title",
+    "originalDefault": "Product & payment"
+  },
   "qYZ81s": {
     "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
     "description": "Errored Submissions Removal Method help text",
@@ -699,11 +704,6 @@
     "description": "\"component\" operand type",
     "originalDefault": "the field"
   },
-  "ru7KD+": {
-    "defaultMessage": "Payment",
-    "description": "Payment tab title",
-    "originalDefault": "Payment"
-  },
   "t99ynC": {
     "defaultMessage": "Component where the last name should be entered",
     "description": "Last Name Component field help text",
@@ -713,11 +713,6 @@
     "defaultMessage": "Change form",
     "description": "Change form page title",
     "originalDefault": "Change form"
-  },
-  "tsM2D7": {
-    "defaultMessage": "Product",
-    "description": "Product tab title",
-    "originalDefault": "Product"
   },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
