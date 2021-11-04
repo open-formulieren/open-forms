@@ -1,3 +1,4 @@
+{% load l10n %}
 <ZKN:zakLk01
         xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
         xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
@@ -23,12 +24,12 @@
             <ZKN:bron>Open Formulieren</ZKN:bron>
         </ZKN:kenmerk>
         {% endfor %}
-        {% if lokatie %}
+        {% if locatie %}
         <ZKN:anderZaakObject>
-               <ZKN:omschrijving>{{ lokatie.key }}</ZKN:omschrijving>
+               <ZKN:omschrijving>{{ locatie.key }}</ZKN:omschrijving>
                <ZKN:lokatie>
                     <GML:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-                        <GML:pos>{{ lokatie.lat }} {{ lokatie.lng }}</GML:pos>
+                        <GML:pos>{{ locatie.lat|unlocalize }} {{ locatie.lng|unlocalize }}</GML:pos>
                     </GML:Point>
                </ZKN:lokatie>
         </ZKN:anderZaakObject>
