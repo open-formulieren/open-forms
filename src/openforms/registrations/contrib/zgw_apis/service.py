@@ -14,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_zaak(
-    options: dict,
-    payment_required: bool = False,
-    existing_reference: str = "",
+    options: dict, payment_required: bool = False, existing_reference: str = "", **extra
 ) -> dict:
     config = ZgwConfig.get_solo()
     client = config.zrc_service.build_client()
@@ -42,6 +40,8 @@ def create_zaak(
                 "bron": "Open Formulieren",  # XXX: only 40 chars, what's supposed to go here?
             }
         ]
+
+    data.update(extra)
 
     zaak = client.create("zaak", data)
     return zaak

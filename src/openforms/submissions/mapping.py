@@ -37,6 +37,7 @@ def apply_data_mapping(
     submission: Submission,
     mapping_config: Mapping[str, Union[str, FieldConf]],
     component_attribute: str,
+    target_dict: dict = None,
 ) -> dict:
     """
     apply mapping to data and build new data structure based on mapped attributes on the formio component configuration
@@ -79,7 +80,8 @@ def apply_data_mapping(
         }
 
     """
-    target_dict = dict()
+    if target_dict is None:
+        target_dict = dict()
 
     # build a lookup, also implicitly de-duplicates assigned attributes
     attr_key_lookup = dict()
@@ -150,3 +152,10 @@ def get_unmapped_data(
             data.pop(data_key, None)
 
     return data
+
+
+def get_component(submission, registration_attribute: str, component_attribute: str):
+    for component in submission.form.iter_components(recursive=True):
+        attribute = glom(component, component_attribute, default=None)
+        if attribute == registration_attribute:
+            return component

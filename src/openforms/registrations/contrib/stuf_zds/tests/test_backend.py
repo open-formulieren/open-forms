@@ -239,6 +239,12 @@ class StufZDSPluginTests(StufTestBase):
                     },
                 },
                 {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+                {
                     "key": "extra",
                 },
             ],
@@ -249,6 +255,7 @@ class StufZDSPluginTests(StufTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
                 "extra": "BuzzBazz",
             },
         )
@@ -326,6 +333,8 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
+                "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
             },
         )
         # extraElementen

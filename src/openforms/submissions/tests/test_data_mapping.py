@@ -7,6 +7,7 @@ from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
 from openforms.submissions.mapping import (
     FieldConf,
     apply_data_mapping,
+    get_component,
     get_unmapped_data,
 )
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -118,6 +119,40 @@ class MappingTests(TestCase):
             "persoon": {
                 "voornaam": "Foo",
                 "achternaam": "Bar",
+            },
+        }
+        self.assertEqual(actual, expected)
+
+    def test_simple_target_dict(self):
+        mapping = {
+            "persoon.voornaam": "xyz_voornaam",
+            "persoon.achternaam": "xyz_achternaam",
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "voornaam", "mapping_attr": "xyz_voornaam"},
+                {"key": "achternaam", "mapping_attr": "xyz_achternaam"},
+            ],
+            submitted_data={"voornaam": "Foo", "achternaam": "Bar"},
+        )
+        # use existing dict
+        target_dict = {
+            "extra": 1,
+            "persoon": {
+                "voornaam": "Bazz",
+                "bijnaam": "Buzz",
+            },
+        }
+        actual = apply_data_mapping(
+            submission, mapping, "mapping_attr", target_dict=target_dict
+        )
+        # submission should be glommed into the target
+        expected = {
+            "extra": 1,
+            "persoon": {
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "bijnaam": "Buzz",
             },
         }
         self.assertEqual(actual, expected)
@@ -238,5 +273,33 @@ class MappingTests(TestCase):
         actual = get_unmapped_data(submission, mapping, "mapping_attr")
         expected = {
             "bijnaam": "Bar",
+        }
+        self.assertEqual(actual, expected)
+
+    def test_get_component(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "label": "Voornaam",
+                    "type": "text",
+                    "mapping_attr": "xyz_voornaam",
+                },
+                {
+                    "key": "achternaam",
+                    "label": "Achternaam",
+                    "type": "text",
+                    "mapping_attr": "xyz_achternaam",
+                },
+            ],
+            submitted_data={"voornaam": "Foo", "achternaam": "Bar"},
+        )
+
+        actual = get_component(submission, "xyz_achternaam", "mapping_attr")
+        expected = {
+            "key": "achternaam",
+            "label": "Achternaam",
+            "type": "text",
+            "mapping_attr": "xyz_achternaam",
         }
         self.assertEqual(actual, expected)
