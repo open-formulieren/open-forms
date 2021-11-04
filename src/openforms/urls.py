@@ -88,7 +88,7 @@ if settings.DEBUG:
         path(
             "dev/email/confirmation/<int:submission_id>",
             EmailWrapperTestView.as_view(),
-            name="dev-email-wrapper",
+            name="dev-email-confirm",
         ),
     ]
 
