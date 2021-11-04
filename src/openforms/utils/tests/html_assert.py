@@ -1,4 +1,8 @@
 import re
+from io import StringIO
+
+from lxml import etree
+from lxml.etree import XMLSyntaxError
 
 
 class HTMLAssertMixin:
@@ -15,3 +19,13 @@ class HTMLAssertMixin:
         """
         if re.search(f"<{tag}(?: [^>]*)?>\s*{text}", document_str):
             self.fail(f"unexpectedly found <{tag}..>{text} in: {document_str}")
+
+    def assertHTMLValid(self, html_text):
+        """
+        check basic HTML syntax validity
+        """
+        parser = etree.HTMLParser(recover=False)
+        try:
+            etree.parse(StringIO(html_text), parser)
+        except XMLSyntaxError as e:
+            self.fail(f"invalid html: {e}")

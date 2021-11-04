@@ -39,3 +39,11 @@ class HTMLAssertMixinTest(HTMLAssertMixin, SimpleTestCase):
             AssertionError, r"^unexpectedly found <td..>aaa in: "
         ):
             self.assertNotTagWithTextIn("td", "aaa", html)
+
+    def test_assertHTMLValid(self):
+        self.assertHTMLValid("<p></p>")
+
+        with self.assertRaisesRegex(
+            AssertionError, r"^invalid html: Unexpected end tag : p"
+        ):
+            self.assertHTMLValid("</p>")

@@ -86,6 +86,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         # Check that the template is used
         message_html = message.alternatives[0][0]
+        self.assertHTMLValid(message_html)
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message.body)
 
