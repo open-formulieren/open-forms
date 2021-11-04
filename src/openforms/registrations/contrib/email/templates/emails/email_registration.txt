@@ -1,5 +1,5 @@
-{% load i18n %}{% blocktrans trimmed %}
+{% load i18n %}{% autoescape off %}{% blocktrans trimmed %}
     Submission details for {{form_name}} (submitted on {{datetime}})
 {% endblocktrans %}
 {% for key, value in submitted_data.items %}
-- {{ key|safe }}: {% display_value value %}{% endfor %}
+- {{ key }}: {% display_value value %}{% endfor %}{% endautoescape %}
