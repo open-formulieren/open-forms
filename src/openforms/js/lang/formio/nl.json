@@ -180,5 +180,7 @@
   "Text Field": "Tekst",
   "required": "Dit veld is verplicht.",
   "Dropdown with search": "Dropdown met zoekfunctie",
-  "Native browser dropdown": "Native browser dropdown"
+  "Native browser dropdown": "Native browser dropdown",
+  "Multiple values": "Meerdere waarden",
+  "Are there multiple values possible for this field?": "Zijn er voor dit veld meerdere waarden mogelijk?"
 }
