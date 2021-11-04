@@ -218,8 +218,9 @@ class BasePlugin:
 
     def get_appointment_details_markup(self, identifier: str, as_text=False) -> str:
         """
-        Returns an HTML version of the appointment details that can be used in
-        a mail or webpage.
+        Render the the appointment details as a template to include in e-mails or webpages.
+
+        Either renders an HTML or text version, based on :arg:`as_text`.
         """
         details = self.get_appointment_details(identifier)
 

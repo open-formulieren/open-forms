@@ -11,7 +11,7 @@ from django.utils.html import strip_tags as django_strip_tags
 
 from openforms.config.models import GlobalConfiguration
 
-from ..utils.email import send_mail_plus
+from openforms.utils.email import send_mail_plus
 from .constants import URL_REGEX
 from .context import get_wrapper_context
 

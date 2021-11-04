@@ -12,7 +12,7 @@ def get_wrapper_context(html_content=""):
     ctx = {
         "content": mark_safe(html_content),
         "main_website_url": config.main_website,
-        "style": _get_design_token_values(design_token),
+        "style": _get_design_token_values(design_tokens),
     }
     if config.logo:
         ctx["logo_url"] = build_absolute_uri(config.logo.url)
@@ -20,7 +20,7 @@ def get_wrapper_context(html_content=""):
     return ctx
 
 
-def _get_design_token_values(token):
+def _get_design_token_values(tokens):
     """
     convert and apply defaults for use in template
     """

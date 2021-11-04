@@ -1,6 +1,6 @@
 {% load static %}
 <html>
-<body style="font-family: Verdana, Arial, sans-serif; font-size: 12px; border: none; margin: 0; padding: 0; background-color: {{ style.layout.background }};">
+<body style="font-family: Verdana, Arial, sans-serif; font-size: 12px; border: none; margin: 0; padding: 0; background: {{ style.layout.background }};">
 
 <table style="font-family: Verdana, Arial, sans-serif; font-size: 12px; width: 100%; border: none; margin: 0; padding: 0; background-color: #e6e6e6; border-collapse: collapse;" cellpadding="0" cellspacing="0">
     <tr>
@@ -16,7 +16,7 @@
                 </tr>
                 <tr>
                     <td align="left" style="padding:30px 30px 60px 30px;">
-                        {{ content|safe }}
+                        {{ content }}
                     </td>
                 </tr>
                 <tr>
@@ -25,7 +25,7 @@
                             Dit bericht kan informatie bevatten die niet voor u is bestemd. Indien u niet de
                             geadresseerde bent of dit bericht abusievelijk aan u is toegezonden, wordt u
                             verzocht dat aan de afzender te melden en het bericht te verwijderen.
-                            Wij aanvaarded geen aansprakelijkheid voor schade, van welke aard ook, die
+                            Wij aanvaarden geen aansprakelijkheid voor schade, van welke aard ook, die
                             verband houdt met risico's verbonden aan het elektronisch verzenden van
                             berichten.
                         </p>
