@@ -10,8 +10,8 @@ from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
 from openforms.config.models import GlobalConfiguration
-
 from openforms.utils.email import send_mail_plus
+
 from .constants import URL_REGEX
 from .context import get_wrapper_context
 
@@ -105,8 +105,12 @@ NEWLINE_CHARS = (
 )
 
 
-def strip_tags_plus(text):
-    # copied and modified from https://bitbucket.org/maykinmedia/werkbezoek/src/develop/src/werkbezoek/utils/email.py
+def strip_tags_plus(text: str) -> str:
+    """
+    NOTE this renders unescaped user-data and should never used for display as HTML content
+
+    copied and modified from https://bitbucket.org/maykinmedia/werkbezoek/src/develop/src/werkbezoek/utils/email.py
+    """
     text = unwrap_anchors(text)
     text = django_strip_tags(text)
     lines = text.splitlines()
@@ -116,7 +120,7 @@ def strip_tags_plus(text):
     return "".join(deduplicated_newlines)
 
 
-def transform_lines(lines):
+def transform_lines(lines: List[str]) -> List[str]:
     transformed_lines = []
 
     for line in lines:
@@ -128,7 +132,7 @@ def transform_lines(lines):
     return transformed_lines
 
 
-def deduplicate_newlines(lines):
+def deduplicate_newlines(lines: List[str]) -> List[str]:
     deduplicated_newlines = []
 
     for line in lines:
@@ -146,7 +150,7 @@ def deduplicate_newlines(lines):
     return deduplicated_newlines
 
 
-def unwrap_anchors(html_str):
+def unwrap_anchors(html_str: str) -> str:
     """
     ugly util to append the href inside the anchor text so we can use strip-tags
     """

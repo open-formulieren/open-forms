@@ -12,7 +12,7 @@ def get_wrapper_context(html_content=""):
     ctx = {
         "content": mark_safe(html_content),
         "main_website_url": config.main_website,
-        "style": _get_design_token_values(design_tokens),
+        "style": _get_design_token_values(design_token),
     }
     if config.logo:
         ctx["logo_url"] = build_absolute_uri(config.logo.url)
@@ -26,20 +26,20 @@ def _get_design_token_values(tokens):
     """
     return {
         "header": {
-            "color": glom(token, "page-header.color.value", default="black"),
+            "color": glom(tokens, "page-header.color.value", default="black"),
             "background": glom(
-                token, "page-header.background.value", default="#2980b9"
+                tokens, "page-header.background.value", default="#2980b9"
             ),
         },
         "logo": {
-            "height": glom(token, "logo-header.height.value", default="auto"),
-            "width": glom(token, "logo-header.width.value", default="auto"),
+            "height": glom(tokens, "logo-header.height.value", default="auto"),
+            "width": glom(tokens, "logo-header.width.value", default="auto"),
         },
         "footer": {
-            "color": glom(token, "footer.color.value", default="black"),
-            "background": glom(token, "footer.background.value", default="#2980b9"),
+            "color": glom(tokens, "footer.color.value", default="black"),
+            "background": glom(tokens, "footer.background.value", default="#2980b9"),
         },
         "layout": {
-            "background": glom(token, "layout.background.value", default="#e6e6e6")
+            "background": glom(tokens, "layout.background.value", default="#e6e6e6")
         },
     }
