@@ -33,6 +33,12 @@ const BASIC = {
         },
         {
             type: 'checkbox',
+            key: 'multiple',
+            label: 'Multiple values',
+            tooltip: 'Are there multiple values possible for this field?'
+        },
+        {
+            type: 'checkbox',
             key: 'hidden',
             label: 'Hidden',
             tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
