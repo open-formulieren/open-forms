@@ -861,12 +861,16 @@ EHERKENNING_SERVICE_DESCRIPTION_EN = config("EHERKENNING_SERVICE_DESCRIPTION_EN"
 EHERKENNING_ORGANISATION_NAME_NL = config("EHERKENNING_ORGANISATION_NAME_NL", "")
 EHERKENNING_ORGANISATION_NAME_EN = config("EHERKENNING_ORGANISATION_NAME_EN", "")
 EHERKENNING_SERVICE_INDEX = config("EHERKENNING_SERVICE_INDEX", "1")
+EHERKENNING_SERVICE_UUID = config("EHERKENNING_SERVICE_UUID", "")
+EHERKENNING_SERVICE_INSTANCE_UUID = config("EHERKENNING_SERVICE_INSTANCE_UUID", "")
 
 EIDAS_SERVICE_NAME_NL = config("EIDAS_SERVICE_NAME_NL", "")
 EIDAS_SERVICE_NAME_EN = config("EIDAS_SERVICE_NAME_EN", "")
 EIDAS_SERVICE_DESCRIPTION_NL = config("EIDAS_SERVICE_DESCRIPTION_NL", "")
 EIDAS_SERVICE_DESCRIPTION_EN = config("EIDAS_SERVICE_DESCRIPTION_EN", "")
 EIDAS_SERVICE_INDEX = config("EIDAS_SERVICE_INDEX", "2")
+EIDAS_SERVICE_UUID = config("EIDAS_SERVICE_UUID", "")
+EIDAS_SERVICE_INSTANCE_UUID = config("EIDAS_SERVICE_INSTANCE_UUID", "")
 
 EHERKENNING = {
     "metadata_file": EHERKENNING_METADATA,
@@ -884,7 +888,7 @@ EHERKENNING = {
         {
             "attribute_consuming_service_index": EHERKENNING_SERVICE_INDEX,
             "service_loa": EHERKENNING_LOA,
-            "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
+            "service_uuid": EHERKENNING_SERVICE_UUID,
             "service_name": {
                 "nl": EHERKENNING_SERVICE_NAME_NL,
                 "en": EHERKENNING_SERVICE_NAME_EN,
@@ -893,7 +897,7 @@ EHERKENNING = {
                 "nl": EHERKENNING_SERVICE_DESCRIPTION_NL,
                 "en": EHERKENNING_SERVICE_DESCRIPTION_EN,
             },
-            "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
+            "service_instance_uuid": EHERKENNING_SERVICE_INSTANCE_UUID,
             "service_url": BASE_URL,
             # Either require and return RSIN and KVKNr (set 1) or require only KvKnr (set 2). The
             # latter is needed for 'eenmanszaak'
@@ -913,7 +917,7 @@ EHERKENNING = {
         {
             "attribute_consuming_service_index": EIDAS_SERVICE_INDEX,
             "service_loa": EHERKENNING_LOA,
-            "service_uuid": "47633add-0a38-46d3-8b49-9f6514bf3679",
+            "service_uuid": EIDAS_SERVICE_UUID,
             "service_name": {
                 "nl": EIDAS_SERVICE_NAME_NL,
                 "en": EIDAS_SERVICE_NAME_EN,
@@ -922,7 +926,7 @@ EHERKENNING = {
                 "nl": EIDAS_SERVICE_DESCRIPTION_NL,
                 "en": EIDAS_SERVICE_DESCRIPTION_EN,
             },
-            "service_instance_uuid": "e1b14970-53c1-4695-bb51-e4a98f31a0ef",
+            "service_instance_uuid": EIDAS_SERVICE_INSTANCE_UUID,
             "service_url": BASE_URL,
             "entity_concerned_types_allowed": [
                 {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
