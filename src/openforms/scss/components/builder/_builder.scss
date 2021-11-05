@@ -40,7 +40,8 @@ li.nav-item {
 }
 
 .formio-dialog,
-.ck-body .ck.ck-balloon-panel
+.ck-body .ck.ck-balloon-panel,
+div.flatpickr-calendar.open
 {
   z-index: 10000000;
 }
