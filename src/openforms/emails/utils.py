@@ -6,6 +6,7 @@ from typing import Any, List, Optional, Sequence, Tuple
 from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
@@ -18,6 +19,8 @@ from .constants import URL_REGEX
 from .context import get_wrapper_context
 
 logger = logging.getLogger(__name__)
+
+MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
 
 
 def sanitize_urls(allowlist: List[str], match) -> str:
@@ -158,6 +161,8 @@ def unwrap_anchors(html_str: str) -> str:
 
     note this runs on un-trusted HTML content
     """
+    if len(html_str) > MESSAGE_SIZE_LIMIT:
+        raise SuspiciousOperation("email content-length exceeded safety limit")
 
     root = fromstring(html_str)
 

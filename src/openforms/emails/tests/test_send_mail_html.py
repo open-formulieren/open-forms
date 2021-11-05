@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core import mail
+from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 
 from openforms.config.models import GlobalConfiguration
@@ -89,3 +90,15 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertNotIn("google.com", message_html)
         self.assertNotIn("allowed.com", message_html)
         self.assertIn(settings.BASE_URL, message_html)
+
+    def test_oversize_content_raise_suspiciosu_operation(self):
+        body = "<p>My Message</p>" + ("123" * 1024 * 1024)
+        with self.assertRaisesMessage(
+            SuspiciousOperation, "email content-length exceeded safety limit"
+        ):
+            send_mail_html(
+                "My Subject",
+                body,
+                "foo@sender.com",
+                ["foo@bar.baz"],
+            )
