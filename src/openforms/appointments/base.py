@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -231,7 +231,7 @@ class BasePlugin:
 
         return render_to_string(template_name, {"appointment": details})
 
-    def get_appointment_links(self, submission: Submission) -> List[Dict[str, str]]:
+    def get_appointment_links(self, submission: Submission) -> List[Tuple[str, str]]:
 
         token = submission_appointment_token_generator.make_token(submission)
 
@@ -244,4 +244,4 @@ class BasePlugin:
         )
         cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
-        return [(_("Cancel Appointment"), cancel_url)]
+        return [(_("cancel appointment"), cancel_url)]

@@ -3,7 +3,7 @@
     <h1>{% trans "Appointment information" %}</h1>
     <p>
     {% for label, url in appointment_links %}
-        {{ label }}: {{ url|urlize }}<br>
+        {{ label|capfirst }}: {{ url|urlize }}<br>
     {% endfor %}
     </p>
 {% endif %}

@@ -1,2 +1,2 @@
 {% load i18n %}{% autoescape off %}{% if appointment_links %}{% for label, url in appointment_links %}
-{{ label }}: {{ url }}{% endfor %}{% endif %}{% endautoescape %}
+{{ label|capfirst }}: {{ url }}{% endfor %}{% endif %}{% endautoescape %}
