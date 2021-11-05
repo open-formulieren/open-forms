@@ -7,7 +7,7 @@ from django.contrib.sessions.backends.base import SessionBase
 
 from openforms.logging import logevent
 
-from ..emails.utils import send_mail_html, strip_tags_plus
+from openforms.emails.utils import send_mail_html, strip_tags_plus
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 

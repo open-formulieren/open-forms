@@ -9,6 +9,8 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
+from lxml.html import fromstring, tostring
+
 from openforms.config.models import GlobalConfiguration
 from openforms.utils.email import send_mail_plus
 
@@ -153,12 +155,13 @@ def deduplicate_newlines(lines: List[str]) -> List[str]:
 def unwrap_anchors(html_str: str) -> str:
     """
     ugly util to append the href inside the anchor text so we can use strip-tags
+
+    note this runs on un-trusted HTML content
     """
-    from lxml.html import fromstring, tostring
 
     root = fromstring(html_str)
 
-    for link in root.xpath("//a"):
+    for link in root.iterfind(".//a"):
         url = link.attrib.get("href", None)
         if not url:
             continue
