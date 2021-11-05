@@ -178,5 +178,7 @@
   "Columns": "Kolommen",
   "Field Set": "Veldengroep",
   "Text Field": "Tekst",
-  "required": "Dit veld is verplicht."
+  "required": "Dit veld is verplicht.",
+  "Dropdown with search": "Dropdown met zoekfunctie",
+  "Native browser dropdown": "Native browser dropdown"
 }
