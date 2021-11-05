@@ -220,7 +220,7 @@ class BasePlugin:
         """
         Render the the appointment details as a template to include in e-mails or webpages.
 
-        Either renders an HTML or text version, based on :arg:`as_text`.
+        Either renders an HTML or text version.
         """
         details = self.get_appointment_details(identifier)
 

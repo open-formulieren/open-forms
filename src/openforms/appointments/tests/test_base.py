@@ -84,4 +84,4 @@ class BasePluginTests(TestCase):
             },
         )
         cancel_url = f"https://example.com{cancel_path}"
-        self.assertEqual([(_("Cancel Appointment"), cancel_url)], result)
+        self.assertEqual([(_("cancel appointment"), cancel_url)], result)

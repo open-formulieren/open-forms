@@ -478,7 +478,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             - Some: Data
 
-            {_("Cancel Appointment")}: #URL#
+            {_("cancel appointment").capitalize()}: #URL#
 
             {pay_line}
 
