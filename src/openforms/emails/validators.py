@@ -23,9 +23,17 @@ class DjangoTemplateValidator:
         # since we already checked valid syntax we'll keep it simple and use string search
         #   instead of looking through the parsed structure
         for tag_name in self.required_template_tags:
-            # note: the double {{ and }} are escapes for the formatting
-            exp = "{{% *{} *%}}".format(tag_name)
-            if not re.search(exp, value):
+            # note: the double {{ and }} are escapes for the format()
+            variants = [
+                "{{% {t} %}}".format(t=tag_name),
+                "{{% {t}%}}".format(t=tag_name),
+                "{{%{t} %}}".format(t=tag_name),
+                "{{%{t}%}}".format(t=tag_name),
+            ]
+            for tag in variants:
+                if tag in value:
+                    break
+            else:
                 tag_str = "{{% {} %}}".format(tag_name)
                 raise ValidationError(
                     _("Missing required template-tag {tag}").format(tag=tag_str),

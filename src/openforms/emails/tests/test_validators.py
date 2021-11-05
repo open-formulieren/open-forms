@@ -38,6 +38,8 @@ class DjangoTemplateValidatorTest(TestCase):
 
         valid = [
             "{% csrf_token %}",
+            "{%csrf_token %}",
+            "{% csrf_token%}",
             "{%csrf_token%}",
             "{% load i18n %} aa {% csrf_token %} {{ aa.bb.cc }}",
         ]
