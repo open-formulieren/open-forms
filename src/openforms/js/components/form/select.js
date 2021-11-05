@@ -12,11 +12,11 @@ const values = [
             values: [
                 {
                     value: 'choicesjs',
-                    label: 'ChoicesJS'
+                    label: 'Dropdown with search'
                 },
                 {
                     value: 'html5',
-                    label: 'HTML 5'
+                    label: 'Native browser dropdown'
                 }
             ]
         },
