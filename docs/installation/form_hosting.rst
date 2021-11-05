@@ -32,7 +32,7 @@ Run-time configuration
 ----------------------
 
 Via **Admin** > **Configuratie** > **Algemene configuratie**, section
-**Organization configuration**, you can configure the look and feel.
+**Organization configuration**, you can configure the look and feel of the forms and html-email.
 
 **Logo**
 
@@ -84,8 +84,19 @@ The configuration in the admin requires this to be provided as JSON, for example
 
     {
         "page-header": {
+            "color": {
+                "value": "#000"
+            },
             "background": {
-                "value": "#ffffff"
+                "value": "#2980b9"
+            }
+        },
+        "footer": {
+            "color": {
+                "value": "#000"
+            },
+            "background": {
+                "value": "#2980b9"
             }
         },
         "logo-header": {
@@ -96,9 +107,14 @@ The configuration in the admin requires this to be provided as JSON, for example
                 "value": "75px"
             }
         },
+        "layout": {
+            "background": {
+                "value": "#e6e6e6"
+            }
+        },
         "color": {
             "link": {
-                "value": "#c00"
+                "value": "#000"
             },
             "link-hover": {
                 "value": "fuchsia"

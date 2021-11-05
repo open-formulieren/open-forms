@@ -1,0 +1,7 @@
+{%  load i18n %}{% autoescape off %}{% if payment_required %}{% if payment_user_has_paid %}{% blocktrans trimmed %}
+Payment of €{{ payment_price }} received.{% endblocktrans %}
+{% else %}{% blocktrans trimmed %}
+    Payment of € {{ payment_price }} is required.
+{% endblocktrans %}
+
+{% trans "Open payment page" %}: {{ payment_url }}{% endif %}{% endif %}{% endautoescape %}

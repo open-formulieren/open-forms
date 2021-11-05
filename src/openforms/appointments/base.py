@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -216,18 +216,22 @@ class BasePlugin:
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_appointment_details_html(self, identifier: str) -> str:
+    def get_appointment_details_markup(self, identifier: str, as_text=False) -> str:
         """
-        Returns an HTML version of the appointment details that can be used in
-        a mail or webpage.
+        Render the the appointment details as a template to include in e-mails or webpages.
+
+        Either renders an HTML or text version.
         """
         details = self.get_appointment_details(identifier)
 
-        return render_to_string(
-            "appointments/appointment_details.html", {"appointment": details}
-        )
+        if as_text:
+            template_name = "appointments/appointment_details.txt"
+        else:
+            template_name = "appointments/appointment_details.html"
 
-    def get_appointment_links(self, submission: Submission) -> Dict[str, str]:
+        return render_to_string(template_name, {"appointment": details})
+
+    def get_appointment_links(self, submission: Submission) -> List[Tuple[str, str]]:
 
         token = submission_appointment_token_generator.make_token(submission)
 
@@ -240,4 +244,4 @@ class BasePlugin:
         )
         cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
-        return {"cancel_url": cancel_url}
+        return [(_("cancel appointment"), cancel_url)]

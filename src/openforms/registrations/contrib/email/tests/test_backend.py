@@ -22,6 +22,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat
@@ -29,7 +30,7 @@ from ..plugin import EmailRegistration
 
 
 @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-class EmailBackendTests(TestCase):
+class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(
@@ -69,6 +70,9 @@ class EmailBackendTests(TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
+        # Verify we've generated a public_registration_reference
+        self.assertNotEqual(submission.public_registration_reference, "")
+
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
@@ -81,15 +85,29 @@ class EmailBackendTests(TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
+        message_html = message.alternatives[0][0]
+        self.assertHTMLValid(message_html)
+        self.assertIn("<table", message_html)
+        self.assertNotIn("<table", message.body)
+
         self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
+            _("Submission details for %(form_name)s (submitted on %(datetime)s)")
+            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
+            message_html,
+        )
+        self.assertIn(
+            _("Submission details for %(form_name)s (submitted on %(datetime)s)")
+            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
             message.body,
         )
+
         self.assertIn("foo: bar", message.body)
         self.assertIn("some_list: value1, value2", message.body)
+
+        self.assertTagWithTextIn("td", "foo", message_html)
+        self.assertTagWithTextIn("td", "bar", message_html)
+        self.assertTagWithTextIn("td", "some_list", message_html)
+        self.assertTagWithTextIn("td", "value1, value2", message_html)
 
         self.assertEqual(len(message.attachments), 2)
         file1, file2 = message.attachments
@@ -102,6 +120,10 @@ class EmailBackendTests(TestCase):
         self.assertEqual(file2[2], "text/bar")
 
     def test_submission_with_email_backend_strip_out_urls(self):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = []
+        config.save()
+
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
@@ -124,29 +146,14 @@ class EmailBackendTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(
-            message.subject,
-            _("[Open Forms] {form_name} - submission {public_reference}").format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
-        )
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+        message_html = message.alternatives[0][0]
 
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
-            message.body,
-        )
         self.assertNotIn("https://someurl.com", message.body)
+        self.assertNotIn("https://someurl.com", message_html)
 
     def test_submission_with_email_backend_keep_allowed_urls(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["https://allowed.com"]
+        config.email_template_netloc_allowlist = ["allowed.com"]
         config.save()
 
         email_form_options = dict(
@@ -167,32 +174,14 @@ class EmailBackendTests(TestCase):
         email_submission = EmailRegistration("email")
         email_submission.register_submission(submission, email_form_options)
 
-        # Verify we've generated a public_registration_reference
-        self.assertNotEqual(submission.public_registration_reference, "")
-
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(
-            message.subject,
-            _("[Open Forms] {form_name} - submission {public_reference}").format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
-        )
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+        message_html = message.alternatives[0][0]
 
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
-            message.body,
-        )
-        self.assertNotIn("https://allowed.com", message.body)
+        self.assertIn("https://allowed.com", message.body)
+        self.assertIn("https://allowed.com", message_html)
 
     @freeze_time("2021-01-01 10:00")
     def test_register_and_update_paid_product(self):
@@ -272,26 +261,6 @@ class EmailBackendTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(
-            message.subject,
-            _("[Open Forms] {form_name} - submission {public_reference}").format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
-        )
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
-
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
-            message.body,
-        )
-        self.assertIn("foo: bar", message.body)
-        self.assertIn("some_list: value1, value2", message.body)
 
         # Two upload attachments and two export attachments
         self.assertEqual(len(message.attachments), 4)
@@ -357,26 +326,6 @@ class EmailBackendTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(
-            message.subject,
-            _("[Open Forms] {form_name} - submission {public_reference}").format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
-        )
-        self.assertEqual(message.from_email, "info@open-forms.nl")
-        self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
-
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
-        self.assertIn(
-            _("Submission details for {form_name} (submitted on {datetime})").format(
-                form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"
-            ),
-            message.body,
-        )
-        self.assertIn("foo: bar", message.body)
-        self.assertIn("some_list: value1, value2", message.body)
 
         # Two upload attachments and one export attachment
         self.assertEqual(len(message.attachments), 3)

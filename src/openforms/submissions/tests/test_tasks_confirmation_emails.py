@@ -9,13 +9,14 @@ from privates.test import temp_private_root
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
+from ...utils.tests.html_assert import HTMLAssertMixin
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 @temp_private_root()
-class ConfirmationEmailTests(TestCase):
+class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_task_without_mail_template(self):
         submission = SubmissionFactory.create()
         assert (
@@ -82,9 +83,14 @@ class ConfirmationEmailTests(TestCase):
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["test@test.nl"])
 
-        # Check that the template is used
-        self.assertIn('<table border="0">', message.body)
         self.assertIn("Information filled in: bar", message.body)
+        self.assertNotIn("<table", message.body)
+
+        # Check that the HTML template is used
+        html_message, mime_type = message.alternatives[0]
+        self.assertEqual(mime_type, "text/html")
+        self.assertIn("<table", html_message)
+        self.assertIn("Information filled in: bar", html_message)
 
         # Check status is updated
         submission.refresh_from_db()
@@ -133,7 +139,7 @@ class ConfirmationEmailTests(TestCase):
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
             subject="Confirmation mail",
-            content="Information filled in: {{ foo }}, {{ bar }} and {{ hello }}. Submission summary: {% summary %}",
+            content="Information filled in: {{ foo }} and {{ bar }}. Submission summary: {% summary %}",
         )
 
         # "execute" the celery task
@@ -143,15 +149,27 @@ class ConfirmationEmailTests(TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertIn(
-            "Information filled in: foovalue, barvalue and hellovalue.", message.body
-        )
-        self.assertIn("<th>Bar</th>", message.body)
-        self.assertIn("<th>barvalue</th>", message.body)
-        self.assertIn("<th>Foo</th>", message.body)
-        self.assertIn("<th>foovalue</th>", message.body)
-        self.assertNotIn("<th>Hello</th>", message.body)
-        self.assertNotIn("<th>hellovalue</th>", message.body)
+        self.assertIn("Information filled in: foovalue and barvalue.", message.body)
+        self.assertIn("Bar", message.body)
+        self.assertIn("barvalue", message.body)
+        self.assertIn("Foo", message.body)
+        self.assertIn("foovalue", message.body)
+
+        self.assertNotIn("Hello", message.body)
+        self.assertNotIn("hellovalue", message.body)
+
+        # Check that the HTML template is used
+        html_message, mime_type = message.alternatives[0]
+        self.assertEqual(mime_type, "text/html")
+        self.assertIn("<table", html_message)
+        self.assertIn("Information filled in: foovalue and barvalue.", html_message)
+        self.assertTagWithTextIn("td", "Bar", html_message)
+        self.assertTagWithTextIn("td", "barvalue", html_message)
+        self.assertTagWithTextIn("td", "Foo", html_message)
+        self.assertTagWithTextIn("td", "foovalue", html_message)
+
+        self.assertNotTagWithTextIn("td", "Hello", html_message)
+        self.assertNotTagWithTextIn("td", "hellovalue", html_message)
 
     def test_complete_submission_send_confirmation_email_to_many_recipients(self):
         submission = SubmissionFactory.from_components(

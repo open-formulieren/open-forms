@@ -1,10 +1,11 @@
+import html
 import logging
 from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
-from django.core.mail import send_mail
 
+from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
@@ -83,15 +84,20 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    content = email_template.render(submission)
+    html_content = email_template.render(submission)
+    text_content = email_template.render(submission, {"rendering_text": True})
 
-    send_mail(
+    # post process since the mail template has html markup and django escaped entities
+    text_content = strip_tags_plus(text_content)
+    text_content = html.unescape(text_content)
+
+    send_mail_html(
         email_template.subject,
-        content,
+        html_content,
         settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
         to_emails,
         fail_silently=False,
-        html_message=content,
+        text_message=text_content,
     )
 
     submission.confirmation_email_sent = True

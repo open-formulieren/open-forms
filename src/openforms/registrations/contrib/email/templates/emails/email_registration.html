@@ -1,6 +1,7 @@
 {% load i18n %}
-{% if submitted_data %}
-    <p><b>{% trans "Summary" %}</b></p>
+<p>{% blocktrans trimmed %}
+    Submission details for {{form_name}} (submitted on {{datetime}})
+{% endblocktrans %}</p>
 <table>
     <tr>
         <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
@@ -13,4 +14,3 @@
         </tr>
     {% endfor %}
 </table>
-{% endif %}
