@@ -131,6 +131,14 @@ if config("PROFILE", default=False):
     security_index = MIDDLEWARE.index("django.middleware.security.SecurityMiddleware")
     MIDDLEWARE.insert(security_index + 1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
+#
+# Disable CSP rate limit
+#
+DISABLE_CSP_RATELIMITING = config("DISABLE_CSP_RATELIMITING", default=False)
+if DISABLE_CSP_RATELIMITING:
+    MIDDLEWARE.remove("csp.contrib.rate_limiting.RateLimitedCSPMiddleware")
+
+
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
     "error",
