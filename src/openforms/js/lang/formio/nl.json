@@ -182,5 +182,6 @@
   "Dropdown with search": "Dropdown met zoekfunctie",
   "Native browser dropdown": "Native browser dropdown",
   "Multiple values": "Meerdere waarden",
-  "Are there multiple values possible for this field?": "Zijn er voor dit veld meerdere waarden mogelijk?"
+  "Are there multiple values possible for this field?": "Zijn er voor dit veld meerdere waarden mogelijk?",
+  "Search field(s)": "Zoek veld(en)"
 }
