@@ -9,10 +9,11 @@ from django.test import TestCase, TransactionTestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.utils.tests.html_assert import HTMLAssertMixin
 
-from ...utils.tests.html_assert import HTMLAssertMixin
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -278,6 +279,34 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             form__payment_backend="test",
         )
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
+
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            # "execute" the celery task
+            send_confirmation_email(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_completed_submission_after_timeout_with_send_global_configuration_email(
+        self,
+    ):
+        config = GlobalConfiguration.get_solo()
+        config.confirmation_email_subject = "The Subject"
+        config.confirmation_email_content = "The Content"
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             # "execute" the celery task
