@@ -601,7 +601,7 @@ class FormsAPITests(APITestCase):
             "slug": "test-post-form",
             "confirmation_email_template": {
                 "subject": "The subject",
-                "content": "The content",
+                "content": "The content: {% appointment_information %} {% payment_information %}",
             },
         }
         response = self.client.post(url, data=data)
@@ -612,7 +612,10 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
         self.assertEqual(form.confirmation_email_template.subject, "The subject")
-        self.assertEqual(form.confirmation_email_template.content, "The content")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "The content: {% appointment_information %} {% payment_information %}",
+        )
 
     def test_creating_a_confirmation_email_template_for_an_existing_form(self):
         form = FormFactory.create()
@@ -623,7 +626,7 @@ class FormsAPITests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "The subject",
-                "content": "The content",
+                "content": "The content {% appointment_information %} {% payment_information %}",
             }
         }
         response = self.client.patch(url, data=data)
@@ -631,7 +634,10 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertEqual(form.confirmation_email_template.subject, "The subject")
-        self.assertEqual(form.confirmation_email_template.content, "The content")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "The content {% appointment_information %} {% payment_information %}",
+        )
 
     def test_updating_a_confirmation_email_template(self):
         form = FormFactory.create()
@@ -647,7 +653,7 @@ class FormsAPITests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "Updated subject",
-                "content": "Updated content",
+                "content": "Updated content: {% appointment_information %} {% payment_information %}",
             }
         }
         response = self.client.patch(url, data=data)
@@ -655,7 +661,10 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertEqual(form.confirmation_email_template.subject, "Updated subject")
-        self.assertEqual(form.confirmation_email_template.content, "Updated content")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "Updated content: {% appointment_information %} {% payment_information %}",
+        )
 
     def test_getting_a_form_with_a_confirmation_email_template(self):
         form = FormFactory.create()

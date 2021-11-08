@@ -9,3 +9,11 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "emails.ConfirmationEmailTemplate"
+
+    @classmethod
+    def create(cls, **kwargs):
+        if "form" in kwargs:
+            # Update the form to ensure this email is sent
+            kwargs["form"].send_custom_confirmation_email = True
+            kwargs["form"].save(update_fields=["send_custom_confirmation_email"])
+        return super().create(**kwargs)

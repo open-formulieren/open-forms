@@ -44,5 +44,7 @@ class ConfirmationEmailTemplate(models.Model):
     def __str__(self):
         return f"Confirmation email template - {self.form}"
 
-    def render(self, submission: Submission):
-        return render_confirmation_email(submission, self.content)
+    def render(self, submission: Submission, extra_context=None):
+        return render_confirmation_email(
+            submission, self.content, extra_context=extra_context
+        )

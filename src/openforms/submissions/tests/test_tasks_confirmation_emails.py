@@ -193,6 +193,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"single1": "single1@test.nl", "single2": "single2@test.nl"},
         )
+        submission.form.send_custom_confirmation_email = True
+        submission.form.save()
         # second step
         SubmissionStepFactory.create(
             submission=submission,
