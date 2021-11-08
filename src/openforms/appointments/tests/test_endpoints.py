@@ -39,7 +39,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         expected_redirect_url = (
-            furl("http://maykinmedia.nl/myform#afspraak-annuleren")
+            furl("http://maykinmedia.nl/myform/afspraak-annuleren")
             .add(
                 {
                     "time": "2021-07-21T12:00:00+00:00",

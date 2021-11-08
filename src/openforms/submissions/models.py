@@ -135,7 +135,7 @@ class Submission(models.Model):
         validators=(validate_kvk,),
     )
     form_url = models.URLField(
-        _("Form URL"),
+        _("form URL"),
         max_length=255,
         blank=False,
         default="",
