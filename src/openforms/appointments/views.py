@@ -34,7 +34,7 @@ class VerifyCancelAppointmentLinkView(RedirectView):
         add_submmission_to_session(submission, self.request.session)
 
         f = furl(submission.form_url)
-        f.fragment.path.segments = ["afspraak-annuleren"]
+        f /= "afspraak-annuleren"
         f.add(
             {
                 "time": submission.appointment_info.start_time.isoformat(),

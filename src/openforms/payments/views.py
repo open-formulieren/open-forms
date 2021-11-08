@@ -115,7 +115,6 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         if plugin_id != submission.form.payment_backend:
             raise ParseError(detail="plugin not allowed")
 
-
         payment = SubmissionPayment.objects.create_for(
             submission,
             plugin_id,

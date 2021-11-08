@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 help_text="URL where the user initialized the submission.",
                 max_length=255,
                 validators=[openforms.utils.validators.AllowedRedirectValidator()],
-                verbose_name="Form URL",
+                verbose_name="form URL",
             ),
         ),
     ]
