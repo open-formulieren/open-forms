@@ -66,6 +66,7 @@ const initialFormState = {
         paymentBackendOptions: {},
         submissionsRemovalOptions: {},
         confirmationEmailTemplate:{},
+        sendCustomConfirmationEmail: false,
     },
     literals: {
         beginText: {
@@ -995,7 +996,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
 
                 <TabPanel>
                     <ConfirmationEmail
+                        shouldSend={state.form.sendCustomConfirmationEmail}
                         template={state.form.confirmationEmailTemplate}
+                        onChange={onFieldChange}
                     />
                 </TabPanel>
             </Tabs>
