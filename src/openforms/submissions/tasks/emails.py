@@ -1,13 +1,11 @@
 import logging
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, transaction
 
 from celery_once import QueueOnce
 
 from openforms.celery import app
-from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 
 from ..models import Submission
@@ -91,7 +89,7 @@ def send_confirmation_email(submission_id: int) -> None:
     else:
         logevent.confirmation_email_start(submission)
         try:
-            send_confirmation_email(submission)
+            _send_confirmation_email(submission)
         except Exception as e:
             logevent.confirmation_email_failure(submission, e)
             raise

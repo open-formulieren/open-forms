@@ -20,6 +20,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.base import BasePlugin as PaymentBasePlugin
 from openforms.payments.registry import Registry as PaymentRegistry
 from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
@@ -28,7 +29,6 @@ from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
-from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 

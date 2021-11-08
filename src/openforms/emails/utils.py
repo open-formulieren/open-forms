@@ -2,24 +2,22 @@ import logging
 import re
 from functools import partial
 from html import unescape
-from typing import Any, List, Optional, Sequence, Tuple, Dict
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.urls import reverse
-from django.utils.safestring import mark_safe
-from django.core.exceptions import SuspiciousOperation
-from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
 from lxml.html import fromstring, tostring
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
-from openforms.utils.urls import build_absolute_uri
 from openforms.utils.email import send_mail_plus
+from openforms.utils.urls import build_absolute_uri
 
 from .constants import URL_REGEX
 from .context import get_wrapper_context
@@ -207,14 +205,12 @@ def get_confirmation_email_context_data(submission) -> Dict[str, Any]:
     return context
 
 
-def render_confirmation_email(submission, content):
+def render_confirmation_email(submission, content, extra_context=None):
     context = get_confirmation_email_context_data(submission)
+    if extra_context:
+        context.update(extra_context)
 
     # render the e-mail body - the template from this model.
     rendered_content = Template(content).render(Context(context))
 
-    sanitized = sanitize_content(rendered_content)
-
-    # render the content in the system-controlled wrapper template
-    default_template = get_template("confirmation_mail.html")
-    return default_template.render({"body": mark_safe(sanitized)})
+    return rendered_content

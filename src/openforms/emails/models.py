@@ -1,18 +1,11 @@
-from typing import Any, Dict
-
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.template import Context, Template
-from django.urls import reverse
-from django.template import Template, TemplateSyntaxError
 from django.utils.translation import gettext_lazy as _
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
-from ..utils.urls import build_absolute_uri
-from .validators import DjangoTemplateValidator
 from .utils import render_confirmation_email
+from .validators import DjangoTemplateValidator
 
 
 class ConfirmationEmailTemplate(models.Model):
@@ -51,41 +44,5 @@ class ConfirmationEmailTemplate(models.Model):
     def __str__(self):
         return f"Confirmation email template - {self.form}"
 
-    @staticmethod
-    def get_context_data(submission: Submission) -> Dict[str, Any]:
-        context = {
-            # use private variables that can't be accessed in the template data, so that
-            # template designers can't call the .delete method, for example. Variables
-            # starting with underscores are blocked by the Django template engine.
-            "_submission": submission,
-            "_form": submission.form,  # should be the same as self.form
-            **submission.data,
-            "public_reference": submission.public_registration_reference,
-        }
-        if submission.payment_required:
-            context["payment_required"] = True
-            context["payment_user_has_paid"] = submission.payment_user_has_paid
-            context["payment_url"] = build_absolute_uri(
-                reverse("payments:link", kwargs={"uuid": submission.uuid})
-            )
-            context["payment_price"] = str(submission.form.product.price)
-
-        try:
-            context["_appointment_id"] = submission.appointment_info.appointment_id
-        except AppointmentInfo.DoesNotExist:
-            pass
-
-        return context
-
-    def render(self, submission: Submission, extra_context=None):
-        context = self.get_context_data(submission)
-        if extra_context:
-            context.update(extra_context)
-        # render the e-mail body - the template from this model.
-        rendered_content = Template(self.content).render(Context(context))
-
-        return rendered_content
-
-    # TODO Should be like
-    # def render(self, submission: Submission):
-    #     return render_confirmation_email(submission, self.content)
+    def render(self, submission: Submission):
+        return render_confirmation_email(submission, self.content)

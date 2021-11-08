@@ -6,8 +6,8 @@ from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import ObjectDoesNotExist
 
-from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
@@ -89,20 +89,23 @@ def send_confirmation_email(submission: Submission):
             # Raise our own attribute error so the global confirmation email is sent
             raise AttributeError("Form should not send it's own confirmation email")
         email_template = submission.form.confirmation_email_template
+        subject = email_template.subject
         html_content = email_template.render(submission)
         text_content = email_template.render(submission, {"rendering_text": True})
     except (AttributeError, ObjectDoesNotExist):
         config = GlobalConfiguration.get_solo()
-        # TODO Update these
         subject = config.confirmation_email_subject
-        content = config.render_confirmation_email_content(submission)
+        html_content = config.render_confirmation_email_content(submission)
+        text_content = config.render_confirmation_email_content(
+            submission, {"rendering_text": True}
+        )
 
     # post process since the mail template has html markup and django escaped entities
     text_content = strip_tags_plus(text_content)
     text_content = html.unescape(text_content)
 
     send_mail_html(
-        email_template.subject,
+        subject,
         html_content,
         settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
         to_emails,
