@@ -263,7 +263,7 @@ class Plugin(BasePlugin):
                 other={
                     _(
                         "QR-code"
-                    ): f'<img src="data:image/png;base64, {qrcode_base64}" alt="{qrcode}" />'
+                    ): f'<img src="data:image/png;base64,{qrcode_base64}" alt="{qrcode}" />'
                 },
             )
 
