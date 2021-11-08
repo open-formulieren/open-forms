@@ -279,8 +279,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
 
-        # "execute" the celery task
-        send_confirmation_email(submission.id)
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            # "execute" the celery task
+            send_confirmation_email(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)

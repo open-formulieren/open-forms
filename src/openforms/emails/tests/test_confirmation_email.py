@@ -395,6 +395,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )
+        submission.form.send_custom_confirmation_email = True
+        submission.form.save(update_fields=["send_custom_confirmation_email"])
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
             appointment_id="123456789",
