@@ -42,6 +42,7 @@ import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
 import DataRemoval from './DataRemoval';
+import ConfirmationEmail from './ConfirmationEmail';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {getFormComponents} from './utils';
 
@@ -64,6 +65,7 @@ const initialFormState = {
         paymentBackend: '',
         paymentBackendOptions: {},
         submissionsRemovalOptions: {},
+        confirmationEmailTemplate:{},
     },
     literals: {
         beginText: {
@@ -864,6 +866,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>
                         <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                     </Tab>
+                    <Tab>
+                        <FormattedMessage defaultMessage="Confirmation Email" description="Form confirmation email options tab title" />
+                    </Tab>
                 </TabList>
 
                 <TabPanel>
@@ -986,6 +991,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 payload: event,
                             });
                         }} />
+                </TabPanel>
+
+                <TabPanel>
+                    <ConfirmationEmail
+                        template={state.form.confirmationEmailTemplate}
+                    />
                 </TabPanel>
             </Tabs>
 
