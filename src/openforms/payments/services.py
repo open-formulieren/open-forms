@@ -11,16 +11,21 @@ __all__ = ["update_submission_payment_registration"]
 
 
 def update_submission_payment_registration(submission: Submission):
-    if submission.registration_status != RegistrationStatuses.success:
-        return
-    if not submission.payment_required:
-        return
-    if submission.payment_registered:
+    should_skip = any(
+        (
+            submission.registration_status != RegistrationStatuses.success,
+            not submission.payment_required,
+            submission.payment_registered,
+        )
+    )
+    if should_skip:
+        logevent.registration_payment_update_skip(submission)
         return
 
     try:
         plugin = register[submission.form.registration_backend]
-    except KeyError:
+    except KeyError as e:
+        logevent.registration_payment_update_failure(submission, error=e)
         return
 
     # TODO support partial payments
@@ -29,8 +34,10 @@ def update_submission_payment_registration(submission: Submission):
             status=PaymentStatus.completed
         ).select_for_update()
         if not payments:
+            logevent.registration_payment_update_skip(submission)
             return
 
+        logevent.registration_payment_update_start(submission, plugin=plugin)
         options_serializer = plugin.configuration_options(
             data=submission.form.registration_backend_options
         )
@@ -40,9 +47,13 @@ def update_submission_payment_registration(submission: Submission):
             plugin.update_payment_status(submission, options_serializer.validated_data)
             payments.update(status=PaymentStatus.registered)
         except Exception as e:
+            logevent.registration_payment_update_failure(
+                submission, error=e, plugin=plugin
+            )
             for p in payments:
                 logevent.payment_register_failure(p, plugin, e)
             raise
         else:
+            logevent.registration_payment_update_success(submission, plugin=plugin)
             for p in payments:
                 logevent.payment_register_success(p, plugin)
