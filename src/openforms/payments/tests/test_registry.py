@@ -17,7 +17,7 @@ class Plugin(BasePlugin):
         return PaymentInfo(type="get", url="http://testserver/foo")
 
     def handle_return(self, request, payment):
-        return HttpResponseRedirect(payment.form_url)
+        return HttpResponseRedirect(payment.submission.form_url)
 
     def handle_webhook(self, request):
         return None

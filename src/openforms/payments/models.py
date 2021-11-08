@@ -27,7 +27,6 @@ class SubmissionPaymentManager(models.Manager):
         plugin_id: str,
         plugin_options: dict,
         amount: Decimal,
-        form_url: str,
     ):
         assert isinstance(amount, Decimal)
 
@@ -37,7 +36,6 @@ class SubmissionPaymentManager(models.Manager):
             plugin_id=plugin_id,
             plugin_options=plugin_options,
             amount=amount,
-            form_url=form_url,
         )
         # then update with a unique order_id
         while True:
@@ -85,7 +83,6 @@ class SubmissionPayment(models.Model):
         null=True,
         help_text=_("Copy of payment options at time of initializing payment."),
     )
-    form_url = models.URLField(_("Form URL"), max_length=255)
     order_id = models.BigIntegerField(
         _("Order ID (internal)"),
         unique=True,

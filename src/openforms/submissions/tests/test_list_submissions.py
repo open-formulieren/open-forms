@@ -46,7 +46,9 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
         self.assertEqual(set(ids), {str(sub1.uuid), str(sub3.uuid)})
 
     def test_list_response_format(self):
-        submission = SubmissionFactory.create(form=self.form)
+        submission = SubmissionFactory.create(
+            form=self.form, form_url="http://formserver/myform"
+        )
         self._add_submission_to_session(submission)
         submission_path = reverse(
             "api:submission-detail", kwargs={"uuid": submission.uuid}
@@ -74,6 +76,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
             "id": str(submission.uuid),
             "url": f"http://testserver{submission_path}",
             "form": f"http://testserver{form_path}",
+            "formUrl": "http://formserver/myform",
             "steps": [
                 {
                     "id": str(self.step.uuid),

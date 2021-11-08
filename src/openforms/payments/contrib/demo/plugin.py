@@ -18,4 +18,4 @@ class DemoPayment(BasePlugin):
     def handle_return(self, request, payment):
         payment.status = PaymentStatus.completed
         payment.save()
-        return HttpResponseRedirect(payment.form_url)
+        return HttpResponseRedirect(payment.submission.form_url)

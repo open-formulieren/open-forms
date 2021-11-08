@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
-from furl import furl
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -25,7 +24,7 @@ class Plugin(BasePlugin):
         return PaymentInfo(type="get", url="http://testserver/foo")
 
     def handle_return(self, request, payment):
-        return HttpResponseRedirect(payment.form_url)
+        return HttpResponseRedirect(payment.submission.form_url)
 
     def handle_webhook(self, request):
         return None
@@ -51,6 +50,7 @@ class ViewsTests(TestCase):
         submission = SubmissionFactory.create(
             form__product__price=Decimal("11.25"),
             form__payment_backend="plugin1",
+            form_url="http://allowed.foo/my-form",
         )
         self.assertTrue(submission.payment_required)
 
@@ -59,9 +59,7 @@ class ViewsTests(TestCase):
         self.assertRegex(url, r"^http://")
 
         with self.subTest("start ok"):
-            f = furl(url)
-            f.args["next"] = "http://allowed.foo"
-            response = self.client.post(f.url)
+            response = self.client.post(url)
             self.assertEqual(
                 response.data,
                 {
@@ -75,25 +73,11 @@ class ViewsTests(TestCase):
             # keep this
             payment = SubmissionPayment.objects.get()
 
-        with self.subTest("start missing next"):
-            response = self.client.post(url)
-            self.assertEqual(response.data["detail"], "missing 'next' parameter")
-            self.assertEqual(response.status_code, 400)
-
         with self.subTest("start bad plugin"):
             bad_url = bad_plugin.get_start_url(base_request, submission)
-            f = furl(bad_url)
-            f.args["next"] = "http://allowed.foo"
-            response = self.client.post(f.url)
+            response = self.client.post(bad_url)
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
-
-        with self.subTest("start bad redirect"):
-            f = furl(url)
-            f.args["next"] = "http://illegal.bar"
-            response = self.client.post(f.url)
-            self.assertEqual(response.data["detail"], "redirect not allowed")
-            self.assertEqual(response.status_code, 400)
 
         # check the return view
         url = plugin.get_return_url(base_request, payment)
@@ -122,9 +106,7 @@ class ViewsTests(TestCase):
 
         with self.subTest("return bad plugin"):
             update_payments_mock.reset_mock()
-            bad_payment = SubmissionPaymentFactory.for_backend(
-                "bad_plugin", form_url="http://allowed.foo"
-            )
+            bad_payment = SubmissionPaymentFactory.for_backend("bad_plugin")
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
 
             with capture_on_commit_callbacks(execute=True):
@@ -137,7 +119,7 @@ class ViewsTests(TestCase):
         with self.subTest("return bad redirect"):
             update_payments_mock.reset_mock()
             bad_payment = SubmissionPaymentFactory.for_backend(
-                "plugin1", form_url="http://buzz.bazz"
+                "plugin1", submission__form_url="http://bad.com/form"
             )
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
 

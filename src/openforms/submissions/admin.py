@@ -95,7 +95,6 @@ class SubmissionPaymentInline(admin.StackedInline):
         "created",
         "submission",
         "plugin_id",
-        "form_url",
         "public_order_id",
         "amount",
         "status",
@@ -143,7 +142,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         "completed_on",
     )
     list_filter = ("form", SubmissionTypeListFilter)
-    search_fields = ("form__name",)
+    search_fields = (
+        "form__name",
+        "uuid",
+        "bsn",
+        "kvk",
+        "form_url",
+    )
     inlines = [
         SubmissionStepInline,
         SubmissionPaymentInline,

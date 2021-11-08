@@ -26,7 +26,6 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "submission",
         "plugin_id",
         "plugin_options",
-        "form_url",
         "order_id",
         "public_order_id",
         "amount",
@@ -51,5 +50,4 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "public_order_id",
         "submission__uuid",
         "uuid",
-        "form_url",
     )

@@ -204,7 +204,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
-    "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
+    # "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"

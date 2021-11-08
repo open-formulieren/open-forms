@@ -27,7 +27,7 @@ from openforms.emails.utils import sanitize_content
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.fields import StringUUIDField
-from openforms.utils.validators import validate_bsn
+from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
@@ -133,6 +133,14 @@ class Submission(models.Model):
         default=get_default_kvk,
         blank=True,
         validators=(validate_kvk,),
+    )
+    form_url = models.URLField(
+        _("form URL"),
+        max_length=255,
+        blank=False,
+        default="",
+        help_text=_("URL where the user initialized the submission."),
+        validators=[AllowedRedirectValidator()],
     )
 
     # interaction with registration backend

@@ -33,20 +33,12 @@ class VerifyCancelAppointmentLinkView(RedirectView):
 
         add_submmission_to_session(submission, self.request.session)
 
-        config = GlobalConfiguration.get_solo()
-
-        if not config.cancel_appointment_page:
-            raise RuntimeError("No appointment cancel page configured")
-
-        redirect_url = (
-            furl(config.cancel_appointment_page)
-            .add(
-                {
-                    "time": submission.appointment_info.start_time.isoformat(),
-                    "submission_uuid": submission.uuid,
-                }
-            )
-            .url
+        f = furl(submission.form_url)
+        f /= "afspraak-annuleren"
+        f.add(
+            {
+                "time": submission.appointment_info.start_time.isoformat(),
+                "submission_uuid": submission.uuid,
+            }
         )
-
-        return redirect_url
+        return f.url

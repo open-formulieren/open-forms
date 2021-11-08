@@ -81,7 +81,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         self.apply_status(payment, params.STATUS)
 
-        form_url = furl(payment.form_url)
+        form_url = furl(payment.submission.form_url)
         form_url.args.update(
             {
                 "of_payment_status": payment.status,

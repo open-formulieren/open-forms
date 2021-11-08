@@ -15,7 +15,6 @@ class SubmissionPaymentTests(TestCase):
     @freeze_time("2020-01-01")
     def test_create_for(self):
         amount = Decimal("11.25")
-        form_url = "http://test/form"
         options = {
             "foo": 123,
         }
@@ -33,13 +32,13 @@ class SubmissionPaymentTests(TestCase):
 
         # create payment with auto-generated order_id
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 3)
         self.assertEqual(payment.public_order_id, "000003")
 
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 4)
         self.assertEqual(payment.public_order_id, "000004")
@@ -48,7 +47,7 @@ class SubmissionPaymentTests(TestCase):
         SubmissionPaymentFactory.create(order_id=10000000)
 
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 10000001)
         self.assertEqual(payment.public_order_id, "10000001")
@@ -56,7 +55,6 @@ class SubmissionPaymentTests(TestCase):
     @freeze_time("2020-01-01")
     def test_create_for_with_prefix(self):
         amount = Decimal("11.25")
-        form_url = "http://test/form"
         options = {
             "foo": 123,
         }
@@ -74,13 +72,13 @@ class SubmissionPaymentTests(TestCase):
 
         # create payment with auto-generated order_id
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 3)
         self.assertEqual(payment.public_order_id, "xyz2020000003")
 
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 4)
         self.assertEqual(payment.public_order_id, "xyz2020000004")
@@ -89,7 +87,7 @@ class SubmissionPaymentTests(TestCase):
         SubmissionPaymentFactory.create(order_id=10000000)
 
         payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount, form_url
+            submission, "plugin1", options, amount
         )
         self.assertEqual(payment.order_id, 10000001)
         self.assertEqual(payment.public_order_id, "xyz202010000001")
