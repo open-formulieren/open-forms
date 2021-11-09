@@ -313,7 +313,7 @@ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-drf-spectacular==0.17.2
+drf-spectacular==0.20.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
