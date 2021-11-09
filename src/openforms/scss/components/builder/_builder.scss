@@ -77,18 +77,19 @@ div.flatpickr-calendar.open
 }
 
 // bootstrap competing with django admin form styling...
-:not([ref="editForm"]) {
+.react-form-create {
+  :not([ref="editForm"]) {
 
-  .form-row {
-    &, * {
-      box-sizing: initial;
+    .form-row {
+      &, * {
+        box-sizing: initial;
+      }
+    }
+
+    .form-row {
+      display: block;
+      margin-left: 0;
+      margin-right: 0;
     }
   }
-
-  .form-row {
-    display: block;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
 }
