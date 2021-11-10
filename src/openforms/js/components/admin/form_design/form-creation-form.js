@@ -65,7 +65,7 @@ const initialFormState = {
         paymentBackend: '',
         paymentBackendOptions: {},
         submissionsRemovalOptions: {},
-        confirmationEmailTemplate:{},
+        confirmationEmailTemplate: null,
         sendCustomConfirmationEmail: false,
     },
     literals: {
@@ -139,6 +139,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     paymentBackendOptions: 'product-payment',
     submissionsRemovalOptions: 'submission-removal-options',
     literals: 'literals',
+    confirmationEmailTemplate: 'confirmation-email-template',
 };
 
 
@@ -867,7 +868,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab>
                         <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('confirmation-email-template')}>
                         <FormattedMessage defaultMessage="Confirmation Email" description="Form confirmation email options tab title" />
                     </Tab>
                 </TabList>
@@ -997,7 +998,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 <TabPanel>
                     <ConfirmationEmail
                         shouldSend={state.form.sendCustomConfirmationEmail}
-                        template={state.form.confirmationEmailTemplate}
+                        template={state.form.confirmationEmailTemplate || {}}
                         onChange={onFieldChange}
                     />
                 </TabPanel>
