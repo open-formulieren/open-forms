@@ -195,7 +195,11 @@ class FormSerializer(serializers.ModelSerializer):
         )
         instance = super().create(validated_data)
 
-        if confirmation_email_template:
+        if (
+            confirmation_email_template
+            and confirmation_email_template.get("subject")
+            and confirmation_email_template.get("content")
+        ):
             ConfirmationEmailTemplate.objects.create(
                 form=instance, **confirmation_email_template
             )
