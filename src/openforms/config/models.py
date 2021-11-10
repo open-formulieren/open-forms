@@ -60,10 +60,10 @@ class GlobalConfiguration(SingletonModel):
 
         {% appointment_information %}
 
-        {% get_appointment_links as links %}
+        {% appointment_links as links %}
         Cancel Appointment: {{ links.cancel_url|urlize }}
 
-        {% payment_status %}
+        {% payment_information %}
         """,
     )
 

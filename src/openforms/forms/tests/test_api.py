@@ -666,6 +666,57 @@ class FormsAPITests(APITestCase):
             "Updated content: {% appointment_information %} {% payment_information %}",
         )
 
+    def test_deleting_a_confirmation_email_template_through_the_api(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {"confirmation_email_template": None}
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        with self.assertRaises(AttributeError):
+            form.confirmation_email_template
+
+    def test_sending_partial_or_empty_confirmation_email_template_removes_the_confirmation_email_template(
+        self,
+    ):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data_to_test = [
+            {
+                "confirmation_email_template": {
+                    "subject": "Updated subject",
+                }
+            },
+            {"confirmation_email_template": {"subject": "", "content": "The content"}},
+        ]
+
+        for data in data_to_test:
+            with self.subTest(data=data):
+
+                response = self.client.patch(url, data=data)
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                form.refresh_from_db()
+                with self.assertRaises(AttributeError):
+                    form.confirmation_email_template
+
     def test_getting_a_form_with_a_confirmation_email_template(self):
         form = FormFactory.create()
         ConfirmationEmailTemplateFactory.create(
