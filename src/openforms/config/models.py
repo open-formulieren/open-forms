@@ -434,8 +434,8 @@ class GlobalConfiguration(SingletonModel):
 
     def render_confirmation_email_content(self, submission, extra_context=None):
         # Import locally to avoid circular import
-        from openforms.emails.utils import render_confirmation_email
+        from openforms.emails.utils import render_confirmation_email_content
 
-        return render_confirmation_email(
+        return render_confirmation_email_content(
             submission, self.confirmation_email_content, extra_context=extra_context
         )

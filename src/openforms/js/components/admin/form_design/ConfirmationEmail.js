@@ -1,11 +1,11 @@
-import {FormattedMessage} from "react-intl";
-import React from "react";
-import PropTypes from "prop-types";
-import FormRow from "../forms/FormRow";
-import Field from "../forms/Field";
-import TinyMCEEditor from "./Editor";
-import Fieldset from "../forms/Fieldset";
-import {Checkbox, TextInput} from "../forms/Inputs";
+import React from 'react';
+import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
+import TinyMCEEditor from './Editor';
+import FormRow from '../forms/FormRow';
+import Field from '../forms/Field';
+import Fieldset from '../forms/Fieldset';
+import {Checkbox, TextInput} from '../forms/Inputs';
 
 const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
 
@@ -20,15 +20,18 @@ const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
         <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation email template"
                                            description="Submission confirmation email fieldset title"/>}>
             <FormRow>
-                <Checkbox
+                <Field
                     name="form.sendCustomConfirmationEmail"
-                    label={<FormattedMessage defaultMessage="Should send custom confirmation email" description="Form send custom confirmation email label" />}
-                    helpText={<FormattedMessage
+                    label={<FormattedMessage defaultMessage="Should send custom confirmation email" description="Form send custom confirmation email label" />}>
+                    <Checkbox
+                        name="form.sendCustomConfirmationEmail"
+                        checked={shouldSend}
+                        onChange={(event) => onCheckboxChange(event, shouldSend)}
+                        helpText={<FormattedMessage
                                 defaultMessage="Will send the email specified below.  If unchecked it will send the email specified in the global configuration"
                                 description="Form send custom confirmation email help text" />}
-                    checked={shouldSend}
-                    onChange={(event) => onCheckboxChange(event, shouldSend)}
-                />
+                    />
+                </Field>
             </FormRow>
             <FormRow>
                 <Field

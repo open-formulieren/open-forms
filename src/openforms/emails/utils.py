@@ -205,12 +205,11 @@ def get_confirmation_email_context_data(submission) -> Dict[str, Any]:
     return context
 
 
-def render_confirmation_email(submission, content, extra_context=None):
+def render_confirmation_email_content(submission, content, extra_context=None):
     context = get_confirmation_email_context_data(submission)
     if extra_context:
         context.update(extra_context)
 
-    # render the e-mail body - the template from this model.
     rendered_content = Template(content).render(Context(context))
 
     return rendered_content

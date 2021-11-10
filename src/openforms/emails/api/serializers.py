@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from openforms.emails.models import ConfirmationEmailTemplate
+from ..models import ConfirmationEmailTemplate
 
 
 class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
