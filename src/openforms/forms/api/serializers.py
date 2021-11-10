@@ -143,7 +143,9 @@ class FormSerializer(serializers.ModelSerializer):
     submissions_removal_options = SubmissionsRemovalOptionsSerializer(
         source="*", required=False
     )
-    confirmation_email_template = ConfirmationEmailTemplateSerializer(required=False)
+    confirmation_email_template = ConfirmationEmailTemplateSerializer(
+        required=False, allow_null=True
+    )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
@@ -206,7 +208,11 @@ class FormSerializer(serializers.ModelSerializer):
         )
         instance = super().update(instance, validated_data)
 
-        if confirmation_email_template:
+        if (
+            confirmation_email_template
+            and confirmation_email_template.get("subject")
+            and confirmation_email_template.get("content")
+        ):
             try:
                 # First try updating the current confirmation email template
                 instance.confirmation_email_template.subject = (
@@ -221,6 +227,13 @@ class FormSerializer(serializers.ModelSerializer):
                 ConfirmationEmailTemplate.objects.create(
                     form=instance, **confirmation_email_template
                 )
+        else:
+            try:
+                # If a complete email template is not given then delete the potential confirmation email template
+                #   This handles the case where a template was created but later cleared
+                instance.confirmation_email_template.delete()
+            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
+                pass
 
         return instance
 
