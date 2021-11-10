@@ -84,15 +84,15 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    try:
-        if not submission.form.send_custom_confirmation_email:
-            # Raise our own attribute error so the global confirmation email is sent
-            raise AttributeError("Form should not send it's own confirmation email")
-        email_template = submission.form.confirmation_email_template
-        subject = email_template.subject
-        html_content = email_template.render(submission)
-        text_content = email_template.render(submission, {"rendering_text": True})
-    except (AttributeError, ObjectDoesNotExist):
+    if submission.form.send_custom_confirmation_email:
+        try:
+            email_template = submission.form.confirmation_email_template
+            subject = email_template.subject
+            html_content = email_template.render(submission)
+            text_content = email_template.render(submission, {"rendering_text": True})
+        except (AttributeError, ObjectDoesNotExist):
+            subject, html_content, text_content = None, None, None
+    else:
         config = GlobalConfiguration.get_solo()
         subject = config.confirmation_email_subject
         html_content = config.render_confirmation_email_content(submission)
