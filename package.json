@@ -59,6 +59,7 @@
     "classnames": "^2.3.1",
     "css-loader": "^5.0.2",
     "cssnano": "^4.1.10",
+    "flatpickr": "^4.6.9",
     "gulp": "^4.0.2",
     "gulp-file": "^0.4.0",
     "gulp-hub": "^4.2.0",
