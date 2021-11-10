@@ -359,6 +359,11 @@
     "description": "Copy form button",
     "originalDefault": "Copy"
   },
+  "LgJ7vh": {
+    "defaultMessage": "Confirmation Email",
+    "description": "Form confirmation email options tab title",
+    "originalDefault": "Confirmation Email"
+  },
   "M1L9/1": {
     "defaultMessage": "Change text",
     "description": "literals.changeText form label",
@@ -408,6 +413,11 @@
     "defaultMessage": "Save text",
     "description": "Form step save text label",
     "originalDefault": "Save text"
+  },
+  "QQDUZo": {
+    "defaultMessage": "Confirmation Email Content",
+    "description": "Confirmation Email Content label",
+    "originalDefault": "Confirmation Email Content"
   },
   "Qr2wnR": {
     "defaultMessage": "Payment backend options",
@@ -473,6 +483,11 @@
     "defaultMessage": "required",
     "description": "component property \"required\" label",
     "originalDefault": "required"
+  },
+  "VpIy1t": {
+    "defaultMessage": "Should send custom confirmation email",
+    "description": "Form send custom confirmation email label",
+    "originalDefault": "Should send custom confirmation email"
   },
   "WdVKZw": {
     "defaultMessage": "Logic",
@@ -639,6 +654,11 @@
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
   },
+  "kuZk0z": {
+    "defaultMessage": "Confirmation Email Subject",
+    "description": "Confirmation Email Subject label",
+    "originalDefault": "Confirmation Email Subject"
+  },
   "l2Wag+": {
     "defaultMessage": "Mark the form step as not-applicable",
     "description": "action type \"step-not-applicable\" label",
@@ -663,6 +683,11 @@
     "defaultMessage": "months",
     "description": "Logic trigger number of months",
     "originalDefault": "months"
+  },
+  "nTFW6b": {
+    "defaultMessage": "Will send the email specified below. If unchecked it will send the email specified in the global configuration",
+    "description": "Form send custom confirmation email help text",
+    "originalDefault": "Will send the email specified below. If unchecked it will send the email specified in the global configuration"
   },
   "naInSZ": {
     "defaultMessage": "Toggle DSL preview",
@@ -738,6 +763,11 @@
     "defaultMessage": "Change form",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "tjRtQk": {
+    "defaultMessage": "Submission confirmation email template",
+    "description": "Submission confirmation email fieldset title",
+    "originalDefault": "Submission confirmation email template"
   },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",

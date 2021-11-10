@@ -479,6 +479,12 @@
       "value": "Kopiëren"
     }
   ],
+  "LgJ7vh": [
+    {
+      "type": 0,
+      "value": "Confirmation Email"
+    }
+  ],
   "M1L9/1": [
     {
       "type": 0,
@@ -545,6 +551,12 @@
     {
       "type": 0,
       "value": "'Opslaan' tekst"
+    }
+  ],
+  "QQDUZo": [
+    {
+      "type": 0,
+      "value": "Confirmation Email Content"
     }
   ],
   "Qr2wnR": [
@@ -639,6 +651,12 @@
     {
       "type": 0,
       "value": "verplicht"
+    }
+  ],
+  "VpIy1t": [
+    {
+      "type": 0,
+      "value": "Should send custom confirmation email"
     }
   ],
   "WdVKZw": [
@@ -843,6 +861,12 @@
       "value": "uitgeschakeld"
     }
   ],
+  "kuZk0z": [
+    {
+      "type": 0,
+      "value": "Confirmation Email Subject"
+    }
+  ],
   "l2Wag+": [
     {
       "type": 0,
@@ -871,6 +895,12 @@
     {
       "type": 0,
       "value": "maanden"
+    }
+  ],
+  "nTFW6b": [
+    {
+      "type": 0,
+      "value": "Will send the email specified below. If unchecked it will send the email specified in the global configuration"
     }
   ],
   "naInSZ": [
@@ -961,6 +991,12 @@
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "tjRtQk": [
+    {
+      "type": 0,
+      "value": "Submission confirmation email template"
     }
   ],
   "uBO/Al": [
