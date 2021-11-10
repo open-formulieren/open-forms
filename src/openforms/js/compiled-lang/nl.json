@@ -503,6 +503,12 @@
       "value": "Ja"
     }
   ],
+  "P3oGZG": [
+    {
+      "type": 0,
+      "value": "Save and add another"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
@@ -641,6 +647,12 @@
       "value": "Logica"
     }
   ],
+  "YQ/Vx0": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -741,6 +753,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "gzAzdU": [
+    {
+      "type": 0,
+      "value": "Save and continue editing"
     }
   ],
   "h1EURI": [

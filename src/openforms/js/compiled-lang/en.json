@@ -499,6 +499,12 @@
       "value": "Yes"
     }
   ],
+  "P3oGZG": [
+    {
+      "type": 0,
+      "value": "Save and add another"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
@@ -637,6 +643,12 @@
       "value": "Logic"
     }
   ],
+  "YQ/Vx0": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -737,6 +749,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "gzAzdU": [
+    {
+      "type": 0,
+      "value": "Save and continue editing"
     }
   ],
   "h1EURI": [

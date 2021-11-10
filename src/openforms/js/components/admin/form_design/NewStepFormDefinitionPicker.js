@@ -6,6 +6,7 @@ import FAIcon from '../FAIcon';
 import FormModal from '../FormModal';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
+import {SubmitAction} from '../forms/ActionButton';
 import Select from '../forms/Select';
 import SubmitRow from '../forms/SubmitRow';
 import { FormDefinitionsContext } from './Context';
@@ -24,7 +25,8 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
         setIsModalOpen(false);
     };
 
-    const onFormDefinitionConfirmed = () => {
+    const onFormDefinitionConfirmed = (event) => {
+        event.preventDefault();
         if (!selectedFormDefinition) {
             const requiredError = intl.formatMessage({
                 description: 'Field required error',
@@ -97,12 +99,12 @@ const NewStepFormDefinitionPicker = ({ onReplace }) => {
                     </Field>
                 </FormRow>
 
-                <SubmitRow
-                    onSubmit={onFormDefinitionConfirmed}
-                    btnText={intl.formatMessage({description: 'Form definition select confirm button', defaultMessage: 'Confirm'})}
-                    isDefault
-                    preventDefault
-                />
+                <SubmitRow isDefault>
+                    <SubmitAction
+                        text={intl.formatMessage({description: 'Form definition select confirm button', defaultMessage: 'Confirm'})}
+                        onClick={onFormDefinitionConfirmed}
+                    />
+                </SubmitRow>
             </FormModal>
 
         </div>

@@ -379,6 +379,11 @@
     "description": "Component property boolean value \"true\"",
     "originalDefault": "Yes"
   },
+  "P3oGZG": {
+    "defaultMessage": "Save and add another",
+    "description": "Admin save and add another submit button",
+    "originalDefault": "Save and add another"
+  },
   "PdaMqg": {
     "defaultMessage": "Regel toevoegen",
     "description": "Add form logic rule button",
@@ -474,6 +479,11 @@
     "description": "Form logic tab title",
     "originalDefault": "Logic"
   },
+  "YQ/Vx0": {
+    "defaultMessage": "Save",
+    "description": "Admin save submit button",
+    "originalDefault": "Save"
+  },
   "YzLSHY": {
     "defaultMessage": "Weet u zeker dat u dit wilt verwijderen?",
     "description": "Default delete confirmation message",
@@ -558,6 +568,11 @@
     "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "gzAzdU": {
+    "defaultMessage": "Save and continue editing",
+    "description": "Admin save and continue editing submit button",
+    "originalDefault": "Save and continue editing"
   },
   "h1EURI": {
     "defaultMessage": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken.",
