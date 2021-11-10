@@ -2,7 +2,7 @@ import logging
 import re
 from functools import partial
 from html import unescape
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple
 from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
@@ -25,6 +25,9 @@ from .context import get_wrapper_context
 logger = logging.getLogger(__name__)
 
 MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 
 def sanitize_urls(allowlist: List[str], match) -> str:
@@ -179,7 +182,7 @@ def unwrap_anchors(html_str: str) -> str:
     return tostring(root, encoding="utf8").decode("utf8")
 
 
-def get_confirmation_email_context_data(submission) -> Dict[str, Any]:
+def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, Any]:
     context = {
         # use private variables that can't be accessed in the template data, so that
         # template designers can't call the .delete method, for example. Variables
@@ -205,7 +208,9 @@ def get_confirmation_email_context_data(submission) -> Dict[str, Any]:
     return context
 
 
-def render_confirmation_email_content(submission, content, extra_context=None):
+def render_confirmation_email_content(
+    submission: "Submission", content: str, extra_context: Dict[str, Any] = None
+):
     context = get_confirmation_email_context_data(submission)
     if extra_context:
         context.update(extra_context)
