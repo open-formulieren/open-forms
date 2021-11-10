@@ -21,20 +21,6 @@ const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
                                            description="Submission confirmation email fieldset title"/>}>
             <FormRow>
                 <Field
-                    name="form.sendCustomConfirmationEmail"
-                    label={<FormattedMessage defaultMessage="Should send custom confirmation email" description="Form send custom confirmation email label" />}>
-                    <Checkbox
-                        name="form.sendCustomConfirmationEmail"
-                        checked={shouldSend}
-                        onChange={(event) => onCheckboxChange(event, shouldSend)}
-                        helpText={<FormattedMessage
-                                defaultMessage="Will send the email specified below.  If unchecked it will send the email specified in the global configuration"
-                                description="Form send custom confirmation email help text" />}
-                    />
-                </Field>
-            </FormRow>
-            <FormRow>
-                <Field
                     name="form.confirmationEmailTemplate.subject"
                     label={<FormattedMessage defaultMessage="Confirmation Email Subject" description="Confirmation Email Subject label" />}
                 >
@@ -54,6 +40,18 @@ const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
                         )}
                     />
                 </Field>
+            </FormRow>
+            <FormRow>
+                <Checkbox
+                    name="form.sendCustomConfirmationEmail"
+                    label={<FormattedMessage defaultMessage="Should send custom confirmation email"
+                                             description="Form send custom confirmation email label"/>}
+                    helpText={<FormattedMessage
+                        defaultMessage="Will send the email specified below.  If unchecked it will send the email specified in the global configuration"
+                        description="Form send custom confirmation email help text"/>}
+                    checked={shouldSend}
+                    onChange={(event) => onCheckboxChange(event, shouldSend)}
+                />
             </FormRow>
         </Fieldset>
     );
