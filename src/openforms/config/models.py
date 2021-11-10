@@ -55,15 +55,6 @@ class GlobalConfiguration(SingletonModel):
         Geachte heer/mevrouw,
 
         Wij hebben uw inzending, met referentienummer {{ public_reference }}, in goede orde ontvangen.
-
-        {% summary %}
-
-        {% appointment_information %}
-
-        {% appointment_links as links %}
-        Cancel Appointment: {{ links.cancel_url|urlize }}
-
-        {% payment_information %}
         """,
     )
 
