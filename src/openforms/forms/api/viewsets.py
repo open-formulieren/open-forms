@@ -19,12 +19,14 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ..messages import add_success_message
 from ..models import Form, FormDefinition, FormLogic, FormStep, FormVersion
 from ..utils import export_form, form_to_json, import_form
 from .filters import FormLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnly
 from .serializers import (
+    FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
@@ -307,6 +309,46 @@ class FormViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance._is_deleted = True
         instance.save()
+
+    @extend_schema(
+        summary=_("Prepare form edit admin message"),
+        tags=["admin"],
+        parameters=[UUID_OR_SLUG_PARAMETER],
+        request=FormAdminMessageSerializer,
+        responses={
+            status.HTTP_201_CREATED: FormAdminMessageSerializer,
+        },
+    )
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=(permissions.IsAdminUser,),
+        url_path="admin-message",
+    )
+    def admin_message(self, request, *args, **kwargs):
+        """
+        Prepare the relevant message to be displayed in the admin.
+
+        On form create/update, a success message is displayed to the end user on
+        page reload. This exact message varies with the type of submit action that was
+        performed and whether the object was created or updated.
+
+        This endpoint is only available for staff users and prepares messages for display
+        in the admin environment.
+        """
+        form = self.get_object()
+        serializer = FormAdminMessageSerializer(
+            data=request.data,
+            context={"request": request, "form": form},
+        )
+        serializer.is_valid(raise_exception=True)
+        add_success_message(
+            request,
+            form,
+            serializer.validated_data["submit_action"],
+            serializer.validated_data["is_create"],
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @extend_schema(
