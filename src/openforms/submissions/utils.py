@@ -100,6 +100,15 @@ def send_confirmation_email(submission: Submission):
             submission, {"rendering_text": True}
         )
 
+    if not html_content:
+        logger.warning(
+            "Could not get email content for submission %d, "
+            "skipping the confirmation e-mail.",
+            submission.id,
+        )
+        logevent.confirmation_email_skip(submission)
+        return
+
     # post process since the mail template has html markup and django escaped entities
     text_content = strip_tags_plus(text_content)
     text_content = html.unescape(text_content)

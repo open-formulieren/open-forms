@@ -315,6 +315,36 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
+    def test_complete_submission_without_email_content_does_not_send_email(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="",
+            content="",
+        )
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            send_confirmation_email(submission.id)
+
+        # assert that no e-mail was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+        # Check status
+        submission.refresh_from_db()
+        self.assertFalse(submission.confirmation_email_sent)
+
     @override_settings(
         DEFAULT_FROM_EMAIL="info@open-forms.nl",
         PAYMENT_CONFIRMATION_EMAIL_TIMEOUT=1200,

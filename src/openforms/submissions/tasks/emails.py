@@ -81,26 +81,6 @@ def send_confirmation_email(submission_id: int) -> None:
     if submission.confirmation_email_sent:
         return
 
-    if submission.payment_required and not submission.payment_user_has_paid:
-        # wait a while and check again
-        send_confirmation_email_after_payment_timeout.apply_async(
-            args=(submission.id,), countdown=settings.PAYMENT_CONFIRMATION_EMAIL_TIMEOUT
-        )
-    else:
-        logevent.confirmation_email_start(submission)
-        try:
-            _send_confirmation_email(submission)
-        except Exception as e:
-            logevent.confirmation_email_failure(submission, e)
-            raise
-
-
-@app.task(bind=True, ignore_result=True)
-def send_confirmation_email_after_payment_timeout(task, submission_id: int) -> None:
-    submission = Submission.objects.get(id=submission_id)
-    if submission.confirmation_email_sent:
-        return
-
     logevent.confirmation_email_start(submission)
     try:
         _send_confirmation_email(submission)
