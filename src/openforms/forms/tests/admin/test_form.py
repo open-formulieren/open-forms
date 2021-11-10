@@ -1,5 +1,6 @@
 import json
 from io import BytesIO
+from unittest.mock import patch
 from zipfile import ZipFile
 
 from django.test import TestCase
@@ -16,6 +17,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 from openforms.tests.utils import disable_2fa
+from openforms.utils.admin import SubmitActions
 
 
 @disable_2fa
@@ -377,3 +379,263 @@ class FormAdminActionsTests(WebTest):
 
         self.form.refresh_from_db()
         self.assertFalse(self.form.maintenance_mode)
+
+
+from django.test import tag
+
+
+@tag("these")
+@disable_2fa
+class FormEditTests(WebTest):
+    """
+    Test admin behaviour when creating or editing forms via the React UI.
+
+    These tests make the API calls that the React UI would make and assert that the
+    expected side effects occur.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.admin_user = SuperUserFactory.create(is_staff=True)
+        cls.form = FormFactory.create()
+        cls.message_endpoint = reverse(
+            "api:form-admin-message", kwargs={"uuid_or_slug": cls.form.uuid}
+        )
+
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch(
+            "rest_framework.authentication.SessionAuthentication.enforce_csrf",
+            return_value=None,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_form_created_success_message(self):
+        """
+        Assert that a success message is displayed when a new form is created.
+        """
+        create_page = self.app.get(
+            reverse("admin:forms_form_add"), user=self.admin_user
+        )
+        container_node = create_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.save,
+                "isCreate": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _('The {name} "{obj}" was added successfully.').format(
+                name=_("form"),
+                obj=self.form.name,
+            ),
+        )
+
+    def test_form_created_edit_again_success_message(self):
+        """
+        Assert that a success message is displayed when a new form is created.
+        """
+        create_page = self.app.get(
+            reverse("admin:forms_form_add"), user=self.admin_user
+        )
+        container_node = create_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.edit_again,
+                "isCreate": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _('The {name} "{obj}" was added successfully.').format(
+                name=_("form"),
+                obj=self.form.name,
+            )
+            + " "
+            + _("You may edit it again below."),
+        )
+
+    def test_form_created_add_another_success_message(self):
+        """
+        Assert that a success message is displayed when a new form is created.
+        """
+        create_page = self.app.get(
+            reverse("admin:forms_form_add"), user=self.admin_user
+        )
+        container_node = create_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.add_another,
+                "isCreate": True,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _(
+                'The {name} "{obj}" was added successfully. You may add another {name} below.'
+            ).format(
+                name=_("form"),
+                obj=self.form.name,
+            ),
+        )
+
+    def test_form_edited_success_message(self):
+        change_page = self.app.get(
+            reverse("admin:forms_form_change", args=(self.form.pk,)),
+            user=self.admin_user,
+        )
+        container_node = change_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.save,
+                "isCreate": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _('The {name} "{obj}" was changed successfully.').format(
+                name=_("form"),
+                obj=self.form.name,
+            ),
+        )
+
+    def test_form_edited_edit_again_success_message(self):
+        change_page = self.app.get(
+            reverse("admin:forms_form_change", args=(self.form.pk,)),
+            user=self.admin_user,
+        )
+        container_node = change_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.edit_again,
+                "isCreate": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _(
+                'The {name} "{obj}" was changed successfully. You may edit it again below.'
+            ).format(
+                name=_("form"),
+                obj=self.form.name,
+            ),
+        )
+
+    def test_form_edited_add_another_success_message(self):
+        """
+        Assert that a success message is displayed when a new form is created.
+        """
+        create_page = self.app.get(
+            reverse("admin:forms_form_add"), user=self.admin_user
+        )
+        container_node = create_page.pyquery(".react-form-create")
+
+        self.assertTrue(container_node)
+
+        # finalize "transaction" as the UI does
+        response = self.app.post_json(
+            self.message_endpoint,
+            {
+                "submitAction": SubmitActions.add_another,
+                "isCreate": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the list page again, after submit/create the frontend redirects to the list
+        # page
+        list_page = self.app.get(response.json["redirectUrl"])
+
+        messagelist = list_page.pyquery(".messagelist")
+        success_message = messagelist.find(".success").text()
+
+        self.assertEqual(
+            success_message,
+            _(
+                'The {name} "{obj}" was changed successfully. You may add another {name} below.'
+            ).format(
+                name=_("form"),
+                obj=self.form.name,
+            ),
+        )
