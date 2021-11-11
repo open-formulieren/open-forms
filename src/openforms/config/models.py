@@ -46,7 +46,7 @@ class GlobalConfiguration(SingletonModel):
         default="Bevestiging van uw inzending",
     )
 
-    confirmation_email_content = models.TextField(
+    confirmation_email_content = HTMLField(
         _("confirmation email content"),
         help_text=_(
             "Content of the confirmation email message. Can be overridden on the form level"
