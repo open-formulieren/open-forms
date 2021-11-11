@@ -5,9 +5,9 @@ from typing import Optional
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.utils import send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_maintainance_mode
@@ -302,14 +303,19 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
         )
         datetime_removed = instance.created_on + timedelta(days=days_until_removal)
+
         email_body = _(
             "Submission is suspended. Until {date} it can be resumed here: {resume_url}"
         ).format(date=datetime_removed.date(), resume_url=resume_url)
-        send_mail(
-            _("Your form submission"),
-            email_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
+        email_subject = _("Your form submission")
+        html_email_body = format_html("<p>{}</p>", email_body)
+
+        send_mail_html(
+            email_subject,
+            html_email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
         )
 
 
