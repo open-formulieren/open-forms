@@ -10,6 +10,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
+from ..forms.constants import ConfirmationEmailOptions
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 
@@ -84,25 +85,36 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    if submission.form.send_custom_confirmation_email:
+    if (
+        submission.form.confirmation_email_option
+        == ConfirmationEmailOptions.form_specific_email
+    ):
         try:
             email_template = submission.form.confirmation_email_template
             subject = email_template.subject
             html_content = email_template.render(submission)
             text_content = email_template.render(submission, {"rendering_text": True})
         except (AttributeError, ObjectDoesNotExist):
-            subject, html_content, text_content = None, None, None
-    else:
+            logger.warning(
+                "No form specific confirmation email template for submission %d, "
+                "skipping the confirmation e-mail.",
+                submission.id,
+            )
+            logevent.confirmation_email_skip(submission)
+            return
+    elif (
+        submission.form.confirmation_email_option
+        == ConfirmationEmailOptions.global_email
+    ):
         config = GlobalConfiguration.get_solo()
         subject = config.confirmation_email_subject
         html_content = config.render_confirmation_email_content(submission)
         text_content = config.render_confirmation_email_content(
             submission, {"rendering_text": True}
         )
-
-    if not html_content:
-        logger.warning(
-            "Could not get email content for submission %d, "
+    else:
+        logger.debug(
+            "Form is not configured to send an email for submission %d, "
             "skipping the confirmation e-mail.",
             submission.id,
         )

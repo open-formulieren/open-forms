@@ -14,6 +14,7 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
+from ...forms.constants import ConfirmationEmailOptions
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -194,8 +195,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"single1": "single1@test.nl", "single2": "single2@test.nl"},
         )
-        submission.form.send_custom_confirmation_email = True
-        submission.form.save()
         # second step
         SubmissionStepFactory.create(
             submission=submission,
@@ -287,7 +286,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
-    def test_completed_submission_sends_global_configuration_email(
+    def test_completed_submission_sends_global_configuration_email_by_default(
         self,
     ):
         config = GlobalConfiguration.get_solo()
@@ -318,7 +317,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.subject, config.confirmation_email_subject)
         self.assertEqual(message.body.strip(), config.confirmation_email_content)
 
-    def test_completed_submission_sends_global_configuration_email_when_sending_custom_email_is_not_set(
+    def test_completed_submission_sends_global_configuration_email_when_custom_email_exists_but_is_not_selected(
         self,
     ):
         config = GlobalConfiguration.get_solo()
@@ -341,8 +340,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Custom subject", content="Custom content"
         )
-        submission.form.send_custom_confirmation_email = False
-        submission.form.save(update_fields=["send_custom_confirmation_email"])
+        submission.form.confirmation_email_option = (
+            ConfirmationEmailOptions.global_email
+        )
+        submission.form.save(update_fields=["confirmation_email_option"])
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             # "execute" the celery task
@@ -354,12 +355,12 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.subject, config.confirmation_email_subject)
         self.assertEqual(message.body.strip(), config.confirmation_email_content)
 
-    def test_completed_submission_does_not_send_email_if_there_is_no_content(
+    def test_completed_submission_sends_form_specific_email_and_not_global_email(
         self,
     ):
         config = GlobalConfiguration.get_solo()
-        config.confirmation_email_subject = ""
-        config.confirmation_email_content = ""
+        config.confirmation_email_subject = "The Subject"
+        config.confirmation_email_content = "The Content"
         config.save()
 
         submission = SubmissionFactory.from_components(
@@ -374,17 +375,28 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )
-        submission.form.send_custom_confirmation_email = False
-        submission.form.save(update_fields=["send_custom_confirmation_email"])
+        confirmation_email = ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Custom subject", content="Custom content"
+        )
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             # "execute" the celery task
             send_confirmation_email(submission.id)
 
-        # Verify that email was not sent
-        self.assertEqual(len(mail.outbox), 0)
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, confirmation_email.subject)
+        self.assertEqual(message.body.strip(), confirmation_email.content)
 
-    def test_complete_submission_without_email_content_does_not_send_email(self):
+    def test_completed_submission_does_not_send_email_if_not_sending_email_is_specified(
+        self,
+    ):
+        config = GlobalConfiguration.get_solo()
+        config.confirmation_email_subject = "The Subject"
+        config.confirmation_email_content = "The Content"
+        config.save()
+
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[
@@ -398,21 +410,17 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             form__payment_backend="test",
         )
         ConfirmationEmailTemplateFactory.create(
-            form=submission.form,
-            subject="",
-            content="",
+            form=submission.form, subject="Custom subject", content="Custom content"
         )
+        submission.form.confirmation_email_option = ConfirmationEmailOptions.no_email
+        submission.form.save(update_fields=["confirmation_email_option"])
 
-        # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            # "execute" the celery task
             send_confirmation_email(submission.id)
 
-        # assert that no e-mail was sent
+        # Verify that email was not sent
         self.assertEqual(len(mail.outbox), 0)
-
-        # Check status
-        submission.refresh_from_db()
-        self.assertFalse(submission.confirmation_email_sent)
 
     @override_settings(
         DEFAULT_FROM_EMAIL="info@open-forms.nl",

@@ -176,7 +176,7 @@ class FormSerializer(serializers.ModelSerializer):
             "can_submit",
             "submissions_removal_options",
             "confirmation_email_template",
-            "confirmation_email_options",
+            "confirmation_email_option",
         )
         extra_kwargs = {
             "uuid": {

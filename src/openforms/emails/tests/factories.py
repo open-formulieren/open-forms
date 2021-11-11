@@ -1,5 +1,6 @@
 import factory
 
+from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.forms.tests.factories import FormFactory
 
 
@@ -15,6 +16,8 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
         if "form" in kwargs:
             # Update the form to ensure this email is used for the form and
             #   not the one in the Global Configuration
-            kwargs["form"].send_custom_confirmation_email = True
-            kwargs["form"].save(update_fields=["send_custom_confirmation_email"])
+            kwargs[
+                "form"
+            ].confirmation_email_option = ConfirmationEmailOptions.form_specific_email
+            kwargs["form"].save(update_fields=["confirmation_email_option"])
         return super().create(**kwargs)

@@ -19,8 +19,8 @@ from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 
-from .utils import literal_getter
 from ..constants import ConfirmationEmailOptions
+from .utils import literal_getter
 
 
 class FormQuerySet(models.QuerySet):
