@@ -27,7 +27,7 @@ class MSGraphRegistration(BasePlugin):
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client)
 
-        folder_name = self._get_folder_name()
+        folder_name = self._get_folder_name(submission)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         uploader.upload_django_file(
@@ -52,7 +52,7 @@ class MSGraphRegistration(BasePlugin):
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client)
 
-        folder_name = self._get_folder_name()
+        folder_name = self._get_folder_name(submission)
         self._set_payment(uploader, submission, folder_name)
 
     def _set_payment(self, uploader, submission, folder_name):

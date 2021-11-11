@@ -159,6 +159,10 @@
                 "kvkconfig"
             ],
             [
+                "microsoft",
+                "msgraphservice"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
@@ -173,6 +177,10 @@
             [
                 "qmatic",
                 "qmaticconfig"
+            ],
+            [
+                "registrations_microsoft_graph",
+                "msgraphregistrationconfig"
             ],
             [
                 "registrations_objects_api",

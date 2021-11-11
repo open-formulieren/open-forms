@@ -16,10 +16,13 @@ class MSGraphRegistrationConfig(SingletonModel):
 
     service = models.OneToOneField(
         "microsoft.MSGraphService",
-        verbose_name=_("MicroSoft Graph Service"),
+        verbose_name=_("Microsoft Graph Service"),
         on_delete=models.PROTECT,
         related_name="registration_config",
         null=True,
     )
 
     objects = MSGraphRegistrationConfigManager()
+
+    class Meta:
+        verbose_name = _("Microsoft Graph registration")

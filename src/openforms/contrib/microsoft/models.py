@@ -17,7 +17,7 @@ class MSGraphService(models.Model):
         max_length=64,
         help_text=_("Tenant ID"),
     )
-    client_id = models.URLField(
+    client_id = models.CharField(
         _("client ID"),
         max_length=64,
         help_text=_("Client ID (sometimes called App ID or Application ID"),
@@ -29,7 +29,7 @@ class MSGraphService(models.Model):
     )
 
     class Meta:
-        verbose_name = _("MicroSoft Graph Service")
+        verbose_name = _("Microsoft Graph Service")
 
     def __str__(self):
         return self.label
