@@ -570,11 +570,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=0, hour=2),
     },
     "cleanup-unclaimed-temp-files": {
-        "task": "openforms.submissions.tasks.cleanup_unclaimed_temporary_files",
+        "task": "openforms.submissions.tasks.user_uploads.cleanup_unclaimed_temporary_files",
         "schedule": crontab(minute=30, hour=3),
     },
     "cleanup_on_completion_results": {
-        "task": "openforms.submissions.tasks.cleanup_on_completion_results",
+        "task": "openforms.submissions.tasks.cleanup.cleanup_on_completion_results",
         "schedule": crontab(minute=45, hour=4),
     },
     "cleanup_csp_reports": {
