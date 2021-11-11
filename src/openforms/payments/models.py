@@ -8,7 +8,6 @@ from django.db.models import Max, Sum
 from django.utils.translation import gettext_lazy as _
 
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
-from openforms.utils.fields import StringUUIDField
 
 from ..config.models import GlobalConfiguration
 from .constants import PaymentStatus
@@ -70,7 +69,7 @@ class SubmissionPaymentQuerySet(models.QuerySet):
 
 
 class SubmissionPayment(models.Model):
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     created = models.DateTimeField(auto_now_add=True)
 
     submission = models.ForeignKey(

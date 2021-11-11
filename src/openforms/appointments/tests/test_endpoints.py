@@ -43,7 +43,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             .add(
                 {
                     "time": "2021-07-21T12:00:00+00:00",
-                    "submission_uuid": submission.uuid,
+                    "submission_uuid": str(submission.uuid),
                 }
             )
             .url

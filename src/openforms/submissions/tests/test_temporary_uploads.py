@@ -119,7 +119,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(upload.content.read(), b"my content")
 
         # added to session
-        self.assertEqual([upload.uuid], self.client.session[UPLOADS_SESSION_KEY])
+        self.assertEqual([str(upload.uuid)], self.client.session[UPLOADS_SESSION_KEY])
 
     def test_delete_view_requires_registered_uploads(self):
         upload = TemporaryFileUploadFactory.create()

@@ -176,7 +176,7 @@ def import_form_data(
                         # is identical to the existing form definition
                         # with the same slug, use existing instead
                         # of creating new definition
-                        uuid_mapping[old_uuid] = existing_fd.uuid
+                        uuid_mapping[old_uuid] = str(existing_fd.uuid)
                     else:
                         # The imported form definition configuration
                         # is different, create a new form definition

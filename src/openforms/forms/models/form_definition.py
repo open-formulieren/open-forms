@@ -15,8 +15,6 @@ from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
 
-from openforms.utils.fields import StringUUIDField
-
 from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
 
@@ -27,7 +25,7 @@ class FormDefinition(models.Model):
     and used to render the form.
     """
 
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     name = models.CharField(_("name"), max_length=50)
     internal_name = models.CharField(
         _("internal name"),

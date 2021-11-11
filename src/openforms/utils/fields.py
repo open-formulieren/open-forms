@@ -4,6 +4,12 @@ from . import form_fields
 
 
 class StringUUIDField(models.UUIDField):
+    """
+    DEPRECATED
+
+    remains here for references in historical migrations
+    """
+
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value
