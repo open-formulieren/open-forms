@@ -14,7 +14,7 @@ class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
 
 class EmailTestAdminView(FormView):
     form_class = EmailTestForm
-    template_name = "emails/admin_connection_check.html"
+    template_name = "emails/admin/connection_check.html"
     title = _("Email connection test")
 
     def get_context_data(self, **kwargs):

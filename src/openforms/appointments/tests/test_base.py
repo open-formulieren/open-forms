@@ -70,11 +70,11 @@ class BasePluginTests(TestCase):
         self.assertNotIn("<td", result)
 
     @override_settings(BASE_URL="https://example.com/")
-    def test_get_appointment_links(self):
+    def test_get_cancel_link(self):
         submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
 
-        result = self.plugin.get_appointment_links(submission)
+        result = self.plugin.get_cancel_link(submission)
 
         cancel_path = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
@@ -84,4 +84,4 @@ class BasePluginTests(TestCase):
             },
         )
         cancel_url = f"https://example.com{cancel_path}"
-        self.assertEqual([(_("cancel appointment"), cancel_url)], result)
+        self.assertEqual(cancel_url, result)

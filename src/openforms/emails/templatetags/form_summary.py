@@ -11,9 +11,9 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def summary(context):
     if context.get("rendering_text"):
-        name = "form_summary.txt"
+        name = "emails/templatetags/form_summary.txt"
     else:
-        name = "form_summary.html"
+        name = "emails/templatetags/form_summary.html"
     return get_template(name).render(filter_data_to_show_in_email(context.flatten()))
 
 

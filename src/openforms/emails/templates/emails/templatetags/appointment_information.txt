@@ -1,20 +1,23 @@
-{% load i18n %}{% autoescape off %}{% trans "Products" %}:
-{% for product in appointment.products %}
+{% load i18n %}{% autoescape off %}{% trans "Appointment information" %}
+
+{% trans "Products" %}:{% for product in appointment.products %}
 - {{ product.name }}{% endfor %}
 
-
 {% trans "Location" %}:
-
 {{ appointment.location.name }}{% if appointment.location.address %}
 {{ appointment.location.address }}{% endif %}{% if appointment.location.city %}
 {{ appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
 
 {% trans "Date and time" %}:
-
 {{ appointment.start_at.date|date }}, {{ appointment.start_at.time|time }}{% if appointment.end_at %} - {{ appointment.end_at.time|time }}{% endif %}
 
 {% trans "Remarks" %}:
-
 {{ appointment.remarks }}
+
 {% if appointment.other %}{% for key, value in appointment.other.items %}
-- {{ key }}: {{ value }}{% endfor %}{% endif %}{% endautoescape %}
+{{ key }}:
+{{ value }}{% endfor %}{% endif %}{% endautoescape %}
+
+{% trans "If you want to cancel your appointment, you can do so below." %}
+Cancel appointment: {{ appointment_cancel_link }}
+

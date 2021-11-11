@@ -26,7 +26,7 @@ def _get_design_token_values(tokens):
     """
     return {
         "header": {
-            "color": glom(tokens, "page-header.color.value", default="black"),
+            "color": glom(tokens, "page-header.color.value", default="#ffffff"),
             "background": glom(
                 tokens, "page-header.background.value", default="#2980b9"
             ),
@@ -36,7 +36,7 @@ def _get_design_token_values(tokens):
             "width": glom(tokens, "logo-header.width.value", default="auto"),
         },
         "footer": {
-            "color": glom(tokens, "footer.color.value", default="black"),
+            "color": glom(tokens, "footer.color.value", default="#ffffff"),
             "background": glom(tokens, "footer.background.value", default="#2980b9"),
         },
         "layout": {

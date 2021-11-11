@@ -182,6 +182,14 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         return_value=TestPlugin(),
     )
     def test_appointment_information(self, get_client_mock):
+        get_client_mock.return_value.get_cancel_link.return_value = (
+            "http://fake.nl/api/v1/submission-uuid/token/verify/"
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["fake.nl"]
+        config.save()
+
         submission = SubmissionFactory.create()
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
@@ -199,6 +207,14 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("Some", rendered_content)
         self.assertIn("<h1>Data</h1>", rendered_content)
 
+        self.assertInHTML(
+            '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
+            "http://fake.nl/api/v1/submission-uuid/token/verify/"
+            "</a>",
+            rendered_content,
+        )
+        self.assertIn("Cancel Appointment", rendered_content)
+
     def test_appointment_information_with_no_appointment_id(self):
         submission = SubmissionFactory.create()
         AppointmentInfoFactory.create(
@@ -213,39 +229,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         empty_rendered_content = empty_email.render(submission)
 
         self.assertEqual(empty_rendered_content, rendered_content)
-
-    @patch("openforms.emails.templatetags.appointments.get_client")
-    def test_appointment_links(self, get_client_mock):
-        config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["fake.nl"]
-        config.save()
-
-        get_client_mock.return_value.get_appointment_links.return_value = [
-            (
-                "Cancel Appointment",
-                "http://fake.nl/api/v1/submission-uuid/token/verify/",
-            ),
-        ]
-        submission = SubmissionFactory.create()
-        AppointmentInfoFactory.create(
-            status=AppointmentDetailsStatus.success,
-            appointment_id="123456789",
-            submission=submission,
-        )
-        email = ConfirmationEmailTemplate(
-            content="""
-        {% appointment_links %}
-        """
-        )
-        rendered_content = email.render(submission)
-
-        self.assertInHTML(
-            '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
-            "http://fake.nl/api/v1/submission-uuid/token/verify/"
-            "</a>",
-            rendered_content,
-        )
-        self.assertIn("Cancel Appointment", rendered_content)
 
 
 @override_settings(
@@ -354,8 +337,6 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
     {% appointment_information %}
 
-    {% appointment_links %}
-
     {% payment_information %}
 
     <p>Met vriendelijke groet,</p>
@@ -439,9 +420,14 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         ref = submission.public_registration_reference
 
         url_exp = r"https?://[a-z0-9:/._-]+"
-        pay_line = _("Payment of € {payment_price} is required.").format(
-            payment_price="12.34"
-        )
+        pay_line = _(
+            "Payment of € {payment_price} is required. You can pay using the link below."
+        ).format(payment_price="12.34")
+
+        with open("test-email.html", "w") as f:
+            f.write(message.alternatives[0][0])
+        with open("test-email.txt", "w") as f:
+            f.write(message.body)
 
         with self.subTest("text"):
             expected_text = inspect.cleandoc(
@@ -452,37 +438,38 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             Kijk voor meer informatie op de homepage (#URL#)
 
-            {_("Summary")}:
+            {_("Summary")}
 
             - Name: Foo
             - Last name: de Bar & de Baas
             - File: my-image.jpg
 
-            {_("Products")}:
+            {_("Appointment information")}
 
+            {_("Products")}:
             - Test product 1 & 2
             - Test product 3
 
             {_("Location")}:
-
             Test location
             1234ab Teststad
 
             {_("Date and time")}:
-
             1 januari 2021, 12:00 - 12:15
 
             {_("Remarks")}:
-
             Remarks
 
-            - Some: Data
+            Some:
+            Data
 
-            {_("cancel appointment").capitalize()}: #URL#
+            If you want to cancel your appointment, you can do so below.
+            {_("Cancel appointment")}: #URL#
+
+            {_("Payment information")}
 
             {pay_line}
-
-            {_("Open payment page")}: #URL#
+            {_("Go to the payment page")}: #URL#
 
             Met vriendelijke groet,
 
