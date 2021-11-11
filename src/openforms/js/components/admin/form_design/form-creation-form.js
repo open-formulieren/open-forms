@@ -16,7 +16,7 @@ import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
-import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
+import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
@@ -50,6 +50,7 @@ const initialFormState = {
         name: '',
         internalName: '',
         uuid: '',
+        url: '',
         slug: '',
         showProgressIndicator: true,
         active: true,
@@ -883,22 +884,24 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 selectedAuthPlugins: state.selectedAuthPlugins,
                                 availablePrefillPlugins: state.availablePrefillPlugins
                             }}>
-                                <StepsFieldSet
-                                    steps={state.formSteps}
-                                    loadingErrors={state.errors.loadingErrors}
-                                    onEdit={onStepEdit}
-                                    onFieldChange={onStepFieldChange}
-                                    onLiteralFieldChange={onStepLiteralFieldChange}
-                                    onDelete={onStepDelete}
-                                    onReorder={onStepReorder}
-                                    onReplace={onStepReplace}
-                                    onAdd={ (e) => {
-                                        e.preventDefault();
-                                        dispatch({type: 'ADD_STEP'});
-                                    }}
-                                    submitting={state.submitting}
-                                    errors={state.errors.formSteps}
-                                />
+                                <FormContext.Provider value={{url: state.form.url}}>
+                                    <StepsFieldSet
+                                        steps={state.formSteps}
+                                        loadingErrors={state.errors.loadingErrors}
+                                        onEdit={onStepEdit}
+                                        onFieldChange={onStepFieldChange}
+                                        onLiteralFieldChange={onStepLiteralFieldChange}
+                                        onDelete={onStepDelete}
+                                        onReorder={onStepReorder}
+                                        onReplace={onStepReplace}
+                                        onAdd={ (e) => {
+                                            e.preventDefault();
+                                            dispatch({type: 'ADD_STEP'});
+                                        }}
+                                        submitting={state.submitting}
+                                        errors={state.errors.formSteps}
+                                    />
+                                </FormContext.Provider>
                             </PluginsContext.Provider>
                         </FormDefinitionsContext.Provider>
                     </Fieldset>

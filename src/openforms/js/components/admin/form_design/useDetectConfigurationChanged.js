@@ -1,15 +1,17 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 
 import { get } from '../../../utils/fetch';
 import { FORM_DEFINITIONS_ENDPOINT } from './constants';
+import { FormContext } from './Context';
 import { stripIdFromComponents } from './utils';
 
 // debounce changes for 100ms
 const DEBOUNCE_MS = 100;
 
 const useDetectConfigurationChanged = (url, configuration) => {
+    const {url: formUrl} = useContext(FormContext);
     const [changed, setChanged] = useState(false);
     const [affectedForms, setAffectedForms] = useState([]);
 
@@ -25,9 +27,11 @@ const useDetectConfigurationChanged = (url, configuration) => {
             if (!url) return;
             const response = await get(url);
             const existingConfigWithoutId = stripIdFromComponents(response.data.configuration);
-            const changed = !isEqual(existingConfigWithoutId, configurationWithoutId);
-            const affectedForms = changed ? response.data.usedIn : [];
-            setChanged(changed);
+            const definitionChanged = !isEqual(existingConfigWithoutId, configurationWithoutId);
+            const affectedForms = definitionChanged
+                ? response.data.usedIn.filter(affectedForm => affectedForm.url !== formUrl)
+                : [];
+            setChanged(affectedForms.length > 0);
             setAffectedForms(affectedForms);
         },
         DEBOUNCE_MS,
