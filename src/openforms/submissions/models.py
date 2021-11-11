@@ -26,7 +26,6 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
-from openforms.utils.fields import StringUUIDField
 from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
@@ -74,7 +73,7 @@ class SubmissionState:
             (
                 step
                 for step in self.submission_steps
-                if step.form_step.uuid == form_step_uuid
+                if str(step.form_step.uuid) == form_step_uuid
             ),
             None,
         )
@@ -106,7 +105,7 @@ class Submission(models.Model):
     Container for submission steps that hold the actual submitted data.
     """
 
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
@@ -614,7 +613,7 @@ class TemporaryFileUploadQuerySet(models.QuerySet):
 
 
 class TemporaryFileUpload(models.Model):
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     content = PrivateMediaFileField(
         verbose_name=_("content"),
         upload_to=temporary_file_upload_to,
@@ -683,7 +682,7 @@ class SubmissionFileAttachmentManager(models.Manager):
 
 
 class SubmissionFileAttachment(models.Model):
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission_step = models.ForeignKey(
         to="SubmissionStep",
         on_delete=models.CASCADE,

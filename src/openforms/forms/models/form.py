@@ -18,7 +18,6 @@ from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
-from openforms.utils.fields import StringUUIDField
 
 from .utils import literal_getter
 
@@ -37,7 +36,7 @@ class Form(models.Model):
     Form model, containing a list of order form steps.
     """
 
-    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     name = models.CharField(_("name"), max_length=150)
     internal_name = models.CharField(
         _("internal name"),

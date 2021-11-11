@@ -151,7 +151,7 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(1, FormVersion.objects.all().count())
         self.assertEqual(1, FormDefinition.objects.all().count())
 
-        response = self.client.post(url, data={"uuid": version.uuid})
+        response = self.client.post(url, data={"uuid": str(version.uuid)})
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 

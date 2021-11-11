@@ -5,8 +5,6 @@ from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 
-from openforms.utils.fields import StringUUIDField
-
 from .utils import literal_getter
 
 
@@ -16,7 +14,7 @@ class FormStep(OrderedModel):
     Allows for FormDefinitions to be reused as FormSteps in other Form instances.
     """
 
-    uuid = StringUUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
     form_definition = models.ForeignKey(
         "forms.FormDefinition", on_delete=models.PROTECT

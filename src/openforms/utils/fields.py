@@ -4,6 +4,15 @@ from . import form_fields
 
 
 class StringUUIDField(models.UUIDField):
+    system_check_deprecated_details = {
+        "msg": (
+            "StringUUIDField has been deprecated. Support for it (except "
+            "in historical migrations) will be removed soon."
+        ),
+        "hint": "Use models.UUIDField instead.",
+        "id": "fields.F001",
+    }
+
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value

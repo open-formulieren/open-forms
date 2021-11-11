@@ -4,11 +4,9 @@ from django.contrib.postgres.fields.jsonb import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.utils.fields import StringUUIDField
-
 
 class FormVersion(models.Model):
-    uuid = StringUUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+    uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
 
     created = models.DateTimeField(
         verbose_name=_("created"),

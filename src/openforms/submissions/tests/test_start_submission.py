@@ -59,7 +59,7 @@ class SubmissionStartTests(APITestCase):
 
         response_json = response.json()
         expected = {
-            "id": submission.uuid,
+            "id": str(submission.uuid),
             "form": f"http://testserver.com{self.form_url}",
             "nextStep": f"http://testserver.com{submission_step_url}",
         }

@@ -38,7 +38,7 @@ class VerifyCancelAppointmentLinkView(RedirectView):
         f.add(
             {
                 "time": submission.appointment_info.start_time.isoformat(),
-                "submission_uuid": submission.uuid,
+                "submission_uuid": str(submission.uuid),
             }
         )
         return f.url
