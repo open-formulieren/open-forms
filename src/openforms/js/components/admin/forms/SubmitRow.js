@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {SubmitAction, AddAnotherAction, ContinueEditingAction} from './ActionButton';
 
-const SubmitRow = ({ onSubmit, preventDefault=true, btnText='Opslaan', isDefault=false, extraClassName='', children }) => {
+
+const SubmitRow = ({ onSubmit, preventDefault=true, isDefault=false, extraClassName='', children }) => {
     let className = 'submit-row';
     if (extraClassName) {
         className += ` ${extraClassName}`;
@@ -16,13 +18,14 @@ const SubmitRow = ({ onSubmit, preventDefault=true, btnText='Opslaan', isDefault
     return (
         <div className={className}>
             { children ?? (
-                <input
-                    type="submit"
-                    value={btnText}
-                    className={isDefault ? 'default' : ''}
-                    name="_save"
-                    onClick={onSubmitClick}
-                />
+                <>
+                    <SubmitAction
+                        className={isDefault ? 'default' : ''}
+                        onClick={onSubmitClick}
+                    />
+                    <AddAnotherAction onClick={onSubmitClick} />
+                    <ContinueEditingAction onClick={onSubmitClick} />
+                </>
             )}
         </div>
     );
@@ -32,7 +35,6 @@ SubmitRow.propTypes = {
     onSubmit: PropTypes.func,
     preventDefault: PropTypes.bool,
     isDefault: PropTypes.bool,
-    btnText: PropTypes.string,
     extraClassName: PropTypes.string,
     children: PropTypes.node,
 };

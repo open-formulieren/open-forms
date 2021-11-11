@@ -379,6 +379,11 @@
     "description": "Component property boolean value \"true\"",
     "originalDefault": "Yes"
   },
+  "P3oGZG": {
+    "defaultMessage": "Save and add another",
+    "description": "Admin save and add another submit button",
+    "originalDefault": "Save and add another"
+  },
   "PdaMqg": {
     "defaultMessage": "Add rule",
     "description": "Add form logic rule button",
@@ -474,6 +479,16 @@
     "description": "Form logic tab title",
     "originalDefault": "Logic"
   },
+  "Wz5QZo": {
+    "defaultMessage": "Active",
+    "description": "Form list 'active' column header",
+    "originalDefault": "Active"
+  },
+  "YQ/Vx0": {
+    "defaultMessage": "Save",
+    "description": "Admin save submit button",
+    "originalDefault": "Save"
+  },
   "YzLSHY": {
     "defaultMessage": "Are you sure you want to delete this?",
     "description": "Default delete confirmation message",
@@ -559,6 +574,11 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "gzAzdU": {
+    "defaultMessage": "Save and continue editing",
+    "description": "Admin save and continue editing submit button",
+    "originalDefault": "Save and continue editing"
+  },
   "h1EURI": {
     "defaultMessage": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration.",
     "description": "Form step previous text field help text",
@@ -608,6 +628,11 @@
     "defaultMessage": "Then",
     "description": "First logic action prefix",
     "originalDefault": "Then"
+  },
+  "k50COT": {
+    "defaultMessage": "Name",
+    "description": "Form list 'name' column header",
+    "originalDefault": "Name"
   },
   "kNOyt+": {
     "defaultMessage": "disabled",

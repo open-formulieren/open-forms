@@ -503,6 +503,12 @@
       "value": "Ja"
     }
   ],
+  "P3oGZG": [
+    {
+      "type": 0,
+      "value": "Save and add another"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
@@ -641,6 +647,18 @@
       "value": "Logica"
     }
   ],
+  "Wz5QZo": [
+    {
+      "type": 0,
+      "value": "Active"
+    }
+  ],
+  "YQ/Vx0": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -743,6 +761,12 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "gzAzdU": [
+    {
+      "type": 0,
+      "value": "Save and continue editing"
+    }
+  ],
   "h1EURI": [
     {
       "type": 0,
@@ -805,6 +829,12 @@
     {
       "type": 0,
       "value": "Dan"
+    }
+  ],
+  "k50COT": [
+    {
+      "type": 0,
+      "value": "Name"
     }
   ],
   "kNOyt+": [

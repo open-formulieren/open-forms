@@ -336,7 +336,7 @@ class Form(models.Model):
         import_form_data(old_version_data, form_version.form)
 
     @property
-    def admin_name(self):
+    def admin_name(self) -> str:
         return self.internal_name or self.name
 
 

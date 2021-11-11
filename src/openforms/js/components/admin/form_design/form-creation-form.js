@@ -14,15 +14,13 @@ import FAIcon from '../FAIcon';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import SubmitRow from '../forms/SubmitRow';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
-import {FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
+import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
     FORM_DEFINITIONS_ENDPOINT,
-    ADMIN_PAGE,
     REGISTRATION_BACKENDS_ENDPOINT,
     AUTH_PLUGINS_ENDPOINT,
     PREFILL_PLUGINS_ENDPOINT,
@@ -38,6 +36,7 @@ import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
+import FormSubmit from './FormSubmit';
 import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
@@ -51,6 +50,7 @@ const initialFormState = {
         name: '',
         internalName: '',
         uuid: '',
+        url: '',
         slug: '',
         showProgressIndicator: true,
         active: true,
@@ -664,7 +664,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         });
     };
 
-    const onSubmit = async () => {
+    const onSubmit = async (event) => {
+        const { name: submitAction } = event.target;
         dispatch({type: 'SUBMIT_STARTED'});
 
         // Update the form
@@ -790,8 +791,18 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             return;
         }
 
-        // redirect back to list/overview page
-        window.location = ADMIN_PAGE;
+        // finalize the "transacton".
+        //
+        // * schedule a success message
+        // * obtain the admin URL to redirect to (detail if editing again, add if creating
+        //   another object or list page for simple save)
+        const messageData = {
+            isCreate: state.newForm,
+            submitAction: submitAction,
+        };
+        const messageResponse = await post(`${formUrl}/admin-message`, csrftoken, messageData);
+        // this full-page reload ensures that the admin messages are displayed
+        window.location = messageResponse.data.redirectUrl;
     };
 
     const onAuthPluginChange = (event) => {
@@ -873,22 +884,24 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 selectedAuthPlugins: state.selectedAuthPlugins,
                                 availablePrefillPlugins: state.availablePrefillPlugins
                             }}>
-                                <StepsFieldSet
-                                    steps={state.formSteps}
-                                    loadingErrors={state.errors.loadingErrors}
-                                    onEdit={onStepEdit}
-                                    onFieldChange={onStepFieldChange}
-                                    onLiteralFieldChange={onStepLiteralFieldChange}
-                                    onDelete={onStepDelete}
-                                    onReorder={onStepReorder}
-                                    onReplace={onStepReplace}
-                                    onAdd={ (e) => {
-                                        e.preventDefault();
-                                        dispatch({type: 'ADD_STEP'});
-                                    }}
-                                    submitting={state.submitting}
-                                    errors={state.errors.formSteps}
-                                />
+                                <FormContext.Provider value={{url: state.form.url}}>
+                                    <StepsFieldSet
+                                        steps={state.formSteps}
+                                        loadingErrors={state.errors.loadingErrors}
+                                        onEdit={onStepEdit}
+                                        onFieldChange={onStepFieldChange}
+                                        onLiteralFieldChange={onStepLiteralFieldChange}
+                                        onDelete={onStepDelete}
+                                        onReorder={onStepReorder}
+                                        onReplace={onStepReplace}
+                                        onAdd={ (e) => {
+                                            e.preventDefault();
+                                            dispatch({type: 'ADD_STEP'});
+                                        }}
+                                        submitting={state.submitting}
+                                        errors={state.errors.formSteps}
+                                    />
+                                </FormContext.Provider>
                             </PluginsContext.Provider>
                         </FormDefinitionsContext.Provider>
                     </Fieldset>
@@ -975,23 +988,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
             </Tabs>
 
-            <SubmitRow onSubmit={onSubmit} isDefault />
-            { !state.newForm ?
-                <SubmitRow extraClassName="submit-row-extended">
-                    <input
-                        type="submit"
-                        value={intl.formatMessage({defaultMessage: 'Copy', description: 'Copy form button'})}
-                        name="_copy"
-                        title={intl.formatMessage({defaultMessage: 'Duplicate this form', description: 'Copy form button title'})}
-                    />
-                    <input
-                        type="submit"
-                        value={intl.formatMessage({defaultMessage: 'Export', description: 'Export form button'})}
-                        name="_export"
-                        title={intl.formatMessage({defaultMessage: 'Export this form', description: 'Export form button title'})}
-                    />
-                </SubmitRow> : null
-            }
+            <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
+
         </ValidationErrorsProvider>
     );
 };

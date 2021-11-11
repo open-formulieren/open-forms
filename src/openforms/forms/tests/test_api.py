@@ -1355,6 +1355,22 @@ class FormDefinitionsAPITests(APITestCase):
 
         self.assertEqual(0, FormDefinition.objects.all().count())
 
+    def test_used_in_forms_serializer_field(self):
+        form_step = FormStepFactory.create()
+        url = reverse(
+            "api:formdefinition-detail", args=(form_step.form_definition.uuid,)
+        )
+        form_url = reverse("api:form-detail", args=(form_step.form.uuid,))
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        self.assertEqual(len(response_data["usedIn"]), 1)
+        self.assertEqual(
+            response_data["usedIn"][0]["url"], f"http://testserver{form_url}"
+        )
+
 
 class ImportExportAPITests(APITestCase):
     def setUp(self):

@@ -16,5 +16,8 @@
 @import './logic-trigger';
 @import './logic-action';
 
+// re-implementation of django admin changelist in React
+@import './changelist';
+
 // third party
 @import './ReactModal';

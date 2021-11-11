@@ -3,6 +3,8 @@ import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from './constants'
 import FormIOBuilder from './builder';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import flatpickr from 'flatpickr';
+import { Dutch } from 'flatpickr/dist/l10n/nl.js';
 
 document.addEventListener('DOMContentLoaded', event => {
     const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
@@ -17,4 +19,10 @@ document.addEventListener('DOMContentLoaded', event => {
             BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
         )
     });
+
+    initFlatpickr();
 });
+
+const initFlatpickr = () => {
+    flatpickr.localize(Dutch);
+};

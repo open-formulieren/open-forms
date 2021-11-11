@@ -499,6 +499,12 @@
       "value": "Yes"
     }
   ],
+  "P3oGZG": [
+    {
+      "type": 0,
+      "value": "Save and add another"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
@@ -637,6 +643,18 @@
       "value": "Logic"
     }
   ],
+  "Wz5QZo": [
+    {
+      "type": 0,
+      "value": "Active"
+    }
+  ],
+  "YQ/Vx0": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -739,6 +757,12 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "gzAzdU": [
+    {
+      "type": 0,
+      "value": "Save and continue editing"
+    }
+  ],
   "h1EURI": [
     {
       "type": 0,
@@ -801,6 +825,12 @@
     {
       "type": 0,
       "value": "Then"
+    }
+  ],
+  "k50COT": [
+    {
+      "type": 0,
+      "value": "Name"
     }
   ],
   "kNOyt+": [

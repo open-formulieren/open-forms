@@ -17,4 +17,13 @@ PluginsContext.displayName = 'PluginsContext';
 const TinyMceContext = React.createContext('');
 TinyMceContext.displayName = 'TinyMceContext';
 
-export { FormDefinitionsContext, PluginsContext, TinyMceContext, FormStepsContext };
+const FormContext = React.createContext({url: ''});
+FormContext.displayName = 'FormContext';
+
+export {
+    FormContext,
+    FormDefinitionsContext,
+    FormStepsContext,
+    PluginsContext,
+    TinyMceContext,
+};
