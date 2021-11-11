@@ -1,13 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 import TinyMCEEditor from './Editor';
 import FormRow from '../forms/FormRow';
 import Field from '../forms/Field';
 import Fieldset from '../forms/Fieldset';
 import {Checkbox, TextInput} from '../forms/Inputs';
+import {getTranslatedChoices} from "../../../utils/i18n";
+import Select from "../forms/Select";
 
-const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
+
+const CONFIRMATION_EMAIL_OPTIONS = [
+    [
+        'global_email',
+        defineMessage({
+            description: 'global_email option label',
+            defaultMessage: 'Global email',
+        })
+    ],
+    [
+        'form_specific_email',
+        defineMessage({
+            description: 'form_specific_email option label',
+            defaultMessage: 'Form specific email',
+        })
+    ],
+    [
+        'no_email',
+        defineMessage({
+            description: 'no_email option label',
+            defaultMessage: 'No email',
+        })
+    ],
+];
+
+
+const ConfirmationEmail = ({ confirmationEmailOption='global_email', template={}, onChange }) => {
+    const intl = useIntl();
+    const confirmationEmailOptions = getTranslatedChoices(intl, CONFIRMATION_EMAIL_OPTIONS);
 
     const { subject, content } = template;
 
@@ -42,23 +72,31 @@ const ConfirmationEmail = ({ shouldSend=false, template={}, onChange }) => {
                 </Field>
             </FormRow>
             <FormRow>
-                <Checkbox
-                    name="form.sendCustomConfirmationEmail"
-                    label={<FormattedMessage defaultMessage="Should send custom confirmation email"
-                                             description="Form send custom confirmation email label"/>}
+                <Field
+                    name="form.confirmationEmail"
+                    label={<FormattedMessage defaultMessage="Confirmation Email"
+                                             description="Form confirmation email label"/>}
                     helpText={<FormattedMessage
-                        defaultMessage="Will send the email specified below.  If unchecked it will send the email specified in the global configuration"
-                        description="Form send custom confirmation email help text"/>}
-                    checked={shouldSend}
-                    onChange={(event) => onCheckboxChange(event, shouldSend)}
-                />
+                        defaultMessage="Will send the email specified."
+                        description="Form confirmation email help text"/>}
+                >
+                    <Select
+                        name="form.confirmationEmail"
+                        choices={confirmationEmailOptions}
+                        value={confirmationEmailOption}
+                        onChange={onChange}
+                    />
+                </Field>
+
+
+
             </FormRow>
         </Fieldset>
     );
 };
 
 ConfirmationEmail.propTypes = {
-    shouldSend: PropTypes.bool,
+    confirmationEmailOption: PropTypes.string,
     template: PropTypes.object,
     onChange: PropTypes.func.isRequired,
 };

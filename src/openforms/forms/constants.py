@@ -17,3 +17,9 @@ class LogicActionTypes(DjangoChoices):
 class PropertyTypes(DjangoChoices):
     bool = ChoiceItem("bool", _("Boolean"))
     json = ChoiceItem("json", _("JSON"))
+
+
+class ConfirmationEmailOptions(DjangoChoices):
+    form_specific_email = ChoiceItem("form_specific_email", _("Form specific email"))
+    global_email = ChoiceItem("global_email", _("Global email"))
+    no_email = ChoiceItem("no_email", _("No email"))

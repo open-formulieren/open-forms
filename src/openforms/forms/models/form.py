@@ -20,6 +20,7 @@ from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 
 from .utils import literal_getter
+from ..constants import ConfirmationEmailOptions
 
 
 class FormQuerySet(models.QuerySet):
@@ -87,14 +88,11 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         ),
     )
-    send_custom_confirmation_email = models.BooleanField(
-        _("send custom confirmation email"),
-        default=False,
-        help_text=_(
-            "Whether the custom confirmation email linked to the form should be sent.  "
-            "Note: If this is not checked the default confirmation email specified in the global"
-            "confirmation will be sent."
-        ),
+    confirmation_email_option = models.CharField(
+        _("confirmation email option"),
+        choices=ConfirmationEmailOptions,
+        default=ConfirmationEmailOptions.global_email,
+        max_length=255,
     )
     begin_text = models.CharField(
         _("begin text"),
