@@ -49,12 +49,6 @@
       "value": "?"
     }
   ],
-  "1GyseX": [
-    {
-      "type": 0,
-      "value": "Submission page content"
-    }
-  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -403,6 +397,12 @@
       "value": "Slug of the form, used in URLs"
     }
   ],
+  "HqVHBq": [
+    {
+      "type": 0,
+      "value": "Will send the email specified."
+    }
+  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -413,6 +413,12 @@
     {
       "type": 0,
       "value": "Select form definition"
+    }
+  ],
+  "ICW7rb": [
+    {
+      "type": 0,
+      "value": "Global email"
     }
   ],
   "Ika4IH": [
@@ -451,10 +457,22 @@
       "value": "Last Name Component"
     }
   ],
+  "JuVh63": [
+    {
+      "type": 0,
+      "value": "Form specific email"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Name/title of the form"
+    }
+  ],
+  "KL5k2f": [
+    {
+      "type": 0,
+      "value": "Content"
     }
   ],
   "KUXH/H": [
@@ -473,12 +491,6 @@
     {
       "type": 0,
       "value": "Copy"
-    }
-  ],
-  "LgJ7vh": [
-    {
-      "type": 0,
-      "value": "Confirmation Email"
     }
   ],
   "M1L9/1": [
@@ -549,12 +561,6 @@
       "value": "Save text"
     }
   ],
-  "QQDUZo": [
-    {
-      "type": 0,
-      "value": "Confirmation Email Content"
-    }
-  ],
   "Qr2wnR": [
     {
       "type": 0,
@@ -615,6 +621,12 @@
       "value": "All Submissions Removal Limit"
     }
   ],
+  "VMMOA0": [
+    {
+      "type": 0,
+      "value": "Page content"
+    }
+  ],
   "VQYmOD": [
     {
       "type": 0,
@@ -649,16 +661,16 @@
       "value": "required"
     }
   ],
-  "VpIy1t": [
-    {
-      "type": 0,
-      "value": "Should send custom confirmation email"
-    }
-  ],
   "WdVKZw": [
     {
       "type": 0,
       "value": "Logic"
+    }
+  ],
+  "XNqV97": [
+    {
+      "type": 0,
+      "value": "Subject"
     }
   ],
   "Wz5QZo": [
@@ -739,6 +751,12 @@
       "value": "Product"
     }
   ],
+  "cpiYVw": [
+    {
+      "type": 0,
+      "value": "No email"
+    }
+  ],
   "d45v2X": [
     {
       "type": 0,
@@ -749,6 +767,12 @@
     {
       "type": 0,
       "value": "Show progress indicator"
+    }
+  ],
+  "e0XOsm": [
+    {
+      "type": 0,
+      "value": "Email Option"
     }
   ],
   "f590Rb": [
@@ -857,12 +881,6 @@
       "value": "disabled"
     }
   ],
-  "kuZk0z": [
-    {
-      "type": 0,
-      "value": "Confirmation Email Subject"
-    }
-  ],
   "l2Wag+": [
     {
       "type": 0,
@@ -891,12 +909,6 @@
     {
       "type": 0,
       "value": "months"
-    }
-  ],
-  "nTFW6b": [
-    {
-      "type": 0,
-      "value": "Will send the email specified below. If unchecked it will send the email specified in the global configuration"
     }
   ],
   "naInSZ": [
