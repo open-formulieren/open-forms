@@ -479,6 +479,11 @@
     "description": "Form logic tab title",
     "originalDefault": "Logic"
   },
+  "Wz5QZo": {
+    "defaultMessage": "Active",
+    "description": "Form list 'active' column header",
+    "originalDefault": "Active"
+  },
   "YQ/Vx0": {
     "defaultMessage": "Save",
     "description": "Admin save submit button",
@@ -623,6 +628,11 @@
     "defaultMessage": "Dan",
     "description": "First logic action prefix",
     "originalDefault": "Then"
+  },
+  "k50COT": {
+    "defaultMessage": "Name",
+    "description": "Form list 'name' column header",
+    "originalDefault": "Name"
   },
   "kNOyt+": {
     "defaultMessage": "uitgeschakeld",

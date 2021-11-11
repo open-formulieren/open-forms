@@ -269,6 +269,11 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
+    admin_url = serializers.SerializerMethodField(
+        label=_("admin URL"),
+        help_text=_("Link to the change/view page in the admin interface"),
+    )
+
     class Meta:
         model = Form
         fields = (
@@ -276,6 +281,7 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
             "uuid",
             "name",
             "active",
+            "admin_url",
         )
         extra_kwargs = {
             "url": {
@@ -283,7 +289,18 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_field": "uuid",
                 "lookup_url_kwarg": "uuid_or_slug",
             },
+            "name": {
+                "source": "admin_name",
+            },
         }
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_admin_url(self, obj: Form) -> str:
+        admin_url = reverse("admin:forms_form_change", args=(obj.pk,))
+        request = self.context.get("request")
+        if not request:
+            return admin_url
+        return request.build_absolute_uri(admin_url)
 
 
 class FormDefinitionDetailSerializer(FormDefinitionSerializer):

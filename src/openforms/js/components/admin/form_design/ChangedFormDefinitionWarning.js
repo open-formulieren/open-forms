@@ -3,6 +3,35 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import Modal from '../Modal';
+import {ChangelistTable, ChangelistColumn} from '../tables';
+
+
+const AffectedFormType = PropTypes.shape({
+    url: PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    active: PropTypes.bool.isRequired,
+    adminUrl: PropTypes.string.isRequired,
+});
+
+
+const AffectedFormsTable = ({children: forms}) => (
+    <ChangelistTable linkColumn={0} linkProp="adminUrl" rowKey="uuid" data={forms}>
+
+        <ChangelistColumn objProp="name">
+            <FormattedMessage description="Form list 'name' column header" defaultMessage="Name" />
+        </ChangelistColumn>
+
+        <ChangelistColumn objProp="active" isBool>
+            <FormattedMessage description="Form list 'active' column header" defaultMessage="Active" />
+        </ChangelistColumn>
+
+    </ChangelistTable>
+);
+
+AffectedFormsTable.propTypes = {
+    children: PropTypes.arrayOf(AffectedFormType),
+};
 
 
 const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
@@ -17,11 +46,9 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
     return (
         <>
             <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} title={`Formulieren (${affectedForms.length})`}>
-                <ul>
-                    {affectedForms.map(form => (
-                        <li key={form.uuid}>{(form.internalName || form.name)}</li>
-                    ))}
-                </ul>
+                <AffectedFormsTable>
+                    {affectedForms}
+                </AffectedFormsTable>
             </Modal>
 
             <ul className="messagelist">
@@ -45,12 +72,7 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
 
 ChangedFormDefinitionWarning.propTypes = {
     changed: PropTypes.bool,
-    affectedForms: PropTypes.arrayOf(PropTypes.shape({
-        url: PropTypes.string.isRequired,
-        uuid: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        active: PropTypes.bool.isRequired,
-    })),
+    affectedForms: PropTypes.arrayOf(AffectedFormType),
 };
 
 
