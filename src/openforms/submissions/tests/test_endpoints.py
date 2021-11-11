@@ -21,10 +21,6 @@ from ..tokens import submission_resume_token_generator
 
 class SubmissionResumeViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
-        config = GlobalConfiguration.get_solo()
-        config.sdk_url = "http://maykinmedia-sdk.nl/"
-        config.save()
-
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[
@@ -35,6 +31,7 @@ class SubmissionResumeViewTests(TestCase):
                     "confirmationRecipient": True,
                 },
             ],
+            form_url="http://maykinmedia.nl/myform",
             submitted_data={"email": "test@test.nl"},
         )
         # add a second step
@@ -55,7 +52,7 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        f = furl(config.sdk_url)
+        f = furl(submission.form_url)
         # furl adds paths with the /= operator
         f /= "stap"
         f /= submission.get_last_completed_step().form_step.form_definition.slug
@@ -70,24 +67,6 @@ class SubmissionResumeViewTests(TestCase):
         self.assertIn(
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
         )
-
-    def test_runtime_error_raised_when_no_sdk_url_is_specified(self):
-        config = GlobalConfiguration.get_solo()
-        config.sdk_url = ""
-        config.save()
-
-        submission = SubmissionFactory.create()
-
-        endpoint = reverse(
-            "submissions:resume",
-            kwargs={
-                "token": submission_resume_token_generator.make_token(submission),
-                "submission_uuid": submission.uuid,
-            },
-        )
-
-        with self.assertRaises(RuntimeError):
-            self.client.get(endpoint)
 
     def test_403_response_with_unfound_submission(self):
         endpoint = reverse(
@@ -148,10 +127,6 @@ class SubmissionResumeViewTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_token_valid_on_same_day(self):
-        config = GlobalConfiguration.get_solo()
-        config.sdk_url = "http://maykinmedia-sdk.nl/"
-        config.save()
-
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[

@@ -34,12 +34,7 @@ class ResumeSubmissionView(RedirectView):
 
         add_submmission_to_session(submission, self.request.session)
 
-        config = GlobalConfiguration.get_solo()
-
-        if not config.sdk_url:
-            raise RuntimeError("No SDK URL configured")
-
-        f = furl(config.sdk_url)
+        f = furl(submission.form_url)
         # furl adds paths with the /= operator
         f /= "stap"
         f /= submission.get_last_completed_step().form_step.form_definition.slug
