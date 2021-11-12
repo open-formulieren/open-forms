@@ -1,5 +1,8 @@
+import logging
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError, transaction
 
 from celery_once import QueueOnce
 
@@ -10,6 +13,8 @@ from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email
 
 __all__ = ["maybe_send_confirmation_email"]
+
+logger = logging.getLogger(__name__)
 
 
 @app.task(
@@ -41,6 +46,7 @@ def maybe_send_confirmation_email(submission_id: int) -> None:
 
 
 @app.task(ignore_result=True)
+@transaction.atomic()
 def send_confirmation_email(submission_id: int) -> None:
     """
     Render and send the confirmation e-mail if conditions are met.
@@ -57,10 +63,22 @@ def send_confirmation_email(submission_id: int) -> None:
     calling this task for immediate execution. The immediate execution would then not
     be scheduled and we would always get the timeout e-mail.
 
-    So, if we're really having a lot of bad luck, a race condition is possible and then
-    the confirmation e-mail would be sent out twice, which is an acceptable risk.
+    We protect against race-conditions by locking the submission database row, if a
+    lock can not be acquired, this means that another transaction already holds the lock
+    and is sending an e-mail, so we abort our own attempt.
     """
-    submission = Submission.objects.get(id=submission_id)
+    try:
+        submission = Submission.objects.select_for_update(nowait=True).get(
+            id=submission_id
+        )
+    except DatabaseError:
+        logger.debug(
+            "Submission %d confirmation e-mail task failed to acquire a lock. This is "
+            "likely intended behaviour to prevent race conditions.",
+            submission_id,
+        )
+        return
+
     if submission.confirmation_email_sent:
         return
 

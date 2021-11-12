@@ -174,6 +174,29 @@ def registration_skip(submission: "Submission"):
 # - - -
 
 
+def registration_payment_update_start(submission: "Submission", plugin):
+    _create_log(submission, "registration_payment_update_start", plugin=plugin)
+
+
+def registration_payment_update_success(submission: "Submission", plugin):
+    _create_log(submission, "registration_payment_update_success", plugin=plugin)
+
+
+def registration_payment_update_failure(
+    submission: "Submission", error: Exception, plugin=None
+):
+    _create_log(
+        submission, "registration_payment_update_failure", plugin=plugin, error=error
+    )
+
+
+def registration_payment_update_skip(submission: "Submission"):
+    _create_log(submission, "registration_payment_update_skip")
+
+
+# - - -
+
+
 def confirmation_email_start(submission: "Submission"):
     _create_log(submission, "confirmation_email_start")
 

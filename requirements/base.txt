@@ -178,7 +178,7 @@ drf-nested-routers==0.93.3
     # via -r requirements/base.in
 git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb#egg=drf-polymorphic
     # via -r requirements/base.in
-drf-spectacular==0.17.2
+drf-spectacular==0.20.2
     # via -r requirements/base.in
 git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
     # via -r requirements/base.in

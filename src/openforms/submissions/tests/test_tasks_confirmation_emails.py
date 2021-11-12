@@ -1,8 +1,11 @@
+import threading
+import time
 from decimal import Decimal
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.db import close_old_connections
+from django.test import TestCase, TransactionTestCase, override_settings
 
 from privates.test import temp_private_root
 
@@ -333,3 +336,37 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
+
+
+class RaceConditionTests(TransactionTestCase):
+    @patch("openforms.submissions.tasks.emails._send_confirmation_email")
+    def test_concurrent_send_confirmation_email_calls(
+        self, mock_send_confirmation_email
+    ):
+        """
+        Assert that simultaneously scheduled send_email tasks do not run twice.
+
+        There exists a race condition with the browser return flow + webhook return flow.
+        """
+        submission = SubmissionFactory.create(
+            completed=True, confirmation_email_sent=False
+        )
+        ConfirmationEmailTemplateFactory.create(form=submission.form, content="test")
+
+        def fake_send(*args, **kwargs):
+            time.sleep(0.5)
+
+        mock_send_confirmation_email.side_effect = fake_send
+
+        def do_send_confirmation_email():
+            send_confirmation_email(submission.id)
+            close_old_connections()
+
+        thread1 = threading.Thread(target=do_send_confirmation_email)
+        thread2 = threading.Thread(target=do_send_confirmation_email)
+        thread1.start()
+        thread2.start()
+        thread1.join()
+        thread2.join()
+
+        mock_send_confirmation_email.assert_called_once()

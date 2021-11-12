@@ -94,13 +94,13 @@ def get_reference_for_submission(submission: Submission) -> str:
 
 
 def get_random_reference() -> str:
-    # 36 characters with length 6 -> 36^6 possible combinations.
-    # that's roughly 1.5 billion combinations before we run out of options.
+    # 32 characters with length 6 -> 32^6 possible combinations.
+    # that's roughly one billion combinations before we run out of options.
     # Also note that submissions are pruned after a (configurable) number of days, so
     # used references do become available again after that time.
     # TODO: maybe include date param?
     random_string = get_random_string(
-        length=6, allowed_chars="ABCDEFGHIJKLMNPQRSTUVWXYZ123456789"
+        length=6, allowed_chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     )
     return f"OF-{random_string}"
 

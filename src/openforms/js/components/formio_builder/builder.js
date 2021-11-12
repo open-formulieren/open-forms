@@ -1,10 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
 import React, {useRef, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {FormBuilder} from 'react-formio';
+import {FormBuilder, Templates} from 'react-formio';
 
 import nlStrings from './translation';
+import customTemplates from './customTemplates';
 
+Templates.current = customTemplates;
 
 const BUILDER_OPTIONS = {
     builder: {
