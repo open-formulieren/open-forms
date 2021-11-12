@@ -4,6 +4,7 @@ from typing import NoReturn
 
 from django.conf import settings
 from django.template.loader import get_template
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
@@ -38,7 +39,9 @@ class EmailRegistration(BasePlugin):
         context = {
             "form_name": submission.form.admin_name,
             "public_reference": submission.public_registration_reference,
-            "datetime": submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
+            "datetime": timezone.localtime(submission.completed_on).strftime(
+                "%H:%M:%S %d-%m-%Y"
+            ),
             "submitted_data": submitted_data,
         }
 
