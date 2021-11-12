@@ -1,0 +1,51 @@
+{% load i18n %}
+{% if appointment %}
+    <h2 style="margin: 1em 0; font-size: 1.5em;">{% trans "Appointment information" %}</h2>
+
+    <table style="width: 100%; border: none; border-collapse: collapse;" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Products" %}</td>
+            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
+                {% for product in appointment.products %}
+                    {{ product.name }}{% if not forloop.last %}<br />{% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Location" %}</td>
+            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
+                {{ appointment.location.name }}
+                {% if appointment.location.address %}<br />{{ appointment.location.address }}{% endif %}
+                {% if appointment.location.city %}<br />{{ appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Date and time" %}</td>
+            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
+                {{ appointment.start_at.date }}, {{ appointment.start_at.time }}{% if appointment.end_at %} - {{ appointment.end_at.time }}{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Remarks" %}</td>
+            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
+                {{ appointment.remarks|linebreaksbr }}
+            </td>
+        </tr>
+        {% if appointment.other %}
+            {% for key, value in appointment.other.items %}
+                <tr>
+                    <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{{ key }}</td>
+                    <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ value }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
+
+    <p>
+        {% trans "If you want to cancel your appointment, you can do so below." %}
+    </p>
+    <p>
+        <a href="{{ appointment_cancel_link }}" rel="nofollow">{% trans "Cancel appointment" %}</a>
+    </p>
+        
+{% endif %}

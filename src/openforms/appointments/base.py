@@ -1,11 +1,10 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -216,22 +215,7 @@ class BasePlugin:
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_appointment_details_markup(self, identifier: str, as_text=False) -> str:
-        """
-        Render the the appointment details as a template to include in e-mails or webpages.
-
-        Either renders an HTML or text version.
-        """
-        details = self.get_appointment_details(identifier)
-
-        if as_text:
-            template_name = "appointments/appointment_details.txt"
-        else:
-            template_name = "appointments/appointment_details.html"
-
-        return render_to_string(template_name, {"appointment": details})
-
-    def get_appointment_links(self, submission: Submission) -> List[Tuple[str, str]]:
+    def get_cancel_link(self, submission: Submission) -> str:
 
         token = submission_appointment_token_generator.make_token(submission)
 
@@ -242,6 +226,5 @@ class BasePlugin:
                 "submission_uuid": submission.uuid,
             },
         )
-        cancel_url = urljoin(settings.BASE_URL, cancel_path)
 
-        return [(_("cancel appointment"), cancel_url)]
+        return urljoin(settings.BASE_URL, cancel_path)

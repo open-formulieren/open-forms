@@ -1,0 +1,19 @@
+{% load i18n %}
+{% if payment_required %}
+    <h2 style="margin: 1em 0; font-size: 1.5em;">{% trans "Payment information" %}</h2>
+    <p>
+        {% if payment_user_has_paid %}
+            {% blocktrans trimmed %}
+                Payment of &euro; {{ payment_price }} received.
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans trimmed %}
+                Payment of &euro; {{ payment_price }} is required. You can pay using the link below.
+            {% endblocktrans %}
+
+            <p>
+                <a href="{{ payment_url }}" rel="nofollow">{% trans "Go to the payment page" %}</a>
+            </p>
+        {% endif %}
+    </p>
+{% endif %}

@@ -1,9 +1,0 @@
-{% load i18n %}
-{% if appointment_links %}
-    <h1>{% trans "Appointment information" %}</h1>
-    <p>
-    {% for label, url in appointment_links %}
-        {{ label|capfirst }}: {{ url|urlize }}<br>
-    {% endfor %}
-    </p>
-{% endif %}

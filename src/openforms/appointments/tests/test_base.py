@@ -2,7 +2,6 @@ from datetime import datetime
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils.translation import gettext as _
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -39,42 +38,12 @@ class BasePluginTests(TestCase):
     def setUpTestData(cls):
         cls.plugin = TestPlugin()
 
-    def test_get_appointment_details_markup(self):
-        identifier = "1234567890"
-
-        result = self.plugin.get_appointment_details_markup(identifier)
-
-        self.assertIn("Test product 1", result)
-        self.assertIn("Test product 2", result)
-        self.assertIn("Test location", result)
-        self.assertIn("1 januari 2021, 12:00 - 12:15", result)
-        self.assertIn("Remarks", result)
-        self.assertIn("Some", result)
-        self.assertIn("<h1>Data</h1>", result)
-
-    def test_get_appointment_details_markup_as_text(self):
-        identifier = "1234567890"
-
-        result = self.plugin.get_appointment_details_markup(identifier, as_text=True)
-
-        self.assertIn("Test product 1", result)
-        self.assertIn("Test product 2", result)
-        self.assertIn("Test location", result)
-        self.assertIn("1 januari 2021, 12:00 - 12:15", result)
-        self.assertIn("Remarks", result)
-        self.assertIn("Some", result)
-
-        # this was in the data and should show up
-        self.assertIn("<h1>Data</h1>", result)
-
-        self.assertNotIn("<td", result)
-
     @override_settings(BASE_URL="https://example.com/")
-    def test_get_appointment_links(self):
+    def test_get_cancel_link(self):
         submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
 
-        result = self.plugin.get_appointment_links(submission)
+        result = self.plugin.get_cancel_link(submission)
 
         cancel_path = reverse(
             "appointments:appointments-verify-cancel-appointment-link",
@@ -84,4 +53,4 @@ class BasePluginTests(TestCase):
             },
         )
         cancel_url = f"https://example.com{cancel_path}"
-        self.assertEqual([(_("cancel appointment"), cancel_url)], result)
+        self.assertEqual(cancel_url, result)
