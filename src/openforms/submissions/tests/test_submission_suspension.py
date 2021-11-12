@@ -115,7 +115,12 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         email = mail.outbox[0]
         self.assertEqual(email.to, ["hello@open-forms.nl"])
-        self.assertEqual(email.subject, _("Your form submission"))
+        self.assertEqual(
+            email.subject, _(f"Opgeslagen formulier {submission.form.name}")
+        )
+
+        self.assertIn(submission.form.name, email.body)
+        self.assertIn(timezone.now().date().strftime("%d-%m-%Y"), email.body)
 
         submission.refresh_from_db()
         token = submission_resume_token_generator.make_token(submission)
@@ -136,4 +141,4 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         )
         datetime_removed = submission.created_on + timedelta(days=days_until_removal)
 
-        self.assertIn(str(datetime_removed.date()), email.body)
+        self.assertIn(datetime_removed.date().strftime("%d-%m-%Y"), email.body)

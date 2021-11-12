@@ -305,10 +305,10 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         datetime_removed = instance.created_on + timedelta(days=days_until_removal)
 
         context = {
-            'form_name': instance.form.name,
-            'save_date': timezone.now().date().strftime("%d-%m-%Y"),
-            'expiration_date': datetime_removed.date().strftime("%d-%m-%Y"),
-            'continue_url': continue_url
+            "form_name": instance.form.name,
+            "save_date": timezone.now().date().strftime("%d-%m-%Y"),
+            "expiration_date": datetime_removed.date().strftime("%d-%m-%Y"),
+            "continue_url": continue_url,
         }
 
         subject_template = get_template("emails/save_form_subject.txt")
