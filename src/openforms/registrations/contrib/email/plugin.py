@@ -25,7 +25,7 @@ class EmailRegistration(BasePlugin):
     configuration_options = EmailOptionsSerializer
 
     def register_submission(self, submission: Submission, options: dict) -> None:
-        submitted_data = submission.get_merged_data()
+        submitted_data = submission.get_printable_data()
 
         # explicitly get a reference before registering
         set_submission_reference(submission)
