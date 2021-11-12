@@ -34,8 +34,8 @@
         {% if appointment.other %}
             {% for key, value in appointment.other.items %}
                 <tr>
-                    <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{{ key|safe }}</td>
-                    <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ value|safe }}</td>
+                    <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{{ key }}</td>
+                    <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ value }}</td>
                 </tr>
             {% endfor %}
         {% endif %}

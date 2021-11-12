@@ -2,6 +2,7 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
@@ -247,6 +248,13 @@ class Plugin(BasePlugin):
 
             qrcode_base64 = create_base64_qrcode(qrcode)
 
+            qr_label = _("QR-code")
+            qr_value = format_html(
+                '<img src="data:image/png;base64,{qrcode_base64}" alt="{qrcode}" />',
+                qrcode_base64=qrcode_base64,
+                qrcode=qrcode,
+            )
+
             result = AppointmentDetails(
                 identifier=identifier,
                 products=app_products,
@@ -260,11 +268,7 @@ class Plugin(BasePlugin):
                 start_at=details.appStartTime,
                 end_at=details.appEndTime,
                 remarks=details.appointmentDesc,
-                other={
-                    _(
-                        "QR-code"
-                    ): f'<img src="data:image/png;base64,{qrcode_base64}" alt="{qrcode}" />'
-                },
+                other={qr_label: qr_value},
             )
 
             return result
