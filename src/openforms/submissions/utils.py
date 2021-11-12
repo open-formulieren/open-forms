@@ -5,6 +5,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import Context, Template
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html, strip_tags_plus
@@ -107,7 +108,9 @@ def send_confirmation_email(submission: Submission):
         == ConfirmationEmailOptions.global_email
     ):
         config = GlobalConfiguration.get_solo()
-        subject = config.confirmation_email_subject
+        subject = Template(config.confirmation_email_subject).render(
+            Context({"form_name": submission.form.name})
+        )
         html_content = config.render_confirmation_email_content(submission)
         text_content = config.render_confirmation_email_content(
             submission, {"rendering_text": True}
