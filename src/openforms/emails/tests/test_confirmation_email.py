@@ -74,6 +74,11 @@ NESTED_COMPONENT_CONF = {
 }
 
 
+class FixedCancelLinkPlugin(TestPlugin):
+    def get_cancel_link(self, submission) -> str:
+        return "http://fake.nl/api/v1/submission-uuid/token/verify/"
+
+
 @override_settings(CACHES=NOOP_CACHES)
 class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_validate_content_syntax(self):
@@ -179,13 +184,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
-        return_value=TestPlugin(),
+        return_value=FixedCancelLinkPlugin(),
     )
     def test_appointment_information(self, get_client_mock):
-        get_client_mock.return_value.get_cancel_link.return_value = (
-            "http://fake.nl/api/v1/submission-uuid/token/verify/"
-        )
-
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["fake.nl"]
         config.save()
@@ -205,15 +206,14 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("1 januari 2021, 12:00 - 12:15", rendered_content)
         self.assertIn("Remarks", rendered_content)
         self.assertIn("Some", rendered_content)
-        self.assertIn("<h1>Data</h1>", rendered_content)
+        self.assertIn("&lt;h1&gt;Data&lt;/h1&gt;", rendered_content)
 
         self.assertInHTML(
             '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
-            "http://fake.nl/api/v1/submission-uuid/token/verify/"
-            "</a>",
+            + _("Cancel appointment")
+            + "</a>",
             rendered_content,
         )
-        self.assertIn("Cancel Appointment", rendered_content)
 
     def test_appointment_information_with_no_appointment_id(self):
         submission = SubmissionFactory.create()
@@ -266,9 +266,9 @@ class PaymentConfirmationEmailTests(TestCase):
         rendered_content = email.render(submission)
 
         # show amount
-        literal = _("Payment of &euro;%(payment_price)s is required.") % {
-            "payment_price": submission.form.product.price
-        }
+        literal = _(
+            "Payment of &euro; %(payment_price)s is required. You can pay using the link below."
+        ) % {"payment_price": submission.form.product.price}
         self.assertIn(literal, rendered_content)
 
         # show link
@@ -293,7 +293,7 @@ class PaymentConfirmationEmailTests(TestCase):
         rendered_content = email.render(submission)
 
         # still show amount
-        literal = _("Payment of &euro;%(payment_price)s received.") % {
+        literal = _("Payment of &euro; %(payment_price)s received.") % {
             "payment_price": submission.form.product.price
         }
         self.assertIn(literal, rendered_content)
@@ -423,11 +423,6 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         pay_line = _(
             "Payment of € {payment_price} is required. You can pay using the link below."
         ).format(payment_price="12.34")
-
-        with open("test-email.html", "w") as f:
-            f.write(message.alternatives[0][0])
-        with open("test-email.txt", "w") as f:
-            f.write(message.body)
 
         with self.subTest("text"):
             expected_text = inspect.cleandoc(
