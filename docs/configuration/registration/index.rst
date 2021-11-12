@@ -10,6 +10,6 @@ Registration plugins
    objects
    stufzds
    zgw
+   msgraph
    email
    local
-
