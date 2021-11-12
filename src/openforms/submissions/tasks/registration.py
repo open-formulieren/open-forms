@@ -94,7 +94,7 @@ def get_reference_for_submission(submission: Submission) -> str:
 
 
 def get_random_reference() -> str:
-    # 36 characters with length 6 -> 32^6 possible combinations.
+    # 32 characters with length 6 -> 32^6 possible combinations.
     # that's roughly one billion combinations before we run out of options.
     # Also note that submissions are pruned after a (configurable) number of days, so
     # used references do become available again after that time.

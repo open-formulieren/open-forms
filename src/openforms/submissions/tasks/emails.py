@@ -63,8 +63,9 @@ def send_confirmation_email(submission_id: int) -> None:
     calling this task for immediate execution. The immediate execution would then not
     be scheduled and we would always get the timeout e-mail.
 
-    So, if we're really having a lot of bad luck, a race condition is possible and then
-    the confirmation e-mail would be sent out twice, which is an acceptable risk.
+    We protect against race-conditions by locking the submission database row, if a
+    lock can not be acquired, this means that another transaction already holds the lock
+    and is sending an e-mail, so we abort our own attempt.
     """
     try:
         submission = Submission.objects.select_for_update(nowait=True).get(
