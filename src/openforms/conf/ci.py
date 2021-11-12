@@ -18,7 +18,17 @@ CACHES = {
     "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
 }
 
-LOGGING = None  # shut up logging
+# shut up logging
+LOGGING["loggers"].update(
+    {
+        "openforms.api.exception_handling": {
+            "handlers": ["console"],
+            "level": "CRITICAL",
+            "propagate": False,
+        },
+    }
+)
+
 
 ENVIRONMENT = "CI"
 

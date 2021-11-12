@@ -160,7 +160,6 @@ INSTALLED_APPS = [
     "openforms.multidomain",
     "openforms.products",
     "openforms.ui",
-    "openforms.utils",
     "openforms.submissions",
     "openforms.logging.apps.LoggingAppConfig",
     "openforms.contrib.brp",
@@ -189,6 +188,7 @@ INSTALLED_APPS = [
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
     "openforms.data_removal",
+    "openforms.utils",
 ]
 
 MIDDLEWARE = [

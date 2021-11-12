@@ -1,3 +1,5 @@
+from io import StringIO
+
 from django.core.management import call_command
 from django.test import override_settings
 from django.urls import reverse
@@ -21,7 +23,7 @@ class CookieNoticeTests(WebTest):
         cls.url = reverse("forms:form-detail", kwargs={"slug": cls.form.slug})
 
         # load some default cookie groups and cookies
-        call_command("loaddata", "cookie_consent")
+        call_command("loaddata", "cookie_consent", stdout=StringIO())
 
         config = GlobalConfiguration.get_solo()
 

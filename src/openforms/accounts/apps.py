@@ -1,3 +1,5 @@
+from io import StringIO
+
 from django.apps import AppConfig, apps
 from django.contrib.auth.management import create_permissions
 from django.contrib.contenttypes.management import create_contenttypes
@@ -15,9 +17,9 @@ def update_admin_index(sender, **kwargs):
 
     for app_config in apps.get_app_configs():
         if app_config.name.startswith(project_name):
-            create_contenttypes(app_config)
+            create_contenttypes(app_config, verbosity=0)
 
-    call_command("loaddata", "default_admin_index", verbosity=0)
+    call_command("loaddata", "default_admin_index", verbosity=0, stdout=StringIO())
 
 
 def update_groups(sender, **kwargs):
@@ -26,9 +28,9 @@ def update_groups(sender, **kwargs):
 
     for app_config in apps.get_app_configs():
         if app_config.name.startswith(project_name):
-            create_permissions(app_config)
+            create_permissions(app_config, verbosity=0)
 
-    call_command("loaddata", "default_groups", verbosity=0)
+    call_command("loaddata", "default_groups", verbosity=0, stdout=StringIO())
 
 
 class AccountsConfig(AppConfig):

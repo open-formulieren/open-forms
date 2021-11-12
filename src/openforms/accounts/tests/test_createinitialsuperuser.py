@@ -1,3 +1,5 @@
+from io import StringIO
+
 from django.conf import settings
 from django.core import mail
 from django.core.management import call_command
@@ -15,6 +17,7 @@ class CreateInitialSuperuserTests(TestCase):
             "--email-password-reset",
             username="maykin",
             email="support@maykinmedia.nl",
+            stdout=StringIO(),
         )
         user = User.objects.get()
 
@@ -40,6 +43,7 @@ class CreateInitialSuperuserTests(TestCase):
             "--email-password-reset",
             username="maykin",
             email="support@maykinmedia.nl",
+            stdout=StringIO(),
         )
         user = User.objects.get()
 

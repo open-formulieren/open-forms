@@ -48,7 +48,7 @@ class eHerkenningAssertionConsumerServiceView(
             "urn:etoegang:core:LegalSubjectID",
         ]
         for expected_id in expected_ids:
-            if not expected_id in attributes:
+            if expected_id not in attributes:
                 continue
 
             subjects = attributes[expected_id]
