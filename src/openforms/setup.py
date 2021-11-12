@@ -11,7 +11,9 @@ they are available for Django settings initialization.
 """
 import logging
 import os
+import sys
 import tempfile
+import warnings
 
 from django.conf import settings
 from django.urls import reverse
@@ -92,3 +94,16 @@ def monkeypatch_requests():
         return self._original_request(*args, **kwargs)
 
     Session.request = new_request
+
+
+def mute_deprecation_warnings():
+    """
+    Mute :class:`DeprecationWarning` again after O365 enabled them.
+
+    See https://github.com/O365/python-o365/blob/master/O365/__init__.py for the culprit.
+
+    See https://docs.python.org/3.8/library/warnings.html#overriding-the-default-filter
+    for the stdlib documentation.
+    """
+    if not sys.warnoptions:
+        warnings.simplefilter("ignore", DeprecationWarning, append=False)

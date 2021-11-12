@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
-from openforms.setup import monkeypatch_cookie_consent
+from openforms.setup import monkeypatch_cookie_consent, mute_deprecation_warnings
 
 
 class UtilsConfig(AppConfig):
@@ -12,4 +12,5 @@ class UtilsConfig(AppConfig):
         # register custom converters
         from .api import drf_jsonschema  # noqa
 
+        mute_deprecation_warnings()
         monkeypatch_cookie_consent()
