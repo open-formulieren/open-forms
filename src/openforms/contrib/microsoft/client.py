@@ -59,8 +59,8 @@ class MSGraphUploadHelper:
 
     def upload_disk_file(self, input_path: str, remote_path: Union[str, Path]):
         stream_size = os.path.getsize(input_path)
-        stream = open(input_path, "rb")
-        return self.upload_stream(stream, stream_size, remote_path)
+        with open(input_path, "rb") as stream:
+            return self.upload_stream(stream, stream_size, remote_path)
 
     def upload_django_file(self, input_field, remote_path: Union[str, Path]):
         stream_size = input_field.size

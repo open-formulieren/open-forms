@@ -16,8 +16,8 @@ Open Forms can be configured to access these API's to register form submissions.
    external system, offered or maintained by a service provider.
 
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
 This registration backend requires a Microsoft Azure application.
 These can be registered and managed in the `Azure App Registrations`_ portal.
