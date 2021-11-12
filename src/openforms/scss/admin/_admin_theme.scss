@@ -86,6 +86,12 @@ div.breadcrumbs {
   }
 }
 
+.form-row {
+  // #748 client requested increased contrast for this element
+  // here we override a django admin style
+  border-bottom-color: #e5e5e5 !important;
+}
+
 .object-tools {
   a:focus, a:hover {
     background-color: $color_dark;
