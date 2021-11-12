@@ -28,7 +28,6 @@ from stuf.constants import (
     STUF_ZDS_EXPIRY_MINUTES,
     EndpointSecurity,
     EndpointType,
-    SOAPVersion,
 )
 from stuf.models import StufService
 

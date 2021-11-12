@@ -1,3 +1,3 @@
-from .form import FormAdmin
-from .form_definition import FormDefinitionAdmin
-from .form_version import FormVersionAdmin
+from . import form  # noqa
+from . import form_definition  # noqa
+from . import form_version  # noqa

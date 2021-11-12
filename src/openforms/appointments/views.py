@@ -6,7 +6,6 @@ from django.views.generic import RedirectView
 
 from furl import furl
 
-from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.submissions.utils import add_submmission_to_session
 

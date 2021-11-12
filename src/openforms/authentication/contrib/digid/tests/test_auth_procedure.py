@@ -2,7 +2,6 @@ import os
 from base64 import b64decode, b64encode
 from hashlib import sha1
 from unittest.mock import patch
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.template import Context, Template
@@ -15,11 +14,6 @@ from lxml import etree
 from requests_mock import Mocker
 from rest_framework import status
 
-from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
-from openforms.authentication.contrib.digid.views import (
-    DIGID_MESSAGE_PARAMETER,
-    LOGIN_CANCELLED,
-)
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,

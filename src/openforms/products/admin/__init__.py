@@ -1,1 +1,1 @@
-from .product import ProductAdmin
+from . import product  # noqa

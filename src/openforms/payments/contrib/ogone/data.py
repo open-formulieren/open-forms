@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Optional, Sequence, Union
+from typing import Union
 
 
 @dataclasses.dataclass()

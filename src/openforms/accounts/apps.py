@@ -21,8 +21,6 @@ def update_admin_index(sender, **kwargs):
 
 
 def update_groups(sender, **kwargs):
-    from django.contrib.auth.models import Group
-
     # Make sure project permissions are created.
     project_name = __name__.split(".")[0]
 

@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Callable, Iterable, Iterator, List, Tuple, Type, Union
+from typing import Callable, Iterable, List, Type, Union
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 

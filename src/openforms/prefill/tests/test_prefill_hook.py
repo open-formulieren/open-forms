@@ -6,7 +6,6 @@ from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import apply_prefill
-from ..base import BasePlugin
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry
 

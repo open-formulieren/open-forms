@@ -1,1 +1,1 @@
-from .form_builder import FormBuilderWidget
+from .form_builder import FormBuilderWidget  # noqa

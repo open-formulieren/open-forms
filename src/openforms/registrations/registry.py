@@ -1,9 +1,4 @@
-from typing import TYPE_CHECKING
-
 from openforms.plugins.registry import BaseRegistry
-
-if TYPE_CHECKING:
-    from openforms.submissions.models import Submission
 
 
 class Registry(BaseRegistry):

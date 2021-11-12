@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-from django.utils.translation import gettext_lazy as _
-
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase

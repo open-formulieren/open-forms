@@ -1,4 +1,3 @@
-import re
 from typing import List, Optional
 
 from django.core.exceptions import ValidationError

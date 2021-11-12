@@ -1,5 +1,4 @@
 from decimal import Decimal
-from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
 

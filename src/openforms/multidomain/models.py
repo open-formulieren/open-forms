@@ -1,5 +1,3 @@
-from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 

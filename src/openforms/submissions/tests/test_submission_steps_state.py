@@ -8,7 +8,6 @@ API responses.
 
 from django.test import TestCase
 
-from openforms.forms.constants import AvailabilityOptions
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from .factories import SubmissionFactory, SubmissionStepFactory
