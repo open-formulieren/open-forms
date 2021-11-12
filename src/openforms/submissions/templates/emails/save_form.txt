@@ -1,0 +1,10 @@
+Geachte heer/mevrouw,
+
+U heeft via de website het formulier "{{ form_name }}" tussentijds opgeslagen op {{ save_date }}. U kunt dit formulier op een later moment hervatten door op onderstaande link te klikken.
+Onderstaande link is geldig tot en met {{ expiration_date }}.
+
+Verder gaan met formulier: {{ continue_url }}
+
+Met vriendelijke groet,
+
+Open Formulieren

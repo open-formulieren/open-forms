@@ -6,8 +6,8 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db import transaction
+from django.template.loader import get_template
 from django.utils import timezone
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -289,14 +289,14 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
     def notify_suspension(self, instance: Submission, email: str):
         token = submission_resume_token_generator.make_token(instance)
 
-        resume_path = reverse(
+        continue_path = reverse(
             "submissions:resume",
             kwargs={
                 "token": token,
                 "submission_uuid": instance.uuid,
             },
         )
-        resume_url = urljoin(settings.BASE_URL, resume_path)
+        continue_url = urljoin(settings.BASE_URL, continue_path)
 
         days_until_removal = (
             instance.form.incomplete_submissions_removal_limit
@@ -304,18 +304,29 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         )
         datetime_removed = instance.created_on + timedelta(days=days_until_removal)
 
-        email_body = _(
-            "Submission is suspended. Until {date} it can be resumed here: {resume_url}"
-        ).format(date=datetime_removed.date(), resume_url=resume_url)
-        email_subject = _("Your form submission")
-        html_email_body = format_html("<p>{}</p>", email_body)
+        context = {
+            'form_name': instance.form.name,
+            'save_date': timezone.now().date().strftime("%d-%m-%Y"),
+            'expiration_date': datetime_removed.date().strftime("%d-%m-%Y"),
+            'continue_url': continue_url
+        }
+
+        subject_template = get_template("emails/save_form_subject.txt")
+        html_template = get_template("emails/save_form.html")
+        text_template = get_template("emails/save_form.txt")
+
+        html_content = html_template.render(context)
+        context["rendering_text"] = True
+        text_content = text_template.render(context)
+        subject_content = subject_template.render(context)
 
         send_mail_html(
-            email_subject,
-            html_email_body,
+            subject_content.strip(),
+            html_content,
             settings.DEFAULT_FROM_EMAIL,
             [email],
             fail_silently=False,
+            text_message=text_content,
         )
 
 
