@@ -2,7 +2,6 @@ import os
 from base64 import b64decode, b64encode
 from hashlib import sha1
 from unittest.mock import patch
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.template import Context, Template
