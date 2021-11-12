@@ -59,7 +59,7 @@ class FormAdmin(
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
     list_filter = ("active", "maintenance_mode")
-    search_fields = ("name",)
+    search_fields = ("name", "internal_name")
 
     change_list_template = "admin/forms/form/change_list.html"
 
