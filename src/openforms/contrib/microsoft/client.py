@@ -64,8 +64,8 @@ class MSGraphUploadHelper:
 
     def upload_django_file(self, input_field, remote_path: Union[str, Path]):
         stream_size = input_field.size
-        stream = input_field.open("rb")
-        return self.upload_stream(stream, stream_size, remote_path)
+        with input_field.open("rb") as stream:
+            return self.upload_stream(stream, stream_size, remote_path)
 
     def upload_json(self, json_data: dict, remote_path: Union[str, Path]):
         json_str = json.dumps(json_data)

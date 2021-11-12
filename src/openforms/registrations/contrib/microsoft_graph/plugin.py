@@ -58,7 +58,7 @@ class MSGraphRegistration(BasePlugin):
     def _set_payment(self, uploader, submission, folder_name):
         if submission.payment_required:
             if submission.payment_user_has_paid:
-                content = f"payment received: € {submission.form.product.price}"
+                content = f"{_('payment received')}: € {submission.form.product.price}"
             else:
-                content = f"payment required: € {submission.form.product.price}"
+                content = f"{_('payment required')}: € {submission.form.product.price}"
             uploader.upload_string(content, f"{folder_name}/payment_status.txt")

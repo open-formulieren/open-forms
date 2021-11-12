@@ -15,12 +15,14 @@ class MSGraphService(models.Model):
     tenant_id = models.CharField(
         _("tenant ID"),
         max_length=64,
-        help_text=_("Tenant ID"),
+        help_text=_("Tenant ID, in GUID format"),
     )
     client_id = models.CharField(
         _("client ID"),
         max_length=64,
-        help_text=_("Client ID (sometimes called App ID or Application ID"),
+        help_text=_(
+            "Client ID, in GUID format (sometimes called App ID or Application ID)"
+        ),
     )
     secret = models.CharField(
         _("secret"),
@@ -30,6 +32,7 @@ class MSGraphService(models.Model):
 
     class Meta:
         verbose_name = _("Microsoft Graph Service")
+        ordering = ("label", "tenant_id")
 
     def __str__(self):
         return self.label

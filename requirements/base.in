@@ -6,6 +6,7 @@ furl
 glom
 git+https://github.com/maykinmedia/json-logic-py.git@1ceb93ad165d69a5639edc623d5613d0229c05e2#egg=maykin-json-logic-py
 lxml
+O365  # microsoft graph
 Pillow  # handle images
 psycopg2  # database driver
 pytz  # handle timezones
@@ -68,6 +69,3 @@ flower # task monitoring
 
 # Common Ground integration
 zgw-consumers
-
-#
-O365

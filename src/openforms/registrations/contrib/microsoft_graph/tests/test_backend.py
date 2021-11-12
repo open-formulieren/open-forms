@@ -2,6 +2,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from django.test import TestCase
+from django.utils.translation import ugettext as _
 
 from O365 import Account
 from O365.drive import Drive
@@ -105,7 +106,7 @@ class MSGraphRegistrationBackendTests(TestCase):
             path = f"{folder}/payment_status.txt"
             self.assertEqual(call.args[1], path)
             content = call.kwargs["stream"].read().decode("utf8")
-            self.assertEqual(content, f"payment required: € 11.35")
+            self.assertEqual(content, f"{_('payment required')}: € 11.35")
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_update_payment_status(self, upload_mock):
@@ -147,4 +148,4 @@ class MSGraphRegistrationBackendTests(TestCase):
             path = f"{folder}/payment_status.txt"
             self.assertEqual(call.args[1], path)
             content = call.kwargs["stream"].read().decode("utf8")
-            self.assertEqual(content, f"payment received: € 11.35")
+            self.assertEqual(content, f"{_('payment received')}: € 11.35")

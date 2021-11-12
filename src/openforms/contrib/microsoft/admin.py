@@ -5,4 +5,5 @@ from .models import MSGraphService
 
 @admin.register(MSGraphService)
 class MSGraphServiceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("label", "tenant_id", "client_id")
+    search_fields = ("label", "tenant_id", "client_id")
