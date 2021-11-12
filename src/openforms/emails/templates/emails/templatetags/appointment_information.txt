@@ -16,8 +16,7 @@
 
 {% if appointment.other %}{% for key, value in appointment.other.items %}
 {{ key }}:
-{{ value }}{% endfor %}{% endif %}{% endautoescape %}
+{{ value }}{% endfor %}{% endif %}
 
 {% trans "If you want to cancel your appointment, you can do so below." %}
-Cancel appointment: {{ appointment_cancel_link }}
-
+{% trans "Cancel appointment" %}: {{ appointment_cancel_link }}{% endautoescape %}
