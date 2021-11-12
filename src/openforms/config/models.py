@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template import Context, Template
+from django.template.loader import get_template, render_to_string
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
@@ -13,6 +14,14 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
+
+
+def get_confirmation_email_subject():
+    return get_template("emails/confirmation_email_subject.txt").template.source.strip()
+
+
+def get_confirmation_email_content():
+    return get_template("emails/confirmation_email_content.html").template.source
 
 
 class GlobalConfiguration(SingletonModel):
@@ -43,7 +52,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "Subject of the confirmation email message. Can be overridden on the form level"
         ),
-        default="Bevestiging van uw inzending",
+        default=get_confirmation_email_subject,
     )
 
     confirmation_email_content = HTMLField(
@@ -51,11 +60,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "Content of the confirmation email message. Can be overridden on the form level"
         ),
-        default="""
-        Geachte heer/mevrouw,
-
-        Wij hebben uw inzending, met referentienummer {{ public_reference }}, in goede orde ontvangen.
-        """,
+        default=get_confirmation_email_content,
     )
 
     allow_empty_initiator = models.BooleanField(
