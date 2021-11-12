@@ -1,5 +1,4 @@
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
