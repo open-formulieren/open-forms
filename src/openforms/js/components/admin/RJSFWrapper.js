@@ -5,6 +5,59 @@ import Form from '@rjsf/core';
 import Field from './forms/Field';
 
 
+const DefaultTemplate = ({
+    id,
+    label,
+    children,
+    errors,
+    help,
+    description,
+    hidden,
+    required,
+    displayLabel,
+}) => {
+    if (hidden) {
+        return <div className="hidden">{children}</div>;
+    }
+
+    return (
+        <div className="rjsf-field">
+            {displayLabel && (
+                <label className="rjsf-field__col1" htmlFor={id}>
+                    {label}
+                    {required && <span className="required">*</span>}
+                </label>
+            )}
+            <div className="rjsf-field__col2">
+                {displayLabel && description ? description : null}
+                {children}
+            </div>
+            {errors}
+            {help}
+        </div>
+    );
+};
+
+
+const CustomObjectFieldTemplate = ({
+    idSchema,
+    properties,
+    uiSchema,
+    ...extraProps
+})  => {
+    const updatedProperties = properties.map((property) => {
+        let content = property.content;
+        content.props.uiSchema["ui:FieldTemplate"] = DefaultTemplate;
+        return content;
+    });
+    return (
+        <fieldset id={idSchema.$id}>
+          {updatedProperties}
+        </fieldset>
+    );
+}
+
+
 const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) => {
     let extraErrors = {};
 
@@ -43,6 +96,7 @@ const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) =>
                 schema={schema}
                 formData={formData}
                 onChange={onChange}
+                ObjectFieldTemplate={CustomObjectFieldTemplate}
                 children={true}
                 extraErrors={extraErrors}
                 showErrorList={false}

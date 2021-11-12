@@ -14,7 +14,7 @@ from .models import MSGraphRegistrationConfig
 
 @register("microsoft-graph")
 class MSGraphRegistration(BasePlugin):
-    verbose_name = _("Microsoft Graph (OneDrive/SharePoint")
+    verbose_name = _("Microsoft Graph (OneDrive/SharePoint)")
 
     def _get_folder_name(self, submission: Submission):
         return f"open-forms/{submission.form.admin_name}/{submission.public_registration_reference}"

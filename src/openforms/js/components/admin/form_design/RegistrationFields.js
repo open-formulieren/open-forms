@@ -27,9 +27,10 @@ const RegistrationFields = ({
     });
 
     return (
-        <Fieldset style={{
-            '--of-add-another-text': `"${addAnotherMsg}"`
-        }}>
+        <Fieldset
+            style={{'--of-add-another-text': `"${addAnotherMsg}"`}}
+            extraClassName={'registration-tab'}
+        >
             <FormRow>
                 <Field
                     name="form.registrationBackend"

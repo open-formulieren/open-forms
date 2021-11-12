@@ -1,0 +1,11 @@
+.rjsf-field {
+  display: flex;
+
+  &__col1 {
+    flex: 10%;
+  }
+
+  &__col2 {
+    flex: 90%;
+  }
+}
