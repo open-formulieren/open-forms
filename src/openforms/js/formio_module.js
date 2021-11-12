@@ -14,6 +14,7 @@ import SelectBoxesField from './components/form/selectBoxes';
 import EmailField from './components/form/email';
 import FieldSet from './components/form/fieldset';
 import Map from './components/form/map';
+import PasswordField from './components/form/password';
 
 const FormIOModule = {
   components: {
@@ -32,6 +33,7 @@ const FormIOModule = {
     selectboxes: SelectBoxesField,
     email: EmailField,
     map: Map,
+    password: PasswordField,
     fieldset: FieldSet,
   },
 };

@@ -39,6 +39,7 @@ const BUILDER_OPTIONS = {
                 postcode: true,
                 file: true,
                 map: true,
+                password: true,
             }
         },
         custom_layout: {
