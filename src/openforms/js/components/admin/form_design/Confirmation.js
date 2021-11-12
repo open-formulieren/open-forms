@@ -91,7 +91,7 @@ const Confirmation = ({ pageTemplate='', emailOption='global_email', emailTempla
                 <FormRow>
                     <Field
                         name="form.confirmationEmailOption"
-                        label={<FormattedMessage defaultMessage="Email Option"
+                        label={<FormattedMessage defaultMessage="Email option"
                                                  description="Form confirmation email label"/>}
                         helpText={<FormattedMessage
                             defaultMessage="Will send the email specified."
