@@ -6,7 +6,7 @@ import Field from './forms/Field';
 import FAIcon from './FAIcon';
 
 
-const DefaultTemplate = ({
+const CustomFieldTemplate = ({
     id,
     label,
     children,
@@ -44,23 +44,37 @@ const DefaultTemplate = ({
 };
 
 
-const CustomObjectFieldTemplate = ({
-    idSchema,
-    properties,
-    uiSchema,
-    ...extraProps
-})  => {
-    const updatedProperties = properties.map((property) => {
-        let content = property.content;
-        content.props.uiSchema["ui:FieldTemplate"] = DefaultTemplate;
-        return content;
-    });
+const CustomCheckboxWidget = ({
+    schema,
+    id,
+    value,
+    disabled,
+    readonly,
+    autofocus,
+    onBlur,
+    onFocus,
+    onChange,
+}) => {
+
+    // The CustomCheckboxWidget is rendered as a children of the CustomFieldTemplate, which makes styling a bit trickier
     return (
-        <fieldset id={idSchema.$id}>
-          {updatedProperties}
-        </fieldset>
+        <div className="rjsf-field__checkbox">
+            <label className="rjsf-field__label" htmlFor={id}>
+                {schema.title}
+            </label>
+            <input
+                type="checkbox"
+                id={id}
+                checked={typeof value === "undefined" ? false : value}
+                disabled={disabled || readonly}
+                autoFocus={autofocus}
+                onChange={event => onChange(event.target.checked)}
+                onBlur={onBlur && (event => onBlur(id, event.target.checked))}
+                onFocus={onFocus && (event => onFocus(id, event.target.checked))}
+            />
+        </div>
     );
-}
+};
 
 
 const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) => {
@@ -101,7 +115,9 @@ const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) =>
                 schema={schema}
                 formData={formData}
                 onChange={onChange}
-                ObjectFieldTemplate={CustomObjectFieldTemplate}
+                FieldTemplate={CustomFieldTemplate}
+                widgets={{
+                    CheckboxWidget: CustomCheckboxWidget}}
                 children={true}
                 extraErrors={extraErrors}
                 showErrorList={false}
