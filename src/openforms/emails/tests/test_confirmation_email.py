@@ -282,7 +282,7 @@ class PaymentConfirmationEmailTests(TestCase):
         # show amount
         literal = _(
             "Payment of &euro; %(payment_price)s is required. You can pay using the link below."
-        ) % {"payment_price": submission.form.product.price}
+        ) % {"payment_price": "12,34"}
         self.assertIn(literal, rendered_content)
 
         # show link
@@ -309,7 +309,7 @@ class PaymentConfirmationEmailTests(TestCase):
 
         # still show amount
         literal = _("Payment of &euro; %(payment_price)s received.") % {
-            "payment_price": submission.form.product.price
+            "payment_price": "12,34"
         }
         self.assertIn(literal, rendered_content)
 
@@ -437,7 +437,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         url_exp = r"https?://[a-z0-9:/._-]+"
         pay_line = _(
             "Payment of € {payment_price} is required. You can pay using the link below."
-        ).format(payment_price="12.34")
+        ).format(payment_price="12,34")
 
         with self.subTest("text"):
             expected_text = inspect.cleandoc(
