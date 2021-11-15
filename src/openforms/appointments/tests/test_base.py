@@ -54,3 +54,20 @@ class BasePluginTests(TestCase):
         )
         cancel_url = f"https://example.com{cancel_path}"
         self.assertEqual(cancel_url, result)
+
+    @override_settings(BASE_URL="https://example.com/")
+    def test_get_change_link(self):
+        submission = SubmissionFactory.create(completed=True)
+        AppointmentInfoFactory.create(submission=submission, registration_ok=True)
+
+        result = self.plugin.get_change_link(submission)
+
+        change_path = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        change_url = f"https://example.com{change_path}"
+        self.assertEqual(change_url, result)

@@ -23,5 +23,6 @@ def appointment_information(context):
     tag_context = {
         "appointment": client.get_appointment_details(appointment_id),
         "appointment_cancel_link": client.get_cancel_link(context["_submission"]),
+        "appointment_change_link": client.get_change_link(context["_submission"]),
     }
     return render_to_string(template_name, tag_context)

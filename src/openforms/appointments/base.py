@@ -228,3 +228,17 @@ class BasePlugin:
         )
 
         return urljoin(settings.BASE_URL, cancel_path)
+
+    def get_change_link(self, submission: Submission) -> str:
+
+        token = submission_appointment_token_generator.make_token(submission)
+
+        cancel_path = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": token,
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        return urljoin(settings.BASE_URL, cancel_path)

@@ -23,6 +23,7 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         "start_time",
         "submission",
         "get_cancel_link",
+        "get_change_link",
     )
     list_filter = ("status", "start_time")
     date_hierarchy = "created"
@@ -34,6 +35,7 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         list_display = super().get_list_display(request)
         if not request.user.is_superuser:
             list_display.remove("get_cancel_link")
+            list_display.remove("get_change_link")
         return list_display
 
     def get_cancel_link(self, obj) -> str:
@@ -55,3 +57,23 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         )
 
     get_cancel_link.short_description = _("Cancel link")
+
+    def get_change_link(self, obj) -> str:
+        if not obj.status == AppointmentDetailsStatus.success:
+            return ""
+
+        token = submission_appointment_token_generator.make_token(obj.submission)
+        url = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "submission_uuid": obj.submission.uuid,
+                "token": token,
+            },
+        )
+        return format_html(
+            '<a href="{url}">{text}</a>',
+            url=url,
+            text=_("Change appointment"),
+        )
+
+    get_change_link.short_description = _("Change link")

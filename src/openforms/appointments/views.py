@@ -41,3 +41,36 @@ class VerifyCancelAppointmentLinkView(RedirectView):
             }
         )
         return f.url
+
+
+class VerifyChangeAppointmentLinkView(RedirectView):
+    def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
+        try:
+            submission = Submission.objects.get(uuid=submission_uuid)
+        except Submission.DoesNotExist:
+            logger.debug(
+                "Called endpoint with an invalid submission uuid: %s", submission_uuid
+            )
+            raise PermissionDenied("Cancel url is not valid")
+
+        # Check that the token is valid
+        valid = submission_appointment_token_generator.check_token(submission, token)
+        if not valid:
+            logger.debug("Called endpoint with an invalid token: %s", token)
+            raise PermissionDenied("Cancel url is not valid")
+
+        # TODO
+        # 1. Create a new submission
+        # 2. Find correct step to redirect to
+
+        add_submmission_to_session(submission, self.request.session)
+
+        f = furl(submission.form_url)
+        f /= "afspraak-annuleren"
+        f.add(
+            {
+                "time": submission.appointment_info.start_time.isoformat(),
+                "submission_uuid": str(submission.uuid),
+            }
+        )
+        return f.url
