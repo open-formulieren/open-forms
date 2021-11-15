@@ -1,22 +1,17 @@
 import uuid
 from datetime import timedelta
-from urllib.parse import urljoin
 
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 
 from freezegun import freeze_time
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
-from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
 
+from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
+from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 class SubmissionResumeViewTests(TestCase):

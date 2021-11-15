@@ -76,6 +76,7 @@ class SubmissionResumeTokenGenerator(BaseTokenGenerator):
         Obtain the attribute values that mutate to invalidate the token.
         """
         attributes = [
+            "completed_on",
             "suspended_on",
         ]
         return [str(getattr(submission, attr)) for attr in attributes]

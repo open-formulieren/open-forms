@@ -75,7 +75,7 @@ class SubmissionState:
 
     def get_last_completed_step(self) -> Optional["SubmissionStep"]:
         """
-        Determine the last step that was fill out.
+        Determine the last step that was filled out.
 
         The last completed step is the step that:
         - is the last submitted step

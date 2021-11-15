@@ -1,4 +1,6 @@
-{% blocktrans %}Dear Sir or Madam,
+{% load i18n %}
+{% blocktrans %}
+Dear Sir or Madam,
 
 You have stored the form "{{ form_name }}" via the website on {{ save_date }}. You can resume this form at a later time by clicking the link below.
 The link is valid up to and including {{ expiration_date }}.
@@ -7,4 +9,5 @@ Resume form: {{ continue_url }}
 
 Kind regards,
 
-Open Forms{% endblocktrans %}
+Open Forms
+{% endblocktrans %}

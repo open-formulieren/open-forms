@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db import transaction
-from django.template.loader import get_template
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -20,6 +20,7 @@ from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_maintainance_mode
 
+from ...utils.urls import build_absolute_uri
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
@@ -296,7 +297,9 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
                 "submission_uuid": instance.uuid,
             },
         )
-        continue_url = urljoin(settings.BASE_URL, continue_path)
+        continue_url = build_absolute_uri(
+            continue_path, request=self.context.get("request")
+        )
 
         days_until_removal = (
             instance.form.incomplete_submissions_removal_limit
@@ -311,14 +314,16 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             "continue_url": continue_url,
         }
 
-        subject_template = get_template("emails/save_form_subject.txt")
-        html_template = get_template("emails/save_form.html")
-        text_template = get_template("emails/save_form.txt")
-
-        html_content = html_template.render(context)
+        html_content = render_to_string(
+            "emails/save_form/save_form.html", context=context
+        )
         context["rendering_text"] = True
-        text_content = text_template.render(context)
-        subject_content = subject_template.render(context)
+        text_content = render_to_string(
+            "emails/save_form/save_form.txt", context=context
+        )
+        subject_content = render_to_string(
+            "emails/save_form/save_form_subject.txt", context=context
+        )
 
         send_mail_html(
             subject_content.strip(),

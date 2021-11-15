@@ -1,1 +1,0 @@
-{% blocktrans %}Saved form {{ form_name }}{% endblocktrans %}

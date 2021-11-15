@@ -115,9 +115,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         email = mail.outbox[0]
         self.assertEqual(email.to, ["hello@open-forms.nl"])
-        self.assertEqual(
-            email.subject, _(f"Opgeslagen formulier {submission.form.name}")
-        )
+        self.assertEqual(email.subject, _(f"Saved form {submission.form.name}"))
 
         self.assertIn(submission.form.name, email.body)
         self.assertIn(timezone.now().date().strftime("%d-%m-%Y"), email.body)
@@ -131,7 +129,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
                 "submission_uuid": submission.uuid,
             },
         )
-        expected_resume_url = urljoin(settings.BASE_URL, resume_path)
+        expected_resume_url = urljoin("http://testserver", resume_path)
 
         self.assertIn(expected_resume_url, email.body)
 
