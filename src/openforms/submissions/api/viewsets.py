@@ -218,7 +218,9 @@ class SubmissionViewSet(
         """
         submission = self.get_object()
         serializer = SubmissionSuspensionSerializer(
-            instance=submission, data=request.data
+            instance=submission,
+            data=request.data,
+            context={"request": request},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

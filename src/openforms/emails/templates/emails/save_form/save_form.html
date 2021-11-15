@@ -1,0 +1,14 @@
+{% load i18n %}
+{% blocktrans trimmed with formatted_save_date=save_date|date formatted_expiration_date=expiration_date|date %}
+Dear Sir or Madam,<br>
+<br>
+You have stored the form "{{ form_name }}" via the website on {{ formatted_save_date }}.
+You can resume this form at a later time by clicking the link below.<br>
+The link is valid up to and including {{ formatted_expiration_date }}.<br>
+<br>
+<a href="{{ continue_url }}">Resume form "{{ form_name }}".</a><br>
+<br>
+Kind regards,<br>
+<br>
+Open Forms
+{% endblocktrans %}

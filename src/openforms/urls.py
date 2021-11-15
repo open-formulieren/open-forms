@@ -56,6 +56,10 @@ urlpatterns = [
         include("openforms.appointments.urls", namespace="appointments"),
     ),
     path("csp/", include("cspreports.urls")),
+    path(
+        "submissions/",
+        include("openforms.submissions.urls", namespace="submissions"),
+    ),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("payment/", include("openforms.payments.urls", namespace="payments")),
     # NOTE: we dont use the User creation feature so don't enable all the mock views

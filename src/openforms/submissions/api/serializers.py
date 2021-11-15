@@ -1,10 +1,12 @@
 import logging
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Optional
+from urllib.parse import urljoin
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db import transaction
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -12,13 +14,17 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
+from openforms.config.models import GlobalConfiguration
+from openforms.emails.utils import send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.models import FormStep
+from openforms.forms.validators import validate_not_maintainance_mode
 
-from ...forms.validators import validate_not_maintainance_mode
+from ...utils.urls import build_absolute_uri
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
+from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
 
 logger = logging.getLogger(__name__)
@@ -282,12 +288,50 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         return instance
 
     def notify_suspension(self, instance: Submission, email: str):
-        logger.info("TODO: properly implement sending e-mail with magic link")
-        send_mail(
-            _("Your form submission"),
-            "Submission is suspended. Resume here: <link>",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
+        token = submission_resume_token_generator.make_token(instance)
+
+        continue_path = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": token,
+                "submission_uuid": instance.uuid,
+            },
+        )
+        continue_url = build_absolute_uri(
+            continue_path, request=self.context.get("request")
+        )
+
+        days_until_removal = (
+            instance.form.incomplete_submissions_removal_limit
+            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        )
+        datetime_removed = instance.created_on + timedelta(days=days_until_removal)
+
+        context = {
+            "form_name": instance.form.name,
+            "save_date": timezone.now(),
+            "expiration_date": datetime_removed,
+            "continue_url": continue_url,
+        }
+
+        html_content = render_to_string(
+            "emails/save_form/save_form.html", context=context
+        )
+        context["rendering_text"] = True
+        text_content = render_to_string(
+            "emails/save_form/save_form.txt", context=context
+        )
+        subject_content = render_to_string(
+            "emails/save_form/save_form_subject.txt", context=context
+        )
+
+        send_mail_html(
+            subject_content.strip(),
+            html_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+            text_message=text_content,
         )
 
 

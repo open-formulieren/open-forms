@@ -7,9 +7,12 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+from datetime import datetime, timedelta
 from unittest.mock import patch
+from urllib.parse import urljoin
 
 from django.core import mail
+from django.template import defaulttags
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -19,9 +22,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
+from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
@@ -96,6 +101,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
         self.assertIsNone(submission.suspended_on)
 
+    @freeze_time("2021-11-15")
     def test_email_sent(self):
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
@@ -110,4 +116,68 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         email = mail.outbox[0]
         self.assertEqual(email.to, ["hello@open-forms.nl"])
-        self.assertEqual(email.subject, _("Your form submission"))
+        self.assertEqual(
+            email.subject,
+            _("Saved form {form_name}").format(form_name=submission.form.name),
+        )
+
+        self.assertIn(submission.form.name, email.body)
+        self.assertIn(defaulttags.date(timezone.now()), email.body)
+
+        submission.refresh_from_db()
+        token = submission_resume_token_generator.make_token(submission)
+        resume_path = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": token,
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_resume_url = urljoin("http://testserver", resume_path)
+
+        self.assertIn(expected_resume_url, email.body)
+
+        datetime_removed = datetime(2021, 11, 22, 12, 00, 00, tzinfo=timezone.utc)
+
+        self.assertIn(defaulttags.date(datetime_removed), email.body)
+
+    @freeze_time("2020-11-15T12:00:00+01:00")
+    def test_resume_url_does_not_work_after_submission_has_been_completed(self):
+        form = FormFactory.create()
+        FormStepFactory.create(form=form, optional=False)
+        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step2, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        # Suspend the submission
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        submission.refresh_from_db()
+        self.assertEqual(submission.suspended_on, timezone.now())
+
+        # Get suspended link and resume submission
+        submission.refresh_from_db()
+        token = submission_resume_token_generator.make_token(submission)
+        resume_path = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": token,
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        response = self.client.get(resume_path)
+        self.assertEqual(response.status_code, 302)
+
+        # Complete the submission
+        submission.completed_on = timezone.now()
+        submission.save(update_fields=["completed_on"])
+
+        # Validate the link no longer works
+        response = self.client.get(resume_path)
+        self.assertEqual(response.status_code, 403)
