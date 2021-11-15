@@ -79,17 +79,7 @@ def remove_submission_uploads_from_session(
         remove_upload_from_session(attachment.temporary_file, session)
 
 
-def send_confirmation_email(submission: Submission):
-    to_emails = submission.get_email_confirmation_recipients(submission.data)
-    if not to_emails:
-        logger.warning(
-            "Could not determine the recipient e-mail address for submission %d, "
-            "skipping the confirmation e-mail.",
-            submission.id,
-        )
-        logevent.confirmation_email_skip(submission)
-        return
-
+def get_confirmation_email_components(submission: Submission):
     if (
         submission.form.confirmation_email_option
         == ConfirmationEmailOptions.form_specific_email
@@ -102,10 +92,8 @@ def send_confirmation_email(submission: Submission):
         text_content = render_confirmation_email_content(
             submission, email_template.content, {"rendering_text": True}
         )
-    elif (
-        submission.form.confirmation_email_option
-        == ConfirmationEmailOptions.global_email
-    ):
+        return subject, html_content, text_content
+    else:
         config = GlobalConfiguration.get_solo()
         subject = Template(config.confirmation_email_subject).render(
             Context({"form_name": submission.form.name})
@@ -116,14 +104,31 @@ def send_confirmation_email(submission: Submission):
         text_content = render_confirmation_email_content(
             submission, config.confirmation_email_content, {"rendering_text": True}
         )
-    else:
+        return subject, html_content, text_content
+
+
+def send_confirmation_email(submission: Submission):
+    if submission.form.confirmation_email_option == ConfirmationEmailOptions.no_email:
         logger.debug(
-            "Form is not configured to send an email for submission %d, "
+            "Form %d is configured to not send a confirmation email for submission %d, "
+            "skipping the confirmation e-mail.",
+            submission.form.id,
+            submission.id,
+        )
+        logevent.confirmation_email_skip(submission)
+        return
+
+    to_emails = submission.get_email_confirmation_recipients(submission.data)
+    if not to_emails:
+        logger.warning(
+            "Could not determine the recipient e-mail address for submission %d, "
             "skipping the confirmation e-mail.",
             submission.id,
         )
         logevent.confirmation_email_skip(submission)
         return
+
+    subject, html_content, text_content = get_confirmation_email_components(submission)
 
     # post process since the mail template has html markup and django escaped entities
     text_content = strip_tags_plus(text_content)
