@@ -309,8 +309,8 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
 
         context = {
             "form_name": instance.form.name,
-            "save_date": timezone.now().date().strftime("%d-%m-%Y"),
-            "expiration_date": datetime_removed.date().strftime("%d-%m-%Y"),
+            "save_date": timezone.now(),
+            "expiration_date": datetime_removed,
             "continue_url": continue_url,
         }
 

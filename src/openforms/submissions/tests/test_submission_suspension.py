@@ -101,6 +101,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
         self.assertIsNone(submission.suspended_on)
 
+    @freeze_time("2021-11-15")
     def test_email_sent(self):
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
@@ -118,7 +119,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(email.subject, _(f"Saved form {submission.form.name}"))
 
         self.assertIn(submission.form.name, email.body)
-        self.assertIn(timezone.now().date().strftime("%d-%m-%Y"), email.body)
+        self.assertIn("15-11-2021", email.body)
 
         submission.refresh_from_db()
         token = submission_resume_token_generator.make_token(submission)
@@ -133,10 +134,8 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         self.assertIn(expected_resume_url, email.body)
 
-        days_until_removal = (
-            submission.form.incomplete_submissions_removal_limit
-            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+        datetime_removed = submission.created_on + timedelta(
+            days=GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
         )
-        datetime_removed = submission.created_on + timedelta(days=days_until_removal)
 
         self.assertIn(datetime_removed.date().strftime("%d-%m-%Y"), email.body)

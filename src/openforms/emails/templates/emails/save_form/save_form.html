@@ -1,10 +1,10 @@
 {% load i18n %}
-{% blocktrans trimmed %}
+{% blocktrans trimmed with formatted_save_date=save_date|date:"d-m-Y" formatted_expiration_date=expiration_date|date:"d-m-Y" %}
 Dear Sir or Madam,<br>
 <br>
-You have stored the form "{{ form_name }}" via the website on {{ save_date }}.
+You have stored the form "{{ form_name }}" via the website on {{ formatted_save_date }}.
 You can resume this form at a later time by clicking the link below.<br>
-The link is valid up to and including {{ expiration_date }}.<br>
+The link is valid up to and including {{ formatted_expiration_date }}.<br>
 <br>
 <a href="{{ continue_url }}">Resume form "{{ form_name }}".</a><br>
 <br>
