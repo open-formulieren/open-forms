@@ -81,9 +81,4 @@ def send_confirmation_email(submission_id: int) -> None:
     if submission.confirmation_email_sent:
         return
 
-    logevent.confirmation_email_start(submission)
-    try:
-        _send_confirmation_email(submission)
-    except Exception as e:
-        logevent.confirmation_email_failure(submission, e)
-        raise
+    _send_confirmation_email(submission)

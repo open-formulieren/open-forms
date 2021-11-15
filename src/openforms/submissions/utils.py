@@ -108,6 +108,8 @@ def get_confirmation_email_components(submission: Submission):
 
 
 def send_confirmation_email(submission: Submission):
+    logevent.confirmation_email_start(submission)
+
     if submission.form.confirmation_email_option == ConfirmationEmailOptions.no_email:
         logger.debug(
             "Form %d is configured to not send a confirmation email for submission %d, "
@@ -134,14 +136,18 @@ def send_confirmation_email(submission: Submission):
     text_content = strip_tags_plus(text_content)
     text_content = html.unescape(text_content)
 
-    send_mail_html(
-        subject,
-        html_content,
-        settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
-        to_emails,
-        fail_silently=False,
-        text_message=text_content,
-    )
+    try:
+        send_mail_html(
+            subject,
+            html_content,
+            settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
+            to_emails,
+            fail_silently=False,
+            text_message=text_content,
+        )
+    except Exception as e:
+        logevent.confirmation_email_failure(submission, e)
+        raise
 
     submission.confirmation_email_sent = True
     submission.save(update_fields=("confirmation_email_sent",))
