@@ -92,7 +92,7 @@ class Form(models.Model):
         _("confirmation email option"),
         choices=ConfirmationEmailOptions,
         default=ConfirmationEmailOptions.global_email,
-        max_length=255,
+        max_length=20,
     )
     begin_text = models.CharField(
         _("begin text"),

@@ -12,9 +12,9 @@ from privates.test import temp_private_root
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
-from ...forms.constants import ConfirmationEmailOptions
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -314,8 +314,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(message.subject, config.confirmation_email_subject)
-        self.assertEqual(message.body.strip(), config.confirmation_email_content)
+        self.assertEqual(message.subject, "The Subject")
+        self.assertEqual(message.body.strip(), "The Content")
 
     def test_completed_submission_sends_global_configuration_email_when_custom_email_exists_but_is_not_selected(
         self,
@@ -352,8 +352,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(message.subject, config.confirmation_email_subject)
-        self.assertEqual(message.body.strip(), config.confirmation_email_content)
+        self.assertEqual(message.subject, "The Subject")
+        self.assertEqual(message.body.strip(), "The Content")
 
     def test_completed_submission_sends_form_specific_email_and_not_global_email(
         self,
@@ -375,7 +375,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )
-        confirmation_email = ConfirmationEmailTemplateFactory.create(
+        ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Custom subject", content="Custom content"
         )
 
@@ -386,8 +386,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(message.subject, confirmation_email.subject)
-        self.assertEqual(message.body.strip(), confirmation_email.content)
+        self.assertEqual(message.subject, "Custom subject")
+        self.assertEqual(message.body.strip(), "Custom content")
 
     def test_completed_submission_does_not_send_email_if_not_sending_email_is_specified(
         self,
