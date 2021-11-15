@@ -1,11 +1,15 @@
 .rjsf-field {
   display: flex;
+  padding-bottom: 1em;
+  align-items: center;
 
-  &__col1 {
-    flex: 10%;
+  .rjsf-field__label {
+    text-transform: capitalize;
   }
 
-  &__col2 {
-    flex: 90%;
+  .rjsf-field__help {
+    cursor: help;
+    padding-left: .5em;
+    color: #999;
   }
 }

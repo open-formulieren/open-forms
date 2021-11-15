@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Form from '@rjsf/core';
 
 import Field from './forms/Field';
+import FAIcon from "./FAIcon";
 
 
 const DefaultTemplate = ({
@@ -20,20 +21,24 @@ const DefaultTemplate = ({
         return <div className="hidden">{children}</div>;
     }
 
+    const descriptionText = description?.props?.description;
+
     return (
         <div className="rjsf-field">
-            {displayLabel && (
-                <label className="rjsf-field__col1" htmlFor={id}>
+            {(displayLabel && label) && (
+                <label className={`rjsf-field__label ${required ? 'required' : ''}`} htmlFor={id}>
                     {label}
-                    {required && <span className="required">*</span>}
                 </label>
             )}
-            <div className="rjsf-field__col2">
-                {displayLabel && description ? description : null}
+            <div className="rjsf-field__input">
                 {children}
             </div>
+            {descriptionText && (
+                <div className="rjsf-field__help">
+                    <FAIcon icon="question-circle" title={descriptionText}/>
+                </div>
+            )}
             {errors}
-            {help}
         </div>
     );
 };
