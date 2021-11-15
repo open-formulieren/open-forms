@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Form from '@rjsf/core';
 
 import Field from './forms/Field';
-import FAIcon from "./FAIcon";
+import FAIcon from './FAIcon';
 
 
 const DefaultTemplate = ({
