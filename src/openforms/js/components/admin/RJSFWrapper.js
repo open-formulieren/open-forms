@@ -6,12 +6,17 @@ import Field from './forms/Field';
 import FAIcon from './FAIcon';
 
 
+/*
+ Adapted from:
+ https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/fields/SchemaField.js#L128
+ */
 const CustomFieldTemplate = ({
     id,
     label,
     children,
     errors,
-    description,
+    rawErrors,
+    rawDescription,
     hidden,
     required,
     displayLabel,
@@ -20,12 +25,9 @@ const CustomFieldTemplate = ({
         return <div className="hidden">{children}</div>;
     }
 
-    const descriptionText = description?.props?.description;
-    const listOfErrors = errors.props.errors;
-
     return (
         <div className="rjsf-field">
-            <div className={`rjsf-field__field ${listOfErrors ? 'rjsf-field__field--error' : ''}`}>
+            <div className={`rjsf-field__field ${rawErrors ? 'rjsf-field__field--error' : ''}`}>
                 {(displayLabel && label) && (
                     <label className={`rjsf-field__label ${required ? 'required' : ''}`} htmlFor={id}>
                         {label}
@@ -34,20 +36,35 @@ const CustomFieldTemplate = ({
                 <div className="rjsf-field__input">
                     {children}
                 </div>
-                {descriptionText && (
+                {rawDescription && (
                     <div className="rjsf-field__help">
-                        <FAIcon icon="question-circle" title={descriptionText}/>
+                        <FAIcon icon="question-circle" title={rawDescription}/>
                     </div>
                 )}
             </div>
-            {listOfErrors && (
+            {rawErrors && (
                 <div className="rjsf-field__errors">{errors}</div>
             )}
         </div>
     );
 };
 
+CustomFieldTemplate.propTypes = {
+    id: PropTypes.string,
+    label: PropTypes.string,
+    children: PropTypes.node.isRequired,
+    errors: PropTypes.element,
+    rawErrors: PropTypes.arrayOf(PropTypes.string),
+    rawDescription: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+    hidden: PropTypes.bool,
+    required: PropTypes.bool,
+    displayLabel: PropTypes.bool,
+};
 
+/*
+Adapted from:
+https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/widgets/CheckboxWidget.js#L5
+ */
 const CustomCheckboxWidget = ({
     schema,
     id,
@@ -55,11 +72,8 @@ const CustomCheckboxWidget = ({
     disabled,
     readonly,
     autofocus,
-    onBlur,
-    onFocus,
     onChange,
 }) => {
-
     // The CustomCheckboxWidget is rendered as a children of the CustomFieldTemplate, which makes styling a bit trickier
     return (
         <div className="rjsf-field__checkbox">
@@ -73,11 +87,22 @@ const CustomCheckboxWidget = ({
                 disabled={disabled || readonly}
                 autoFocus={autofocus}
                 onChange={event => onChange(event.target.checked)}
-                onBlur={onBlur && (event => onBlur(id, event.target.checked))}
-                onFocus={onFocus && (event => onFocus(id, event.target.checked))}
             />
         </div>
     );
+};
+
+
+CustomCheckboxWidget.propTypes = {
+    schema: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readonly: PropTypes.bool,
+    autofocus: PropTypes.bool,
+    multiple: PropTypes.bool,
+    onChange: PropTypes.func,
 };
 
 
