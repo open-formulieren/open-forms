@@ -1,10 +1,10 @@
-Geachte heer/mevrouw,
+{% blocktrans %}Dear Sir or Madam,
 
-U heeft via de website het formulier "{{ form_name }}" tussentijds opgeslagen op {{ save_date }}. U kunt dit formulier op een later moment hervatten door op onderstaande link te klikken.
-Onderstaande link is geldig tot en met {{ expiration_date }}.
+You have stored the form "{{ form_name }}" via the website on {{ save_date }}. You can resume this form at a later time by clicking the link below.
+The link is valid up to and including {{ expiration_date }}.
 
-Verder gaan met formulier: {{ continue_url }}
+Resume form: {{ continue_url }}
 
-Met vriendelijke groet,
+Kind regards,
 
-Open Formulieren
+Open Forms{% endblocktrans %}

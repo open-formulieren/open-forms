@@ -1,1 +1,1 @@
-Opgeslagen formulier {{ form_name }}
+{% blocktrans %}Saved form {{ form_name }}{% endblocktrans %}
