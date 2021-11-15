@@ -1,7 +1,32 @@
+@import '../vars';
+
 .rjsf-field {
-  display: flex;
   padding-bottom: 1em;
-  align-items: center;
+
+  // reset default error color
+  @at-root .form-row.errors & {
+    input {
+      border-color: #ccc;
+    }
+  }
+
+  .rjsf-field__field {
+    display: flex;
+    align-items: center;
+  }
+
+  .rjsf-field__field--error {
+    input {
+      border-color: $color-error !important;
+    }
+  }
+
+  .rjsf-field__errors {
+    .error-detail {
+      padding-left: 0;
+      margin-left: 0;
+    }
+  }
 
   .rjsf-field__label {
     text-transform: capitalize;

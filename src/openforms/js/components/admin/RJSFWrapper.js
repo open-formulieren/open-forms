@@ -11,7 +11,6 @@ const CustomFieldTemplate = ({
     label,
     children,
     errors,
-    help,
     description,
     hidden,
     required,
@@ -22,23 +21,28 @@ const CustomFieldTemplate = ({
     }
 
     const descriptionText = description?.props?.description;
+    const listOfErrors = errors.props.errors;
 
     return (
         <div className="rjsf-field">
-            {(displayLabel && label) && (
-                <label className={`rjsf-field__label ${required ? 'required' : ''}`} htmlFor={id}>
-                    {label}
-                </label>
-            )}
-            <div className="rjsf-field__input">
-                {children}
-            </div>
-            {descriptionText && (
-                <div className="rjsf-field__help">
-                    <FAIcon icon="question-circle" title={descriptionText}/>
+            <div className={`rjsf-field__field ${listOfErrors ? 'rjsf-field__field--error' : ''}`}>
+                {(displayLabel && label) && (
+                    <label className={`rjsf-field__label ${required ? 'required' : ''}`} htmlFor={id}>
+                        {label}
+                    </label>
+                )}
+                <div className="rjsf-field__input">
+                    {children}
                 </div>
+                {descriptionText && (
+                    <div className="rjsf-field__help">
+                        <FAIcon icon="question-circle" title={descriptionText}/>
+                    </div>
+                )}
+            </div>
+            {listOfErrors && (
+                <div className="rjsf-field__errors">{errors}</div>
             )}
-            {errors}
         </div>
     );
 };
@@ -116,8 +120,7 @@ const FormRjsfWrapper = ({ name, label, schema, formData, onChange, errors }) =>
                 formData={formData}
                 onChange={onChange}
                 FieldTemplate={CustomFieldTemplate}
-                widgets={{
-                    CheckboxWidget: CustomCheckboxWidget}}
+                widgets={{CheckboxWidget: CustomCheckboxWidget}}
                 children={true}
                 extraErrors={extraErrors}
                 showErrorList={false}
