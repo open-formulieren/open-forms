@@ -8,7 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import Context, Template
 
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.emails.utils import (
+    render_confirmation_email_content,
+    send_mail_html,
+    strip_tags_plus,
+)
 from openforms.logging import logevent
 
 from ..forms.constants import ConfirmationEmailOptions
@@ -90,19 +94,14 @@ def send_confirmation_email(submission: Submission):
         submission.form.confirmation_email_option
         == ConfirmationEmailOptions.form_specific_email
     ):
-        try:
-            email_template = submission.form.confirmation_email_template
-            subject = email_template.subject
-            html_content = email_template.render(submission)
-            text_content = email_template.render(submission, {"rendering_text": True})
-        except (AttributeError, ObjectDoesNotExist):
-            logger.warning(
-                "No form specific confirmation email template for submission %d, "
-                "skipping the confirmation e-mail.",
-                submission.id,
-            )
-            logevent.confirmation_email_skip(submission)
-            return
+        email_template = submission.form.confirmation_email_template
+        subject = email_template.subject
+        html_content = render_confirmation_email_content(
+            submission, email_template.content
+        )
+        text_content = render_confirmation_email_content(
+            submission, email_template.content, {"rendering_text": True}
+        )
     elif (
         submission.form.confirmation_email_option
         == ConfirmationEmailOptions.global_email
@@ -111,9 +110,11 @@ def send_confirmation_email(submission: Submission):
         subject = Template(config.confirmation_email_subject).render(
             Context({"form_name": submission.form.name})
         )
-        html_content = config.render_confirmation_email_content(submission)
-        text_content = config.render_confirmation_email_content(
-            submission, {"rendering_text": True}
+        html_content = render_confirmation_email_content(
+            submission, config.confirmation_email_content
+        )
+        text_content = render_confirmation_email_content(
+            submission, config.confirmation_email_content, {"rendering_text": True}
         )
     else:
         logger.debug(

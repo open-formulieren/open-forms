@@ -35,7 +35,7 @@ from ...submissions.utils import send_confirmation_email
 from ...utils.tests.html_assert import HTMLAssertMixin
 from ...utils.urls import build_absolute_uri
 from ..models import ConfirmationEmailTemplate
-from ..utils import unwrap_anchors
+from ..utils import render_confirmation_email_content, unwrap_anchors
 from .factories import ConfirmationEmailTemplateFactory
 
 NESTED_COMPONENT_CONF = {
@@ -110,7 +110,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             email.full_clean()
 
         with self.assertRaises(TemplateSyntaxError):
-            email.render(submission)
+            render_confirmation_email_content(submission, email.content)
 
         submission.refresh_from_db()
         self.assertIsNotNone(submission.pk)
@@ -126,7 +126,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         submission = submission_step.submission
         email = ConfirmationEmailTemplate(content="{% summary %}")
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)
@@ -174,7 +174,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         submission = submission_step.submission
         email = ConfirmationEmailTemplate(content="{% summary %}")
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)
@@ -199,7 +199,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submission=submission,
         )
         email = ConfirmationEmailTemplate(content="{% appointment_information %}")
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         self.assertIn("Test product 1", rendered_content)
         self.assertIn("Test product 2", rendered_content)
@@ -226,8 +226,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         email = ConfirmationEmailTemplate(content="{% appointment_information %}")
         empty_email = ConfirmationEmailTemplate(content="")
 
-        rendered_content = email.render(submission)
-        empty_rendered_content = empty_email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
+        empty_rendered_content = render_confirmation_email_content(
+            submission, empty_email.content
+        )
 
         self.assertEqual(empty_rendered_content, rendered_content)
 
@@ -242,7 +244,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertFalse(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
 
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         literals = [
             _("Payment of &euro;%(payment_price)s received."),
@@ -264,7 +266,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertTrue(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
 
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         # show amount
         literal = _(
@@ -291,7 +293,7 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertTrue(submission.payment_required)
         self.assertTrue(submission.payment_user_has_paid)
 
-        rendered_content = email.render(submission)
+        rendered_content = render_confirmation_email_content(submission, email.content)
 
         # still show amount
         literal = _("Payment of &euro; %(payment_price)s received.") % {
