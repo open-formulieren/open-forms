@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 
 from openforms.config.models import GlobalConfiguration
@@ -17,17 +18,14 @@ class FormListView(UIListView):
     def get(self, request, *args, **kwargs):
         config = GlobalConfiguration.get_solo()
 
-        render_list = not config.main_website or request.user.is_staff
-        if render_list:
-            if not config.main_website:
-                logger.info(
-                    "Rendering list view because there's no redirect target set up."
-                )
+        if request.user.is_staff:
             return super().get(request, *args, **kwargs)
-
-        # looks like an "open redirect", but admins control the value of this and
-        # we only give access to trusted users to the admin.
-        return HttpResponseRedirect(config.main_website)
+        elif not config.main_website:
+            raise PermissionDenied()
+        else:
+            # looks like an "open redirect", but admins control the value of this and
+            # we only give access to trusted users to the admin.
+            return HttpResponseRedirect(config.main_website)
 
 
 class FormDetailView(UIDetailView):
