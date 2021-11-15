@@ -13,6 +13,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.core import mail
+from django.template import defaulttags
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -119,7 +120,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(email.subject, _(f"Saved form {submission.form.name}"))
 
         self.assertIn(submission.form.name, email.body)
-        self.assertIn("15-11-2021", email.body)
+        self.assertIn(defaulttags.date(timezone.now()), email.body)
 
         submission.refresh_from_db()
         token = submission_resume_token_generator.make_token(submission)
@@ -138,4 +139,4 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
             days=GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
         )
 
-        self.assertIn(datetime_removed.date().strftime("%d-%m-%Y"), email.body)
+        self.assertIn(defaulttags.date(datetime_removed), email.body)

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% blocktrans with formatted_save_date=save_date|date:"d-m-Y" formatted_expiration_date=expiration_date|date:"d-m-Y" %}
+{% blocktrans with formatted_save_date=save_date|date formatted_expiration_date=expiration_date|date %}
 Dear Sir or Madam,
 
 You have stored the form "{{ form_name }}" via the website on {{ formatted_save_date }}. You can resume this form at a later time by clicking the link below.
