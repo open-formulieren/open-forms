@@ -243,7 +243,7 @@ function reducer(draft, action) {
                     isNew: false,
                 };
             } else {
-                const { configuration, name, internalName, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
+                const { configuration, name, internalName, isReusable, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
                 const { url } = draft.formSteps[index];
                 draft.formSteps[index] = {
                     configuration,
@@ -251,6 +251,7 @@ function reducer(draft, action) {
                     index,
                     name,
                     internalName,
+                    isReusable,
                     slug,
                     url,
                     literals: {
