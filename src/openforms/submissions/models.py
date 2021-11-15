@@ -236,6 +236,10 @@ class Submission(models.Model):
         ),
     )
 
+    previous_submission = models.ForeignKey(
+        "submissions.Submission", on_delete=models.DO_NOTHING, null=True, blank=True
+    )
+
     objects = SubmissionQuerySet.as_manager()
 
     class Meta:

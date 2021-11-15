@@ -6,7 +6,7 @@ from django.views.generic import RedirectView
 
 from furl import furl
 
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 from openforms.submissions.utils import add_submmission_to_session
 
 from .tokens import submission_appointment_token_generator
@@ -59,18 +59,41 @@ class VerifyChangeAppointmentLinkView(RedirectView):
             logger.debug("Called endpoint with an invalid token: %s", token)
             raise PermissionDenied("Cancel url is not valid")
 
-        # TODO
-        # 1. Create a new submission
-        # 2. Find correct step to redirect to
+        # Create a new submission
+        new_submission = Submission.objects.create(
+            form=submission.form,
+            form_url=submission.form_url,
+            previous_submission=submission,
+        )
+        for submission_step in submission.submissionstep_set.all():
+            SubmissionStep.objects.create(
+                submission=new_submission,
+                form_step=submission_step.form_step,
+                data=submission_step.data,
+            )
 
-        add_submmission_to_session(submission, self.request.session)
+        add_submmission_to_session(new_submission, self.request.session)
 
-        f = furl(submission.form_url)
-        f /= "afspraak-annuleren"
+        # Find the step url to redirect to
+        step_url = ""
+        for form_step in submission.form.formstep_set.all():
+            for component in form_step.form_definition.configuration["components"]:
+                if component.get("appointments", {}).get("showProducts"):
+                    step_url = form_step.form_definition.slug
+
+        if not step_url:
+            # Should never happen but log in case it does
+            logger.warning(
+                "Could not find the appointment step for submission %s", submission.uuid
+            )
+
+        f = furl(new_submission.form_url)
+        f /= step_url
         f.add(
             {
-                "time": submission.appointment_info.start_time.isoformat(),
-                "submission_uuid": str(submission.uuid),
+                "product": submission.get_merged_appointment_data()["productIDAndName"][
+                    "value"
+                ]["identifier"]
             }
         )
         return f.url
