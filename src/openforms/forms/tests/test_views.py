@@ -48,13 +48,11 @@ class FormListViewTests(WebTest):
 
         self.assertTemplateUsed(list_page, "core/views/form/form_list.html")
 
-    def test_show_list_no_main_website_configured(self):
+    def test_forbidden_no_main_website_configured(self):
         self.config.main_website = ""
         self.config.save()
 
-        list_page = self.app.get(self.url)
-
-        self.assertTemplateUsed(list_page, "core/views/form/form_list.html")
+        self.app.get(self.url, status=403)
 
 
 @override_settings(

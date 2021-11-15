@@ -53,8 +53,7 @@ class FormsAPITests(APITestCase):
         url = reverse("api:form-list")
         response = self.client.get(url, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_list_staff(self):
         FormFactory.create_batch(2)
@@ -614,19 +613,7 @@ class FormsStepsAPITests(APITestCase):
         )
         response = self.client.get(url, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        retrieved_steps = response.json()
-
-        self.assertEqual(len(retrieved_steps), 1)
-
-        self.assertIn("url", retrieved_steps[0])
-        self.assertIn("index", retrieved_steps[0])
-        self.assertIn("name", retrieved_steps[0])
-        self.assertIn("slug", retrieved_steps[0])
-        self.assertIn("configuration", retrieved_steps[0])
-        self.assertIn("loginRequired", retrieved_steps[0])
-        self.assertIn("formDefinition", retrieved_steps[0])
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_form_step_successful(self):
         self.user.is_staff = True
@@ -1190,9 +1177,7 @@ class FormDefinitionsAPITests(APITestCase):
         url = reverse("api:formdefinition-list")
         response = self.client.get(url, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response_data = response.json()
-        self.assertEqual(response_data["count"], 2)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_non_staff_user_cant_update(self):
         definition = FormDefinitionFactory.create(
