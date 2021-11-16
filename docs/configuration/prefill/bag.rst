@@ -5,7 +5,7 @@ BAG
 ===
 
 The BAG (Basisregistratie Adressen en Gebouwen) is a database from the
-`Kadaster`_ containing address inforamtion, that can be accessed via the
+`Kadaster`_ containing address information, that can be accessed via the
 semi-public `BAG API`_. Open Forms can be configured to access this API to
 autocomplete addresses.
 
