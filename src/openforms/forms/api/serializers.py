@@ -211,32 +211,9 @@ class FormSerializer(serializers.ModelSerializer):
         )
         instance = super().update(instance, validated_data)
 
-        if (
-            confirmation_email_template
-            and confirmation_email_template.get("subject")
-            and confirmation_email_template.get("content")
-        ):
-            try:
-                # First try updating the current confirmation email template
-                instance.confirmation_email_template.subject = (
-                    confirmation_email_template["subject"]
-                )
-                instance.confirmation_email_template.content = (
-                    confirmation_email_template["content"]
-                )
-                instance.confirmation_email_template.save()
-            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
-                # If one does not exist then create it
-                ConfirmationEmailTemplate.objects.create(
-                    form=instance, **confirmation_email_template
-                )
-        else:
-            try:
-                # If a complete email template is not given then delete the potential confirmation email template
-                #   This handles the case where a template was created but later cleared
-                instance.confirmation_email_template.delete()
-            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
-                pass
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
 
         return instance
 

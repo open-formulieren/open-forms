@@ -4,8 +4,28 @@ from django.utils.translation import gettext_lazy as _
 from openforms.appointments.models import AppointmentInfo
 from openforms.submissions.models import Submission
 
-from .utils import render_confirmation_email_content
 from .validators import DjangoTemplateValidator
+
+
+class ConfirmationEmailTemplateManager(models.Manager):
+    @staticmethod
+    def set_for_form(form=None, data=None):
+        if data and data.get("subject") and data.get("content"):
+            try:
+                # First try updating the current confirmation email template
+                form.confirmation_email_template.subject = data["subject"]
+                form.confirmation_email_template.content = data["content"]
+                form.confirmation_email_template.save()
+            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
+                # If one does not exist then create it
+                ConfirmationEmailTemplate.objects.create(form=form, **data)
+        else:
+            try:
+                # If a complete email template is not given then delete the potential confirmation email template
+                #   This handles the case where a template was created but later cleared
+                form.confirmation_email_template.delete()
+            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
+                pass
 
 
 class ConfirmationEmailTemplate(models.Model):
@@ -36,6 +56,8 @@ class ConfirmationEmailTemplate(models.Model):
         related_name="confirmation_email_template",
         help_text=_("The form for which this confirmation email template will be used"),
     )
+
+    objects = ConfirmationEmailTemplateManager()
 
     class Meta:
         verbose_name = _("Confirmation email template")
