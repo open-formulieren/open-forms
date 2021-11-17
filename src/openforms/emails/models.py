@@ -58,7 +58,8 @@ class ConfirmationEmailTemplate(models.Model):
         verbose_name_plural = _("Confirmation email templates")
 
     def __str__(self):
-        return f"Confirmation email template - {self.form}"
+        form_str = str(self.form) if self.form_id else _("(unsaved form)")
+        return _("Confirmation email template - {form}").format(form=form_str)
 
     @property
     def is_usable(self) -> bool:
