@@ -657,17 +657,19 @@ class FormsAPITests(APITestCase):
             "{% appointment_information %}",
             "{% payment_information %}",
         ]:
-            modified_data = copy.deepcopy(data)
-            modified_data["confirmation_email_template"]["content"] = modified_data[
-                "confirmation_email_template"
-            ]["content"].replace(missing_tag, "")
-            response = self.client.patch(url, data=modified_data)
+            with self.subTest(missing_tag=missing_tag):
+                modified_data = copy.deepcopy(data)
+                modified_data["confirmation_email_template"]["content"] = modified_data[
+                    "confirmation_email_template"
+                ]["content"].replace(missing_tag, "")
 
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertEqual(
-                response.json()["invalidParams"][0]["reason"],
-                _("Missing required template-tag {tag}").format(tag=missing_tag),
-            )
+                response = self.client.patch(url, data=modified_data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertEqual(
+                    response.json()["invalidParams"][0]["reason"],
+                    _("Missing required template-tag {tag}").format(tag=missing_tag),
+                )
 
     def test_updating_a_confirmation_email_template(self):
         form = FormFactory.create()
@@ -739,16 +741,20 @@ class FormsAPITests(APITestCase):
     def test_sending_partial_confirmation_email_template_raises_an_exception(
         self,
     ):
-        form = FormFactory.create()
-        ConfirmationEmailTemplateFactory.create(
-            form=form,
+        patcher = patch(
+            "openforms.emails.validators.DjangoTemplateValidator.check_required_tags",
+            return_value=None,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        template = ConfirmationEmailTemplateFactory.create(
             subject="Initial subject",
             content="Initial content",
         )
         self.user.is_staff = True
         self.user.save()
 
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": template.form.uuid})
         data_to_test = [
             {
                 "confirmation_email_template": {
@@ -766,7 +772,9 @@ class FormsAPITests(APITestCase):
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
                 self.assertEqual(
                     response.json()["invalidParams"][0]["reason"],
-                    _("This field is required."),
+                    _(
+                        "The fields {fields} must all be provided if one of them is provided."
+                    ).format(fields="subject, content"),
                 )
 
     def test_getting_a_form_with_a_confirmation_email_template(self):

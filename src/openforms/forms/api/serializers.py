@@ -251,52 +251,6 @@ class FormSerializer(serializers.ModelSerializer):
             detail = {options_field: e.detail}
             raise serializers.ValidationError(detail) from e
 
-    def validate_confirmation_email_template(self, validated_data):
-        if validated_data:
-            if validated_data.get("subject") and not validated_data.get("content"):
-                raise serializers.ValidationError(
-                    {
-                        "content": [
-                            ErrorDetail(
-                                string=_("This field is required."), code="required"
-                            )
-                        ]
-                    }
-                )
-
-            if validated_data.get("content") and not validated_data.get("subject"):
-                raise serializers.ValidationError(
-                    {
-                        "subject": [
-                            ErrorDetail(
-                                string=_("This field is required."), code="required"
-                            )
-                        ]
-                    }
-                )
-            for tag in [
-                "{% appointment_information %}",
-                "{% payment_information %}",
-            ]:
-                if (
-                    validated_data.get("content")
-                    and tag not in validated_data["content"]
-                ):
-                    raise serializers.ValidationError(
-                        {
-                            "content": [
-                                ErrorDetail(
-                                    string=_(
-                                        "Missing required template-tag {tag}"
-                                    ).format(tag=tag),
-                                    code="required",
-                                )
-                            ]
-                        }
-                    )
-
-        return validated_data
-
 
 class FormExportSerializer(FormSerializer):
     def get_fields(self):
