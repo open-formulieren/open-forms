@@ -47,7 +47,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     confirmation_email_subject = models.CharField(
-        _("confirmation email subject"),
+        _("subject"),
         max_length=1000,
         help_text=_(
             "Subject of the confirmation email message. Can be overridden on the form level"
@@ -56,7 +56,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     confirmation_email_content = HTMLField(
-        _("confirmation email content"),
+        _("content"),
         help_text=_(
             "Content of the confirmation email message. Can be overridden on the form level"
         ),
