@@ -217,7 +217,9 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
 
 
 def render_confirmation_email_content(
-    submission: "Submission", content: str, extra_context: Dict[str, Any] = None
+    submission: "Submission",
+    content: str,
+    extra_context: Optional[Dict[str, Any]] = None,
 ):
     context = get_confirmation_email_context_data(submission)
     if extra_context:
