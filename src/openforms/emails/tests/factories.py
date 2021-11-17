@@ -13,6 +13,8 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def update_form_confirmation_email_option(obj, create, extracted, **kwargs):
+        if extracted is False:
+            return
         # Update the form to ensure this email is used for the form and
         #   not the one in the Global Configuration
         obj.form.confirmation_email_option = (

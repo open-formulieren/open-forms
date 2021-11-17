@@ -9,6 +9,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
@@ -22,7 +23,7 @@ from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
 from openforms.utils.json_logic import JsonLogicTest
 
-from ..constants import LogicActionTypes, PropertyTypes
+from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
@@ -230,6 +231,34 @@ class FormSerializer(serializers.ModelSerializer):
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
+
+        confirmation_email_option = get_from_serializer_data_or_instance(
+            "confirmation_email_option", attrs, self
+        )
+        confirmation_email_template = (
+            get_from_serializer_data_or_instance(
+                "confirmation_email_template", attrs, self
+            )
+            or {}
+        )
+        if confirmation_email_option == ConfirmationEmailOptions.form_specific_email:
+            if isinstance(confirmation_email_template, ConfirmationEmailTemplate):
+                _template = confirmation_email_template
+            else:
+                _template = ConfirmationEmailTemplate(**confirmation_email_template)
+            if not _template.is_usable:
+                raise serializers.ValidationError(
+                    {
+                        "confirmation_email_option": ErrorDetail(
+                            _(
+                                "The form specific confirmation email template is not set up correctly and "
+                                "can therefore not be selected."
+                            ),
+                            code="invalid",
+                        )
+                    }
+                )
+
         return attrs
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):

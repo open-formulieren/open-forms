@@ -30,22 +30,17 @@ from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
+from ..constants import ConfirmationEmailOptions
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 class FormsAPITests(APITestCase):
     def setUp(self):
-        # TODO: Replace with API-token
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john", password="secret", email="john@example.com"
-        )
+        super().setUp()
 
-        # TODO: Axes requires HttpRequest, should we have that in the API at all?
-        assert self.client.login(
-            request=HttpRequest(), username=self.user.username, password="secret"
-        )
+        self.user = UserFactory.create()
+        self.client.force_authenticate(user=self.user)
 
     def test_list(self):
         FormFactory.create_batch(2)
@@ -725,6 +720,7 @@ class FormsAPITests(APITestCase):
             form=form,
             subject="Initial subject",
             content="Initial content",
+            update_form_confirmation_email_option=False,
         )
         self.user.is_staff = True
         self.user.save()
@@ -795,6 +791,41 @@ class FormsAPITests(APITestCase):
             response.json()["confirmationEmailTemplate"],
             {"subject": "Initial subject", "content": "Initial content"},
         )
+
+    def test_configure_form_use_form_template_but_not_usable(self):
+        """
+        Assert that it's not possible to configure a form to use an unusable confirmation
+        email template.
+
+        Unusable is defined as having an empty subject or content.
+        """
+        user = StaffUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create()
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        invalid_templates = [
+            None,
+            {"subject": "", "content": ""},
+        ]
+
+        for invalid_template in invalid_templates:
+            with self.subTest(invalid_template_data=invalid_template):
+                data = {
+                    "confirmation_email_template": invalid_template,
+                    "confirmation_email_option": ConfirmationEmailOptions.form_specific_email,
+                }
+
+                response = self.client.patch(url, data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                err_message = response.json()["invalidParams"][0]["reason"]
+                self.assertEqual(
+                    err_message,
+                    _(
+                        "The form specific confirmation email template is not set up correctly and "
+                        "can therefore not be selected."
+                    ),
+                )
 
 
 class FormsStepsAPITests(APITestCase):
