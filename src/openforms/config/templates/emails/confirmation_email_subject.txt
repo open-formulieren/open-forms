@@ -1,1 +1,1 @@
-Bevestiging van uw inzending van {{ form_name }}
+{% load i18n %}{% blocktrans %}Bevestiging van uw inzending van {{ form_name }}{% endblocktrans %}

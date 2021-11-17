@@ -2,7 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template import Context, Template
-from django.template.loader import get_template, render_to_string
+from django.template.loader import get_template
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 

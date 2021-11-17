@@ -1,13 +1,20 @@
+{% load i18n %}<br>
+{% blocktrans %}<br>
 Geachte heer/mevrouw,<br>
 <br>
 U heeft via de website het formulier "{{ form_name }}" verzonden op {{ submission_date }}.<br>
 <br>
 Uw referentienummer is: {{ public_reference }}<br>
 <br>
+{% endblocktrans %}<br><br>
+
 {% summary %}<br>
 {% appointment_information %}<br>
-{% payment_information %}<br>
+{% payment_information %}<br><br>
+
+{% blocktrans %}
 <br>
 Met vriendelijke groet,<br>
 <br>
-Open Formulieren
+Open Formulieren<br>
+{% endblocktrans %}
