@@ -71,7 +71,7 @@ const Confirmation = ({ pageTemplate='', emailOption='global_email', emailTempla
                         name="form.confirmationEmailTemplate.subject"
                         label={<FormattedMessage defaultMessage="Subject" description="Confirmation Email Subject label" />}
                     >
-                        <TextInput value={subject} onChange={onChange} maxLength="1000"/>
+                        <TextInput value={subject || ""} onChange={onChange} maxLength="1000"/>
                     </Field>
                 </FormRow>
                 <FormRow>
