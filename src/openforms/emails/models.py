@@ -24,6 +24,7 @@ class ConfirmationEmailTemplate(models.Model):
         blank=True,
         max_length=1000,
         help_text=_("Subject of the email message"),
+        validators=[DjangoTemplateValidator()],
     )
     content = models.TextField(
         _("content"),
