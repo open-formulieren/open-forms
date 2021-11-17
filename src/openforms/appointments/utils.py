@@ -19,7 +19,7 @@ from openforms.submissions.models import Submission
 
 from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
 from .constants import AppointmentDetailsStatus
-from .exceptions import AppointmentCreateFailed
+from .exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
 from .models import AppointmentInfo, AppointmentsConfig
 from .service import AppointmentRegistrationFailed
 
@@ -146,6 +146,20 @@ def book_appointment_for_submission(submission: Submission) -> None:
             start_time=start_at,
         )
         appointment_register_success(appointment_info, client)
+        if submission.previous_submission:
+            try:
+                # Delete previous appointment if one exists
+                client.delete_appointment(
+                    submission.previous_submission.appointment_info.appointment_id
+                )
+                submission.previous_submission.appointment_info.status = (
+                    AppointmentDetailsStatus.cancelled
+                )
+                submission.previous_submission.appointment_info.save(
+                    update_fields=["status"]
+                )
+            except (AppointmentInfo.DoesNotExist, AppointmentDeleteFailed):
+                pass
     except AppointmentCreateFailed as e:
         # This is displayed to the end-user!
         error_information = _(
