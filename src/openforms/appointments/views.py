@@ -88,6 +88,7 @@ class VerifyChangeAppointmentLinkView(RedirectView):
             )
 
         f = furl(new_submission.form_url)
+        f /= "stap"
         f /= step_url
         f.add(
             {
