@@ -1,14 +1,16 @@
 import html
 from mimetypes import types_map
-from typing import NoReturn
+from typing import List, NoReturn, Tuple
 
 from django.conf import settings
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks.registration import set_submission_reference
@@ -16,6 +18,7 @@ from openforms.submissions.tasks.registration import set_submission_reference
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference
 from ...registry import register
+from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
 
@@ -117,3 +120,11 @@ class EmailRegistration(BasePlugin):
             options["to_emails"],
             fail_silently=False,
         )
+
+    def check_config(self):
+        check_config()
+
+    def get_config_actions(self) -> List[Tuple[str, str]]:
+        return [
+            (_("Test"), reverse("admin_email_test")),
+        ]

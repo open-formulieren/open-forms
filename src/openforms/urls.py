@@ -36,6 +36,10 @@ urlpatterns = [
         name="admin_email_test",
     ),
     path("admin/hijack/", include("hijack.urls")),
+    path(
+        "admin/config/",
+        decorator_include(login_required, "openforms.config.urls", namespace="config"),
+    ),
     path("admin/", admin.site.urls),
     path(
         "reset/<uidb64>/<token>/",

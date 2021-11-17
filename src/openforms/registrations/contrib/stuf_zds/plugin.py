@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.constants import (
     REGISTRATION_ATTRIBUTE,
@@ -191,3 +192,6 @@ class StufZDSRegistration(BasePlugin):
         client = config.get_client(submission.form.registration_backend_options)
 
         client.set_zaak_payment(submission.registration_result["zaak"])
+
+    def check_config(self):
+        raise InvalidPluginConfiguration("TODO")

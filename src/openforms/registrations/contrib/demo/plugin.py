@@ -27,6 +27,12 @@ class DemoRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission", options: dict):
         print(submission)
 
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
+        pass
+
 
 @register("failing-demo")
 class DemoFailRegistration(BasePlugin):
@@ -41,4 +47,10 @@ class DemoFailRegistration(BasePlugin):
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
+        pass
+
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
         pass

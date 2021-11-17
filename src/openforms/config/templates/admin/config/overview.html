@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">{% endblock %}
+
+{% block title %} {% trans "Configuration" %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; {% trans 'Configuration' %}
+&rsaquo; {% trans 'Overview' %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans 'Configuration' %}</h1>
+    <div id="content-main">
+        
+        {% for section in sections %}
+            <section class="module">
+                <table class="table" width="100%">
+                    <caption>{{ section.name }}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" width="300">{% trans "Name" %}</th>
+                            <th scope="col">{% trans "Status" %}</th>
+                            <th scope="col" width="300">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in section.entries %}
+                            <tr>
+                                <td><strong>{{ entry.name }}</strong></td>
+                                <td>{{ entry.status }}{% if entry.status_message %} {{ entry.status_message }}{% endif %}</td>
+                                <td>
+                                    {% for label, url in entry.actions %}
+                                        <a href="{{ url }}">{{ label }}</a>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endfor %}
+
+        <div class="submit-row">
+            <input type="button" class="default" value="{% trans 'Cancel' %}" onclick="javascript:history.back();">
+        </div>
+    </div>
+
+{% endblock %}
