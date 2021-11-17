@@ -1,20 +1,15 @@
-{% load i18n %}<br>
-{% blocktrans %}<br>
 Geachte heer/mevrouw,<br>
 <br>
-U heeft via de website het formulier "{{ form_name }}" verzonden op {{ submission_date }}.<br>
+U heeft via de website het formulier "{% templatetag openvariable %} form_name {% templatetag closevariable %}" verzonden op {% templatetag openvariable %} submission_date {% templatetag closevariable %}.<br>
 <br>
-Uw referentienummer is: {{ public_reference }}<br>
+Uw referentienummer is: {% templatetag openvariable %} public_reference {% templatetag closevariable %}<br>
 <br>
-{% endblocktrans %}<br><br>
 
-{% summary %}<br>
-{% appointment_information %}<br>
-{% payment_information %}<br><br>
+{% templatetag openblock %} summary {% templatetag closeblock %}<br>
+{% templatetag openblock %} appointment_information {% templatetag closeblock %}<br>
+{% templatetag openblock %} payment_information {% templatetag closeblock %}<br><br>
 
-{% blocktrans %}
 <br>
 Met vriendelijke groet,<br>
 <br>
 Open Formulieren<br>
-{% endblocktrans %}

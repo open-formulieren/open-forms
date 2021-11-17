@@ -2,7 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template import Context, Template
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
@@ -17,11 +17,11 @@ from openforms.utils.translations import runtime_gettext
 
 
 def get_confirmation_email_subject():
-    return get_template("emails/confirmation_email_subject.txt").template.source.strip()
+    return render_to_string("emails/confirmation_email_subject.txt")
 
 
 def get_confirmation_email_content():
-    return get_template("emails/confirmation_email_content.html").template.source
+    return render_to_string("emails/confirmation_email_content.html")
 
 
 class GlobalConfiguration(SingletonModel):

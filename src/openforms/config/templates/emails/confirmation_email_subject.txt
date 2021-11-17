@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans %}Bevestiging van uw inzending van {{ form_name }}{% endblocktrans %}
+Bevestiging van uw inzending van {% templatetag openvariable %} form_name {% templatetag closevariable %}
