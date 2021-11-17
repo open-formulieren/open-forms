@@ -2,5 +2,5 @@
 {% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
 {% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
 {% blocktrans %}
-Bevestiging van uw inzending van {{ tt_openvariable }} form_name {{ tt_closevariable }}
+Confirmation of your {{ tt_openvariable }} form_name {{ tt_closevariable }} submission
 {% endblocktrans %}

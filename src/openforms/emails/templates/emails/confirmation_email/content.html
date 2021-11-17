@@ -5,11 +5,11 @@
 {% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
 
 {% blocktrans %}
-Geachte heer/mevrouw,<br>
+Dear Sir, Madam,<br>
 <br>
-U heeft via de website het formulier "{{ tt_openvariable }} form_name {{ tt_closevariable }}" verzonden op {{ tt_openvariable }} submission_date {{ tt_closevariable }}.<br>
+You have submitted the form "{{ tt_openvariable }} form_name {{ tt_closevariable }}" on {{ tt_openvariable }} submission_date {{ tt_closevariable }}.<br>
 <br>
-Uw referentienummer is: {{ tt_openvariable }} public_reference {{ tt_closevariable }}<br>
+Your reference is: {{ tt_openvariable }} public_reference {{ tt_closevariable }}<br>
 <br>
 
 {{ tt_openblock }} summary {{ tt_closeblock }}<br>
@@ -17,7 +17,7 @@ Uw referentienummer is: {{ tt_openvariable }} public_reference {{ tt_closevariab
 {{ tt_openblock }} payment_information {{ tt_closeblock }}<br><br>
 
 <br>
-Met vriendelijke groet,<br>
+Kind regards,<br>
 <br>
-Open Formulieren<br>
+Open Forms<br>
 {% endblocktrans %}
