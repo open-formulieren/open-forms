@@ -1,9 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.appointments.models import AppointmentInfo
-from openforms.submissions.models import Submission
-
 from .validators import DjangoTemplateValidator
 
 
