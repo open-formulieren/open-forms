@@ -8,6 +8,7 @@ from urllib.parse import urlparse, urlsplit
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.template import Context, Template
+from django.template.defaultfilters import date as date_filter
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.html import strip_tags as django_strip_tags
@@ -194,7 +195,10 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         "form_name": submission.form.name,
     }
 
-    context["submission_date"] = submission.completed_on.date().strftime("%d-%m-%Y")
+    # use the ``|date`` filter so that the timestamp is first localized to the correct
+    # timezone, and then the date is formatted according to the django global setting.
+    # This makes date representations consistent across the system.
+    context["submission_date"] = date_filter(submission.completed_on)
 
     if submission.payment_required:
         context["payment_required"] = True
