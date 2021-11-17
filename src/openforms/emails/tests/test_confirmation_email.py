@@ -12,30 +12,34 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from openforms.appointments.constants import AppointmentDetailsStatus
-from openforms.appointments.tests.factories import AppointmentInfoFactory
-from openforms.appointments.tests.test_base import TestPlugin
-from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormStepFactory
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
-from openforms.tests.utils import NOOP_CACHES
-
-from ...appointments.base import (
+from openforms.appointments.base import (
     AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
     BasePlugin,
 )
-from ...payments.constants import PaymentStatus
-from ...payments.tests.factories import SubmissionPaymentFactory
-from ...submissions.utils import send_confirmation_email
-from ...utils.tests.html_assert import HTMLAssertMixin
-from ...utils.urls import build_absolute_uri
+from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.appointments.tests.test_base import TestPlugin
+from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import FormStepFactory
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
+from openforms.submissions.utils import send_confirmation_email
+from openforms.tests.utils import NOOP_CACHES
+from openforms.utils.tests.html_assert import HTMLAssertMixin
+from openforms.utils.urls import build_absolute_uri
+
+from ..confirmation_emails import (
+    get_confirmation_email_context_data,
+    render_confirmation_email_template,
+)
 from ..models import ConfirmationEmailTemplate
-from ..utils import render_confirmation_email_content, unwrap_anchors
+from ..utils import unwrap_anchors
 from .factories import ConfirmationEmailTemplateFactory
 
 NESTED_COMPONENT_CONF = {
@@ -110,7 +114,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             email.full_clean()
 
         with self.assertRaises(TemplateSyntaxError):
-            render_confirmation_email_content(submission, email.content)
+            context = get_confirmation_email_context_data(submission)
+            render_confirmation_email_template(email.content, context)
 
         submission.refresh_from_db()
         self.assertIsNotNone(submission.pk)
@@ -126,7 +131,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         submission = submission_step.submission
         email = ConfirmationEmailTemplate(content="{% summary %}")
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)
@@ -174,7 +180,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         submission = submission_step.submission
         email = ConfirmationEmailTemplate(content="{% summary %}")
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)
@@ -199,7 +206,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submission=submission,
         )
         email = ConfirmationEmailTemplate(content="{% appointment_information %}")
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         self.assertIn("Test product 1", rendered_content)
         self.assertIn("Test product 2", rendered_content)
@@ -226,9 +234,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         email = ConfirmationEmailTemplate(content="{% appointment_information %}")
         empty_email = ConfirmationEmailTemplate(content="")
 
-        rendered_content = render_confirmation_email_content(submission, email.content)
-        empty_rendered_content = render_confirmation_email_content(
-            submission, empty_email.content
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
+        empty_rendered_content = render_confirmation_email_template(
+            empty_email.content, context
         )
 
         self.assertEqual(empty_rendered_content, rendered_content)
@@ -244,7 +253,8 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertFalse(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
 
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         literals = [
             _("Payment of &euro;%(payment_price)s received."),
@@ -266,7 +276,8 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertTrue(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
 
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         # show amount
         literal = _(
@@ -293,7 +304,8 @@ class PaymentConfirmationEmailTests(TestCase):
         self.assertTrue(submission.payment_required)
         self.assertTrue(submission.payment_user_has_paid)
 
-        rendered_content = render_confirmation_email_content(submission, email.content)
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template(email.content, context)
 
         # still show amount
         literal = _("Payment of &euro; %(payment_price)s received.") % {

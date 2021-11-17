@@ -1,0 +1,2 @@
+class SkipConfirmationEmail(Exception):
+    pass

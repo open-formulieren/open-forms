@@ -1,21 +1,18 @@
-import html
 import logging
 from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
-from django.core.exceptions import ObjectDoesNotExist
-from django.template import Context, Template
 
-from openforms.config.models import GlobalConfiguration
-from openforms.emails.utils import (
-    render_confirmation_email_content,
-    send_mail_html,
-    strip_tags_plus,
+from openforms.emails.confirmation_emails import (
+    SkipConfirmationEmail,
+    get_confirmation_email_context_data,
+    get_confirmation_email_templates,
+    render_confirmation_email_template,
 )
+from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
-from ..forms.constants import ConfirmationEmailOptions
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
 
@@ -79,38 +76,14 @@ def remove_submission_uploads_from_session(
         remove_upload_from_session(attachment.temporary_file, session)
 
 
-def get_confirmation_email_components(submission: Submission):
-    if (
-        submission.form.confirmation_email_option
-        == ConfirmationEmailOptions.form_specific_email
-    ):
-        email_template = submission.form.confirmation_email_template
-        subject = email_template.subject
-        html_content = render_confirmation_email_content(
-            submission, email_template.content
-        )
-        text_content = render_confirmation_email_content(
-            submission, email_template.content, {"rendering_text": True}
-        )
-        return subject, html_content, text_content
-    else:
-        config = GlobalConfiguration.get_solo()
-        subject = Template(config.confirmation_email_subject).render(
-            Context({"form_name": submission.form.name})
-        )
-        html_content = render_confirmation_email_content(
-            submission, config.confirmation_email_content
-        )
-        text_content = render_confirmation_email_content(
-            submission, config.confirmation_email_content, {"rendering_text": True}
-        )
-        return subject, html_content, text_content
-
-
 def send_confirmation_email(submission: Submission):
     logevent.confirmation_email_start(submission)
 
-    if submission.form.confirmation_email_option == ConfirmationEmailOptions.no_email:
+    try:
+        subject_template, content_template = get_confirmation_email_templates(
+            submission
+        )
+    except SkipConfirmationEmail:
         logger.debug(
             "Form %d is configured to not send a confirmation email for submission %d, "
             "skipping the confirmation e-mail.",
@@ -130,11 +103,18 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    subject, html_content, text_content = get_confirmation_email_components(submission)
+    context = get_confirmation_email_context_data(submission)
 
-    # post process since the mail template has html markup and django escaped entities
-    text_content = strip_tags_plus(text_content)
-    text_content = html.unescape(text_content)
+    # render the templates with the submission context
+    subject = render_confirmation_email_template(
+        subject_template, context, rendering_text=True
+    )
+    html_content = render_confirmation_email_template(content_template, context)
+    text_content = strip_tags_plus(
+        render_confirmation_email_template(
+            content_template, context, rendering_text=True
+        )
+    )
 
     try:
         send_mail_html(
@@ -142,7 +122,6 @@ def send_confirmation_email(submission: Submission):
             html_content,
             settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
             to_emails,
-            fail_silently=False,
             text_message=text_content,
         )
     except Exception as e:

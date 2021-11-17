@@ -2,23 +2,18 @@ import logging
 import re
 from functools import partial
 from html import unescape
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
-from django.template import Context, Template
-from django.template.defaultfilters import date as date_filter
 from django.template.loader import get_template
-from django.urls import reverse
 from django.utils.html import strip_tags as django_strip_tags
 
 from lxml.html import fromstring, tostring
 
-from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
 from openforms.utils.email import send_mail_plus
-from openforms.utils.urls import build_absolute_uri
 
 from .constants import URL_REGEX
 from .context import get_wrapper_context
@@ -26,9 +21,6 @@ from .context import get_wrapper_context
 logger = logging.getLogger(__name__)
 
 MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
-
-if TYPE_CHECKING:
-    from openforms.submissions.models import Submission
 
 
 def sanitize_urls(allowlist: List[str], match) -> str:
@@ -181,50 +173,3 @@ def unwrap_anchors(html_str: str) -> str:
         link.text += f" ({url})"
 
     return tostring(root, encoding="utf8").decode("utf8")
-
-
-def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, Any]:
-    context = {
-        # use private variables that can't be accessed in the template data, so that
-        # template designers can't call the .delete method, for example. Variables
-        # starting with underscores are blocked by the Django template engine.
-        "_submission": submission,
-        "_form": submission.form,  # should be the same as self.form
-        **submission.data,
-        "public_reference": submission.public_registration_reference,
-        "form_name": submission.form.name,
-    }
-
-    # use the ``|date`` filter so that the timestamp is first localized to the correct
-    # timezone, and then the date is formatted according to the django global setting.
-    # This makes date representations consistent across the system.
-    context["submission_date"] = date_filter(submission.completed_on)
-
-    if submission.payment_required:
-        context["payment_required"] = True
-        context["payment_user_has_paid"] = submission.payment_user_has_paid
-        context["payment_url"] = build_absolute_uri(
-            reverse("payments:link", kwargs={"uuid": submission.uuid})
-        )
-        context["payment_price"] = str(submission.form.product.price)
-
-    try:
-        context["_appointment_id"] = submission.appointment_info.appointment_id
-    except AppointmentInfo.DoesNotExist:
-        pass
-
-    return context
-
-
-def render_confirmation_email_content(
-    submission: "Submission",
-    content: str,
-    extra_context: Optional[Dict[str, Any]] = None,
-):
-    context = get_confirmation_email_context_data(submission)
-    if extra_context:
-        context.update(extra_context)
-
-    rendered_content = Template(content).render(Context(context))
-
-    return rendered_content
