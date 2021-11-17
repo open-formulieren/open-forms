@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -189,33 +190,26 @@ class FormSerializer(serializers.ModelSerializer):
             },
         }
 
+    @transaction.atomic()
     def create(self, validated_data):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
         instance = super().create(validated_data)
-
-        if (
-            confirmation_email_template
-            and confirmation_email_template.get("subject")
-            and confirmation_email_template.get("content")
-        ):
-            ConfirmationEmailTemplate.objects.create(
-                form=instance, **confirmation_email_template
-            )
-
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
         return instance
 
+    @transaction.atomic()
     def update(self, instance, validated_data):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
         instance = super().update(instance, validated_data)
-
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
-
         return instance
 
     def get_fields(self):

@@ -708,12 +708,12 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {"confirmation_email_template": None}
+
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
-        with self.assertRaises(AttributeError):
-            form.confirmation_email_template
+        self.assertFalse(form.confirmation_email_template.is_usable)
 
     def test_sending_empty_confirmation_email_template_removes_the_confirmation_email_template(
         self,
@@ -734,8 +734,7 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
-        with self.assertRaises(AttributeError):
-            form.confirmation_email_template
+        self.assertFalse(form.confirmation_email_template.is_usable)
 
     def test_sending_partial_confirmation_email_template_raises_an_exception(
         self,

@@ -1,36 +1,33 @@
+from typing import Optional
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from openforms.forms.models import Form
 
 from .validators import DjangoTemplateValidator
 
 
 class ConfirmationEmailTemplateManager(models.Manager):
-    @staticmethod
-    def set_for_form(form=None, data=None):
-        if data and data.get("subject") and data.get("content"):
-            try:
-                # First try updating the current confirmation email template
-                form.confirmation_email_template.subject = data["subject"]
-                form.confirmation_email_template.content = data["content"]
-                form.confirmation_email_template.save()
-            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
-                # If one does not exist then create it
-                ConfirmationEmailTemplate.objects.create(form=form, **data)
-        else:
-            try:
-                # If a complete email template is not given then delete the potential confirmation email template
-                #   This handles the case where a template was created but later cleared
-                form.confirmation_email_template.delete()
-            except (AttributeError, ConfirmationEmailTemplate.DoesNotExist):
-                pass
+    def set_for_form(self, form: Form, data: Optional[dict]):
+        # if there's *no* template data, make sure that we do indeed wipe the fields,
+        # making the template not usable
+        if not data:
+            data = {"subject": "", "content": ""}
+
+        return self.update_or_create(form=form, defaults=data)
 
 
 class ConfirmationEmailTemplate(models.Model):
     subject = models.CharField(
-        _("subject"), max_length=1000, help_text=_("Subject of the email message")
+        _("subject"),
+        blank=True,
+        max_length=1000,
+        help_text=_("Subject of the email message"),
     )
     content = models.TextField(
         _("content"),
+        blank=True,
         help_text=_(
             "The content of the email message can contain variables that will be "
             "templated from the submitted form data."
@@ -62,3 +59,7 @@ class ConfirmationEmailTemplate(models.Model):
 
     def __str__(self):
         return f"Confirmation email template - {self.form}"
+
+    @property
+    def is_usable(self) -> bool:
+        return bool(self.subject and self.content)
