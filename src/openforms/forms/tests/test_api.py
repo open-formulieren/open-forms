@@ -1,3 +1,4 @@
+import copy
 import json
 import uuid
 from io import BytesIO
@@ -638,6 +639,35 @@ class FormsAPITests(APITestCase):
             form.confirmation_email_template.content,
             "The content {% appointment_information %} {% payment_information %}",
         )
+
+    def test_creating_a_confirmation_email_fails_for_missing_template_tags(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content {% appointment_information %} {% payment_information %}",
+            }
+        }
+
+        for missing_tag in [
+            "{% appointment_information %}",
+            "{% payment_information %}",
+        ]:
+            modified_data = copy.deepcopy(data)
+            modified_data["confirmation_email_template"]["content"] = modified_data[
+                "confirmation_email_template"
+            ]["content"].replace(missing_tag, "")
+            response = self.client.patch(url, data=modified_data)
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.json()["invalidParams"][0]["reason"],
+                _("Missing required template-tag {tag}").format(tag=missing_tag),
+            )
 
     def test_updating_a_confirmation_email_template(self):
         form = FormFactory.create()

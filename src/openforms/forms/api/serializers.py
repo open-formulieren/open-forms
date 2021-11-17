@@ -280,6 +280,27 @@ class FormSerializer(serializers.ModelSerializer):
                         ]
                     }
                 )
+            for tag in [
+                "{% appointment_information %}",
+                "{% payment_information %}",
+            ]:
+                if (
+                    validated_data.get("content")
+                    and tag not in validated_data["content"]
+                ):
+                    raise serializers.ValidationError(
+                        {
+                            "content": [
+                                ErrorDetail(
+                                    string=_(
+                                        "Missing required template-tag {tag}"
+                                    ).format(tag=tag),
+                                    code="required",
+                                )
+                            ]
+                        }
+                    )
+
         return validated_data
 
 
