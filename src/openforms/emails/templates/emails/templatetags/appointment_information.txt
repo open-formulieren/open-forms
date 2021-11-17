@@ -20,3 +20,4 @@
 
 {% trans "If you want to cancel your appointment, you can do so below." %}
 {% trans "Cancel appointment" %}: {{ appointment_cancel_link }}{% endautoescape %}
+{% trans "Change appointment" %}: {{ appointment_change_link }}{% endautoescape %}
