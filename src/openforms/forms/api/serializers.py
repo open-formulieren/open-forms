@@ -5,6 +5,7 @@ from drf_polymorphic.serializers import PolymorphicSerializer
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
@@ -255,6 +256,31 @@ class FormSerializer(serializers.ModelSerializer):
             # like registrationBackendOptions.toEmails.0 if the first email was invalid
             detail = {options_field: e.detail}
             raise serializers.ValidationError(detail) from e
+
+    def validate_confirmation_email_template(self, validated_data):
+        if validated_data:
+            if validated_data.get("subject") and not validated_data.get("content"):
+                raise serializers.ValidationError(
+                    {
+                        "content": [
+                            ErrorDetail(
+                                string=_("This field is required."), code="required"
+                            )
+                        ]
+                    }
+                )
+
+            if validated_data.get("content") and not validated_data.get("subject"):
+                raise serializers.ValidationError(
+                    {
+                        "subject": [
+                            ErrorDetail(
+                                string=_("This field is required."), code="required"
+                            )
+                        ]
+                    }
+                )
+        return validated_data
 
 
 class FormExportSerializer(FormSerializer):

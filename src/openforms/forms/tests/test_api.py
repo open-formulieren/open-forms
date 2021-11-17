@@ -617,30 +617,6 @@ class FormsAPITests(APITestCase):
             "The content: {% appointment_information %} {% payment_information %}",
         )
 
-    def test_create_form_with_confirmation_email_template_does_not_create_template_with_invalid_information(
-        self,
-    ):
-        self.user.is_staff = True
-        self.user.save()
-        url = reverse("api:form-list")
-        data = {
-            "name": "Test Post Form",
-            "slug": "test-post-form",
-            "confirmation_email_template": {
-                "subject": "The subject",
-                "content": "",
-            },
-        }
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Form.objects.count(), 1)
-        form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
-        self.assertEqual(form.slug, "test-post-form")
-        with self.assertRaises(AttributeError):
-            form.confirmation_email_template
-
     def test_creating_a_confirmation_email_template_for_an_existing_form(self):
         form = FormFactory.create()
         self.user.is_staff = True
@@ -709,7 +685,29 @@ class FormsAPITests(APITestCase):
         with self.assertRaises(AttributeError):
             form.confirmation_email_template
 
-    def test_sending_partial_or_empty_confirmation_email_template_removes_the_confirmation_email_template(
+    def test_sending_empty_confirmation_email_template_removes_the_confirmation_email_template(
+        self,
+    ):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {"confirmation_email_template": {"subject": "", "content": ""}}
+
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        with self.assertRaises(AttributeError):
+            form.confirmation_email_template
+
+    def test_sending_partial_confirmation_email_template_raises_an_exception(
         self,
     ):
         form = FormFactory.create()
@@ -736,10 +734,11 @@ class FormsAPITests(APITestCase):
 
                 response = self.client.patch(url, data=data)
 
-                self.assertEqual(response.status_code, status.HTTP_200_OK)
-                form.refresh_from_db()
-                with self.assertRaises(AttributeError):
-                    form.confirmation_email_template
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertEqual(
+                    response.json()["invalidParams"][0]["reason"],
+                    _("This field is required."),
+                )
 
     def test_getting_a_form_with_a_confirmation_email_template(self):
         form = FormFactory.create()
