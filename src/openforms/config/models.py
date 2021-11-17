@@ -17,11 +17,11 @@ from openforms.utils.translations import runtime_gettext
 
 
 def get_confirmation_email_subject():
-    return render_to_string("emails/confirmation_email_subject.txt")
+    return render_to_string("emails/confirmation_email/subject.txt")
 
 
 def get_confirmation_email_content():
-    return render_to_string("emails/confirmation_email_content.html")
+    return render_to_string("emails/confirmation_email/content.html")
 
 
 class GlobalConfiguration(SingletonModel):

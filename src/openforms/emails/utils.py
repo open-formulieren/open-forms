@@ -194,8 +194,7 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         "form_name": submission.form.name,
     }
 
-    if submission.completed_on:
-        context["submission_date"] = submission.completed_on.date().strftime("%d-%m-%Y")
+    context["submission_date"] = submission.completed_on.date().strftime("%d-%m-%Y")
 
     if submission.payment_required:
         context["payment_required"] = True
