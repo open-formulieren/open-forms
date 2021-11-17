@@ -11,6 +11,7 @@ from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
 from openforms.data_removal.constants import RemovalMethods
+from openforms.emails.validators import DjangoTemplateValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
@@ -53,6 +54,7 @@ class GlobalConfiguration(SingletonModel):
             "Subject of the confirmation email message. Can be overridden on the form level"
         ),
         default=get_confirmation_email_subject,
+        validators=[DjangoTemplateValidator()],
     )
 
     confirmation_email_content = HTMLField(
@@ -61,6 +63,7 @@ class GlobalConfiguration(SingletonModel):
             "Content of the confirmation email message. Can be overridden on the form level"
         ),
         default=get_confirmation_email_content,
+        validators=[DjangoTemplateValidator()],
     )
 
     allow_empty_initiator = models.BooleanField(
