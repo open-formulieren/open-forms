@@ -1,7 +1,6 @@
 import logging
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, transaction
 
 from celery_once import QueueOnce
@@ -82,16 +81,4 @@ def send_confirmation_email(submission_id: int) -> None:
     if submission.confirmation_email_sent:
         return
 
-    try:
-        # access the reverse of the one2one
-        submission.form.confirmation_email_template
-    except (AttributeError, ObjectDoesNotExist):
-        logevent.confirmation_email_skip(submission)
-        return
-
-    logevent.confirmation_email_start(submission)
-    try:
-        _send_confirmation_email(submission)
-    except Exception as e:
-        logevent.confirmation_email_failure(submission, e)
-        raise
+    _send_confirmation_email(submission)

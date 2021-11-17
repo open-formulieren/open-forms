@@ -49,12 +49,6 @@
       "value": "?"
     }
   ],
-  "1GyseX": [
-    {
-      "type": 0,
-      "value": "Submission page content"
-    }
-  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -71,6 +65,12 @@
     {
       "type": 0,
       "value": "Registration backend options"
+    }
+  ],
+  "2utbek": [
+    {
+      "type": 0,
+      "value": "Email option"
     }
   ],
   "3W3Px9": [
@@ -403,6 +403,12 @@
       "value": "Slug of the form, used in URLs"
     }
   ],
+  "HqVHBq": [
+    {
+      "type": 0,
+      "value": "Will send the email specified."
+    }
+  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -413,6 +419,12 @@
     {
       "type": 0,
       "value": "Select form definition"
+    }
+  ],
+  "ICW7rb": [
+    {
+      "type": 0,
+      "value": "Global email"
     }
   ],
   "Ika4IH": [
@@ -451,10 +463,22 @@
       "value": "Last Name Component"
     }
   ],
+  "JuVh63": [
+    {
+      "type": 0,
+      "value": "Form specific email"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
       "value": "Name/title of the form"
+    }
+  ],
+  "KL5k2f": [
+    {
+      "type": 0,
+      "value": "Content"
     }
   ],
   "KUXH/H": [
@@ -603,6 +627,12 @@
       "value": "All Submissions Removal Limit"
     }
   ],
+  "VMMOA0": [
+    {
+      "type": 0,
+      "value": "Page content"
+    }
+  ],
   "VQYmOD": [
     {
       "type": 0,
@@ -647,6 +677,12 @@
     {
       "type": 0,
       "value": "Active"
+    }
+  ],
+  "XNqV97": [
+    {
+      "type": 0,
+      "value": "Subject"
     }
   ],
   "YQ/Vx0": [
@@ -719,6 +755,12 @@
     {
       "type": 0,
       "value": "Product"
+    }
+  ],
+  "cpiYVw": [
+    {
+      "type": 0,
+      "value": "No email"
     }
   ],
   "d45v2X": [
@@ -957,6 +999,12 @@
     {
       "type": 0,
       "value": "Change form"
+    }
+  ],
+  "tjRtQk": [
+    {
+      "type": 0,
+      "value": "Submission confirmation email template"
     }
   ],
   "uBO/Al": [

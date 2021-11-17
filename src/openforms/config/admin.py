@@ -24,6 +24,15 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Confirmation Email"),
+            {
+                "fields": (
+                    "confirmation_email_subject",
+                    "confirmation_email_content",
+                ),
+            },
+        ),
+        (
             _("Button labels"),
             {
                 "fields": (

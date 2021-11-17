@@ -172,6 +172,10 @@ django-capture-on-commit-callbacks==1.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-capture-tag==1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-choices==1.7.1
     # via
     #   -c requirements/ci.txt

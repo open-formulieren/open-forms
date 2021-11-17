@@ -34,11 +34,6 @@
     "description": "Step delete confirmation",
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
-  "1GyseX": {
-    "defaultMessage": "Bevestigingspagina tekst",
-    "description": "Confirmation template label",
-    "originalDefault": "Submission page content"
-  },
   "1fD+K4": {
     "defaultMessage": "Opschoonmethode voor niet voltooide inzendingen",
     "description": "Incomplete Submissions Removal Method field label",
@@ -53,6 +48,11 @@
     "defaultMessage": "Opties",
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
+  },
+  "2utbek": {
+    "defaultMessage": "Email option",
+    "description": "Form confirmation email label",
+    "originalDefault": "Email option"
   },
   "3W3Px9": {
     "defaultMessage": "Voeg nog één toe",
@@ -299,6 +299,11 @@
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
   },
+  "HqVHBq": {
+    "defaultMessage": "Will send the email specified.",
+    "description": "Form confirmation email help text",
+    "originalDefault": "Will send the email specified."
+  },
   "I0bgsg": {
     "defaultMessage": "Opschoonmethode voor voltooide inzendingen",
     "description": "Successful Submissions Removal Method",
@@ -308,6 +313,11 @@
     "defaultMessage": "Selecteer formulierdefinitie",
     "description": "Form definition select label",
     "originalDefault": "Select form definition"
+  },
+  "ICW7rb": {
+    "defaultMessage": "Global email",
+    "description": "global_email option label",
+    "originalDefault": "Global email"
   },
   "Ika4IH": {
     "defaultMessage": "Inzendingen worden permanent verwijderd",
@@ -339,10 +349,20 @@
     "description": "Last Name Component field label",
     "originalDefault": "Last Name Component"
   },
+  "JuVh63": {
+    "defaultMessage": "Form specific email",
+    "description": "form_specific_email option label",
+    "originalDefault": "Form specific email"
+  },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
     "description": "Form name field help text",
     "originalDefault": "Name/title of the form"
+  },
+  "KL5k2f": {
+    "defaultMessage": "Content",
+    "description": "Confirmation Email Content label",
+    "originalDefault": "Content"
   },
   "KUXH/H": {
     "defaultMessage": "De onderstaande formulierdefinitie bevat fouten.",
@@ -459,6 +479,11 @@
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
   },
+  "VMMOA0": {
+    "defaultMessage": "Page content",
+    "description": "Confirmation page content label",
+    "originalDefault": "Page content"
+  },
   "VQYmOD": {
     "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
@@ -483,6 +508,11 @@
     "defaultMessage": "Active",
     "description": "Form list 'active' column header",
     "originalDefault": "Active"
+  },
+  "XNqV97": {
+    "defaultMessage": "Subject",
+    "description": "Confirmation Email Subject label",
+    "originalDefault": "Subject"
   },
   "YQ/Vx0": {
     "defaultMessage": "Save",
@@ -543,6 +573,11 @@
     "defaultMessage": "Product",
     "description": "Form product label",
     "originalDefault": "Product"
+  },
+  "cpiYVw": {
+    "defaultMessage": "No email",
+    "description": "no_email option label",
+    "originalDefault": "No email"
   },
   "d45v2X": {
     "defaultMessage": "Exporteer dit formulier",
@@ -738,6 +773,11 @@
     "defaultMessage": "Formulier configureren",
     "description": "Change form page title",
     "originalDefault": "Change form"
+  },
+  "tjRtQk": {
+    "defaultMessage": "Submission confirmation email template",
+    "description": "Submission confirmation email fieldset title",
+    "originalDefault": "Submission confirmation email template"
   },
   "uBO/Al": {
     "defaultMessage": "Kies een stap om te bekijken of aan te passen.",

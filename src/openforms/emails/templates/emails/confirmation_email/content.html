@@ -1,0 +1,23 @@
+{% load i18n capture_tags %}
+{% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
+{% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+
+{% blocktrans %}
+Geachte heer/mevrouw,<br>
+<br>
+U heeft via de website het formulier "{{ tt_openvariable }} form_name {{ tt_closevariable }}" verzonden op {{ tt_openvariable }} submission_date {{ tt_closevariable }}.<br>
+<br>
+Uw referentienummer is: {{ tt_openvariable }} public_reference {{ tt_closevariable }}<br>
+<br>
+
+{{ tt_openblock }} summary {{ tt_closeblock }}<br>
+{{ tt_openblock }} appointment_information {{ tt_closeblock }}<br>
+{{ tt_openblock }} payment_information {{ tt_closeblock }}<br><br>
+
+<br>
+Met vriendelijke groet,<br>
+<br>
+Open Formulieren<br>
+{% endblocktrans %}

@@ -19,6 +19,7 @@ from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 
+from ..constants import ConfirmationEmailOptions
 from .utils import literal_getter
 
 
@@ -86,6 +87,12 @@ class Form(models.Model):
         help_text=_(
             "Whether the step progression should be displayed in the UI or not."
         ),
+    )
+    confirmation_email_option = models.CharField(
+        _("confirmation email option"),
+        choices=ConfirmationEmailOptions,
+        default=ConfirmationEmailOptions.global_email,
+        max_length=20,
     )
     begin_text = models.CharField(
         _("begin text"),

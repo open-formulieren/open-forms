@@ -1,10 +1,15 @@
-import html
 import logging
 from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 
+from openforms.emails.confirmation_emails import (
+    SkipConfirmationEmail,
+    get_confirmation_email_context_data,
+    get_confirmation_email_templates,
+    render_confirmation_email_template,
+)
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
@@ -72,7 +77,21 @@ def remove_submission_uploads_from_session(
 
 
 def send_confirmation_email(submission: Submission):
-    email_template = submission.form.confirmation_email_template
+    logevent.confirmation_email_start(submission)
+
+    try:
+        subject_template, content_template = get_confirmation_email_templates(
+            submission
+        )
+    except SkipConfirmationEmail:
+        logger.debug(
+            "Form %d is configured to not send a confirmation email for submission %d, "
+            "skipping the confirmation e-mail.",
+            submission.form.id,
+            submission.id,
+        )
+        logevent.confirmation_email_skip(submission)
+        return
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)
     if not to_emails:
@@ -84,21 +103,30 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
-    html_content = email_template.render(submission)
-    text_content = email_template.render(submission, {"rendering_text": True})
+    context = get_confirmation_email_context_data(submission)
 
-    # post process since the mail template has html markup and django escaped entities
-    text_content = strip_tags_plus(text_content)
-    text_content = html.unescape(text_content)
-
-    send_mail_html(
-        email_template.subject,
-        html_content,
-        settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
-        to_emails,
-        fail_silently=False,
-        text_message=text_content,
+    # render the templates with the submission context
+    subject = render_confirmation_email_template(
+        subject_template, context, rendering_text=True
     )
+    html_content = render_confirmation_email_template(content_template, context)
+    text_content = strip_tags_plus(
+        render_confirmation_email_template(
+            content_template, context, rendering_text=True
+        )
+    )
+
+    try:
+        send_mail_html(
+            subject,
+            html_content,
+            settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
+            to_emails,
+            text_message=text_content,
+        )
+    except Exception as e:
+        logevent.confirmation_email_failure(submission, e)
+        raise
 
     submission.confirmation_email_sent = True
     submission.save(update_fields=("confirmation_email_sent",))

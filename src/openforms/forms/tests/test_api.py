@@ -1,3 +1,4 @@
+import copy
 import json
 import uuid
 from io import BytesIO
@@ -20,6 +21,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.base import BasePlugin as PaymentBasePlugin
 from openforms.payments.registry import Registry as PaymentRegistry
 from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
@@ -28,22 +30,17 @@ from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import NOOP_CACHES
 
+from ..constants import ConfirmationEmailOptions
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 class FormsAPITests(APITestCase):
     def setUp(self):
-        # TODO: Replace with API-token
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john", password="secret", email="john@example.com"
-        )
+        super().setUp()
 
-        # TODO: Axes requires HttpRequest, should we have that in the API at all?
-        assert self.client.login(
-            request=HttpRequest(), username=self.user.username, password="secret"
-        )
+        self.user = UserFactory.create()
+        self.client.force_authenticate(user=self.user)
 
     def test_list(self):
         FormFactory.create_batch(2)
@@ -590,6 +587,245 @@ class FormsAPITests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_form_with_confirmation_email_template_successful(self):
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content: {% appointment_information %} {% payment_information %}",
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.confirmation_email_template.subject, "The subject")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "The content: {% appointment_information %} {% payment_information %}",
+        )
+
+    def test_creating_a_confirmation_email_template_for_an_existing_form(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content {% appointment_information %} {% payment_information %}",
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.confirmation_email_template.subject, "The subject")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "The content {% appointment_information %} {% payment_information %}",
+        )
+
+    def test_creating_a_confirmation_email_fails_for_missing_template_tags(self):
+        form = FormFactory.create()
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "The subject",
+                "content": "The content {% appointment_information %} {% payment_information %}",
+            }
+        }
+
+        for missing_tag in [
+            "{% appointment_information %}",
+            "{% payment_information %}",
+        ]:
+            with self.subTest(missing_tag=missing_tag):
+                modified_data = copy.deepcopy(data)
+                modified_data["confirmation_email_template"]["content"] = modified_data[
+                    "confirmation_email_template"
+                ]["content"].replace(missing_tag, "")
+
+                response = self.client.patch(url, data=modified_data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertEqual(
+                    response.json()["invalidParams"][0]["reason"],
+                    _("Missing required template-tag {tag}").format(tag=missing_tag),
+                )
+
+    def test_updating_a_confirmation_email_template(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "confirmation_email_template": {
+                "subject": "Updated subject",
+                "content": "Updated content: {% appointment_information %} {% payment_information %}",
+            }
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(form.confirmation_email_template.subject, "Updated subject")
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "Updated content: {% appointment_information %} {% payment_information %}",
+        )
+
+    def test_deleting_a_confirmation_email_template_through_the_api(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {"confirmation_email_template": None}
+
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertFalse(form.confirmation_email_template.is_usable)
+
+    def test_sending_empty_confirmation_email_template_removes_the_confirmation_email_template(
+        self,
+    ):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+            update_form_confirmation_email_option=False,
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {"confirmation_email_template": {"subject": "", "content": ""}}
+
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertFalse(form.confirmation_email_template.is_usable)
+
+    def test_sending_partial_confirmation_email_template_raises_an_exception(
+        self,
+    ):
+        patcher = patch(
+            "openforms.emails.validators.DjangoTemplateValidator.check_required_tags",
+            return_value=None,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        template = ConfirmationEmailTemplateFactory.create(
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": template.form.uuid})
+        data_to_test = [
+            {
+                "confirmation_email_template": {
+                    "subject": "Updated subject",
+                }
+            },
+            {"confirmation_email_template": {"subject": "", "content": "The content"}},
+        ]
+
+        for data in data_to_test:
+            with self.subTest(data=data):
+
+                response = self.client.patch(url, data=data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertEqual(
+                    response.json()["invalidParams"][0]["reason"],
+                    _(
+                        "The fields {fields} must all be provided if one of them is provided."
+                    ).format(fields="subject, content"),
+                )
+
+    def test_getting_a_form_with_a_confirmation_email_template(self):
+        form = FormFactory.create()
+        ConfirmationEmailTemplateFactory.create(
+            form=form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["confirmationEmailTemplate"],
+            {"subject": "Initial subject", "content": "Initial content"},
+        )
+
+    def test_configure_form_use_form_template_but_not_usable(self):
+        """
+        Assert that it's not possible to configure a form to use an unusable confirmation
+        email template.
+
+        Unusable is defined as having an empty subject or content.
+        """
+        user = StaffUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create()
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        invalid_templates = [
+            None,
+            {"subject": "", "content": ""},
+        ]
+
+        for invalid_template in invalid_templates:
+            with self.subTest(invalid_template_data=invalid_template):
+                data = {
+                    "confirmation_email_template": invalid_template,
+                    "confirmation_email_option": ConfirmationEmailOptions.form_specific_email,
+                }
+
+                response = self.client.patch(url, data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                err_message = response.json()["invalidParams"][0]["reason"]
+                self.assertEqual(
+                    err_message,
+                    _(
+                        "The form specific confirmation email template is not set up correctly and "
+                        "can therefore not be selected."
+                    ),
+                )
 
 
 class FormsStepsAPITests(APITestCase):

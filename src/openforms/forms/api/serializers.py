@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -5,10 +6,14 @@ from drf_polymorphic.serializers import PolymorphicSerializer
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
+from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
+from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.prefill import apply_prefill
@@ -18,7 +23,7 @@ from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
 from openforms.utils.json_logic import JsonLogicTest
 
-from ..constants import LogicActionTypes, PropertyTypes
+from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
@@ -140,6 +145,9 @@ class FormSerializer(serializers.ModelSerializer):
     submissions_removal_options = SubmissionsRemovalOptionsSerializer(
         source="*", required=False
     )
+    confirmation_email_template = ConfirmationEmailTemplateSerializer(
+        required=False, allow_null=True
+    )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
 
     class Meta:
@@ -169,6 +177,8 @@ class FormSerializer(serializers.ModelSerializer):
             "submission_confirmation_template",
             "can_submit",
             "submissions_removal_options",
+            "confirmation_email_template",
+            "confirmation_email_option",
         )
         extra_kwargs = {
             "uuid": {
@@ -180,6 +190,28 @@ class FormSerializer(serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+
+    @transaction.atomic()
+    def create(self, validated_data):
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().create(validated_data)
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
+        return instance
+
+    @transaction.atomic()
+    def update(self, instance, validated_data):
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().update(instance, validated_data)
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
+        return instance
 
     def get_fields(self):
         fields = super().get_fields()
@@ -199,6 +231,34 @@ class FormSerializer(serializers.ModelSerializer):
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
+
+        confirmation_email_option = get_from_serializer_data_or_instance(
+            "confirmation_email_option", attrs, self
+        )
+        confirmation_email_template = (
+            get_from_serializer_data_or_instance(
+                "confirmation_email_template", attrs, self
+            )
+            or {}
+        )
+        if confirmation_email_option == ConfirmationEmailOptions.form_specific_email:
+            if isinstance(confirmation_email_template, ConfirmationEmailTemplate):
+                _template = confirmation_email_template
+            else:
+                _template = ConfirmationEmailTemplate(**confirmation_email_template)
+            if not _template.is_usable:
+                raise serializers.ValidationError(
+                    {
+                        "confirmation_email_option": ErrorDetail(
+                            _(
+                                "The form specific confirmation email template is not set up correctly and "
+                                "can therefore not be selected."
+                            ),
+                            code="invalid",
+                        )
+                    }
+                )
+
         return attrs
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):
@@ -227,6 +287,7 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
+        del fields["confirmation_email_template"]
         fields["authentication_backends"].write_only = False
         return fields
 

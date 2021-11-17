@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template import Context, Template
+from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
@@ -13,6 +14,14 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
+
+
+def get_confirmation_email_subject():
+    return render_to_string("emails/confirmation_email/subject.txt")
+
+
+def get_confirmation_email_content():
+    return render_to_string("emails/confirmation_email/content.html")
 
 
 class GlobalConfiguration(SingletonModel):
@@ -35,6 +44,23 @@ class GlobalConfiguration(SingletonModel):
             "templated from the submitted form data."
         ),
         default="Thank you for submitting this form.",
+    )
+
+    confirmation_email_subject = models.CharField(
+        _("subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the confirmation email message. Can be overridden on the form level"
+        ),
+        default=get_confirmation_email_subject,
+    )
+
+    confirmation_email_content = HTMLField(
+        _("content"),
+        help_text=_(
+            "Content of the confirmation email message. Can be overridden on the form level"
+        ),
+        default=get_confirmation_email_content,
     )
 
     allow_empty_initiator = models.BooleanField(

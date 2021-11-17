@@ -11,8 +11,6 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
 import FAIcon from '../FAIcon';
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
@@ -33,7 +31,6 @@ import {
     saveLogicRules,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
-import TinyMCEEditor from './Editor';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
 import FormSubmit from './FormSubmit';
@@ -42,6 +39,7 @@ import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
 import TextLiterals from './TextLiterals';
 import DataRemoval from './DataRemoval';
+import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {getFormComponents} from './utils';
 
@@ -64,6 +62,8 @@ const initialFormState = {
         paymentBackend: '',
         paymentBackendOptions: {},
         submissionsRemovalOptions: {},
+        confirmationEmailTemplate: null,
+        confirmationEmailOption: 'global_email',
     },
     literals: {
         beginText: {
@@ -128,6 +128,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     isDeleted: 'form',
     maintenanceMode: 'form',
     submissionConfirmationTemplate: 'submission-confirmation',
+    confirmationEmailTemplate: 'submission-confirmation',
     canSubmit: 'form',
     registrationBackend: 'registration',
     registrationBackendOptions: 'registration',
@@ -909,28 +910,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation template" description="Submission confirmation fieldset title" />}>
-                        <FormRow>
-                            <Field
-                                name="form.submissionConfirmationTemplate"
-                                label={<FormattedMessage defaultMessage="Submission page content" description="Confirmation template label" />}
-                                helpText={
-                                    <FormattedMessage
-                                        defaultMessage="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-                                        description="Confirmation template help text"
-                                    />
-                                }
-                                // errors={state.errors.submissionConfirmationTemplate}
-                            >
-                                <TinyMCEEditor
-                                    content={state.form.submissionConfirmationTemplate}
-                                    onEditorChange={(newValue, editor) => onFieldChange(
-                                        {target: {name: 'form.submissionConfirmationTemplate', value: newValue}}
-                                    )}
-                                />
-                            </Field>
-                        </FormRow>
-                    </Fieldset>
+                    <Confirmation
+                        pageTemplate={state.form.submissionConfirmationTemplate}
+                        emailOption={state.form.confirmationEmailOption}
+                        emailTemplate={state.form.confirmationEmailTemplate || {}}
+                        onChange={onFieldChange}
+                    />
                 </TabPanel>
 
                 <TabPanel>

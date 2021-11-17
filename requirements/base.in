@@ -27,6 +27,7 @@ django-admin-index
 django-autoslug
 django-axes
 django-better-admin-arrayfield
+django-capture-tag
 django-choices
 django-cookie-consent
 django-cors-headers
