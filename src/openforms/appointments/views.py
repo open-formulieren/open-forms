@@ -85,7 +85,8 @@ class VerifyChangeAppointmentLinkView(RedirectView):
             # Should never happen but log in case it does
             logger.warning(
                 "Could not find the appointment step for submission %s,"
-                "redirecting user to first step in form", submission.uuid
+                "redirecting user to first step in form",
+                submission.uuid,
             )
             step_url = submission.form.formstep_set.first().form_definition.slug
 
@@ -95,13 +96,15 @@ class VerifyChangeAppointmentLinkView(RedirectView):
         try:
             f.add(
                 {
-                    "product": submission.get_merged_appointment_data()["productIDAndName"][
-                        "value"
-                    ]["identifier"]
+                    "product": submission.get_merged_appointment_data()[
+                        "productIDAndName"
+                    ]["value"]["identifier"]
                 }
             )
         except KeyError:
             # Should not happen but don't want to break flow in case it does
-            logger.warning("Could not find product identifier for submission %s", submission.uuid)
+            logger.warning(
+                "Could not find product identifier for submission %s", submission.uuid
+            )
 
         return f.url

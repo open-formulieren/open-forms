@@ -188,7 +188,9 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         with freeze_time("2021-07-16T21:15:00Z"):
             response = self.client.get(endpoint)
 
-        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/{form_definition.slug}?product=79"
+        expected_redirect_url = (
+            f"http://maykinmedia.nl/myform/stap/{form_definition.slug}?product=79"
+        )
 
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
@@ -308,3 +310,142 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 302)
+
+    def test_redirect_to_first_step_when_appointment_form_definition_can_not_be_found(
+        self,
+    ):
+        form = FormFactory.create()
+        form_definition_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "name",
+                        "label": "Name",
+                    },
+                ],
+            }
+        )
+        form_definition_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "product",
+                        "appointments": {"showProducts": False},
+                        "label": "Product",
+                    },
+                    {
+                        "key": "time",
+                        "appointments": {"showTimes": False},
+                        "label": "Time",
+                    },
+                ],
+            }
+        )
+        form_step_1 = FormStepFactory.create(
+            form=form, form_definition=form_definition_1
+        )
+        form_step_2 = FormStepFactory.create(
+            form=form, form_definition=form_definition_2
+        )
+        submission = SubmissionFactory.create(
+            form=form, form_url="http://maykinmedia.nl/myform/"
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "Name": "Maykin",
+            },
+            form_step=form_step_1,
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "time": "2021-08-25T17:00:00",
+            },
+            form_step=form_step_2,
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # one day after token generation
+        with freeze_time("2021-07-16T21:15:00Z"):
+            response = self.client.get(endpoint)
+
+        expected_redirect_url = (
+            f"http://maykinmedia.nl/myform/stap/{form_definition_1.slug}"
+        )
+
+        self.assertRedirects(
+            response, expected_redirect_url, fetch_redirect_response=False
+        )
+
+    def test_redirect_has_no_query_params_when_product_identifier_can_not_be_found(
+        self,
+    ):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "product",
+                        "label": "Product",
+                    },
+                    {
+                        "key": "time",
+                        "label": "Time",
+                    },
+                ],
+            }
+        )
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        submission = SubmissionFactory.create(
+            form=form, form_url="http://maykinmedia.nl/myform/"
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "time": "2021-08-25T17:00:00",
+            },
+            form_step=form_step,
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # one day after token generation
+        with freeze_time("2021-07-16T21:15:00Z"):
+            response = self.client.get(endpoint)
+
+        expected_redirect_url = (
+            f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
+        )
+
+        self.assertRedirects(
+            response, expected_redirect_url, fetch_redirect_response=False
+        )
