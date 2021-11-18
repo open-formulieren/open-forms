@@ -20,7 +20,7 @@ const PaymentFields = ({
     const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
     return (
-        <Fieldset>
+        <Fieldset extraClassName="admin-fieldset">
             <FormRow>
                 <Field
                     name="form.paymentBackend"

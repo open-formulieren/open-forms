@@ -3,7 +3,7 @@
 @import '~microscope-sass/lib/typography';
 
 @import './vendor/react-tabs';
-@import './vendor/rjsf';
+@import './vendor/rjsf-field';
 @import './vendor/tinymce';
 
 // this violates a check by postcss-selector-lint, but it's the SDK snippet which has no

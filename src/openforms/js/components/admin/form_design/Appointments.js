@@ -79,7 +79,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
 
     return (
         <ComponentsContext.Provider value={availableComponents}>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="products"
@@ -95,7 +95,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="locations"
@@ -111,7 +111,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="dates"
@@ -127,7 +127,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="times"
@@ -143,7 +143,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="lastName"
@@ -159,7 +159,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="birthDate"
@@ -175,7 +175,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-            <Fieldset>
+            <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
                         name="phoneNumber"

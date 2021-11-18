@@ -95,3 +95,20 @@ div.flatpickr-calendar.open
     }
   }
 }
+
+// rjsf styling competing with bootstrap, competing with django admin.....
+.admin-fieldset {
+  margin-bottom: 0;
+
+  .form-row {
+    &, * {
+      box-sizing: border-box !important;
+    }
+  }
+
+  .form-row {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}

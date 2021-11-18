@@ -33,7 +33,7 @@ const ProductFields = ({ selectedProduct=null, onChange }) => {
 
     const productChoices = products.map(product => [product.url, product.name]);
     return (
-        <Fieldset>
+        <Fieldset extraClassName="admin-fieldset">
             <FormRow>
                 <Field
                     name="form.product"
