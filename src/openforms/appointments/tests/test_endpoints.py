@@ -188,11 +188,8 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         with freeze_time("2021-07-16T21:15:00Z"):
             response = self.client.get(endpoint)
 
-        expected_redirect_url = (
-            furl(f"http://maykinmedia.nl/myform/{form_definition.slug}")
-            .add({"product": "79"})
-            .url
-        )
+        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/{form_definition.slug}?product=79"
+
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )
