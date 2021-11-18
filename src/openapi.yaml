@@ -23,6 +23,162 @@ info:
   license:
     name: UNLICENSED
 paths:
+  /api/v1/appointments/{submission_uuid}/cancel:
+    post:
+      operationId: appointments_cancel_create
+      summary: Cancel an appointment
+      parameters:
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - appointments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelAppointmentInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CancelAppointmentInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CancelAppointmentInput'
+        required: true
+      responses:
+        '204':
+          description: No response body
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Unable to verify ownership of the appointment.
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Unable to cancel appointment.
+  /api/v1/appointments/dates:
+    get:
+      operationId: appointments_dates_list
+      description: |-
+        List all dates for a given product.
+
+        Note that you must include valid querystring parameters to get actual results. If
+        you don't, then an empty list is returned.
+      summary: List available dates for a given location and product
+      parameters:
+      - in: query
+        name: location_id
+        schema:
+          type: string
+        description: ID of the location
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+        description: ID of the product
+        required: true
+      tags:
+      - appointments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Date'
+          description: ''
+  /api/v1/appointments/locations:
+    get:
+      operationId: appointments_locations_list
+      description: |-
+        List all locations for a given product.
+
+        Note that you must include valid querystring parameters to get actual results. If
+        you don't, then an empty list is returned.
+      summary: List available locations for a given product
+      parameters:
+      - in: query
+        name: product_id
+        schema:
+          type: string
+        description: ID of the product
+        required: true
+      tags:
+      - appointments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+          description: ''
+  /api/v1/appointments/products:
+    get:
+      operationId: appointments_products_list
+      description: List all products a user can choose when making an appointment.
+      summary: List available products
+      tags:
+      - appointments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppointmentProduct'
+          description: ''
+  /api/v1/appointments/times:
+    get:
+      operationId: appointments_times_list
+      description: |-
+        List all times for a given product.
+
+        Note that you must include valid querystring parameters to get actual results. If
+        you don't, then an empty list is returned.
+      summary: List available times for a given location, product, and date
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+        description: The date
+        required: true
+      - in: query
+        name: location_id
+        schema:
+          type: string
+        description: ID of the location
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+        description: ID of the product
+        required: true
+      tags:
+      - appointments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Time'
+          description: ''
   /api/v1/authentication/plugins:
     get:
       operationId: authentication_plugins_list
@@ -47,10 +203,38 @@ paths:
                 items:
                   $ref: '#/components/schemas/AuthPlugin'
           description: ''
+  /api/v1/authentication/session:
+    delete:
+      operationId: authentication_session_destroy
+      description: Calling this endpoint will clear the current user session and delete
+        the session cookie.
+      summary: Delete session
+      tags:
+      - authentication
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/config/privacy_policy_info:
+    get:
+      operationId: config_privacy_policy_info_retrieve
+      summary: Privacybeleid informatie
+      tags:
+      - config
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyPolicyInfo'
+          description: ''
   /api/v1/form-definitions:
     get:
       operationId: form_definitions_list
-      description: ''
       summary: List form step definitions
       parameters:
       - name: page
@@ -74,7 +258,6 @@ paths:
           description: ''
     post:
       operationId: form_definitions_create
-      description: ''
       summary: Create a form definition
       tags:
       - forms
@@ -98,7 +281,6 @@ paths:
   /api/v1/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
-      description: ''
       summary: Retrieve form step definition details
       parameters:
       - in: path
@@ -122,7 +304,6 @@ paths:
           description: ''
     put:
       operationId: form_definitions_update
-      description: ''
       summary: Update all details of a form definition
       parameters:
       - in: path
@@ -152,7 +333,6 @@ paths:
           description: ''
     patch:
       operationId: form_definitions_partial_update
-      description: ''
       summary: Update some details of a form definition
       parameters:
       - in: path
@@ -181,7 +361,6 @@ paths:
           description: ''
     delete:
       operationId: form_definitions_destroy
-      description: ''
       summary: Delete a form definition
       parameters:
       - in: path
@@ -310,7 +489,6 @@ paths:
   /api/v1/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
-      description: ''
       summary: List form steps
       parameters:
       - in: path
@@ -335,7 +513,6 @@ paths:
           description: ''
     post:
       operationId: forms_steps_create
-      description: ''
       summary: Create a form step
       parameters:
       - in: path
@@ -371,7 +548,6 @@ paths:
   /api/v1/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
-      description: ''
       summary: Retrieve form step details
       parameters:
       - in: path
@@ -400,7 +576,6 @@ paths:
           description: ''
     put:
       operationId: forms_steps_update
-      description: ''
       summary: Update all details of a form step
       parameters:
       - in: path
@@ -441,7 +616,6 @@ paths:
           description: ''
     patch:
       operationId: forms_steps_partial_update
-      description: ''
       summary: Update some details of a form step
       parameters:
       - in: path
@@ -481,7 +655,6 @@ paths:
           description: ''
     delete:
       operationId: forms_steps_destroy
-      description: ''
       summary: Delete a form step
       parameters:
       - in: path
@@ -498,6 +671,102 @@ paths:
         required: true
       tags:
       - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/forms/{form_uuid_or_slug}/versions:
+    get:
+      operationId: forms_versions_list
+      summary: List form versions
+      parameters:
+      - in: path
+        name: form_uuid_or_slug
+        schema:
+          type: string
+        description: Either a UUID4 or a slug identifying the form.
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormVersion'
+          description: ''
+    post:
+      operationId: forms_versions_create
+      description: Save the current version of the form so that it can later be retrieved
+      summary: Save form version
+      parameters:
+      - in: path
+        name: form_uuid_or_slug
+        schema:
+          type: string
+        description: Either a UUID4 or a slug identifying the form.
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormVersion'
+          description: ''
+  /api/v1/forms/{form_uuid_or_slug}/versions/{uuid}/restore:
+    post:
+      operationId: forms_versions_restore_create
+      description: Restore a previously saved version of a form.
+      summary: Restore form version
+      parameters:
+      - in: path
+        name: form_uuid_or_slug
+        schema:
+          type: string
+        description: Either a UUID4 or a slug identifying the form.
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+        description: The UUID of the form version
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormVersion'
       security:
       - tokenAuth: []
       - cookieAuth: []
@@ -635,6 +904,50 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/forms/{uuid_or_slug}/admin-message:
+    post:
+      operationId: forms_admin_message_create
+      description: |-
+        Prepare the relevant message to be displayed in the admin.
+
+        On form create/update, a success message is displayed to the end user on
+        page reload. This exact message varies with the type of submit action that was
+        performed and whether the object was created or updated.
+
+        This endpoint is only available for staff users and prepares messages for display
+        in the admin environment.
+      summary: Prepare form edit admin message
+      parameters:
+      - in: path
+        name: uuid_or_slug
+        schema:
+          type: string
+        description: Either a UUID4 or a slug identifiying the form.
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormAdminMessage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormAdminMessage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormAdminMessage'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormAdminMessage'
+          description: ''
   /api/v1/forms/{uuid_or_slug}/copy:
     post:
       operationId: forms_copy_create
@@ -696,6 +1009,217 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/v1/location/get-street-name-and-city:
+    get:
+      operationId: get_street_name_and_city_list
+      description: Get the street name and city for a given postal code and house
+        number
+      summary: Get a street name and city
+      parameters:
+      - in: query
+        name: house_number
+        schema:
+          type: number
+        description: House number of the address
+        required: true
+      - in: query
+        name: postcode
+        schema:
+          type: string
+        description: Postal code of the address
+        required: true
+      tags:
+      - location
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStreetNameAndCityViewResult'
+          description: ''
+  /api/v1/logic-rules:
+    get:
+      operationId: logic_rules_list
+      summary: List logic rules
+      parameters:
+      - in: query
+        name: form
+        schema:
+          type: string
+          format: uuid
+        description: De UUID van het formulier gekoppeld aan deze logica regels.
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormLogic'
+          description: ''
+    post:
+      operationId: logic_rules_create
+      summary: Create a logic rule
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormLogic'
+          description: ''
+  /api/v1/logic-rules/{uuid}:
+    get:
+      operationId: logic_rules_retrieve
+      summary: Retrieve logic rule details
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormLogic'
+          description: ''
+    put:
+      operationId: logic_rules_update
+      summary: Update all details of a logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormLogic'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormLogic'
+          description: ''
+    patch:
+      operationId: logic_rules_partial_update
+      summary: Update some details of a logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFormLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFormLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFormLogic'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormLogic'
+          description: ''
+    delete:
+      operationId: logic_rules_destroy
+      summary: Delete a logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/payment/plugins:
+    get:
+      operationId: payment_plugins_list
+      description: |-
+        List all payment plugins that have been registered.
+
+        Each payment plugin is tied to a particular (third-party) payment
+        provider.
+      summary: List available payment plugins
+      tags:
+      - payment
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentPlugin'
+          description: ''
   /api/v1/prefill/plugins:
     get:
       operationId: prefill_plugins_list
@@ -737,6 +1261,220 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PrefillAttribute'
+          description: ''
+  /api/v1/price-rules:
+    get:
+      operationId: price_rules_list
+      summary: List pricing logic rules
+      parameters:
+      - in: query
+        name: form
+        schema:
+          type: string
+          format: uuid
+        description: De UUID van het formulier gekoppeld aan deze logica regels.
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormPriceLogic'
+          description: ''
+    post:
+      operationId: price_rules_create
+      summary: Create a pricing logic rule
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormPriceLogic'
+          description: ''
+  /api/v1/price-rules/{uuid}:
+    get:
+      operationId: price_rules_retrieve
+      summary: Retrieve pricing logic rule details
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormPriceLogic'
+          description: ''
+    put:
+      operationId: price_rules_update
+      summary: Update all details of a pricing logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormPriceLogic'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormPriceLogic'
+          description: ''
+    patch:
+      operationId: price_rules_partial_update
+      summary: Update some details of a pricing logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFormPriceLogic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFormPriceLogic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFormPriceLogic'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormPriceLogic'
+          description: ''
+    delete:
+      operationId: price_rules_destroy
+      summary: Delete a pricing logic rule
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - logic-rules
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/products:
+    get:
+      operationId: products_list
+      description: |-
+        List and retrieve the products registered in the admin interface.
+
+        Note that these endpoints are only available to authenticated admin users. The
+        products functionality is minimal to be able to register prices. In the future,
+        probably a dedicated products catalogue will become relevant.
+      summary: List available products
+      tags:
+      - products
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+          description: ''
+  /api/v1/products/{uuid}:
+    get:
+      operationId: products_retrieve
+      description: |-
+        List and retrieve the products registered in the admin interface.
+
+        Note that these endpoints are only available to authenticated admin users. The
+        products functionality is minimal to be able to register prices. In the future,
+        probably a dedicated products catalogue will become relevant.
+      summary: Retrieve details of a single product
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Globally unique identifier
+        required: true
+      tags:
+      - products
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
           description: ''
   /api/v1/registration/attributes:
     get:
@@ -830,10 +1568,10 @@ paths:
   /api/v1/submissions/{report_id}/{token}/download:
     get:
       operationId: submissions_download_retrieve
-      description: Download the PDF report containing the submission data. The endpoint
-        requires a token which is tied to the submission from the session. Once the
-        PDF is downloaded, this token is invalidated. The token also automatically
-        expires after 1 day(s).
+      description: Download het document met de ingezonden gegevens, in PDF vorm.
+        Dit document kan alleen worden opgevraagd indien het juiste token is meegegeven,
+        die hoort bij de formulier sessie. Nadat het document is gedownload, of na
+        1 dagen, is het token niet meer te gebruiken.
       summary: Download the PDF report
       parameters:
       - in: path
@@ -848,8 +1586,6 @@ paths:
         required: true
       tags:
       - submissions
-      security:
-      - {}
       responses:
         '200':
           content:
@@ -857,37 +1593,6 @@ paths:
               schema:
                 type: string
                 format: binary
-          description: ''
-  /api/v1/submissions/{report_id}/{token}/status:
-    get:
-      operationId: submissions_status_retrieve
-      description: On submission completion, a PDF report is generated with the submitted
-        form data. This is done in a background job. You can use this endpoint to
-        check the status of this PDF generation. The endpoint requires a token which
-        is tied to the submission from the session. Once the PDF is downloaded, this
-        token is invalidated. The token also automatically expires after 1 day(s).
-      summary: Get PDF report generation status
-      parameters:
-      - in: path
-        name: report_id
-        schema:
-          type: integer
-        required: true
-      - in: path
-        name: token
-        schema:
-          type: string
-        required: true
-      tags:
-      - submissions
-      security:
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReportStatus'
           description: ''
   /api/v1/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
@@ -956,6 +1661,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionStep'
           description: ''
+  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
+    post:
+      operationId: submissions_steps__check_logic_create
+      description: Apply/check the logic rules specified on the form step.
+      summary: Apply/check form logic
+      parameters:
+      - in: path
+        name: step_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormData'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionStateLogic'
+          description: ''
   /api/v1/submissions/{uuid}:
     get:
       operationId: submissions_retrieve
@@ -977,6 +1714,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/Submission'
           description: ''
+  /api/v1/submissions/{uuid}/{token}/status:
+    get:
+      operationId: submissions_status_retrieve
+      description: |-
+        Obtain the current submission processing status, after completing it.
+
+        The submission is processed asynchronously. Poll this endpoint to receive
+        information on the status of this async processing.
+      summary: Get the submission processing status
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        description: Time-based authentication token
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionProcessingStatus'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
   /api/v1/submissions/{uuid}/_complete:
     post:
       operationId: submissions__complete_create
@@ -985,11 +1765,21 @@ paths:
 
         Submission completion requires that all required steps are completed.
 
-        Once a submission is completed, it's removed from the session. This means it's
-        no longer possible to change or read the submission data (including individual
-        steps).
+        Note that the processing of the submission runs in the background, and you
+        should periodically check the submission status endpoint to check the state.
+        Background processing makes sure that:
 
-        The submission is persisted to the configured backend.
+        * potential appointments are registered
+        * a report PDF is generated
+        * the submission is persisted to the configured backend
+        * payment is initiated if relevant
+
+        Once a submission is completed, it's removed from the submission and time-stamped
+        HMAC token URLs are used for subsequent process flow. This means it's no longer
+        possible to change or read the submission data (including individual steps).
+        This guarantees that the submission is removed from the session without having
+        to rely on the client being able to make another call. IF it is detected in the
+        status endpoint that a retry is needed, the ID is added back to the session.
       summary: Complete a submission
       parameters:
       - in: path
@@ -1050,9 +1840,92 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionSuspension'
           description: ''
+  /api/v1/submissions/files/{uuid}:
+    get:
+      operationId: submissions_files_retrieve
+      description: |-
+        Haal tijdelijk bestand op.
+
+        Deze aanroep wordt gedaan door het standaard Form.io bestandsupload widget.
+
+        Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en)
+      summary: Retrieve temporary file upload
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
+    delete:
+      operationId: submissions_files_destroy
+      description: "Delete temporary file upload by the uploader. \n\nThis is called\
+        \ by the default Form.io file upload widget. \n\nAccess to this view requires\
+        \ an active form submission. Unclaimed temporary files automatically expire\
+        \ after {expire_days} day(s). "
+      summary: Delete temporary file upload
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '204':
+          description: No response body
+  /api/v1/submissions/files/upload:
+    post:
+      operationId: submissions_files_upload_create
+      description: |-
+        Bestandsupload handler voor jet Form.io bestandsupload opslagtype 'url'.
+
+        Bestandsuploads worden tijdelijke opgeslagen en moeten gekoppeld worden aan een inzending.
+
+        Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en)
+      summary: Create temporary file upload
+      tags:
+      - submissions
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemporaryFileUpload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemporaryFileUpload'
+          description: ''
+  /api/v1/translations/formio:
+    get:
+      operationId: translations_formio_retrieve
+      description: Retrieve the translations for the strings used by FormIO
+      summary: Get FormIO translations
+      tags:
+      - translations
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/validation/plugins:
     get:
-      operationId: validation_plugin_list
+      operationId: validation_plugins_list
       description: List all prefill plugins that have been registered.
       summary: List available validation plugins
       tags:
@@ -1100,8 +1973,6 @@ paths:
               $ref: '#/components/schemas/ValidationInput'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
       - {}
       responses:
         '200':
@@ -1368,8 +2239,325 @@ paths:
               schema:
                 type: string
           description: Not found. The slug did not point to a live form.
+  /payment/{plugin_id}/webhook:
+    get:
+      operationId: payment_webhook_retrieve
+      description: |-
+        This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Various validations are performed:
+        * the `plugin_id` is configured on the form
+        * payment is required and configured on the form
+      summary: Webhook handler for external payment flow
+      parameters:
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the payment plugin. Note that this is validated
+          against the configured available plugins for this particular form.
+        required: true
+      tags:
+      - payment
+      security:
+      - {}
+      responses:
+        '200':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          description: No response body
+        '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Not found. The slug did not point to a live plugin.
+    post:
+      operationId: payment_webhook_create
+      description: |-
+        This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Various validations are performed:
+        * the `plugin_id` is configured on the form
+        * payment is required and configured on the form
+      summary: Webhook handler for external payment flow
+      parameters:
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the payment plugin. Note that this is validated
+          against the configured available plugins for this particular form.
+        required: true
+      tags:
+      - payment
+      security:
+      - {}
+      responses:
+        '200':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          description: No response body
+        '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Not found. The slug did not point to a live plugin.
+  /payment/{uuid}/{plugin_id}/start:
+    post:
+      operationId: payment_start_create
+      description: |-
+        This endpoint provides information to start the payment flow for a submission.
+
+        Due to support for legacy platforms this view doesn't redirect but provides information for the frontend to be used client side.
+
+        Various validations are performed:
+        * the form and submission must require payment
+        * the `plugin_id` is configured on the form
+        * payment is required and configured on the form
+        * the `next` parameter must be present
+        * the `next` parameter must match the CORS policy
+
+        The HTTP 200 response contains the information to start the flow with the payment provider. Depending on the 'type', send a `GET` or `POST` request with the `data` as 'Form Data' to the given 'url'.
+      summary: Start payment flow
+      parameters:
+      - in: query
+        name: next
+        schema:
+          type: string
+          format: uri
+        description: URL of the form to redirect back to. This URL is validated against
+          the CORS configuration.
+        required: true
+      - in: path
+        name: plugin_id
+        schema:
+          type: string
+        description: Identifier of the payment plugin. Note that this is validated
+          against the configured available plugins for this particular form.
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+        description: UUID identifying the submission.
+        required: true
+      tags:
+      - payment
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInfo'
+          description: ''
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Not found. The slug did not point to a live submission or the
+            `plugin_id` does not exist.
+  /payment/{uuid}/return:
+    get:
+      operationId: payment_return_retrieve
+      description: |-
+        Payment plugins call this endpoint in the return step of the payment flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Typically payment plugins will redirect again to the URL where the SDK is embedded.
+
+        Various validations are performed:
+        * the form and submission must require payment
+        * the `plugin_id` is configured on the form
+        * payment is required and configured on the form
+        * the redirect target must match the CORS policy
+      summary: Return from external payment flow
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+        description: UUID identifying the payment.
+        required: true
+      tags:
+      - payment
+      security:
+      - {}
+      responses:
+        '302':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL where the SDK initiated the payment flow.
+              required: true
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          description: Tempomrary redirect
+        '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Not found. The slug did not point to a live submission payment
+            or the `plugin_id` does not exist.
+    post:
+      operationId: payment_return_create
+      description: |-
+        Payment plugins call this endpoint in the return step of the payment flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+
+        Typically payment plugins will redirect again to the URL where the SDK is embedded.
+
+        Various validations are performed:
+        * the form and submission must require payment
+        * the `plugin_id` is configured on the form
+        * payment is required and configured on the form
+        * the redirect target must match the CORS policy
+      summary: Return from external payment flow
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+        description: UUID identifying the payment.
+        required: true
+      tags:
+      - payment
+      security:
+      - {}
+      responses:
+        '302':
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL where the SDK initiated the payment flow.
+              required: true
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          description: Tempomrary redirect
+        '400':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Bad request. Invalid parameters were passed.
+        '404':
+          headers:
+            Allow:
+              schema:
+                type: string
+              description: Allowed HTTP method(s) for this plugin.
+              required: true
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Not found. The slug did not point to a live submission payment
+            or the `plugin_id` does not exist.
 components:
   schemas:
+    AppointmentProduct:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Product code
+        identifier:
+          type: string
+          description: ID of the product
+        name:
+          type: string
+          description: Product name
+      required:
+      - code
+      - identifier
+      - name
     AuthPlugin:
       type: object
       properties:
@@ -1394,12 +2582,13 @@ components:
       enum:
       - demo
       - demo-kvk
-      - demo-outage
-      - bsn-outage
-      - kvk-outage
-      - digid-mock
       - digid
+      - eherkenning
+      - eidas
       type: string
+    BlankEnum:
+      enum:
+      - ''
     ButtonText:
       type: object
       properties:
@@ -1411,6 +2600,15 @@ components:
       required:
       - resolved
       - value
+    CancelAppointmentInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email given when making the appointment
+      required:
+      - email
     CompletionValidation:
       type: object
       properties:
@@ -1418,8 +2616,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IncompleteStep'
+        canSubmit:
+          type: boolean
+          readOnly: true
       required:
+      - canSubmit
       - incompleteSteps
+    ComponentProperty:
+      type: object
+      properties:
+        value:
+          type: string
+          title: property key
+          description: The Form.io component property to alter, identified by `component.key`
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ComponentPropertyTypeEnum'
+          description: The type of the value field
+      required:
+      - type
+      - value
+    ComponentPropertyTypeEnum:
+      enum:
+      - bool
+      - json
+      type: string
+    ConfirmationEmailOptionEnum:
+      enum:
+      - form_specific_email
+      - global_email
+      - no_email
+      type: string
+    ConfirmationEmailTemplate:
+      type: object
+      properties:
+        subject:
+          type: string
+          description: Subject of the email message
+          maxLength: 1000
+        content:
+          type: string
+          description: The content of the email message can contain variables that
+            will be templated from the submitted form data.
     ContextAwareFormStep:
       type: object
       properties:
@@ -1433,6 +2671,46 @@ components:
       required:
       - configuration
       - index
+    Date:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+      required:
+      - date
+    Exception:
+      type: object
+      description: |-
+        Error format for HTTP 4xx and 5xx errors.
+
+        See https://docs.geostandaarden.nl/api/API-Strategie-ext/#error-handling-0 for the NL API strategy guidelines.
+      properties:
+        type:
+          type: string
+          description: URI reference to the error type, intended for developers
+        code:
+          type: string
+          description: System code indicating the type of error
+        title:
+          type: string
+          description: Generic title for the type of error
+        status:
+          type: integer
+          description: The HTTP status code
+        detail:
+          type: string
+          description: Extra information about the error, if available
+        instance:
+          type: string
+          description: URI with reference to this specific occurrence of the error.
+            This can be used in conjunction with server logs, for example.
+      required:
+      - code
+      - detail
+      - instance
+      - status
+      - title
     Form:
       type: object
       properties:
@@ -1442,10 +2720,21 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 50
+          maxLength: 150
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 150
         loginRequired:
           type: boolean
           readOnly: true
+        registrationBackend:
+          type: string
+          maxLength: 100
+        registrationBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
         authenticationBackends:
           type: array
           items:
@@ -1456,12 +2745,30 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        paymentRequired:
+          type: boolean
+          readOnly: true
+        paymentBackend:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/PaymentBackendEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        paymentBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        paymentOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentOption'
+          readOnly: true
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          allOf:
-          - $ref: '#/components/schemas/Product'
-          readOnly: true
+          type: string
+          format: uri
+          nullable: true
+          description: URL to the product in the Open Forms API
         slug:
           type: string
           maxLength: 100
@@ -1483,15 +2790,72 @@ components:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
             mode.
+        active:
+          type: boolean
+        isDeleted:
+          type: boolean
+        submissionConfirmationTemplate:
+          type: string
+          description: The content of the submission confirmation page. It can contain
+            variables that will be templated from the submitted form data. If not
+            specified, the global template will be used.
+        explanationTemplate:
+          type: string
+          description: Content that will be shown on the start page of the form, below
+            the title and above the log in text.
+        canSubmit:
+          type: boolean
+          description: Whether the user is allowed to submit this form or not.
+        submissionsRemovalOptions:
+          $ref: '#/components/schemas/SubmissionsRemovalOptions'
+        confirmationEmailTemplate:
+          allOf:
+          - $ref: '#/components/schemas/ConfirmationEmailTemplate'
+          nullable: true
+        confirmationEmailOption:
+          $ref: '#/components/schemas/ConfirmationEmailOptionEnum'
       required:
       - loginOptions
       - loginRequired
       - name
-      - product
+      - paymentOptions
+      - paymentRequired
       - slug
       - steps
       - url
       - uuid
+    FormAdminMessage:
+      type: object
+      description: Collect metadata about which (success) message to send.
+      properties:
+        submitAction:
+          allOf:
+          - $ref: '#/components/schemas/SubmitActionEnum'
+          description: Which submit action was clicked. This determines the success
+            message todisplay.
+        isCreate:
+          type: boolean
+          description: Whether the submit action was a create operation or update.
+        redirectUrl:
+          type: string
+          format: uri
+          readOnly: true
+          description: Where the UI should redirect the user to. The exact admin URL
+            varies with the submit action.
+      required:
+      - isCreate
+      - redirectUrl
+      - submitAction
+    FormData:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: {}
+          title: form data
+          description: The Form.io submission data object. This will be merged with
+            the full form submission data, including data from other steps, to evaluate
+            the configured form logic.
     FormDefinition:
       type: object
       properties:
@@ -1505,6 +2869,10 @@ components:
         name:
           type: string
           maxLength: 50
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 50
         slug:
           type: string
           maxLength: 100
@@ -1512,11 +2880,14 @@ components:
         configuration:
           type: object
           additionalProperties: {}
-          title: Formio.js configuration
-          description: The form definition as Formio.js JSON schema
+          title: Form.io configuration
+          description: The form definition as Form.io JSON schema
         loginRequired:
           type: boolean
           description: DigID Login required for form step
+        isReusable:
+          type: boolean
+          description: Allow this definition to be re-used in multiple forms
       required:
       - configuration
       - name
@@ -1535,6 +2906,10 @@ components:
         name:
           type: string
           maxLength: 50
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 50
         slug:
           type: string
           maxLength: 100
@@ -1542,11 +2917,14 @@ components:
         configuration:
           type: object
           additionalProperties: {}
-          title: Formio.js configuration
-          description: The form definition as Formio.js JSON schema
+          title: Form.io configuration
+          description: The form definition as Form.io JSON schema
         loginRequired:
           type: boolean
           description: DigID Login required for form step
+        isReusable:
+          type: boolean
+          description: Allow this definition to be re-used in multiple forms
         usedIn:
           type: array
           items:
@@ -1581,9 +2959,79 @@ components:
           $ref: '#/components/schemas/ButtonText'
         confirmText:
           $ref: '#/components/schemas/ButtonText'
+    FormLogic:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        form:
+          type: string
+          format: uri
+          description: Form to which the JSON logic applies.
+        jsonLogicTrigger:
+          type: object
+          additionalProperties: {}
+          title: JSON logic
+          description: The trigger expression to determine if the actions should execute
+            or not. Note that this must be a valid JsonLogic expression, and the first
+            operand must be a reference to a component in the form.
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicComponentAction'
+          description: Actions triggered when the trigger expression evaluates to
+            'truthy'.
+      required:
+      - actions
+      - form
+      - jsonLogicTrigger
+      - url
+      - uuid
+    FormPriceLogic:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        form:
+          type: string
+          format: uri
+          description: Form to which the pricing JSON logic applies.
+        jsonLogicTrigger:
+          type: object
+          additionalProperties: {}
+          title: JSON logic
+          description: The trigger expression to determine if the actions should execute
+            or not. Note that this must be a valid JsonLogic expression, and the first
+            operand must be a reference to a component in the form.
+        price:
+          type: string
+          format: decimal
+          pattern: ^\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - form
+      - jsonLogicTrigger
+      - price
+      - url
+      - uuid
     FormStep:
       type: object
       properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
         index:
           type: integer
         slug:
@@ -1599,11 +3047,17 @@ components:
         name:
           type: string
           readOnly: true
+        internalName:
+          type: string
+          readOnly: true
         url:
           type: string
           format: uri
           readOnly: true
         loginRequired:
+          type: boolean
+          readOnly: true
+        isReusable:
           type: boolean
           readOnly: true
         literals:
@@ -1612,10 +3066,13 @@ components:
       - configuration
       - formDefinition
       - index
+      - internalName
+      - isReusable
       - loginRequired
       - name
       - slug
       - url
+      - uuid
     FormStepLiterals:
       type: object
       properties:
@@ -1625,6 +3082,35 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
+    FormVersion:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Date and time of creation of the form version.
+      required:
+      - created
+    GenericObject:
+      type: object
+      description: Generic object
+      additionalProperties: true
+    GetStreetNameAndCityViewResult:
+      type: object
+      properties:
+        streetName:
+          type: string
+          description: Found street name
+        city:
+          type: string
+          description: Found city
+      required:
+      - city
+      - streetName
     IncompleteStep:
       type: object
       properties:
@@ -1634,6 +3120,124 @@ components:
           readOnly: true
       required:
       - formStep
+    IncompleteSubmissionsRemovalMethodEnum:
+      enum:
+      - delete_permanently
+      - make_anonymous
+      type: string
+    Location:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: ID of the location
+        name:
+          type: string
+          description: Location name
+      required:
+      - identifier
+      - name
+    LogicActionPolymorphic:
+      oneOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicGenericObject'
+      - $ref: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
+      discriminator:
+        propertyName: type
+        mapping:
+          disable-next: '#/components/schemas/LogicActionPolymorphicGenericObject'
+          property: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
+          value: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
+          step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
+    LogicActionPolymorphicGenericObject:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/GenericObject'
+    LogicActionPolymorphicLogicPropertyAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/LogicPropertyAction'
+    LogicActionPolymorphicLogicValueAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/LogicValueAction'
+    LogicActionPolymorphicShared:
+      type: object
+      description: |-
+        Polymorphic serializer base class.
+
+        Note that the discriminator field must exist at the same depth as the mapped serializer
+        fields for the OpenAPI introspection. See
+        https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/ for
+        more information. As such, it's not possible to define something like:
+
+        {
+            "object_type": "foo",
+            "polymorphic_context": {
+                <foo-specific fields>
+            }
+        }
+
+        without explicitly wrapping this in a parent serializer, i.e. - ``polymorphic_context``
+        can not be a PolymorphicSerializer itself, as it requires access to the ``object_type``
+        in the parent scope.
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/LogicActionPolymorphicSharedTypeEnum'
+          description: Action type for this particular action
+      required:
+      - type
+    LogicActionPolymorphicSharedTypeEnum:
+      enum:
+      - step-not-applicable
+      - disable-next
+      - property
+      - value
+      type: string
+    LogicComponentAction:
+      type: object
+      properties:
+        component:
+          type: string
+          title: Form.io component
+          description: 'Sleutel van de Form.io-component waarop de actie van toepassing
+            is. Dit veld is optioneel als het actietype `disable-next` is, anders
+            vereist. '
+        formStep:
+          type: string
+          format: uri
+          nullable: true
+          description: De formulierstap die wordt beïnvloed door de actie. Dit veld
+            is verplicht als het actietype `step-not-applicable` is, anders optioneel.
+        action:
+          $ref: '#/components/schemas/LogicActionPolymorphic'
+      required:
+      - action
+    LogicPropertyAction:
+      type: object
+      properties:
+        property:
+          $ref: '#/components/schemas/ComponentProperty'
+        state:
+          type: object
+          additionalProperties: {}
+          title: value of the property
+          description: 'Valid JSON determining the new value of the specified property.
+            For example: `true` or `false`.'
+      required:
+      - property
+      - state
+    LogicValueAction:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties: {}
+          description: A valid JsonLogic expression describing the value. This may
+            refer to (other) Form.io components.
+      required:
+      - value
     LoginLogo:
       type: object
       properties:
@@ -1712,6 +3316,31 @@ components:
       - slug
       - url
       - uuid
+    NestedSubmissionPaymentDetail:
+      type: object
+      properties:
+        isRequired:
+          type: boolean
+          readOnly: true
+          title: payment required
+          description: Whether the registration requires payment.
+        amount:
+          type: string
+          format: decimal
+          pattern: ^\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+          title: payment amount
+          description: Amount (to be) paid
+        hasPaid:
+          type: boolean
+          readOnly: true
+          title: user has paid
+          description: Whether the user has completed the required payment.
+      required:
+      - amount
+      - hasPaid
+      - isRequired
     NestedSubmissionStep:
       type: object
       description: |-
@@ -1736,7 +3365,7 @@ components:
           type: string
           format: uri
           readOnly: true
-        available:
+        isApplicable:
           type: boolean
           readOnly: true
         completed:
@@ -1745,17 +3374,18 @@ components:
         optional:
           type: boolean
           readOnly: true
+        canSubmit:
+          type: boolean
+          readOnly: true
       required:
-      - available
+      - canSubmit
       - completed
       - formStep
       - id
+      - isApplicable
       - name
       - optional
       - url
-    NullEnum:
-      enum:
-      - null
     PaginatedFormDefinitionList:
       type: object
       properties:
@@ -1805,10 +3435,21 @@ components:
           readOnly: true
         name:
           type: string
-          maxLength: 50
+          maxLength: 150
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 150
         loginRequired:
           type: boolean
           readOnly: true
+        registrationBackend:
+          type: string
+          maxLength: 100
+        registrationBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
         authenticationBackends:
           type: array
           items:
@@ -1819,12 +3460,30 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        paymentRequired:
+          type: boolean
+          readOnly: true
+        paymentBackend:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/PaymentBackendEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        paymentBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        paymentOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentOption'
+          readOnly: true
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          allOf:
-          - $ref: '#/components/schemas/Product'
-          readOnly: true
+          type: string
+          format: uri
+          nullable: true
+          description: URL to the product in the Open Forms API
         slug:
           type: string
           maxLength: 100
@@ -1846,6 +3505,30 @@ components:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
             mode.
+        active:
+          type: boolean
+        isDeleted:
+          type: boolean
+        submissionConfirmationTemplate:
+          type: string
+          description: The content of the submission confirmation page. It can contain
+            variables that will be templated from the submitted form data. If not
+            specified, the global template will be used.
+        explanationTemplate:
+          type: string
+          description: Content that will be shown on the start page of the form, below
+            the title and above the log in text.
+        canSubmit:
+          type: boolean
+          description: Whether the user is allowed to submit this form or not.
+        submissionsRemovalOptions:
+          $ref: '#/components/schemas/SubmissionsRemovalOptions'
+        confirmationEmailTemplate:
+          allOf:
+          - $ref: '#/components/schemas/ConfirmationEmailTemplate'
+          nullable: true
+        confirmationEmailOption:
+          $ref: '#/components/schemas/ConfirmationEmailOptionEnum'
     PatchedFormDefinition:
       type: object
       properties:
@@ -1859,6 +3542,10 @@ components:
         name:
           type: string
           maxLength: 50
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 50
         slug:
           type: string
           maxLength: 100
@@ -1866,14 +3553,75 @@ components:
         configuration:
           type: object
           additionalProperties: {}
-          title: Formio.js configuration
-          description: The form definition as Formio.js JSON schema
+          title: Form.io configuration
+          description: The form definition as Form.io JSON schema
         loginRequired:
           type: boolean
           description: DigID Login required for form step
+        isReusable:
+          type: boolean
+          description: Allow this definition to be re-used in multiple forms
+    PatchedFormLogic:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        form:
+          type: string
+          format: uri
+          description: Form to which the JSON logic applies.
+        jsonLogicTrigger:
+          type: object
+          additionalProperties: {}
+          title: JSON logic
+          description: The trigger expression to determine if the actions should execute
+            or not. Note that this must be a valid JsonLogic expression, and the first
+            operand must be a reference to a component in the form.
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicComponentAction'
+          description: Actions triggered when the trigger expression evaluates to
+            'truthy'.
+    PatchedFormPriceLogic:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        form:
+          type: string
+          format: uri
+          description: Form to which the pricing JSON logic applies.
+        jsonLogicTrigger:
+          type: object
+          additionalProperties: {}
+          title: JSON logic
+          description: The trigger expression to determine if the actions should execute
+            or not. Note that this must be a valid JsonLogic expression, and the first
+            operand must be a reference to a component in the form.
+        price:
+          type: string
+          format: decimal
+          pattern: ^\d{0,8}(?:\.\d{0,2})?$
     PatchedFormStep:
       type: object
       properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
         index:
           type: integer
         slug:
@@ -1889,6 +3637,9 @@ components:
         name:
           type: string
           readOnly: true
+        internalName:
+          type: string
+          readOnly: true
         url:
           type: string
           format: uri
@@ -1896,8 +3647,76 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        isReusable:
+          type: boolean
+          readOnly: true
         literals:
           $ref: '#/components/schemas/FormStepLiterals'
+    PaymentBackendEnum:
+      enum:
+      - ogone-legacy
+      type: string
+    PaymentInfo:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/PaymentInfoTypeEnum'
+          readOnly: true
+          title: Request type
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        data:
+          type: object
+          additionalProperties:
+            type: string
+            readOnly: true
+            title: Value
+          readOnly: true
+      required:
+      - data
+      - type
+      - url
+    PaymentInfoTypeEnum:
+      enum:
+      - get
+      - post
+      type: string
+    PaymentOption:
+      type: object
+      properties:
+        identifier:
+          type: string
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+          title: Button label
+          description: Button label
+      required:
+      - identifier
+      - label
+    PaymentPlugin:
+      type: object
+      description: Serialize the available plugins for the form builder.
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+        schema:
+          type: object
+          additionalProperties: {}
+          title: JSON schema
+          description: The generated JSON schema for the plugin options.
+      required:
+      - id
+      - label
+      - schema
     PrefillAttribute:
       type: object
       properties:
@@ -1929,21 +3748,43 @@ components:
       - id
       - label
       - requiresAuth
+    PrivacyPolicyInfo:
+      type: object
+      properties:
+        requiresPrivacyConsent:
+          type: boolean
+          description: Of de gebruiker akkoord moet gaan met het privacybeleid voordat
+            hij een formulier indient.
+        privacyLabel:
+          type: string
+          description: Het opgemaakte label dat naast het selectievakje moet worden
+            getoond wanneer de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid.
+      required:
+      - requiresPrivacyConsent
     Product:
       type: object
       properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Globally unique identifier
         name:
           type: string
           maxLength: 50
-        url:
-          type: string
         price:
           type: string
           format: decimal
-          pattern: ^\d{0,8}(\.\d{0,2})?$
+          pattern: ^\d{0,8}(?:\.\d{0,2})?$
       required:
       - name
       - price
+      - url
+      - uuid
     RegistrationAttribute:
       type: object
       properties:
@@ -1965,28 +3806,24 @@ components:
         label:
           type: string
           description: The human-readable name for a plugin.
+        schema:
+          type: object
+          additionalProperties: {}
+          title: JSON schema
+          description: The generated JSON schema for the plugin options.
       required:
       - id
       - label
-    ReportStatus:
-      type: object
-      properties:
-        status:
-          nullable: true
-          description: Status of the background task responsible for generating the
-            submission data PDF.
-          oneOf:
-          - $ref: '#/components/schemas/StatusEnum'
-          - $ref: '#/components/schemas/NullEnum'
-      required:
-      - status
+      - schema
+    ResultEnum:
+      enum:
+      - failed
+      - success
+      type: string
     StatusEnum:
       enum:
-      - PENDING
-      - STARTED
-      - RETRY
-      - FAILURE
-      - SUCCESS
+      - in_progress
+      - done
       type: string
     Submission:
       type: object
@@ -2016,36 +3853,93 @@ components:
           format: uri
           readOnly: true
           nullable: true
+        canSubmit:
+          type: boolean
+          readOnly: true
+          description: Whether the user is allowed to submit this form.
+        payment:
+          allOf:
+          - $ref: '#/components/schemas/NestedSubmissionPaymentDetail'
+          readOnly: true
+          title: payment information
+        formUrl:
+          type: string
+          format: uri
+          description: URL where the user initialized the submission.
+          maxLength: 255
       required:
+      - canSubmit
       - form
+      - formUrl
       - id
       - nextStep
+      - payment
       - steps
       - url
     SubmissionCompletion:
       type: object
       properties:
-        downloadUrl:
+        statusUrl:
           type: string
           format: uri
-          readOnly: true
-          title: Report download url
-          description: The URL where the PDF report with submission data can be downloaded
-            from.
-        reportStatusUrl:
+          title: status check endpoint
+          description: The API endpoint where the background processing status can
+            be checked. After calling the completion endpoint, this status URL should
+            be polled to report the processing status back to the end-user. Note that
+            the endpoint contains a token which invalidates on state changes and after
+            one day.
+      required:
+      - statusUrl
+    SubmissionProcessingStatus:
+      type: object
+      properties:
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          default: in_progress
+          title: background processing status
+          description: The async task state, managed by the async task queue. Once
+            the status is `done`, check the `result` field for the outcome.
+        result:
+          title: background processing result
+          description: The result from the background processing. This field only
+            has a value if the processing has completed (both successfully or with
+            errors).
+          oneOf:
+          - $ref: '#/components/schemas/ResultEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        errorMessage:
           type: string
-          format: uri
-          readOnly: true
-          description: The endpoint where the PDF report generation status can be
-            checked.
+          title: Error information
+          description: Error feedback in case the processing did not complete successfully.
+        publicReference:
+          type: string
+          description: The public registration reference, sourced from the registration
+            backend or otherwise uniquely generated in case the backend could not
+            provide it.
         confirmationPageContent:
           type: string
-          readOnly: true
           description: Body text of the confirmation page. May contain HTML!
+        reportDownloadUrl:
+          type: string
+          format: uri
+          description: Download URL for the generated PDF report. Note that this contain
+            a timestamped token generated by the backend.
+        paymentUrl:
+          type: string
+          format: uri
+          description: URL to retrieve the payment information. Note that this (will)
+            contain(s) a timestamped token generated by the backend.
+    SubmissionStateLogic:
+      type: object
+      properties:
+        submission:
+          $ref: '#/components/schemas/Submission'
+        step:
+          $ref: '#/components/schemas/SubmissionStep'
       required:
-      - confirmationPageContent
-      - downloadUrl
-      - reportStatusUrl
+      - step
+      - submission
     SubmissionStep:
       type: object
       description: |-
@@ -2075,9 +3969,25 @@ components:
           type: object
           additionalProperties: {}
           nullable: true
+        isApplicable:
+          type: boolean
+          readOnly: true
+        completed:
+          type: boolean
+          readOnly: true
+        optional:
+          type: boolean
+          readOnly: true
+        canSubmit:
+          type: boolean
+          readOnly: true
       required:
+      - canSubmit
+      - completed
       - formStep
       - id
+      - isApplicable
+      - optional
       - slug
     SubmissionSuspension:
       type: object
@@ -2096,6 +4006,103 @@ components:
       required:
       - email
       - suspendedOn
+    SubmissionsRemovalOptions:
+      type: object
+      properties:
+        successfulSubmissionsRemovalLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          title: Successful submission removal limit
+          description: Amount of days successful submissions of this form will remain
+            before being removed. Leave blank to use value in General Configuration.
+        successfulSubmissionsRemovalMethod:
+          description: How successful submissions of this form will be removed after
+            the limit. Leave blank to use value in General Configuration.
+          oneOf:
+          - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        incompleteSubmissionsRemovalLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          title: Incomplete submission removal limit
+          description: Amount of days incomplete submissions of this form will remain
+            before being removed. Leave blank to use value in General Configuration.
+        incompleteSubmissionsRemovalMethod:
+          description: How incomplete submissions of this form will be removed after
+            the limit. Leave blank to use value in General Configuration.
+          oneOf:
+          - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        erroredSubmissionsRemovalLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          title: Errored submission removal limit
+          description: Amount of days errored submissions of this form will remain
+            before being removed. Leave blank to use value in General Configuration.
+        erroredSubmissionsRemovalMethod:
+          title: Errored submission removal limit
+          description: How errored submissions of this form will be removed after
+            the limit. Leave blank to use value in General Configuration.
+          oneOf:
+          - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        allSubmissionsRemovalLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 1
+          nullable: true
+          description: Amount of days when all submissions of this form will be permanently
+            deleted. Leave blank to use value in General Configuration.
+    SubmitActionEnum:
+      enum:
+      - _save
+      - _addanother
+      - _continue
+      type: string
+    TemporaryFileUpload:
+      type: object
+      description: |-
+        https://help.form.io/integrations/filestorage/#url
+
+        {
+            url: 'http://link.to/file',
+            name: 'The_Name_Of_The_File.doc',
+            size: 1000
+        }
+      properties:
+        file:
+          type: string
+          writeOnly: true
+        url:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+          title: File name
+        size:
+          type: integer
+          readOnly: true
+          title: File size
+      required:
+      - file
+      - name
+      - size
+      - url
+    Time:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+      required:
+      - time
     UsedInForm:
       type: object
       properties:
@@ -2108,10 +4115,16 @@ components:
           format: uuid
         name:
           type: string
-          maxLength: 50
+          readOnly: true
         active:
           type: boolean
+        adminUrl:
+          type: string
+          format: uri
+          readOnly: true
+          description: Link to the change/view page in the admin interface
       required:
+      - adminUrl
       - name
       - url
     ValidationInput:
@@ -2152,7 +4165,7 @@ components:
     cookieAuth:
       type: apiKey
       in: cookie
-      name: Session
+      name: openforms_sessionid
     tokenAuth:
       type: apiKey
       in: header
