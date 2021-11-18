@@ -3,10 +3,6 @@ name: Run CI
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
-    paths-ignore:
-      # Ignore src/openapi.yaml because it's automatically generated within
-      # this workflow.
-      - 'src/openapi.yaml'
     branches:
       - master
     tags:
@@ -82,7 +78,8 @@ jobs:
       - name: Generate OAS
         run: |
           python src/manage.py spectacular --validate --fail-on-warn --lang=en --file openapi.yaml
-      - name: Store OAS artifact
+
+      - name: Store generated OAS
         uses: actions/upload-artifact@v2
         with:
           name: open-forms-oas
@@ -117,7 +114,6 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-latest
     steps:
-      # This will include the updated OAS (if updated) from the update-oas job.
       - uses: actions/checkout@v2
 
       - name: Set tag
@@ -152,8 +148,22 @@ jobs:
           path: image.tar
           retention-days: 1
 
-  oas-lint:
+  oas-up-to-date:
     needs: tests
+    name:  Check for unexepected OAS changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download generated OAS
+        uses: actions/download-artifact@v2
+        with:
+          name: open-forms-oas
+      - name: Check for OAS changes
+        run: |
+          diff openapi.yaml src/openapi.yaml
+
+  oas-lint:
+    needs: oas-up-to-date
     name:  Validate OAS
     runs-on: ubuntu-latest
     steps:
@@ -171,7 +181,7 @@ jobs:
         run: spectral lint ./openapi.yaml
 
   oas-postman:
-    needs: tests
+    needs: oas-up-to-date
     name: Generate Postman collection from OAS
     runs-on: ubuntu-latest
     steps:
@@ -191,7 +201,7 @@ jobs:
         run: openapi2postmanv2 -s ./openapi.yaml -o ./tests/postman/collection.json --pretty
 
   oas-generate-sdks:
-    needs: tests
+    needs: oas-up-to-date
     name: Generate SDKs from OAS
     runs-on: ubuntu-latest
     steps:
@@ -220,35 +230,13 @@ jobs:
         run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
           -o ./sdks/python -g python --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
 
-  update-oas:
-    if: github.event_name == 'push'  # Exclude PRs
+  docker_push:
     needs:
+      - tests
+      - docker_build
       - oas-lint
       - oas-postman
       - oas-generate-sdks
-    name: Update OAS in repository
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download generated OAS
-        uses: actions/download-artifact@v2
-        with:
-          name: open-forms-oas
-      - name: Commit OAS changes
-        continue-on-error: true
-        run: |
-          git config --global user.name 'Github actions'
-          git config --global user.email 'support@maykinmedia.com'
-          mv ./openapi.yaml ./src/openapi.yaml
-          git add ./src/openapi.yaml
-          git commit -m ":package: Updated OAS."
-          git push
-
-  docker_push:
-    needs:
-      - update-oas
-      - tests
-      - docker_build
 
     name: Push Docker image
     runs-on: ubuntu-latest
