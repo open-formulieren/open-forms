@@ -7,6 +7,9 @@ echo "Extracting messages for Python code..."
 python manage.py makemessages \
 --all \
 --ignore="test_*" \
+--ignore="openforms/forms/api/serializers.py" \
+--ignore="openforms/forms/api/viewsets.py" \
+--ignore="openforms/forms/api/views.py" \
 --ignore="openforms/api/tests/error_views.py" \
 --ignore="openforms/prefill/contrib/haalcentraal/constants.py" \
 --ignore="openforms/prefill/contrib/kvk/constants.py" \
