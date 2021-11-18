@@ -329,3 +329,64 @@ class TestSubmission(TestCase):
                 },
             },
         )
+
+    def test_copy_submission(self):
+        submission = SubmissionFactory.create()
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"key1": "value1", "key2": "value2"},
+            form_step=FormStepFactory.create(),
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"key3": "value-b"},
+            form_step=FormStepFactory.create(),
+        )
+
+        new_submission = submission.copy()
+
+        self.assertEqual(new_submission.form, submission.form)
+        self.assertEqual(new_submission.form_url, submission.form_url)
+        self.assertEqual(new_submission.previous_submission, submission)
+        self.assertEqual(new_submission.data, submission.data)
+        self.assertNotEqual(new_submission.id, submission.id)
+        self.assertNotEqual(new_submission.uuid, submission.uuid)
+
+    def test_get_appointment_step_url_returns_empty_string_when_url_not_found(self):
+        submission = SubmissionFactory.create()
+        self.assertEqual(submission.get_appointment_step_url(), "")
+
+    def test_get_appointment_step_url_returns_correct_url(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            slug="test-slug",
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "product",
+                        "appointments": {"showProducts": True},
+                        "label": "Product",
+                    },
+                    {
+                        "key": "time",
+                        "appointments": {"showTimes": True},
+                        "label": "Time",
+                    },
+                ],
+            },
+        )
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        submission = SubmissionFactory.create(
+            form=form, form_url="http://maykinmedia.nl/myform/"
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "time": "2021-08-25T17:00:00",
+            },
+            form_step=form_step,
+        )
+
+        self.assertEqual(submission.get_appointment_step_url(), "test-slug")
