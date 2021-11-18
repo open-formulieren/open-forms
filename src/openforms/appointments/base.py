@@ -226,7 +226,7 @@ class BasePlugin:
             },
         )
 
-        return urljoin(submission.form_url, path)
+        return urljoin(settings.BASE_URL, path)
 
     def get_cancel_link(self, submission: Submission) -> str:
         return self.get_link(submission, "cancel")

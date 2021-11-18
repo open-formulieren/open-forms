@@ -25,7 +25,11 @@ def send_mail_plus(
         fail_silently=fail_silently,
     )
     mail = EmailMultiAlternatives(
-        subject, message, from_email, recipient_list, connection=connection
+        subject.replace("\n", ""),
+        message,
+        from_email,
+        recipient_list,
+        connection=connection,
     )
     if html_message:
         mail.attach_alternative(html_message, "text/html")
