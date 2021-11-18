@@ -188,5 +188,6 @@
   "Minimum Date": "Minimale datum",
   "The minimum date that can be picked.": "De minimale datum die gekozen kan worden.",
   "Maximum Date": "Maximale datum",
-  "The maximum date that can be picked.": "De maximale datum die gekozen kan worden."
+  "The maximum date that can be picked.": "De maximale datum die gekozen kan worden.",
+  "invalid_time": "Alleen tijden tussen {{ minTime }} en {{ maxTime }} zijn toegestaan."
 }
