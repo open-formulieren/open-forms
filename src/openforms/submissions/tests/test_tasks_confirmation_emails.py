@@ -9,6 +9,8 @@ from django.test import TestCase, TransactionTestCase, override_settings
 
 from privates.test import temp_private_root
 
+from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
@@ -495,6 +497,48 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    def test_send_confirmation_email_when_appointment_is_changed(self):
+        previous_submission = SubmissionFactory.create()
+        AppointmentInfoFactory.create(
+            submission=previous_submission, status=AppointmentDetailsStatus.cancelled
+        )
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            previous_submission=previous_submission,
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+        )
+        # add a second step
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form=submission.form,
+            form_step__optional=False,
+            data={"foo": "bar"},
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+        )
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Confirmation mail (change)")
 
 
 class RaceConditionTests(TransactionTestCase):
