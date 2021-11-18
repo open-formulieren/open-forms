@@ -44,7 +44,6 @@ class StufBGClient:
 
     def _make_request(self, data):
         url = self.service.get_endpoint(type=EndpointType.vrije_berichten)
-
         logger.debug("StUF BG client request.\nurl: %s\ndata: %s", url, data)
         stuf_bg_request(self.service, url)
 
@@ -54,7 +53,9 @@ class StufBGClient:
             headers={
                 "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
                     self.service.soap_version
-                )
+                ),
+                # we only have one action so lets hardcode for now
+                "SOAPAction": "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
             },
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),

@@ -66,6 +66,10 @@ class StufBGConfigTests(TestCase):
             m.last_request.headers["Content-Type"],
             SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap12),
         )
+        self.assertEqual(
+            m.last_request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
+        )
 
         with open(
             f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
