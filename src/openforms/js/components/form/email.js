@@ -1,8 +1,26 @@
 import {Formio} from "formiojs";
 import DEFAULT_TABS, {ADVANCED, SENSITIVE_BASIC, REGISTRATION, VALIDATION} from "./edit/tabs";
 
+const FormioEmail = Formio.Components.components.email;
 
-class EmailField extends Formio.Components.components.email {
+class EmailField extends FormioEmail {
+    static schema(...extend) {
+        return FormioEmail.schema({
+            validateOn: 'blur'
+        }, ...extend);
+    }
+
+    static get builderInfo() {
+        return {
+          title: 'Email',
+          group: 'advanced',
+          icon: 'at',
+          documentation: '/userguide/#email',
+          weight: 10,
+          schema: EmailField.schema()
+        };
+    }
+
     static editForm() {
         const extra = [
             {
