@@ -161,8 +161,12 @@ class StufZDSClientTests(StufTestBase):
         self.client.create_zaak_identificatie()
 
         request = m.request_history[0]
+        self.assertEqual(request.headers["Content-Type"], "application/soap+xml")
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/genereerZaakIdentificatie_Di02",
+        )
 
-        self.assertEqual(request.headers.get("Content-Type"), "application/soap+xml")
         xml = etree.fromstring(bytes(request.text, encoding="utf8"))
         soap_header = xml.xpath("/*[local-name()='Envelope']/*[local-name()='Header']")[
             0
@@ -201,8 +205,12 @@ class StufZDSClientTests(StufTestBase):
         self.client.create_zaak_identificatie()
 
         request = m.request_history[0]
+        self.assertEqual(request.headers["Content-Type"], "text/xml")
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/genereerZaakIdentificatie_Di02",
+        )
 
-        self.assertEqual(request.headers.get("Content-Type"), "text/xml")
         xml = etree.fromstring(bytes(request.text, encoding="utf8"))
         soap_header = xml.xpath("/*[local-name()='Envelope']/*[local-name()='Header']")[
             0
@@ -237,6 +245,12 @@ class StufZDSClientTests(StufTestBase):
         )
 
         identificatie = self.client.create_zaak_identificatie()
+
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/genereerZaakIdentificatie_Di02",
+        )
 
         self.assertEqual(identificatie, "foo")
 
@@ -273,6 +287,12 @@ class StufZDSClientTests(StufTestBase):
         )
 
         self.client.create_zaak("foo", {"bsn": "111222333"}, {}, payment_required=True)
+
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/creeerZaak_Lk01",
+        )
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
@@ -314,6 +334,12 @@ class StufZDSClientTests(StufTestBase):
 
         self.client.set_zaak_payment("foo", partial=True)
 
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/updateZaak_Lk01",
+        )
+
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathExists(xml_doc, "//zkn:zakLk01")
@@ -353,6 +379,12 @@ class StufZDSClientTests(StufTestBase):
 
         identificatie = self.client.create_document_identificatie()
 
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/genereerDocumentIdentificatie_Di02",
+        )
+
         self.assertEqual(identificatie, "bar")
 
         xml_doc = xml_from_request_history(m, 0)
@@ -390,6 +422,12 @@ class StufZDSClientTests(StufTestBase):
 
         self.client.create_zaak_document(
             zaak_id="foo", doc_id="bar", submission_report=submission_report
+        )
+
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01",
         )
 
         xml_doc = xml_from_request_history(m, 0)
@@ -436,6 +474,11 @@ class StufZDSClientTests(StufTestBase):
 
         self.client.create_zaak_attachment(
             zaak_id="foo", doc_id="bar", submission_attachment=submission_attachment
+        )
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01",
         )
 
         xml_doc = xml_from_request_history(m, 0)
