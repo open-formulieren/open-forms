@@ -42,6 +42,8 @@ smtp_settings = dict(
 
 
 class CheckEmailSettingsFunctionTests(TestCase):
+    maxDiff = None
+
     def test_ok(self):
         res = check_email_backend("receiver@bar.bazz")
 
