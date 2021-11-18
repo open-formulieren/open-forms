@@ -14,7 +14,7 @@ from .tokens import submission_appointment_token_generator
 logger = logging.getLogger(__name__)
 
 
-def validate_and_get_submission(submission_uuid: uuid, token: str):
+def validate_url_and_get_submission(submission_uuid: uuid, token: str) -> Submission:
     try:
         submission = Submission.objects.get(uuid=submission_uuid)
     except Submission.DoesNotExist:
@@ -34,7 +34,7 @@ def validate_and_get_submission(submission_uuid: uuid, token: str):
 
 class VerifyCancelAppointmentLinkView(RedirectView):
     def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        submission = validate_and_get_submission(submission_uuid, token)
+        submission = validate_url_and_get_submission(submission_uuid, token)
 
         add_submmission_to_session(submission, self.request.session)
 
@@ -51,29 +51,13 @@ class VerifyCancelAppointmentLinkView(RedirectView):
 
 class VerifyChangeAppointmentLinkView(RedirectView):
     def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        submission = validate_and_get_submission(submission_uuid, token)
+        submission = validate_url_and_get_submission(submission_uuid, token)
 
-        # Create a new submission
-        new_submission = Submission.objects.create(
-            form=submission.form,
-            form_url=submission.form_url,
-            previous_submission=submission,
-        )
-        for submission_step in submission.submissionstep_set.all():
-            SubmissionStep.objects.create(
-                submission=new_submission,
-                form_step=submission_step.form_step,
-                data=submission_step.data,
-            )
+        new_submission = submission.copy()
 
         add_submmission_to_session(new_submission, self.request.session)
 
-        # Find the step url to redirect to
-        step_url = ""
-        for form_step in submission.form.formstep_set.all():
-            for component in form_step.form_definition.configuration["components"]:
-                if component.get("appointments", {}).get("showProducts"):
-                    step_url = form_step.form_definition.slug
+        step_url = submission.get_appointment_step_url()
 
         if not step_url:
             # Should not happen but redirect to first step if it does

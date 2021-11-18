@@ -532,6 +532,29 @@ class Submission(models.Model):
         # TODO support partial payments
         return self.payments.filter(status=PaymentStatus.registered).exists()
 
+    def get_appointment_step_url(self) -> str:
+        for form_step in self.form.formstep_set.all():
+            for component in form_step.iter_components(recursive=True):
+                if component.get("appointments", {}).get("showProducts"):
+                    return form_step.form_definition.slug
+
+        return ""
+
+    @transaction.atomic
+    def copy(self):
+        copy = Submission.objects.create(
+            form=self.form,
+            form_url=self.form_url,
+            previous_submission=self,
+        )
+        for submission_step in self.submissionstep_set.all():
+            SubmissionStep.objects.create(
+                submission=copy,
+                form_step=submission_step.form_step,
+                data=submission_step.data,
+            )
+        return copy
+
 
 class SubmissionStep(models.Model):
     """
