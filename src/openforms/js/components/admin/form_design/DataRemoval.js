@@ -38,7 +38,7 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
             allSubmissionsRemovalLimit='' } = submissionsRemovalOptions;
 
     return (
-        <Fieldset>
+        <Fieldset extraClassName="admin-fieldset">
             <FormRow>
                 <Field
                     name="form.submissionsRemovalOptions.successfulSubmissionsRemovalLimit"

@@ -29,6 +29,7 @@ const RegistrationFields = ({
     return (
         <Fieldset
             style={{'--of-add-another-text': `"${addAnotherMsg}"`}}
+            extraClassName="admin-fieldset"
         >
             <FormRow>
                 <Field
