@@ -194,5 +194,9 @@
   "Maximum Time": "Maximale tijd",
   "The maximum time that can be picked.": "De maximale tijd die gekozen kan worden.",
   "invalid_time": "Alleen tijden tussen {{ minTime }} en {{ maxTime }} zijn toegestaan.",
-  "Receives confirmation email": "Ontvangt bevestigingsmail"
+  "Receives confirmation email": "Ontvangt bevestigingsmail",
+  "Maximum Value": "Maximale waarde",
+  "The maximum value this field can have before the form can be submitted.": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden.",
+  "Minimum Value": "Minimale waarde",
+  "The minimum value this field must have before the form can be submitted.": "De minimale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
 }
