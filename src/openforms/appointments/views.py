@@ -14,21 +14,27 @@ from .tokens import submission_appointment_token_generator
 logger = logging.getLogger(__name__)
 
 
+def validate_and_get_submission(submission_uuid: uuid, token: str):
+    try:
+        submission = Submission.objects.get(uuid=submission_uuid)
+    except Submission.DoesNotExist:
+        logger.debug(
+            "Called endpoint with an invalid submission uuid: %s", submission_uuid
+        )
+        raise PermissionDenied("Url is not valid")
+
+    # Check that the token is valid
+    valid = submission_appointment_token_generator.check_token(submission, token)
+    if not valid:
+        logger.debug("Called endpoint with an invalid token: %s", token)
+        raise PermissionDenied("Url is not valid")
+
+    return submission
+
+
 class VerifyCancelAppointmentLinkView(RedirectView):
     def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        try:
-            submission = Submission.objects.get(uuid=submission_uuid)
-        except Submission.DoesNotExist:
-            logger.debug(
-                "Called endpoint with an invalid submission uuid: %s", submission_uuid
-            )
-            raise PermissionDenied("Cancel url is not valid")
-
-        # Check that the token is valid
-        valid = submission_appointment_token_generator.check_token(submission, token)
-        if not valid:
-            logger.debug("Called endpoint with an invalid token: %s", token)
-            raise PermissionDenied("Cancel url is not valid")
+        submission = validate_and_get_submission(submission_uuid, token)
 
         add_submmission_to_session(submission, self.request.session)
 
@@ -45,19 +51,7 @@ class VerifyCancelAppointmentLinkView(RedirectView):
 
 class VerifyChangeAppointmentLinkView(RedirectView):
     def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        try:
-            submission = Submission.objects.get(uuid=submission_uuid)
-        except Submission.DoesNotExist:
-            logger.debug(
-                "Called endpoint with an invalid submission uuid: %s", submission_uuid
-            )
-            raise PermissionDenied("Cancel url is not valid")
-
-        # Check that the token is valid
-        valid = submission_appointment_token_generator.check_token(submission, token)
-        if not valid:
-            logger.debug("Called endpoint with an invalid token: %s", token)
-            raise PermissionDenied("Cancel url is not valid")
+        submission = validate_and_get_submission(submission_uuid, token)
 
         # Create a new submission
         new_submission = Submission.objects.create(
@@ -82,7 +76,7 @@ class VerifyChangeAppointmentLinkView(RedirectView):
                     step_url = form_step.form_definition.slug
 
         if not step_url:
-            # Should never happen but log in case it does
+            # Should not happen but redirect to first step if it does
             logger.warning(
                 "Could not find the appointment step for submission %s,"
                 "redirecting user to first step in form",
@@ -102,7 +96,7 @@ class VerifyChangeAppointmentLinkView(RedirectView):
                 }
             )
         except KeyError:
-            # Should not happen but don't want to break flow in case it does
+            # Should not happen but don't break flow in case it does
             logger.warning(
                 "Could not find product identifier for submission %s", submission.uuid
             )

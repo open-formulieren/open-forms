@@ -7,14 +7,18 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
 
-from ...forms.tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
-from ...submissions.models import Submission
 from ..tokens import submission_appointment_token_generator
 from .factories import AppointmentInfoFactory
 

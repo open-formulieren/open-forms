@@ -38,13 +38,13 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
             list_display.remove("get_change_link")
         return list_display
 
-    def get_cancel_link(self, obj) -> str:
+    def get_link(self, obj, verb) -> str:
         if not obj.status == AppointmentDetailsStatus.success:
             return ""
 
         token = submission_appointment_token_generator.make_token(obj.submission)
         url = reverse(
-            "appointments:appointments-verify-cancel-appointment-link",
+            f"appointments:appointments-verify-{verb.lower()}-appointment-link",
             kwargs={
                 "submission_uuid": obj.submission.uuid,
                 "token": token,
@@ -53,27 +53,15 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="{url}">{text}</a>',
             url=url,
-            text=_("Cancel appointment"),
+            text=_("{verb} appointment").format(verb=verb.title()),
         )
+
+    def get_cancel_link(self, obj) -> str:
+        return self.get_link(obj, "cancel")
 
     get_cancel_link.short_description = _("Cancel link")
 
     def get_change_link(self, obj) -> str:
-        if not obj.status == AppointmentDetailsStatus.success:
-            return ""
-
-        token = submission_appointment_token_generator.make_token(obj.submission)
-        url = reverse(
-            "appointments:appointments-verify-change-appointment-link",
-            kwargs={
-                "submission_uuid": obj.submission.uuid,
-                "token": token,
-            },
-        )
-        return format_html(
-            '<a href="{url}">{text}</a>',
-            url=url,
-            text=_("Change appointment"),
-        )
+        return self.get_link(obj, "change")
 
     get_change_link.short_description = _("Change link")

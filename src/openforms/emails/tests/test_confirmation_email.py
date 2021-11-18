@@ -448,6 +448,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             public_registration_reference="xyz123",
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
+            form_url="http://server/form",
         )
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
@@ -514,6 +515,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             Als u uw afspraak wilt annuleren kunt u dat hieronder doen.
             {_("Cancel appointment")}: #URL#
+            {_("Change appointment")}: #URL#
 
             {_("Payment information")}
 

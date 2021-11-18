@@ -215,30 +215,21 @@ class BasePlugin:
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_cancel_link(self, submission: Submission) -> str:
-
+    def get_link(self, submission: Submission, verb: str) -> str:
         token = submission_appointment_token_generator.make_token(submission)
 
-        cancel_path = reverse(
-            "appointments:appointments-verify-cancel-appointment-link",
+        path = reverse(
+            f"appointments:appointments-verify-{verb.lower()}-appointment-link",
             kwargs={
                 "token": token,
                 "submission_uuid": submission.uuid,
             },
         )
 
-        return urljoin(settings.BASE_URL, cancel_path)
+        return urljoin(submission.form_url, path)
+
+    def get_cancel_link(self, submission: Submission) -> str:
+        return self.get_link(submission, "cancel")
 
     def get_change_link(self, submission: Submission) -> str:
-
-        token = submission_appointment_token_generator.make_token(submission)
-
-        cancel_path = reverse(
-            "appointments:appointments-verify-change-appointment-link",
-            kwargs={
-                "token": token,
-                "submission_uuid": submission.uuid,
-            },
-        )
-
-        return urljoin(settings.BASE_URL, cancel_path)
+        return self.get_link(submission, "change")
