@@ -38,10 +38,9 @@ class BasePluginTests(TestCase):
     def setUpTestData(cls):
         cls.plugin = TestPlugin()
 
+    @override_settings(BASE_URL="https://example.com/")
     def test_get_cancel_link(self):
-        submission = SubmissionFactory.create(
-            completed=True, form_url="https://example.com/"
-        )
+        submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
 
         result = self.plugin.get_cancel_link(submission)
@@ -56,10 +55,9 @@ class BasePluginTests(TestCase):
         cancel_url = f"https://example.com{cancel_path}"
         self.assertEqual(cancel_url, result)
 
+    @override_settings(BASE_URL="https://example.com/")
     def test_get_change_link(self):
-        submission = SubmissionFactory.create(
-            completed=True, form_url="https://example.com/"
-        )
+        submission = SubmissionFactory.create(completed=True)
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
 
         result = self.plugin.get_change_link(submission)

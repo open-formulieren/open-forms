@@ -72,19 +72,5 @@ class VerifyChangeAppointmentLinkView(RedirectView):
         f /= "stap"
         f /= step_url
         f.add({"submission_uuid": new_submission.uuid})
-        try:
-            f.add(
-                {
-                    "product": new_submission.get_merged_appointment_data()[
-                        "productIDAndName"
-                    ]["value"]["identifier"]
-                }
-            )
-        except KeyError:
-            # Should not happen but don't break flow in case it does
-            logger.warning(
-                "Could not find product identifier for submission %s",
-                new_submission.uuid,
-            )
 
         return f.url
