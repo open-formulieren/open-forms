@@ -122,6 +122,17 @@ class OpenIDConnectEHerkenningConfig(SingletonModel):
         ),
     )
 
+    # Keycloak specific config
+    oidc_keycloak_idp_hint = models.CharField(
+        _("Keycloak Identity Provider hint"),
+        max_length=1000,
+        help_text=_(
+            "Specific for Keycloak: parameter that indicates which identity provider "
+            "should be used (therefore skipping the Keycloak login screen)."
+        ),
+        blank=True,
+    )
+
     class Meta:
         verbose_name = _("OpenID Connect configuration for eHerkenning")
 

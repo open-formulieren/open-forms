@@ -21,6 +21,12 @@ class OIDCAuthenticationRequestView(SoloConfigMixin, _OIDCAuthenticationRequestV
 
         return super().get(request)
 
+    def get_extra_params(self, request):
+        kc_idp_hint = self.get_settings("OIDC_KEYCLOAK_IDP_HINT", "")
+        if kc_idp_hint:
+            return {"kc_idp_hint": kc_idp_hint}
+        return {}
+
 
 class OIDCAuthenticationCallbackView(SoloConfigMixin, _OIDCAuthenticationCallbackView):
     def login_success(self):
