@@ -21,6 +21,7 @@ from django.utils.http import is_safe_url
 
 import defusedxml
 from dotenv import load_dotenv
+from mozilla_django_oidc import views
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
@@ -40,6 +41,7 @@ def setup_env():
 
     load_self_signed_certs()
     monkeypatch_requests()
+    monkeypatch_mozilla_django_oidc_get_from_settings()
 
 
 def load_self_signed_certs() -> None:
@@ -73,6 +75,57 @@ def monkeypatch_cookie_consent():
         return self.request.headers.get("referer") or default
 
     CookieGroupBaseProcessView.get_success_url = get_success_url
+
+
+def monkeypatch_mozilla_django_oidc_get_from_settings():
+    def get_next_url(request, redirect_field_name):
+        """
+        To allow the list of allowed redirect hosts for OIDC to be dynamic,
+        we have to override this function to use the list of hosts from the
+        configuration models
+        """
+        from django.utils.http import is_safe_url
+
+        from mozilla_django_oidc.utils import import_from_settings
+
+        from openforms.authentication.contrib.digid_oidc.models import (
+            OpenIDConnectPublicConfig,
+        )
+        from openforms.authentication.contrib.eherkenning_oidc.models import (
+            OpenIDConnectEHerkenningConfig,
+        )
+
+        # TODO use generic list of domains that are allowed to embed forms?
+        if request.path == reverse("digid_oidc:oidc_authentication_init"):
+            config = OpenIDConnectPublicConfig.get_solo()
+        elif request.path == reverse("eherkenning_oidc:oidc_authentication_init"):
+            config = OpenIDConnectEHerkenningConfig.get_solo()
+
+        next_url = request.GET.get(redirect_field_name)
+        if next_url:
+            kwargs = {
+                "url": next_url,
+                "require_https": import_from_settings(
+                    "OIDC_REDIRECT_REQUIRE_HTTPS", request.is_secure()
+                ),
+            }
+
+            hosts = list(
+                getattr(
+                    config,
+                    "oidc_redirect_allowed_hosts",
+                    import_from_settings("OIDC_REDIRECT_ALLOWED_HOSTS", []),
+                )
+            )
+            hosts.append(request.get_host())
+            kwargs["allowed_hosts"] = hosts
+
+            is_safe = is_safe_url(**kwargs)
+            if is_safe:
+                return next_url
+        return None
+
+    views.get_next_url = get_next_url
 
 
 def monkeypatch_requests():

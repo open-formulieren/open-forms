@@ -30,6 +30,7 @@ class OpenIDConnectConfigAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "oidc_rp_scopes_list",
                     "oidc_rp_sign_algo",
                     "oidc_rp_idp_sign_key",
+                    "oidc_redirect_allowed_hosts",
                 )
             },
         ),
