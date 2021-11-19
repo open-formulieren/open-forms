@@ -300,7 +300,7 @@
     "originalDefault": "Slug of the form, used in URLs"
   },
   "HqVHBq": {
-    "defaultMessage": "Gebruikt het bevestiging e-mailsjabloon zoals hier is opgegeven.",
+    "defaultMessage": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven.",
     "description": "Form confirmation email help text",
     "originalDefault": "Will send the email specified."
   },
@@ -350,7 +350,7 @@
     "originalDefault": "Last Name Component"
   },
   "JuVh63": {
-    "defaultMessage": "Formulier specifieke e-mail",
+    "defaultMessage": "Formulierspecifieke e-mail",
     "description": "form_specific_email option label",
     "originalDefault": "Form specific email"
   },
@@ -775,7 +775,7 @@
     "originalDefault": "Change form"
   },
   "tjRtQk": {
-    "defaultMessage": "Bevestings e-mailsjabloon",
+    "defaultMessage": "Bevestingsmailsjabloon",
     "description": "Submission confirmation email fieldset title",
     "originalDefault": "Submission confirmation email template"
   },

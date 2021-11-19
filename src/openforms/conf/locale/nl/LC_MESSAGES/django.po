@@ -780,7 +780,7 @@ msgid ""
 "Subject of the confirmation email message. Can be overridden on the form "
 "level"
 msgstr ""
-"Onderwerp van de bevestigingse-mail. Bij het formulier kan een afwijkend "
+"Onderwerp van de bevestigingsmail. Bij het formulier kan een afwijkend "
 "onderwerp worden opgegeven."
 
 #: openforms/config/models.py:61 openforms/emails/models.py:30
@@ -794,7 +794,7 @@ msgid ""
 "Content of the confirmation email message. Can be overridden on the form "
 "level"
 msgstr ""
-"Inhoud van de bevestigingse-mail. Bij het formulier kan een afwijkende "
+"Inhoud van de bevestigingsmail. Bij het formulier kan een afwijkende "
 "inhoud worden opgegeven."
 
 #: openforms/config/models.py:70
@@ -1383,15 +1383,15 @@ msgstr "formulier"
 
 #: openforms/emails/models.py:52
 msgid "The form for which this confirmation email template will be used"
-msgstr "Het formulier waarvoor dit bevestingse-mail sjabloon gebruikt wordt"
+msgstr "Het formulier waarvoor dit bevestingsmailsjabloon gebruikt wordt"
 
 #: openforms/emails/models.py:58
 msgid "Confirmation email template"
-msgstr "Bevestigingse-mail sjabloon"
+msgstr "Bevestigingsmailsjabloon"
 
 #: openforms/emails/models.py:59
 msgid "Confirmation email templates"
-msgstr "Bevestigingse-mail sjablonen"
+msgstr "Bevestigingsmailsjablonen"
 
 #: openforms/emails/models.py:62
 msgid "(unsaved form)"
@@ -2053,7 +2053,7 @@ msgstr "JSON"
 
 #: openforms/forms/constants.py:23
 msgid "Form specific email"
-msgstr "Formulier specifieke e-mail"
+msgstr "Formulierspecifieke e-mail"
 
 #: openforms/forms/constants.py:24
 msgid "Global email"
@@ -2199,7 +2199,7 @@ msgstr ""
 
 #: openforms/forms/models/form.py:92
 msgid "confirmation email option"
-msgstr "bevestigingse-mail"
+msgstr "bevestigingsmail"
 
 #: openforms/forms/models/form.py:102
 msgid ""
@@ -4618,7 +4618,7 @@ msgstr "Waarden moeten uniek zijn"
 
 #: openforms/utils/validators.py:84
 msgid "URL is not on the domain whitelist"
-msgstr "URL is niet toegestaan volgens de domein whitelist"
+msgstr "URL is niet toegestaan volgens de domeinwhitelist"
 
 #: openforms/validations/api/serializers.py:8
 msgid "value"
