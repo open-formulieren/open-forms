@@ -394,7 +394,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.1.0
     # via -r requirements/base.in
-zgw-consumers==0.15.2
+zgw-consumers==0.16.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:

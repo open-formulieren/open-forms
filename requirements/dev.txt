@@ -1001,7 +1001,7 @@ zeep==4.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.15.2
+zgw-consumers==0.16.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
