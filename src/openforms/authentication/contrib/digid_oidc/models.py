@@ -112,6 +112,16 @@ class OpenIDConnectPublicConfig(SingletonModel):
         blank=True,
     )
 
+    oidc_redirect_allowed_hosts = ArrayField(
+        verbose_name=_("Allowed redirect hosts"),
+        base_field=models.CharField(_("Allowed redirect hosts"), max_length=1000),
+        default=list,
+        blank=True,
+        help_text=_(
+            "Hosts that are allowed for redirection after authentication is successful"
+        ),
+    )
+
     class Meta:
         verbose_name = _("OpenID Connect configuration for DigiD")
 
