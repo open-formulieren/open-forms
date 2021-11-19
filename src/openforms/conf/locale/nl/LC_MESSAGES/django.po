@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-19 12:23+0100\n"
-"PO-Revision-Date: 2021-11-19 12:24+0020\n"
+"POT-Creation-Date: 2021-11-19 14:06+0100\n"
+"PO-Revision-Date: 2021-11-19 14:15+0020\n"
 "Last-Translator: b'<joeri.bekker@maykin.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -1576,15 +1576,11 @@ msgstr "Ga naar de betalingspagina"
 
 #: openforms/emails/templates/emails/templatetags/payment_information.txt:3
 #, python-format
-#| msgid "Payment of €%(payment_price)s received."
 msgid "Payment of EUR %(payment_price)s received."
 msgstr "Betaling van EUR %(payment_price)s ontvangen."
 
 #: openforms/emails/templates/emails/templatetags/payment_information.txt:5
 #, python-format
-#| msgid ""
-#| "Payment of &euro; %(payment_price)s is required. You can pay using the link "
-#| "below."
 msgid ""
 "Payment of EUR %(payment_price)s is required. You can pay using the link "
 "below."
@@ -1681,9 +1677,355 @@ msgstr "gebruikt in"
 msgid "The UUID of a form associated with logic rules"
 msgstr "De UUID van het formulier gekoppeld aan deze logica regels."
 
+#: openforms/forms/api/serializers.py:129
+msgid "product"
+msgstr "product"
+
+#: openforms/forms/api/serializers.py:135
+msgid "URL to the product in the Open Forms API"
+msgstr "URL van het product in de Open Formulieren API"
+
+#: openforms/forms/api/serializers.py:254
+msgid ""
+"The form specific confirmation email template is not set up correctly and "
+"can therefore not be selected."
+msgstr ""
+"De bevestigingse-mail van het formulier is niet valide en kan daarom niet "
+"worden geselecteerd."
+
+#: openforms/forms/api/serializers.py:334
+msgid "admin URL"
+msgstr "admin URL"
+
+#: openforms/forms/api/serializers.py:335
+msgid "Link to the change/view page in the admin interface"
+msgstr "Link naar de wijzigen/weergave pagina in de beheeromgeving"
+
+#: openforms/forms/api/serializers.py:370
+msgid "Used in forms"
+msgstr "Gebruikt in formulieren"
+
+#: openforms/forms/api/serializers.py:372
+msgid ""
+"The collection of forms making use of this definition. This includes both "
+"active and inactive forms."
+msgstr ""
+"De verzameling van actieven en niet actieve formulieren die gebruik maken "
+"van deze formulier definitie."
+
+#: openforms/forms/api/serializers.py:443
+msgid "The file that contains the form, form definitions and form steps."
+msgstr ""
+"Het bestand dat het formulier, de formulier definities en de "
+"formulierstappen bevat."
+
+#: openforms/forms/api/serializers.py:458
+msgid "property key"
+msgstr "attribuutsleutel"
+
+#: openforms/forms/api/serializers.py:460
+msgid "The Form.io component property to alter, identified by `component.key`"
+msgstr ""
+"Het Form.io component attribute dat gewijzigd moet worden, geïdentificeerd "
+"door `component.key`"
+
+#: openforms/forms/api/serializers.py:464 openforms/submissions/admin.py:32
+msgid "type"
+msgstr "type"
+
+#: openforms/forms/api/serializers.py:465
+msgid "The type of the value field"
+msgstr "Het type van het waardeveld"
+
+#: openforms/forms/api/serializers.py:473
+msgid "value of the property"
+msgstr "waarde van het attribuut"
+
+#: openforms/forms/api/serializers.py:475
+msgid ""
+"Valid JSON determining the new value of the specified property. For example:"
+" `true` or `false`."
+msgstr ""
+"De JSON die de nieuwe waarde van het gespecificeerde attribuut bepaald. "
+"Bijvoorbeeld: `true` of `false`."
+
+#: openforms/forms/api/serializers.py:482
+#: openforms/payments/api/serializers.py:39
+msgid "Value"
+msgstr "Waarde"
+
+#: openforms/forms/api/serializers.py:484
+msgid ""
+"A valid JsonLogic expression describing the value. This may refer to (other)"
+" Form.io components."
+msgstr ""
+"Een JsonLogic expressie die de waarde beschrijft. Deze mag naar (andere) "
+"Form.io componenten verwijzen."
+
+#: openforms/forms/api/serializers.py:494
+msgid "Type"
+msgstr "Type"
+
+#: openforms/forms/api/serializers.py:495
+msgid "Action type for this particular action"
+msgstr "Actie type voor deze actie"
+
+#: openforms/forms/api/serializers.py:512
+msgid "Form.io component"
+msgstr "Form.io component"
+
+#: openforms/forms/api/serializers.py:514
+#, python-brace-format
+msgid ""
+"Key of the Form.io component that the action applies to. This field is "
+"optional if the action type is `{action_type}`, otherwise required."
+msgstr ""
+"Sleutel van de Form.io-component waarop de actie van toepassing is. Dit veld"
+" is optioneel als het actietype `{action_type}` is, anders vereist. "
+
+#: openforms/forms/api/serializers.py:525
+#: openforms/forms/models/form_step.py:69
+msgid "form step"
+msgstr "formulierstap"
+
+#: openforms/forms/api/serializers.py:527
+#, python-format
+msgid ""
+"The form step that will be affected by the action. This field is required if"
+" the action type is `%(action_type)s`, otherwise optional."
+msgstr ""
+"De formulierstap die wordt beïnvloed door de actie. Dit veld is verplicht "
+"als het actietype `%(action_type)s` is, anders optioneel."
+
+#: openforms/forms/api/serializers.py:564
+msgid "Actions"
+msgstr "Acties"
+
+#: openforms/forms/api/serializers.py:566
+msgid "Actions triggered when the trigger expression evaluates to 'truthy'."
+msgstr ""
+"Acties die worden geactiveerd wanneer de trigger-expressie wordt geëvalueerd"
+" als 'truthy'."
+
+#: openforms/forms/api/serializers.py:589
+msgid ""
+"The trigger expression to determine if the actions should execute or not. "
+"Note that this must be a valid JsonLogic expression, and the first operand "
+"must be a reference to a component in the form."
+msgstr ""
+"De expressie om te bepalen of de actie uitgevoerd moet worden of niet. Let "
+"op dat dit een valide JsonLogic expressie moet zijn en de eerste operand "
+"moet een verwijzing zijn naar een component in het formulier."
+
+#: openforms/forms/api/serializers.py:615
+msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
+msgstr "De eerste operand moet een `{\"var\": \"<componentKey>\"}` expressie zijn."
+
+#: openforms/forms/api/serializers.py:647
+msgid "The specified component is not present in the form definition"
+msgstr "De opgegeven component is niet aanwezig in de formulierdefinitie"
+
+#: openforms/forms/api/serializers.py:663
+msgid "submit action"
+msgstr "verzendactie"
+
+#: openforms/forms/api/serializers.py:666
+msgid ""
+"Which submit action was clicked. This determines the success message "
+"todisplay."
+msgstr ""
+"Welke opslaan-actie is aangeklikt. Dit bepaald de melding om weer te geven."
+
+#: openforms/forms/api/serializers.py:671
+msgid "is create"
+msgstr "is aanmaken"
+
+#: openforms/forms/api/serializers.py:672
+msgid "Whether the submit action was a create operation or update."
+msgstr ""
+"Geeft aan of de opslaan-actie een aanmaak operatie betreft of een wijziging."
+
+#: openforms/forms/api/serializers.py:675
+msgid "redirect URL"
+msgstr "omleiden URL"
+
+#: openforms/forms/api/serializers.py:677
+msgid ""
+"Where the UI should redirect the user to. The exact admin URL varies with "
+"the submit action."
+msgstr ""
+"Waar de gebruikersinterface de gebruiker naar toe moet sturen. De precieze "
+"beheer-URL hangt af van de opslaan-actie."
+
 #: openforms/forms/api/validators.py:14
 msgid "Invalid JSON logic."
 msgstr "Ongeldige JsonLogic"
+
+#: openforms/forms/api/viewsets.py:47 openforms/forms/api/viewsets.py:160
+msgid "Either a UUID4 or a slug identifiying the form."
+msgstr "Een UUID4 of een slug die het formulier identificeert."
+
+#: openforms/forms/api/viewsets.py:52
+msgid "List form steps"
+msgstr "Formulierstappen weergeven"
+
+#: openforms/forms/api/viewsets.py:53
+msgid "Retrieve form step details"
+msgstr "Formulierstap details weergeven"
+
+#: openforms/forms/api/viewsets.py:54
+msgid "Create a form step"
+msgstr "Formulierstap aanmaken"
+
+#: openforms/forms/api/viewsets.py:55
+msgid "Update all details of a form step"
+msgstr "Formulierstap in zijn geheel bijwerken"
+
+#: openforms/forms/api/viewsets.py:56
+msgid "Update some details of a form step"
+msgstr "Formulierstap gedeeltelijk bijwerken"
+
+#: openforms/forms/api/viewsets.py:57
+msgid "Delete a form step"
+msgstr "Formulierstap verwijderen"
+
+#: openforms/forms/api/viewsets.py:75
+msgid "List logic rules"
+msgstr "Logica regels weergeven"
+
+#: openforms/forms/api/viewsets.py:76
+msgid "Retrieve logic rule details"
+msgstr "Logica regel details weergeven"
+
+#: openforms/forms/api/viewsets.py:77
+msgid "Create a logic rule"
+msgstr "Logica regel aanmaken"
+
+#: openforms/forms/api/viewsets.py:78
+msgid "Update all details of a logic rule"
+msgstr "Logica regel in zijn geheel bijwerken"
+
+#: openforms/forms/api/viewsets.py:79
+msgid "Update some details of a logic rule"
+msgstr "Logica regel gedeeltelijk bijwerken"
+
+#: openforms/forms/api/viewsets.py:80
+msgid "Delete a logic rule"
+msgstr "Logica regel verwijderen"
+
+#: openforms/forms/api/viewsets.py:95
+msgid "List form step definitions"
+msgstr "Formulierstap definities weergeven"
+
+#: openforms/forms/api/viewsets.py:99
+msgid "Retrieve form step definition details"
+msgstr "Formulierstap definitie details weergeven"
+
+#: openforms/forms/api/viewsets.py:103
+msgid "Create a form definition"
+msgstr "Formulier definitie toevoegen"
+
+#: openforms/forms/api/viewsets.py:107
+msgid "Update all details of a form definition"
+msgstr "Formulier definitie in zijn geheel bijwerken"
+
+#: openforms/forms/api/viewsets.py:111
+msgid "Update some details of a form definition"
+msgstr "formulier definitie gedeeltelijk bijwerken"
+
+#: openforms/forms/api/viewsets.py:115
+msgid "Delete a form definition"
+msgstr "Verwijder een formulier definitie"
+
+#: openforms/forms/api/viewsets.py:139
+msgid "Retrieve form definition JSON schema"
+msgstr "Formulier definitie JSON schema weergeven"
+
+#: openforms/forms/api/viewsets.py:166
+msgid "List forms"
+msgstr "Formulieren weergeven"
+
+#: openforms/forms/api/viewsets.py:168
+msgid ""
+"List the active forms, including the pointers to the form steps. Form steps "
+"are included in order as they should appear."
+msgstr ""
+"Actieve formulieren weergeven, inclusief de verwijzingen naar de formulier "
+"stappen. formulierstappen zijn opgenomen in de volgorde waarin ze doorlopen "
+"moeten worden."
+
+#: openforms/forms/api/viewsets.py:173
+msgid "Retrieve form details"
+msgstr "Formulier details weergeven"
+
+#: openforms/forms/api/viewsets.py:176
+msgid "Create form"
+msgstr "Formulier aanmaken"
+
+#: openforms/forms/api/viewsets.py:178
+msgid "Update all details of a form"
+msgstr "Formulier in zijn geheel bijwerken"
+
+#: openforms/forms/api/viewsets.py:182
+msgid "Update given details of a form"
+msgstr "Formulier gedeeltelijk bijwerken"
+
+#: openforms/forms/api/viewsets.py:186
+msgid "Mark form as deleted"
+msgstr "Formulier markeren als verwijderd"
+
+#: openforms/forms/api/viewsets.py:188
+msgid ""
+"Destroying a form leads to a soft-delete to protect related submissions. "
+"These deleted forms are no longer visible in the API endpoints."
+msgstr ""
+"Het verwijderen van een formulier markeert het formulier slechts als "
+"verwijderd om gerelateerde inzendingen te beschermen. Formulieren die "
+"gemarkeerd zijn als verwijderd komen niet meer in de API naar voren."
+
+#: openforms/forms/api/viewsets.py:243
+msgid "Copy form"
+msgstr "Formulier kopieren"
+
+#: openforms/forms/api/viewsets.py:280
+msgid "Export form"
+msgstr "Formulier exporteren"
+
+#: openforms/forms/api/viewsets.py:315
+msgid "Prepare form edit admin message"
+msgstr "Admin berichten voor formulier bewerken voorbereiden"
+
+#: openforms/forms/api/viewsets.py:361 openforms/forms/api/viewsets.py:378
+#: openforms/forms/api/viewsets.py:397
+msgid "Either a UUID4 or a slug identifying the form."
+msgstr "Een UUID4 of een slug die het formulier identificeert."
+
+#: openforms/forms/api/viewsets.py:367
+msgid "Save form version"
+msgstr "Formulierversie opslaan"
+
+#: openforms/forms/api/viewsets.py:371
+msgid "Restore form version"
+msgstr "Formulierversie terugzetten"
+
+#: openforms/forms/api/viewsets.py:384
+msgid "The UUID of the form version"
+msgstr "Het UUID van de formulierversie"
+
+#: openforms/forms/api/viewsets.py:390
+msgid "List form versions"
+msgstr "Formulierversies weergeven"
+
+#: openforms/forms/api/viewsets.py:438
+#: openforms/forms/templates/admin/forms/form/change_list.html:10
+#: openforms/forms/templates/admin/forms/form/import_form.html:10
+#: openforms/forms/templates/admin/forms/form/import_form.html:15
+msgid "Import form"
+msgstr "Formulier importeren"
+
+#: openforms/forms/api/viewsets.py:440
+msgid "No response body"
+msgstr "Geen antwoordbericht inhoud"
 
 #: openforms/forms/constants.py:8
 msgid "Mark the form step as not-applicable"
@@ -2070,10 +2412,6 @@ msgstr ""
 "Het label van de knop om naar de volgende stap binnen het formulier te gaan."
 " Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form_step.py:69
-msgid "form step"
-msgstr "formulierstap"
-
 #: openforms/forms/models/form_step.py:70
 msgid "form steps"
 msgstr "formulierstappen"
@@ -2146,12 +2484,6 @@ msgstr "Exporteren"
 #: openforms/forms/templates/admin/forms/form/change_form.html:70
 msgid "Copy"
 msgstr "Kopieëren"
-
-#: openforms/forms/templates/admin/forms/form/change_list.html:10
-#: openforms/forms/templates/admin/forms/form/import_form.html:10
-#: openforms/forms/templates/admin/forms/form/import_form.html:15
-msgid "Import form"
-msgstr "Formulier importeren"
 
 #: openforms/forms/templates/admin/forms/form/import_form.html:4
 msgid "Import forms"
@@ -2641,10 +2973,6 @@ msgstr "URL"
 #: openforms/payments/api/serializers.py:38
 msgid "Data"
 msgstr "Gegevens"
-
-#: openforms/payments/api/serializers.py:39
-msgid "Value"
-msgstr "Waarde"
 
 #: openforms/payments/api/views.py:13
 msgid "List available payment plugins"
@@ -3417,10 +3745,6 @@ msgstr ""
 #: openforms/registrations/contrib/zgw_apis/plugin.py:60
 msgid "ZGW API's"
 msgstr "ZGW API's"
-
-#: openforms/submissions/admin.py:32
-msgid "type"
-msgstr "type"
 
 #: openforms/submissions/admin.py:60
 msgid "All"
@@ -4214,11 +4538,11 @@ msgstr "Alles toestaan"
 msgid "Decline all"
 msgstr "Alles weigeren"
 
-#: openforms/translations/views.py:20
+#: openforms/translations/views.py:22
 msgid "Get FormIO translations"
 msgstr "Ophalen FormIO vertalingen"
 
-#: openforms/translations/views.py:21
+#: openforms/translations/views.py:23
 msgid "Retrieve the translations for the strings used by FormIO"
 msgstr "Haal de vertalingen op voor de teksten gebruikt door FormIO"
 
@@ -4625,128 +4949,6 @@ msgstr "Documenttype omschrijving voor nieuw aangemaakt zaken via StUF-ZDS"
 msgid "StUF-ZDS configuration"
 msgstr "StUF-ZDS configuratie"
 
-#~ msgid "Either a UUID4 or a slug identifiying the form."
-#~ msgstr "Een UUID4 of een slug die het formulier identificeert."
-
-#~ msgid "List form steps"
-#~ msgstr "Formulierstappen weergeven"
-
-#~ msgid "Retrieve form step details"
-#~ msgstr "Formulierstap details weergeven"
-
-#~ msgid "Create a form step"
-#~ msgstr "Formulierstap aanmaken"
-
-#~ msgid "Update all details of a form step"
-#~ msgstr "Formulierstap in zijn geheel bijwerken"
-
-#~ msgid "Update some details of a form step"
-#~ msgstr "Formulierstap gedeeltelijk bijwerken"
-
-#~ msgid "Delete a form step"
-#~ msgstr "Formulierstap verwijderen"
-
-#~ msgid "List logic rules"
-#~ msgstr "Logica regels weergeven"
-
-#~ msgid "Retrieve logic rule details"
-#~ msgstr "Logica regel details weergeven"
-
-#~ msgid "Create a logic rule"
-#~ msgstr "Logica regel aanmaken"
-
-#~ msgid "Update all details of a logic rule"
-#~ msgstr "Logica regel in zijn geheel bijwerken"
-
-#~ msgid "Update some details of a logic rule"
-#~ msgstr "Logica regel gedeeltelijk bijwerken"
-
-#~ msgid "Delete a logic rule"
-#~ msgstr "Logica regel verwijderen"
-
-#~ msgid "List form step definitions"
-#~ msgstr "Formulierstap definities weergeven"
-
-#~ msgid "Retrieve form step definition details"
-#~ msgstr "Formulierstap definitie details weergeven"
-
-#~ msgid "Create a form definition"
-#~ msgstr "Formulier definitie toevoegen"
-
-#~ msgid "Update all details of a form definition"
-#~ msgstr "Formulier definitie in zijn geheel bijwerken"
-
-#~ msgid "Update some details of a form definition"
-#~ msgstr "formulier definitie gedeeltelijk bijwerken"
-
-#~ msgid "Delete a form definition"
-#~ msgstr "Verwijder een formulier definitie"
-
-#~ msgid "Retrieve form definition JSON schema"
-#~ msgstr "Formulier definitie JSON schema weergeven"
-
-#~ msgid "List forms"
-#~ msgstr "Formulieren weergeven"
-
-#~ msgid ""
-#~ "List the active forms, including the pointers to the form steps. Form steps "
-#~ "are included in order as they should appear."
-#~ msgstr ""
-#~ "Actieve formulieren weergeven, inclusief de verwijzingen naar de formulier "
-#~ "stappen. formulierstappen zijn opgenomen in de volgorde waarin ze doorlopen "
-#~ "moeten worden."
-
-#~ msgid "Retrieve form details"
-#~ msgstr "Formulier details weergeven"
-
-#~ msgid "Create form"
-#~ msgstr "Formulier aanmaken"
-
-#~ msgid "Update all details of a form"
-#~ msgstr "Formulier in zijn geheel bijwerken"
-
-#~ msgid "Update given details of a form"
-#~ msgstr "Formulier gedeeltelijk bijwerken"
-
-#~ msgid "Mark form as deleted"
-#~ msgstr "Formulier markeren als verwijderd"
-
-#~ msgid ""
-#~ "Destroying a form leads to a soft-delete to protect related submissions. "
-#~ "These deleted forms are no longer visible in the API endpoints."
-#~ msgstr ""
-#~ "Het verwijderen van een formulier markeert het formulier slechts als "
-#~ "verwijderd om gerelateerde inzendingen te beschermen. Formulieren die "
-#~ "gemarkeerd zijn als verwijderd komen niet meer in de API naar voren."
-
-#~ msgid "Copy form"
-#~ msgstr "Formulier kopieren"
-
-#~ msgid "Export form"
-#~ msgstr "Formulier exporteren"
-
-#, fuzzy
-#~ msgid "Prepare form edit admin message"
-#~ msgstr "Onderwerp van het e-mailbericht"
-
-#~ msgid "Either a UUID4 or a slug identifying the form."
-#~ msgstr "Een UUID4 of een slug die het formulier identificeert."
-
-#~ msgid "Save form version"
-#~ msgstr "Formulierversie opslaan"
-
-#~ msgid "Restore form version"
-#~ msgstr "Formulierversie terugzetten"
-
-#~ msgid "The UUID of the form version"
-#~ msgstr "Het UUID van de formulierversie"
-
-#~ msgid "List form versions"
-#~ msgstr "Formulierversies weergeven"
-
-#~ msgid "No response body"
-#~ msgstr "Geen antwoordbericht inhoud"
-
 #, fuzzy
 #~ msgid ""
 #~ "The {name} \"{obj}\" was changed successfully. You may edit it again {name} "
@@ -4754,120 +4956,6 @@ msgstr "StUF-ZDS configuratie"
 #~ msgstr ""
 #~ "De {name} \"{obj}\" is met succes gewijzigd. U kunt deze hieronder nogmaals "
 #~ "bewerken."
-
-#~ msgid "product"
-#~ msgstr "product"
-
-#~ msgid "URL to the product in the Open Forms API"
-#~ msgstr "URL van het product in de Open Formulieren API"
-
-#~ msgid ""
-#~ "The form specific confirmation email template is not set up correctly and "
-#~ "can therefore not be selected."
-#~ msgstr ""
-#~ "De bevestigingse-mail van het formulier is niet valide en kan daarom niet "
-#~ "worden geselecteerd."
-
-#, fuzzy
-#~ msgid "admin URL"
-#~ msgstr "Betaalpagina URL"
-
-#~ msgid "Used in forms"
-#~ msgstr "Gebruikt in formulieren"
-
-#~ msgid ""
-#~ "The collection of forms making use of this definition. This includes both "
-#~ "active and inactive forms."
-#~ msgstr ""
-#~ "De verzameling van actieven en niet actieve formulieren die gebruik maken "
-#~ "van deze formulier definitie."
-
-#~ msgid "The file that contains the form, form definitions and form steps."
-#~ msgstr ""
-#~ "Het bestand dat het formulier, de formulier definities en de "
-#~ "formulierstappen bevat."
-
-#~ msgid "property key"
-#~ msgstr "attribuutsleutel"
-
-#~ msgid "The Form.io component property to alter, identified by `component.key`"
-#~ msgstr ""
-#~ "Het Form.io component attribute dat gewijzigd moet worden, geïdentificeerd "
-#~ "door `component.key`"
-
-#~ msgid "The type of the value field"
-#~ msgstr "Het type van het waardeveld"
-
-#~ msgid "value of the property"
-#~ msgstr "waarde van het attribuut"
-
-#~ msgid ""
-#~ "Valid JSON determining the new value of the specified property. For example:"
-#~ " `true` or `false`."
-#~ msgstr ""
-#~ "De JSON die de nieuwe waarde van het gespecificeerde attribuut bepaald. "
-#~ "Bijvoorbeeld: `true` of `false`."
-
-#~ msgid ""
-#~ "A valid JsonLogic expression describing the value. This may refer to (other)"
-#~ " Form.io components."
-#~ msgstr ""
-#~ "Een JsonLogic expressie die de waarde beschrijft. Deze mag naar (andere) "
-#~ "Form.io componenten verwijzen."
-
-#~ msgid "Type"
-#~ msgstr "Type"
-
-#~ msgid "Action type for this particular action"
-#~ msgstr "Actie type voor deze actie"
-
-#~ msgid "Form.io component"
-#~ msgstr "Form.io component"
-
-#~ msgid ""
-#~ "Key of the Form.io component that the action applies to. This field is "
-#~ "optional if the action type is `{action_type}`, otherwise required."
-#~ msgstr ""
-#~ "Sleutel van de Form.io-component waarop de actie van toepassing is. Dit veld"
-#~ " is optioneel als het actietype `{action_type}` is, anders vereist. "
-
-#~ msgid ""
-#~ "The form step that will be affected by the action. This field is required if"
-#~ " the action type is `%(action_type)s`, otherwise optional."
-#~ msgstr ""
-#~ "De formulierstap die wordt beïnvloed door de actie. Dit veld is verplicht "
-#~ "als het actietype `%(action_type)s` is, anders optioneel."
-
-#~ msgid "Actions"
-#~ msgstr "Acties"
-
-#~ msgid "Actions triggered when the trigger expression evaluates to 'truthy'."
-#~ msgstr ""
-#~ "Acties die worden geactiveerd wanneer de trigger-expressie wordt geëvalueerd"
-#~ " als 'truthy'."
-
-#~ msgid ""
-#~ "The trigger expression to determine if the actions should execute or not. "
-#~ "Note that this must be a valid JsonLogic expression, and the first operand "
-#~ "must be a reference to a component in the form."
-#~ msgstr ""
-#~ "De expressie om te bepalen of de actie uitgevoerd moet worden of niet. Let "
-#~ "op dat dit een valide JsonLogic expressie moet zijn en de eerste operand "
-#~ "moet een verwijzing zijn naar een component in het formulier."
-
-#~ msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
-#~ msgstr "De eerste operand moet een `{\"var\": \"<componentKey>\"}` expressie zijn."
-
-#~ msgid "The specified component is not present in the form definition"
-#~ msgstr "De opgegeven component is niet aanwezig in de formulierdefinitie"
-
-#, fuzzy
-#~ msgid "submit action"
-#~ msgstr "inzending"
-
-#, fuzzy
-#~ msgid "is create"
-#~ msgstr "aangemaakt"
 
 #, fuzzy
 #~ msgid "cancel appointment"
