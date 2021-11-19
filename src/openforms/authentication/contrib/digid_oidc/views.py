@@ -1,17 +1,25 @@
 import time
 
+from django.core.exceptions import DisallowedRedirect
 from django.http import HttpResponseRedirect
 
 from mozilla_django_oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
     OIDCAuthenticationRequestView as _OIDCAuthenticationRequestView,
+    get_next_url,
 )
 
 from .mixins import SoloConfigMixin
 
 
 class OIDCAuthenticationRequestView(SoloConfigMixin, _OIDCAuthenticationRequestView):
-    pass
+    def get(self, request):
+        redirect_field_name = self.get_settings("OIDC_REDIRECT_FIELD_NAME", "next")
+        next_url = get_next_url(request, redirect_field_name)
+        if not next_url:
+            raise DisallowedRedirect
+
+        return super().get(request)
 
 
 class OIDCAuthenticationCallbackView(SoloConfigMixin, _OIDCAuthenticationCallbackView):
