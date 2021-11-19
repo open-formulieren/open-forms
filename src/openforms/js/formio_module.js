@@ -15,6 +15,7 @@ import EmailField from './components/form/email';
 import FieldSet from './components/form/fieldset';
 import Map from './components/form/map';
 import PasswordField from './components/form/password';
+import NumberField from './components/form/number';
 
 const FormIOModule = {
   components: {
@@ -24,6 +25,7 @@ const FormIOModule = {
     date: DateField,
     signature: SignatureField,
     time: TimeField,
+    number: NumberField,
     phoneNumber: PhoneNumberField,
     bsn: BsnField,
     postcode: PostcodeField,
