@@ -10,35 +10,41 @@
     }
   }
 
-  .rjsf-field__field {
+  &__field {
     display: flex;
     align-items: center;
   }
 
-  .rjsf-field__field--error {
+  &__field--error {
     input {
       border-color: $color-error !important;
     }
   }
 
-  .rjsf-field__errors {
+  &__input {
+    input[type="email"] {
+      width: $input-field-size;  // override from admin/rjsf default
+    }
+  }
+
+  &__errors {
     .error-detail {
       padding-left: 0;
       margin-left: 0;
     }
   }
 
-  .rjsf-field__label {
+  &__label {
     text-transform: capitalize;
   }
 
-  .rjsf-field__help {
+  &__help {
     cursor: help;
     padding-left: .5em;
     color: #999;
   }
 
-  .rjsf-field__checkbox {
+  &__checkbox {
     display: flex;
     align-items: center;
   }

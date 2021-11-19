@@ -223,6 +223,15 @@ div.breadcrumbs {
 }
 
 /**
+ * Django form field lengths
+ */
+.change-form {
+  .vTextField {
+    width: $input-field-size;
+  }
+}
+
+/**
  * DJANGO ADMIN INDEX
  */
 
@@ -325,6 +334,12 @@ div#container .dropdown-menu {
 
     .inline-deletelink {
       display: none;
+    }
+  }
+
+  .array-item {
+    input {
+      width: $input-field-size;
     }
   }
 }

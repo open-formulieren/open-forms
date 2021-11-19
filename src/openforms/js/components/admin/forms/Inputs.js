@@ -16,7 +16,9 @@ Input.propTypes = {
     name: PropTypes.string.isRequired,
 };
 
-const TextInput = (props) => (<Input type="text" {...props} />);
+const TextInput = (props) => (
+    <Input type="text" className={props.noVTextField ? '' : 'vTextField'} {...props} />
+);
 
 const TextArea = ({name, rows=5, cols=10, ...extraProps}) => {
     const prefix = useContext(PrefixContext);
