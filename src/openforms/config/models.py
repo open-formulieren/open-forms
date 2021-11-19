@@ -18,7 +18,7 @@ from openforms.utils.translations import runtime_gettext
 
 
 def get_confirmation_email_subject():
-    return render_to_string("emails/confirmation_email/subject.txt")
+    return render_to_string("emails/confirmation_email/subject.txt").strip()
 
 
 def get_confirmation_email_content():
