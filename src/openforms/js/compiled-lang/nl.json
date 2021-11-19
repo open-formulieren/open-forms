@@ -70,7 +70,7 @@
   "2utbek": [
     {
       "type": 0,
-      "value": "Email option"
+      "value": "E-mailsjabloon"
     }
   ],
   "3W3Px9": [
@@ -410,7 +410,7 @@
   "HqVHBq": [
     {
       "type": 0,
-      "value": "Will send the email specified."
+      "value": "Gebruikt het sjabloon zoals hier is opgegeven."
     }
   ],
   "I0bgsg": [
@@ -428,7 +428,7 @@
   "ICW7rb": [
     {
       "type": 0,
-      "value": "Global email"
+      "value": "Globale e-mail"
     }
   ],
   "Ika4IH": [
@@ -470,7 +470,7 @@
   "JuVh63": [
     {
       "type": 0,
-      "value": "Form specific email"
+      "value": "Formulierspecifieke e-mail"
     }
   ],
   "KIy7Wr": [
@@ -482,7 +482,7 @@
   "KL5k2f": [
     {
       "type": 0,
-      "value": "Content"
+      "value": "Inhoud"
     }
   ],
   "KUXH/H": [
@@ -530,7 +530,7 @@
   "P3oGZG": [
     {
       "type": 0,
-      "value": "Save and add another"
+      "value": "Opslaan en nieuwe toevoegen"
     }
   ],
   "PdaMqg": [
@@ -634,7 +634,7 @@
   "VMMOA0": [
     {
       "type": 0,
-      "value": "Page content"
+      "value": "Inhoud"
     }
   ],
   "VQYmOD": [
@@ -680,19 +680,19 @@
   "Wz5QZo": [
     {
       "type": 0,
-      "value": "Active"
+      "value": "Actief"
     }
   ],
   "XNqV97": [
     {
       "type": 0,
-      "value": "Subject"
+      "value": "Onderwerp"
     }
   ],
   "YQ/Vx0": [
     {
       "type": 0,
-      "value": "Save"
+      "value": "Opslaan"
     }
   ],
   "YzLSHY": [
@@ -764,7 +764,7 @@
   "cpiYVw": [
     {
       "type": 0,
-      "value": "No email"
+      "value": "Geen e-mail"
     }
   ],
   "d45v2X": [
@@ -806,7 +806,7 @@
   "gzAzdU": [
     {
       "type": 0,
-      "value": "Save and continue editing"
+      "value": "Opslaan en opnieuw bewerken"
     }
   ],
   "h1EURI": [
@@ -876,7 +876,7 @@
   "k50COT": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "kNOyt+": [
@@ -1008,7 +1008,7 @@
   "tjRtQk": [
     {
       "type": 0,
-      "value": "Submission confirmation email template"
+      "value": "Bevestigingsmailsjabloon"
     }
   ],
   "uBO/Al": [

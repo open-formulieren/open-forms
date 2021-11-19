@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
+from django.utils.translation import ugettext as _
 
 from ..redirect import allow_redirect_url
 from ..validators import AllowedRedirectValidator
@@ -51,6 +52,6 @@ class RedirectTests(TestCase):
         validator("http://foo.bar")
 
         with self.assertRaisesMessage(
-            ValidationError, "URL is not on the domain whitelist"
+            ValidationError, _("URL is not on the domain whitelist")
         ):
             validator("http://bazz.buzz")

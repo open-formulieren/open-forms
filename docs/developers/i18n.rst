@@ -54,11 +54,18 @@ To extract messages from the codebase, run:
 
 The resulting message catalogs are now available in ``src/openforms/js/lang/{locale}.json``.
 
-Edit these files with the correct translations, and then compile them:
+Edit these files with the correct translations and then compile them:
 
 .. code-block:: bash
 
     npm run compilemessages
+
+If you want to see the results directly, you need to add them to the build but
+this is also done by the CI to create the Docker image.
+
+.. code-block:: bash
+
+    npm run build
 
 .. _react-intl: https://formatjs.io/docs/getting-started/installation
 

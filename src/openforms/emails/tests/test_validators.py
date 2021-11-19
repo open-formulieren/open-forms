@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from openforms.emails.validators import DjangoTemplateValidator
 
@@ -48,10 +49,17 @@ class DjangoTemplateValidatorTest(TestCase):
                 validator(text)
 
         invalid = [
-            ("", "Missing required template-tag \{% csrf_token %}"),
+            (
+                "",
+                _("Missing required template-tag {tag}").format(
+                    tag="\{% csrf_token %}"
+                ),
+            ),
             (
                 "{% load i18n %} aa {{ aa.bb.cc }}",
-                "Missing required template-tag \{% csrf_token %}",
+                _("Missing required template-tag {tag}").format(
+                    tag="\{% csrf_token %}"
+                ),
             ),
         ]
         for text, message in invalid:
