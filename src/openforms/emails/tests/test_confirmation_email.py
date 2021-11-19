@@ -96,7 +96,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         email = ConfirmationEmailTemplate(subject="foo", content="no tags here")
         with self.assertRaisesRegex(
             ValidationError,
-            "Missing required template-tag {% appointment_information %}",
+            _("Missing required template-tag {tag}").format(
+                tag="{% appointment_information %}"
+            ),
         ):
             email.full_clean()
 
@@ -257,8 +259,8 @@ class PaymentConfirmationEmailTests(TestCase):
         rendered_content = render_confirmation_email_template(email.content, context)
 
         literals = [
-            _("Payment of &euro;%(payment_price)s received."),
-            _("Payment of &euro;%(payment_price)s is required."),
+            _("Payment of &euro; %(payment_price)s received."),
+            _("Payment of &euro; %(payment_price)s is required."),
         ]
         for literal in literals:
             with self.subTest(literal=literal):
@@ -436,8 +438,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
         url_exp = r"https?://[a-z0-9:/._-]+"
         pay_line = _(
-            "Payment of € {payment_price} is required. You can pay using the link below."
-        ).format(payment_price="12,34")
+            "Payment of EUR %(payment_price)s is required. You can pay using the link below."
+        ) % {"payment_price": "12,34"}
 
         with self.subTest("text"):
             expected_text = inspect.cleandoc(
@@ -473,7 +475,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             Some:
             Data
 
-            If you want to cancel your appointment, you can do so below.
+            Als u uw afspraak wilt annuleren kunt u dat hieronder doen.
             {_("Cancel appointment")}: #URL#
 
             {_("Payment information")}

@@ -118,7 +118,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(email.to, ["hello@open-forms.nl"])
         self.assertEqual(
             email.subject,
-            _("Saved form {form_name}").format(form_name=submission.form.name),
+            _("Saved form %(form_name)s") % {"form_name": submission.form.name},
         )
 
         self.assertIn(submission.form.name, email.body)
