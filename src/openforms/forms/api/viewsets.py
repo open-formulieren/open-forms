@@ -12,7 +12,6 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import parsers, permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -25,7 +24,7 @@ from ..models import Form, FormDefinition, FormLogic, FormStep, FormVersion
 from ..utils import export_form, form_to_json, import_form
 from .filters import FormLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
-from .permissions import IsStaffOrReadOnly, IsStaffOrReadOnlyNoList
+from .permissions import IsStaffOrReadOnlyNoList
 from .serializers import (
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
