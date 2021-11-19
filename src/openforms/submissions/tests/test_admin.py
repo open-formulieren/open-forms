@@ -8,6 +8,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
+from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
 from ..constants import RegistrationStatuses
@@ -217,3 +218,22 @@ class TestSubmissionAdmin(WebTest):
 
         on_completion_retry_mock.assert_called_once_with(failed.id)
         on_completion_retry_mock.return_value.delay.assert_called_once()
+
+    def test_change_view_displays_logs_if_not_avg(self):
+        # add regular submission log
+        submission_start(self.submission_1)
+
+        # viewing this generates an AVG log
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+        start_log, avg_log = TimelineLogProxy.objects.all()
+
+        # regular log visible
+        self.assertContains(response, start_log.get_message())
+
+        # avg log not visible
+        self.assertNotContains(response, avg_log.get_message())
