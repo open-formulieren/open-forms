@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -87,7 +87,7 @@ CONFIGURATION = {
 }
 
 
-class PrefillHookTests(TestCase):
+class PrefillHookTests(TransactionTestCase):
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
