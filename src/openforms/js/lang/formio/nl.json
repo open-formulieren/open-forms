@@ -184,5 +184,14 @@
   "Multiple values": "Meerdere waarden",
   "Are there multiple values possible for this field?": "Zijn er voor dit veld meerdere waarden mogelijk?",
   "Search field(s)": "Zoek veld(en)",
-  "invalid_email": "Ongeldige e-mail"
+  "invalid_email": "Ongeldige e-mail",
+  "Minimum Date": "Minimale datum",
+  "The minimum date that can be picked.": "De minimale datum die gekozen kan worden.",
+  "Maximum Date": "Maximale datum",
+  "The maximum date that can be picked.": "De maximale datum die gekozen kan worden.",
+  "Minimum Time": "Minimale tijd",
+  "The minimum time that can be picked.": "De minimale tijd die gekozen kan worden.",
+  "Maximum Time": "Maximale tijd",
+  "The maximum time that can be picked.": "De maximale tijd die gekozen kan worden.",
+  "invalid_time": "Alleen tijden tussen {{ minTime }} en {{ maxTime }} zijn toegestaan."
 }

@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import DEFAULT_TABS from './edit/tabs';
+import DEFAULT_TABS, {ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION} from './edit/tabs';
 
 const Time = Formio.Components.components.time;
 
@@ -14,6 +14,9 @@ class TimeField extends Time {
         return Time.schema({
             inputType: 'text',
             format: 'HH:mm',
+            minTime: null,
+            maxTime: null,
+            validateOn: 'blur'
         }, ...extend);
     }
 
@@ -28,7 +31,42 @@ class TimeField extends Time {
     }
 
     static editForm() {
-        return {components: [DEFAULT_TABS]};
+        const extra = [
+            {
+                type: 'time',
+                input: true,
+                key: 'minTime',
+                label: 'Minimum Time',
+                weight: 10,
+                tooltip: 'The minimum time that can be picked.',
+            },
+            {
+                type: 'time',
+                input: true,
+                key: 'maxTime',
+                label: 'Maximum Time',
+                weight: 10,
+                tooltip: 'The maximum time that can be picked.',
+            },
+        ];
+
+        const BASIC_TAB = {
+            ...SENSITIVE_BASIC,
+            components: [
+                ...SENSITIVE_BASIC.components,
+                ...extra,
+            ]
+        };
+        const TABS = {
+            ...DEFAULT_TABS,
+            components: [
+                BASIC_TAB,
+                ADVANCED,
+                VALIDATION,
+                REGISTRATION,
+            ]
+        };
+        return {components: [TABS]};
     }
 
     get defaultSchema() {
