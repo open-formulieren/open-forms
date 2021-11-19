@@ -90,9 +90,16 @@ const parseJsonLogic = (logic) => {
     }
 
     // check if we're using a literal value, or a component reference
-    const compareValue = values[1];
+    let compareValue = values[1];
     let operandType = '';
     let operand = '';
+
+    // Selectboxes case: the component name contains the reference to which value, e.g. "selectComponentField.option1"
+    const splitComponent = component.split('.');
+    if (splitComponent.length > 1) {
+        component = splitComponent[0];
+        compareValue = splitComponent[1];
+    }
 
     if (jsonLogic.is_logic(compareValue)) {
         const op = jsonLogic.get_operator(compareValue);
@@ -261,8 +268,20 @@ const Trigger = ({ name, logic, onChange }) => {
         }
     }
 
-    const firstOperand = componentType === 'date' ?
-        {date: {var: triggerComponent}} : {var: triggerComponent};
+    let firstOperand;
+    switch (componentType) {
+        case 'date': {
+            firstOperand = {date: {var: triggerComponent}};
+            break;
+        }
+        case 'selectboxes': {
+            firstOperand = {var: `${triggerComponent}.${compareValue}`}
+            compareValue = true;
+            break;
+        }
+        default:
+            firstOperand = {var: triggerComponent};
+    }
 
     const jsonLogicFromState = {
         [operator]: [
