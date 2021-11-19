@@ -47,4 +47,5 @@ class OpenIDConnectConfigAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 )
             },
         ),
+        (_("Keycloak specific settings"), {"fields": ("oidc_keycloak_idp_hint",)}),
     )
