@@ -6,7 +6,7 @@ import {getTranslatedChoices} from '../../../utils/i18n'
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import {TextInput} from '../forms/Inputs';
+import {NumberInput} from '../forms/Inputs';
 import Select from '../forms/Select';
 
 
@@ -55,11 +55,10 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                         />
                     }
                 >
-                    <TextInput
+                    <NumberInput
                         value={successfulSubmissionsRemovalLimit || ""}
                         onChange={onChange}
-                        type="number"
-                        min="1"/>
+                        min="1" />
                 </Field>
             </FormRow>
             <FormRow>
@@ -103,11 +102,10 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                         />
                     }
                 >
-                    <TextInput
+                    <NumberInput
                         value={incompleteSubmissionsRemovalLimit || ""}
                         onChange={onChange}
-                        type="number"
-                        min="1"/>
+                        min="1" />
                 </Field>
             </FormRow>
             <FormRow>
@@ -151,11 +149,10 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                         />
                     }
                 >
-                    <TextInput
+                    <NumberInput
                         value={erroredSubmissionsRemovalLimit || ""}
                         onChange={onChange}
-                        type="number"
-                        min="1"/>
+                        min="1" />
                 </Field>
             </FormRow>
             <FormRow>
@@ -199,11 +196,10 @@ const DataRemoval = ({ submissionsRemovalOptions, onChange }) => {
                         />
                     }
                 >
-                    <TextInput
+                    <NumberInput
                         value={allSubmissionsRemovalLimit || ""}
                         onChange={onChange}
-                        type="number"
-                        min="1"/>
+                        min="1" />
                 </Field>
             </FormRow>
         </Fieldset>
