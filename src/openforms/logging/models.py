@@ -19,6 +19,12 @@ class TimelineLogProxyQueryset(models.QuerySet):
     def filter_event(self, event: str):
         return self.filter(extra_data__log_event=event)
 
+    def has_tag(self, tag: str):
+        return self.filter(extra_data__contains={tag: True})
+
+    def exclude_tag(self, tag: str):
+        return self.exclude(extra_data__contains={tag: True})
+
 
 class TimelineLogProxy(TimelineLog):
     objects = TimelineLogProxyQueryset.as_manager()
@@ -139,7 +145,7 @@ class TimelineLogProxy(TimelineLog):
 class AVGTimelineLogProxyManager(models.Manager):
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(extra_data__contains={TimelineLogTags.AVG: True})
+        return qs.has_tag(TimelineLogTags.AVG)
 
 
 class AVGTimelineLogProxy(TimelineLogProxy):

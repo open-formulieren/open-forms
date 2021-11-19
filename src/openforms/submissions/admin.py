@@ -9,6 +9,7 @@ from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
 from openforms.appointments.models import AppointmentInfo
+from openforms.logging.constants import TimelineLogTags
 from openforms.logging.logevent import (
     submission_details_view_admin,
     submission_export_list as log_export_submissions,
@@ -116,6 +117,7 @@ class SubmissionLogInline(GenericTabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.exclude_tag(TimelineLogTags.AVG)
         return qs.prefetch_related(
             "content_object", "content_object__form"
         ).select_related("user")
