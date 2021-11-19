@@ -1,9 +1,9 @@
 {% load i18n %}{% autoescape off %}{% if payment_required %}{% trans "Payment information" %}
 
 {% if payment_user_has_paid %}{% blocktrans trimmed %}
-    Payment of €{{ payment_price }} received.{% endblocktrans %}
+    Payment of EUR {{ payment_price }} received.{% endblocktrans %}
 {% else %}{% blocktrans trimmed %}
-    Payment of &euro; {{ payment_price }} is required. You can pay using the link below.
+    Payment of EUR {{ payment_price }} is required. You can pay using the link below.
 {% endblocktrans %}
 {% trans "Go to the payment page" %}: {{ payment_url }}{% endif %}{% endif %}{% endautoescape %}
 
