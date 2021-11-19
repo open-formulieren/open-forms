@@ -117,6 +117,8 @@ div.flatpickr-calendar.open
   // #748 client requested increased contrast for this element
   // here we clobber formio's compiled 0.2 opacity of the drag-and-drop target indicator
   opacity: 0.7;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-  filter: alpha(opacity=70);
+
+  &.drag-copy {
+    border: solid 1px #ccc;
+  }
 }
