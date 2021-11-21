@@ -26,13 +26,16 @@ def _get_design_token_values(tokens):
     """
     return {
         "header": {
-            "color": glom(tokens, "page-header.color.value", default="#ffffff"),
+            "color": glom(tokens, "page-header.color.value", default="#000000"),
             "background": glom(
-                tokens, "page-header.background.value", default="#2980b9"
+                tokens, "page-header.background.value", default="#ffffff"
             ),
         },
         "logo": {
-            "height": glom(tokens, "logo-header.height.value", default="auto"),
+            # Setting height to a default of 50 obtaines the same result on the 
+            # website that uses flexbox shrink, to size the logo to it's minimum
+            # size.
+            "height": glom(tokens, "logo-header.height.value", default="50"),
             "width": glom(tokens, "logo-header.width.value", default="auto"),
         },
         "footer": {
