@@ -14,13 +14,15 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import DjangoTemplateValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
-from openforms.utils.translations import runtime_gettext
+from openforms.utils.translations import ensure_default_language, runtime_gettext
 
 
+@ensure_default_language()
 def get_confirmation_email_subject():
     return render_to_string("emails/confirmation_email/subject.txt").strip()
 
 
+@ensure_default_language()
 def get_confirmation_email_content():
     return render_to_string("emails/confirmation_email/content.html")
 
@@ -44,7 +46,7 @@ class GlobalConfiguration(SingletonModel):
             "The content of the submission confirmation page. It can contain variables that will be "
             "templated from the submitted form data."
         ),
-        default="Thank you for submitting this form.",
+        default=runtime_gettext(_("Thank you for submitting this form.")),
     )
 
     confirmation_email_subject = models.CharField(
