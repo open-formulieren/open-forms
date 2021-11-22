@@ -374,6 +374,8 @@ class Submission(models.Model):
                     "type": component["type"],
                     "value": merged_data[key],
                     "label": component.get("label", key),
+                    "multiple": component.get("multiple", False),
+                    "values": component.get("values"),
                 }
 
         # now append remaining data that doesn't have a matching component
@@ -449,10 +451,13 @@ class Submission(models.Model):
                 else:
                     printable_data[label] = _("empty")
             elif info["type"] == "selectboxes":
-                formatted_select_boxes = ", ".join(
-                    [label for label, selected in info["value"].items() if selected]
-                )
-                printable_data[label] = formatted_select_boxes
+                selected_values: Dict[str, bool] = info["value"]
+                selected_labels = [
+                    entry["label"]
+                    for entry in info["values"]
+                    if selected_values[entry["value"]]
+                ]
+                printable_data[label] = ", ".join(selected_labels)
             else:
                 # more here? like getComponentValue() in the SDK?
                 printable_data[label] = info["value"]
