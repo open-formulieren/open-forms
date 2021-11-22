@@ -124,6 +124,13 @@ class FormDefinition(models.Model):
             configuration = self.configuration
 
         components = configuration.get("components")
+        if configuration.get("type") == "columns" and recursive:
+            assert not components, "Both nested components and columns found"
+            for column in configuration["columns"]:
+                yield from self.iter_components(
+                    configuration=column, recursive=recursive
+                )
+
         if components:
             for component in components:
                 yield component

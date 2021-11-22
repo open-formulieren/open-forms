@@ -24,17 +24,17 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     :return: dict, with filtered data
     """
     form = context["_form"]
+    submission = context["_submission"]
 
     # From the form definition, see which fields should be shown in the confirmation email
     data_to_show_in_email = []
     for form_definition in FormDefinition.objects.filter(formstep__form=form):
-        data_to_show_in_email += form_definition.get_keys_for_email_summary()
+        keys = [item[0] for item in form_definition.get_keys_for_email_summary()]
+        data_to_show_in_email += keys
 
-    # Return a dict with only the data that should be shown in the email
-    filtered_data = {}
-    for property_key, property_label in data_to_show_in_email:
-        if property_key in context:
-            filtered_data[property_label] = context[property_key]
+    filtered_data = submission.get_printable_data(
+        limit_keys_to=data_to_show_in_email, use_merged_data_fallback=True
+    )
     return {"submitted_data": filtered_data}
 
 

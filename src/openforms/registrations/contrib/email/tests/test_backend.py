@@ -343,3 +343,177 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(pdf_export[0], report.title)
         self.assertEqual(pdf_export[1], report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
+
+    def test_regression_nested_components_columns(self):
+        """
+        Assert that columns in the form definition don't lead to template engine crashes.
+        """
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "data": {
+                        "values": [
+                            {"label": "Hallo", "value": "hallo"},
+                            {"label": "is it me", "value": "isItMe"},
+                            {
+                                "label": "you're looking for?",
+                                "value": "youreLookingFor",
+                            },
+                        ]
+                    },
+                    "dataSrc": "values",
+                    "key": "dropdownMetZoekfunctie",
+                    "label": "Dropdown met zoekfunctie",
+                    "showInEmail": True,
+                },
+                {
+                    "key": "wachtwoord",
+                    "label": "Wachtwoord",
+                    "showInEmail": True,
+                    "type": "password",
+                },
+                {
+                    "key": "favorieteComponenten",
+                    "label": "Favoriete componenten?",
+                    "multiple": True,
+                    "showInEmail": True,
+                    "type": "textfield",
+                },
+                {
+                    "key": "tijdstip",
+                    "label": "Tijdstip",
+                    "showInEmail": False,
+                    "type": "time",
+                },
+                {
+                    "components": [
+                        {
+                            "columns": [
+                                {
+                                    "components": [
+                                        {
+                                            "key": "dev1Naam",
+                                            "label": "Naam",
+                                            "showInEmail": False,
+                                            "type": "textfield",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "components": [
+                                        {
+                                            "key": "dev1taken",
+                                            "showInEmail": False,
+                                            "type": "selectboxes",
+                                            "values": [
+                                                {
+                                                    "label": "Backend",
+                                                    "value": "backend",
+                                                },
+                                                {
+                                                    "label": "Frontend",
+                                                    "value": "frontend",
+                                                },
+                                                {
+                                                    "label": "DevOops",
+                                                    "value": "devOops",
+                                                },
+                                            ],
+                                        }
+                                    ],
+                                },
+                            ],
+                            "key": "kolommen",
+                            "label": "Kolommen",
+                            "type": "columns",
+                        },
+                        {
+                            "key": "nogEenOntwikkelaarToevoegen",
+                            "label": "Nog een ontwikkelaar toevoegen?",
+                            "showInEmail": False,
+                            "type": "radio",
+                            "values": [
+                                {"label": "Ja", "value": "ja"},
+                                {"label": "Nee", "value": "nee"},
+                            ],
+                        },
+                    ],
+                    "key": "dev1",
+                    "label": "Ontwikkelaargegevens",
+                    "legend": "Ontwikkelaargegevens",
+                    "type": "fieldset",
+                },
+                {
+                    "components": [
+                        {
+                            "columns": [
+                                {
+                                    "components": [
+                                        {
+                                            "key": "dev2Naam",
+                                            "label": "Naam",
+                                            "showInEmail": False,
+                                            "type": "textfield",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "components": [
+                                        {
+                                            "key": "dev2taken",
+                                            "label": "Taken",
+                                            "showInEmail": False,
+                                            "type": "selectboxes",
+                                            "values": [
+                                                {
+                                                    "label": "Backend",
+                                                    "value": "backend",
+                                                },
+                                                {
+                                                    "label": "Frontend",
+                                                    "value": "frontend",
+                                                },
+                                                {
+                                                    "label": "DevOops",
+                                                    "value": "devOops",
+                                                },
+                                            ],
+                                        }
+                                    ],
+                                },
+                            ],
+                            "key": "kolommen1",
+                            "label": "Kolommen",
+                            "type": "columns",
+                        }
+                    ],
+                    "key": "dev2",
+                    "label": "Ontwikkelaargegevens",
+                    "legend": "Ontwikkelaargegevens",
+                },
+            ],
+            submitted_data={
+                "dev1Naam": "Bart",
+                "dev2Naam": "Silvia",
+                "tijdstip": "11:00:00",
+                "dev1taken": {"backend": True, "devOops": False, "frontend": False},
+                "dev2taken": {"backend": True, "devOops": False, "frontend": True},
+                "wachtwoord": "sdafsdfa",
+                "favorieteComponenten": ["kaart"],
+                "dropdownMetZoekfunctie": "isItMe",
+                "nogEenOntwikkelaarToevoegen": "ja",
+                "eMailadres": "foo@bar.nl",
+            },
+        )
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+        )
+
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
+
+        message = mail.outbox[0]
+
+        message_html = message.alternatives[0][0]
+        self.assertIn("Backend, Frontend", message_html)

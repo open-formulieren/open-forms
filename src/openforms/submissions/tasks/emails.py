@@ -6,7 +6,6 @@ from django.db import DatabaseError, transaction
 from celery_once import QueueOnce
 
 from openforms.celery import app
-from openforms.logging import logevent
 
 from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email

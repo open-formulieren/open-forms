@@ -81,6 +81,8 @@ class TestSubmission(TestCase):
                         "type": "textfield",
                         "value": "this is some text",
                         "label": "Label",
+                        "multiple": False,
+                        "values": None,
                     },
                 ),
                 (
@@ -89,15 +91,28 @@ class TestSubmission(TestCase):
                         "type": "textarea",
                         "value": "this is other text in a text area",
                         "label": "Label2",
+                        "multiple": False,
+                        "values": None,
                     },
                 ),
-                ("key3", {"type": "checkbox", "value": True, "label": "Label3"}),
+                (
+                    "key3",
+                    {
+                        "type": "checkbox",
+                        "value": True,
+                        "label": "Label3",
+                        "multiple": False,
+                        "values": None,
+                    },
+                ),
                 (
                     "key5",
                     {
                         "type": "textfield",
                         "value": "this is some inner text",
                         "label": "key5",
+                        "multiple": False,
+                        "values": None,
                     },
                 ),
             ]
@@ -114,9 +129,9 @@ class TestSubmission(TestCase):
                         "type": "selectboxes",
                         "label": "My Boxes",
                         "values": [
-                            {"values": "test1", "label": "test1", "shortcut": ""},
-                            {"values": "test2", "label": "test2", "shortcut": ""},
-                            {"values": "test3", "label": "test3", "shortcut": ""},
+                            {"value": "test1", "label": "test 1", "shortcut": ""},
+                            {"value": "test2", "label": "test 2", "shortcut": ""},
+                            {"value": "test3", "label": "test 3", "shortcut": ""},
                         ],
                     },
                 ],
@@ -139,6 +154,12 @@ class TestSubmission(TestCase):
                     "type": "selectboxes",
                     "label": "My Boxes",
                     "value": {"test1": True, "test2": True, "test3": False},
+                    "values": [
+                        {"value": "test1", "label": "test 1", "shortcut": ""},
+                        {"value": "test2", "label": "test 2", "shortcut": ""},
+                        {"value": "test3", "label": "test 3", "shortcut": ""},
+                    ],
+                    "multiple": False,
                 }
             },
         )
@@ -146,7 +167,7 @@ class TestSubmission(TestCase):
 
         self.assertEqual(
             printable_data["My Boxes"],
-            "test1, test2",
+            "test 1, test 2",
         )
 
     def test_submission_remove_sensitive_data(self):
