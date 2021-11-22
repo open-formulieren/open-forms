@@ -244,6 +244,37 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         self.assertEqual(empty_rendered_content, rendered_content)
 
+    def test_selectboxes_regression(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "values": [
+                        {"label": "Value 1", "value": "value1"},
+                        {"label": "Value 2", "value": "value2"},
+                        {"label": "Value 3", "value": "value3"},
+                    ],
+                    "showInEmail": True,
+                }
+            ],
+            submitted_data={
+                "selectBoxes": {
+                    "value2": True,
+                    "value1": True,
+                },
+            },
+        )
+
+        context = get_confirmation_email_context_data(submission)
+        rendered_content = render_confirmation_email_template("{% summary %}", context)
+
+        import bpdb
+
+        bpdb.set_trace()
+        self.assertIn("Value 1, Value 2", rendered_content)
+
 
 @override_settings(
     CACHES=NOOP_CACHES,

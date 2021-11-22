@@ -343,3 +343,37 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(pdf_export[0], report.title)
         self.assertEqual(pdf_export[1], report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
+
+    def test_selectboxes_regression(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "values": [
+                        {"label": "Value 1", "value": "value1"},
+                        {"label": "Value 2", "value": "value2"},
+                        {"label": "Value 3", "value": "value3"},
+                    ],
+                    "showInEmail": True,
+                }
+            ],
+            submitted_data={
+                "selectBoxes": {
+                    "value2": True,
+                    "value1": True,
+                },
+            },
+        )
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+        )
+
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(submission, email_form_options)
+
+        message = mail.outbox[0]
+
+        message_html = message.alternatives[0][0]
+        self.assertIn("Value 1, Value 2", message_html)
