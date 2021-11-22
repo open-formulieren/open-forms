@@ -362,7 +362,6 @@ class PaymentLinkView(DetailView):
                 plugin_id,
                 submission.form.payment_backend_options,
                 submission.form.product.price,
-                self.request.build_absolute_uri(),
             )
 
             info = plugin.start_payment(self.request, payment)
