@@ -375,7 +375,9 @@ class Submission(models.Model):
                     "value": merged_data[key],
                     "label": component.get("label", key),
                     "multiple": component.get("multiple", False),
-                    "values": component.get("values"),
+                    # The select component has the values/labels nested in a 'data' field
+                    "values": component.get("values")
+                    or component.get("data", {}).get("values"),
                 }
 
         # now append remaining data that doesn't have a matching component
@@ -436,6 +438,12 @@ class Submission(models.Model):
 
         return merged_data
 
+    def _get_value_label(self, possible_values: list, value: str) -> str:
+        for possible_value in possible_values:
+            if possible_value["value"] == value:
+                return possible_value["label"]
+        return value
+
     def get_printable_data(
         self, limit_keys_to: Optional[List[str]] = None, use_merged_data_fallback=False
     ) -> Dict[str, str]:
@@ -469,8 +477,15 @@ class Submission(models.Model):
                 ]
                 printable_data[label] = ", ".join(selected_labels)
             else:
+                printable_value = info["value"]
+                if info.get("values"):
+                    # Case in which each value has a label (for example select and radio components)
+                    printable_value = self._get_value_label(
+                        info["values"], info["value"]
+                    )
+
                 # more here? like getComponentValue() in the SDK?
-                printable_data[label] = info["value"]
+                printable_data[label] = printable_value
 
         return printable_data
 
