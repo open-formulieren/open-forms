@@ -193,5 +193,6 @@
   "The minimum time that can be picked.": "De minimale tijd die gekozen kan worden.",
   "Maximum Time": "Maximale tijd",
   "The maximum time that can be picked.": "De maximale tijd die gekozen kan worden.",
-  "invalid_time": "Alleen tijden tussen {{ minTime }} en {{ maxTime }} zijn toegestaan."
+  "invalid_time": "Alleen tijden tussen {{ minTime }} en {{ maxTime }} zijn toegestaan.",
+  "Receives confirmation email": "Ontvangt bevestigingsmail"
 }
