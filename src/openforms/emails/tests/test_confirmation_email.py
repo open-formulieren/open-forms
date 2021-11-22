@@ -181,9 +181,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submission__form=form_step.form,
         )
         submission = submission_step.submission
-        email = ConfirmationEmailTemplate(content="{% summary %}")
         context = get_confirmation_email_context_data(submission)
-        rendered_content = render_confirmation_email_template(email.content, context)
+        rendered_content = render_confirmation_email_template("{% summary %}", context)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)

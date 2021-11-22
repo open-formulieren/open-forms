@@ -124,8 +124,18 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[
-                {"key": "email", "confirmationRecipient": True, "label": "Email"},
-                {"key": "foo", "showInEmail": True, "label": "Foo"},
+                {
+                    "key": "email",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                    "label": "Email",
+                },
+                {
+                    "key": "foo",
+                    "type": "textfield",
+                    "showInEmail": True,
+                    "label": "Foo",
+                },
             ],
             submitted_data={"foo": "foovalue", "email": "test@test.nl"},
         )
@@ -135,8 +145,18 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             form_step__form=submission.form,
             form_step__form_definition__configuration={
                 "components": [
-                    {"key": "bar", "label": "Bar", "showInEmail": True},
-                    {"key": "hello", "label": "Hello", "showInEmail": False},
+                    {
+                        "key": "bar",
+                        "type": "textfield",
+                        "label": "Bar",
+                        "showInEmail": True,
+                    },
+                    {
+                        "key": "hello",
+                        "type": "textfield",
+                        "label": "Hello",
+                        "showInEmail": False,
+                    },
                 ],
             },
             data={"bar": "barvalue", "hello": "hellovalue"},

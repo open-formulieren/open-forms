@@ -48,6 +48,8 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         # starting with underscores are blocked by the Django template engine.
         "_submission": submission,
         "_form": submission.form,  # should be the same as self.form
+        # TODO: this should use the printable data but be keyed by component.key instead of the label,
+        # which submission.get_printable_data does.
         **submission.data,
         "public_reference": submission.public_registration_reference,
         "form_name": submission.form.name,
