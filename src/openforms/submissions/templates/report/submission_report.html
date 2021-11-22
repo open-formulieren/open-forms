@@ -48,7 +48,7 @@
         {% for key, value in submission_data.items %}
             <tr>
                 <td class="table-cell-key">{{ key }}</td>
-                <td>{{ value }}</td>
+                <td>{% display_value value %}</td>
             </tr>
         {% endfor %}
         {% if submission.payment_required and submission.form.product.price %}
