@@ -129,3 +129,42 @@ class eHerkenningOIDCTests(TestCase):
         )
 
         self.assertEqual(self.client.session["oidc_login_next"], form_url)
+
+    def test_redirect_with_keycloak_identity_provider_hint(self):
+        config = OpenIDConnectEHerkenningConfig.get_solo()
+        config.oidc_keycloak_idp_hint = "oidc-eHerkenning"
+        config.save()
+
+        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse(
+            "eherkenning_oidc:oidc_authentication_init",
+        )
+
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"http://testserver{form_path}?_start=1"
+
+        response = self.client.get(f"{login_url}?next={form_url}")
+
+        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        parsed = urlparse(response.url)
+        query_params = parse_qs(parsed.query)
+
+        self.assertEqual(parsed.hostname, "provider.com")
+        self.assertEqual(
+            parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
+        )
+        self.assertEqual(query_params["scope"][0], "openid kvk")
+        self.assertEqual(query_params["client_id"][0], "testclient")
+        self.assertEqual(
+            query_params["redirect_uri"][0],
+            f"http://testserver{reverse('eherkenning_oidc:oidc_authentication_callback')}",
+        )
+
+        # Verify that the Identity provider hint is passed to Keycloak
+        self.assertEqual(query_params["kc_idp_hint"][0], "oidc-eHerkenning")
+
+        self.assertEqual(self.client.session["oidc_login_next"], form_url)
