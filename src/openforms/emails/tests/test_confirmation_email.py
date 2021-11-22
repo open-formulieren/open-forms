@@ -244,7 +244,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         self.assertEqual(empty_rendered_content, rendered_content)
 
-    def test_selectboxes_regression(self):
+    def test_checkboxes_ordering(self):
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[
@@ -270,9 +270,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_confirmation_email_template("{% summary %}", context)
 
-        import bpdb
-
-        bpdb.set_trace()
         self.assertIn("Value 1, Value 2", rendered_content)
 
 
