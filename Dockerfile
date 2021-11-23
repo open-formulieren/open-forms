@@ -4,7 +4,7 @@
 # image minimal in size.
 
 # must be at the top to use it in FROM clauses
-ARG SDK_RELEASE=latest
+ARG SDK_RELEASE=oidc-digid
 FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 
 # Stage 1 - Backend build environment
