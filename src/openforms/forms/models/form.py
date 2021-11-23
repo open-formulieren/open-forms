@@ -14,7 +14,10 @@ from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
-from openforms.authentication.fields import AuthenticationBackendMultiSelectField
+from openforms.authentication.fields import (
+    AuthenticationBackendChoiceField,
+    AuthenticationBackendMultiSelectField,
+)
 from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.fields import PaymentBackendChoiceField
@@ -73,6 +76,9 @@ class Form(models.Model):
 
     authentication_backends = AuthenticationBackendMultiSelectField(
         _("authentication backend(s)"), blank=True
+    )
+    auto_login_authentication_backend = AuthenticationBackendChoiceField(
+        _("automatic login"), blank=True
     )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
