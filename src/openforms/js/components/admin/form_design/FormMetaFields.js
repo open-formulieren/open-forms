@@ -13,6 +13,7 @@ import Select from '../forms/Select';
 import AuthPluginField from './AuthPluginField';
 import TinyMCEEditor from './Editor';
 import {getTranslatedChoices} from '../../../utils/i18n';
+import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 
 
 export const SUMBISSION_ALLOWED_CHOICES = [
@@ -48,7 +49,9 @@ const FormMetaFields = ({
     onChange,
     availableAuthPlugins,
     selectedAuthPlugins,
-    onAuthPluginChange
+    onAuthPluginChange,
+    selectedAuthPluginAutoLogin,
+    onAuthPluginAutoLoginChange,
 }) => {
     const {
         uuid,
@@ -131,6 +134,15 @@ const FormMetaFields = ({
                     availableAuthPlugins={availableAuthPlugins}
                     selectedAuthPlugins={selectedAuthPlugins}
                     onChange={onAuthPluginChange}
+                />
+            </FormRow>
+
+            <FormRow>
+                <AuthPluginAutoLoginField
+                    availableAuthPlugins={availableAuthPlugins}
+                    selectedAuthPlugins={selectedAuthPlugins}
+                    selectedAuthPlugin={selectedAuthPluginAutoLogin}
+                    onChange={onAuthPluginAutoLoginChange}
                 />
             </FormRow>
 

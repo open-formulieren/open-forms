@@ -134,6 +134,10 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
+    auto_login_authentication_backend = serializers.CharField(
+        required=False,
+        allow_blank=True,
+    )
 
     product = serializers.HyperlinkedRelatedField(
         label=_("product"),
@@ -171,6 +175,7 @@ class FormSerializer(serializers.ModelSerializer):
             "registration_backend_options",
             "authentication_backends",
             "login_options",
+            "auto_login_authentication_backend",
             "payment_required",
             "payment_backend",
             "payment_backend_options",
