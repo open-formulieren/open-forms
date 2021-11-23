@@ -99,7 +99,7 @@ COPY --from=backend-build /app/src/ /app/src/
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 COPY --from=frontend-build /app/node_modules/formiojs/dist/fonts /app/node_modules/formiojs/dist/fonts
 # Include SDK files
-COPY --from=openformulieren/open-forms-sdk:latest /sdk /app/static/sdk
+COPY --from=openformulieren/open-forms-sdk:oidc-digid /sdk /app/static/sdk
 
 # copy source code
 COPY ./src /app/src
