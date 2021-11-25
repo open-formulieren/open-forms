@@ -10,10 +10,16 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
+
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
-from .factories import SubmissionFactory, SubmissionReportFactory
+from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionStepFactory
 
 
 @temp_private_root()
@@ -96,6 +102,47 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertEqual("some-id", report.task_id)
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
+
+    def test_submission_printable_data(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "radio1",
+                        "type": "radio",
+                        "label": "Test Radio",
+                        "values": [
+                            {"label": "Test Option 1", "value": "testOption1"},
+                            {"label": "Test Option 2", "value": "testOption2"},
+                        ],
+                    },
+                    {
+                        "key": "select1",
+                        "label": "Test Select",
+                        "data": {
+                            "values": [
+                                {"label": "Test Option 1", "value": "testOption1"},
+                                {"label": "Test Option 2", "value": "testOption2"},
+                            ]
+                        },
+                        "type": "select",
+                    },
+                ]
+            }
+        )
+        form_step = FormStepFactory.create(form_definition=form_def, form=form)
+        submission = SubmissionFactory.create(completed=True, form=form)
+        SubmissionStepFactory.create(
+            data={"radio1": "testOption1", "select1": "testOption2"},
+            submission=submission,
+            form_step=form_step,
+        )
+
+        printable_data = submission.get_printable_data()
+
+        self.assertEqual("Test Option 1", printable_data["Test Radio"])
+        self.assertEqual("Test Option 2", printable_data["Test Select"])
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
