@@ -69,7 +69,7 @@ const TRIGGER_FIELD_ORDER = [
 ];
 
 
-const parseJsonLogic = (logic) => {
+const parseJsonLogic = (logic, allComponents) => {
     // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
     // with our own organization.
     if (!logic || !Object.keys(logic).length) return {};
@@ -95,10 +95,10 @@ const parseJsonLogic = (logic) => {
     let operand = '';
 
     // Selectboxes case: the component name contains the reference to which value, e.g. "selectComponentField.option1"
-    const splitComponent = component.split('.');
-    if (splitComponent.length > 1) {
-        component = splitComponent[0];
-        compareValue = splitComponent[1];
+    if (!allComponents[component]) {
+        let componentBits = component.split('.');
+        component = componentBits.slice(0, componentBits.length-1).join('.');
+        compareValue = componentBits.slice(componentBits.length-1).join('.');
     }
 
     if (jsonLogic.is_logic(compareValue)) {
@@ -161,11 +161,10 @@ const reducer = (draft, action) => {
 };
 
 const Trigger = ({ name, logic, onChange }) => {
-    // break down the json logic back into variables that can be managed by components state
-    const parsedLogic = parseJsonLogic(logic);
-    // hooks
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
     const allComponents = useContext(ComponentsContext);
+    // break down the json logic back into variables that can be managed by components state
+    const parsedLogic = parseJsonLogic(logic, allComponents);
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
 
     // event handlers
     const onTriggerChange = (event) => {
