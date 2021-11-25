@@ -438,7 +438,8 @@ class Submission(models.Model):
 
         return merged_data
 
-    def _get_value_label(self, possible_values: list, value: str) -> str:
+    @staticmethod
+    def _get_value_label(possible_values: list, value: str) -> str:
         for possible_value in possible_values:
             if possible_value["value"] == value:
                 return possible_value["label"]
