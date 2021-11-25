@@ -70,7 +70,14 @@ class FormStep(OrderedModel):
         verbose_name_plural = _("form steps")
 
     def __str__(self):
-        return _("Form step {order}").format(order=self.order)
+        if self.form_id and self.form_definition_id:
+            return _("{form_name} step {order}: {definition_name}").format(
+                form_name=self.form.admin_name,
+                order=self.order,
+                definition_name=self.form_definition.admin_name,
+            )
+        else:
+            return super().__str__()
 
     def iter_components(self, recursive=True):
         yield from self.form_definition.iter_components(recursive=recursive)

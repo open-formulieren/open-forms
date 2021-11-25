@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-from ..models import Form, FormDefinition
+from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
@@ -262,3 +262,22 @@ class FormDefinitionTestCase(TestCase):
             self.form_definition_with_sensitive_information.sensitive_fields,
             ["textFieldSensitive"],
         )
+
+
+class FormStepTestCase(TestCase):
+    def test_str(self):
+        step = FormStepFactory.create(
+            form__internal_name="InternalForm",
+            form_definition__internal_name="InternalDef",
+            order=1,
+        )
+        expected = _("{form_name} step {order}: {definition_name}").format(
+            form_name=step.form.admin_name,
+            order=step.order,
+            definition_name=step.form_definition.admin_name,
+        )
+        self.assertEqual(str(step), expected)
+
+    def test_str_no_relation(self):
+        step = FormStep()
+        self.assertEqual(str(step), "FormStep object (None)")
