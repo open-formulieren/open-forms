@@ -1006,6 +1006,92 @@ class StepModificationTests(TestCase):
 
         self.assertFalse(submission_step.can_submit)
 
+    def test_select_boxes_trigger_with_dot_in_key_name(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "selectboxes",
+                        "key": "current.pets",
+                        "values": [
+                            {"label": "Cat", "value": "cat"},
+                            {"label": "Dog", "value": "dog"},
+                            {"label": "Fish", "value": "fish"},
+                        ],
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "current.pets.cat"},
+                    True,
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "name": "Disable next",
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"current": {"pets": {"cat": True, "dog": False, "fish": False}}},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        self.assertFalse(submission_step.can_submit)
+
+    def test_normal_component_trigger_with_dot_in_key_name(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"key": "normal.component", "type": "textfield"}]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "normal.component"},
+                    "test-value",
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "name": "Disable next",
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"normal": {"component": "test-value"}},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        self.assertFalse(submission_step.can_submit)
+
 
 class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_response_contains_submission(self):
