@@ -34,7 +34,7 @@ celery==4.4.7
     #   -r requirements/base.in
     #   celery-once
     #   flower
-certifi==2020.6.20
+certifi==2021.10.8
     # via
     #   elastic-apm
     #   requests
@@ -133,7 +133,7 @@ django-solo==1.1.3
     #   zgw-consumers
 django-timeline-logger==1.1.2
     # via -r requirements/base.in
-django-tinymce==3.3.0
+django-tinymce==3.4.0
     # via -r requirements/base.in
 django-yubin==1.6.0
     # via -r requirements/base.in

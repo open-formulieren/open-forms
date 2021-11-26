@@ -66,7 +66,7 @@ celery==4.4.7
     #   -r requirements/base.txt
     #   celery-once
     #   flower
-certifi==2020.6.20
+certifi==2021.10.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -248,7 +248,7 @@ django-timeline-logger==1.1.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-tinymce==3.3.0
+django-tinymce==3.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
