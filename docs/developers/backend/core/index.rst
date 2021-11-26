@@ -36,4 +36,5 @@ same thing twice.
    :maxdepth: 2
 
    submissions
+   utils
    tokens

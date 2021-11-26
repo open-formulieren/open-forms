@@ -1,3 +1,5 @@
+import warnings
+
 from django import template
 from django.utils.html import format_html
 
@@ -34,6 +36,11 @@ def capture(parser, token):
     var_name = args[-1]
     nodelist = parser.parse(("endcapture",))
     parser.delete_first_token()
+    warnings.warn(
+        "Our own capture templatetag implementation is deprecated in favour of the "
+        "django-capture-tag library",
+        DeprecationWarning,
+    )
     return CaptureNode(nodelist, var_name)
 
 

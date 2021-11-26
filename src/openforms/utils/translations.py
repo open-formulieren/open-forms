@@ -25,7 +25,14 @@ def runtime_gettext(literal) -> Callable[[], str]:
 
 class ensure_default_language(translation.override):
     """
-    If not translation is activated, ensures that the default LANGUAGE_CODE is.
+    Ensure that the default translation is activated if none is active.
+
+    Sometimes translations are deactivated (e.g. running management commands), but
+    content should be translated anyway. This context manager allows you to force
+    falling back to :attr:`settings.LANGUAGE_CODE`.
+
+    Note that the context manager can also be used as decorator, as it inherits from
+    :class:`django.utils.translation.override`.
     """
 
     def __init__(self, **kwargs):
