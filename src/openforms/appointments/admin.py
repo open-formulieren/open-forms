@@ -31,7 +31,7 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         return super().get_queryset(request).select_related("submission")
 
     def get_list_display(self, request):
-        list_display = super().get_list_display(request)
+        list_display = list(super().get_list_display(request))
         if not request.user.is_superuser:
             list_display.remove("get_object_actions")
         return list_display
