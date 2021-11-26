@@ -1,13 +1,11 @@
 import logging
 import uuid
-from urllib.parse import urljoin
 
 from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
 
 from furl import furl
 
-from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.submissions.utils import add_submmission_to_session
 
@@ -40,5 +38,12 @@ class ResumeSubmissionView(RedirectView):
         f /= submission.get_last_completed_step().form_step.form_definition.slug
         # Add the submission uuid to the query param
         f.add({"submission_uuid": submission.uuid})
+
+        if submission.form.login_required:
+            redirect_url = furl(submission.form_url)
+            redirect_url.args.popvalue("_start")
+            redirect_url /= "resume"
+            redirect_url.add({"next": f.url})
+            return redirect_url.url
 
         return f.url
