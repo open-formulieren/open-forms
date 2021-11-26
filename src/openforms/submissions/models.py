@@ -532,14 +532,6 @@ class Submission(models.Model):
         # TODO support partial payments
         return self.payments.filter(status=PaymentStatus.registered).exists()
 
-    def get_appointment_step_url(self) -> str:
-        for form_step in self.form.formstep_set.all():
-            for component in form_step.iter_components(recursive=True):
-                if component.get("appointments", {}).get("showProducts"):
-                    return form_step.form_definition.slug
-
-        return ""
-
 
 class SubmissionStep(models.Model):
     """

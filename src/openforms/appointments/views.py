@@ -10,6 +10,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.utils import add_submmission_to_session
 
 from .tokens import submission_appointment_token_generator
+from .utils import find_first_appointment_step
 
 logger = logging.getLogger(__name__)
 
@@ -57,20 +58,24 @@ class VerifyChangeAppointmentLinkView(RedirectView):
 
         add_submmission_to_session(new_submission, self.request.session)
 
-        step_url = new_submission.get_appointment_step_url()
+        next_step = find_first_appointment_step(new_submission.form)
 
-        if not step_url:
+        if next_step is None:
             # Should not happen but redirect to first step if it does
             logger.warning(
                 "Could not find the appointment step for submission %s,"
                 "redirecting user to first step in form",
                 new_submission.uuid,
             )
-            step_url = new_submission.form.formstep_set.first().form_definition.slug
+            next_step = new_submission.form.formstep_set.select_related(
+                "form_definition"
+            ).first()
+
+        assert next_step is not None, "Form has no steps to redirect to!"
 
         f = furl(new_submission.form_url)
         f /= "stap"
-        f /= step_url
+        f /= next_step.form_definition.slug
         f.add({"submission_uuid": new_submission.uuid})
 
         return f.url

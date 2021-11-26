@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 import qrcode
 
+from openforms.forms.models import Form, FormStep
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
@@ -242,3 +243,23 @@ def create_base64_qrcode(text):
     buffer.seek(0)
 
     return base64.b64encode(buffer.read()).decode("ascii")
+
+
+def find_first_appointment_step(form: Form) -> Optional[FormStep]:
+    """
+    Find the first step in a form dealing with appointments.
+
+    This looks at the component configuration for each step and detects if a component
+    is holding appointment-related meta-information. If no such step is found, ``None``
+    is returned.
+    """
+    for form_step in form.formstep_set.select_related("form_definition"):
+        for component in form_step.iter_components(recursive=True):
+            if "appointments" not in component:
+                continue
+
+            if component["appointments"].get("showProducts"):
+                return form_step
+
+    # no component in any form step found that satisfies
+    return None

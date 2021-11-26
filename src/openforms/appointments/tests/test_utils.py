@@ -26,6 +26,7 @@ from ..service import AppointmentRegistrationFailed
 from ..utils import (
     book_appointment_for_submission,
     create_base64_qrcode,
+    find_first_appointment_step,
     get_formatted_phone_number,
 )
 from .factories import AppointmentInfoFactory
@@ -567,6 +568,41 @@ class UtilsTests(TestCase):
         result = create_base64_qrcode(data)
 
         self.assertEqual(result, expected)
+
+    def test_find_first_appointment_step_returns_None_for_no_appointment_data(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "textfield",
+                    "key": "placeholder",
+                }
+            ]
+        )
+
+        step = find_first_appointment_step(submission.form)
+
+        self.assertIsNone(step)
+
+    def test_find_first_appointment_step_finds_correct_step(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+            ]
+        )
+
+        step = find_first_appointment_step(submission.form)
+
+        self.assertIsNotNone(step)
+        self.assertEqual(step, submission.submissionstep_set.get().form_step)
 
 
 class GetFormattedPhoneNumberTest(TestCase):
