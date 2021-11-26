@@ -34,7 +34,7 @@ celery==4.4.7
     #   -r requirements/base.in
     #   celery-once
     #   flower
-certifi==2020.6.20
+certifi==2021.10.8
     # via
     #   elastic-apm
     #   requests
