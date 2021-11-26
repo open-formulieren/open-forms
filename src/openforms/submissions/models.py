@@ -237,7 +237,7 @@ class Submission(models.Model):
     )
 
     previous_submission = models.ForeignKey(
-        "submissions.Submission", on_delete=models.DO_NOTHING, null=True, blank=True
+        "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     objects = SubmissionManager()
