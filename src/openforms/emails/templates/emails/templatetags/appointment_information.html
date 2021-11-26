@@ -42,10 +42,13 @@
     </table>
 
     <p>
-        {% trans "If you want to cancel your appointment, you can do so below." %}
+        {% trans "If you want to cancel or change your appointment, you can do so below." %}
     </p>
     <p>
         <a href="{{ appointment_cancel_link }}" rel="nofollow">{% trans "Cancel appointment" %}</a>
     </p>
-        
+    <p>
+        <a href="{{ appointment_change_link }}" rel="nofollow">{% trans "Change appointment" %}</a>
+    </p>
+
 {% endif %}

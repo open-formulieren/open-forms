@@ -79,9 +79,12 @@ NESTED_COMPONENT_CONF = {
 }
 
 
-class FixedCancelLinkPlugin(TestPlugin):
+class FixedCancelAndChangeLinkPlugin(TestPlugin):
     def get_cancel_link(self, submission) -> str:
         return "http://fake.nl/api/v1/submission-uuid/token/verify/"
+
+    def get_change_link(self, submission) -> str:
+        return "http://fake.nl/api/v1/submission-uuid/token/change/"
 
 
 @override_settings(CACHES=NOOP_CACHES)
@@ -193,7 +196,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
-        return_value=FixedCancelLinkPlugin(),
+        return_value=FixedCancelAndChangeLinkPlugin(),
     )
     def test_appointment_information(self, get_client_mock):
         config = GlobalConfiguration.get_solo()
@@ -221,6 +224,13 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertInHTML(
             '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
             + _("Cancel appointment")
+            + "</a>",
+            rendered_content,
+        )
+
+        self.assertInHTML(
+            '<a href="http://fake.nl/api/v1/submission-uuid/token/change/" rel="nofollow">'
+            + _("Change appointment")
             + "</a>",
             rendered_content,
         )
@@ -438,6 +448,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             public_registration_reference="xyz123",
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
+            form_url="http://server/form",
         )
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
@@ -504,6 +515,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             Als u uw afspraak wilt annuleren kunt u dat hieronder doen.
             {_("Cancel appointment")}: #URL#
+            {_("Change appointment")}: #URL#
 
             {_("Payment information")}
 

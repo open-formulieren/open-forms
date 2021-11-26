@@ -30,7 +30,7 @@ from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
-from .query import SubmissionQuerySet
+from .query import SubmissionManager
 
 logger = logging.getLogger(__name__)
 
@@ -236,7 +236,11 @@ class Submission(models.Model):
         ),
     )
 
-    objects = SubmissionQuerySet.as_manager()
+    previous_submission = models.ForeignKey(
+        "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    objects = SubmissionManager()
 
     class Meta:
         verbose_name = _("submission")

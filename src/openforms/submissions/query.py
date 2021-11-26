@@ -1,4 +1,6 @@
-from django.db import models
+from typing import TYPE_CHECKING
+
+from django.db import models, transaction
 from django.db.models import (
     Case,
     CharField,
@@ -13,6 +15,9 @@ from django.db.models import (
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+
+if TYPE_CHECKING:
+    from .models import Submission
 
 
 class SubmissionQuerySet(models.QuerySet):
@@ -48,3 +53,41 @@ class SubmissionQuerySet(models.QuerySet):
             )
 
         return annotation
+
+
+class BaseSubmissionManager(models.Manager):
+    @transaction.atomic
+    def copy(
+        self, original: "Submission", fields=("form", "form_url", "bsn", "kvk")
+    ) -> "Submission":
+        """
+        Copy an existing submission into a new, cleaned submission record.
+
+        The new submission has the meta fields cleared, but existing submitted data
+        copied over.
+
+        :arg submission: An existing :class:`Submission` instance
+        :arg fields: iterable of model field names to copy
+        """
+        from .models import SubmissionStep
+
+        new_instance = self.create(
+            previous_submission=original,  # store the reference from where it was copied
+            **{field: getattr(original, field) for field in fields},
+        )
+
+        new_steps = []
+        related_steps_manager = original.submissionstep_set
+        for step in related_steps_manager.all():
+            new_steps.append(
+                SubmissionStep(
+                    submission=new_instance,
+                    form_step=step.form_step,
+                    data=step.data,
+                )
+            )
+        related_steps_manager.bulk_create(new_steps)
+        return new_instance
+
+
+SubmissionManager = BaseSubmissionManager.from_queryset(SubmissionQuerySet)

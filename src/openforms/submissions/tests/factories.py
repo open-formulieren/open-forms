@@ -55,6 +55,12 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.in_progress,
         )
+        has_previous_submission = factory.Trait(
+            previous_submission=factory.SubFactory(
+                "openforms.submissions.tests.factories.SubmissionFactory",
+                form=factory.SelfAttribute("..form"),
+            )
+        )
 
     @classmethod
     def from_components(

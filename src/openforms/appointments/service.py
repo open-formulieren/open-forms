@@ -11,6 +11,7 @@ from openforms.submissions.models import Submission
 
 from .exceptions import AppointmentRegistrationFailed, AppointmentUpdateFailed
 from .models import AppointmentInfo
+from .utils import get_confirmation_mail_suffix
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ __all__ = [
     "AppointmentRegistrationFailed",
     "AppointmentUpdateFailed",
     "register_appointment",
+    "get_confirmation_mail_suffix",
 ]
 
 
@@ -31,8 +33,8 @@ def register_appointment(submission: Submission) -> None:
     because the submission form is not an appointment form, then this function just
     returns.
 
-    :arg submission: :class:`Submission` instance containing all the relevant submission
-      data.
+    :param submission: :class:`Submission` instance containing all the relevant
+      submission data.
     :raises AppointmentRegistrationFaild: if the submission form is an appointment form
       and registration was attempted. The state will already have been updated in the
       database with the relevant context/information - the exception just signals the

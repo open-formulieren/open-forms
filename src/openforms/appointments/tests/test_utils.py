@@ -1,7 +1,11 @@
+from datetime import timedelta
+
 from django.test import TestCase
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 import requests_mock
+from freezegun import freeze_time
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -21,7 +25,9 @@ from ..models import AppointmentInfo
 from ..service import AppointmentRegistrationFailed
 from ..utils import (
     book_appointment_for_submission,
+    cancel_previous_submission_appointment,
     create_base64_qrcode,
+    find_first_appointment_step,
     get_formatted_phone_number,
 )
 from .factories import AppointmentInfoFactory
@@ -141,7 +147,7 @@ class BookAppointmentForSubmissionTest(TestCase):
             form_step=form_step_2,
         )
 
-        with self.assertRaises(AppointmentRegistrationFailed) as cm:
+        with self.assertRaises(AppointmentRegistrationFailed):
             book_appointment_for_submission(submission)
 
         info = AppointmentInfo.objects.filter(
@@ -244,6 +250,96 @@ class BookAppointmentForSubmissionTest(TestCase):
                 status=AppointmentDetailsStatus.success,
             ).exists()
         )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_start.txt"
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/appointment_register_success.txt"
+            ).count(),
+            1,
+        )
+
+    @freeze_time("2021-08-21T18:00:00+02:00")
+    @requests_mock.Mocker()
+    def test_creating_appointment_deletes_previous_appointment_when_one_exists(self, m):
+        new_completed_on = timezone.now() - timedelta(hours=1)
+        base_data = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "location": {"identifier": "1", "name": "Amsterdam"},
+            "lastName": "Maykin",
+            "birthDate": "1990-08-01",
+        }
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            completed_on=new_completed_on,
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "location",
+                    "appointments": {"showLocations": True},
+                    "label": "Location",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+                {
+                    "key": "lastName",
+                    "appointments": {"lastName": True},
+                    "label": "Last Name",
+                },
+                {
+                    "key": "birthDate",
+                    "appointments": {"birthDate": True},
+                    "label": "Date of Birth",
+                },
+            ],
+            submitted_data={**base_data, "time": "2021-08-26T17:00:00+02:00"},
+            has_previous_submission=True,
+            previous_submission__completed=True,
+            previous_submission__completed_on=new_completed_on - timedelta(hours=12),
+        )
+
+        # set the data of the previous submission
+        appointment_info = AppointmentInfoFactory.create(
+            submission=submission.previous_submission,
+            registration_ok=True,
+            appointment_id="98765",
+        )
+        SubmissionStepFactory.create(
+            submission=submission.previous_submission,
+            form_step=submission.form.formstep_set.get(),
+            data={**base_data, "time": "2021-08-25T17:00:00+02:00"},
+        )
+        m.post(
+            "http://example.com/soap11",
+            [
+                {"text": mock_response("bookGovAppointmentResponse.xml")},
+                {"text": mock_response("deleteGovAppointmentResponse.xml")},
+            ],
+        )
+
+        book_appointment_for_submission(submission)
+
+        self.assertTrue(
+            AppointmentInfo.objects.filter(
+                appointment_id="1234567890",
+                submission=submission,
+                status=AppointmentDetailsStatus.success,
+            ).exists()
+        )
+
+        appointment_info.refresh_from_db()
+        self.assertEqual(appointment_info.status, AppointmentDetailsStatus.cancelled)
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/appointment_register_start.txt"
@@ -449,6 +545,35 @@ class BookAppointmentForSubmissionTest(TestCase):
             1,
         )
 
+    def test_cancelling_previous_appointments_nothing_to_cancel(self):
+        submission1 = SubmissionFactory.create(has_previous_submission=True)
+        AppointmentInfoFactory.create(
+            submission=submission1.previous_submission,
+            registration_failed=True,
+        )
+        submission2 = SubmissionFactory.create(has_previous_submission=True)
+        AppointmentInfoFactory.create(
+            submission=submission2.previous_submission,
+            registration_ok=True,
+            appointment_id="",
+        )
+        submissions = [
+            ("no previous", SubmissionFactory.create(has_previous_submission=False)),
+            (
+                "no appointment info",
+                SubmissionFactory.create(has_previous_submission=True),
+            ),
+            ("failed registration", submission1),
+            ("succeeded registration but no id", submission2),
+        ]
+
+        for label, submission in submissions:
+            with self.subTest(type=label):
+                with requests_mock.Mocker() as m:
+                    cancel_previous_submission_appointment(submission)
+
+                self.assertFalse(m.called)
+
 
 class UtilsTests(TestCase):
     maxDiff = 1024
@@ -473,6 +598,41 @@ class UtilsTests(TestCase):
         result = create_base64_qrcode(data)
 
         self.assertEqual(result, expected)
+
+    def test_find_first_appointment_step_returns_None_for_no_appointment_data(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "textfield",
+                    "key": "placeholder",
+                }
+            ]
+        )
+
+        step = find_first_appointment_step(submission.form)
+
+        self.assertIsNone(step)
+
+    def test_find_first_appointment_step_finds_correct_step(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+            ]
+        )
+
+        step = find_first_appointment_step(submission.form)
+
+        self.assertIsNotNone(step)
+        self.assertEqual(step, submission.submissionstep_set.get().form_step)
 
 
 class GetFormattedPhoneNumberTest(TestCase):

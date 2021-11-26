@@ -11,11 +11,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
-from openforms.logging.logevent import (
-    appointment_cancel_failure,
-    appointment_cancel_start,
-    appointment_cancel_success,
-)
+from openforms.logging import logevent
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
@@ -35,8 +31,7 @@ from ..api.serializers import (
 )
 from ..base import AppointmentLocation, AppointmentProduct
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
-from ..models import AppointmentInfo
-from ..utils import get_client
+from ..utils import delete_appointment_for_submission, get_client
 
 logger = logging.getLogger(__name__)
 
@@ -241,30 +236,27 @@ class CancelAppointmentView(GenericAPIView):
         submission = self.get_object()
         client = get_client()
 
-        appointment_cancel_start(submission.appointment_info, client)
+        logevent.appointment_cancel_start(submission.appointment_info, client)
 
         serializer = CancelAppointmentInputSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except ValidationError as e:
-            appointment_cancel_failure(submission.appointment_info, client, e)
+            logevent.appointment_cancel_failure(submission.appointment_info, client, e)
             raise e
 
         emails = submission.get_email_confirmation_recipients(submission.data)
 
         # The user must enter the email address they used when creating
-        #   the appointment which we validate here
+        # the appointment which we validate here
         if serializer.validated_data["email"] not in emails:
             e = PermissionDenied
-            appointment_cancel_failure(submission.appointment_info, client, e)
+            logevent.appointment_cancel_failure(submission.appointment_info, client, e)
             raise e
 
         try:
-            client.delete_appointment(submission.appointment_info.appointment_id)
-            submission.appointment_info.cancel()
-        except (AppointmentDeleteFailed, AppointmentInfo.DoesNotExist) as e:
-            appointment_cancel_failure(submission.appointment_info, client, e)
-            raise CancelAppointmentFailed
+            delete_appointment_for_submission(submission)
+        except AppointmentDeleteFailed as exc:
+            raise CancelAppointmentFailed() from exc
 
-        appointment_cancel_success(submission.appointment_info, client)
         return Response(status=HTTP_204_NO_CONTENT)
