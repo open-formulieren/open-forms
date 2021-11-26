@@ -25,6 +25,7 @@ from ..models import AppointmentInfo
 from ..service import AppointmentRegistrationFailed
 from ..utils import (
     book_appointment_for_submission,
+    cancel_previous_submission_appointment,
     create_base64_qrcode,
     find_first_appointment_step,
     get_formatted_phone_number,
@@ -543,6 +544,35 @@ class BookAppointmentForSubmissionTest(TestCase):
             ).count(),
             1,
         )
+
+    def test_cancelling_previous_appointments_nothing_to_cancel(self):
+        submission1 = SubmissionFactory.create(has_previous_submission=True)
+        AppointmentInfoFactory.create(
+            submission=submission1.previous_submission,
+            registration_failed=True,
+        )
+        submission2 = SubmissionFactory.create(has_previous_submission=True)
+        AppointmentInfoFactory.create(
+            submission=submission2.previous_submission,
+            registration_ok=True,
+            appointment_id="",
+        )
+        submissions = [
+            ("no previous", SubmissionFactory.create(has_previous_submission=False)),
+            (
+                "no appointment info",
+                SubmissionFactory.create(has_previous_submission=True),
+            ),
+            ("failed registration", submission1),
+            ("succeeded registration but no id", submission2),
+        ]
+
+        for label, submission in submissions:
+            with self.subTest(type=label):
+                with requests_mock.Mocker() as m:
+                    cancel_previous_submission_appointment(submission)
+
+                self.assertFalse(m.called)
 
 
 class UtilsTests(TestCase):
