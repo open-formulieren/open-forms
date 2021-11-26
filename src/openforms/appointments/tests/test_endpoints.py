@@ -7,11 +7,7 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -144,36 +140,27 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 @freeze_time("2021-07-15T21:15:00Z")
 class VerifyChangeAppointmentLinkViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
-        form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
-            }
-        )
-        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        submission = SubmissionFactory.create(
-            form=form, form_url="http://maykinmedia.nl/myform/"
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+            ],
+            submitted_data={
                 "product": {"identifier": "79", "name": "Paspoort"},
                 "time": "2021-08-25T17:00:00",
             },
-            form_step=form_step,
+            form_url="http://maykinmedia.nl/myform/",
         )
+        form_definition = submission.form.formstep_set.get().form_definition
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
@@ -193,7 +180,10 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
-        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/{form_definition.slug}?submission_uuid={new_submission.uuid}"
+        expected_redirect_url = (
+            f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
+            f"?submission_uuid={new_submission.uuid}"
+        )
 
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
@@ -264,35 +254,25 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_token_valid_on_same_day_appointment(self):
-        form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
-            }
-        )
-        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        submission = SubmissionFactory.create(
-            form=form, form_url="http://maykinmedia.nl/myform/"
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+            ],
+            submitted_data={
                 "product": {"identifier": "79", "name": "Paspoort"},
                 "time": "2021-08-25T17:00:00",
             },
-            form_step=form_step,
+            form_url="http://maykinmedia.nl/myform/",
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -317,8 +297,13 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         self,
     ):
         form = FormFactory.create()
-        form_definition_1 = FormDefinitionFactory.create(
-            configuration={
+        submission = SubmissionFactory.create(
+            form=form, completed=True, form_url="http://maykinmedia.nl/myform/"
+        )
+        SubmissionStepFactory.create(
+            form_step__form=form,
+            form_step__form_definition__slug="step-1",
+            form_step__form_definition__configuration={
                 "display": "form",
                 "components": [
                     {
@@ -326,10 +311,17 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                         "label": "Name",
                     },
                 ],
-            }
+            },
+            submission=submission,
+            data={
+                "Name": "Maykin",
+            },
         )
-        form_definition_2 = FormDefinitionFactory.create(
-            configuration={
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form=form,
+            form_step__form_definition__slug="step-2",
+            form_step__form_definition__configuration={
                 "display": "form",
                 "components": [
                     {
@@ -343,31 +335,11 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                         "label": "Time",
                     },
                 ],
-            }
-        )
-        form_step_1 = FormStepFactory.create(
-            form=form, form_definition=form_definition_1
-        )
-        form_step_2 = FormStepFactory.create(
-            form=form, form_definition=form_definition_2
-        )
-        submission = SubmissionFactory.create(
-            form=form, form_url="http://maykinmedia.nl/myform/"
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
-                "Name": "Maykin",
             },
-            form_step=form_step_1,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
                 "time": "2021-08-25T17:00:00",
             },
-            form_step=form_step_2,
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -388,8 +360,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
-        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/{form_definition_1.slug}?submission_uuid={new_submission.uuid}"
-
+        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/step-1?submission_uuid={new_submission.uuid}"
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )

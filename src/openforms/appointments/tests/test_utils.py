@@ -1,7 +1,11 @@
+from datetime import timedelta
+
 from django.test import TestCase
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 import requests_mock
+from freezegun import freeze_time
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -257,96 +261,61 @@ class BookAppointmentForSubmissionTest(TestCase):
             1,
         )
 
+    @freeze_time("2021-08-21T18:00:00+02:00")
     @requests_mock.Mocker()
     def test_creating_appointment_deletes_previous_appointment_when_one_exists(self, m):
-        form = FormFactory.create()
-        form_definition_1 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "location",
-                        "appointments": {"showLocations": True},
-                        "label": "Location",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
-            }
-        )
-        form_definition_2 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "lastName",
-                        "appointments": {"lastName": True},
-                        "label": "Last Name",
-                    },
-                    {
-                        "key": "birthDate",
-                        "appointments": {"birthDate": True},
-                        "label": "Date of Birth",
-                    },
-                ],
-            }
-        )
-        form_step_1 = FormStepFactory.create(
-            form=form, form_definition=form_definition_1
-        )
-        form_step_2 = FormStepFactory.create(
-            form=form, form_definition=form_definition_2
-        )
-        previous_submission = SubmissionFactory.create(form=form)
-        appointment_info = AppointmentInfoFactory.create(
-            submission=previous_submission, appointment_id="98765"
-        )
-        submission = SubmissionFactory.create(
-            form=form, previous_submission=previous_submission
-        )
-        SubmissionStepFactory.create(
-            submission=previous_submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "location": {"identifier": "1", "name": "Amsterdam"},
-                "time": "2021-08-25T17:00:00+02:00",
-            },
-            form_step=form_step_1,
-        )
-        SubmissionStepFactory.create(
-            submission=previous_submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "1990-08-01",
-            },
-            form_step=form_step_2,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "location": {"identifier": "1", "name": "Amsterdam"},
-                "time": "2021-08-26T17:00:00+02:00",
-            },
-            form_step=form_step_1,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "1990-08-01",
-            },
-            form_step=form_step_2,
+        new_completed_on = timezone.now() - timedelta(hours=1)
+        base_data = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "location": {"identifier": "1", "name": "Amsterdam"},
+            "lastName": "Maykin",
+            "birthDate": "1990-08-01",
+        }
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            completed_on=new_completed_on,
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "location",
+                    "appointments": {"showLocations": True},
+                    "label": "Location",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+                {
+                    "key": "lastName",
+                    "appointments": {"lastName": True},
+                    "label": "Last Name",
+                },
+                {
+                    "key": "birthDate",
+                    "appointments": {"birthDate": True},
+                    "label": "Date of Birth",
+                },
+            ],
+            submitted_data={**base_data, "time": "2021-08-26T17:00:00+02:00"},
+            has_previous_submission=True,
+            previous_submission__completed=True,
+            previous_submission__completed_on=new_completed_on - timedelta(hours=12),
         )
 
+        # set the data of the previous submission
+        appointment_info = AppointmentInfoFactory.create(
+            submission=submission.previous_submission, appointment_id="98765"
+        )
+        SubmissionStepFactory.create(
+            submission=submission.previous_submission,
+            form_step=submission.form.formstep_set.get(),
+            data={**base_data, "time": "2021-08-25T17:00:00+02:00"},
+        )
         m.post(
             "http://example.com/soap11",
             [
@@ -356,6 +325,7 @@ class BookAppointmentForSubmissionTest(TestCase):
         )
 
         book_appointment_for_submission(submission)
+
         self.assertTrue(
             AppointmentInfo.objects.filter(
                 appointment_id="1234567890",
@@ -363,6 +333,7 @@ class BookAppointmentForSubmissionTest(TestCase):
                 status=AppointmentDetailsStatus.success,
             ).exists()
         )
+
         appointment_info.refresh_from_db()
         self.assertEqual(appointment_info.status, AppointmentDetailsStatus.cancelled)
         self.assertEqual(
