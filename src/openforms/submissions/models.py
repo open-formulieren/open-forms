@@ -30,7 +30,7 @@ from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
-from .query import SubmissionQuerySet
+from .query import SubmissionManager
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +240,7 @@ class Submission(models.Model):
         "submissions.Submission", on_delete=models.DO_NOTHING, null=True, blank=True
     )
 
-    objects = SubmissionQuerySet.as_manager()
+    objects = SubmissionManager()
 
     class Meta:
         verbose_name = _("submission")
@@ -539,21 +539,6 @@ class Submission(models.Model):
                     return form_step.form_definition.slug
 
         return ""
-
-    @transaction.atomic
-    def copy(self):
-        copy = Submission.objects.create(
-            form=self.form,
-            form_url=self.form_url,
-            previous_submission=self,
-        )
-        for submission_step in self.submissionstep_set.all():
-            SubmissionStep.objects.create(
-                submission=copy,
-                form_step=submission_step.form_step,
-                data=submission_step.data,
-            )
-        return copy
 
 
 class SubmissionStep(models.Model):

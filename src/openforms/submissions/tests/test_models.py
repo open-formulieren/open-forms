@@ -8,6 +8,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
@@ -343,7 +344,7 @@ class TestSubmission(TestCase):
             form_step=FormStepFactory.create(),
         )
 
-        new_submission = submission.copy()
+        new_submission = Submission.objects.copy(submission)
 
         self.assertEqual(new_submission.form, submission.form)
         self.assertEqual(new_submission.form_url, submission.form_url)

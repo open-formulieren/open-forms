@@ -53,7 +53,7 @@ class VerifyChangeAppointmentLinkView(RedirectView):
     def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
         submission = validate_url_and_get_submission(submission_uuid, token)
 
-        new_submission = submission.copy()
+        new_submission = Submission.objects.copy(submission)
 
         add_submmission_to_session(new_submission, self.request.session)
 
