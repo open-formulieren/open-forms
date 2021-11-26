@@ -1,5 +1,6 @@
 import base64
 import io
+import logging
 import re
 from datetime import datetime
 from typing import List, Optional
@@ -9,12 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 import qrcode
 
-from openforms.logging.logevent import (
-    appointment_register_failure,
-    appointment_register_skip,
-    appointment_register_start,
-    appointment_register_success,
-)
+from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
 from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
@@ -22,6 +18,8 @@ from .constants import AppointmentDetailsStatus
 from .exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
 from .models import AppointmentInfo, AppointmentsConfig
 from .service import AppointmentRegistrationFailed
+
+logger = logging.getLogger()
 
 
 def get_client():
@@ -96,7 +94,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
     # error information.
     if absent_or_empty_information:
         # Incomplete information to make an appointment
-        appointment_register_skip(submission)
+        logevent.appointment_register_skip(submission)
         missing_fields_labels = get_missing_fields_labels(
             appointment_data, absent_or_empty_information
         )
@@ -135,7 +133,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
 
     client = get_client()
     try:
-        appointment_register_start(submission, client)
+        logevent.appointment_register_start(submission, client)
         appointment_id = client.create_appointment(
             [product], location, start_at, appointment_client
         )
@@ -145,21 +143,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             submission=submission,
             start_time=start_at,
         )
-        appointment_register_success(appointment_info, client)
-        if submission.previous_submission:
-            try:
-                # Delete previous appointment if one exists
-                client.delete_appointment(
-                    submission.previous_submission.appointment_info.appointment_id
-                )
-                submission.previous_submission.appointment_info.status = (
-                    AppointmentDetailsStatus.cancelled
-                )
-                submission.previous_submission.appointment_info.save(
-                    update_fields=["status"]
-                )
-            except (AppointmentInfo.DoesNotExist, AppointmentDeleteFailed):
-                pass
+        logevent.appointment_register_success(appointment_info, client)
     except AppointmentCreateFailed as e:
         # This is displayed to the end-user!
         error_information = _(
@@ -171,8 +155,84 @@ def book_appointment_for_submission(submission: Submission) -> None:
             error_information=error_information,
             submission=submission,
         )
-        appointment_register_failure(appointment_info, client, e)
+        logevent.appointment_register_failure(appointment_info, client, e)
         raise AppointmentRegistrationFailed("Unable to create appointment") from e
+
+    cancel_previous_submission_appointment(submission)
+
+
+def cancel_previous_submission_appointment(submission: Submission) -> None:
+    """
+    Given a submission, check if there's a previous appointment to cancel.
+    """
+    if not submission.previous_submission:
+        logger.debug(
+            "Submission %s has no known previous appointment to cancel", submission.uuid
+        )
+        return
+
+    # check if there's anything to cancel at all
+    try:
+        appointment_info = submission.previous_submission.appointment_info
+    except AppointmentInfo.DoesNotExist:
+        logger.debug(
+            "Submission %s has no known previous appointment to cancel", submission.uuid
+        )
+        return
+
+    if (
+        appointment_info.status != AppointmentDetailsStatus.success
+        or not appointment_info.appointment_id
+    ):
+        logger.debug(
+            "Submission %s has no known previous appointment to cancel", submission.uuid
+        )
+        return
+
+    client = get_client()
+
+    logger.debug(
+        "Attempting to cancel appointment %s of submission %s",
+        appointment_info.appointment_id,
+        submission.uuid,
+    )
+    logevent.appointment_cancel_start(appointment_info, client)
+
+    try:
+        delete_appointment_for_submission(submission.previous_submission)
+    except AppointmentDeleteFailed:
+        logger.warning(
+            "Deleting the appointment %s of submission %s failed",
+            appointment_info.appointment_id,
+            submission.uuid,
+        )
+
+
+def delete_appointment_for_submission(submission: Submission, client=None) -> None:
+    """
+    Delete/cancels the appointment for a given submission.
+
+    :raises CancelAppointmentFailed: if the plugin errored or there was no relevant
+      appointment information.
+    """
+    client = client or get_client()
+    try:
+        appointment_info = submission.appointment_info
+    except AppointmentInfo.DoesNotExist:
+        logger.info(
+            "Submission %s had no recorded appointment information, aborting deletion.",
+            submission.uuid,
+        )
+        return
+
+    try:
+        client.delete_appointment(appointment_info.appointment_id)
+        appointment_info.cancel()
+    except AppointmentDeleteFailed as e:
+        logevent.appointment_cancel_failure(appointment_info, client, e)
+        raise
+
+    logevent.appointment_cancel_success(appointment_info, client)
 
 
 def create_base64_qrcode(text):

@@ -145,7 +145,7 @@ class BookAppointmentForSubmissionTest(TestCase):
             form_step=form_step_2,
         )
 
-        with self.assertRaises(AppointmentRegistrationFailed) as cm:
+        with self.assertRaises(AppointmentRegistrationFailed):
             book_appointment_for_submission(submission)
 
         info = AppointmentInfo.objects.filter(
@@ -309,7 +309,9 @@ class BookAppointmentForSubmissionTest(TestCase):
 
         # set the data of the previous submission
         appointment_info = AppointmentInfoFactory.create(
-            submission=submission.previous_submission, appointment_id="98765"
+            submission=submission.previous_submission,
+            registration_ok=True,
+            appointment_id="98765",
         )
         SubmissionStepFactory.create(
             submission=submission.previous_submission,
