@@ -6,8 +6,7 @@ from django.contrib.sessions.backends.base import SessionBase
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
 
-from openforms.appointments.constants import AppointmentDetailsStatus
-from openforms.appointments.models import AppointmentInfo
+from openforms.appointments.service import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
     SkipConfirmationEmail,
     get_confirmation_email_context_data,
@@ -112,16 +111,10 @@ def send_confirmation_email(submission: Submission):
     # render the templates with the submission context
     subject = render_confirmation_email_template(
         subject_template, context, rendering_text=True
-    )
+    ).strip()
 
-    try:
-        if (
-            submission.previous_submission.appointment_info.status
-            == AppointmentDetailsStatus.cancelled
-        ):
-            subject += " " + SafeText(_("(change)"))
-    except (AttributeError, AppointmentInfo.DoesNotExist):
-        pass
+    if subject_suffix := get_confirmation_mail_suffix(submission):
+        subject = f"{subject} {subject_suffix}"
 
     html_content = render_confirmation_email_template(content_template, context)
     text_content = strip_tags_plus(

@@ -6,6 +6,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase, override_settings
+from django.utils.translation import gettext as _
 
 from privates.test import temp_private_root
 
@@ -500,13 +501,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_send_confirmation_email_when_appointment_is_changed(self):
-        previous_submission = SubmissionFactory.create()
-        AppointmentInfoFactory.create(
-            submission=previous_submission, status=AppointmentDetailsStatus.cancelled
-        )
         submission = SubmissionFactory.from_components(
             completed=True,
-            previous_submission=previous_submission,
             components_list=[
                 {
                     "key": "email",
@@ -516,6 +512,11 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
+            has_previous_submission=True,
+        )
+        AppointmentInfoFactory.create(
+            submission=submission.previous_submission,
+            status=AppointmentDetailsStatus.cancelled,
         )
         # add a second step
         SubmissionStepFactory.create(
@@ -538,7 +539,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        self.assertEqual(message.subject, "Confirmation mail (change)")
+        self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
 
 
 class RaceConditionTests(TransactionTestCase):

@@ -263,3 +263,32 @@ def find_first_appointment_step(form: Form) -> Optional[FormStep]:
 
     # no component in any form step found that satisfies
     return None
+
+
+def get_confirmation_mail_suffix(submission: Submission) -> str:
+    """
+    Determine the suffix, if appropriate for the subject of the confirmation mail.
+
+    If this submission is related to an appointment and previous submission,
+    append an "updated" marker to the subject (see #680).
+    """
+    # if there's no related previous submission, it cannot be an update
+    if not submission.previous_submission_id:
+        return ""
+
+    # if there's no appointment info attached to the previous submission, it cannot be
+    # an update
+    try:
+        appointment_info = submission.previous_submission.appointment_info
+    except AppointmentInfo.DoesNotExist:
+        return ""
+
+    # if the previous appointment was not cancelled, it cannot be an update
+    # TODO: what to do when we did succesfully create a new appointment, but the old
+    # one deletion failed? there are now two appointments open.
+    # submission.appointment_info.status == AppointmentDetailsStatus.success and
+    # submission.previous_submission.appointment_info.status == AppointmentDetailsStatus.success
+    if appointment_info.status != AppointmentDetailsStatus.cancelled:
+        return ""
+
+    return _("(updated)")
