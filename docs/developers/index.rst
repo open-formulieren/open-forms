@@ -19,14 +19,12 @@ familiarize yourself with the design principles.
 
 .. toctree::
    :caption: Topics
-   :maxdepth: 3
+   :maxdepth: 2
 
    architecture
-   submissions
+   backend/index
+   sdk/index
    plugins/index
    manual_testing
-   sdk/index
-   profiling
    i18n
-   tokens
    npm

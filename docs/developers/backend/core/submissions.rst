@@ -1,4 +1,4 @@
-.. _developers_submissions:
+.. _developers_backend_core_submissions:
 
 ===========
 Submissions
