@@ -7,7 +7,7 @@ from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.tasks.registration import set_submission_reference
 
 from ...base import BasePlugin
-from ...exceptions import NoSubmissionReference
+from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .models import MSGraphRegistrationConfig
 
@@ -24,6 +24,9 @@ class MSGraphRegistration(BasePlugin):
         set_submission_reference(submission)
 
         config = MSGraphRegistrationConfig.get_solo()
+        if not config.service:
+            raise RegistrationFailed("No service configured.")
+
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client)
 
