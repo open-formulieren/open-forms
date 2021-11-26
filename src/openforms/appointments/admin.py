@@ -1,13 +1,13 @@
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
+from django.utils import timezone
+from django.utils.html import format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 
+from .base import BasePlugin
 from .constants import AppointmentDetailsStatus
 from .models import AppointmentInfo, AppointmentsConfig
-from .tokens import submission_appointment_token_generator
 
 
 @admin.register(AppointmentsConfig)
@@ -22,8 +22,7 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         "appointment_id",
         "start_time",
         "submission",
-        "get_cancel_link",
-        "get_change_link",
+        "get_object_actions",
     )
     list_filter = ("status", "start_time")
     date_hierarchy = "created"
@@ -34,34 +33,24 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
         list_display = super().get_list_display(request)
         if not request.user.is_superuser:
-            list_display.remove("get_cancel_link")
-            list_display.remove("get_change_link")
+            list_display.remove("get_object_actions")
         return list_display
 
-    def get_link(self, obj, verb) -> str:
+    def get_object_actions(self, obj) -> str:
         if not obj.status == AppointmentDetailsStatus.success:
-            return ""
+            return "-"
 
-        token = submission_appointment_token_generator.make_token(obj.submission)
-        url = reverse(
-            f"appointments:appointments-verify-{verb.lower()}-appointment-link",
-            kwargs={
-                "submission_uuid": obj.submission.uuid,
-                "token": token,
-            },
+        if obj.start_time and obj.start_time <= timezone.now():
+            return "-"
+
+        actions = [
+            ("change", _("Change")),
+            ("cancel", _("Cancel")),
+        ]
+        links = (
+            (BasePlugin.get_link(obj.submission, verb=action), label)
+            for action, label in actions
         )
-        return format_html(
-            '<a href="{url}">{text}</a>',
-            url=url,
-            text=_("{verb} appointment").format(verb=verb.title()),
-        )
+        return format_html_join(" | ", '<a href="{}">{}</a>', links)
 
-    def get_cancel_link(self, obj) -> str:
-        return self.get_link(obj, "cancel")
-
-    get_cancel_link.short_description = _("Cancel link")
-
-    def get_change_link(self, obj) -> str:
-        return self.get_link(obj, "change")
-
-    get_change_link.short_description = _("Change link")
+    get_object_actions.short_description = _("Appointment actions")

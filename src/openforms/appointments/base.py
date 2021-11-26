@@ -2,9 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
-from urllib.parse import urljoin
 
-from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +10,7 @@ from rest_framework import serializers
 
 from openforms.submissions.models import Submission
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.urls import build_absolute_uri
 
 from .tokens import submission_appointment_token_generator
 
@@ -215,7 +214,8 @@ class BasePlugin:
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_link(self, submission: Submission, verb: str) -> str:
+    @staticmethod
+    def get_link(submission: Submission, verb: str) -> str:
         token = submission_appointment_token_generator.make_token(submission)
 
         path = reverse(
@@ -226,10 +226,12 @@ class BasePlugin:
             },
         )
 
-        return urljoin(settings.BASE_URL, path)
+        return build_absolute_uri(path)
 
-    def get_cancel_link(self, submission: Submission) -> str:
-        return self.get_link(submission, "cancel")
+    @classmethod
+    def get_cancel_link(cls, submission: Submission) -> str:
+        return cls.get_link(submission, "cancel")
 
-    def get_change_link(self, submission: Submission) -> str:
-        return self.get_link(submission, "change")
+    @classmethod
+    def get_change_link(cls, submission: Submission) -> str:
+        return cls.get_link(submission, "change")
