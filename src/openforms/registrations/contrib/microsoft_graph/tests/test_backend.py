@@ -15,6 +15,7 @@ from openforms.registrations.contrib.microsoft_graph.models import (
     MSGraphRegistrationConfig,
 )
 from openforms.registrations.contrib.microsoft_graph.plugin import MSGraphRegistration
+from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -149,3 +150,22 @@ class MSGraphRegistrationBackendTests(TestCase):
             self.assertEqual(call.args[1], path)
             content = call.kwargs["stream"].read().decode("utf8")
             self.assertEqual(content, f"{_('payment received')}: € 11.35")
+
+
+class MSGraphRegistrationBackendFailureTests(TestCase):
+    def test_no_service_configured_raises_registration_error(self):
+        submission = SubmissionFactory.create(
+            form__registration_backend="microsoft-graph",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"foo": "bar", "some_list": ["value1", "value2"]},
+        )
+        SubmissionReportFactory.create(submission=submission)
+
+        with self.assertRaises(RegistrationFailed):
+            with patch.object(Account, "is_authenticated", True), patch.object(
+                Drive, "get_root_folder", return_value=MockFolder()
+            ):
+                graph_submission = MSGraphRegistration("microsoft-graph")
+                graph_submission.register_submission(submission, None)
