@@ -29,7 +29,7 @@ Configureren van OIDC zelf
 Contacteer de IAM beheerders in je organisatie om een *Client* aan te
 maken in de omgeving van de OpenID Connect provider.
 
-Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/oidc/callback`` in,
+Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
 
 Aan het eind van dit proces moet je de volgende gegevens hebben (on premise):
@@ -72,3 +72,30 @@ Klik tot slot rechtsonder op **Opslaan**.
 Je kan vervolgens het makkelijkst testen of alles werkt door in een incognitoscherm
 naar https://open-formulieren.gemeente.nl/admin/ te navigeren en op *Inloggen met organisatieaccount* te
 klikken.
+
+Cloud providers
+===============
+
+Azure Active Directory
+----------------------
+
+Azure Active Directory is a cloud-hosted identity provider from Microsoft, part of Azure
+webservices.
+
+To use AAD as OIDC provider, you must obtain:
+
+- Tenant ID, which is usually a UUID4
+- Application (client) ID
+- Application secret value
+
+The tenant ID is used in the discovery URL:
+``https://login.microsoftonline.com/${tenantId}/v2.0``
+
+You can inspect the metadata document in your browser at
+``https://login.microsoftonline.com/${tenantId}/v2.0/.well-known/openid-configuration``.
+
+Known issues:
+
+- The v2.0 is essential, since the URL without the suffix has an invalid issuer which
+  doesn't match the tenant-specific URL.
+- Make sure there's no trailing slash - the issuer does not have one.
