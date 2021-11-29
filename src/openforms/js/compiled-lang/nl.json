@@ -341,6 +341,12 @@
       "value": "de lijst"
     }
   ],
+  "FQswyM": [
+    {
+      "type": 0,
+      "value": "Mode"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -387,6 +393,12 @@
     {
       "type": 0,
       "value": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "Gi+cvN": [
+    {
+      "type": 0,
+      "value": "Use linked product price"
     }
   ],
   "H6VxhG": [
@@ -1117,6 +1129,12 @@
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "zeXZzX": [
+    {
+      "type": 0,
+      "value": "Use logic rules to determine the price"
     }
   ]
 }

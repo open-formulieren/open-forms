@@ -430,7 +430,7 @@ function reducer(draft, action) {
         case 'ADD_PRICE_RULE': {
             const {form: {url}} = draft;
             draft.priceRules.push({
-                ...EMPTY_RULE,
+                ...EMPTY_PRICE_RULE,
                 form: url
             });
             break;

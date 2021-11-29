@@ -337,6 +337,12 @@
       "value": "the array"
     }
   ],
+  "FQswyM": [
+    {
+      "type": 0,
+      "value": "Mode"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -383,6 +389,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+    }
+  ],
+  "Gi+cvN": [
+    {
+      "type": 0,
+      "value": "Use linked product price"
     }
   ],
   "H6VxhG": [
@@ -1113,6 +1125,12 @@
     {
       "type": 0,
       "value": "There are validation errors"
+    }
+  ],
+  "zeXZzX": [
+    {
+      "type": 0,
+      "value": "Use logic rules to determine the price"
     }
   ]
 }

@@ -244,6 +244,11 @@
     "description": "\"array\" operand type",
     "originalDefault": "the array"
   },
+  "FQswyM": {
+    "defaultMessage": "Mode",
+    "description": "Pricing mode label",
+    "originalDefault": "Mode"
+  },
   "FceidS": {
     "defaultMessage": "is niet gelijk aan",
     "description": "\"!=\" operator description",
@@ -283,6 +288,11 @@
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.confirmText help text",
     "originalDefault": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+  },
+  "Gi+cvN": {
+    "defaultMessage": "Use linked product price",
+    "description": "static pricing mode label",
+    "originalDefault": "Use linked product price"
   },
   "H6VxhG": {
     "defaultMessage": "Onderhoudsmodus",
@@ -868,5 +878,10 @@
     "defaultMessage": "Er zijn validatiefouten",
     "description": "Step validation errors icon title",
     "originalDefault": "There are validation errors"
+  },
+  "zeXZzX": {
+    "defaultMessage": "Use logic rules to determine the price",
+    "description": "dynamic pricing mode label",
+    "originalDefault": "Use logic rules to determine the price"
   }
 }
