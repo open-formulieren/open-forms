@@ -27,7 +27,11 @@ from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyType
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
-from .validators import JsonLogicTriggerValidator, JsonLogicValidator
+from .validators import (
+    JsonLogicTriggerComponentValidator,
+    JsonLogicTriggerValidator,
+    JsonLogicValidator,
+)
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -593,50 +597,7 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
                 "validators": [JsonLogicTriggerValidator()],
             },
         }
-
-    def validate(self, data: dict) -> dict:
-        # test that the component is present in the form definition
-        form = data.get("form") or self.instance.form
-        trigger_logic = (
-            data.get("json_logic_trigger") or self.instance.json_logic_trigger
-        )
-
-        if form and trigger_logic:
-            logic_test = JsonLogicTest.from_expression(trigger_logic)
-            first_operand = logic_test.values[0]
-            if (
-                first_operand.operator == "date"
-                and isinstance(first_operand.values[0], JsonLogicTest)
-                and first_operand.values[0].operator == "var"
-            ):
-                needle = first_operand.values[0].values[0]
-            else:
-                needle = first_operand.values[0]
-            for component in form.iter_components(recursive=True):
-                key = component.get("key")
-                if key and key == needle:
-                    break
-
-                if component.get("type") == "selectboxes":
-                    needle_bits = needle.split(".")
-                    key_bits = key.split(".")
-                    if key_bits == needle_bits[:-1]:
-                        break
-
-            # executes if the break was not hit
-            else:
-                raise serializers.ValidationError(
-                    {
-                        "json_logic_trigger": serializers.ValidationError(
-                            _(
-                                "The specified component is not present in the form definition"
-                            ),
-                            code="invalid",
-                        )
-                    }
-                )
-
-        return data
+        validators = [JsonLogicTriggerComponentValidator()]
 
 
 class FormAdminMessageSerializer(serializers.Serializer):
