@@ -60,8 +60,9 @@ class FormDefinitionAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        (old_func, name, short_description) = actions["delete_selected"]
-        actions["delete_selected"] = (delete_selected, name, short_description)
+        if "delete_selected" in actions:
+            (old_func, name, short_description) = actions["delete_selected"]
+            actions["delete_selected"] = (delete_selected, name, short_description)
         return actions
 
     def make_copies(self, request, queryset):
