@@ -36,6 +36,9 @@ class eHerkenningOIDCAuthentication(BasePlugin):
         )
         requests.get(f"{logout_endpoint}?{params}")
 
+    def get_label(self) -> str:
+        return "eHerkenning"
+
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(
             title=self.get_label(),
