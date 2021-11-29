@@ -27,7 +27,7 @@ from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyType
 from ..custom_field_types import handle_custom_types
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..models.form import FormLogic
-from .validators import JsonLogicValidator
+from .validators import JsonLogicTriggerValidator, JsonLogicValidator
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -590,32 +590,9 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
                     "or not. Note that this must be a valid JsonLogic expression, and "
                     "the first operand must be a reference to a component in the form."
                 ),
-                "validators": [JsonLogicValidator()],
+                "validators": [JsonLogicTriggerValidator()],
             },
         }
-
-    def validate_json_logic_trigger(self, trigger_logic: dict) -> dict:
-        """
-        Validate that the first operand of the trigger is a reference to a component.
-        """
-        # at first instance, we don't support nested logic. Once we do, this will need
-        # to be adapted so that we only check primitives.
-        logic_test = JsonLogicTest.from_expression(trigger_logic)
-
-        first_operand = logic_test.values[0]
-        is_date_operand = (
-            first_operand.operator == "date"
-            and isinstance(first_operand.values[0], JsonLogicTest)
-            and first_operand.values[0].operator == "var"
-        )
-        if not isinstance(first_operand, JsonLogicTest) or (
-            first_operand.operator != "var" and not is_date_operand
-        ):
-            raise serializers.ValidationError(
-                _('The first operand must be a `{"var": "<componentKey>"}` expression.')
-            )
-
-        return trigger_logic
 
     def validate(self, data: dict) -> dict:
         # test that the component is present in the form definition
