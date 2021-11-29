@@ -20,9 +20,16 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..messages import add_success_message
-from ..models import Form, FormDefinition, FormLogic, FormStep, FormVersion
+from ..models import (
+    Form,
+    FormDefinition,
+    FormLogic,
+    FormPriceLogic,
+    FormStep,
+    FormVersion,
+)
 from ..utils import export_form, form_to_json, import_form
-from .filters import FormLogicFilter
+from .filters import FormLogicFilter, FormPriceLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
 from .permissions import IsStaffOrReadOnlyNoList
 from .serializers import (
@@ -31,6 +38,7 @@ from .serializers import (
     FormDefinitionSerializer,
     FormImportSerializer,
     FormLogicSerializer,
+    FormPriceLogicSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVersionSerializer,
@@ -70,6 +78,7 @@ class FormStepViewSet(
         return context
 
 
+@extend_schema(tags=["logic-rules"])
 @extend_schema_view(
     list=extend_schema(summary=_("List logic rules")),
     retrieve=extend_schema(summary=_("Retrieve logic rule details")),
@@ -83,9 +92,33 @@ class FormLogicViewSet(
 ):
     serializer_class = FormLogicSerializer
     queryset = FormLogic.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [
+        permissions.IsAdminUser
+    ]  # TODO: connect with can_change_form admin permission!
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FormLogicFilter
+    lookup_field = "uuid"
+
+
+@extend_schema(tags=["logic-rules"])
+@extend_schema_view(
+    list=extend_schema(summary=_("List pricing logic rules")),
+    retrieve=extend_schema(summary=_("Retrieve pricing logic rule details")),
+    create=extend_schema(summary=_("Create a pricing logic rule")),
+    update=extend_schema(summary=_("Update all details of a pricing logic rule")),
+    partial_update=extend_schema(
+        summary=_("Update some details of a pricing logic rule")
+    ),
+    destroy=extend_schema(summary=_("Delete a pricing logic rule")),
+)
+class FormPriceLogicViewSet(viewsets.ModelViewSet):
+    serializer_class = FormPriceLogicSerializer
+    queryset = FormPriceLogic.objects.all()
+    permission_classes = [
+        permissions.IsAdminUser
+    ]  # TODO: connect with can_change_form admin permission!
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FormPriceLogicFilter
     lookup_field = "uuid"
 
 

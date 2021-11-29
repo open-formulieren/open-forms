@@ -21,12 +21,17 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
-from openforms.utils.json_logic import JsonLogicTest
 
 from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
-from ..models import Form, FormDefinition, FormStep, FormVersion
-from ..models.form import FormLogic
+from ..models import (
+    Form,
+    FormDefinition,
+    FormLogic,
+    FormPriceLogic,
+    FormStep,
+    FormVersion,
+)
 from .validators import (
     JsonLogicTriggerComponentValidator,
     JsonLogicTriggerValidator,
@@ -562,22 +567,13 @@ class LogicComponentActionSerializer(serializers.Serializer):
         return data
 
 
-class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
-    actions = LogicComponentActionSerializer(
-        many=True,
-        label=_("Actions"),
-        help_text=_(
-            "Actions triggered when the trigger expression evaluates to 'truthy'."
-        ),
-    )
-
+class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = FormLogic
         fields = (
             "uuid",
+            "url",
             "form",
             "json_logic_trigger",
-            "actions",
         )
         extra_kwargs = {
             "uuid": {
@@ -598,6 +594,40 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
             },
         }
         validators = [JsonLogicTriggerComponentValidator()]
+
+
+class FormLogicSerializer(FormLogicBaseSerializer):
+    actions = LogicComponentActionSerializer(
+        many=True,
+        label=_("Actions"),
+        help_text=_(
+            "Actions triggered when the trigger expression evaluates to 'truthy'."
+        ),
+    )
+
+    class Meta(FormLogicBaseSerializer.Meta):
+        model = FormLogic
+        fields = FormLogicBaseSerializer.Meta.fields + ("actions",)
+        extra_kwargs = {
+            **FormLogicBaseSerializer.Meta.extra_kwargs,
+            "url": {
+                "view_name": "api:form-logics-detail",
+                "lookup_field": "uuid",
+            },
+        }
+
+
+class FormPriceLogicSerializer(FormLogicBaseSerializer):
+    class Meta(FormLogicBaseSerializer.Meta):
+        model = FormPriceLogic
+        fields = FormLogicBaseSerializer.Meta.fields + ("price",)
+        extra_kwargs = {
+            **FormLogicBaseSerializer.Meta.extra_kwargs,
+            "url": {
+                "view_name": "api:price-logics-detail",
+                "lookup_field": "uuid",
+            },
+        }
 
 
 class FormAdminMessageSerializer(serializers.Serializer):
