@@ -19,6 +19,14 @@ class FormFactory(factory.django.DjangoModelFactory):
         model = Form
         rename = {"deleted_": "_is_deleted"}
 
+    class Params:
+        generate_minimal_setup = factory.Trait(
+            formstep=factory.RelatedFactory(
+                "openforms.forms.tests.factories.FormStepFactory",
+                factory_related_name="form",
+            ),
+        )
+
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
@@ -85,3 +93,19 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
         json_form = form_to_json(obj.form.id)
         obj.export_blob = json_form
         obj.save()
+
+
+class FormPriceLogicFactory(factory.django.DjangoModelFactory):
+    form = factory.SubFactory(FormFactory)
+    json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
+    price = factory.Faker(
+        "pydecimal",
+        left_digits=2,
+        right_digits=2,
+        positive=True,
+        min_value=5.00,
+        max_value=100.00,
+    )
+
+    class Meta:
+        model = "forms.FormPriceLogic"

@@ -21,13 +21,22 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
-from openforms.utils.json_logic import JsonLogicTest
 
 from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
 from ..custom_field_types import handle_custom_types
-from ..models import Form, FormDefinition, FormStep, FormVersion
-from ..models.form import FormLogic
-from .validators import JsonLogicValidator
+from ..models import (
+    Form,
+    FormDefinition,
+    FormLogic,
+    FormPriceLogic,
+    FormStep,
+    FormVersion,
+)
+from .validators import (
+    JsonLogicTriggerComponentValidator,
+    JsonLogicTriggerValidator,
+    JsonLogicValidator,
+)
 
 
 class ButtonTextSerializer(serializers.Serializer):
@@ -558,22 +567,13 @@ class LogicComponentActionSerializer(serializers.Serializer):
         return data
 
 
-class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
-    actions = LogicComponentActionSerializer(
-        many=True,
-        label=_("Actions"),
-        help_text=_(
-            "Actions triggered when the trigger expression evaluates to 'truthy'."
-        ),
-    )
-
+class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = FormLogic
         fields = (
             "uuid",
+            "url",
             "form",
             "json_logic_trigger",
-            "actions",
         )
         extra_kwargs = {
             "uuid": {
@@ -590,76 +590,44 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
                     "or not. Note that this must be a valid JsonLogic expression, and "
                     "the first operand must be a reference to a component in the form."
                 ),
-                "validators": [JsonLogicValidator()],
+                "validators": [JsonLogicTriggerValidator()],
+            },
+        }
+        validators = [JsonLogicTriggerComponentValidator()]
+
+
+class FormLogicSerializer(FormLogicBaseSerializer):
+    actions = LogicComponentActionSerializer(
+        many=True,
+        label=_("Actions"),
+        help_text=_(
+            "Actions triggered when the trigger expression evaluates to 'truthy'."
+        ),
+    )
+
+    class Meta(FormLogicBaseSerializer.Meta):
+        model = FormLogic
+        fields = FormLogicBaseSerializer.Meta.fields + ("actions",)
+        extra_kwargs = {
+            **FormLogicBaseSerializer.Meta.extra_kwargs,
+            "url": {
+                "view_name": "api:form-logics-detail",
+                "lookup_field": "uuid",
             },
         }
 
-    def validate_json_logic_trigger(self, trigger_logic: dict) -> dict:
-        """
-        Validate that the first operand of the trigger is a reference to a component.
-        """
-        # at first instance, we don't support nested logic. Once we do, this will need
-        # to be adapted so that we only check primitives.
-        logic_test = JsonLogicTest.from_expression(trigger_logic)
 
-        first_operand = logic_test.values[0]
-        is_date_operand = (
-            first_operand.operator == "date"
-            and isinstance(first_operand.values[0], JsonLogicTest)
-            and first_operand.values[0].operator == "var"
-        )
-        if not isinstance(first_operand, JsonLogicTest) or (
-            first_operand.operator != "var" and not is_date_operand
-        ):
-            raise serializers.ValidationError(
-                _('The first operand must be a `{"var": "<componentKey>"}` expression.')
-            )
-
-        return trigger_logic
-
-    def validate(self, data: dict) -> dict:
-        # test that the component is present in the form definition
-        form = data.get("form") or self.instance.form
-        trigger_logic = (
-            data.get("json_logic_trigger") or self.instance.json_logic_trigger
-        )
-
-        if form and trigger_logic:
-            logic_test = JsonLogicTest.from_expression(trigger_logic)
-            first_operand = logic_test.values[0]
-            if (
-                first_operand.operator == "date"
-                and isinstance(first_operand.values[0], JsonLogicTest)
-                and first_operand.values[0].operator == "var"
-            ):
-                needle = first_operand.values[0].values[0]
-            else:
-                needle = first_operand.values[0]
-            for component in form.iter_components(recursive=True):
-                key = component.get("key")
-                if key and key == needle:
-                    break
-
-                if component.get("type") == "selectboxes":
-                    needle_bits = needle.split(".")
-                    key_bits = key.split(".")
-                    if key_bits == needle_bits[:-1]:
-                        break
-
-            # executes if the break was not hit
-            else:
-                raise serializers.ValidationError(
-                    {
-                        "json_logic_trigger": serializers.ValidationError(
-                            _(
-                                "The specified component is not present in the form definition"
-                            ),
-                            code="invalid",
-                        )
-                    }
-                )
-
-        return data
+class FormPriceLogicSerializer(FormLogicBaseSerializer):
+    class Meta(FormLogicBaseSerializer.Meta):
+        model = FormPriceLogic
+        fields = FormLogicBaseSerializer.Meta.fields + ("price",)
+        extra_kwargs = {
+            **FormLogicBaseSerializer.Meta.extra_kwargs,
+            "url": {
+                "view_name": "api:price-logics-detail",
+                "lookup_field": "uuid",
+            },
+        }
 
 
 class FormAdminMessageSerializer(serializers.Serializer):
