@@ -369,6 +369,11 @@
     "description": "Invalid form step error",
     "originalDefault": "The form step below is invalid."
   },
+  "L0g8AL": {
+    "defaultMessage": "Payment provider",
+    "description": "Payment provider fieldset title",
+    "originalDefault": "Payment provider"
+  },
   "LN58C1": {
     "defaultMessage": "Sensitive data within the submissions will be deleted",
     "description": "make_anonymous removal method option label",
@@ -499,6 +504,11 @@
     "description": "component property \"required\" label",
     "originalDefault": "required"
   },
+  "WQCs+M": {
+    "defaultMessage": "Product",
+    "description": "Product fieldset title",
+    "originalDefault": "Product"
+  },
   "WdVKZw": {
     "defaultMessage": "Logic",
     "description": "Form logic tab title",
@@ -598,6 +608,11 @@
     "defaultMessage": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Incomplete Submissions Removal Limit help text",
     "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "fLHOey": {
+    "defaultMessage": "Pricing logic",
+    "description": "Dynamic pricing fieldset title",
+    "originalDefault": "Pricing logic"
   },
   "ftzF/n": {
     "defaultMessage": "When",

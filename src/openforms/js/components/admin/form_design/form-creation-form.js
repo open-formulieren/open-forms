@@ -24,6 +24,7 @@ import {
     PREFILL_PLUGINS_ENDPOINT,
     PAYMENT_PLUGINS_ENDPOINT,
     LOGICS_ENDPOINT,
+    PRICE_RULES_ENDPOINT,
 } from './constants';
 import {
     loadPlugins,
@@ -41,6 +42,7 @@ import TextLiterals from './TextLiterals';
 import DataRemoval from './DataRemoval';
 import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
+import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {getFormComponents} from './utils';
 
 const initialFormState = {
@@ -92,6 +94,8 @@ const initialFormState = {
     submitting: false,
     logicRules: [],
     logicRulesToDelete: [],
+    priceRules: [],
+    priceRulesToDelete: [],
     // backend error handling
     validationErrors: [],
     tabsWithErrors: [],
@@ -419,6 +423,47 @@ function reducer(draft, action) {
             draft.logicRulesToDelete = [];
             break;
         }
+
+        /**
+         * Price rules actions
+         */
+        case 'ADD_PRICE_RULE': {
+            const {form: {url}} = draft;
+            draft.priceRules.push({
+                ...EMPTY_RULE,
+                form: url
+            });
+            break;
+        }
+        case 'CHANGED_PRICE_RULE': {
+            const {index, name, value} = action.payload;
+            draft.priceRules[index][name] = value;
+            break;
+        }
+        case 'DELETED_PRICE_RULE': {
+            const {index} = action.payload;
+            const ruleUuid = draft.priceRules[index].uuid;
+            draft.priceRulesToDelete.push(ruleUuid);
+
+            // delete object from state
+            const updatedRules = [...draft.priceRules];
+            updatedRules.splice(index, 1);
+            draft.priceRules = updatedRules;
+            break;
+        }
+        case 'PRICE_RULES_SAVED': {
+            // set the generated UUID from the backend for created rules
+            const createdRules = action.payload;
+            for (const rule of createdRules) {
+                const {uuid, index} = rule;
+                draft.priceRules[index].uuid = uuid;
+            }
+
+            // clear the state of rules to delete, as they have been deleted
+            draft.priceRulesToDelete = [];
+            break;
+        }
+
         /**
          * Validation error handling
          */
@@ -565,6 +610,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     // a new form.
     if (formUuid) {
         pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
+        pluginsToLoad.push({endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`, stateVar: 'priceRules'});
     }
 
     const {loading} = useAsync(async () => {
@@ -662,6 +708,14 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         const { name, value } = event.target;
         dispatch({
             type: 'CHANGED_RULE',
+            payload: {name, value, index},
+        });
+    };
+
+    const onPriceRuleChange = (index, event) => {
+        const { name, value } = event.target;
+        dispatch({
+            type: 'CHANGED_PRICE_RULE',
             payload: {name, value, index},
         });
     };
@@ -938,6 +992,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         selectedBackend={state.form.paymentBackend}
                         backendOptions={state.form.paymentBackendOptions}
                         onChange={onFieldChange}
+                    />
+                    <PriceLogic
+                        rules={state.priceRules}
+                        availableComponents={availableComponents}
+                        onChange={onPriceRuleChange}
+                        onDelete={(index) => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
+                        onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
                     />
                 </TabPanel>
 

@@ -487,6 +487,12 @@
       "value": "The form step below is invalid."
     }
   ],
+  "L0g8AL": [
+    {
+      "type": 0,
+      "value": "Payment provider"
+    }
+  ],
   "LN58C1": [
     {
       "type": 0,
@@ -667,6 +673,12 @@
       "value": "required"
     }
   ],
+  "WQCs+M": [
+    {
+      "type": 0,
+      "value": "Product"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -785,6 +797,12 @@
     {
       "type": 0,
       "value": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "fLHOey": [
+    {
+      "type": 0,
+      "value": "Pricing logic"
     }
   ],
   "ftzF/n": [

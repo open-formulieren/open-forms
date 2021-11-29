@@ -410,7 +410,7 @@
   "HqVHBq": [
     {
       "type": 0,
-      "value": "Gebruikt het sjabloon zoals hier is opgegeven."
+      "value": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven."
     }
   ],
   "I0bgsg": [
@@ -489,6 +489,12 @@
     {
       "type": 0,
       "value": "De onderstaande formulierdefinitie bevat fouten."
+    }
+  ],
+  "L0g8AL": [
+    {
+      "type": 0,
+      "value": "Payment provider"
     }
   ],
   "LN58C1": [
@@ -671,6 +677,12 @@
       "value": "verplicht"
     }
   ],
+  "WQCs+M": [
+    {
+      "type": 0,
+      "value": "Product"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -789,6 +801,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "fLHOey": [
+    {
+      "type": 0,
+      "value": "Pricing logic"
     }
   ],
   "ftzF/n": [
@@ -1008,7 +1026,7 @@
   "tjRtQk": [
     {
       "type": 0,
-      "value": "Bevestigingsmailsjabloon"
+      "value": "Bevestingsmailsjabloon"
     }
   ],
   "uBO/Al": [
