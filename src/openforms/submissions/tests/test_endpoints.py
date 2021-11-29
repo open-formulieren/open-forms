@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
@@ -153,3 +154,58 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 302)
+
+    def test_redirects_to_resume_page_if_form_requires_login(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, optional=False, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(
+            form=form, form_url="http://maykinmedia.nl/myform"
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_url = furl("http://maykinmedia.nl/myform/resume")
+        expected_url.args[
+            "next"
+        ] = f"http://maykinmedia.nl/myform/stap/{form_step.form_definition.slug}?submission_uuid={submission.uuid}"
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(response, expected_url.url, fetch_redirect_response=False)
+
+    def test_redirects_to_start_page_if_form_does_not_require_login(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, optional=False, form_definition__login_required=False
+        )
+        submission = SubmissionFactory.create(
+            form=form, form_url="http://maykinmedia.nl/myform"
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_url = furl("http://maykinmedia.nl/myform/stap/")
+        expected_url /= form_step.form_definition.slug
+        expected_url.args["submission_uuid"] = submission.uuid
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(response, expected_url.url, fetch_redirect_response=False)

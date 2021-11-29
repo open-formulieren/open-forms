@@ -41,7 +41,7 @@ class ResumeSubmissionView(RedirectView):
 
         if submission.form.login_required:
             redirect_url = furl(submission.form_url)
-            redirect_url.args.popvalue("_start")
+            redirect_url.remove(query="_start")
             redirect_url /= "resume"
             redirect_url.add({"next": f.url})
             return redirect_url.url
