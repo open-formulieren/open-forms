@@ -389,3 +389,75 @@ class FormLogicAPITests(APITestCase):
         response = self.client.post(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+    def test_logic_with_selectboxes_and_components_with_dots_in_keyname(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "selectboxes",
+                        "key": "foo.bar",
+                        "values": [
+                            {"label": "Option 1", "value": "option1"},
+                            {"label": "Option 2", "value": "option2"},
+                        ],
+                    },
+                    {"key": "fuu.ber", "type": "textfield"},
+                    {"key": "normalComponent", "type": "textfield"},
+                ]
+            },
+        )
+
+        form_logic_1 = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "foo.bar.option1"},
+                    True,
+                ]
+            },
+            "actions": [
+                {
+                    "component": "normalComponent",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        }
+
+        form_logic_2 = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "fuu.ber"},
+                    "test-value",
+                ]
+            },
+            "actions": [
+                {
+                    "component": "normalComponent",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+
+        response_1 = self.client.post(url, data=form_logic_1)
+        response_2 = self.client.post(url, data=form_logic_2)
+
+        self.assertEqual(status.HTTP_201_CREATED, response_1.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response_2.status_code)

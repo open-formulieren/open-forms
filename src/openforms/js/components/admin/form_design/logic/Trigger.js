@@ -69,7 +69,7 @@ const TRIGGER_FIELD_ORDER = [
 ];
 
 
-const parseJsonLogic = (logic) => {
+const parseJsonLogic = (logic, allComponents) => {
     // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
     // with our own organization.
     if (!logic || !Object.keys(logic).length) return {};
@@ -90,9 +90,16 @@ const parseJsonLogic = (logic) => {
     }
 
     // check if we're using a literal value, or a component reference
-    const compareValue = values[1];
+    let compareValue = values[1];
     let operandType = '';
     let operand = '';
+
+    // Selectboxes case: the component name contains the reference to which value, e.g. "selectComponentField.option1"
+    if (!allComponents[component]) {
+        let componentBits = component.split('.');
+        component = componentBits.slice(0, componentBits.length-1).join('.');
+        compareValue = componentBits.slice(componentBits.length-1).join('.');
+    }
 
     if (jsonLogic.is_logic(compareValue)) {
         const op = jsonLogic.get_operator(compareValue);
@@ -154,11 +161,10 @@ const reducer = (draft, action) => {
 };
 
 const Trigger = ({ name, logic, onChange }) => {
-    // break down the json logic back into variables that can be managed by components state
-    const parsedLogic = parseJsonLogic(logic);
-    // hooks
-    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
     const allComponents = useContext(ComponentsContext);
+    // break down the json logic back into variables that can be managed by components state
+    const parsedLogic = parseJsonLogic(logic, allComponents);
+    const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
 
     // event handlers
     const onTriggerChange = (event) => {
@@ -261,8 +267,20 @@ const Trigger = ({ name, logic, onChange }) => {
         }
     }
 
-    const firstOperand = componentType === 'date' ?
-        {date: {var: triggerComponent}} : {var: triggerComponent};
+    let firstOperand;
+    switch (componentType) {
+        case 'date': {
+            firstOperand = {date: {var: triggerComponent}};
+            break;
+        }
+        case 'selectboxes': {
+            firstOperand = {var: `${triggerComponent}.${compareValue}`}
+            compareValue = true;
+            break;
+        }
+        default:
+            firstOperand = {var: triggerComponent};
+    }
 
     const jsonLogicFromState = {
         [operator]: [

@@ -636,8 +636,16 @@ class FormLogicSerializer(serializers.HyperlinkedModelSerializer):
             else:
                 needle = first_operand.values[0]
             for component in form.iter_components(recursive=True):
-                if (key := component.get("key")) and key == needle:
+                key = component.get("key")
+                if key and key == needle:
                     break
+
+                if component.get("type") == "selectboxes":
+                    needle_bits = needle.split(".")
+                    key_bits = key.split(".")
+                    if key_bits == needle_bits[:-1]:
+                        break
+
             # executes if the break was not hit
             else:
                 raise serializers.ValidationError(
