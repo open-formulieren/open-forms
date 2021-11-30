@@ -154,6 +154,12 @@ class Submission(models.Model):
         blank=True,
         validators=(validate_bsn,),
     )
+    acting_bsn = models.CharField(
+        _("BSN van gemachtigde"),
+        max_length=9,
+        blank=True,
+        validators=(validate_bsn,),
+    )
     kvk = models.CharField(
         _("KvK number"),
         max_length=9,

@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
+from openforms.authentication.constants import AuthAttribute
 from openforms.logging import logevent
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -102,6 +103,18 @@ class SubmissionViewSet(
         submission_start.send(
             sender=self.__class__, instance=serializer.instance, request=self.request
         )
+
+        bsn = self.request.session.get(AuthAttribute.bsn)
+        if bsn:
+            instance = serializer.instance
+            instance.bsn = bsn
+            instance.save(update_fields=["bsn"])
+
+        acting_bsn = self.request.session.get(AuthAttribute.acting_bsn)
+        if acting_bsn:
+            instance = serializer.instance
+            instance.acting_bsn = acting_bsn
+            instance.save(update_fields=["acting_bsn"])
 
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission

@@ -39,6 +39,26 @@ class OpenIDConnectPublicConfig(SingletonModel):
         default=AuthAttribute.bsn,
     )
 
+    # Specific fields for DigiD machtigen
+    legal_bsn_claim_name = models.CharField(
+        _("Legal BSN claim name"),
+        max_length=100,
+        help_text=_(
+            "The name of the claim in which the BSN of the user is stored in "
+            "case of `machtigen`"
+        ),
+        blank=True,
+    )
+    acting_bsn_claim_name = models.CharField(
+        _("Acting BSN claim name"),
+        max_length=100,
+        help_text=_(
+            "The name of the claim in which the BSN of the person who is acting "
+            "on behalf of the `machtiger`"
+        ),
+        blank=True,
+    )
+
     oidc_rp_client_id = models.CharField(
         _("OpenID Connect client ID"),
         max_length=1000,
