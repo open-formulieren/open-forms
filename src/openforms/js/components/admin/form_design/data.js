@@ -3,7 +3,9 @@ import {get, post, put, apiDelete, ValidationErrors} from '../../../utils/fetch'
 import {
     FORM_DEFINITIONS_ENDPOINT,
     LOGICS_ENDPOINT,
+    PRICE_RULES_ENDPOINT,
 } from './constants';
+import {saveRules} from './logic-data';
 
 class PluginLoadingError extends Error {
     constructor(message, plugin, response) {
@@ -142,58 +144,29 @@ const updateOrCreateFormSteps = async (csrftoken, formUrl, formSteps) => {
 
 
 const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
-    // updating and creating rules
-    const updateOrCreatePromises = Promise.all(
-        logicRules.map(rule => {
-            const shouldCreate = !rule.uuid;
-            const createOrUpdate = shouldCreate ? post : put;
-            const endPoint = shouldCreate ? LOGICS_ENDPOINT : `${LOGICS_ENDPOINT}/${rule.uuid}`;
-
-            return createOrUpdate(endPoint, csrftoken, rule.form ? rule : {...rule, form: formUrl});
-        })
+    const createdRules = await saveRules(
+        LOGICS_ENDPOINT,
+        formUrl,
+        csrftoken,
+        logicRules,
+        logicRulesToDelete,
     );
-    // deleting rules
-    const deletePromises = Promise.all(
-        logicRulesToDelete
-        .filter( uuid => !!uuid )
-        .map( uuid => {
-            return apiDelete(`${LOGICS_ENDPOINT}/${uuid}`, csrftoken);
-        })
-    );
-
-
-    let updateOrCreateResponses, deleteResponses;
-    try {
-        [updateOrCreateResponses, deleteResponses] = await Promise.all([updateOrCreatePromises, deletePromises]);
-    } catch(e) {
-        console.error(e);
-        return;
-    }
-
-    // process the created rules
-    const createdRules = [];
-    updateOrCreateResponses.forEach( (response, index) => {
-        if (!response.ok) {
-            // TODO: include more information -> which rule was it etc.
-            throw new Error('An error occurred while saving the form logic.');
-        }
-        const rule = logicRules[index];
-        if (!rule.uuid) {
-            const uuid = response.data.uuid;
-            createdRules.push({uuid, index});
-        }
-    });
-
-    // process the deleted rules
-    deleteResponses.forEach(response => {
-        if (!response.ok) {
-            throw new Error('An error occurred while deleting logic rules.');
-        }
-    });
-
     return createdRules;
 };
 
+
+const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete) => {
+    const createdRules = await saveRules(
+        PRICE_RULES_ENDPOINT,
+        formUrl,
+        csrftoken,
+        priceRules,
+        priceRulesToDelete,
+    );
+    return createdRules;
+};
+
+
 export { loadPlugins, PluginLoadingError };
 export { updateOrCreateFormSteps };
-export { saveLogicRules };
+export { saveLogicRules, savePriceRules };
