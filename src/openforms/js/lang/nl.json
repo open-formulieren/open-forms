@@ -189,6 +189,11 @@
     "description": "\"+\" operator description",
     "originalDefault": "plus"
   },
+  "BrsG4w": {
+    "defaultMessage": "Then the price is",
+    "description": "Price logic prefix",
+    "originalDefault": "Then the price is"
+  },
   "C4Zn+R": {
     "defaultMessage": "Interne naam van de formulierdefinitie voor deze stap",
     "description": "Form step internal name field help text",
@@ -434,6 +439,11 @@
     "description": "Auth plugin provided attributes suffix",
     "originalDefault": "(provides {attrs})"
   },
+  "QAbqb6": {
+    "defaultMessage": "Add rule",
+    "description": "Add price logic rule button",
+    "originalDefault": "Add rule"
+  },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
     "description": "Select form definition tile",
@@ -608,6 +618,11 @@
     "defaultMessage": "Toon voortgang",
     "description": "Progress indicator field label",
     "originalDefault": "Show progress indicator"
+  },
+  "eJEu3L": {
+    "defaultMessage": "Are you sure you want to delete this rule?",
+    "description": "Price rule deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this rule?"
   },
   "f590Rb": {
     "defaultMessage": "'Start' tekst",

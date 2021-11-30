@@ -2,6 +2,10 @@
   display: flex;
   border-bottom: dashed 1px #eee;
 
+  &--flat {
+    border-bottom: none;
+  }
+
   &__actions {
     padding: 0.5em;
     padding-top: calc(1em + 3px);

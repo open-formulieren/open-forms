@@ -1,17 +1,21 @@
 .logic-trigger {
-    display: flex;
-    padding: 1em;
-    border-bottom: solid 1px #eee;
+  display: flex;
+  padding: 1em;
+  border-bottom: solid 1px #eee;
 
-    &__editor {
-        flex-grow: 1;
-    }
+  &__editor {
+    flex-grow: 1;
+  }
 
-    &__data-preview {
-        min-width: 400px;
-        max-width: 800px;
-        width: 100%;
-        padding-top: 7px;
-        flex-grow: 0;
-    }
+  &__children {
+    @include margin('auto', $properties: margin-right);
+  }
+
+  &__data-preview {
+    min-width: 400px;
+    max-width: 800px;
+    width: 100%;
+    padding-top: 7px;
+    flex-grow: 0;
+  }
 }
