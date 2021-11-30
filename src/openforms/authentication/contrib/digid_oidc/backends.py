@@ -48,9 +48,21 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
             msg = "Claims verification failed"
             raise SuspiciousOperation(msg)
 
-        self.request.session[AuthAttribute.bsn] = payload[
-            self.get_settings("bsn_claim_name")
-        ]
+        # TODO proper check if DigiD machtigen
+        if (
+            self.get_settings("legal_bsn_claim_name") in payload
+            and self.get_settings("acting_bsn_claim_name") in payload
+        ):
+            self.request.session[AuthAttribute.bsn] = payload[
+                self.get_settings("legal_bsn_claim_name")
+            ]
+            self.request.session[AuthAttribute.acting_bsn] = payload[
+                self.get_settings("acting_bsn_claim_name")
+            ]
+        else:
+            self.request.session[AuthAttribute.bsn] = payload[
+                self.get_settings("bsn_claim_name")
+            ]
         user = AnonymousUser()
         user.is_active = True
         return user

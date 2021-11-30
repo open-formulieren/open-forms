@@ -25,6 +25,8 @@ class OpenIDConnectConfigAdmin(DynamicArrayMixin, SingletonModelAdmin):
             {
                 "fields": (
                     "bsn_claim_name",
+                    "legal_bsn_claim_name",
+                    "acting_bsn_claim_name",
                     "oidc_rp_client_id",
                     "oidc_rp_client_secret",
                     "oidc_rp_scopes_list",

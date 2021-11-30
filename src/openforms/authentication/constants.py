@@ -9,5 +9,6 @@ class AuthAttribute(DjangoChoices):
     """
 
     bsn = ChoiceItem("bsn", _("BSN"))
+    acting_bsn = ChoiceItem("acting_bsn", _("BSN van gemachtigde"))
     kvk = ChoiceItem("kvk", _("KvK number"))
     pseudo = ChoiceItem("pseudo", _("Pseudo ID"))
