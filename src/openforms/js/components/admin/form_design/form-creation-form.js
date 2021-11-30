@@ -30,6 +30,7 @@ import {
     loadPlugins,
     updateOrCreateFormSteps,
     saveLogicRules,
+    savePriceRules,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -831,6 +832,20 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             return;
         }
 
+        // Update/create price rules
+        try {
+            const {priceRules, priceRulesToDelete} = state;
+            const createdPriceRules = await savePriceRules(formUrl, csrftoken, priceRules, priceRulesToDelete);
+            dispatch({
+                type: 'PRICE_RULES_SAVED',
+                payload: createdPriceRules,
+            });
+        } catch (e) {
+            console.error(e);
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            window.scrollTo(0, 0);
+            return;
+        }
 
         // Save this new version of the form in the "form version control"
         try {
