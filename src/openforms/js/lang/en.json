@@ -189,6 +189,11 @@
     "description": "\"+\" operator description",
     "originalDefault": "plus"
   },
+  "BrsG4w": {
+    "defaultMessage": "Then the price is",
+    "description": "Price logic prefix",
+    "originalDefault": "Then the price is"
+  },
   "C4Zn+R": {
     "defaultMessage": "Internal name of the form definition used in this form step",
     "description": "Form step internal name field help text",
@@ -244,6 +249,11 @@
     "description": "\"array\" operand type",
     "originalDefault": "the array"
   },
+  "FQswyM": {
+    "defaultMessage": "Mode",
+    "description": "Pricing mode label",
+    "originalDefault": "Mode"
+  },
   "FceidS": {
     "defaultMessage": "is not equal to",
     "description": "\"!=\" operator description",
@@ -283,6 +293,11 @@
     "defaultMessage": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration.",
     "description": "literals.confirmText help text",
     "originalDefault": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+  },
+  "Gi+cvN": {
+    "defaultMessage": "Use linked product price",
+    "description": "static pricing mode label",
+    "originalDefault": "Use linked product price"
   },
   "H6VxhG": {
     "defaultMessage": "Maintenance mode",
@@ -369,6 +384,11 @@
     "description": "Invalid form step error",
     "originalDefault": "The form step below is invalid."
   },
+  "L0g8AL": {
+    "defaultMessage": "Payment provider",
+    "description": "Payment provider fieldset title",
+    "originalDefault": "Payment provider"
+  },
   "LN58C1": {
     "defaultMessage": "Sensitive data within the submissions will be deleted",
     "description": "make_anonymous removal method option label",
@@ -418,6 +438,11 @@
     "defaultMessage": "(provides {attrs})",
     "description": "Auth plugin provided attributes suffix",
     "originalDefault": "(provides {attrs})"
+  },
+  "QAbqb6": {
+    "defaultMessage": "Add rule",
+    "description": "Add price logic rule button",
+    "originalDefault": "Add rule"
   },
   "QDBI2H": {
     "defaultMessage": "Select existing form definition",
@@ -498,6 +523,11 @@
     "defaultMessage": "required",
     "description": "component property \"required\" label",
     "originalDefault": "required"
+  },
+  "WQCs+M": {
+    "defaultMessage": "Product",
+    "description": "Product fieldset title",
+    "originalDefault": "Product"
   },
   "WdVKZw": {
     "defaultMessage": "Logic",
@@ -589,6 +619,11 @@
     "description": "Progress indicator field label",
     "originalDefault": "Show progress indicator"
   },
+  "eJEu3L": {
+    "defaultMessage": "Are you sure you want to delete this rule?",
+    "description": "Price rule deletion confirm message",
+    "originalDefault": "Are you sure you want to delete this rule?"
+  },
   "f590Rb": {
     "defaultMessage": "Begin text",
     "description": "literals.beginText form label",
@@ -598,6 +633,11 @@
     "defaultMessage": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Incomplete Submissions Removal Limit help text",
     "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "fLHOey": {
+    "defaultMessage": "Pricing logic",
+    "description": "Dynamic pricing fieldset title",
+    "originalDefault": "Pricing logic"
   },
   "ftzF/n": {
     "defaultMessage": "When",
@@ -853,5 +893,10 @@
     "defaultMessage": "There are validation errors",
     "description": "Step validation errors icon title",
     "originalDefault": "There are validation errors"
+  },
+  "zeXZzX": {
+    "defaultMessage": "Use logic rules to determine the price",
+    "description": "dynamic pricing mode label",
+    "originalDefault": "Use logic rules to determine the price"
   }
 }

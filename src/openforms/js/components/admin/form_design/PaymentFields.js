@@ -20,7 +20,10 @@ const PaymentFields = ({
     const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
     return (
-        <Fieldset extraClassName="admin-fieldset">
+        <Fieldset
+            extraClassName="admin-fieldset"
+            title={<FormattedMessage description="Payment provider fieldset title" defaultMessage="Payment provider" />}
+        >
             <FormRow>
                 <Field
                     name="form.paymentBackend"

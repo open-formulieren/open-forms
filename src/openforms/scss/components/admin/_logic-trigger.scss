@@ -1,17 +1,32 @@
+@import '~microscope-sass/lib/responsive';
+
+$logic-line-breakpoint: 1800px !default;
+
 .logic-trigger {
-    display: flex;
-    padding: 1em;
-    border-bottom: solid 1px #eee;
+  display: flex;
+  padding: 1em;
+  border-bottom: solid 1px #eee;
 
-    &__editor {
-        flex-grow: 1;
-    }
+  @include breakpoint($max: $logic-line-breakpoint) {
+    flex-wrap: wrap;
+  }
 
-    &__data-preview {
-        min-width: 400px;
-        max-width: 800px;
-        width: 100%;
-        padding-top: 7px;
-        flex-grow: 0;
+  &__editor {
+    flex-grow: 1;
+  }
+
+  &__children {
+    @include margin('auto', $properties: margin-right);
+    flex-grow: 1;
+  }
+
+  &__data-preview {
+    min-width: 200px;
+    @include breakpoint($min: $logic-line-breakpoint) {
+      min-width: 400px;;
     }
+    max-width: 800px;
+    padding-top: 7px;
+    flex-grow: 0;
+  }
 }

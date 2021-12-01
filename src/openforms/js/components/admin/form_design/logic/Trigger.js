@@ -160,7 +160,7 @@ const reducer = (draft, action) => {
     }
 };
 
-const Trigger = ({ name, logic, onChange }) => {
+const Trigger = ({ name, logic, onChange, children }) => {
     const allComponents = useContext(ComponentsContext);
     // break down the json logic back into variables that can be managed by components state
     const parsedLogic = parseJsonLogic(logic, allComponents);
@@ -348,6 +348,8 @@ const Trigger = ({ name, logic, onChange }) => {
                 </div>
             </div>
 
+            {children ? <div className="logic-trigger__children">{children}</div> : null}
+
             <div className="logic-trigger__data-preview">
                 <DataPreview data={jsonLogicFromState} />
             </div>
@@ -360,6 +362,7 @@ Trigger.propTypes = {
     name: PropTypes.string.isRequired,
     logic: PropTypes.object,
     onChange: PropTypes.func.isRequired,
+    children: PropTypes.node,
 };
 
 

@@ -275,6 +275,12 @@
       "value": "plus"
     }
   ],
+  "BrsG4w": [
+    {
+      "type": 0,
+      "value": "Then the price is"
+    }
+  ],
   "C4Zn+R": [
     {
       "type": 0,
@@ -341,6 +347,12 @@
       "value": "de lijst"
     }
   ],
+  "FQswyM": [
+    {
+      "type": 0,
+      "value": "Mode"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -389,6 +401,12 @@
       "value": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "Gi+cvN": [
+    {
+      "type": 0,
+      "value": "Use linked product price"
+    }
+  ],
   "H6VxhG": [
     {
       "type": 0,
@@ -410,7 +428,7 @@
   "HqVHBq": [
     {
       "type": 0,
-      "value": "Gebruikt het sjabloon zoals hier is opgegeven."
+      "value": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven."
     }
   ],
   "I0bgsg": [
@@ -491,6 +509,12 @@
       "value": "De onderstaande formulierdefinitie bevat fouten."
     }
   ],
+  "L0g8AL": [
+    {
+      "type": 0,
+      "value": "Payment provider"
+    }
+  ],
   "LN58C1": [
     {
       "type": 0,
@@ -557,6 +581,12 @@
     {
       "type": 0,
       "value": " aan)"
+    }
+  ],
+  "QAbqb6": [
+    {
+      "type": 0,
+      "value": "Add rule"
     }
   ],
   "QDBI2H": [
@@ -671,6 +701,12 @@
       "value": "verplicht"
     }
   ],
+  "WQCs+M": [
+    {
+      "type": 0,
+      "value": "Product"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -779,6 +815,12 @@
       "value": "Toon voortgang"
     }
   ],
+  "eJEu3L": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this rule?"
+    }
+  ],
   "f590Rb": [
     {
       "type": 0,
@@ -789,6 +831,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "fLHOey": [
+    {
+      "type": 0,
+      "value": "Pricing logic"
     }
   ],
   "ftzF/n": [
@@ -1008,7 +1056,7 @@
   "tjRtQk": [
     {
       "type": 0,
-      "value": "Bevestigingsmailsjabloon"
+      "value": "Bevestingsmailsjabloon"
     }
   ],
   "uBO/Al": [
@@ -1099,6 +1147,12 @@
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "zeXZzX": [
+    {
+      "type": 0,
+      "value": "Use logic rules to determine the price"
     }
   ]
 }

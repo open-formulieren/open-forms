@@ -1,3 +1,7 @@
+@import '~microscope-sass/lib/responsive';
+
+$logic-line-breakpoint: 1800px !default;
+
 .logic-action {
   display: flex;
   padding: 1em;
@@ -13,9 +17,11 @@
   }
 
   &__data-preview {
-    min-width: 400px;
+    min-width: 200px;
+    @include breakpoint($min: $logic-line-breakpoint) {
+      min-width: 400px;;
+    }
     max-width: 800px;
-    width: 100%;
     padding-top: 7px;
     flex-grow: 0;
   }
