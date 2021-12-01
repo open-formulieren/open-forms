@@ -9,7 +9,6 @@ The backend should perform total-form validation as part of this action.
 from decimal import Decimal
 from unittest.mock import patch
 
-from django.test import tag
 from django.utils import timezone
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
@@ -206,7 +205,6 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
 
 
-@tag("submissionprice")
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
     """
