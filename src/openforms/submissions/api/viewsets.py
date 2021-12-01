@@ -137,6 +137,7 @@ class SubmissionViewSet(
                 validation_serializer.data, status=status.HTTP_400_BAD_REQUEST
             )
 
+        submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
         submission.save()
 

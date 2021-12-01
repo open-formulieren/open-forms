@@ -30,6 +30,7 @@ from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
+from .pricing import get_submission_price
 from .query import SubmissionManager
 
 logger = logging.getLogger(__name__)
@@ -555,6 +556,14 @@ class Submission(models.Model):
                     recipient_emails.update(value)
 
         return list(recipient_emails)
+
+    def calculate_price(self, save=True) -> None:
+        """
+        Calculate and save the price of this particular submission.
+        """
+        self.price = get_submission_price(self)
+        if save:
+            self.save(update_fields=["price"])
 
     @property
     def payment_required(self) -> bool:
