@@ -68,7 +68,17 @@ export const PriceLogic = ({ rules=[], availableComponents={}, onChange, onDelet
             onAdd();
         // toggle from dynamic to static -> delete all the rules
         } else if (value === 'static' && hasDynamicPricing) {
-            rules.forEach((rule, index) => onDelete(index));
+            // XXX: iterate in reverse so we delete all rules by removing the last one
+            // every time.
+            // State updates in event handlers are batched by React, so removing index 0, 1,...
+            // in success causes issues since the local `rules` does no langer match the
+            // parent component state - draft.priceRules.length !== rules.length.
+            // By reversing, we essentially pop the last element every time which
+            // works around this.
+            const maxIndex = rules.length - 1;
+            for (let offset=0; offset < rules.length; offset++) {
+                onDelete(maxIndex - offset);
+            }
         }
     };
 

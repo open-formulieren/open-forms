@@ -444,7 +444,6 @@ function reducer(draft, action) {
         case 'DELETED_PRICE_RULE': {
             const {index} = action.payload;
             const ruleUuid = draft.priceRules[index].uuid;
-            draft.priceRulesToDelete.push(ruleUuid);
 
             // delete object from state
             const updatedRules = [...draft.priceRules];
