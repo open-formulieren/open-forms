@@ -94,7 +94,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
             "payment": {
                 "isRequired": False,
                 "hasPaid": False,
-                "amount": "15.00",
+                "amount": None,
             },
         }
 

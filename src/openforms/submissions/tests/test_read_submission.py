@@ -94,7 +94,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "payment": {
                     "isRequired": False,
                     "hasPaid": False,
-                    "amount": "15.00",
+                    "amount": None,
                 },
             },
         )
@@ -145,7 +145,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             response.json()["payment"],
             {
                 "isRequired": False,
-                "amount": "",
+                "amount": None,
                 "hasPaid": False,
             },
         )

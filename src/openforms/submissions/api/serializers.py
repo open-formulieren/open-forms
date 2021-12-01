@@ -89,12 +89,13 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
     )
     amount = serializers.DecimalField(
         label=_("payment amount"),
-        # from SubmissionPayment model
-        max_digits=8,
+        # from Submission model
+        max_digits=10,
         decimal_places=2,
-        source="form.product.price",
+        source="price",
         help_text=_("Amount (to be) paid"),
         read_only=True,
+        allow_null=True,
     )
 
     class Meta:
