@@ -131,18 +131,21 @@ class Submission(models.Model):
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
+
+    # meta information
+    form_url = models.URLField(
+        _("form URL"),
+        max_length=255,
+        blank=False,
+        default="",
+        help_text=_("URL where the user initialized the submission."),
+        validators=[AllowedRedirectValidator()],
+    )
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
-    last_register_date = models.DateTimeField(
-        _("last register attempt date"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The last time the submission registration was attempted with the backend.  "
-            "Note that this date will be updated even if the registration is not successful."
-        ),
-    )
+
+    # authentication state
     bsn = models.CharField(
         _("BSN"),
         max_length=9,
@@ -172,7 +175,31 @@ class Submission(models.Model):
         validators=[AllowedRedirectValidator()],
     )
 
+    # payment state
+    price = models.DecimalField(
+        _("price"),
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        editable=False,
+        help_text=_(
+            "Cost of this submission. Either derived from the related product, "
+            "or evaluated from price logic rules. The price is calculated and saved "
+            "on submission completion."
+        ),
+    )
+
     # interaction with registration backend
+    last_register_date = models.DateTimeField(
+        _("last register attempt date"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "The last time the submission registration was attempted with the backend.  "
+            "Note that this date will be updated even if the registration is not successful."
+        ),
+    )
     registration_result = JSONField(
         _("registration backend result"),
         blank=True,
@@ -242,6 +269,7 @@ class Submission(models.Model):
         ),
     )
 
+    # relation to earlier submission which is altered after processing
     previous_submission = models.ForeignKey(
         "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
     )
