@@ -86,6 +86,6 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "uuid": str(self.product.uuid),
                 "url": f"http://testserver{self.detail_url}",
                 "name": self.product.name,
-                "price": str(self.product.price),
+                "price": "15.00",
             },
         )

@@ -46,6 +46,7 @@ class MSGraphRegistrationBackendTests(TestCase):
         data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
         submission = SubmissionFactory.create(
+            completed=True,
             form__name="MyName",
             form__internal_name="MyInternalName: with (extra)",
             form__registration_backend="microsoft-graph",

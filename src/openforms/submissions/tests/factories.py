@@ -34,6 +34,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             created_on=factory.LazyAttribute(
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
+            price=factory.PostGenerationMethodCall("calculate_price"),
         )
         registration_failed = factory.Trait(
             completed=True,

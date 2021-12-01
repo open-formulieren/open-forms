@@ -66,7 +66,7 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         context["payment_url"] = build_absolute_uri(
             reverse("payments:link", kwargs={"uuid": submission.uuid})
         )
-        context["payment_price"] = submission.form.product.price
+        context["payment_price"] = submission.price
 
     try:
         context["_appointment_id"] = submission.appointment_info.appointment_id

@@ -119,7 +119,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             submission,
             plugin_id,
             submission.form.payment_backend_options,
-            submission.form.product.price,
+            submission.price,
         )
 
         info = plugin.start_payment(request, payment)
@@ -352,7 +352,7 @@ class PaymentLinkView(DetailView):
         context = super().get_context_data(**kwargs)
 
         submission = self.get_object()
-        context["price"] = submission.form.product.price
+        context["price"] = submission.price
 
         if submission.payment_required and not submission.payment_user_has_paid:
             plugin_id = submission.form.payment_backend
@@ -361,7 +361,7 @@ class PaymentLinkView(DetailView):
                 submission,
                 plugin_id,
                 submission.form.payment_backend_options,
-                submission.form.product.price,
+                submission.price,
             )
 
             info = plugin.start_payment(self.request, payment)

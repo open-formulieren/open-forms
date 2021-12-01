@@ -51,10 +51,10 @@
                 <td>{% display_value value %}</td>
             </tr>
         {% endfor %}
-        {% if submission.payment_required and submission.form.product.price %}
+        {% if submission.payment_required and submission.price %}
             <tr>
                 <td class="table-cell-key">{% trans "Total payment required" %}</td>
-                <td>&euro; {{ submission.form.product.price }}</td>
+                <td>&euro; {{ submission.price }}</td>
             </tr>
         {% endif %}
     </table>
