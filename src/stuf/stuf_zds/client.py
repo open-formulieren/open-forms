@@ -8,6 +8,7 @@ from typing import Tuple
 from django.template import loader
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 import requests
 from defusedxml.lxml import fromstring as df_fromstring
@@ -21,6 +22,7 @@ from openforms.logging.logevent import (
     stuf_zds_request,
     stuf_zds_success_response,
 )
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 from stuf.constants import (
@@ -176,13 +178,17 @@ class StufZDSClient:
             )
             if response.status_code < 200 or response.status_code >= 400:
                 logger.debug("SOAP-response:\n%s", response.content)
+                error_text = parse_soap_error_text(response)
                 logger.error(
                     "bad response for referentienummer/submission '%s'\n%s",
                     self.options["referentienummer"],
-                    parse_soap_error_text(response),
+                    error_text,
                 )
                 stuf_zds_failure_response(self.service, url)
-                raise RegistrationFailed("error while making backend request")
+                raise RegistrationFailed(
+                    f"error while making backend request: HTTP {response.status_code}: {error_text}",
+                    response=response,
+                )
             else:
                 logger.debug("SOAP-response:\n%s", response.content)
         except RequestException as e:
@@ -381,6 +387,46 @@ class StufZDSClient:
         )
 
         return None
+
+    def check_config(self):
+        template = "stuf_zds/soap/geefZaakDetails_check.xml"
+        context = self._get_request_base_context()
+
+        try:
+            self._make_request(
+                template,
+                context,
+                endpoint_type=EndpointType.beantwoord_vraag,
+                soap_action="geefZaakdetails_ZakLv01",
+            )
+        except RegistrationFailed as e:
+            if not e.response:
+                raise InvalidPluginConfiguration(
+                    _("Invalid response: {exception}").format(exception=e)
+                )
+            else:
+                try:
+                    xml = df_fromstring(e.response.content)
+                except etree.XMLSyntaxError as e:
+                    raise InvalidPluginConfiguration(
+                        _("XMLSyntaxError in error response: {exception}").format(
+                            exception=e
+                        )
+                    )
+                else:
+                    faults = xml.xpath("//*[local-name()='Fault']/faultstring")
+                    if not faults:
+                        raise InvalidPluginConfiguration(
+                            _(
+                                "Unexpected response: expected 'Fault' node in SOAP response"
+                            )
+                        )
+                    elif faults[0].text != "Object niet gevonden":
+                        raise InvalidPluginConfiguration(
+                            _(
+                                "Unexpected response: expected '{message}' SOAP response"
+                            ).format(message="Object niet gevonden")
+                        )
 
 
 def parse_soap_error_text(response):

@@ -1,5 +1,6 @@
 class RegistrationFailed(Exception):
-    pass
+    def __init__(self, *args, **kwargs):
+        self.response = kwargs.pop("response", None)
 
 
 class NoSubmissionReference(Exception):
