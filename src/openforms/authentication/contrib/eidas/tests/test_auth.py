@@ -24,6 +24,8 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ....constants import AuthAttribute
+
 # The settings for the eIDAS service are within the eHerkenning settings
 EIDAS_SERVICE_INDEX = "9999"
 EHERKENNING = {
@@ -275,7 +277,9 @@ class AuthenticationStep5Tests(TestCase):
         )
 
         self.assertIn("form_auth", self.client.session)
-        self.assertEqual("pseudo", self.client.session["form_auth"]["attribute"])
+        self.assertEqual(
+            AuthAttribute.pseudo, self.client.session["form_auth"]["attribute"]
+        )
         self.assertEqual(pseudo_id, self.client.session["form_auth"]["value"])
 
     @patch(

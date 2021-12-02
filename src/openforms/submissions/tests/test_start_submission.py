@@ -103,7 +103,7 @@ class SubmissionStartTests(APITestCase):
         session = self.client.session
         session["form_auth"] = {
             "plugin": "digid",
-            "attribute": "bsn",
+            "attribute": AuthAttribute.bsn,
             "value": "123456782",
         }
         session.save()

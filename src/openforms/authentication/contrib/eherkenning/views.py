@@ -13,8 +13,8 @@ from digid_eherkenning.views import (
 from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+from ...constants import AuthAttribute
+from ...contrib.digid.mixins import AssertionConsumerServiceMixin
 
 logger = logging.getLogger(__name__)
 

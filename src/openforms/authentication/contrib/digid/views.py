@@ -73,7 +73,7 @@ class DigiDAssertionConsumerServiceView(
         bsn = sectoral_number
         request.session["form_auth"] = {
             "plugin": "digid",
-            "attribute": "bsn",
+            "attribute": AuthAttribute.bsn,
             "value": bsn,
         }
         return HttpResponseRedirect(self.get_success_url())

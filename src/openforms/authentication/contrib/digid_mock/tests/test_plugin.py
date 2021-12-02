@@ -55,5 +55,7 @@ class LoginTests(TestCase):
         self.assertEqual(response["Location"], "http://foo.bar")
 
         self.assertIn("form_auth", self.client.session)
-        self.assertEqual("bsn", self.client.session["form_auth"]["attribute"])
+        self.assertEqual(
+            AuthAttribute.bsn, self.client.session["form_auth"]["attribute"]
+        )
         self.assertEqual("111222333", self.client.session["form_auth"]["value"])

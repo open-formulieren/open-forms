@@ -23,6 +23,8 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ....constants import AuthAttribute
+
 EHERKENNING_SERVICE_INDEX = "8888"
 EHERKENNING = {
     "base_url": "https://test-sp.nl",
@@ -272,7 +274,9 @@ class AuthenticationStep5Tests(TestCase):
             status_code=302,
         )
         self.assertIn("form_auth", self.client.session)
-        self.assertEqual("kvk", self.client.session["form_auth"]["attribute"])
+        self.assertEqual(
+            AuthAttribute.kvk, self.client.session["form_auth"]["attribute"]
+        )
         self.assertEqual(kvk, self.client.session["form_auth"]["value"])
 
     @patch(
