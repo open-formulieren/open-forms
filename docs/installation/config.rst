@@ -156,7 +156,7 @@ DigiD/EHerkenning/eIDAS settings
 Processing of submissions
 -------------------------
 
-Submissions are :ref:`processed <developers_submissions>` in the background after the
+Submissions are :ref:`processed <developers_backend_core_submissions>` in the background after the
 end-user has submitted the form data. This can fail because of external factors, and
 Open Forms has an automatic-retry mechanism.
 

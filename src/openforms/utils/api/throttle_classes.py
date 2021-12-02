@@ -2,6 +2,12 @@ from rest_framework.throttling import UserRateThrottle
 
 
 class PollingRateThrottle(UserRateThrottle):
+    """
+    Provide a "polling" scope for throttling configuration.
+
+    This scope exists for endpoints intended to be called automatically and frequently.
+    """
+
     scope = "polling"
 
     def allow_request(self, request, view):

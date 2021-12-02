@@ -2,6 +2,13 @@ from rest_framework.response import Response
 
 
 class ListMixin:
+    """
+    Fetch and serialize a list of objects.
+
+    Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
+    backed collections of objects.
+    """
+
     def get_serializer(self, **kwargs):
         return self.serializer_class(
             many=True,

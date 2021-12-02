@@ -48,6 +48,10 @@ class Proef11ValidatorBase:
 
 @deconstructible
 class BSNValidator(Proef11ValidatorBase):
+    """
+    Validate a BSN value by applying the "11-proef".
+    """
+
     value_size = 9
     error_messages = {
         "too_short": _("BSN should have %(size)i characters."),
@@ -57,6 +61,10 @@ class BSNValidator(Proef11ValidatorBase):
 
 @deconstructible
 class RSINValidator(Proef11ValidatorBase):
+    """
+    Validate a RSIN value by applying the "11-proef".
+    """
+
     value_size = 9
     error_messages = {
         "too_short": _("RSIN should have %(size)i characters."),
@@ -70,6 +78,10 @@ validate_rsin = RSINValidator()
 
 @deconstructible
 class UniqueValuesValidator:
+    """
+    Validate a collection of unique values.
+    """
+
     message = _("Values must be unique")
     code = "invalid"
 
@@ -81,6 +93,10 @@ class UniqueValuesValidator:
 
 @deconstructible
 class AllowedRedirectValidator:
+    """
+    Validate that a redirect target is not an open redirect.
+    """
+
     message = _("URL is not on the domain whitelist")
     code = "invalid"
 

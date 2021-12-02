@@ -11,6 +11,13 @@ def origin_from_url(url: str) -> str:
 
 
 def allow_redirect_url(url: str) -> bool:
+    """
+    Check that a redirect target is allowed against the CORS policy.
+
+    The "Cross-Origin Resource Sharing" configuration specifies which external hosts
+    are allowed to access Open Forms. We leverage this configuration to block or allow
+    redirects to external hosts.
+    """
     cors = CorsMiddleware()
     origin = origin_from_url(url)
     parts = urlparse(url)

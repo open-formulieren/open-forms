@@ -1,4 +1,4 @@
-.. _developers_profiling:
+.. _developers_backend_profiling:
 
 =====================
 Performance profiling

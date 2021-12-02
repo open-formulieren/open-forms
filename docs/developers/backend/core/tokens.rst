@@ -1,4 +1,4 @@
-.. _developers_tokens:
+.. _developers_backend_core_tokens:
 
 ==================
 Timestamped tokens

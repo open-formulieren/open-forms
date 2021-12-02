@@ -14,8 +14,12 @@ def send_mail_plus(
     attachments=None,
 ):
     """
-    modified copy of django.core.mail.send_mail() with:
+    Send outgoing email.
+
+    modified copy of :func:`django.core.mail.send_mail()` with:
+
     - attachment support
+
     """
 
     connection = connection or get_connection(
