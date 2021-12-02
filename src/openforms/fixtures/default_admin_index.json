@@ -340,9 +340,9 @@
     "fields": {
         "order": 5,
         "app_group": [
-            "handige-links"
+            "configuratie"
         ],
-        "name": "Configuratie Overview",
+        "name": "Configuratie overview",
         "link": "/admin/config/overview/"
     }
 }
