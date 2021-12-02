@@ -2,6 +2,7 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -36,6 +37,12 @@ urlpatterns = [
         name="admin_email_test",
     ),
     path("admin/hijack/", include("hijack.urls")),
+    path(
+        "admin/config/",
+        decorator_include(
+            staff_member_required, "openforms.config.urls", namespace="config"
+        ),
+    ),
     path("admin/", admin.site.urls),
     path(
         "reset/<uidb64>/<token>/",

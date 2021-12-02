@@ -3,6 +3,7 @@ from typing import NoReturn
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.contrib.microsoft.client import MSGraphClient, MSGraphUploadHelper
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.tasks.registration import set_submission_reference
 
@@ -65,3 +66,6 @@ class MSGraphRegistration(BasePlugin):
             else:
                 content = f"{_('payment required')}: € {submission.form.product.price}"
             uploader.upload_string(content, f"{folder_name}/payment_status.txt")
+
+    def check_config(self):
+        raise InvalidPluginConfiguration("TODO")

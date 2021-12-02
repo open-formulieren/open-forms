@@ -334,5 +334,16 @@
         "name": "Audit log",
         "link": "/admin/logging/timelinelogproxy/auditlog/"
     }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 5,
+        "app_group": [
+            "configuratie"
+        ],
+        "name": "Configuratie overview",
+        "link": "/admin/config/overview/"
+    }
 }
 ]

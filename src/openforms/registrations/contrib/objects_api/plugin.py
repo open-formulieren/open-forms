@@ -6,6 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from zgw_consumers.models import Service
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+
 # "Borrow" the functions from another plugin.
 from openforms.registrations.contrib.zgw_apis.service import (
     create_attachment_document,
@@ -131,3 +133,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")
+
+    def check_config(self):
+        raise InvalidPluginConfiguration("TODO")

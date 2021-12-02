@@ -1,17 +1,22 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
-from openforms.registrations.base import BasePlugin
-from openforms.registrations.constants import (
-    REGISTRATION_ATTRIBUTE,
-    RegistrationAttribute,
-)
-from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
-from openforms.registrations.contrib.zgw_apis.service import (
+from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
+from openforms.submissions.models import Submission, SubmissionReport
+from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.validators import validate_rsin
+
+from ...base import BasePlugin
+from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from ...registry import register
+from .checks import check_config
+from .models import ZgwConfig
+from .service import (
     create_attachment_document,
     create_report_document,
     create_rol,
@@ -20,11 +25,6 @@ from openforms.registrations.contrib.zgw_apis.service import (
     relate_document,
     set_zaak_payment,
 )
-from openforms.registrations.registry import register
-from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
-from openforms.submissions.models import Submission, SubmissionReport
-from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import validate_rsin
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -148,3 +148,17 @@ class ZGWRegistration(BasePlugin):
 
     def update_payment_status(self, submission: "Submission", options: dict):
         set_zaak_payment(submission.registration_result["zaak"]["url"])
+
+    def check_config(self):
+        check_config()
+
+    def get_config_actions(self) -> List[Tuple[str, str]]:
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:zgw_apis_zgwconfig_change",
+                    args=(ZgwConfig.singleton_instance_id,),
+                ),
+            ),
+        ]
