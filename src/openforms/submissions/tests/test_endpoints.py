@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
@@ -153,3 +154,185 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 302)
+
+    def test_redirects_to_auth_if_form_requires_login(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(form=form, auth_plugin="digid")
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_redirect_url = furl(f"http://testserver/auth/{form.slug}/digid/start")
+        expected_redirect_url.args["next"] = f"http://testserver{endpoint}"
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(
+            response, expected_redirect_url.url, fetch_redirect_response=False
+        )
+        self.assertNotIn("form-submissions", self.client.session)
+
+    def test_after_successful_auth_redirects_to_form(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            form_url="http://testserver/myform/",
+            auth_plugin="digid",
+            bsn="123456782",
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_redirect_url = furl(submission.form_url)
+        expected_redirect_url /= "stap"
+        expected_redirect_url /= form_step.form_definition.slug
+        expected_redirect_url.args["submission_uuid"] = submission.uuid
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(
+            response, expected_redirect_url.url, fetch_redirect_response=False
+        )
+        self.assertIn("form-submissions", self.client.session)
+        self.assertIn(str(submission.uuid), self.client.session["form-submissions"])
+
+    def test_invalid_auth_plugin_raises_exception(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            form_url="http://testserver/myform/",
+            auth_plugin="wrong-plugin",
+            bsn="123456782",
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn("form-submissions", self.client.session)
+
+    def test_invalid_auth_attribute_raises_exception(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            form_url="http://testserver/myform/",
+            auth_plugin="digid",
+            kvk="123456782",
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn("form-submissions", self.client.session)
+
+    def test_invalid_auth_value_raises_exception(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__login_required=True
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            form_url="http://testserver/myform/",
+            auth_plugin="digid",
+            bsn="wrong-bsn",
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn("form-submissions", self.client.session)
