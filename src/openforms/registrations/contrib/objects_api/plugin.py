@@ -2,6 +2,7 @@ from copy import deepcopy
 from datetime import date
 from typing import Any, Dict, NoReturn
 
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from zgw_consumers.models import Service
@@ -22,6 +23,7 @@ from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...exceptions import NoSubmissionReference
 from ...registry import register
+from .checks import check_config
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 
@@ -135,4 +137,15 @@ class ObjectsAPIRegistration(BasePlugin):
         raise NoSubmissionReference("Object API plugin does not emit a reference")
 
     def check_config(self):
-        raise InvalidPluginConfiguration("TODO")
+        check_config()
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:registrations_objects_api_objectsapiconfig_change",
+                    args=(ObjectsAPIConfig.singleton_instance_id,),
+                ),
+            ),
+        ]
