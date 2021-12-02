@@ -5,5 +5,5 @@ from .views import ConfigurationView
 app_name = "config"
 
 urlpatterns = [
-    path("overview/", ConfigurationView.as_view(), name="config-overview"),
+    path("overview/", ConfigurationView.as_view(), name="overview"),
 ]
