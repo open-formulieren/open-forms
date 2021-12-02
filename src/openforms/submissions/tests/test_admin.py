@@ -5,6 +5,7 @@ from django.utils import timezone
 
 import tablib
 from django_webtest import WebTest
+from lxml import etree
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
@@ -120,6 +121,7 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.csv"',
         )
         self.assertIsNotNone(response.content)
+        # check if it parses
         tablib.Dataset().load(response.content.decode("utf8"), format="csv")
 
         self.assertEqual(
@@ -152,7 +154,68 @@ class TestSubmissionAdmin(WebTest):
             'attachment; filename="submissions_export.xlsx"',
         )
         self.assertIsNotNone(response.content)
+        # check if it parses
         tablib.Dataset().load(response.content, format="xlsx")
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_export_list.txt"
+            ).count(),
+            1,
+        )
+
+    def test_export_json_successfully_exports_json_file(self):
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "export_json"
+        form["_selected_action"] = [
+            str(submission.pk) for submission in Submission.objects.all()
+        ]
+
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["content-type"], "application/json")
+        self.assertEqual(
+            response["content-disposition"],
+            'attachment; filename="submissions_export.json"',
+        )
+        self.assertIsNotNone(response.content)
+        # check if it parses
+        response.json
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/submission_export_list.txt"
+            ).count(),
+            1,
+        )
+
+    def test_export_xml_successfully_exports_xml_file(self):
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "export_xml"
+        form["_selected_action"] = [
+            str(submission.pk) for submission in Submission.objects.all()
+        ]
+
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["content-type"], "text/xml")
+        self.assertEqual(
+            response["content-disposition"],
+            'attachment; filename="submissions_export.xml"',
+        )
+        self.assertIsNotNone(response.content)
+        # check if it parses
+        etree.fromstring(response.content)
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
