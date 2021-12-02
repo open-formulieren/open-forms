@@ -165,7 +165,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         "on_completion_task_ids",
         "confirmation_email_sent",
     ]
-    actions = ["export_csv", "export_xlsx", "retry_processing_submissions"]
+    actions = [
+        "export_csv",
+        "export_json",
+        "export_xlsx",
+        "export_xml",
+        "retry_processing_submissions",
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -249,6 +255,20 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     export_xlsx.short_description = _(
         "Export selected %(verbose_name_plural)s as Excel-file."
+    )
+
+    def export_json(self, request, queryset):
+        return self._export(request, queryset, ExportFileTypes.JSON)
+
+    export_json.short_description = _(
+        "Export selected %(verbose_name_plural)s as JSON-file."
+    )
+
+    def export_xml(self, request, queryset):
+        return self._export(request, queryset, ExportFileTypes.XML)
+
+    export_xml.short_description = _(
+        "Export selected %(verbose_name_plural)s as XML-file."
     )
 
     def retry_processing_submissions(self, request, queryset):

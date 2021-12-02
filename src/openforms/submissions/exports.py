@@ -4,6 +4,8 @@ from django.http import FileResponse, HttpResponse
 from django.utils.timezone import make_naive
 
 import tablib
+from lxml import etree
+from tablib.formats._json import serialize_objects_handler
 
 from .query import SubmissionQuerySet
 
@@ -19,6 +21,8 @@ class ExportFileTypes:
     XLSX = FileType(
         "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    JSON = FileType("json", "application/json")
+    XML = FileType("xml", "text/xml")
 
 
 def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
@@ -55,3 +59,22 @@ def export_submissions(
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
     return response
+
+
+class XMLKeyValueExport:
+    title = "xml"
+
+    @classmethod
+    def export_set(cls, dset):
+        root = etree.Element("submissions")
+        for row in dset.dict:
+            elem = etree.SubElement(root, "submission")
+            for key, value in row.items():
+                field = etree.SubElement(elem, "field", name=key)
+
+                # let's re-use the JSON object serializer for dates, UUIDs, Decimals etc.
+                field.text = serialize_objects_handler(value)
+
+        return etree.tostring(
+            root, xml_declaration=True, encoding="utf8", pretty_print=True
+        )
