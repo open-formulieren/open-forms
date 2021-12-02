@@ -71,6 +71,9 @@ class DigiDAssertionConsumerServiceView(
             raise BSNNotPresentError
 
         bsn = sectoral_number
-        request.session[AuthAttribute.bsn] = bsn
-
+        request.session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": bsn,
+        }
         return HttpResponseRedirect(self.get_success_url())

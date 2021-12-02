@@ -37,7 +37,11 @@ class DigidMockAuthentication(BasePlugin):
         if not bsn:
             return HttpResponseBadRequest("missing 'bsn' parameter")
 
-        request.session[AuthAttribute.bsn] = bsn
+        request.session["form_auth"] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": bsn,
+        }
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
