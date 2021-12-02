@@ -4,9 +4,12 @@ from django.test import override_settings
 from django.test.client import RequestFactory
 
 from furl import furl
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..registry import Registry
 from ..views import (
@@ -14,10 +17,10 @@ from ..views import (
     AuthenticationReturnView,
     AuthenticationStartView,
 )
-from .mocks import FailingPlugin, Plugin
+from .mocks import FailingPlugin, Plugin, mock_register
 
 
-class AuthenticationFlowTests(APITestCase):
+class AuthenticationFlowTests(SubmissionsMixin, APITestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
@@ -134,3 +137,73 @@ class AuthenticationFlowTests(APITestCase):
         expected = furl("http://foo.bar?bazz=buzz")
         expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
         self.assertEqual(furl(response["Location"]), expected)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_co_sign_flow(self):
+        """
+        Assert that the authentication flow for co-signing works as expected.
+        """
+        register = Registry()
+        register("plugin1")(Plugin)
+
+        submission = SubmissionFactory.create(
+            form__slug="myform",
+            form__authentication_backends=["plugin1"],
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__formstep__form_definition__slug="stap-1",
+        )
+        next_url = "https://example.com/f/myform/stap/stap-1"
+        self._add_submission_to_session(submission)
+
+        with mock_register(register):
+            with self.subTest("start ok"):
+                start_url = reverse(
+                    "authentication:start",
+                    kwargs={"slug": "myform", "plugin_id": "plugin1"},
+                )
+
+                response = self.client.get(
+                    start_url,
+                    {
+                        "next": next_url,
+                        "coSignSubmission": submission.uuid,
+                    },
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.content, b"start")
+
+            with self.subTest("return ok"):
+                return_url = reverse(
+                    "authentication:return",
+                    kwargs={"slug": "myform", "plugin_id": "plugin1"},
+                )
+
+                response = self.client.get(
+                    return_url,
+                    {
+                        "coSignSubmission": submission.uuid,
+                        "next": next_url,
+                    },
+                )
+
+                self.assertEqual(response.status_code, 302)
+
+        # validate that the co-sign data is saved on the submission
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.co_sign_data,
+            {
+                "plugin": "plugin1",
+                "identifier": "mock-id",
+                "fields": {
+                    "mock_field_1": "field 1",
+                    "mock_field_2": "",
+                },
+            },
+        )
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_co_sign_flow_invalid_submission_id(self):
+        raise NotImplementedError()
