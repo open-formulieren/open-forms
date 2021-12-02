@@ -12,7 +12,7 @@ class CoSignDataSerializer(serializers.Serializer):
     identifier = serializers.CharField()
     # TODO: validate fields shape depending on value of plugin (polymorphic serializer)
     fields = serializers.DictField(
-        child=serializers.CharField(),
+        child=serializers.CharField(allow_blank=True),
         required=False,
         allow_null=True,
     )

@@ -17,6 +17,8 @@ from rest_framework.renderers import TemplateHTMLRenderer
 
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
+from openforms.submissions.models import Submission
+from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
 
 logger = logging.getLogger(__name__)
@@ -192,6 +194,16 @@ COMMON_RETURN_RESPONSES = {
             description=_("Identifier of the authentication plugin."),
         ),
         OpenApiParameter(
+            name="coSignSubmission",
+            location=OpenApiParameter.QUERY,
+            type=OpenApiTypes.UUID,
+            description=_(
+                "UUID of the submission for which this co-sign authentication applies. "
+                "Presence of this parameter marks a flow as a co-sign flow."
+            ),
+            required=False,
+        ),
+        OpenApiParameter(
             name="Location",
             location=OpenApiParameter.HEADER,
             type=OpenApiTypes.URI,
@@ -236,6 +248,24 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
         if plugin.return_method.upper() != request.method.upper():
             return HttpResponseNotAllowed([plugin.return_method])
+
+        request_data = getattr(request, plugin.return_method.upper())
+        if "coSignSubmission" in request_data:
+            logger.debug("Co-sign authentication detected, invoking plugin handler.")
+
+            # load the submission object - the return view is expected to validate against tampering
+            submission = Submission.objects.get(uuid=request_data["coSignSubmission"])
+            assert not submission.co_sign_data, "Submission already has co-sign data!"
+
+            co_sign_data = {
+                **plugin.handle_co_sign(request, form),
+                "plugin": plugin.identifier,
+            }
+            serializer = CoSignDataSerializer(data=co_sign_data)
+            if not serializer.is_valid():
+                return HttpResponseBadRequest("plugin returned invalid data")
+            submission.co_sign_data = serializer.validated_data
+            submission.save(update_fields=["co_sign_data"])
 
         response = plugin.handle_return(request, form)
 

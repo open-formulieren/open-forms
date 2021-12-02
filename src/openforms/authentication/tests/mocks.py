@@ -16,6 +16,15 @@ class Plugin(BasePlugin):
     def handle_return(self, request, form):
         return HttpResponseRedirect(request.GET.get("next"))
 
+    def handle_co_sign(self, request, form):
+        return {
+            "identifier": "mock-id",
+            "fields": {
+                "mock_field_1": "field 1",
+                "mock_field_2": "",
+            },
+        }
+
 
 class FailingPlugin(BasePlugin):
     verbose_name = "some human readable label"
@@ -39,5 +48,6 @@ def mock_register(register: Registry):
         new_callable=PropertyMock,
         return_value=register,
     )
-    with patcher1, patcher2:
+    patcher3 = patch("openforms.submissions.serializers.register", new=register)
+    with patcher1, patcher2, patcher3:
         yield

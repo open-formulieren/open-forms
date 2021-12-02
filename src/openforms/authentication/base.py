@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from django.http import HttpRequest, HttpResponse
 
@@ -38,6 +38,15 @@ class BasePlugin(AbstractBasePlugin):
 
     def handle_return(self, request: HttpRequest, form: Form) -> HttpResponse:
         # process and validate return information, store bsn in session
+        raise NotImplementedError()
+
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> Dict[str, Any]:
+        """
+        Process the authentication and return a dict of co-sign details.
+
+        The co-sign details are stored on ``Submission.co_sign_data`` and must match the
+        schema (except for the ``plugin`` key).
+        """
         raise NotImplementedError()
 
     # helpers
