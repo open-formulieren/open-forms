@@ -47,7 +47,7 @@ class MSGraphRegistrationBackendTests(TestCase):
 
         submission = SubmissionFactory.create(
             form__name="MyName",
-            form__internal_name="MyInternalName",
+            form__internal_name="MyInternalName: with (extra)",
             form__registration_backend="microsoft-graph",
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
@@ -79,7 +79,7 @@ class MSGraphRegistrationBackendTests(TestCase):
         # made the calls
         self.assertEqual(upload_mock.call_count, 5)
 
-        folder = f"open-forms/MyInternalName/{submission.public_registration_reference}"
+        folder = f"open-forms/myinternalname-with-extra/{submission.public_registration_reference}"
         calls = upload_mock.call_args_list
 
         with self.subTest("report"):
@@ -141,7 +141,7 @@ class MSGraphRegistrationBackendTests(TestCase):
         # made the calls
         self.assertEqual(upload_mock.call_count, 1)
 
-        folder = f"open-forms/MyInternalName/{submission.public_registration_reference}"
+        folder = f"open-forms/myinternalname/{submission.public_registration_reference}"
         calls = upload_mock.call_args_list
 
         with self.subTest("payment status"):

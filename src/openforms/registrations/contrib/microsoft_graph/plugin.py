@@ -1,5 +1,6 @@
 from typing import NoReturn
 
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.contrib.microsoft.client import MSGraphClient, MSGraphUploadHelper
@@ -17,7 +18,7 @@ class MSGraphRegistration(BasePlugin):
     verbose_name = _("Microsoft Graph (OneDrive/SharePoint)")
 
     def _get_folder_name(self, submission: Submission):
-        return f"open-forms/{submission.form.admin_name}/{submission.public_registration_reference}"
+        return f"open-forms/{slugify(submission.form.admin_name)}/{submission.public_registration_reference}"
 
     def register_submission(self, submission: Submission, options: dict) -> None:
         # explicitly get a reference before registering
