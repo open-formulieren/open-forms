@@ -45,6 +45,22 @@ def set_bsn_from_session(sender, instance: Submission, request: Request, **kwarg
     instance.save(update_fields=["bsn"])
 
 
+@receiver(submission_start, dispatch_uid="auth.set_submission_pseudo")
+def set_pseudo_from_session(sender, instance: Submission, request: Request, **kwargs):
+    pseudo = request.session.get("pseudo")
+    if not pseudo:
+        return
+
+    warnings.warn(
+        "The bare 'pseudo' session key is deprecated in favour of the generic 'form_auth' "
+        "session key.",
+        DeprecationWarning,
+    )
+
+    instance.pseudo = pseudo
+    instance.save(update_fields=["pseudo"])
+
+
 @receiver(submission_start, dispatch_uid="auth.set_submission_form_auth")
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, **kwargs
