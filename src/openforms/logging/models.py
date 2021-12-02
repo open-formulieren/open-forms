@@ -144,8 +144,9 @@ class TimelineLogProxy(TimelineLog):
 
 class AVGTimelineLogProxyManager(models.Manager):
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.has_tag(TimelineLogTags.AVG)
+        return TimelineLogProxyQueryset(self.model, using=self._db).has_tag(
+            TimelineLogTags.AVG
+        )
 
 
 class AVGTimelineLogProxy(TimelineLogProxy):
