@@ -239,6 +239,12 @@ class Submission(models.Model):
     previous_submission = models.ForeignKey(
         "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
     )
+    auth_plugin = models.CharField(
+        _("auth plugin"),
+        max_length=100,
+        blank=True,
+        help_text=_("The plugin used by the user for authentication."),
+    )
 
     objects = SubmissionManager()
 
