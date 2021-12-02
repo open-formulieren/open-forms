@@ -18,36 +18,6 @@ class ConfigurationView(TemplateView):
         context = super().get_context_data(**kwargs)
         sections = []
 
-        def get_plugin_entry(plugin: Any) -> Dict[str, Any]:
-            try:
-                plugin.check_config()
-            except InvalidPluginConfiguration as e:
-                status_message = e
-                status = False
-            except Exception as e:
-                status_message = _("Internal error: {exception}").format(exception=e)
-                status = None
-            else:
-                status_message = None
-                status = True
-
-            try:
-                actions = plugin.get_config_actions()
-            except Exception:
-                actions = [
-                    (
-                        "Not implemented",
-                        "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
-                    )
-                ]
-
-            return {
-                "name": plugin.verbose_name,
-                "status": _boolean_icon(status),
-                "status_message": status_message,
-                "actions": actions,
-            }
-
         # Iterate over all plugin registries.
         plugin_registries = [
             # (_("Appointment plugins"), appointments_register),
@@ -61,7 +31,7 @@ class ConfigurationView(TemplateView):
                 {
                     "name": name,
                     "entries": [
-                        get_plugin_entry(plugin)
+                        self.get_plugin_entry(plugin)
                         for plugin in register.iter_enabled_plugins()
                     ],
                 }
@@ -70,3 +40,33 @@ class ConfigurationView(TemplateView):
         context.update({"sections": sections})
 
         return context
+
+    def get_plugin_entry(self, plugin: Any) -> Dict[str, Any]:
+        try:
+            plugin.check_config()
+        except InvalidPluginConfiguration as e:
+            status_message = e
+            status = False
+        except Exception as e:
+            status_message = _("Internal error: {exception}").format(exception=e)
+            status = None
+        else:
+            status_message = None
+            status = True
+
+        try:
+            actions = plugin.get_config_actions()
+        except Exception:
+            actions = [
+                (
+                    "Not implemented",
+                    "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
+                )
+            ]
+
+        return {
+            "name": plugin.verbose_name,
+            "status": _boolean_icon(status),
+            "status_message": status_message,
+            "actions": actions,
+        }
