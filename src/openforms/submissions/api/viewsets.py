@@ -89,12 +89,6 @@ class SubmissionViewSet(
             sender=self.__class__, instance=serializer.instance, request=self.request
         )
 
-        bsn = self.request.session.get("bsn")
-        if bsn:
-            instance = serializer.instance
-            instance.bsn = bsn
-            instance.save(update_fields=["bsn"])
-
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
         # note: possible race condition with concurrent requests
