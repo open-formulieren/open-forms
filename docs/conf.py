@@ -83,4 +83,5 @@ linkcheck_ignore = [
     r"https://.*sentry.*",
     r"https://example.com*",
     r"https://portal.azure.com*",
+    r"https://.*kvk\.nl*",
 ]
