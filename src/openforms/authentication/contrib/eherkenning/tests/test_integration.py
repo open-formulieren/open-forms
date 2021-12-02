@@ -4,11 +4,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.authentication.constants import AuthAttribute
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 
-FORM_AUTH_SESSION_KEY = "form_auth"  # TODO: #957 - use centrally defined constant
+from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 
 
 class SubmissionIntegrationTests(APITestCase):
