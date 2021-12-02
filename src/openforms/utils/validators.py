@@ -1,9 +1,11 @@
-from typing import List
+from typing import List, Type
 
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
+
+from rest_framework import serializers
 
 from openforms.utils.redirect import allow_redirect_url
 
@@ -103,3 +105,28 @@ class AllowedRedirectValidator:
     def __call__(self, value: str):
         if not allow_redirect_url(value):
             raise ValidationError(self.message, code=self.code)
+
+
+@deconstructible
+class SerializerValidator:
+    """
+    Validate a value against a DRF serializer class.
+    """
+
+    message = _("The data shape does not match the expected shape: {errors}")
+    code = "invalid"
+
+    def __init__(self, serializer_cls: Type[serializers.Serializer], many=False):
+        self.serializer_cls = serializer_cls
+        self.many = many
+
+    def __call__(self, value):
+        if not value:
+            return
+
+        serializer = self.serializer_cls(data=value, many=self.many)
+        if not serializer.is_valid():
+            raise ValidationError(
+                self.message.format(errors=serializer.errors),
+                code=self.code,
+            )

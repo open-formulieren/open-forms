@@ -158,6 +158,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     ]
     readonly_fields = [
         "created_on",
+        "co_sign_data",
         "get_registration_backend",
         "get_appointment_status",
         "get_appointment_id",
