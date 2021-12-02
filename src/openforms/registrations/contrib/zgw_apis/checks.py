@@ -29,7 +29,7 @@ def check_config():
         ),
     )
 
-    for service_field, api_name, api_operation in services:
+    for service_field, api_name, api_resource in services:
 
         # Check settings
         service = getattr(config, service_field)
@@ -41,7 +41,7 @@ def check_config():
         # Check connection and API-response
         try:
             client = service.build_client()
-            client.list(api_operation)
+            client.list(api_resource)
         except (HTTPError, ClientError) as e:
             raise InvalidPluginConfiguration(
                 _("Invalid response from {api_name}: {exception}").format(
