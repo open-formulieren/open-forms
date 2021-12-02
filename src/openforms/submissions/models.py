@@ -147,6 +147,12 @@ class Submission(models.Model):
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
 
     # authentication state
+    auth_plugin = models.CharField(
+        _("auth plugin"),
+        max_length=100,
+        blank=True,
+        help_text=_("The plugin used by the user for authentication."),
+    )
     bsn = models.CharField(
         _("BSN"),
         max_length=9,
@@ -166,14 +172,6 @@ class Submission(models.Model):
         max_length=9,
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
-    )
-    form_url = models.URLField(
-        _("form URL"),
-        max_length=255,
-        blank=False,
-        default="",
-        help_text=_("URL where the user initialized the submission."),
-        validators=[AllowedRedirectValidator()],
     )
 
     # payment state
@@ -273,12 +271,6 @@ class Submission(models.Model):
     # relation to earlier submission which is altered after processing
     previous_submission = models.ForeignKey(
         "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
-    )
-    auth_plugin = models.CharField(
-        _("auth plugin"),
-        max_length=100,
-        blank=True,
-        help_text=_("The plugin used by the user for authentication."),
     )
 
     objects = SubmissionManager()
