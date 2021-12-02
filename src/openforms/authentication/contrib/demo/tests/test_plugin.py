@@ -55,7 +55,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 405)
 
         # good
-        self.assertNotIn("bsn", self.client.session)
+        self.assertNotIn("form_auth", self.client.session)
 
         response = self.client.post(
             url, data={"next": "http://foo.bar", "bsn": "111222333"}
@@ -64,8 +64,9 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "http://foo.bar")
 
-        self.assertIn("bsn", self.client.session)
-        self.assertIn(self.client.session[AuthAttribute.bsn], "111222333")
+        self.assertIn("form_auth", self.client.session)
+        self.assertEqual("bsn", self.client.session["form_auth"]["attribute"])
+        self.assertEqual("111222333", self.client.session["form_auth"]["value"])
 
     def test_login_kvk(self):
         # simplified from above just checking the kvk plugin
@@ -93,7 +94,7 @@ class LoginTests(TestCase):
         # return
         url = plugin.get_return_url(request, form)
 
-        self.assertNotIn("kvk", self.client.session)
+        self.assertNotIn("form_auth", self.client.session)
 
         response = self.client.post(
             url, data={"next": "http://foo.bar", "kvk": "111222333"}
@@ -102,5 +103,6 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "http://foo.bar")
 
-        self.assertIn("kvk", self.client.session)
-        self.assertIn(self.client.session["kvk"], "111222333")
+        self.assertIn("form_auth", self.client.session)
+        self.assertEqual("kvk", self.client.session["form_auth"]["attribute"])
+        self.assertEqual("111222333", self.client.session["form_auth"]["value"])

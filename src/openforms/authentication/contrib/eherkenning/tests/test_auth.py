@@ -271,7 +271,9 @@ class AuthenticationStep5Tests(TestCase):
             form_url,
             status_code=302,
         )
-        self.assertEqual(kvk, self.client.session["kvk"])
+        self.assertIn("form_auth", self.client.session)
+        self.assertEqual("kvk", self.client.session["form_auth"]["attribute"])
+        self.assertEqual(kvk, self.client.session["form_auth"]["value"])
 
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True

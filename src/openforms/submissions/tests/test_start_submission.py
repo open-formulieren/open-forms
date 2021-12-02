@@ -101,7 +101,11 @@ class SubmissionStartTests(APITestCase):
 
     def test_start_submission_bsn_in_session(self):
         session = self.client.session
-        session[AuthAttribute.bsn] = "123456782"
+        session["form_auth"] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
         session.save()
 
         body = {
@@ -114,6 +118,7 @@ class SubmissionStartTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
         self.assertEqual(submission.bsn, "123456782")
+        self.assertEqual(submission.auth_plugin, "digid")
 
     def test_start_submission_in_maintenance_mode(self):
         form = FormFactory.create(maintenance_mode=True)
