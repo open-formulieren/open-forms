@@ -1,6 +1,7 @@
 import smtplib
 import socket
 from unittest import mock
+from unittest.mock import patch
 from urllib.parse import quote
 
 from django.conf import settings
@@ -11,6 +12,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from django_yubin import settings as yubin_settings
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.emails.connection_check import LabelValue, check_email_backend
@@ -66,14 +68,17 @@ class CheckEmailSettingsFunctionTests(TestCase):
     @override_settings(
         **replace(
             smtp_settings,
-            MAILER_PAUSE_SEND=True,
-            MAILER_TEST_MODE=True,
-            MAILER_USE_BACKEND="django.core.mail.backends.smtp.EmailBackend",
             EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend",
         )
     )
     def test_init_yubin(self):
-        res = check_email_backend("receiver@bar.bazz")
+        with patch.multiple(
+            yubin_settings,
+            PAUSE_SEND=True,
+            MAILER_TEST_MODE=True,
+            USE_BACKEND="django.core.mail.backends.smtp.EmailBackend",
+        ):
+            res = check_email_backend("receiver@bar.bazz")
 
         self.assertEqual(res.success, True)
         self.assertEqual(
