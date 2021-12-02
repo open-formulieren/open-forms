@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from djchoices import ChoiceItem, DjangoChoices
 
+FORM_AUTH_SESSION_KEY = "form_auth"  # pending #957 rework
+
 
 class AuthAttribute(DjangoChoices):
     """

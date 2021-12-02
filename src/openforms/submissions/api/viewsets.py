@@ -24,6 +24,7 @@ from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
+from ..signals import submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
@@ -83,11 +84,10 @@ class SubmissionViewSet(
     def perform_create(self, serializer):
         super().perform_create(serializer)
 
-        bsn = self.request.session.get("bsn")
-        if bsn:
-            instance = serializer.instance
-            instance.bsn = bsn
-            instance.save(update_fields=["bsn"])
+        # dispatch signal for modules to tap into
+        submission_start.send(
+            sender=self.__class__, instance=serializer.instance, request=self.request
+        )
 
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission

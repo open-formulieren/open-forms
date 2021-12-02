@@ -2,7 +2,6 @@ import logging
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional
-from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db import transaction
@@ -192,9 +191,6 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
         }
 
     def get_configuration(self, instance) -> dict:
-        # can't simply declare this because the JSON is stored as string in
-        # the DB instead of actual JSON
-        # FIXME: sort out the storing of configuration
         submission = self.root.instance.submission
         serializer = FormDefinitionSerializer(
             instance=instance.form_definition,
