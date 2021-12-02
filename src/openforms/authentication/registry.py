@@ -1,8 +1,11 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from django.http import HttpRequest
 
 from openforms.plugins.registry import BaseRegistry
+
+if TYPE_CHECKING:
+    from .base import LoginInfo
 
 
 class Registry(BaseRegistry):
