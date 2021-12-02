@@ -21,7 +21,7 @@ class MSGraphClient:
         "https://graph.microsoft.com/.default",
     ]
 
-    def __init__(self, service: MSGraphService):
+    def __init__(self, service: MSGraphService, force_auth=False):
         self.service = service
 
         self.account = Account(
@@ -29,9 +29,9 @@ class MSGraphClient:
             auth_flow_type="credentials",
             tenant_id=self.service.tenant_id,
         )
-        if not self.account.is_authenticated:
+        if force_auth or not self.account.is_authenticated:
             if not self.account.authenticate(scopes=self.scopes):
-                raise MSAuthenticationError("cannot authenticate")
+                raise MSAuthenticationError("cannot authenticate: check credentials")
 
     @property
     def is_authenticated(self):

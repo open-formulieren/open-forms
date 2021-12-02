@@ -1,17 +1,21 @@
 from typing import NoReturn
 
+from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ugettext_lazy as _
 
 from openforms.contrib.microsoft.client import MSGraphClient, MSGraphUploadHelper
+from openforms.contrib.microsoft.exceptions import MSAuthenticationError
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.registrations.contrib.microsoft_graph.models import (
+    MSGraphRegistrationConfig,
+)
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.tasks.registration import set_submission_reference
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
-from .models import MSGraphRegistrationConfig
 
 
 @register("microsoft-graph")
@@ -69,4 +73,34 @@ class MSGraphRegistration(BasePlugin):
             uploader.upload_string(content, f"{folder_name}/payment_status.txt")
 
     def check_config(self):
-        raise InvalidPluginConfiguration("TODO")
+        config = MSGraphRegistrationConfig.get_solo()
+        if not config.service_id:
+            raise InvalidPluginConfiguration(_("MSGraphService not selected"))
+
+        # check connection
+        try:
+            client = MSGraphClient(config.service, force_auth=True)
+        except MSAuthenticationError as e:
+            raise InvalidPluginConfiguration(
+                _("Could not connect: {exception}").format(exception=e)
+            )
+        else:
+            try:
+                storage = client.account.storage()
+                drive = storage.get_default_drive()
+                root_folder = drive.get_root_folder()
+            except Exception as e:
+                raise InvalidPluginConfiguration(
+                    _("Could not access root folder: {exception}").format(exception=e)
+                )
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:registrations_microsoft_graph_msgraphregistrationconfig_change",
+                    args=(MSGraphRegistrationConfig.singleton_instance_id,),
+                ),
+            ),
+        ]
