@@ -19,3 +19,9 @@ class DemoPayment(BasePlugin):
         payment.status = PaymentStatus.completed
         payment.save()
         return HttpResponseRedirect(payment.submission.form_url)
+
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
+        pass
