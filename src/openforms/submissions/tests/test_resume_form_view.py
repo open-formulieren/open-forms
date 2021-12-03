@@ -156,13 +156,15 @@ class SubmissionResumeViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_redirects_to_auth_if_form_requires_login(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__login_required=True
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="digid",
         )
-        submission = SubmissionFactory.create(form=form, auth_plugin="digid")
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data={"foo": "bar"}
+            submission=submission,
+            form_step=submission.form.formstep_set.first(),
+            data={"foo": "bar"},
         )
 
         endpoint = reverse(
@@ -172,7 +174,9 @@ class SubmissionResumeViewTests(TestCase):
                 "submission_uuid": submission.uuid,
             },
         )
-        expected_redirect_url = furl(f"http://testserver/auth/{form.slug}/digid/start")
+        expected_redirect_url = furl(
+            f"http://testserver/auth/{submission.form.slug}/digid/start"
+        )
         expected_redirect_url.args["next"] = f"http://testserver{endpoint}"
 
         response = self.client.get(endpoint)
@@ -183,18 +187,18 @@ class SubmissionResumeViewTests(TestCase):
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_after_successful_auth_redirects_to_form(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__login_required=True
-        )
         submission = SubmissionFactory.create(
-            form=form,
-            form_url="http://testserver/myform/",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
             auth_plugin="digid",
+            form_url="http://testserver/myform/",
             bsn="123456782",
         )
+        form_step = submission.form.formstep_set.first()
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data={"foo": "bar"}
+            submission=submission,
+            form_step=form_step,
+            data={"foo": "bar"},
         )
 
         endpoint = reverse(
@@ -229,18 +233,17 @@ class SubmissionResumeViewTests(TestCase):
         )
 
     def test_invalid_auth_plugin_raises_exception(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__login_required=True
-        )
         submission = SubmissionFactory.create(
-            form=form,
-            form_url="http://testserver/myform/",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
             auth_plugin="wrong-plugin",
+            form_url="http://testserver/myform/",
             bsn="123456782",
         )
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data={"foo": "bar"}
+            submission=submission,
+            form_step=submission.form.formstep_set.first(),
+            data={"foo": "bar"},
         )
 
         endpoint = reverse(
@@ -266,18 +269,17 @@ class SubmissionResumeViewTests(TestCase):
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_invalid_auth_attribute_raises_exception(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__login_required=True
-        )
         submission = SubmissionFactory.create(
-            form=form,
-            form_url="http://testserver/myform/",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
             auth_plugin="digid",
+            form_url="http://testserver/myform/",
             kvk="123456782",
         )
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data={"foo": "bar"}
+            submission=submission,
+            form_step=submission.form.formstep_set.first(),
+            data={"foo": "bar"},
         )
 
         endpoint = reverse(
@@ -303,18 +305,17 @@ class SubmissionResumeViewTests(TestCase):
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_invalid_auth_value_raises_exception(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__login_required=True
-        )
         submission = SubmissionFactory.create(
-            form=form,
-            form_url="http://testserver/myform/",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
             auth_plugin="digid",
+            form_url="http://testserver/myform/",
             bsn="wrong-bsn",
         )
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data={"foo": "bar"}
+            submission=submission,
+            form_step=submission.form.formstep_set.first(),
+            data={"foo": "bar"},
         )
 
         endpoint = reverse(
