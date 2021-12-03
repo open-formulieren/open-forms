@@ -13,12 +13,6 @@ class KVKClientError(Exception):
 
 
 class KVKClient:
-    """
-    https://developers.kvk.nl/apis/profile/swagger
-
-    https://developers.kvk.nl/api/v2/testprofile/companies?kvkNumber=69599084
-    """
-
     def query(self, **query_params):
         config = KVKConfig.get_solo()
         if not config.service:
