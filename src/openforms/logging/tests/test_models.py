@@ -4,8 +4,10 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.tests.factories import FormFactory
+from openforms.logging import logevent
+from openforms.logging.models import AVGTimelineLogProxy
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -119,6 +121,20 @@ class TimelineLogProxyTests(TestCase):
         self.assertEqual(_("Anonymous user"), log.fmt_user)
         self.assertEqual(f"[2020-01-02 13:34:00 CET]", log.fmt_lead)
         self.assertEqual(_("(unknown)"), log.fmt_plugin)
+
+
+class AVGProxyModelTest(LoggingTestMixin, TestCase):
+    def test_model_and_proxy(self):
+        user = StaffUserFactory.create()
+        submission = SubmissionFactory.create()
+        # create AVG log
+        logevent.submission_details_view_admin(submission, user)
+
+        # create generic log
+        TimelineLogProxyFactory.create(content_object=submission, user=user)
+
+        # check we have one AVG log
+        self.assertEqual(AVGTimelineLogProxy.objects.count(), 1)
 
 
 class LoggingTestMixinTest(LoggingTestMixin, TestCase):
