@@ -200,5 +200,7 @@
   "Minimum Value": "Minimale waarde",
   "The minimum value this field must have before the form can be submitted.": "De minimale waarde die dit veld kan hebben voordat het formulier kan worden verzonden.",
   "min": "De waarde moet groter dan {{ min }} zijn.",
-  "max": "De waarde moet kleiner dan {{ max }} zijn."
+  "max": "De waarde moet kleiner dan {{ max }} zijn.",
+  "License plate": "Kenteken",
+  "Invalid Dutch license plate": "Ongeldig Nederlands kenteken"
 }

@@ -4,3 +4,4 @@ import './radio';
 import './number';
 import './currency';
 import './email';
+import './licenseplate';

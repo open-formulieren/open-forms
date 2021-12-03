@@ -16,6 +16,7 @@ import FieldSet from './components/form/fieldset';
 import Map from './components/form/map';
 import PasswordField from './components/form/password';
 import NumberField from './components/form/number';
+import LicensePlate from './components/form/licenseplate';
 
 const FormIOModule = {
   components: {
@@ -37,6 +38,7 @@ const FormIOModule = {
     map: Map,
     password: PasswordField,
     fieldset: FieldSet,
+    licenseplate: LicensePlate,
   },
 };
 
