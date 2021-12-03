@@ -16,7 +16,6 @@
 {% block content %}
     <h1>{% trans 'Configuration' %}</h1>
     <div id="content-main">
-        
         {% for section in sections %}
             <section class="module">
                 <table class="table" width="100%">
@@ -35,7 +34,11 @@
                                 <td>{{ entry.status }}{% if entry.status_message %} {{ entry.status_message }}{% endif %}</td>
                                 <td>
                                     {% for label, url in entry.actions %}
+                                        {% if url %}
                                         <a href="{{ url }}">{{ label }}</a>
+                                        {% else %}
+                                        {{ label }}
+                                        {% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
