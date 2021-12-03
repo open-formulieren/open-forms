@@ -7,8 +7,8 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
@@ -215,7 +215,7 @@ class SubmissionResumeViewTests(TestCase):
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
-        session["form_auth"] = {
+        session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
@@ -256,7 +256,7 @@ class SubmissionResumeViewTests(TestCase):
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
-        session["form_auth"] = {
+        session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
@@ -292,7 +292,7 @@ class SubmissionResumeViewTests(TestCase):
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
-        session["form_auth"] = {
+        session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
@@ -328,7 +328,7 @@ class SubmissionResumeViewTests(TestCase):
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
-        session["form_auth"] = {
+        session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
