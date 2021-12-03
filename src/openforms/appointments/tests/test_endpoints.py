@@ -7,6 +7,7 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.models import Submission
@@ -135,6 +136,200 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 302)
+
+    def test_redirects_to_auth_if_form_requires_login(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="digid",
+            completed=True,
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_redirect_url = furl(
+            f"http://testserver/auth/{submission.form.slug}/digid/start"
+        )
+        expected_redirect_url.args["next"] = f"http://testserver{endpoint}"
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(
+            response, expected_redirect_url.url, fetch_redirect_response=False
+        )
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_after_successful_auth_redirects_to_form(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="digid",
+            form_url="http://testserver/myform/",
+            completed=True,
+            bsn="123456782",
+        )
+        start_time = datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc)
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=start_time,
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_redirect_url = furl(submission.form_url)
+        expected_redirect_url /= "afspraak-annuleren"
+        expected_redirect_url.add(
+            {
+                "time": start_time.isoformat(),
+                "submission_uuid": str(submission.uuid),
+            }
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(
+            response, expected_redirect_url.url, fetch_redirect_response=False
+        )
+        self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+        self.assertIn(
+            str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
+        )
+
+    def test_invalid_auth_plugin_raises_exception(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="wrong-plugin",
+            form_url="http://testserver/myform/",
+            completed=True,
+            bsn="123456782",
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_invalid_auth_attribute_raises_exception(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="digid",
+            form_url="http://testserver/myform/",
+            completed=True,
+            kvk="123456782",
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_invalid_auth_value_raises_exception(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            auth_plugin="digid",
+            form_url="http://testserver/myform/",
+            completed=True,
+            bsn="wrong-bsn",
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-cancel-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(403, response.status_code)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
 
 @freeze_time("2021-07-15T21:15:00Z")
