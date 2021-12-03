@@ -11,10 +11,11 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.base import BasePlugin
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
+
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...registry import register
 
 
 class DemoBaseForm(forms.Form):
@@ -56,13 +57,17 @@ class DemoBaseAuthentication(BasePlugin):
     def handle_return(
         self, request: HttpRequest, form: Form
     ) -> Union[str, HttpResponse]:
-        submited = self.form_class(request.POST)
-        if not submited.is_valid():
+        submitted = self.form_class(request.POST)
+        if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session[self.provides_auth] = submited.cleaned_data[self.form_field]
+        request.session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": submitted.cleaned_data[self.provides_auth],
+        }
 
-        return HttpResponseRedirect(submited.cleaned_data["next"])
+        return HttpResponseRedirect(submitted.cleaned_data["next"])
 
 
 @register("demo")

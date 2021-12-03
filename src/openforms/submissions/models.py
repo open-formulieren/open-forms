@@ -157,6 +157,12 @@ class Submission(models.Model):
         blank=True,
         validators=(validate_kvk,),
     )
+    pseudo = models.CharField(
+        _("Pseudo ID"),
+        max_length=9,
+        blank=True,
+        help_text=_("Pseudo ID provided by authentication with eIDAS"),
+    )
     form_url = models.URLField(
         _("form URL"),
         max_length=255,

@@ -2,9 +2,10 @@ from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
 
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
 from openforms.forms.tests.factories import FormStepFactory
+
+from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....registry import register
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -55,7 +56,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 405)
 
         # good
-        self.assertNotIn("bsn", self.client.session)
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
 
         response = self.client.post(
             url, data={"next": "http://foo.bar", "bsn": "111222333"}
@@ -64,8 +65,13 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "http://foo.bar")
 
-        self.assertIn("bsn", self.client.session)
-        self.assertIn(self.client.session[AuthAttribute.bsn], "111222333")
+        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        self.assertEqual(
+            AuthAttribute.bsn, self.client.session[FORM_AUTH_SESSION_KEY]["attribute"]
+        )
+        self.assertEqual(
+            "111222333", self.client.session[FORM_AUTH_SESSION_KEY]["value"]
+        )
 
     def test_login_kvk(self):
         # simplified from above just checking the kvk plugin
@@ -93,7 +99,7 @@ class LoginTests(TestCase):
         # return
         url = plugin.get_return_url(request, form)
 
-        self.assertNotIn("kvk", self.client.session)
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
 
         response = self.client.post(
             url, data={"next": "http://foo.bar", "kvk": "111222333"}
@@ -102,5 +108,8 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "http://foo.bar")
 
-        self.assertIn("kvk", self.client.session)
-        self.assertIn(self.client.session["kvk"], "111222333")
+        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        self.assertEqual("kvk", self.client.session[FORM_AUTH_SESSION_KEY]["attribute"])
+        self.assertEqual(
+            "111222333", self.client.session[FORM_AUTH_SESSION_KEY]["value"]
+        )

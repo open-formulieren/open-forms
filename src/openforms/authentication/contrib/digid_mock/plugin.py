@@ -8,8 +8,9 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.reverse import reverse
 
 from openforms.authentication.base import BasePlugin, LoginLogo
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
+
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...registry import register
 
 
 @register("digid-mock")
@@ -37,7 +38,11 @@ class DigidMockAuthentication(BasePlugin):
         if not bsn:
             return HttpResponseBadRequest("missing 'bsn' parameter")
 
-        request.session[AuthAttribute.bsn] = bsn
+        request.session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": bsn,
+        }
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:

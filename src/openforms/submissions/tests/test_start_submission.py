@@ -16,9 +16,9 @@ from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
-from ...authentication.constants import AuthAttribute
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import Submission
 
@@ -101,7 +101,11 @@ class SubmissionStartTests(APITestCase):
 
     def test_start_submission_bsn_in_session(self):
         session = self.client.session
-        session[AuthAttribute.bsn] = "123456782"
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
         session.save()
 
         body = {
@@ -114,6 +118,7 @@ class SubmissionStartTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
         self.assertEqual(submission.bsn, "123456782")
+        self.assertEqual(submission.auth_plugin, "digid")
 
     def test_start_submission_in_maintenance_mode(self):
         form = FormFactory.create(maintenance_mode=True)
