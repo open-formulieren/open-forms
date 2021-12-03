@@ -332,7 +332,9 @@ class TestSubmission(TestCase):
         )
 
     def test_copy_submission(self):
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(
+            kvk="kvk1", bsn="bsn1", pseudo="pseudo1", auth_plugin="digid"
+        )
         SubmissionStepFactory.create(
             submission=submission,
             data={"key1": "value1", "key2": "value2"},
@@ -350,5 +352,9 @@ class TestSubmission(TestCase):
         self.assertEqual(new_submission.form_url, submission.form_url)
         self.assertEqual(new_submission.previous_submission, submission)
         self.assertEqual(new_submission.data, submission.data)
+        self.assertEqual(new_submission.kvk, "kvk1")
+        self.assertEqual(new_submission.bsn, "bsn1")
+        self.assertEqual(new_submission.pseudo, "pseudo1")
+        self.assertEqual(new_submission.auth_plugin, "digid")
         self.assertNotEqual(new_submission.id, submission.id)
         self.assertNotEqual(new_submission.uuid, submission.uuid)
