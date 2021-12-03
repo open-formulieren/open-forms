@@ -713,7 +713,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
-sqlparse==0.3.1
+sqlparse==0.4.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
