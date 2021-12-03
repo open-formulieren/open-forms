@@ -1,13 +1,12 @@
 import logging
 import uuid
 
-from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
 
 from furl import furl
 
 from openforms.submissions.models import Submission
-from openforms.submissions.utils import add_submmission_to_session
+from openforms.submissions.views import ResumeFormMixin
 
 from .tokens import submission_appointment_token_generator
 from .utils import find_first_appointment_step
@@ -15,30 +14,10 @@ from .utils import find_first_appointment_step
 logger = logging.getLogger(__name__)
 
 
-def validate_url_and_get_submission(submission_uuid: uuid, token: str) -> Submission:
-    try:
-        submission = Submission.objects.get(uuid=submission_uuid)
-    except Submission.DoesNotExist:
-        logger.debug(
-            "Called endpoint with an invalid submission uuid: %s", submission_uuid
-        )
-        raise PermissionDenied("Url is not valid")
+class VerifyCancelAppointmentLinkView(ResumeFormMixin, RedirectView):
+    token_generator = submission_appointment_token_generator
 
-    # Check that the token is valid
-    valid = submission_appointment_token_generator.check_token(submission, token)
-    if not valid:
-        logger.debug("Called endpoint with an invalid token: %s", token)
-        raise PermissionDenied("Url is not valid")
-
-    return submission
-
-
-class VerifyCancelAppointmentLinkView(RedirectView):
-    def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        submission = validate_url_and_get_submission(submission_uuid, token)
-
-        add_submmission_to_session(submission, self.request.session)
-
+    def get_form_resume_url(self, submission: Submission) -> str:
         f = furl(submission.form_url)
         f /= "afspraak-annuleren"
         f.add(
@@ -50,32 +29,35 @@ class VerifyCancelAppointmentLinkView(RedirectView):
         return f.url
 
 
-class VerifyChangeAppointmentLinkView(RedirectView):
-    def get_redirect_url(self, submission_uuid: uuid, token: str, *args, **kwargs):
-        submission = validate_url_and_get_submission(submission_uuid, token)
+class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
+    token_generator = submission_appointment_token_generator
 
+    def validate_url_and_get_submission(
+        self, submission_uuid: uuid, token: str
+    ) -> Submission:
+        submission = super().validate_url_and_get_submission(submission_uuid, token)
         new_submission = Submission.objects.copy(submission)
+        return new_submission
 
-        add_submmission_to_session(new_submission, self.request.session)
-
-        next_step = find_first_appointment_step(new_submission.form)
+    def get_form_resume_url(self, submission: Submission) -> str:
+        next_step = find_first_appointment_step(submission.form)
 
         if next_step is None:
             # Should not happen but redirect to first step if it does
             logger.warning(
                 "Could not find the appointment step for submission %s,"
                 "redirecting user to first step in form",
-                new_submission.uuid,
+                submission.uuid,
             )
-            next_step = new_submission.form.formstep_set.select_related(
+            next_step = submission.form.formstep_set.select_related(
                 "form_definition"
             ).first()
 
         assert next_step is not None, "Form has no steps to redirect to!"
 
-        f = furl(new_submission.form_url)
+        f = furl(submission.form_url)
         f /= "stap"
         f /= next_step.form_definition.slug
-        f.add({"submission_uuid": new_submission.uuid})
+        f.add({"submission_uuid": submission.uuid})
 
         return f.url

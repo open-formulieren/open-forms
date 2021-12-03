@@ -52,7 +52,7 @@ class ResumeFormMixin:
 
         redirect_url = furl(auth_start_url)
         redirect_url.args["next"] = reverse(
-            "submissions:resume",
+            self.request.resolver_match.view_name,
             request=self.request,
             kwargs={"submission_uuid": submission.uuid, "token": token},
         )
