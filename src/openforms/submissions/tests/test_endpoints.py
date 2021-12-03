@@ -180,7 +180,7 @@ class SubmissionResumeViewTests(TestCase):
         self.assertRedirects(
             response, expected_redirect_url.url, fetch_redirect_response=False
         )
-        self.assertNotIn("form-submissions", self.client.session)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_after_successful_auth_redirects_to_form(self):
         form = FormFactory.create()
@@ -223,8 +223,10 @@ class SubmissionResumeViewTests(TestCase):
         self.assertRedirects(
             response, expected_redirect_url.url, fetch_redirect_response=False
         )
-        self.assertIn("form-submissions", self.client.session)
-        self.assertIn(str(submission.uuid), self.client.session["form-submissions"])
+        self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+        self.assertIn(
+            str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
+        )
 
     def test_invalid_auth_plugin_raises_exception(self):
         form = FormFactory.create()
@@ -261,7 +263,7 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(403, response.status_code)
-        self.assertNotIn("form-submissions", self.client.session)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_invalid_auth_attribute_raises_exception(self):
         form = FormFactory.create()
@@ -298,7 +300,7 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(403, response.status_code)
-        self.assertNotIn("form-submissions", self.client.session)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_invalid_auth_value_raises_exception(self):
         form = FormFactory.create()
@@ -335,4 +337,4 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(403, response.status_code)
-        self.assertNotIn("form-submissions", self.client.session)
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)

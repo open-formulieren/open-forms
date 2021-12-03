@@ -7,6 +7,8 @@ from django.views.generic import RedirectView
 from furl import furl
 from rest_framework.reverse import reverse
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+
 from .models import Submission
 from .tokens import submission_resume_token_generator
 from .utils import add_submmission_to_session
@@ -47,7 +49,7 @@ class ResumeSubmissionView(RedirectView):
         # Login IS required. Check if the user has already logged in.
         # This is done by checking if the authentication details are in the session and
         # if they match those in the saved submission.
-        if "form_auth" in self.request.session:
+        if FORM_AUTH_SESSION_KEY in self.request.session:
             if not self._is_auth_data_correct(submission):
                 raise PermissionDenied("Authentication data is not valid")
 
@@ -72,13 +74,15 @@ class ResumeSubmissionView(RedirectView):
 
     def _is_auth_data_correct(self, submission: Submission) -> bool:
         is_auth_plugin_correct = (
-            submission.auth_plugin == self.request.session["form_auth"]["plugin"]
+            submission.auth_plugin
+            == self.request.session[FORM_AUTH_SESSION_KEY]["plugin"]
         )
         submission_auth_value = getattr(
-            submission, self.request.session["form_auth"]["attribute"]
+            submission, self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
         )
         is_auth_data_correct = (
-            submission_auth_value == self.request.session["form_auth"]["value"]
+            submission_auth_value
+            == self.request.session[FORM_AUTH_SESSION_KEY]["value"]
         )
 
         return is_auth_plugin_correct and is_auth_data_correct

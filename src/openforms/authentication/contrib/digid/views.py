@@ -10,8 +10,8 @@ from digid_eherkenning.views import (
 )
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.digid.mixins import AssertionConsumerServiceMixin
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from .mixins import AssertionConsumerServiceMixin
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class DigiDAssertionConsumerServiceView(
             raise BSNNotPresentError
 
         bsn = sectoral_number
-        request.session["form_auth"] = {
+        request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": bsn,

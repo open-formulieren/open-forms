@@ -24,7 +24,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ....constants import AuthAttribute
+from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 
 # The settings for the eIDAS service are within the eHerkenning settings
 EIDAS_SERVICE_INDEX = "9999"
@@ -276,11 +276,12 @@ class AuthenticationStep5Tests(TestCase):
             status_code=302,
         )
 
-        self.assertIn("form_auth", self.client.session)
+        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
         self.assertEqual(
-            AuthAttribute.pseudo, self.client.session["form_auth"]["attribute"]
+            AuthAttribute.pseudo,
+            self.client.session[FORM_AUTH_SESSION_KEY]["attribute"],
         )
-        self.assertEqual(pseudo_id, self.client.session["form_auth"]["value"])
+        self.assertEqual(pseudo_id, self.client.session[FORM_AUTH_SESSION_KEY]["value"])
 
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True

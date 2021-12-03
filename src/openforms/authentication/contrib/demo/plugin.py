@@ -11,10 +11,11 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.base import BasePlugin
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
+
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...registry import register
 
 
 class DemoBaseForm(forms.Form):
@@ -60,7 +61,7 @@ class DemoBaseAuthentication(BasePlugin):
         if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session["form_auth"] = {
+        request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
             "value": submitted.cleaned_data[self.provides_auth],
