@@ -13,7 +13,7 @@ from django.utils.http import base36_to_int, int_to_base36
 
 class BaseTokenGenerator(ABC):
     """
-    Strategy object used to generate and check tokens for object-level permission checks.
+    Generate and check tokens for object-level permission checks.
 
     Implementation adapted from
     :class:`django.contrib.auth.tokens.PasswordResetTokenGenerator`.
@@ -33,7 +33,8 @@ class BaseTokenGenerator(ABC):
 
     Subclasses MUST:
 
-    * specify :attr:`key_salt` - the salt to use for all tokens, input to :func:`salted_hmac`
+    * specify :attr:`key_salt` - the salt to use for all tokens, input to
+      :func:`salted_hmac`
     * specify :attr:`token_timeout_days`, determining how long the token is valid.
     * implement :meth:`get_hash_value_parts`
     """
@@ -45,7 +46,8 @@ class BaseTokenGenerator(ABC):
     """
     token_timeout_days = 1
     """
-    Default number of days the token is valid. Can be overridden via :meth:`get_token_timeout_days`.
+    Default number of days the token is valid. Can be overridden via
+    :meth:`get_token_timeout_days`.
     """
 
     def make_token(self, obj: models.Model) -> str:
@@ -95,8 +97,8 @@ class BaseTokenGenerator(ABC):
         """
         Determine how many days the token is valid for.
 
-        Defaults to :attr:`token_timeout_days`, optionally you can override this method and
-        fetch information from the object being checked.
+        Defaults to :attr:`token_timeout_days`, optionally you can override this method
+        and fetch information from the object being checked.
         """
         return self.token_timeout_days
 

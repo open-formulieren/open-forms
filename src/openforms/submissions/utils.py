@@ -3,8 +3,6 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
-from django.utils.safestring import SafeText
-from django.utils.translation import gettext_lazy as _
 
 from openforms.appointments.service import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (

@@ -9,7 +9,7 @@ class Registry(BaseRegistry):
     def check_plugin(self, plugin):
         if not plugin.configuration_options:
             raise ValueError(
-                f"Please specify 'configuration_options' attribute for plugin class."
+                "Please specify 'configuration_options' attribute for plugin class."
             )
 
 

@@ -1,5 +1,5 @@
 """
-The :mod:`openforms.registrations` package provides the persistence backends 
+The :mod:`openforms.registrations` package provides the persistence backends
 for submissions.
 
 Once a form is submitted ('completed') by an end-user, a

@@ -184,14 +184,17 @@ class Plugin(BasePlugin):
             "notes": remarks,
         }
 
+        start_date = start_at.strftime("%Y-%m-%d")
+        start_time = start_at.strftime("%H:%M")
+        url = (
+            f"branches/{location.identifier}/services/{product_id}/"
+            f"dates/{start_date}/times/{start_time}/book"
+        )
         try:
-            response = self.client.post(
-                f"branches/{location.identifier}/services/{product_id}/dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
-                data,
-            )
+            response = self.client.post(url, data)
             response.raise_for_status()
             return response.json()["publicId"]
-        except (ClientError, RequestException, KeyError) as e:
+        except (ClientError, RequestException, KeyError):
             raise AppointmentCreateFailed(
                 "Could not create appointment for products '%s' at location '%s' starting at %s",
                 product_id,
