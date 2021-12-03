@@ -4,10 +4,10 @@ from datetime import date, datetime
 from typing import Dict, List, Optional
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.urls import build_absolute_uri
@@ -72,12 +72,11 @@ class AppointmentDetails:
         return self.identifier
 
 
-class BasePlugin:
+class BasePlugin(AbstractBasePlugin):
     """
     Base Appointment plugin.
     """
 
-    verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
     configuration_options = EmptyOptions
 
     def get_available_products(
@@ -210,9 +209,6 @@ class BasePlugin:
         raise NotImplementedError()
 
     # cosmetics
-
-    def get_label(self) -> str:
-        return self.verbose_name
 
     @staticmethod
     def get_link(submission: Submission, verb: str) -> str:

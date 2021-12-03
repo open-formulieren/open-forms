@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Mapping
 
 from django.http import HttpRequest, HttpResponse
-from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import PaymentRequestType
@@ -34,18 +34,10 @@ class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
 
 
-class BasePlugin:
-    verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
-    """
-    Specify the human-readable label for the plugin.
-    """
+class BasePlugin(AbstractBasePlugin):
     return_method = "GET"
     webhook_method = "POST"
     configuration_options = EmptyOptions
-    is_demo_plugin = False
-
-    def __init__(self, identifier: str):
-        self.identifier = identifier
 
     # override
 
@@ -93,8 +85,3 @@ class BasePlugin:
             self.get_label(),
         )
         return info
-
-    # cosmetics
-
-    def get_label(self) -> str:
-        return self.verbose_name

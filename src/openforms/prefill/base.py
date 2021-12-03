@@ -1,21 +1,11 @@
 from typing import Any, Dict, Iterable, List, Tuple
 
-from django.utils.translation import gettext_lazy as _
-
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 
 
-class BasePlugin:
-    verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
+class BasePlugin(AbstractBasePlugin):
     requires_auth = None
-    is_demo_plugin = False
-
-    """
-    Specify the human-readable label for the plugin.
-    """
-
-    def __init__(self, identifier: str):
-        self.identifier = identifier
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """

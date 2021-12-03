@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from django.http import HttpRequest, HttpResponse
-from django.utils.translation import gettext_lazy as _
 
 from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
+from openforms.plugins.plugin import AbstractBasePlugin
 
 
 @dataclass()
@@ -24,17 +24,9 @@ class LoginInfo:
     url: Optional[str] = None
 
 
-class BasePlugin:
-    verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
-    """
-    Specify the human-readable label for the plugin.
-    """
+class BasePlugin(AbstractBasePlugin):
     provides_auth = None
     return_method = "GET"
-    is_demo_plugin = False
-
-    def __init__(self, identifier: str):
-        self.identifier = identifier
 
     # override
 
