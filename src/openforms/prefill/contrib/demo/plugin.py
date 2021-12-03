@@ -38,3 +38,9 @@ class DemoPrefill(BasePlugin):
           to efficiently fetch as much data as possible with the minimal amount of calls.
         """
         return {attr: CALLBACKS[attr]() for attr in attributes}
+
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
+        pass
