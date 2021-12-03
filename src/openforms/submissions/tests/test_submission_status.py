@@ -285,6 +285,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             # see PR#650 which drops this requirement
             form__payment_backend_options={"merchant_id": merchant.id},
         )
+        submission.calculate_price()
         SubmissionReportFactory.create(submission=submission)
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(

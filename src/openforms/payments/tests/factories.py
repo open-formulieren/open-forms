@@ -36,7 +36,7 @@ class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
             submission=submission,
             plugin_id=submission.form.payment_backend,
             plugin_options=submission.form.payment_backend_options,
-            amount=submission.form.product.price,
+            amount=submission.price,
             **kwargs,
         )
         return payment

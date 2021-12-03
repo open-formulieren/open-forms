@@ -4,15 +4,20 @@ makes resuming possible across devices (if you have a "magic link").
 
 This information drives the frontend/navigation.
 """
+from decimal import Decimal
 
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormPriceLogicFactory,
+    FormStepFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
@@ -89,7 +94,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "payment": {
                     "isRequired": False,
                     "hasPaid": False,
-                    "amount": "15.00",
+                    "amount": None,
                 },
             },
         )
@@ -115,4 +120,93 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 template="logging/events/submission_details_view_api.txt"
             ).count(),
             1,
+        )
+
+
+class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
+    def test_submission_payment_information_no_payment_required(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product=None,
+            form__payment_backend="demo",
+        )
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertFalse(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": False,
+                "amount": None,
+                "hasPaid": False,
+            },
+        )
+
+    def test_submission_payment_information_uses_product_price(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+        )
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": "123.45",
+                "hasPaid": False,
+            },
+        )
+
+    def test_submission_payment_information_uses_logic_rules(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"test-key": "test"},
+        )
+        FormPriceLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
+            price=Decimal("51.15"),
+        )
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": "51.15",
+                "hasPaid": False,
+            },
         )

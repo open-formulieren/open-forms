@@ -16,7 +16,6 @@ from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
 from openforms.logging import logevent
-from openforms.logging.logevent import submission_details_view_api
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ...utils.api.throttle_classes import PollingRateThrottle
@@ -73,12 +72,27 @@ logger = logging.getLogger(__name__)
 class SubmissionViewSet(
     PermissionFilterMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
 ):
-    queryset = Submission.objects.order_by("created_on")
+    queryset = (
+        Submission.objects.select_related("form", "form__product")
+        .prefetch_related(
+            "form__formpricelogic_set",
+        )
+        .order_by("created_on")
+    )
     serializer_class = SubmissionSerializer
     authentication_classes = ()
     permission_classes = [ActiveSubmissionPermission]
     lookup_field = "uuid"
     pagination_class = pagination.PageNumberPagination
+
+    def get_object(self):
+        if not hasattr(self, "_get_object_cache"):
+            submission = super().get_object()
+            self._get_object_cache = submission
+            # on the fly, calculate the price if it's not set yet (required for overview screen)
+            if submission.completed_on is None:
+                submission.calculate_price(save=False)
+        return self._get_object_cache
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -137,6 +151,7 @@ class SubmissionViewSet(
                 validation_serializer.data, status=status.HTTP_400_BAD_REQUEST
             )
 
+        submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
         submission.save()
 
@@ -227,7 +242,7 @@ class SubmissionViewSet(
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        submission_details_view_api(self.get_object(), request.user)
+        logevent.submission_details_view_api(self.get_object(), request.user)
         return super().retrieve(request, *args, **kwargs)
 
 

@@ -25,6 +25,7 @@ class OgoneTests(TestCase):
             pspid="psp123",
         )
         submission = SubmissionFactory.create(
+            completed=True,
             form__slug="myform",
             form__payment_backend="ogone-legacy",
             form__payment_backend_options={"merchant_id": merchant.id},
@@ -114,6 +115,7 @@ class OgoneTests(TestCase):
             pspid="psp123",
         )
         submission = SubmissionFactory.create(
+            completed=True,
             form__slug="myform",
             form__payment_backend="ogone-legacy",
             form__payment_backend_options={"merchant_id": merchant.id},

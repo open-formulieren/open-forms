@@ -288,7 +288,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 class PaymentConfirmationEmailTests(TestCase):
     def test_email_payment_not_required(self):
         email = ConfirmationEmailTemplate(content="test {% payment_information %}")
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(completed=True, price=Decimal("10.00"))
         self.assertFalse(submission.payment_required)
         self.assertFalse(submission.payment_user_has_paid)
 
@@ -302,13 +302,14 @@ class PaymentConfirmationEmailTests(TestCase):
         for literal in literals:
             with self.subTest(literal=literal):
                 self.assertNotIn(
-                    literal % {"payment_price": submission.form.product.price},
+                    literal % {"payment_price": Decimal("10.00")},
                     rendered_content,
                 )
 
     def test_email_payment_incomplete(self):
         email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create(
+            completed=True,
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )
@@ -333,6 +334,7 @@ class PaymentConfirmationEmailTests(TestCase):
     def test_email_payment_completed(self):
         email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create(
+            completed=True,
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )

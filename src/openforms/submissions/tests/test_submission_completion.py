@@ -6,6 +6,7 @@ sub-resource.
 
 The backend should perform total-form validation as part of this action.
 """
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.utils import timezone
@@ -17,7 +18,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormPriceLogicFactory,
+    FormStepFactory,
+)
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
@@ -198,3 +203,141 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             response_data,
             {"incompleteSteps": [], "canSubmit": False},
         )
+
+
+@temp_private_root()
+class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
+    """
+    Make assertions about price derivation on submission completion.
+    """
+
+    def test_no_product_no_price_rules(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product=None,
+            form__payment_backend="demo",
+        )
+        with self.subTest(part="check data setup"):
+            self.assertFalse(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertFalse(submission.payment_required)
+        self.assertIsNone(submission.price)
+
+    def test_no_product_linked_but_price_rules_set(self):
+        """
+        Test that payment is not required if no product is linked, even with price rules.
+        """
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product=None,
+            form__payment_backend="demo",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"test-key": "test"},
+        )
+        FormPriceLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
+            price=Decimal("9.6"),
+        )
+        with self.subTest(part="check data setup"):
+            self.assertFalse(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertFalse(submission.payment_required)
+        self.assertIsNone(submission.price)
+
+    def test_use_product_price(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+        )
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertTrue(submission.payment_required)
+        self.assertEqual(submission.price, Decimal("123.45"))
+
+    def test_price_rules_specified(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"test-key": "test"},
+        )
+        FormPriceLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
+            price=Decimal("51.15"),
+        )
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertTrue(submission.payment_required)
+        self.assertEqual(submission.price, Decimal("51.15"))
+
+    def test_price_rules_specified_but_no_match(self):
+        """
+        Assert that the product price is used as fallback.
+        """
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__optional=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"test-key": "test"},
+        )
+        FormPriceLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "test-key"}, "nottest"]},
+            price=Decimal("51.15"),
+        )
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        submission.refresh_from_db()
+        self.assertTrue(submission.payment_required)
+        self.assertEqual(submission.price, Decimal("123.45"))
