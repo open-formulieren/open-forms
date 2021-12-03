@@ -74,17 +74,19 @@ class ResumeFormMixin:
 
         return is_auth_plugin_correct and is_auth_data_correct
 
+    def custom_submission_modifications(self, submission: Submission) -> Submission:
+        return submission
+
     def get_redirect_url(
         self, submission_uuid: uuid, token: str, *args, **kwargs
     ) -> str:
         submission = self.validate_url_and_get_submission(submission_uuid, token)
 
-        form_resume_url = self.get_form_resume_url(submission)
-
         # No login required, skip authentication
         if not submission.form.login_required:
+            submission = self.custom_submission_modifications(submission)
             add_submmission_to_session(submission, self.request.session)
-            return form_resume_url
+            return self.get_form_resume_url(submission)
 
         # Login IS required. Check if the user has already logged in.
         # This is done by checking if the authentication details are in the session and
@@ -93,8 +95,9 @@ class ResumeFormMixin:
             if not self.is_auth_data_correct(submission):
                 raise PermissionDenied("Authentication data is not valid")
 
+            submission = self.custom_submission_modifications(submission)
             add_submmission_to_session(submission, self.request.session)
-            return form_resume_url
+            return self.get_form_resume_url(submission)
 
         # The user has not logged in. Redirect them to the start of the authentication process
         return self.get_login_url(submission, token)

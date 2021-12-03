@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
 
 from furl import furl
@@ -32,12 +33,8 @@ class VerifyCancelAppointmentLinkView(ResumeFormMixin, RedirectView):
 class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
     token_generator = submission_appointment_token_generator
 
-    def validate_url_and_get_submission(
-        self, submission_uuid: uuid, token: str
-    ) -> Submission:
-        submission = super().validate_url_and_get_submission(submission_uuid, token)
-        new_submission = Submission.objects.copy(submission)
-        return new_submission
+    def custom_submission_modifications(self, submission: Submission) -> Submission:
+        return Submission.objects.copy(submission)
 
     def get_form_resume_url(self, submission: Submission) -> str:
         next_step = find_first_appointment_step(submission.form)
