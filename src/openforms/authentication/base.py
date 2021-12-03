@@ -34,11 +34,11 @@ class BasePlugin(AbstractBasePlugin):
         self, request: HttpRequest, form: Form, form_url: str
     ) -> HttpResponse:
         # redirect/go to auth service (like digid)
-        raise NotImplementedError()
+        raise NotImplementedError()  # noqa
 
     def handle_return(self, request: HttpRequest, form: Form) -> HttpResponse:
         # process and validate return information, store bsn in session
-        raise NotImplementedError()
+        raise NotImplementedError()  # noqa
 
     def handle_co_sign(self, request: HttpRequest, form: Form) -> Dict[str, Any]:
         """
@@ -47,7 +47,7 @@ class BasePlugin(AbstractBasePlugin):
         The co-sign details are stored on ``Submission.co_sign_data`` and must match the
         schema (except for the ``plugin`` key).
         """
-        raise NotImplementedError()
+        raise NotImplementedError()  # noqa
 
     # helpers
 

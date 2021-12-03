@@ -3,8 +3,10 @@ from urllib.parse import quote
 from django.test import RequestFactory, TestCase, override_settings
 
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....registry import register
 
 
@@ -113,3 +115,68 @@ class LoginTests(TestCase):
         self.assertEqual(
             "111222333", self.client.session[FORM_AUTH_SESSION_KEY]["value"]
         )
+
+
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
+    def test_login_co_sign_bsn(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__slug="myform",
+            form__authentication_backends=["demo"],
+        )
+        self._add_submission_to_session(submission)
+        form = submission.form
+        plugin = register["demo"]
+        # we need an arbitrary request
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        start_url = plugin.get_start_url(request, form)
+        return_url = plugin.get_return_url(request, form)
+
+        with self.subTest("auth flow start"):
+            start_response = self.client.get(
+                start_url,
+                {"next": "http://localhost:3000", CO_SIGN_PARAMETER: submission.uuid},
+            )
+
+            self.assertEqual(start_response.status_code, 200)
+            initial_data = start_response.context["form"].initial
+            self.assertEqual(
+                initial_data,
+                {
+                    "next": "http://localhost:3000",
+                    CO_SIGN_PARAMETER: str(submission.uuid),
+                },
+            )
+
+        with self.subTest("auth flow invalid data"):
+            return_response = self.client.post(
+                return_url,
+                {
+                    "next": "http://localhost:3000",
+                    CO_SIGN_PARAMETER: submission.uuid,
+                    "bsn": "",
+                },
+            )
+
+            self.assertEqual(return_response.status_code, 400)
+
+        with self.subTest("auth flow return"):
+            return_response = self.client.post(
+                return_url,
+                {
+                    "next": "http://localhost:3000",
+                    CO_SIGN_PARAMETER: submission.uuid,
+                    "bsn": "111222333",
+                },
+            )
+
+            self.assertEqual(return_response.status_code, 302)
+            self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+            submission.refresh_from_db()
+            self.assertEqual(
+                submission.co_sign_data,
+                {"plugin": "demo", "identifier": "111222333", "fields": {}},
+            )

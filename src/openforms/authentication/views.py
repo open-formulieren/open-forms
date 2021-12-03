@@ -27,6 +27,7 @@ from openforms.utils.redirect import allow_redirect_url
 
 from .base import BasePlugin
 from .constants import CO_SIGN_PARAMETER
+from .exceptions import InvalidCoSignData
 from .registry import register
 
 logger = logging.getLogger(__name__)
@@ -288,7 +289,10 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         if plugin.return_method.upper() != request.method.upper():
             return HttpResponseNotAllowed([plugin.return_method])
 
-        self._handle_co_sign(form, plugin)
+        try:
+            self._handle_co_sign(form, plugin)
+        except InvalidCoSignData as exc:
+            return HttpResponseBadRequest(exc.args[0])
         response = plugin.handle_return(request, form)
 
         if response.status_code in (301, 302):

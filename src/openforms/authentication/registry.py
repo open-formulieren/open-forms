@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from openforms.plugins.registry import BaseRegistry
 
 if TYPE_CHECKING:
-    from .base import LoginInfo
+    from .base import LoginInfo  # noqa
 
 
 class Registry(BaseRegistry):
