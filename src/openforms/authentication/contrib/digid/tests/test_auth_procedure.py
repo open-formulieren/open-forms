@@ -8,10 +8,10 @@ from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+import requests_mock
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
-from requests_mock import Mocker
 from rest_framework import status
 
 from openforms.forms.tests.factories import (
@@ -19,6 +19,10 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
+
+from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 
 DIGID = {
     "base_url": "https://test-sp.nl",
@@ -60,6 +64,17 @@ DIGID = {
     },
     "requested_attributes": ["bsn"],
 }
+
+
+def _create_test_artifact(service_entity_id: str = "") -> str:
+    if not service_entity_id:
+        service_entity_id = settings.DIGID["entity_id"]
+    type_code = b"\x00\x04"
+    endpoint_index = b"\x00\x00"
+    sha_entity_id = sha1(service_entity_id.encode("utf-8")).digest()
+    message_handle = b"01234567890123456789"  # something random
+    b64encoded = b64encode(type_code + endpoint_index + sha_entity_id + message_handle)
+    return b64encoded.decode("ascii")
 
 
 @override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
@@ -130,15 +145,8 @@ class AuthenticationStep2Tests(TestCase):
 
 
 @override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True)
-@Mocker()
+@requests_mock.Mocker()
 class AuthenticationStep5Tests(TestCase):
-    def _create_test_artifact(self, service_entity_id) -> bytes:
-        type_code = b"\x00\x04"
-        endpoint_index = b"\x00\x00"
-        sha_entity_id = sha1(service_entity_id.encode("utf-8")).digest()
-        message_handle = b"01234567890123456789"  # something random
-        return b64encode(type_code + endpoint_index + sha_entity_id + message_handle)
-
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
     )
@@ -199,9 +207,7 @@ class AuthenticationStep5Tests(TestCase):
 
         url = furl(reverse("digid:acs")).set(
             {
-                "SAMLart": self._create_test_artifact(
-                    DIGID["service_entity_id"]
-                ).decode("ascii"),
+                "SAMLart": _create_test_artifact(),
                 "RelayState": form_url,
             }
         )
@@ -271,9 +277,7 @@ class AuthenticationStep5Tests(TestCase):
 
         url = furl(reverse("digid:acs")).set(
             {
-                "SAMLart": self._create_test_artifact(
-                    DIGID["service_entity_id"]
-                ).decode("ascii"),
+                "SAMLart": _create_test_artifact(),
                 "RelayState": success_return_url.url,
             }
         )
@@ -286,3 +290,37 @@ class AuthenticationStep5Tests(TestCase):
             response.redirect_chain[-1],
             (form_url.url, 302),
         )
+
+
+@override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True)
+@requests_mock.Mocker()
+class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
+    @freeze_time("2020-04-09T08:31:46Z")
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_for_co_sign(self, m, mock_id):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__slug="myform",
+            form__authentication_backends=["digid"],
+        )
+        self._add_submission_to_session(submission)
+        form_url = "http://localhost:3000"
+        login_url = reverse(
+            "authentication:start", kwargs={"slug": "myform", "plugin_id": "digid"}
+        )
+
+        start_response = self.client.get(
+            login_url,
+            {"next": form_url, CO_SIGN_PARAMETER: submission.uuid},
+            follow=True,
+        )
+
+        # form that auto-submits to DigiD
+        self.assertEqual(start_response.status_code, 200)
+        relay_state = furl(start_response.context["form"].initial["RelayState"])
+        self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
+        self.assertEqual(relay_state.args[CO_SIGN_PARAMETER], str(submission.uuid))

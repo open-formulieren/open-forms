@@ -2,14 +2,14 @@ from typing import Optional
 
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
-from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
+from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.authentication.base import BasePlugin, LoginLogo
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
+from ...base import BasePlugin, LoginLogo
+from ...constants import CO_SIGN_PARAMETER, AuthAttribute
+from ...registry import register
 
 
 @register("digid")
@@ -28,13 +28,16 @@ class DigidAuthentication(BasePlugin):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": "digid"},
         )
-        params = {"next": form_url}
-        return_url = f"{auth_return_url}?{urlencode(params)}"
+        return_url = furl(auth_return_url).set(
+            {
+                "next": form_url,
+            }
+        )
+        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
+            return_url.args[CO_SIGN_PARAMETER] = co_sign_param
 
-        auth_return_params = {"next": return_url}
-        url = f"{login_url}?{urlencode(auth_return_params)}"
-
-        return HttpResponseRedirect(url)
+        redirect_url = furl(login_url).set({"next": str(return_url)})
+        return HttpResponseRedirect(str(redirect_url))
 
     def handle_return(self, request, form):
         """Redirect to form URL.
