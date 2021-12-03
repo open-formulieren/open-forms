@@ -1,12 +1,17 @@
 import logging
 from typing import Any, Dict, Iterable, List, Tuple
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import xmltodict
+from defusedxml.lxml import fromstring as df_fromstring
 from glom import T as Target, glom
+from lxml import etree
+from requests import HTTPError, RequestException
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
@@ -83,3 +88,46 @@ class StufBgPrefill(BasePlugin):
                 response_dict[attribute] = value
 
         return response_dict
+
+    def check_config(self):
+        check_bsn = "111222333"
+
+        config = StufBGConfig.get_solo()
+        if not config.service:
+            raise InvalidPluginConfiguration(_("Service not selected"))
+
+        client = config.get_client()
+        try:
+            data = client.get_request_data(check_bsn, [FieldChoices.bsn])
+            response = client.make_request(data)
+            response.raise_for_status()
+        except (RequestException, HTTPError) as e:
+            raise InvalidPluginConfiguration(
+                _("Client error: {exception}").format(exception=e)
+            )
+        else:
+            try:
+                xml = df_fromstring(response.content)
+            except etree.XMLSyntaxError as e:
+                raise InvalidPluginConfiguration(
+                    _("SyntaxError in response: {exception}").format(exception=e)
+                )
+            else:
+                faults = xml.xpath("//*[local-name()='Fault']/faultstring")
+                if not faults or faults[0].text != "Object niet gevonden":
+                    raise InvalidPluginConfiguration(
+                        _(
+                            "Unexpected response: expected '{message}' SOAP response"
+                        ).format(message="Object niet gevonden")
+                    )
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:stuf_bg_stufbgconfig_change",
+                    args=(StufBGConfig.singleton_instance_id,),
+                ),
+            ),
+        ]
