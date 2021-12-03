@@ -1,15 +1,18 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
+from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.authentication.base import BasePlugin, LoginLogo
+from openforms.forms.models import Form
 
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...base import BasePlugin, LoginLogo
+from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...exceptions import InvalidCoSignData
 from ...registry import register
 
 
@@ -19,15 +22,28 @@ class DigidMockAuthentication(BasePlugin):
     provides_auth = AuthAttribute.bsn
     is_demo_plugin = True
 
-    def start_login(self, request, form, form_url):
+    def start_login(self, request: HttpRequest, form: Form, form_url: str):
         url = reverse("digid-mock:login", request=request)
+        acs = furl(self.get_return_url(request, form))
+        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
+            acs.args[CO_SIGN_PARAMETER] = co_sign_param
         params = {
-            "acs": self.get_return_url(request, form),
+            "acs": str(acs),
             "next": form_url,
             "cancel": form_url,
         }
         url = f"{url}?{urlencode(params)}"
         return HttpResponseRedirect(url)
+
+    def handle_co_sign(
+        self, request: HttpRequest, form: Form
+    ) -> Optional[Dict[str, Any]]:
+        if not (bsn := request.GET.get("bsn")):
+            raise InvalidCoSignData("Missing 'bsn' parameter/value")
+        return {
+            "identifier": bsn,
+            "fields": {},
+        }
 
     def handle_return(self, request, form):
         form_url = request.GET.get("next")
@@ -38,11 +54,14 @@ class DigidMockAuthentication(BasePlugin):
         if not bsn:
             return HttpResponseBadRequest("missing 'bsn' parameter")
 
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": self.identifier,
-            "attribute": self.provides_auth,
-            "value": bsn,
-        }
+        # set the session auth key only if we're not co-signing
+        if CO_SIGN_PARAMETER not in request.GET:
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": bsn,
+            }
+
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:

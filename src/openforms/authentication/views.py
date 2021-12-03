@@ -291,6 +291,8 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
         try:
             self._handle_co_sign(form, plugin)
+        except serializers.ValidationError:
+            return HttpResponseBadRequest("plugin returned invalid data")
         except InvalidCoSignData as exc:
             return HttpResponseBadRequest(exc.args[0])
         response = plugin.handle_return(request, form)
@@ -316,8 +318,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 "plugin": plugin.identifier,
             }
             serializer = CoSignDataSerializer(data=co_sign_data)
-            if not serializer.is_valid():
-                return HttpResponseBadRequest("plugin returned invalid data")
+            serializer.is_valid(raise_exception=True)
 
             co_sign_submission.co_sign_data = serializer.validated_data
             co_sign_submission.save(update_fields=["co_sign_data"])
