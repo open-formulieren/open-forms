@@ -196,7 +196,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
-        return_value=FixedCancelAndChangeLinkPlugin(),
+        return_value=FixedCancelAndChangeLinkPlugin("email"),
     )
     def test_appointment_information(self, get_client_mock):
         config = GlobalConfiguration.get_solo()
@@ -401,7 +401,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
-        return_value=TestAppointmentPlugin(),
+        return_value=TestAppointmentPlugin("test"),
     )
     def test_send_confirmation_mail_text_kitchensink(self, appointment_client_mock):
         config = GlobalConfiguration.get_solo()

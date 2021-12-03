@@ -47,6 +47,9 @@ class ConfigurationView(TemplateView):
         except InvalidPluginConfiguration as e:
             status_message = e
             status = False
+        except NotImplementedError:
+            status_message = _("Not implemented")
+            status = None
         except Exception as e:
             status_message = _("Internal error: {exception}").format(exception=e)
             status = None
@@ -56,11 +59,18 @@ class ConfigurationView(TemplateView):
 
         try:
             actions = plugin.get_config_actions()
-        except Exception:
+        except NotImplementedError:
             actions = [
                 (
                     "Not implemented",
                     "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
+                )
+            ]
+        except Exception as e:
+            actions = [
+                (
+                    _("Internal error: {exception}").format(exception=e),
+                    "",
                 )
             ]
 

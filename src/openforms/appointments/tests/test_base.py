@@ -36,7 +36,7 @@ class BasePluginTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.plugin = TestPlugin()
+        cls.plugin = TestPlugin("base")
 
     @override_settings(BASE_URL="https://example.com/")
     def test_get_cancel_link(self):
