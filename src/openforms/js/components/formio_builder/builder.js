@@ -40,6 +40,7 @@ const BUILDER_OPTIONS = {
                 file: true,
                 map: true,
                 password: true,
+                licenseplate: true,
             }
         },
         custom_layout: {
