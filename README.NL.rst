@@ -27,8 +27,9 @@ Door gebruik te maken van een plugin-architectuur kan Open Formulieren flexibel
 worden ingericht met submission backends (bijv. `Open Zaak`_), authenticatie 
 middelen, betaalproviders, kalender applicaties en pre-fill services.
 
-Open Formulieren is ontwikkeld volgens de `Common Ground`_ principes, specifiek 
-voor gemeenten en met focus op gebruiksgemak voor zowel burger als beheerder.
+Open Formulieren is ontwikkeld volgens de `Common Ground`_ principes, met veel
+plugins voor overheidsgebruik en met focus op gebruiksgemak voor zowel 
+eindgebruikers als beheerders.
 
 .. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
@@ -64,9 +65,9 @@ Links
 * `Documentatie <https://open-forms.readthedocs.io/>`_
 * `Community <https://commonground.nl/groups/view/0c79b387-4567-4522-bc35-7d3583978c9f/open-forms>`_
 * `Docker image <https://hub.docker.com/r/openformulieren/open-forms>`_
-* `Open Formulieren SDK <https://github.com/open-formulieren/open-forms-sdk>`_
 * `Issues <https://github.com/open-formulieren/open-forms/issues>`_
 * `Code <https://github.com/open-formulieren/open-forms>`_
+* `Open Formulieren SDK <https://github.com/open-formulieren/open-forms-sdk>`_
 
 
 Licentie

@@ -28,8 +28,8 @@ backends (ie. `Open Zaak`_), authentication schemes, payment providers, calendar
 apps and pre-fill services.
 
 Open Forms is developed in line with the `Common Ground`_ principles,
-specificly for municipalities and with a strong focus on usability for both
-the civilian users and the administrator.
+with many plugins for government usage and with a strong focus on usability for 
+both end users and administrators.
 
 .. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
@@ -64,9 +64,9 @@ References
 * `Documentation <https://open-forms.readthedocs.io/>`_
 * `Community <https://commonground.nl/groups/view/0c79b387-4567-4522-bc35-7d3583978c9f/open-forms>`_
 * `Docker image <https://hub.docker.com/r/openformulieren/open-forms>`_
-* `Open Forms SDK <https://github.com/open-formulieren/open-forms-sdk>`_
 * `Issues <https://github.com/open-formulieren/open-forms/issues>`_
 * `Code <https://github.com/open-formulieren/open-forms>`_
+* `Open Forms SDK <https://github.com/open-formulieren/open-forms-sdk>`_
 
 
 Licence
