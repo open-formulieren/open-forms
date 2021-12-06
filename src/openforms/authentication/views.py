@@ -51,10 +51,9 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
         Check if the flow is a co-sign flow and validate the referenced submission.
         """
         request_data = getattr(self.request, self.request.method)
-        if CO_SIGN_PARAMETER not in request_data:
+        if not (submission_uuid := request_data.get(CO_SIGN_PARAMETER)):
             return None
 
-        submission_uuid = request_data[CO_SIGN_PARAMETER]
         # validate permissions so that people cannot just tinker with UUIDs in URLs
         if not owns_submission(self.request, submission_uuid):
             raise PermissionDenied("invalid submission ID")

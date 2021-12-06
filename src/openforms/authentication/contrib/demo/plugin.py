@@ -10,7 +10,6 @@ from django.http import (
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
-from openforms.authentication.base import BasePlugin
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
 
