@@ -58,7 +58,9 @@ class SubmissionQuerySet(models.QuerySet):
 class BaseSubmissionManager(models.Manager):
     @transaction.atomic
     def copy(
-        self, original: "Submission", fields=("form", "form_url", "bsn", "kvk")
+        self,
+        original: "Submission",
+        fields=("form", "form_url", "bsn", "kvk", "pseudo", "auth_plugin"),
     ) -> "Submission":
         """
         Copy an existing submission into a new, cleaned submission record.
