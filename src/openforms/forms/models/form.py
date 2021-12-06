@@ -134,6 +134,13 @@ class Form(models.Model):
             "Leave blank to get value from global configuration."
         ),
     )
+    explanation_template = HTMLField(
+        _("explanation template"),
+        blank=True,
+        help_text=_(
+            "Content that will be shown on the start page of the form, below the title and above the log in text."
+        ),
+    )
 
     # life cycle management
     active = models.BooleanField(_("active"), default=False)
