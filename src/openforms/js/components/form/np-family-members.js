@@ -2,14 +2,19 @@
  * A form widget to select family members.
  */
 import {Formio} from 'formiojs';
-import {DEFAULT_CHOICES_TABS} from "./edit/tabs";
+import {
+    ADVANCED,
+    REGISTRATION,
+    SENSITIVE_BASIC,
+    VALIDATION
+} from './edit/tabs';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
 
 class NpFamilyMembers extends SelectBoxes {
     static schema(...extend) {
         return SelectBoxes.schema({
-            label: 'Selecteer gezinsleden',
+            label: 'Select family members',
             key: 'npFamilyMembers',
             type: 'npFamilyMembers',
         }, ...extend);
@@ -17,8 +22,8 @@ class NpFamilyMembers extends SelectBoxes {
 
     static get builderInfo() {
         return {
-            title: 'Gezinsleden',
-            icon: 'fa fa-users',
+            title: 'Family members',
+            icon: 'users',
             group: 'basic',
             weight: 10,
             schema: NpFamilyMembers.schema(),
@@ -30,7 +35,21 @@ class NpFamilyMembers extends SelectBoxes {
     }
 
     static editForm() {
-        return {components: [DEFAULT_CHOICES_TABS]};
+        // The datagrid that would usually be shown to set the values of the checkboxes is not present, since the
+        // values will be set by the fill_out_family_members function in openforms/contrib/brp/field_types.py
+        let basicFieldsNoDefault = {...SENSITIVE_BASIC};
+        basicFieldsNoDefault.components = basicFieldsNoDefault.components.filter(component => component.key !== 'defaultValue');
+        const sensitiveBasicTabs = {
+            type: 'tabs',
+            key: 'tabs',
+            components: [
+                basicFieldsNoDefault,
+                ADVANCED,
+                VALIDATION,
+                REGISTRATION,
+            ]
+        };
+        return {components: [sensitiveBasicTabs]};
     }
 }
 
