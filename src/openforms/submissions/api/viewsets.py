@@ -36,6 +36,7 @@ from .permissions import ActiveSubmissionPermission, SubmissionStatusPermission
 from .serializers import (
     FormDataSerializer,
     SubmissionCompletionSerializer,
+    SubmissionCoSignStatusSerializer,
     SubmissionProcessingStatusSerializer,
     SubmissionSerializer,
     SubmissionStateLogic,
@@ -109,6 +110,27 @@ class SubmissionViewSet(
         add_submmission_to_session(serializer.instance, self.request.session)
 
         logevent.submission_start(serializer.instance)
+
+    @extend_schema(
+        summary=_("Retrieve co-sign state"),
+        request=None,
+        responses={
+            200: SubmissionCoSignStatusSerializer,
+            403: ExceptionSerializer,
+            404: ExceptionSerializer,
+            405: ExceptionSerializer,
+        },
+    )
+    @action(detail=True, methods=["get"], url_name="co-sign")
+    def co_sign(self, request, *args, **kwargs) -> Response:
+        """
+        Retrieve co-sign state.
+        """
+        submission = self.get_object()
+        serializer = SubmissionCoSignStatusSerializer(
+            instance=submission, context={"request": request}
+        )
+        return Response(serializer.data)
 
     @extend_schema(
         summary=_("Complete a submission"),

@@ -8,7 +8,16 @@ from .mixins import SubmissionsMixin
 
 class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
     def test_submission_id_not_in_session(self):
-        submission = SubmissionFactory.create(co_sign_data={})
+        submission = SubmissionFactory.create(
+            co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "fields": {
+                    "first_name": "Bono",
+                    "last_name": "My Tires",
+                },
+            }
+        )
         endpoint = reverse("api:submission-co-sign", kwargs={"uuid": submission.uuid})
 
         response = self.client.get(endpoint)
@@ -19,7 +28,16 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
         """
         Assert that the identifier is not present in the API response.
         """
-        submission = SubmissionFactory.create(co_sign_data={})
+        submission = SubmissionFactory.create(
+            co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "fields": {
+                    "first_name": "Bono",
+                    "last_name": "My Tires",
+                },
+            }
+        )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-co-sign", kwargs={"uuid": submission.uuid})
 
@@ -29,7 +47,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "coSigned": True,
-                "fields": {
+                "representationFields": {
                     "firstName": "Bono",
                     "lastName": "My Tires",
                 },
@@ -47,6 +65,6 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "coSigned": False,
-                "fields": {},
+                "representationFields": {},
             },
         )
