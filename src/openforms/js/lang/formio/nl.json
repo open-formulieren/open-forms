@@ -202,5 +202,6 @@
   "min": "De waarde moet groter dan {{ min }} zijn.",
   "max": "De waarde moet kleiner dan {{ max }} zijn.",
   "License plate": "Kenteken",
-  "Invalid Dutch license plate": "Ongeldig Nederlands kenteken"
+  "Invalid Dutch license plate": "Ongeldig Nederlands kenteken",
+  "Co-Sign ({{ authPlugin }})": "Co-signeren ({{ authPlugin }})"
 }
