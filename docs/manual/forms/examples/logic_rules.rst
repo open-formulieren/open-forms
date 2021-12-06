@@ -1,3 +1,5 @@
+.. _example_logic_rules:
+
 ===========================
 Formulier met logica regels
 ===========================
