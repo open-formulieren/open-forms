@@ -170,26 +170,33 @@ class AuthenticationStep5Tests(TestCase):
         form = FormFactory.create(authentication_backends=["digid"])
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
-
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}?_start=1"
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "digid"},
+        )
+        relay_state = furl(auth_return_url).set({"next": form_url})
 
         url = furl(reverse("digid:acs")).set(
             {
                 "SAMLart": _create_test_artifact(),
-                "RelayState": form_url,
+                "RelayState": str(relay_state),
             }
         )
 
         response = self.client.get(url)
 
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-        self.assertEqual(form_url, response.url)
+        self.assertRedirects(response, str(relay_state), fetch_redirect_response=False)
 
         response = self.client.get(url, follow=True)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertTemplateUsed(response, "core/views/form/form_detail.html")
+        self.assertEqual(
+            self.client.session[FORM_AUTH_SESSION_KEY],
+            {"plugin": "digid", "attribute": AuthAttribute.bsn, "value": "12345678"},
+        )
 
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
@@ -275,62 +282,76 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
         self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
         self.assertEqual(relay_state.args[CO_SIGN_PARAMETER], str(submission.uuid))
 
-    # @patch(
-    #     "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    # )
-    # @patch(
-    #     "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-    #     return_value="_1330416516",
-    # )
-    # @patch(
-    #     "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    # )
-    # @patch(
-    #     "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-    #     return_value=True,
-    # )
-    # @patch(
-    #     "onelogin.saml2.response.OneLogin_Saml2_Response.get_nameid",
-    #     return_value="s00000000:12345678",
-    # )
-    # def test_return_with_samlart_from_digid(
-    #     self,
-    #     m,
-    #     mock_nameid,
-    #     mock_verification,
-    #     mock_validation,
-    #     mock_id,
-    #     mock_xml_validation,
-    # ):
-    #     submission = SubmissionFactory.create(
-    #         form__generate_minimal_setup=True,
-    #         form__formstep__form_definition__login_required=True,
-    #         form__slug="myform",
-    #         form__authentication_backends=["digid"],
-    #     )
-    #     self._add_submission_to_session(submission)
-    #     form_url = "http://localhost:3000"
-    #     m.post(
-    #         "https://test-digid.nl/saml/idp/resolve_artifact",
-    #         content=_get_artifact_response("ArtifactResponse.xml"),
-    #     )
+    @patch(
+        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
+    )
+    @patch(
+        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="_1330416516",
+    )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
+    )
+    @patch(
+        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
+        return_value=True,
+    )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.get_nameid",
+        return_value="s00000000:12345678",
+    )
+    def test_return_with_samlart_from_digid(
+        self,
+        m,
+        mock_nameid,
+        mock_verification,
+        mock_validation,
+        mock_id,
+        mock_xml_validation,
+    ):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__slug="myform",
+            form__authentication_backends=["digid"],
+        )
+        self._add_submission_to_session(submission)
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": "myform", "plugin_id": "digid"},
+        )
+        auth_return_url = furl(auth_return_url).set({"next": "http://localhost:3000"})
+        m.post(
+            "https://test-digid.nl/saml/idp/resolve_artifact",
+            content=_get_artifact_response("ArtifactResponse.xml"),
+        )
+        # set the relay-state, see test ``test_authn_request_for_co_sign`` for the
+        # expected querystring args
+        relay_state = auth_return_url.add(
+            {
+                CO_SIGN_PARAMETER: str(submission.uuid),
+            }
+        )
+        url = furl(reverse("digid:acs")).set(
+            {
+                "SAMLart": _create_test_artifact(),
+                "RelayState": relay_state,
+            }
+        )
 
-    #     form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-    #     form_url = f"https://testserver{form_path}?_start=1"
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, str(auth_return_url), fetch_redirect_response=False
+        )
+        response = self.client.get(response["Location"])
 
-    #     url = furl(reverse("digid:acs")).set(
-    #         {
-    #             "SAMLart": _create_test_artifact(),
-    #             "RelayState": form_url,
-    #         }
-    #     )
-
-    #     response = self.client.get(url)
-
-    #     self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-    #     self.assertEqual(form_url, response.url)
-
-    #     response = self.client.get(url, follow=True)
-
-    #     self.assertEqual(status.HTTP_200_OK, response.status_code)
-    #     self.assertEqual("core/views/form/form_detail.html", response.template_name[0])
+        self.assertRedirects(
+            response, "http://localhost:3000", fetch_redirect_response=False
+        )
+        # we don't expect the auth parameters to be set, as this is a co-sign request
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.co_sign_data,
+            {"plugin": "digid", "identifier": "12345678", "fields": {}},
+        )

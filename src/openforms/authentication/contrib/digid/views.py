@@ -10,7 +10,7 @@ from digid_eherkenning.views import (
 )
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from .constants import DIGID_AUTH_SESSION_KEY
 from .mixins import AssertionConsumerServiceMixin
 
 logger = logging.getLogger(__name__)
@@ -71,9 +71,9 @@ class DigiDAssertionConsumerServiceView(
             raise BSNNotPresentError
 
         bsn = sectoral_number
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": "digid",
-            "attribute": AuthAttribute.bsn,
-            "value": bsn,
-        }
+
+        # store the bsn itself in the session, and let the plugin decide where
+        # to persist it. This is an implementation detail for this specific plugin!
+        request.session[DIGID_AUTH_SESSION_KEY] = bsn
+
         return HttpResponseRedirect(self.get_success_url())
