@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Tuple
 
 from rest_framework.request import Request
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.custom_field_types import register
 from openforms.submissions.models import Submission
 
@@ -19,16 +20,20 @@ def fill_out_family_members(
     component["inline"] = False
     component["inputType"] = "checkbox"
 
-    # set the available choices
-    child_choices = get_np_children(request)
+    if not len(component["values"]) or component["values"][0] == {
+        "label": "",
+        "value": "",
+    }:
+        # set the available choices
+        child_choices = get_np_children(request)
 
-    component["values"] = [
-        {
-            "label": label,
-            "value": value,
-        }
-        for value, label in child_choices
-    ]
+        component["values"] = [
+            {
+                "label": label,
+                "value": value,
+            }
+            for value, label in child_choices
+        ]
 
     if "mask" in component:
         del component["mask"]
@@ -40,9 +45,14 @@ def get_np_children(request: Request) -> List[Tuple[str, str]]:
     config = BRPConfig.get_solo()
     client = config.get_client()
 
-    bsn = request.session.get("bsn")
-    if not bsn:
+    form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
+    if not form_auth:
         raise RuntimeError("No authenticated person!")
+
+    if form_auth.get("attribute") != AuthAttribute.bsn:
+        raise RuntimeError("No BSN found in the authentication details.")
+
+    bsn = form_auth["value"]
 
     # actual operation ID from standard! but Open Personen has the wrong one
     # operation_id = "ingeschrevenpersonenBurgerservicenummerkinderen"
