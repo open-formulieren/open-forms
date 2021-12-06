@@ -8,9 +8,9 @@ import {FormattedMessage} from 'react-intl';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
-import Select from '../forms/Select';
 import {TextInput, Checkbox} from '../forms/Inputs';
 import AuthPluginField from './AuthPluginField';
+import TinyMCEEditor from './Editor';
 
 
 /**
@@ -32,7 +32,8 @@ const FormMetaFields = ({
         active,
         isDeleted,
         maintenanceMode,
-        canSubmit
+        canSubmit,
+        explanationTemplate,
     } = form;
 
     const onCheckboxChange = (event, currentValue) => {
@@ -148,6 +149,25 @@ const FormMetaFields = ({
                     checked={canSubmit}
                     onChange={(event) => onCheckboxChange(event, canSubmit)}
                 />
+            </FormRow>
+            <FormRow>
+                <Field
+                    name="form.explanationTemplate"
+                    label={<FormattedMessage defaultMessage="Explanation template" description="Start page explanation text label" />}
+                    helpText={
+                        <FormattedMessage
+                            defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
+                            description="Start page explanation text"
+                        />
+                    }
+                >
+                    <TinyMCEEditor
+                        content={explanationTemplate}
+                        onEditorChange={(newValue, editor) => onChange(
+                            {target: {name: 'form.explanationTemplate', value: newValue}}
+                        )}
+                    />
+                </Field>
             </FormRow>
         </Fieldset>
     );
