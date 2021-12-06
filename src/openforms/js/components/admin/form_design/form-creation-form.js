@@ -67,6 +67,7 @@ const initialFormState = {
         submissionsRemovalOptions: {},
         confirmationEmailTemplate: null,
         confirmationEmailOption: 'global_email',
+        explanationTemplate: '',
     },
     literals: {
         beginText: {
@@ -142,6 +143,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     paymentBackendOptions: 'product-payment',
     submissionsRemovalOptions: 'submission-removal-options',
     literals: 'literals',
+    explanationTemplate: 'form',
 };
 
 
@@ -586,7 +588,6 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
-    const intl = useIntl();
     const initialState = {
         ...initialFormState,
         form: {

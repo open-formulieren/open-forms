@@ -184,6 +184,7 @@ class FormSerializer(serializers.ModelSerializer):
             "active",
             "is_deleted",
             "submission_confirmation_template",
+            "explanation_template",
             "can_submit",
             "submissions_removal_options",
             "confirmation_email_template",
