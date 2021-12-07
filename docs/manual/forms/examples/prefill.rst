@@ -4,10 +4,11 @@
 Voorinvullen van gegevens
 =========================
 
-In dit voorbeeld tonen we hoe u velden kunt voorinvullen. In dit voorbeeld 
-tonen we hoe informatie uit de :ref:`KvK <configuration_prefill_kvk>` 
-vooringevuld kan worden.
-Het vooronvullen van gegevens kan uit diverse bronnen komen, naast die van de 
+In dit voorbeeld wordt informatie uit de :ref:`KvK <configuration_prefill_kvk>` 
+vooringevuld in een specifiek formulier veld, als de gebruiker is ingelogd met
+een inlogmethode die het KvK-nummer teruggeeft.
+
+Het voorinvullen van gegevens kan uit diverse bronnen komen, naast die van de 
 KvK, zoals via :ref:`StUF-BG <configuration_prefill_stuf_bg>` of
 :ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>`.
 

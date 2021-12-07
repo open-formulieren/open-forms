@@ -8,15 +8,16 @@ voor formulieren die geschikt zijn voor bedrijven en voor particulieren.
 
 .. note::
     
-    Open Formulieren ondersteund niet direct de logica om op basis van 
+    Open Formulieren ondersteunt niet direct de logica om op basis van 
     inlogmethode bepaalde velden wel of niet te tonen. We beschrijven hier een
     methode om het toch voor elkaar te krijgen. Dit vereist wel dat er een 
     koppeling met de :ref:`KvK <configuration_prefill_kvk>` en met 
     :ref:`StUF-BG <configuration_prefill_stuf_bg>` of 
-    :ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>`.
+    :ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>`
+    is ingesteld.
 
 In dit voorbeeld gaan we er van uit dat u een
-:ref:`eenvoudig formulier <example_simple_form>` en combineren we de kennis van
+:ref:`eenvoudig formulier <example_simple_form>` heeft en combineren we de kennis van
 :ref:`voorinvullen <example_prefill>` met :ref:`logica <example_logic_rules>`.
 
 
