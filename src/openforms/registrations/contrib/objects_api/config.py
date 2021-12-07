@@ -6,6 +6,13 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 
+class AttachmentInformatieObjecttype(serializers.Serializer):
+    attachment_field_name = serializers.CharField(label=_("attachment fieldname"))
+    informatieobjecttype_url = serializers.URLField(
+        label=_("attachment informatieobjecttype"),
+    )
+
+
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     objecttype = serializers.URLField(
         label=_("objecttype"),
@@ -52,10 +59,11 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         required=False,
     )
-    informatieobjecttype_attachment = serializers.URLField(
-        label=_("attachment informatieobjecttype"),
+    informatieobjecttypes_attachments = serializers.ListField(
+        child=AttachmentInformatieObjecttype(),
+        label=_("attachment informatieobjecttypes"),
         help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "List of URLs that point to the INFORMATIEOBJECTTYPE in the Catalogi API "
             "to be used for the submission attachments"
         ),
         required=False,

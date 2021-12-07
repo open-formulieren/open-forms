@@ -68,12 +68,20 @@ class ObjectsAPIRegistration(BasePlugin):
             get_drc=get_drc,
         )
 
-        attachment_options = deepcopy(options)
-        attachment_options["informatieobjecttype"] = options[
-            "informatieobjecttype_attachment"
-        ]
         attachments = []
         for attachment in submission.attachments:
+            attachment_options = deepcopy(options)
+
+            informatieobjecttype = options["informatieobjecttype_attachment"]
+
+            # Use specific IOType if defined
+            for attachment_iotype in options.get(
+                "informatieobjecttypes_attachments", []
+            ):
+                if attachment_iotype["attachment_field_name"] == attachment.form_key:
+                    informatieobjecttype = attachment_iotype["informatieobjecttype_url"]
+
+            attachment_options["informatieobjecttype"] = informatieobjecttype
             attachment_document = create_attachment_document(
                 submission.form.admin_name,
                 attachment,
