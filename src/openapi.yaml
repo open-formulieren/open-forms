@@ -1840,6 +1840,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionSuspension'
           description: ''
+  /api/v1/submissions/{uuid}/co_sign:
+    get:
+      operationId: submissions_co_sign_retrieve
+      description: Retrieve co-sign state.
+      summary: Retrieve co-sign state
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionCoSignStatus'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
   /api/v1/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -1996,6 +2035,13 @@ paths:
         * the redirect target must match the CORS policy
       summary: Return from external login flow
       parameters:
+      - in: query
+        name: coSignSubmission
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the submission for which this co-sign authentication
+          applies. Presence of this parameter marks a flow as a co-sign flow.
       - in: path
         name: plugin_id
         schema:
@@ -2078,6 +2124,13 @@ paths:
         * the redirect target must match the CORS policy
       summary: Return from external login flow
       parameters:
+      - in: query
+        name: coSignSubmission
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the submission for which this co-sign authentication
+          applies. Presence of this parameter marks a flow as a co-sign flow.
       - in: path
         name: plugin_id
         schema:
@@ -2184,6 +2237,13 @@ paths:
         * the `next` parameter must match the CORS policy
       summary: Start authentication flow
       parameters:
+      - in: query
+        name: coSignSubmission
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the submission for which this co-sign authentication
+          applies. Presence of this parameter marks a flow as a co-sign flow.
       - in: query
         name: next
         schema:
@@ -3876,6 +3936,24 @@ components:
       - payment
       - steps
       - url
+    SubmissionCoSignStatus:
+      type: object
+      properties:
+        coSigned:
+          type: boolean
+          readOnly: true
+          title: is co-signed?
+          description: Indicator whether the submission has been co-signed or not.
+        representationFields:
+          type: object
+          additionalProperties:
+            type: string
+          readOnly: true
+          title: co-signer display fields
+          description: Fields for co-signer representation in the UI.
+      required:
+      - coSigned
+      - representationFields
     SubmissionCompletion:
       type: object
       properties:

@@ -76,8 +76,7 @@ jobs:
         uses: codecov/codecov-action@v1
 
       - name: Generate OAS
-        run: |
-          python src/manage.py spectacular --validate --fail-on-warn --lang=en --file openapi.yaml
+        run: ./bin/generate_oas.sh openapi.yaml
 
       - name: Store generated OAS
         uses: actions/upload-artifact@v2
