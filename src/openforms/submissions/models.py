@@ -26,12 +26,17 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
-from openforms.utils.validators import AllowedRedirectValidator, validate_bsn
+from openforms.utils.validators import (
+    AllowedRedirectValidator,
+    SerializerValidator,
+    validate_bsn,
+)
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
 from .pricing import get_submission_price
 from .query import SubmissionManager
+from .serializers import CoSignDataSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +152,12 @@ class Submission(models.Model):
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
 
     # authentication state
+    auth_plugin = models.CharField(
+        _("auth plugin"),
+        max_length=100,
+        blank=True,
+        help_text=_("The plugin used by the user for authentication."),
+    )
     bsn = models.CharField(
         _("BSN"),
         max_length=9,
@@ -167,13 +178,12 @@ class Submission(models.Model):
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
     )
-    form_url = models.URLField(
-        _("form URL"),
-        max_length=255,
-        blank=False,
-        default="",
-        help_text=_("URL where the user initialized the submission."),
-        validators=[AllowedRedirectValidator()],
+    co_sign_data = JSONField(
+        _("co-sign data"),
+        blank=True,
+        default=dict,
+        validators=[SerializerValidator(CoSignDataSerializer)],
+        help_text=_("Authentication details of a co-signer."),
     )
 
     # payment state
@@ -273,12 +283,6 @@ class Submission(models.Model):
     # relation to earlier submission which is altered after processing
     previous_submission = models.ForeignKey(
         "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
-    )
-    auth_plugin = models.CharField(
-        _("auth plugin"),
-        max_length=100,
-        blank=True,
-        help_text=_("The plugin used by the user for authentication."),
     )
 
     objects = SubmissionManager()

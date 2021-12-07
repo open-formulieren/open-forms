@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Dict, Optional, Union
 
 from django import forms
 from django.http import (
@@ -14,12 +14,20 @@ from openforms.authentication.base import BasePlugin
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
 
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...base import BasePlugin
+from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...exceptions import InvalidCoSignData
 from ...registry import register
 
 
 class DemoBaseForm(forms.Form):
     next = forms.URLField(required=True, widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[CO_SIGN_PARAMETER] = forms.UUIDField(
+            required=False, widget=forms.HiddenInput
+        )
 
 
 class BSNForm(DemoBaseForm):
@@ -50,9 +58,26 @@ class DemoBaseAuthentication(BasePlugin):
         context = {
             "form_action": self.get_return_url(request, form),
             "form_url": form_url,
-            "form": self.form_class(initial={"next": form_url}),
+            "form": self.form_class(
+                initial={
+                    "next": form_url,
+                    CO_SIGN_PARAMETER: request.GET.get(CO_SIGN_PARAMETER),
+                }
+            ),
         }
         return render(request, "authentication/contrib/demo/login.html", context)
+
+    def handle_co_sign(
+        self, request: HttpRequest, form: Form
+    ) -> Optional[Dict[str, Any]]:
+        submitted = self.form_class(request.POST)
+        if not submitted.is_valid():
+            raise InvalidCoSignData(f"Validation errors: {submitted.errors}")
+        identifier = submitted.cleaned_data[self.form_field]
+        return {
+            "identifier": identifier,
+            "fields": {},
+        }
 
     def handle_return(
         self, request: HttpRequest, form: Form
@@ -61,11 +86,14 @@ class DemoBaseAuthentication(BasePlugin):
         if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")
 
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": self.identifier,
-            "attribute": self.provides_auth,
-            "value": submitted.cleaned_data[self.provides_auth],
-        }
+        # set the session auth key only if we're not co-signing
+        is_co_sign = bool(submitted.cleaned_data.get(CO_SIGN_PARAMETER))
+        if not is_co_sign:
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": submitted.cleaned_data[self.provides_auth],
+            }
 
         return HttpResponseRedirect(submitted.cleaned_data["next"])
 

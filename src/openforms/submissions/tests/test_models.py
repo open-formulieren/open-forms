@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
-from django.test import TestCase
+from django.core.exceptions import ValidationError
+from django.test import TestCase, override_settings
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -12,7 +13,7 @@ from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
-class TestSubmission(TestCase):
+class SubmissionTests(TestCase):
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
@@ -358,3 +359,55 @@ class TestSubmission(TestCase):
         self.assertEqual(new_submission.auth_plugin, "digid")
         self.assertNotEqual(new_submission.id, submission.id)
         self.assertNotEqual(new_submission.uuid, submission.uuid)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_co_sign_data_validation(self):
+        extra_fields = {
+            "form": FormFactory.create(),
+            "form_url": "https://example.com/test",
+        }
+        invalid_values = [
+            {"invalid": "shape"},
+            {
+                "plugin": "invalid-plugin",
+                "identifier": "123456782",
+                "fields": {
+                    "name": "Jane Doe",
+                },
+            },
+            {"plugin": "digid"},
+        ]
+
+        for value in invalid_values:
+            with self.subTest(value=value):
+                submission = SubmissionFactory.build(co_sign_data=value, **extra_fields)
+
+                with self.assertRaises(ValidationError):
+                    submission.full_clean()
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_co_sign_data_valid_values(self):
+        extra_fields = {
+            "form": FormFactory.create(),
+            "form_url": "https://example.com/test",
+        }
+        values = [
+            {},
+            None,
+            {
+                "plugin": "digid",
+                "identifier": "123456782",
+                "fields": {
+                    "name": "Jane Doe",
+                },
+            },
+        ]
+
+        for value in values:
+            with self.subTest(value=value):
+                submission = SubmissionFactory.build(co_sign_data=value, **extra_fields)
+
+                try:
+                    submission.full_clean()
+                except ValidationError as exc:
+                    self.fail(f"Unexpected validation error(s): {exc}")

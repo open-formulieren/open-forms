@@ -1,10 +1,13 @@
 import logging
+from typing import Optional
 
+from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
 )
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -14,10 +17,18 @@ from rest_framework import permissions, serializers
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.request import Request
 
-from openforms.authentication.registry import register
 from openforms.forms.models import Form
+from openforms.submissions.api.permissions import owns_submission
+from openforms.submissions.models import Submission
+from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
+
+from .base import BasePlugin
+from .constants import CO_SIGN_PARAMETER
+from .exceptions import InvalidCoSignData
+from .registry import register
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +45,25 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
     serializer_class = (
         serializers.Serializer
     )  # just to shut up some warnings in drf-spectacular
+
+    def _validate_co_sign_submission(self, plugin: BasePlugin) -> Optional[Submission]:
+        """
+        Check if the flow is a co-sign flow and validate the referenced submission.
+        """
+        request_data = getattr(self.request, self.request.method)
+        if CO_SIGN_PARAMETER not in request_data:
+            return None
+
+        submission_uuid = request_data[CO_SIGN_PARAMETER]
+        # validate permissions so that people cannot just tinker with UUIDs in URLs
+        if not owns_submission(self.request, submission_uuid):
+            raise PermissionDenied("invalid submission ID")
+
+        # load the submission object - the return view is expected to validate against tampering
+        submission = get_object_or_404(Submission, uuid=submission_uuid)
+        assert not submission.co_sign_data, "Submission already has co-sign data!"
+
+        return submission
 
 
 @extend_schema(
@@ -74,6 +104,16 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
                 "against the CORS configuration."
             ),
             required=True,
+        ),
+        OpenApiParameter(
+            name=CO_SIGN_PARAMETER,
+            location=OpenApiParameter.QUERY,
+            type=OpenApiTypes.UUID,
+            description=_(
+                "UUID of the submission for which this co-sign authentication applies. "
+                "Presence of this parameter marks a flow as a co-sign flow."
+            ),
+            required=False,
         ),
         OpenApiParameter(
             name="Location",
@@ -129,6 +169,8 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
                 {"form_url": form_url},
             )
             return HttpResponseBadRequest("redirect not allowed")
+
+        self._validate_co_sign_submission(plugin)
 
         try:
             response = plugin.start_login(request, form, form_url)
@@ -192,6 +234,16 @@ COMMON_RETURN_RESPONSES = {
             description=_("Identifier of the authentication plugin."),
         ),
         OpenApiParameter(
+            name=CO_SIGN_PARAMETER,
+            location=OpenApiParameter.QUERY,
+            type=OpenApiTypes.UUID,
+            description=_(
+                "UUID of the submission for which this co-sign authentication applies. "
+                "Presence of this parameter marks a flow as a co-sign flow."
+            ),
+            required=False,
+        ),
+        OpenApiParameter(
             name="Location",
             location=OpenApiParameter.HEADER,
             type=OpenApiTypes.URI,
@@ -215,7 +267,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
     queryset = Form.objects.live()
     register = register
 
-    def _handle_return(self, request, slug, plugin_id):
+    def _handle_return(self, request: Request, slug: str, plugin_id: str):
         """
         Handle the return flow after the user provided authentication credentials.
 
@@ -237,6 +289,12 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         if plugin.return_method.upper() != request.method.upper():
             return HttpResponseNotAllowed([plugin.return_method])
 
+        try:
+            self._handle_co_sign(form, plugin)
+        except serializers.ValidationError:
+            return HttpResponseBadRequest("plugin returned invalid data")
+        except InvalidCoSignData as exc:
+            return HttpResponseBadRequest(exc.args[0])
         response = plugin.handle_return(request, form)
 
         if response.status_code in (301, 302):
@@ -250,6 +308,20 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 return HttpResponseBadRequest("redirect not allowed")
 
         return response
+
+    def _handle_co_sign(self, form: Form, plugin: BasePlugin) -> None:
+        co_sign_submission = self._validate_co_sign_submission(plugin)
+        if co_sign_submission is not None:
+            logger.debug("Co-sign authentication detected, invoking plugin handler.")
+            co_sign_data = {
+                **plugin.handle_co_sign(self.request, form),
+                "plugin": plugin.identifier,
+            }
+            serializer = CoSignDataSerializer(data=co_sign_data)
+            serializer.is_valid(raise_exception=True)
+
+            co_sign_submission.co_sign_data = serializer.validated_data
+            co_sign_submission.save(update_fields=["co_sign_data"])
 
     @extend_schema(responses=COMMON_RETURN_RESPONSES)
     def get(self, request, *args, **kwargs):

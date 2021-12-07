@@ -1,0 +1,2 @@
+class InvalidCoSignData(Exception):
+    pass

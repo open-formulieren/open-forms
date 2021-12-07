@@ -4,6 +4,8 @@ from djchoices import ChoiceItem, DjangoChoices
 
 FORM_AUTH_SESSION_KEY = "form_auth"  # pending #957 rework
 
+CO_SIGN_PARAMETER = "coSignSubmission"
+
 
 class AuthAttribute(DjangoChoices):
     """
