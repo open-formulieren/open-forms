@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 # from openforms.appointments.registry import register as appointments_register
+from openforms.config.data import Entry
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
@@ -30,10 +31,7 @@ class ConfigurationView(TemplateView):
             sections.append(
                 {
                     "name": name,
-                    "entries": [
-                        self.get_plugin_entry(plugin)
-                        for plugin in register.iter_enabled_plugins()
-                    ],
+                    "entries": self.get_register_entries(register),
                 }
             )
 
@@ -41,7 +39,14 @@ class ConfigurationView(TemplateView):
 
         return context
 
-    def get_plugin_entry(self, plugin: Any) -> Dict[str, Any]:
+    def get_register_entries(self, register):
+        for plugin in register.iter_enabled_plugins():
+            if hasattr(plugin, "iter_config_checks"):
+                yield from plugin.iter_config_checks()
+            else:
+                yield self.get_plugin_entry(plugin)
+
+    def get_plugin_entry(self, plugin: Any) -> Entry:
         try:
             plugin.check_config()
         except InvalidPluginConfiguration as e:
@@ -74,9 +79,9 @@ class ConfigurationView(TemplateView):
                 )
             ]
 
-        return {
-            "name": plugin.verbose_name,
-            "status": _boolean_icon(status),
-            "status_message": status_message,
-            "actions": actions,
-        }
+        return Entry(
+            name=plugin.verbose_name,
+            status=status,
+            status_message=status_message,
+            actions=actions,
+        )
