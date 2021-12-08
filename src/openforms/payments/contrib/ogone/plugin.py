@@ -2,12 +2,15 @@ import logging
 
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
+from openforms.config.data import Entry
 from openforms.logging import logevent
 from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -131,6 +134,35 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         if res > 0:
             payment.refresh_from_db()
+
+    @classmethod
+    def iter_config_checks(cls):
+        for merchant in OgoneMerchant.objects.all():
+            yield cls.check_merchant(merchant)
+
+    @classmethod
+    def check_merchant(cls, merchant):
+        entry = Entry(
+            name=f"{cls.verbose_name}: {merchant.label}",
+            actions=[
+                (
+                    _("Configuration"),
+                    reverse(
+                        "admin:payments_ogone_ogonemerchant_change",
+                        args=(merchant.pk,),
+                    ),
+                )
+            ],
+        )
+        try:
+            response = requests.get(merchant.endpoint)
+            response.raise_for_status()
+        except Exception as e:
+            entry.status = False
+            entry.status_message = str(e)
+        else:
+            entry.status = True
+        return entry
 
 
 def case_insensitive_get(mapping, key, default=None):
