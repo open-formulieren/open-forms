@@ -171,6 +171,10 @@
                 "ogonemerchant"
             ],
             [
+                "prefill",
+                "prefillconfig"
+            ],
+            [
                 "prefill_haalcentraal",
                 "haalcentraalconfig"
             ],
