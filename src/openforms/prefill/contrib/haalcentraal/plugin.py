@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable, List
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -9,7 +9,6 @@ from requests import RequestException
 from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 
@@ -25,6 +24,11 @@ logger = logging.getLogger(__name__)
 class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal")
     requires_auth = AuthAttribute.bsn
+    co_sign_fields = (
+        Attributes.naam_voornamen,
+        Attributes.naam_voorvoegsel,
+        Attributes.naam_geslachtsnaam,
+    )
 
     request_kwargs = dict(headers={"Accept": "application/hal+json"})
 
@@ -33,12 +37,7 @@ class HaalCentraalPrefill(BasePlugin):
         return Attributes.choices
 
     @classmethod
-    def get_prefill_values(
-        cls, submission: Submission, attributes: List[str]
-    ) -> Dict[str, Any]:
-        if not submission.bsn:
-            return {}
-
+    def _get_values_for_bsn(cls, bsn: str, attributes: Iterable[str]) -> Dict[str, Any]:
         config = HaalCentraalConfig.get_solo()
         if not config.service:
             logger.warning("no service defined for Haal Centraal prefill")
@@ -49,7 +48,7 @@ class HaalCentraalPrefill(BasePlugin):
         try:
             data = client.retrieve(
                 "ingeschrevenpersonen",
-                burgerservicenummer=submission.bsn,
+                burgerservicenummer=bsn,
                 request_kwargs=cls.request_kwargs,
             )
         except RequestException as e:
@@ -68,6 +67,29 @@ class HaalCentraalPrefill(BasePlugin):
                     f"missing expected attribute '{attr}' in backend response"
                 )
         return values
+
+    @classmethod
+    def get_prefill_values(
+        cls, submission: Submission, attributes: List[str]
+    ) -> Dict[str, Any]:
+        if not submission.bsn:
+            return {}
+        return cls._get_values_for_bsn(submission.bsn, attributes)
+
+    @classmethod
+    def get_co_sign_values(cls, identifier: str) -> Dict[str, Any]:
+        """
+        Given an identifier, fetch the co-sign specific values.
+
+        The return value is a dict keyed by field name as specified in
+        ``self.co_sign_fields``.
+
+        :param identfier: the unique co-signer identifier used to look up the details
+          in the pre-fill backend.
+        :return: a key-value dictionary, where the key is the requested attribute and
+          the value is the prefill value to use for that attribute.
+        """
+        return cls._get_values_for_bsn(identifier, cls.co_sign_fields)
 
     def check_config(self):
         check_bsn = "111222333"

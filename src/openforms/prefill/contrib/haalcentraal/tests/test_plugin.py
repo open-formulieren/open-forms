@@ -1,28 +1,15 @@
-import json
-import os
-
 from django.test import TestCase
 
 import requests_mock
 from glom import glom
 
-from openforms.prefill.contrib.haalcentraal.constants import Attributes
-from openforms.prefill.contrib.haalcentraal.models import HaalCentraalConfig
-from openforms.prefill.contrib.haalcentraal.plugin import HaalCentraalPrefill
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-
-def load_json_mock(name):
-    path = os.path.join(os.path.dirname(__file__), "files", name)
-    with open(path, "r") as f:
-        return json.load(f)
-
-
-def load_binary_mock(name):
-    path = os.path.join(os.path.dirname(__file__), "files", name)
-    with open(path, "rb") as f:
-        return f.read()
+from ..constants import Attributes
+from ..models import HaalCentraalConfig
+from ..plugin import HaalCentraalPrefill
+from .utils import load_binary_mock, load_json_mock
 
 
 class HaalCentraalPrefillTest(TestCase):
