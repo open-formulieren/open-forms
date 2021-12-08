@@ -44,4 +44,3 @@ def add_co_sign_representation(submission: Submission, auth_attribute: str):
         submission.uuid,
         plugin,
     )
-    print(plugin)

@@ -11,6 +11,8 @@ from ..plugin import StufBgPrefill
 
 class StufBgPrefillTests(TestCase):
     def setUp(self) -> None:
+        super().setUp()
+
         self.plugin = StufBgPrefill("test-plugin")
         self.submission = SubmissionFactory.create(bsn="999992314")
 
