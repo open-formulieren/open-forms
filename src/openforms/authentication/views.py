@@ -29,6 +29,7 @@ from .base import BasePlugin
 from .constants import CO_SIGN_PARAMETER
 from .exceptions import InvalidCoSignData
 from .registry import register
+from .signals import co_sign_authentication_success
 
 logger = logging.getLogger(__name__)
 
@@ -321,6 +322,13 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
             co_sign_submission.co_sign_data = serializer.validated_data
             co_sign_submission.save(update_fields=["co_sign_data"])
+
+            co_sign_authentication_success.send(
+                sender=self.__class__,
+                request=self.request,
+                plugin=plugin,
+                submission=co_sign_submission,
+            )
 
     @extend_schema(responses=COMMON_RETURN_RESPONSES)
     def get(self, request, *args, **kwargs):
