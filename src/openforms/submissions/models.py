@@ -492,6 +492,8 @@ class Submission(models.Model):
 
         return merged_data
 
+    data = property(get_merged_data)
+
     @staticmethod
     def _get_value_label(possible_values: list, value: str) -> str:
         for possible_value in possible_values:
@@ -543,8 +545,6 @@ class Submission(models.Model):
                 printable_data[label] = printable_value
 
         return printable_data
-
-    data = property(get_merged_data)
 
     def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
         return SubmissionFileAttachment.objects.for_submission(self)
