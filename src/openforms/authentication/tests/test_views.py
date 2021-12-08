@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from urllib.parse import quote
 
 from django.test import override_settings
@@ -160,7 +161,8 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
         )
         cls.next_url = "https://example.com/f/myform/stap/stap-1"
 
-    def test_co_sign_flow(self):
+    @patch("openforms.prefill.signals._add_co_sign_representation")
+    def test_co_sign_flow(self, mock_add_co_sign_representation):
         """
         Assert that the authentication flow for co-signing works as expected.
         """
@@ -212,6 +214,9 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
                     "mock_field_2": "",
                 },
             },
+        )
+        mock_add_co_sign_representation.assert_called_once_with(
+            self.submission, "dummy"
         )
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
