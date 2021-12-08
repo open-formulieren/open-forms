@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -8,20 +7,9 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
 from ....registry import register
+from .utils import mock_stufbg_client
 
 plugin = register["stufbg"]
-
-
-def mock_stufbg_client(template: str):
-    patcher = patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    mock_client = patcher.start()
-    get_values_for_attributes_mock = (
-        mock_client.return_value.get_client.return_value.get_values_for_attributes
-    )
-    get_values_for_attributes_mock.return_value = loader.render_to_string(
-        f"stuf_bg/tests/responses/{template}"
-    )
-    return patcher
 
 
 class CoSignPrefillTests(TestCase):
