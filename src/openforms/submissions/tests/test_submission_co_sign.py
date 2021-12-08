@@ -12,6 +12,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             co_sign_data={
                 "plugin": "digid",
                 "identifier": "123456782",
+                "representation": "B. My Tires",
                 "fields": {
                     "first_name": "Bono",
                     "last_name": "My Tires",
@@ -32,6 +33,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             co_sign_data={
                 "plugin": "digid",
                 "identifier": "123456782",
+                "representation": "B. My Tires",
                 "fields": {
                     "first_name": "Bono",
                     "last_name": "My Tires",
@@ -47,10 +49,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "coSigned": True,
-                "representationFields": {
-                    "firstName": "Bono",
-                    "lastName": "My Tires",
-                },
+                "representation": "B. My Tires",
             },
         )
 
@@ -65,6 +64,6 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "coSigned": False,
-                "representationFields": {},
+                "representation": "",
             },
         )

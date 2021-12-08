@@ -209,6 +209,7 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
             {
                 "plugin": "plugin1",
                 "identifier": "mock-id",
+                "representation": "",
                 "fields": {
                     "mock_field_1": "field 1",
                     "mock_field_2": "",

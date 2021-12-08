@@ -3948,16 +3948,14 @@ components:
           readOnly: true
           title: is co-signed?
           description: Indicator whether the submission has been co-signed or not.
-        representationFields:
-          type: object
-          additionalProperties:
-            type: string
+        representation:
+          type: string
           readOnly: true
-          title: co-signer display fields
-          description: Fields for co-signer representation in the UI.
+          title: Co-signer display
+          description: Co-signer representation string for the UI.
       required:
       - coSigned
-      - representationFields
+      - representation
     SubmissionCompletion:
       type: object
       properties:

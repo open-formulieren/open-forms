@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Tuple
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -24,11 +24,6 @@ logger = logging.getLogger(__name__)
 class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal")
     requires_auth = AuthAttribute.bsn
-    co_sign_fields = (
-        Attributes.naam_voornamen,
-        Attributes.naam_voorvoegsel,
-        Attributes.naam_geslachtsnaam,
-    )
 
     request_kwargs = dict(headers={"Accept": "application/hal+json"})
 
@@ -77,7 +72,7 @@ class HaalCentraalPrefill(BasePlugin):
         return cls._get_values_for_bsn(submission.bsn, attributes)
 
     @classmethod
-    def get_co_sign_values(cls, identifier: str) -> Dict[str, Any]:
+    def get_co_sign_values(cls, identifier: str) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
@@ -89,7 +84,25 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        return cls._get_values_for_bsn(identifier, cls.co_sign_fields)
+        values = cls._get_values_for_bsn(
+            identifier,
+            (
+                Attributes.naam_voornamen,
+                Attributes.naam_voorvoegsel,
+                Attributes.naam_geslachtsnaam,
+            ),
+        )
+        representation_bits = [
+            " ".join(
+                [f"{name[0]}." for name in values[Attributes.naam_voornamen].split(" ")]
+            ),
+            values[Attributes.naam_voorvoegsel],
+            values[Attributes.naam_geslachtsnaam],
+        ]
+        return (
+            values,
+            " ".join([bit for bit in representation_bits if bit]),
+        )
 
     def check_config(self):
         check_bsn = "111222333"

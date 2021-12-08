@@ -42,11 +42,6 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
 class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
     requires_auth = AuthAttribute.bsn
-    co_sign_fields = (
-        FieldChoices.voornamen,
-        FieldChoices.voorvoegselGeslachtsnaam,
-        FieldChoices.geslachtsnaam,
-    )
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         return FieldChoices.choices
@@ -99,7 +94,7 @@ class StufBgPrefill(BasePlugin):
 
         return self._get_values_for_bsn(submission.bsn, attributes)
 
-    def get_co_sign_values(self, identifier: str) -> Dict[str, Any]:
+    def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
@@ -111,7 +106,25 @@ class StufBgPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        return self._get_values_for_bsn(identifier, self.co_sign_fields)
+        values = self._get_values_for_bsn(
+            identifier,
+            (
+                FieldChoices.voornamen,
+                FieldChoices.voorvoegselGeslachtsnaam,
+                FieldChoices.geslachtsnaam,
+            ),
+        )
+        representation_bits = [
+            " ".join(
+                [f"{name[0]}." for name in values[FieldChoices.voornamen].split(" ")]
+            ),
+            values.get(FieldChoices.voorvoegselGeslachtsnaam, ""),
+            values[FieldChoices.geslachtsnaam],
+        ]
+        return (
+            values,
+            " ".join([bit for bit in representation_bits if bit]),
+        )
 
     def check_config(self):
         check_bsn = "111222333"

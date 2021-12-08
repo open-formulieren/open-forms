@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Dict, Optional
+from typing import Optional
 
 from django.conf import settings
 from django.db import transaction
@@ -470,18 +470,18 @@ class SubmissionCoSignStatusSerializer(serializers.ModelSerializer):
         label=_("is co-signed?"),
         help_text=_("Indicator whether the submission has been co-signed or not."),
     )
-    representation_fields = serializers.SerializerMethodField(
-        label=_("co-signer display fields"),
-        help_text=_("Fields for co-signer representation in the UI."),
+    representation = serializers.SerializerMethodField(
+        label=_("Co-signer display"),
+        help_text=_("Co-signer representation string for the UI."),
     )
 
     class Meta:
         model = Submission
-        fields = ("co_signed", "representation_fields")
+        fields = ("co_signed", "representation")
 
     def get_co_signed(self, submission: Submission) -> bool:
         co_sign_data = submission.co_sign_data
         return bool(co_sign_data.get("plugin") and co_sign_data.get("identifier"))
 
-    def get_representation_fields(self, submission: Submission) -> Dict[str, str]:
-        return submission.co_sign_data.get("fields", {})
+    def get_representation(self, submission: Submission) -> str:
+        return submission.co_sign_data.get("representation", "")

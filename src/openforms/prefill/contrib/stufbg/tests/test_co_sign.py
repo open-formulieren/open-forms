@@ -45,6 +45,7 @@ class CoSignPrefillTests(TestCase):
             {
                 "plugin": plugin.identifier,
                 "identifier": "999992314",
+                "representation": "M. Maykin",
                 "fields": {
                     "voornamen": "Media",
                     "geslachtsnaam": "Maykin",

@@ -6,11 +6,6 @@ from openforms.submissions.models import Submission
 
 class BasePlugin(AbstractBasePlugin):
     requires_auth = None
-    co_sign_fields: Iterable[str] = ()
-    """
-    An iterable of field names to fetch after a successful co-sign authentication. Used
-    for user representation.
-    """
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """
@@ -40,7 +35,7 @@ class BasePlugin(AbstractBasePlugin):
             "You must implement the 'get_prefill_values' method."
         )  # noqa
 
-    def get_co_sign_values(self, identifier: str) -> Dict[str, Any]:
+    def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 

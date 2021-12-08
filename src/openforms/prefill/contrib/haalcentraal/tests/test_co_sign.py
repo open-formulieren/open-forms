@@ -70,6 +70,7 @@ class CoSignPrefillTests(TestCase):
             {
                 "plugin": plugin.identifier,
                 "identifier": "999990676",
+                "representation": "C. F. Wiegman",
                 "fields": {
                     "_embedded.naam.voornamen": "Cornelia Francisca",
                     "_embedded.naam.voorvoegsel": "",
