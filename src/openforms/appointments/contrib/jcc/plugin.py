@@ -9,6 +9,8 @@ from requests.exceptions import RequestException
 from zeep import Client
 from zeep.exceptions import Error as ZeepError
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+
 from ...base import (
     AppointmentClient,
     AppointmentDetails,
@@ -38,6 +40,7 @@ class Plugin(BasePlugin):
     """
 
     identifier = "JCC-Plugin"
+    verbose_name = "JCC-Plugin"
 
     def __init__(self, wsdl):
         self.client = Client(wsdl)
@@ -275,3 +278,11 @@ class Plugin(BasePlugin):
 
         except (ZeepError, RequestException, AttributeError) as e:
             raise AppointmentException(e)
+
+    def check_config(self):
+        try:
+            self.client.service.getGovAvailableProducts()
+        except (ZeepError, RequestException) as e:
+            raise InvalidPluginConfiguration(
+                _("Invalid response: {exception}").format(exception=e)
+            )
