@@ -1,5 +1,7 @@
 from typing import Any, Dict
 
+from django.conf import settings
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
@@ -20,12 +22,16 @@ class ConfigurationView(TemplateView):
         sections = []
 
         # add custom non-generic
-        sections.append(
+        sections += [
             {
                 "name": _("Appointment plugins"),
                 "entries": check_appointment_configs(),
-            }
-        )
+            },
+            {
+                "name": _("Address lookup plugins"),
+                "entries": self.get_address_entries(),
+            },
+        ]
 
         # Iterate over all plugin registries.
         plugin_registries = [
@@ -65,7 +71,7 @@ class ConfigurationView(TemplateView):
             status = None
         except Exception as e:
             status_message = _("Internal error: {exception}").format(exception=e)
-            status = None
+            status = False
         else:
             status_message = None
             status = True
@@ -93,3 +99,17 @@ class ConfigurationView(TemplateView):
             status_message=status_message,
             actions=actions,
         )
+
+    def get_address_entries(self):
+        try:
+            client = import_string(settings.OPENFORMS_LOCATION_CLIENT)
+        except ImportError as e:
+            return [
+                Entry(
+                    name=_("unknown"),
+                    status=False,
+                    status_message=str(e),
+                )
+            ]
+        else:
+            return [self.get_plugin_entry(client)]
