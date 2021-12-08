@@ -12,3 +12,4 @@ Voorbeelden
    logic_rules
    appointment_creation
    prefill
+   fields_for_logintype

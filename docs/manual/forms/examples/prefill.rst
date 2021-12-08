@@ -1,12 +1,19 @@
-=======
-Prefill
-=======
+.. _example_prefill:
 
-In dit voorbeeld tonen we hoe u een prefill kunnen gebruiken.  Prefill is een optie zodat
-een formulier prefilled met informatie is.  Met dit voorbeeld tonen we hoe u de
-:ref:`KvK <configuration_prefill_kvk>` prefill kan gebruiken maar we hebben op dit moment ook
-:ref:`StUF-BG <configuration_prefill_stuf_bg>` prefill en
-:ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>` prefill dat u kan gebruiken.
+=========================
+Voorinvullen van gegevens
+=========================
+
+In dit voorbeeld wordt informatie uit de :ref:`KvK <configuration_prefill_kvk>` 
+vooringevuld in een specifiek formulier veld, als de gebruiker is ingelogd met
+een inlogmethode die het KvK-nummer teruggeeft.
+
+Het voorinvullen van gegevens kan uit diverse bronnen komen, naast die van de 
+KvK, zoals via :ref:`StUF-BG <configuration_prefill_stuf_bg>` of
+:ref:`Haal Centraal Bevragen personen <configuration_prefill_haal_centraal>`.
+
+In dit voorbeeld gaan we er van uit dat u een
+:ref:`eenvoudig formulier <example_simple_form>` kan maken.
 
 
 Configuratie
