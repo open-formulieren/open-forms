@@ -42,21 +42,22 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
 class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
     requires_auth = AuthAttribute.bsn
+    co_sign_fields = (
+        FieldChoices.voornamen,
+        FieldChoices.voorvoegselGeslachtsnaam,
+        FieldChoices.geslachtsnaam,
+    )
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         return FieldChoices.choices
 
-    def get_prefill_values(
-        self, submission: Submission, attributes: List[str]
+    def _get_values_for_bsn(
+        self, bsn: str, attributes: Iterable[str]
     ) -> Dict[str, Any]:
-        if not submission.bsn:
-            #  If there is no bsn we can't prefill any values so just return
-            return {}
-
         config = StufBGConfig.get_solo()
         client = config.get_client()
 
-        response_data = client.get_values_for_attributes(submission.bsn, attributes)
+        response_data = client.get_values_for_attributes(bsn, attributes)
 
         dict_response = xmltodict.parse(
             response_data,
@@ -88,6 +89,29 @@ class StufBgPrefill(BasePlugin):
                 response_dict[attribute] = value
 
         return response_dict
+
+    def get_prefill_values(
+        self, submission: Submission, attributes: List[str]
+    ) -> Dict[str, Any]:
+        if not submission.bsn:
+            #  If there is no bsn we can't prefill any values so just return
+            return {}
+
+        return self._get_values_for_bsn(submission.bsn, attributes)
+
+    def get_co_sign_values(self, identifier: str) -> Dict[str, Any]:
+        """
+        Given an identifier, fetch the co-sign specific values.
+
+        The return value is a dict keyed by field name as specified in
+        ``self.co_sign_fields``.
+
+        :param identfier: the unique co-signer identifier used to look up the details
+          in the pre-fill backend.
+        :return: a key-value dictionary, where the key is the requested attribute and
+          the value is the prefill value to use for that attribute.
+        """
+        return self._get_values_for_bsn(identifier, self.co_sign_fields)
 
     def check_config(self):
         check_bsn = "111222333"

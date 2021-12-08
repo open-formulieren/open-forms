@@ -44,3 +44,7 @@ def add_co_sign_representation(submission: Submission, auth_attribute: str):
         submission.uuid,
         plugin,
     )
+
+    values = plugin.get_co_sign_values(submission.co_sign_data["identifier"])
+    submission.co_sign_data["fields"] = values
+    submission.save(update_fields=["co_sign_data"])

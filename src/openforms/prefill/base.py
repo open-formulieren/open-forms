@@ -6,12 +6,17 @@ from openforms.submissions.models import Submission
 
 class BasePlugin(AbstractBasePlugin):
     requires_auth = None
+    co_sign_fields: Iterable[str] = ()
+    """
+    An iterable of field names to fetch after a successful co-sign authentication. Used
+    for user representation.
+    """
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """
         Return a choice list of available attributes this plugin offers.
         """
-        raise NotImplementedError(
+        raise NotImplementedError(  # noqa
             "You must implement the 'get_available_attributes' method."
         )
 
@@ -31,4 +36,22 @@ class BasePlugin(AbstractBasePlugin):
         When no pre-fill value can be found for a given attribute, you may omit the key
         altogether, or use ``None``.
         """
-        raise NotImplementedError("You must implement the 'get_prefill_values' method.")
+        raise NotImplementedError(
+            "You must implement the 'get_prefill_values' method."
+        )  # noqa
+
+    def get_co_sign_values(self, identifier: str) -> Dict[str, Any]:
+        """
+        Given an identifier, fetch the co-sign specific values.
+
+        The return value is a dict keyed by field name as specified in
+        ``self.co_sign_fields``.
+
+        :param identfier: the unique co-signer identifier used to look up the details
+          in the pre-fill backend.
+        :return: a key-value dictionary, where the key is the requested attribute and
+          the value is the prefill value to use for that attribute.
+        """
+        raise NotImplementedError(
+            "You must implement the 'get_co_sign_values' method."
+        )  # noqa
