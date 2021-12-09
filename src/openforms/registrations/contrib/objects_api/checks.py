@@ -53,18 +53,28 @@ def check_config():
     for service_field in urls:
         url = getattr(config, service_field)
         if not url:
-            # they are all defaults
-            return
+            # they are all optional defaults
+            continue
 
         try:
             res = requests.get(url)
-            res.raise_for_status()
         except Exception as e:
             raise InvalidPluginConfiguration(
                 _(
                     "Could not access default '{service_field}' ({url}): {exception}"
                 ).format(service_field=service_field, url=url, exception=e)
             )
+        else:
+            if res.status_code not in (200, 403):
+                raise InvalidPluginConfiguration(
+                    _(
+                        "Could not access default '{service_field}' ({url}): {exception}"
+                    ).format(
+                        service_field=service_field,
+                        url=url,
+                        exception=f"HTTP status {res.status_code}",
+                    )
+                )
 
     fields = [
         "productaanvraag_type",
