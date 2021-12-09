@@ -66,3 +66,27 @@ class SubmissionConfirmationPageTests(APITestCase):
             "Dear John Doe, hazelnut is a great ice cream choice!",
             confirmation_page_content,
         )
+
+    def test_template_tags(self):
+        config = GlobalConfiguration.get_solo()
+        config.submission_confirmation_template = "Dear {{ name|title }} {{ last_name|title }}, {% product_information %} Thank you for submitting this form."
+        config.save()
+
+        form = FormFactory.create(
+            product__information="<p>some product information<p/>"
+        )
+        step1 = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"name": "john", "last_name": "doe"},
+        )
+
+        confirmation_page_content = submission.render_confirmation_page()
+
+        self.assertIn(
+            "<p>some product information<p/>",
+            confirmation_page_content,
+        )

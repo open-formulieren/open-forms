@@ -239,6 +239,7 @@ TEMPLATES = [
                 "openforms.emails.templatetags.appointments",
                 "openforms.emails.templatetags.form_summary",
                 "openforms.emails.templatetags.payment",
+                "openforms.emails.templatetags.products",
                 "openforms.config.templatetags.privacy_policy",
             ],
         },

@@ -384,6 +384,11 @@ class Submission(models.Model):
             template = config.submission_confirmation_template
 
         context_data = {
+            # use private variables that can't be accessed in the template data, so that
+            # template designers can't call the .delete method, for example. Variables
+            # starting with underscores are blocked by the Django template engine.
+            "_submission": self,
+            "_form": self.form,  # should be the same as self.form
             "public_reference": self.public_registration_reference,
             **self.data,
         }

@@ -42,6 +42,7 @@ class ProductListEndpointTests(APITestCase):
                     "url": f"http://testserver{reverse('api:product-detail', kwargs={'uuid': product.uuid})}",
                     "name": "sample",
                     "price": "10.00",
+                    "information": "",
                 }
             ],
         )
@@ -87,5 +88,6 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "url": f"http://testserver{self.detail_url}",
                 "name": self.product.name,
                 "price": "15.00",
+                "information": "",
             },
         )
