@@ -1,30 +1,18 @@
-from django.contrib.auth import get_user_model
-from django.http import HttpRequest
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormStepFactory
 
 
 class FormDefinitionsAPITests(APITestCase):
-    def setUp(self):
-        # TODO: Replace with API-token
-        User = get_user_model()
-        user = User.objects.create_user(
-            username="john", password="secret", email="john@example.com"
-        )
-
-        # TODO: Axes requires HttpRequest, should we have that in the API at all?
-        assert self.client.login(
-            request=HttpRequest(), username=user.username, password="secret"
-        )
-
     def test_list(self):
+        user = UserFactory.create()
+        self.client.force_authenticate(user=user)
         FormDefinitionFactory.create_batch(2)
 
         url = reverse("api:formdefinition-list")
@@ -33,6 +21,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_non_staff_user_cant_update(self):
+        user = UserFactory.create()
+        self.client.force_authenticate(user=user)
         definition = FormDefinitionFactory.create(
             name="test form definition",
             slug="test-form-definition",
@@ -58,6 +48,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_non_staff_user_cant_create(self):
+        user = UserFactory.create()
+        self.client.force_authenticate(user=user)
         url = reverse("api:formdefinition-list")
         response = self.client.post(
             url,
@@ -74,6 +66,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_non_staff_user_cant_delete(self):
+        user = UserFactory.create()
+        self.client.force_authenticate(user=user)
         definition = FormDefinitionFactory.create(
             name="test form definition",
             slug="test-form-definition",
@@ -89,8 +83,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_update(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         definition = FormDefinitionFactory.create(
             name="test form definition",
@@ -126,8 +120,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertIn({"label": "New field"}, definition.configuration["components"])
 
     def test_create(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         url = reverse("api:formdefinition-list")
         response = self.client.post(
@@ -153,8 +147,8 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
     def test_create_no_camelcase_snakecase_conversion(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         url = reverse("api:formdefinition-list")
         response = self.client.post(
@@ -174,8 +168,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertNotIn("some_amel_case", config)
 
     def test_delete(self):
-        staff_user = UserFactory.create(is_staff=True)
-        self.client.force_login(staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         definition = FormDefinitionFactory.create(
             name="test form definition",
@@ -194,6 +188,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(0, FormDefinition.objects.all().count())
 
     def test_used_in_forms_serializer_field(self):
+        user = UserFactory.create()
+        self.client.force_authenticate(user=user)
         form_step = FormStepFactory.create()
         url = reverse(
             "api:formdefinition-detail", args=(form_step.form_definition.uuid,)
@@ -208,3 +204,11 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(
             response_data["usedIn"][0]["url"], f"http://testserver{form_url}"
         )
+
+
+class FormioComponentValidationTests(APITestCase):
+    """
+    Test specific Formio component type validations for form definitions.
+    """
+
+    pass
