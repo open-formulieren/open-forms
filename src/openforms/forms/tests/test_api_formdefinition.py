@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.prefill.models import PrefillConfig
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormStepFactory
@@ -211,4 +212,38 @@ class FormioComponentValidationTests(APITestCase):
     Test specific Formio component type validations for form definitions.
     """
 
-    pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.staff_user = StaffUserFactory.create()
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_authenticate(user=self.staff_user)
+
+    def test_configuration_with_co_sign_but_missing_global_config(self):
+        prefill_config = PrefillConfig.get_solo()
+        url = reverse("api:formdefinition-list")
+        config = {
+            "components": [
+                {
+                    "type": "coSign",
+                    "label": "Co-sign test",
+                    "authPlugin": "digid",
+                }
+            ]
+        }
+        with self.subTest("assert test data as expected"):
+            self.assertEqual(prefill_config.default_person_plugin, "")
+            self.assertEqual(prefill_config.default_company_plugin, "")
+
+        response = self.client.post(
+            url,
+            data={
+                "name": "Some name",
+                "slug": "some-slug",
+                "configuration": config,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
