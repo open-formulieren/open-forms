@@ -1,5 +1,7 @@
 import {Formio} from 'react-formio';
 
+import {getFullyQualifiedUrl} from '../../utils/urls';
+
 const FieldComponent = Formio.Components.components.field;
 
 // TODO: in the future, allow selection of an auth plugin (from the registry)
@@ -22,6 +24,23 @@ const EDIT_FORM_TABS = [
                         key: 'description',
                         label: 'Description'
                     },
+                    {
+                        type: 'select',
+                        key: 'authPlugin',
+                        label: 'Authentication method',
+                        description: `
+                            Which authentication method the co-signer must use. Note that this must be an
+                            authentication method available on the form.`,
+                        dataSrc: 'url',
+                        data: {
+                            // if the url starts with '/', then formio will prefix it with the formio
+                            // base URL, which is of course wrong. We there explicitly use the detected
+                            // host.
+                            url: getFullyQualifiedUrl('/api/v1/authentication/plugins'),
+                        },
+                        valueProperty: 'id',
+                        template: `<span>{{ item.label }}, provides: {{ item.providesAuth.join(', ') }}</span>`,
+                    }
                 ],
             }
         ]
@@ -41,11 +60,7 @@ class CoSignField extends FieldComponent {
 
     constructor(component, options, data) {
         super(component, options, data);
-
         this.checks = [];
-
-        // hardcoded for now
-        this.authPlugin = 'digid';
     }
 
     static schema(...extend) {
@@ -74,7 +89,7 @@ class CoSignField extends FieldComponent {
     render(content) {
         const btnContent = this.t(
             'Co-Sign ({{ authPlugin }})',
-            {authPlugin: this.authPlugin}
+            {authPlugin: this.component.authPlugin}
         );
         const context = {
             content: content,
