@@ -6,7 +6,7 @@ from rest_framework import serializers
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
 
 SerializerCls = Type[serializers.Serializer]

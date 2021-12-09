@@ -11,7 +11,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import PaymentRequestType
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.forms.models import Form
 
     from .models import Submission, SubmissionPayment

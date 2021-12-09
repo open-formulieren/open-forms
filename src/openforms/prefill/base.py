@@ -11,7 +11,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         Return a choice list of available attributes this plugin offers.
         """
-        raise NotImplementedError(  # noqa
+        raise NotImplementedError(  # pragma: nocover
             "You must implement the 'get_available_attributes' method."
         )
 
@@ -33,7 +33,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError(
             "You must implement the 'get_prefill_values' method."
-        )  # noqa
+        )  # pragma: nocover
 
     def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """
@@ -49,4 +49,4 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError(
             "You must implement the 'get_co_sign_values' method."
-        )  # noqa
+        )  # pragma: nocover

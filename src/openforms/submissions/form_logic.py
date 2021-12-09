@@ -6,7 +6,7 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormDefinition, FormLogic
 from openforms.prefill import JSONObject
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
 
 

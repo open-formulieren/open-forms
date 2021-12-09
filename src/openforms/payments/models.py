@@ -12,7 +12,7 @@ from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from ..config.models import GlobalConfiguration
 from .constants import PaymentStatus
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
 
 ORDER_ID_START = 100

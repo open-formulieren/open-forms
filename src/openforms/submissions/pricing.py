@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from json_logic import jsonLogic
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission
 
 

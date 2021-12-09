@@ -36,7 +36,7 @@ from zgw_consumers.concurrent import parallel
 from openforms.logging import logevent
 from openforms.typing import JSONObject
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
 
 default_app_config = "openforms.prefill.apps.PrefillConfig"

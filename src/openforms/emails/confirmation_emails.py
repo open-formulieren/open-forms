@@ -13,7 +13,7 @@ from openforms.utils.urls import build_absolute_uri
 from .exceptions import SkipConfirmationEmail
 
 if TYPE_CHECKING:
-    from openforms.submissions.models import Submission
+    from openforms.submissions.models import Submission  # pragma: nocover
 
 
 logger = logging.getLogger(__name__)
