@@ -8,7 +8,11 @@ from openforms.registrations.tasks import register_submission
 
 from ..models import Submission
 
-__all__ = ["register_submission", "obtain_submission_reference"]
+__all__ = [
+    "register_submission",
+    "obtain_submission_reference",
+    "set_submission_reference",
+]
 
 logger = logging.getLogger(__name__)
 
