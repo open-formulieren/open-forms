@@ -65,8 +65,9 @@ given and if everything is approved, it will be merged.
 
 ### Reviews on releases
 
-All pull requests will be reviewed by a project memeber before they are merged 
-to a release branch. 
+Open Forms community support is provided by [Maykin Media][Maykin_Media]. 
+The community support team is responsible for reviewing all pull requests 
+before they are merged to a release branch.
 
 
 [issues]: https://github.com/open-formulieren/open-forms/issues
@@ -74,3 +75,4 @@ to a release branch.
 [mailinglist]: t.b.d.
 [Standard_for_Public_Code]: https://standard.publiccode.net
 [repository]: https://github.com/open-formulieren/open-forms
+[Maykin_Media]: https://www.maykinmedia.nl
