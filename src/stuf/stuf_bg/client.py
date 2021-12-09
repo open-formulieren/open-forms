@@ -42,7 +42,7 @@ class StufBGClient:
             "tijdstip_bericht": dateformat.format(timezone.now(), "YmdHis"),
         }
 
-    def _make_request(self, data):
+    def make_request(self, data):
         url = self.service.get_endpoint(type=EndpointType.vrije_berichten)
         logger.debug("StUF BG client request.\nurl: %s\ndata: %s", url, data)
         stuf_bg_request(self.service, url)
@@ -60,6 +60,7 @@ class StufBGClient:
             cert=self.service.get_cert(),
             auth=self.service.get_auth(),
         )
+        # TODO should this raise_for_error() ?
 
         logger.debug(
             "StUF BG client response.\nurl: %s\nresponse content: %s",
@@ -82,4 +83,4 @@ class StufBGClient:
 
         data = self.get_request_data(bsn, attributes)
 
-        return self._make_request(data).content
+        return self.make_request(data).content
