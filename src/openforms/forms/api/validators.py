@@ -125,7 +125,7 @@ class FormIOComponentsValidator:
     """
     Run validation on all components in a FormIO JSON schema.
 
-    This invokes a registry of lower-level validators and let's the errors bubble
+    This invokes a registry of lower-level validators and lets the errors bubble
     up for a pluggable interface.
     """
 

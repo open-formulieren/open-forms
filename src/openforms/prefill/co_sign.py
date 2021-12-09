@@ -7,6 +7,7 @@ done by amending the co-sign data on a submission when the co-sign auth event is
 received, see the :mod:`signals` module.
 """
 import logging
+from typing import Optional
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
@@ -23,19 +24,24 @@ AUTH_ATTRIBUTE_TO_CONFIG_FIELD = {
 }
 
 
-def add_co_sign_representation(submission: Submission, auth_attribute: str):
+def get_default_plugin_for_auth_attribute(auth_attribute: str) -> Optional[str]:
     if not (config_field := AUTH_ATTRIBUTE_TO_CONFIG_FIELD.get(auth_attribute)):
         logger.info("Unsupported auth_attribute '%s'", auth_attribute)
         return
 
     config = PrefillConfig.get_solo()
     default_plugin = getattr(config, config_field)
-
-    # configuration may be incomplete, do nothing in that case!
     if not default_plugin:
         logger.info(
             "Prefill config is missing a value for '%s', aborting.", config_field
         )
+    return default_plugin
+
+
+def add_co_sign_representation(submission: Submission, auth_attribute: str):
+    default_plugin = get_default_plugin_for_auth_attribute(auth_attribute)
+    # configuration may be incomplete, do nothing in that case!
+    if not default_plugin:
         return
 
     plugin = register[default_plugin]

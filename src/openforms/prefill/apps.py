@@ -8,4 +8,6 @@ class PrefillConfig(AppConfig):
 
     def ready(self):
         # register signal receivers
+        # ensure that validators are registered
         from . import signals  # noqa
+        from . import validators  # noqa
