@@ -33,6 +33,7 @@ from ..models import (
     FormVersion,
 )
 from .validators import (
+    FormIOComponentsValidator,
     JsonLogicTriggerComponentValidator,
     JsonLogicTriggerValidator,
     JsonLogicValidator,
@@ -335,7 +336,10 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "url": {
                 "view_name": "api:formdefinition-detail",
                 "lookup_field": "uuid",
-            }
+            },
+            "configuration": {
+                "validators": [FormIOComponentsValidator()],
+            },
         }
 
 

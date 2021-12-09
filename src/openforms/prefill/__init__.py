@@ -29,11 +29,12 @@ So, to recap:
 import logging
 from copy import deepcopy
 from itertools import groupby
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 from zgw_consumers.concurrent import parallel
 
 from openforms.logging import logevent
+from openforms.typing import JSONObject
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -41,11 +42,6 @@ if TYPE_CHECKING:
 default_app_config = "openforms.prefill.apps.PrefillConfig"
 
 logger = logging.getLogger(__name__)
-
-
-JSONPrimitive = Union[str, int, None, float]
-JSONValue = Union[JSONPrimitive, "JSONObject", List["JSONValue"]]
-JSONObject = Dict[str, JSONValue]
 
 
 def apply_prefill(configuration: JSONObject, submission: "Submission", register=None):

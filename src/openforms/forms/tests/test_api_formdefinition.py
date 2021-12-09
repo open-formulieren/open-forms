@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 
 from rest_framework import status
@@ -207,7 +209,7 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
 
-class FormioComponentValidationTests(APITestCase):
+class FormioCoSignComponentValidationTests(APITestCase):
     """
     Test specific Formio component type validations for form definitions.
     """
@@ -220,6 +222,31 @@ class FormioComponentValidationTests(APITestCase):
     def setUp(self):
         super().setUp()
         self.client.force_authenticate(user=self.staff_user)
+
+    def test_configuration_with_co_sign_but_missing_auth_plugin(self):
+        url = reverse("api:formdefinition-list")
+        config = {
+            "components": [
+                {
+                    "type": "coSign",
+                    "label": "Co-sign test",
+                }
+            ]
+        }
+
+        response = self.client.post(
+            url,
+            data={
+                "name": "Some name",
+                "slug": "some-slug",
+                "configuration": config,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(error["name"], "configuration")
 
     def test_configuration_with_co_sign_but_missing_global_config(self):
         prefill_config = PrefillConfig.get_solo()
@@ -247,3 +274,32 @@ class FormioComponentValidationTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(error["name"], "configuration")
+
+    @patch("openforms.prefill.co_sign.PrefillConfig.get_solo")
+    def test_configuration_with_co_sign_ok(self, mock_get_solo):
+        mock_get_solo.return_value = PrefillConfig(default_person_plugin="stufbg")
+
+        url = reverse("api:formdefinition-list")
+        config = {
+            "components": [
+                {
+                    "type": "coSign",
+                    "label": "Co-sign test",
+                    "authPlugin": "digid",
+                }
+            ]
+        }
+
+        response = self.client.post(
+            url,
+            data={
+                "name": "Some name",
+                "slug": "some-slug",
+                "configuration": config,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
