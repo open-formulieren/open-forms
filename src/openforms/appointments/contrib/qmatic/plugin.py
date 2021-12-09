@@ -2,8 +2,12 @@ import logging
 from datetime import date, datetime, time
 from typing import List, Optional
 
+from django.utils.translation import gettext_lazy as _
+
 from requests.exceptions import RequestException
 from zds_client import ClientError
+
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ...base import (
     AppointmentClient,
@@ -30,6 +34,7 @@ class Plugin(BasePlugin):
     """
 
     identifier = "Qmatic-Plugin"
+    verbose_name = "Qmatic-Plugin"
 
     def __init__(self):
         self.client = QmaticClient()
@@ -251,3 +256,12 @@ class Plugin(BasePlugin):
 
         except (ClientError, RequestException, KeyError) as e:
             raise AppointmentException(e)
+
+    def check_config(self):
+        try:
+            response = self.client.get("services")
+            response.raise_for_status()
+        except (ClientError, RequestException) as e:
+            raise InvalidPluginConfiguration(
+                _("Invalid response: {exception}").format(exception=e)
+            )

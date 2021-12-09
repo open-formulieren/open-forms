@@ -1,10 +1,10 @@
 from typing import Any, Dict
 
-from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 # from openforms.appointments.registry import register as appointments_register
+from openforms.appointments.checks import check_configs as check_appointment_configs
 from openforms.config.data import Entry
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -18,6 +18,14 @@ class ConfigurationView(TemplateView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         sections = []
+
+        # add custom non-generic
+        sections.append(
+            {
+                "name": _("Appointment plugins"),
+                "entries": check_appointment_configs(),
+            }
+        )
 
         # Iterate over all plugin registries.
         plugin_registries = [
