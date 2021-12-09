@@ -2,7 +2,7 @@ from typing import NoReturn
 
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.microsoft.client import MSGraphClient, MSGraphUploadHelper
 from openforms.contrib.microsoft.exceptions import MSAuthenticationError
@@ -88,7 +88,7 @@ class MSGraphRegistration(BasePlugin):
             try:
                 storage = client.account.storage()
                 drive = storage.get_default_drive()
-                root_folder = drive.get_root_folder()
+                drive.get_root_folder()
             except Exception as e:
                 raise InvalidPluginConfiguration(
                     _("Could not access root folder: {exception}").format(exception=e)
