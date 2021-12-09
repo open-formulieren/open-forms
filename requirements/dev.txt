@@ -298,7 +298,7 @@ django-yubin==1.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==2.2.24
+django==2.2.25
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
