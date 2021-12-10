@@ -95,7 +95,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
             )
         except Exception as e:
             # pass it on
-            raise e from None
+            raise
         else:
             if not isinstance(results, dict):
                 raise InvalidPluginConfiguration(_("Response not a dictionary"))
