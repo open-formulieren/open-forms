@@ -6,7 +6,11 @@ from openforms.forms.validation.base import BaseValidator
 from openforms.forms.validation.registry import register
 from openforms.typing import JSONObject
 
-from .co_sign import get_default_plugin_for_auth_attribute
+from .co_sign import (
+    AUTH_ATTRIBUTE_TO_CONFIG_FIELD,
+    PrefillConfig,
+    get_default_plugin_for_auth_attribute,
+)
 
 
 @register("coSign")
@@ -25,10 +29,18 @@ class CoSignValidator(BaseValidator):
             auth_plugin.provides_auth
         )
         if not default_plugin:
+            config_field_name = AUTH_ATTRIBUTE_TO_CONFIG_FIELD[
+                auth_plugin.provides_auth
+            ]
             raise ValidationError(
                 _(
-                    "The co-sign component would look up the name by '{attr}', but the "
-                    "global prefill default is not (yet) configured for this."
-                ).format(attr=auth_plugin.provides_auth),
+                    "The co-sign component requires the '{field_label}' "
+                    "({config_verbose_name}) to be configured."
+                ).format(
+                    field_label=PrefillConfig._meta.get_field(
+                        config_field_name
+                    ).verbose_name,
+                    config_verbose_name=PrefillConfig._meta.verbose_name,
+                ),
                 code="invalid",
             )
