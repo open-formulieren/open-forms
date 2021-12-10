@@ -39,7 +39,6 @@ class SubmissionReportGenerationTests(TestCase):
             {"email": [None]},
             completed=True,
             with_report=False,
-            form__name="Test Form",
         )
 
         generate_submission_report.request.id = "some-id"
