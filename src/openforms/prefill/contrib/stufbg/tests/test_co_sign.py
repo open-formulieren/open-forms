@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -10,6 +9,7 @@ from stuf.tests.factories import StufServiceFactory
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
 from ....registry import register
+from .utils import mock_stufbg_client
 
 plugin = register["stufbg"]
 
@@ -17,14 +17,29 @@ plugin = register["stufbg"]
 class CoSignPrefillTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        config = PrefillConfig.get_solo()
-        config.default_person_plugin = plugin.identifier
-        config.save()
+        cls.stuf_bg_service = StufServiceFactory.create()
 
-        stuf_bg_service = StufServiceFactory.create()
-        config = StufBGConfig.get_solo()
-        config.service = stuf_bg_service
-        config.save()
+    def setUp(self):
+        super().setUp()
+
+        # mock out django-solo interface (we don't have to deal with caches then)
+        prefil_config_patcher = patch(
+            "openforms.prefill.co_sign.PrefillConfig.get_solo",
+            return_value=PrefillConfig(default_person_plugin=plugin.identifier),
+        )
+        prefil_config_patcher.start()
+        self.addCleanup(prefil_config_patcher.stop)
+
+        stufbg_config_patcher = patch(
+            "openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo",
+            return_value=StufBGConfig(service=self.stuf_bg_service),
+        )
+        stufbg_config_patcher.start()
+        self.addCleanup(stufbg_config_patcher.stop)
+
+        # mock out StufBG client
+        client_patcher = mock_stufbg_client("StufBgResponse.xml")
+        self.addCleanup(client_patcher.stop)
 
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
@@ -34,15 +49,8 @@ class CoSignPrefillTests(TestCase):
                 "fields": {},
             }
         )
-        return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponse.xml"
-        )
 
-        with patch(
-            "stuf.stuf_bg.client.StufBGClient.get_values_for_attributes",
-            return_value=return_value,
-        ) as m:
-            add_co_sign_representation(submission, plugin.requires_auth)
+        add_co_sign_representation(submission, plugin.requires_auth)
 
         submission.refresh_from_db()
         self.assertEqual(
