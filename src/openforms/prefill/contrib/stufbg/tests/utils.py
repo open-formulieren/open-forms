@@ -8,12 +8,10 @@ plugin = register["stufbg"]
 
 
 def mock_stufbg_client(template: str):
-    patcher = patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    mock_client = patcher.start()
-    get_values_for_attributes_mock = (
-        mock_client.return_value.get_client.return_value.get_values_for_attributes
+    return_value = loader.render_to_string(f"stuf_bg/tests/responses/{template}")
+    patcher = patch(
+        "stuf.stuf_bg.client.StufBGClient.get_values_for_attributes",
+        return_value=return_value,
     )
-    get_values_for_attributes_mock.return_value = loader.render_to_string(
-        f"stuf_bg/tests/responses/{template}"
-    )
+    patcher.start()
     return patcher

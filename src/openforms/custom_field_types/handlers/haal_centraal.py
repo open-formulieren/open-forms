@@ -1,48 +1,11 @@
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
-from rest_framework.request import Request
-
-from openforms.forms.custom_field_types import register
-from openforms.submissions.models import Submission
-
-from .models import BRPConfig
+from openforms.contrib.brp.models import BRPConfig
 
 
-@register("npFamilyMembers")
-def fill_out_family_members(
-    component: Dict[str, Any], request: Request, submission: Submission
-) -> Dict[str, Any]:
-
-    # change the type to a primitive
-    component["type"] = "selectboxes"
-    component["fieldSet"] = False
-    component["inline"] = False
-    component["inputType"] = "checkbox"
-
-    # set the available choices
-    child_choices = get_np_children(request)
-
-    component["values"] = [
-        {
-            "label": label,
-            "value": value,
-        }
-        for value, label in child_choices
-    ]
-
-    if "mask" in component:
-        del component["mask"]
-
-    return component
-
-
-def get_np_children(request: Request) -> List[Tuple[str, str]]:
+def get_np_children_haal_centraal(bsn: str) -> List[Tuple[str, str]]:
     config = BRPConfig.get_solo()
     client = config.get_client()
-
-    bsn = request.session.get("bsn")
-    if not bsn:
-        raise RuntimeError("No authenticated person!")
 
     # actual operation ID from standard! but Open Personen has the wrong one
     # operation_id = "ingeschrevenpersonenBurgerservicenummerkinderen"

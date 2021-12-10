@@ -1,17 +1,19 @@
 import logging
 import uuid
 from datetime import timedelta
+from typing import List
 
 from django.template import loader
 from django.utils import dateformat, timezone
 
 import requests
+import xmltodict
 
 from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
 from stuf.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
 from stuf.models import StufService
 
-from .constants import STUF_BG_EXPIRY_MINUTES
+from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES
 
 logger = logging.getLogger(__name__)
 
@@ -84,3 +86,29 @@ class StufBGClient:
         data = self.get_request_data(bsn, attributes)
 
         return self.make_request(data).content
+
+    def get_values(self, bsn: str, attributes: List[str]) -> dict:
+
+        response_data = self.get_values_for_attributes(bsn, attributes)
+
+        dict_response = xmltodict.parse(
+            response_data,
+            process_namespaces=True,
+            namespaces=NAMESPACE_REPLACEMENTS,
+        )
+
+        try:
+            return dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
+        except (TypeError, KeyError) as exc:
+            try:
+                # Get the fault information if there
+                fault = dict_response["Envelope"]["Body"]["Fault"]
+            except KeyError:
+                fault = {}
+            finally:
+                logger.error(
+                    "Response data has an unexpected shape",
+                    extra={"response": dict_response, "fault": fault},
+                    exc_info=exc,
+                )
+                return {}

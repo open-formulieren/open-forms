@@ -3,6 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from stuf.stuf_bg.models import StufBGConfig
+from stuf.tests.factories import StufServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
@@ -13,16 +15,27 @@ plugin = register["stufbg"]
 
 
 class CoSignPrefillTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.stuf_bg_service = StufServiceFactory.create()
+
     def setUp(self):
         super().setUp()
 
         # mock out django-solo interface (we don't have to deal with caches then)
-        config_patcher = patch(
+        prefil_config_patcher = patch(
             "openforms.prefill.co_sign.PrefillConfig.get_solo",
             return_value=PrefillConfig(default_person_plugin=plugin.identifier),
         )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
+        prefil_config_patcher.start()
+        self.addCleanup(prefil_config_patcher.stop)
+
+        stufbg_config_patcher = patch(
+            "openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo",
+            return_value=StufBGConfig(service=self.stuf_bg_service),
+        )
+        stufbg_config_patcher.start()
+        self.addCleanup(stufbg_config_patcher.stop)
 
         # mock out StufBG client
         client_patcher = mock_stufbg_client("StufBgResponse.xml")

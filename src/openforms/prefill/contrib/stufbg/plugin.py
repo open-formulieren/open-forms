@@ -4,7 +4,6 @@ from typing import Any, Dict, Iterable, List, Tuple
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-import xmltodict
 from defusedxml.lxml import fromstring as df_fromstring
 from glom import T as Target, glom
 from lxml import etree
@@ -13,7 +12,7 @@ from requests import HTTPError, RequestException
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
-from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
+from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
@@ -52,29 +51,7 @@ class StufBgPrefill(BasePlugin):
         config = StufBGConfig.get_solo()
         client = config.get_client()
 
-        response_data = client.get_values_for_attributes(bsn, attributes)
-
-        dict_response = xmltodict.parse(
-            response_data,
-            process_namespaces=True,
-            namespaces=NAMESPACE_REPLACEMENTS,
-        )
-
-        try:
-            data = dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
-        except (TypeError, KeyError) as exc:
-            try:
-                # Get the fault information if there
-                fault = dict_response["Envelope"]["Body"]["Fault"]
-            except KeyError:
-                fault = {}
-            finally:
-                logger.error(
-                    "Response data has an unexpected shape",
-                    extra={"response": dict_response, "fault": fault},
-                    exc_info=exc,
-                )
-                return {}
+        data = client.get_values(bsn, attributes)
 
         response_dict = {}
         for attribute in attributes:
