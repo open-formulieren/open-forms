@@ -2828,6 +2828,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
         paymentRequired:
           type: boolean
           readOnly: true
@@ -3549,6 +3551,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
         paymentRequired:
           type: boolean
           readOnly: true
