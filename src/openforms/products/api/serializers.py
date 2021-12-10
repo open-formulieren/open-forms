@@ -12,6 +12,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "url",
             "price",
+            "information",
         )
         extra_kwargs = {
             "uuid": {

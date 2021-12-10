@@ -393,6 +393,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
     {% appointment_information %}
 
+    {% product_information %}
+
     {% payment_information %}
 
     <p>Met vriendelijke groet,</p>
@@ -449,6 +451,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             registration_success=True,
             public_registration_reference="xyz123",
             form__product__price=Decimal("12.34"),
+            form__product__information="<p>info line 1</p>\r\n<p>info line 2</p>\r\n<p>info line 3</p>",
             form__payment_backend="test",
             form_url="http://server/form",
         )
@@ -515,9 +518,13 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             Some:
             Data
 
-            Als u uw afspraak wilt annuleren kunt u dat hieronder doen.
+            If you want to cancel or change your appointment, you can do so below.
             {_("Cancel appointment")}: #URL#
             {_("Change appointment")}: #URL#
+
+            info line 1
+            info line 2
+            info line 3
 
             {_("Payment information")}
 
