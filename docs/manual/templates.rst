@@ -126,6 +126,7 @@ Element                              Description
 ``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
 ``{% appointment_information %}``    The information about the appointment to show in the email.
 ``{% appointment_links %}``          Display relevant links about the appointment.
+``{% product_information %}``        Display the text from the optional "information" field of the Product linked to this form.
 ``{% payment_information %}``        If the submission required payment this will either confirm the amount and status, or displays a link where payment can be completed. Displays nothing if submission is free.
 ===================================  ===========================================================================
 
@@ -144,8 +145,9 @@ in the template. Typically, these vary per form!
 
 These are additional variables and statements available to the template.
 
-========================== ===========================================================================
-Element                    Description
-========================== ===========================================================================
-``{{ public_reference }}`` The public reference of the submission, e.g. the "zaaknummer".
-========================== ===========================================================================
+===================================  ===========================================================================
+Element                              Description
+===================================  ===========================================================================
+``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
+``{% product_information %}``        Display the text from the optional "information" field of the Product linked to this form.
+===================================  ===========================================================================
