@@ -3840,6 +3840,10 @@ components:
           type: string
           format: decimal
           pattern: ^\d{0,8}(?:\.\d{0,2})?$
+        information:
+          type: string
+          description: Information text to be displayed in the confirmation page and
+            confirmation email.
       required:
       - name
       - price
