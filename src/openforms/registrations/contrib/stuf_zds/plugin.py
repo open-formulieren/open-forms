@@ -2,6 +2,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -194,4 +195,30 @@ class StufZDSRegistration(BasePlugin):
         client.set_zaak_payment(submission.registration_result["zaak"])
 
     def check_config(self):
-        raise InvalidPluginConfiguration("TODO")
+        config = StufZDSConfig.get_solo()
+        if not config.service_id:
+            raise InvalidPluginConfiguration(_("StufService not selected"))
+
+        options = {
+            "omschrijving": "MyForm",
+            "referentienummer": "123",
+        }
+        config.apply_defaults_to(options)
+        client = config.get_client(options)
+        try:
+            client.check_config()
+        except Exception as e:
+            raise InvalidPluginConfiguration(
+                _("Could not connect: {exception}").format(exception=e)
+            ) from e
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:stuf_zds_stufzdsconfig_change",
+                    args=(StufZDSConfig.singleton_instance_id,),
+                ),
+            ),
+        ]

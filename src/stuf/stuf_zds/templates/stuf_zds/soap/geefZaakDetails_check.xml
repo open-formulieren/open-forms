@@ -1,0 +1,20 @@
+<ZKN:zakLv01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml">
+    <ZKN:stuurgegevens>
+        <StUF:berichtcode>Lv01</StUF:berichtcode>
+        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
+        <StUF:entiteittype>ZAK</StUF:entiteittype>
+    </ZKN:stuurgegevens>
+    <ZKN:parameters>
+        <StUF:sortering>0</StUF:sortering>
+        <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+    </ZKN:parameters>
+    <ZKN:gelijk StUF:entiteittype="ZAK">
+        <ZKN:identificatie>5700000000000000000000000000000000000001</ZKN:identificatie>
+    </ZKN:gelijk>
+    <ZKN:scope>
+        <ZKN:object StUF:entiteittype="ZAK">
+            <ZKN:identificatie>5700000000000000000000000000000000000001</ZKN:identificatie>
+            <ZKN:omschrijving>Client</ZKN:omschrijving>
+        </ZKN:object>
+    </ZKN:scope>
+</ZKN:zakLv01>
