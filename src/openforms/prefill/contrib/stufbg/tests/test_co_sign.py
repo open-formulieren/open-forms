@@ -1,32 +1,30 @@
 from unittest.mock import patch
 
+from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from stuf.stuf_bg.models import StufBGConfig
+from stuf.tests.factories import StufServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
 from ....registry import register
-from .utils import mock_stufbg_client
 
 plugin = register["stufbg"]
 
 
 class CoSignPrefillTests(TestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        config = PrefillConfig.get_solo()
+        config.default_person_plugin = plugin.identifier
+        config.save()
 
-        # mock out django-solo interface (we don't have to deal with caches then)
-        config_patcher = patch(
-            "openforms.prefill.co_sign.PrefillConfig.get_solo",
-            return_value=PrefillConfig(default_person_plugin=plugin.identifier),
-        )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
-
-        # mock out StufBG client
-        client_patcher = mock_stufbg_client("StufBgResponse.xml")
-        self.addCleanup(client_patcher.stop)
+        stuf_bg_service = StufServiceFactory.create()
+        config = StufBGConfig.get_solo()
+        config.service = stuf_bg_service
+        config.save()
 
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
@@ -36,8 +34,15 @@ class CoSignPrefillTests(TestCase):
                 "fields": {},
             }
         )
+        return_value = loader.render_to_string(
+            "stuf_bg/tests/responses/StufBgResponse.xml"
+        )
 
-        add_co_sign_representation(submission, plugin.requires_auth)
+        with patch(
+            "stuf.stuf_bg.client.StufBGClient.get_values_for_attributes",
+            return_value=return_value,
+        ) as m:
+            add_co_sign_representation(submission, plugin.requires_auth)
 
         submission.refresh_from_db()
         self.assertEqual(
