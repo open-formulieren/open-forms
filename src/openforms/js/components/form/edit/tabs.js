@@ -246,8 +246,7 @@ const REGISTRATION = {
     ]
 };
 
-
-const VALIDATION = {
+const VALIDATION_BASIC = {
     key: 'validation',
     label: 'Validation',
     components: [
@@ -258,6 +257,15 @@ const VALIDATION = {
             tooltip: 'A required field must be filled in before the form can be submitted.',
             key: 'validate.required'
         },
+    ]
+};
+
+
+const VALIDATION = {
+    key: 'validation',
+    label: 'Validation',
+    components: [
+        ...VALIDATION_BASIC.components,
         {
             type: 'select',
             key: 'validate.plugins',
@@ -391,5 +399,6 @@ const DEFAULT_CHOICES_TABS = {
 export {
     DEFAULT_TABS, DEFAULT_TEXT_TABS, DEFAULT_CHOICES_TABS, DEFAULT_SENSITIVE_TABS,
     BASIC, TEXT_BASIC, SENSITIVE_BASIC, LOCATION, ADVANCED, VALIDATION, TEXT_VALIDATION, PREFILL, REGISTRATION,
+    VALIDATION_BASIC,
 };
 export default DEFAULT_TABS;
