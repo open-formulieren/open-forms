@@ -114,7 +114,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   digid-eherkenning
     #   python3-saml
-git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@830bed9920471d3ff87a72edfb48c24fe7f036bb#egg=digid_eherkenning
+git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@d61ffe90322b9bb51c700b784181fe13a5253034#egg=digid_eherkenning
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -359,6 +359,7 @@ furl==2.1.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   digid-eherkenning
 gemma-zds-client==1.0.1
     # via
     #   -c requirements/base.txt
