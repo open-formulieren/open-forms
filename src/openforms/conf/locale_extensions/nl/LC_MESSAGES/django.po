@@ -37,18 +37,18 @@ msgstr "toegangslogboek"
 # django-admin-index
 
 msgid "application group"
-msgstr "applicatie groep"
+msgstr "applicatiegroep"
 
 msgid "application groups"
-msgstr "applicatie groepen"
+msgstr "applicatiegroepen"
 
 # django-cookie-consent
 
 msgid "Cookie Group"
-msgstr "Cookie Groep"
+msgstr "Cookiegroep"
 
 msgid "Cookie Groups"
-msgstr "Cookie Groepen"
+msgstr "Cookiegroepen"
 
 # mozilla_django_oidc_db
 
