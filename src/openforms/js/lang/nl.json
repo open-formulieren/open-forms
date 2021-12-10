@@ -190,7 +190,7 @@
     "originalDefault": "plus"
   },
   "BrsG4w": {
-    "defaultMessage": "Then the price is",
+    "defaultMessage": "dan is de prijs",
     "description": "Price logic prefix",
     "originalDefault": "Then the price is"
   },
@@ -295,7 +295,7 @@
     "originalDefault": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
   },
   "Gi+cvN": {
-    "defaultMessage": "Use linked product price",
+    "defaultMessage": "Gebruik gekoppelde productprijs",
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
   },
@@ -379,13 +379,8 @@
     "description": "Confirmation Email Content label",
     "originalDefault": "Content"
   },
-  "KUXH/H": {
-    "defaultMessage": "De onderstaande formulierdefinitie bevat fouten.",
-    "description": "Invalid form step error",
-    "originalDefault": "The form step below is invalid."
-  },
   "L0g8AL": {
-    "defaultMessage": "Payment provider",
+    "defaultMessage": "Betaalprovider",
     "description": "Payment provider fieldset title",
     "originalDefault": "Payment provider"
   },
@@ -440,7 +435,7 @@
     "originalDefault": "(provides {attrs})"
   },
   "QAbqb6": {
-    "defaultMessage": "Add rule",
+    "defaultMessage": "Regel toevoegen",
     "description": "Add price logic rule button",
     "originalDefault": "Add rule"
   },
@@ -455,7 +450,7 @@
     "originalDefault": "Save text"
   },
   "Qr2wnR": {
-    "defaultMessage": "Betaalprovider backend options",
+    "defaultMessage": "Betaalprovider backend opties",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
   },
@@ -605,7 +600,7 @@
     "originalDefault": "Product"
   },
   "cZbqaM": {
-    "defaultMessage": "Content that will be shown on the start page of the form, below the title and above the log in text.",
+    "defaultMessage": "Inhoud die op de formulier startpagina wordt getoond, onder de titel en boven de start knop(pen).",
     "description": "Start page explanation text",
     "originalDefault": "Content that will be shown on the start page of the form, below the title and above the log in text."
   },
@@ -620,7 +615,7 @@
     "originalDefault": "Export this form"
   },
   "ddR92A": {
-    "defaultMessage": "Explanation template",
+    "defaultMessage": "Toelichtingssjabloon",
     "description": "Start page explanation text label",
     "originalDefault": "Explanation template"
   },
@@ -630,7 +625,7 @@
     "originalDefault": "Show progress indicator"
   },
   "eJEu3L": {
-    "defaultMessage": "Are you sure you want to delete this rule?",
+    "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",
     "description": "Price rule deletion confirm message",
     "originalDefault": "Are you sure you want to delete this rule?"
   },
@@ -645,7 +640,7 @@
     "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "fLHOey": {
-    "defaultMessage": "Pricing logic",
+    "defaultMessage": "Prijs logica",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
   },
@@ -710,7 +705,7 @@
     "originalDefault": "No"
   },
   "k34Vke": {
-    "defaultMessage": "Dan",
+    "defaultMessage": "dan",
     "description": "First logic action prefix",
     "originalDefault": "Then"
   },
@@ -905,7 +900,7 @@
     "originalDefault": "There are validation errors"
   },
   "zeXZzX": {
-    "defaultMessage": "Use logic rules to determine the price",
+    "defaultMessage": "Gebruik prijsregels om de prijs te bepalen",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
   }

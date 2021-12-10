@@ -379,11 +379,6 @@
     "description": "Confirmation Email Content label",
     "originalDefault": "Content"
   },
-  "KUXH/H": {
-    "defaultMessage": "The form step below is invalid.",
-    "description": "Invalid form step error",
-    "originalDefault": "The form step below is invalid."
-  },
   "L0g8AL": {
     "defaultMessage": "Payment provider",
     "description": "Payment provider fieldset title",

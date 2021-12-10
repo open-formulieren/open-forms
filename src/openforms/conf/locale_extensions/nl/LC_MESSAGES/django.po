@@ -31,4 +31,26 @@ msgstr "toegangslogboek"
 # msgstr "Wachtwoord of gebruikersnaam vergeten?"
 
 # django-yubin
+
 # Has no translatable strings
+
+# django-admin-index
+
+msgid "application group"
+msgstr "applicatie groep"
+
+msgid "application groups"
+msgstr "applicatie groepen"
+
+# django-cookie-consent
+
+msgid "Cookie Group"
+msgstr "Cookie Groep"
+
+msgid "Cookie Groups"
+msgstr "Cookie Groepen"
+
+# mozilla_django_oidc_db
+
+msgid "OpenID Connect configuration"
+msgstr "OpenID Connect configuratie"
