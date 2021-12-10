@@ -23,3 +23,11 @@ class ConfirmationEmailOptions(DjangoChoices):
     form_specific_email = ChoiceItem("form_specific_email", _("Form specific email"))
     global_email = ChoiceItem("global_email", _("Global email"))
     no_email = ChoiceItem("no_email", _("No email"))
+
+
+class CanSubmitChoices(DjangoChoices):
+    yes = ChoiceItem("yes", _("Yes"))
+    no_with_overview = ChoiceItem("no_with_overview", _("No (with overview page)"))
+    no_without_overview = ChoiceItem(
+        "no_without_overview", _("No (without overview page)")
+    )

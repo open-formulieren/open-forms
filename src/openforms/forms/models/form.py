@@ -19,7 +19,7 @@ from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 
-from ..constants import ConfirmationEmailOptions
+from ..constants import CanSubmitChoices, ConfirmationEmailOptions
 from .utils import literal_getter
 
 
@@ -76,10 +76,15 @@ class Form(models.Model):
         ),
         blank=True,
     )
-    can_submit = models.BooleanField(
+    can_submit = models.CharField(
         _("can submit"),
-        default=True,
-        help_text=_("Whether the user is allowed to submit this form or not."),
+        choices=CanSubmitChoices,
+        default=CanSubmitChoices.yes,
+        help_text=_(
+            "Whether the user is allowed to submit this form or not, "
+            "and whether the overview page should be shown if they are not."
+        ),
+        max_length=100,
     )
     show_progress_indicator = models.BooleanField(
         _("show progress indicator"),
