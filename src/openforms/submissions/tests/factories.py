@@ -68,6 +68,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         cls,
         components_list: List[dict],
         submitted_data: dict = None,
+        with_report=True,
         **kwargs,
     ) -> Submission:
         """
@@ -102,7 +103,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             submission=submission, form_step=form_step, data=submitted_data
         )
 
-        SubmissionReportFactory.create(submission=submission)
+        if with_report:
+            SubmissionReportFactory.create(submission=submission)
 
         return submission
 
