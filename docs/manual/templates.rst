@@ -125,7 +125,6 @@ Element                              Description
 ``{% summary %}``                    A full summary of all elements marked to show in the email.
 ``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
 ``{% appointment_information %}``    The information about the appointment to show in the email.
-``{% appointment_links %}``          Display relevant links about the appointment.
 ``{% product_information %}``        Display the text from the optional "information" field of the Product linked to this form.
 ``{% payment_information %}``        If the submission required payment this will either confirm the amount and status, or displays a link where payment can be completed. Displays nothing if submission is free.
 ===================================  ===========================================================================
