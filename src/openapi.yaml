@@ -2660,6 +2660,10 @@ components:
       enum:
       - demo
       - demo-kvk
+      - demo-outage
+      - bsn-outage
+      - kvk-outage
+      - digid-mock
       - digid
       - eherkenning
       - eidas
