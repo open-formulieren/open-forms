@@ -8,6 +8,7 @@ from openforms.submissions.models import Submission
 
 from .constants import FamilyMembersDataAPIChoices
 from .handlers.haal_centraal import get_np_children_haal_centraal
+from .handlers.stuf_bg import get_np_children_stuf_bg
 from .models import FamilyMembersTypeConfig
 
 
@@ -30,6 +31,7 @@ def fill_out_family_members(
     config = FamilyMembersTypeConfig.get_solo()
     handlers = {
         FamilyMembersDataAPIChoices.haal_centraal: get_np_children_haal_centraal,
+        FamilyMembersDataAPIChoices.stuf_bg: get_np_children_stuf_bg,
     }
 
     # Change the component configuration

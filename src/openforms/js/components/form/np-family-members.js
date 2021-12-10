@@ -36,7 +36,7 @@ class NpFamilyMembers extends SelectBoxes {
 
     static editForm() {
         // The datagrid that would usually be shown to set the values of the checkboxes is not present, since the
-        // values will be set by the fill_out_family_members function in openforms/contrib/brp/field_types.py
+        // values will be set by the backend
         let basicFieldsNoDefault = {...SENSITIVE_BASIC};
         basicFieldsNoDefault.components = basicFieldsNoDefault.components.filter(component => component.key !== 'defaultValue');
         const sensitiveBasicTabs = {
