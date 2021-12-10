@@ -23,6 +23,3 @@ class SubmissionReportGenerationTests(TestCase):
         self.assertEqual(submission, report.submission)
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
         self.assertEqual("some-id", report.task_id)
-
-    def test_submission_report_multivalue(self):
-        pass
