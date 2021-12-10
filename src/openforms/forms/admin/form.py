@@ -14,7 +14,6 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 
 from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
-from ..backends import registry
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
 from ..utils import export_form, import_form
@@ -197,20 +196,6 @@ class FormAdmin(
         context = dict(self.admin_site.each_context(request), form=form)
 
         return TemplateResponse(request, "admin/forms/form/import_form.html", context)
-
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        if db_field.name == "backend":
-            choices = [(path, path.split(".")[-1]) for path in registry]
-            choices.insert(0, ("", "---------"))
-
-            return forms.ChoiceField(
-                label=db_field.verbose_name.capitalize(),
-                choices=choices,
-                required=False,
-                help_text=db_field.help_text,
-            )
-
-        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     def make_copies(self, request, queryset):
         for instance in queryset:
