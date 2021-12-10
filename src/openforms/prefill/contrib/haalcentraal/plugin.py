@@ -90,14 +90,17 @@ class HaalCentraalPrefill(BasePlugin):
                 Attributes.naam_voornamen,
                 Attributes.naam_voorvoegsel,
                 Attributes.naam_geslachtsnaam,
+                Attributes.naam_voorletters,
             ),
         )
+        first_names = values.get(Attributes.naam_voornamen, "")
+        first_letters = values.get(Attributes.naam_voorletters) or " ".join(
+            [f"{name[0]}." for name in first_names.split(" ") if name]
+        )
         representation_bits = [
-            " ".join(
-                [f"{name[0]}." for name in values[Attributes.naam_voornamen].split(" ")]
-            ),
-            values[Attributes.naam_voorvoegsel],
-            values[Attributes.naam_geslachtsnaam],
+            first_letters,
+            values.get(Attributes.naam_voorvoegsel, ""),
+            values.get(Attributes.naam_geslachtsnaam, ""),
         ]
         return (
             values,
