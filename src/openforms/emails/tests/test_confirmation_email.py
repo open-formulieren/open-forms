@@ -518,7 +518,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             Some:
             Data
 
-            If you want to cancel or change your appointment, you can do so below.
+            {_("If you want to cancel or change your appointment, you can do so below.")}
             {_("Cancel appointment")}: #URL#
             {_("Change appointment")}: #URL#
 

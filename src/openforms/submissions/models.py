@@ -751,7 +751,7 @@ class TemporaryFileUpload(models.Model):
 
     class Meta:
         verbose_name = _("temporary file upload")
-        verbose_name_plural = _("temporary file upload")
+        verbose_name_plural = _("temporary file uploads")
 
     def delete(self, using=None, keep_parents=False):
         self.content.delete(save=False)

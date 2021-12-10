@@ -16,7 +16,7 @@ class MSGraphRegistrationConfig(SingletonModel):
 
     service = models.OneToOneField(
         "microsoft.MSGraphService",
-        verbose_name=_("Microsoft Graph Service"),
+        verbose_name=_("Microsoft Graph service"),
         on_delete=models.PROTECT,
         related_name="registration_config",
         null=True,

@@ -31,7 +31,7 @@ class MSGraphService(models.Model):
     )
 
     class Meta:
-        verbose_name = _("Microsoft Graph Service")
+        verbose_name = _("Microsoft Graph service")
         ordering = ("label", "tenant_id")
 
     def __str__(self):

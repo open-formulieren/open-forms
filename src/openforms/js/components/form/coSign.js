@@ -28,9 +28,7 @@ const EDIT_FORM_TABS = [
                         type: 'select',
                         key: 'authPlugin',
                         label: 'Authentication method',
-                        description: `
-                            Which authentication method the co-signer must use. Note that this must be an
-                            authentication method available on the form.`,
+                        description: `Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.`,
                         dataSrc: 'url',
                         data: {
                             // if the url starts with '/', then formio will prefix it with the formio

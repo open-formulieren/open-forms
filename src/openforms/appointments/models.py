@@ -14,6 +14,9 @@ class AppointmentsConfig(SingletonModel):
         blank=True,
     )
 
+    class Meta:
+        verbose_name = _("Appointment configuration")
+
 
 class AppointmentInfo(models.Model):
 
