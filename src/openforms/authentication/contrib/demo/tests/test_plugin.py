@@ -178,5 +178,10 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             submission.refresh_from_db()
             self.assertEqual(
                 submission.co_sign_data,
-                {"plugin": "demo", "identifier": "111222333", "fields": {}},
+                {
+                    "plugin": "demo",
+                    "representation": "",
+                    "identifier": "111222333",
+                    "fields": {},
+                },
             )

@@ -1,0 +1,235 @@
+{
+    "_links": {
+        "self": {
+            "href": "http://localhost:8021/api/ingeschrevenpersonen/999990676"
+        },
+        "kinderen": [],
+        "ouders": [],
+        "partners": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8021/api/ingeschrevenpersonen/999990676/partners/999990421"
+                    }
+                }
+            }
+        ]
+    },
+    "_embedded": {
+        "naam": {
+            "_embedded": {
+                "inOnderzoek": {
+                    "_embedded": {
+                        "datumIngangOnderzoek": {
+                            "dag": 0,
+                            "datum": "",
+                            "jaar": 0,
+                            "maand": 0
+                        }
+                    },
+                    "geslachtsnaam": true,
+                    "voornamen": true,
+                    "voorvoegsel": false
+                }
+            },
+            "aanhef": "Geachte mevrouw Holthuizen-Wiegman",
+            "aanschrijfwijze": "C.F. Holthuizen-Wiegman",
+            "gebruikInLopendeTekst": "mevrouw Holthuizen-Wiegman",
+            "aanduidingNaamgebruik": "V"
+        },
+        "geboorte": {
+            "_embedded": {
+                "datum": {
+                    "dag": 3,
+                    "datum": "19070203",
+                    "jaar": 1907,
+                    "maand": 2
+                },
+                "land": {
+                    "code": "6030",
+                    "omschrijving": "Onbekend"
+                },
+                "plaats": {
+                    "code": "1157",
+                    "omschrijving": "Onbekend"
+                },
+                "inOnderzoek": {
+                    "_embedded": {
+                        "datumIngangOnderzoek": {
+                            "dag": 0,
+                            "datum": "string",
+                            "jaar": 0,
+                            "maand": 0
+                        }
+                    },
+                    "datum": true,
+                    "land": true,
+                    "plaats": true
+                }
+            }
+        },
+        "datumEersteInschrijvingGBA": {
+            "dag": 0,
+            "datum": "string",
+            "jaar": 0,
+            "maand": 0
+        },
+        "kiesrecht": {},
+        "inOnderzoek": {
+            "_embedded": {
+                "datumIngangOnderzoek": {
+                    "dag": 0,
+                    "datum": "string",
+                    "jaar": 0,
+                    "maand": 0
+                }
+            },
+            "burgerservicenummer": true,
+            "geslachtsaanduiding": true
+        },
+        "nationaliteit": [
+            {
+                "_embedded": {
+                    "datumIngangGeldigheid": {
+                        "dag": 3,
+                        "datum": "19070203",
+                        "jaar": 1907,
+                        "maand": 2
+                    },
+                    "nationaliteit": {
+                        "code": "string",
+                        "omschrijving": "0001"
+                    },
+                    "redenOpname": {
+                        "code": "001",
+                        "omschrijving": "Onbekend"
+                    },
+                    "inOnderzoek": {
+                        "_embedded": {
+                            "datumIngangOnderzoek": {
+                                "dag": 0,
+                                "datum": "",
+                                "jaar": 0,
+                                "maand": 0
+                            }
+                        },
+                        "aanduidingBijzonderNederlanderschap": false,
+                        "nationaliteit": true,
+                        "redenOpname": true
+                    }
+                },
+                "aanduidingBijzonderNederlanderschap": ""
+            }
+        ],
+        "opschortingBijhouding": {
+            "_embedded": {
+                "datum": {
+                    "dag": 0,
+                    "datum": "string",
+                    "jaar": 0,
+                    "maand": 0
+                }
+            },
+            "reden": "overlijden"
+        },
+        "overlijden": {},
+        "verblijfplaats": {
+            "_embedded": {
+                "datumAanvangAdreshouding": {
+                    "dag": 0,
+                    "datum": "",
+                    "jaar": 0,
+                    "maand": 0
+                },
+                "datumIngangGeldigheid": {
+                    "dag": 1,
+                    "datum": "20091101",
+                    "jaar": 2009,
+                    "maand": 11
+                },
+                "datumInschrijvingInGemeente": {
+                    "dag": 15,
+                    "datum": "19950515",
+                    "jaar": 1995,
+                    "maand": 5
+                },
+                "datumVestigingInNederland": {
+                    "dag": 0,
+                    "datum": "",
+                    "jaar": 0,
+                    "maand": 0
+                },
+                "gemeenteVanInschrijving": {
+                    "code": "string",
+                    "omschrijving": "0518"
+                },
+                "landVanwaarIngeschreven": {
+                    "code": "string",
+                    "omschrijving": ""
+                },
+                "verblijfBuitenland": {
+                    "_embedded": {
+                        "land": {
+                            "code": "string",
+                            "omschrijving": "string"
+                        }
+                    },
+                    "adresRegel1": "",
+                    "adresRegel2": "",
+                    "adresRegel3": "",
+                    "vertrokkenOnbekendWaarheen": true
+                },
+                "inOnderzoek": {
+                    "_embedded": {
+                        "datumIngangOnderzoek": {
+                            "dag": 0,
+                            "datum": "",
+                            "jaar": 0,
+                            "maand": 0
+                        }
+                    },
+                    "aanduidingBijHuisnummer": false,
+                    "datumAanvangAdreshouding": true,
+                    "datumIngangGeldigheid": true,
+                    "datumInschrijvingInGemeente": true,
+                    "datumVestigingInNederland": false,
+                    "functieAdres": true,
+                    "gemeenteVanInschrijving": true,
+                    "huisletter": false,
+                    "huisnummer": true,
+                    "huisnummertoevoeging": false,
+                    "identificatiecodeNummeraanduiding": true,
+                    "identificatiecodeAdresseerbaarObject": true,
+                    "landVanwaarIngeschreven": false,
+                    "locatiebeschrijving": false,
+                    "naamOpenbareRuimte": true,
+                    "postcode": true,
+                    "straatnaam": true,
+                    "verblijfBuitenland": true,
+                    "woonplaatsnaam": true
+                }
+            },
+            "functieAdres": "W",
+            "huisletter": "",
+            "huisnummer": "58",
+            "huisnummertoevoeging": "",
+            "aanduidingBijHuisnummer": "",
+            "identificatiecodeNummeraanduiding": "0518203530058001",
+            "naamOpenbareRuimte": "Nieuwe Parklaan",
+            "postcode": "2597LD",
+            "woonplaatsnaam": "'s-Gravenhage",
+            "identificatiecodeAdresseerbaarObject": "string",
+            "indicatieVestigingVanuitBuitenland": true,
+            "locatiebeschrijving": "",
+            "straatnaam": "Nieuwe Parklaan",
+            "vanuitVertrokkenOnbekendWaarheen": true
+        },
+        "gezagsverhouding": {},
+        "verblijfstitel": {},
+        "reisdocumenten": []
+    },
+    "burgerservicenummer": "999990676",
+    "geheimhoudingPersoonsgegevens": true,
+    "geslachtsaanduiding": "V",
+    "leeftijd": 114
+}

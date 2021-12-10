@@ -5,6 +5,17 @@ import classNames from 'classnames';
 import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
 
+
+export const normalizeErrors = (errors=[]) => {
+    if( typeof errors === 'string' ) {
+        errors = [ errors ];
+    }
+    const hasErrors = Boolean(errors && errors.length);
+    const formattedErrors = errors.map(([key, msg]) => msg);
+    return [hasErrors, formattedErrors];
+};
+
+
 /**
  * Wrap a single form field, providing the label with correct attributes
  */
@@ -19,13 +30,7 @@ const Field = ({ name, label, helpText='', required=false, errors=[], children, 
         children,
         {id: htmlFor, name: originalName},
     );
-
-    if( typeof errors === 'string' ) {
-        errors = [ errors ];
-    }
-
-    const hasErrors = Boolean(errors && errors.length);
-    const formattedErrors = errors.map(([key, msg]) => msg);
+    const [hasErrors, formattedErrors] = normalizeErrors(errors);
     const className = classNames(
         {'fieldBox': fieldBox},
         {'errors': hasErrors},

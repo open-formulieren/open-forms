@@ -5,7 +5,10 @@ from django.utils.translation import gettext as _
 from json_logic import jsonLogic
 from rest_framework import serializers
 
+from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
+
+from ..validation.registry import register as formio_validators_registry
 
 
 class JsonLogicValidator:
@@ -116,3 +119,30 @@ class JsonLogicTriggerComponentValidator:
                 self.default_message, code=self.default_code
             )
             raise serializers.ValidationError({self.trigger_field: error})
+
+
+class FormIOComponentsValidator:
+    """
+    Run validation on all components in a FormIO JSON schema.
+
+    This invokes a registry of lower-level validators and lets the errors bubble
+    up for a pluggable interface.
+    """
+
+    def __call__(self, configuration: JSONObject) -> None:
+        from ..models import FormDefinition
+
+        instance = FormDefinition()
+
+        for component in instance.iter_components(
+            configuration=configuration, recursive=True
+        ):
+            if not (component_type := component.get("type")):
+                continue
+
+            if component_type not in formio_validators_registry:
+                continue
+
+            validator = formio_validators_registry[component_type]
+            # may raise a :class:`django.core.exceptions.ValidationError`
+            validator(component)

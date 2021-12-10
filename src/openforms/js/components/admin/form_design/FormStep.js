@@ -1,15 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import usePrevious from 'react-use/esm/usePrevious';
-import {FormattedMessage} from 'react-intl';
 
 import FormStepDefinition from './FormStepDefinition';
-import FAIcon from '../FAIcon';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
-const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace, errors={} }) => {
-    const { configuration, formDefinition, name, internalName, slug, literals, loginRequired, isReusable, isNew } = data;
+const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace}) => {
+    const {
+        configuration,
+        formDefinition,
+        name,
+        internalName,
+        slug,
+        literals,
+        loginRequired,
+        isReusable,
+        isNew,
+        validationErrors=[],
+    } = data;
 
     const previousFormDefinition = usePrevious(formDefinition);
     let forceBuilderUpdate = false;
@@ -29,30 +38,23 @@ const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace
     }
 
     return (
-        <>
-            { Object.keys(errors).length ? (
-                <div className="fetch-error">
-                    <FormattedMessage description="Invalid form step error" defaultMessage="The form step below is invalid." />
-                </div>
-            ) : null }
-            <FormStepDefinition
-                name={name}
-                internalName={internalName}
-                slug={slug}
-                url={formDefinition}
-                previousText={literals.previousText.value}
-                saveText={literals.saveText.value}
-                nextText={literals.nextText.value}
-                configuration={configuration}
-                loginRequired={loginRequired}
-                isReusable={isReusable}
-                onFieldChange={onFieldChange}
-                onLiteralFieldChange={onLiteralFieldChange}
-                onChange={onEdit}
-                forceUpdate={forceBuilderUpdate}
-                errors={errors}
-            />
-        </>
+        <FormStepDefinition
+            name={name}
+            internalName={internalName}
+            slug={slug}
+            url={formDefinition}
+            previousText={literals.previousText.value}
+            saveText={literals.saveText.value}
+            nextText={literals.nextText.value}
+            configuration={configuration}
+            loginRequired={loginRequired}
+            isReusable={isReusable}
+            onFieldChange={onFieldChange}
+            onLiteralFieldChange={onLiteralFieldChange}
+            onChange={onEdit}
+            forceUpdate={forceBuilderUpdate}
+            errors={validationErrors}
+        />
     );
 };
 
@@ -69,12 +71,12 @@ FormStep.propTypes = {
         isReusable: PropTypes.bool,
         url: PropTypes.string,
         isNew: PropTypes.bool,
+        validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     }).isRequired,
     onEdit: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,
-    errors: PropTypes.object,
 };
 
 

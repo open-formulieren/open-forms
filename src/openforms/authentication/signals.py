@@ -1,7 +1,6 @@
 import logging
-import warnings
 
-from django.dispatch import receiver
+from django.dispatch import Signal, receiver
 
 from rest_framework.request import Request
 
@@ -11,6 +10,18 @@ from openforms.submissions.signals import submission_start
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 
 logger = logging.getLogger(__name__)
+
+#
+# Custom signals
+#
+co_sign_authentication_success = Signal(
+    providing_args=["request", "plugin", "submission"]
+)
+
+
+#
+# Signal handlers
+#
 
 
 @receiver(submission_start, dispatch_uid="auth.set_submission_form_auth")

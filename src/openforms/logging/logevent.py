@@ -6,7 +6,7 @@ from django.db.models import Model
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.accounts.models import User
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form

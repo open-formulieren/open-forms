@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission
 
 

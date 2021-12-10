@@ -11,7 +11,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         Return a choice list of available attributes this plugin offers.
         """
-        raise NotImplementedError(
+        raise NotImplementedError(  # pragma: nocover
             "You must implement the 'get_available_attributes' method."
         )
 
@@ -31,4 +31,22 @@ class BasePlugin(AbstractBasePlugin):
         When no pre-fill value can be found for a given attribute, you may omit the key
         altogether, or use ``None``.
         """
-        raise NotImplementedError("You must implement the 'get_prefill_values' method.")
+        raise NotImplementedError(
+            "You must implement the 'get_prefill_values' method."
+        )  # pragma: nocover
+
+    def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
+        """
+        Given an identifier, fetch the co-sign specific values.
+
+        The return value is a dict keyed by field name as specified in
+        ``self.co_sign_fields``.
+
+        :param identfier: the unique co-signer identifier used to look up the details
+          in the pre-fill backend.
+        :return: a key-value dictionary, where the key is the requested attribute and
+          the value is the prefill value to use for that attribute.
+        """
+        raise NotImplementedError(
+            "You must implement the 'get_co_sign_values' method."
+        )  # pragma: nocover

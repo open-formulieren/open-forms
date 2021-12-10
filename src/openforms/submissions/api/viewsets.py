@@ -121,7 +121,7 @@ class SubmissionViewSet(
             405: ExceptionSerializer,
         },
     )
-    @action(detail=True, methods=["get"], url_name="co-sign")
+    @action(detail=True, methods=["get"], url_name="co-sign", url_path="co-sign")
     def co_sign(self, request, *args, **kwargs) -> Response:
         """
         Retrieve co-sign state.

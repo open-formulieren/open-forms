@@ -29,6 +29,7 @@ from .base import BasePlugin
 from .constants import CO_SIGN_PARAMETER
 from .exceptions import InvalidCoSignData
 from .registry import register
+from .signals import co_sign_authentication_success
 
 logger = logging.getLogger(__name__)
 
@@ -51,10 +52,9 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
         Check if the flow is a co-sign flow and validate the referenced submission.
         """
         request_data = getattr(self.request, self.request.method)
-        if CO_SIGN_PARAMETER not in request_data:
+        if not (submission_uuid := request_data.get(CO_SIGN_PARAMETER)):
             return None
 
-        submission_uuid = request_data[CO_SIGN_PARAMETER]
         # validate permissions so that people cannot just tinker with UUIDs in URLs
         if not owns_submission(self.request, submission_uuid):
             raise PermissionDenied("invalid submission ID")
@@ -322,6 +322,13 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
             co_sign_submission.co_sign_data = serializer.validated_data
             co_sign_submission.save(update_fields=["co_sign_data"])
+
+            co_sign_authentication_success.send(
+                sender=self.__class__,
+                request=self.request,
+                plugin=plugin,
+                submission=co_sign_submission,
+            )
 
     @extend_schema(responses=COMMON_RETURN_RESPONSES)
     def get(self, request, *args, **kwargs):

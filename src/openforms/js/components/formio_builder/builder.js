@@ -41,6 +41,7 @@ const BUILDER_OPTIONS = {
                 map: true,
                 password: true,
                 licenseplate: true,
+                coSign: true,
             }
         },
         custom_layout: {

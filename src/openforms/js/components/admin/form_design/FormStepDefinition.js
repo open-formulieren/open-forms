@@ -7,7 +7,7 @@ import {FormattedMessage} from 'react-intl';
 
 import FormIOBuilder from '../../formio_builder/builder';
 import {Checkbox, TextInput} from '../forms/Inputs';
-import Field from '../forms/Field';
+import Field, {normalizeErrors} from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
@@ -49,7 +49,6 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
     };
 
     const { changed, affectedForms } = useDetectConfigurationChanged(url, configuration);
-
     return (
         <>
             <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
@@ -67,7 +66,6 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
                         helpText={<FormattedMessage
                             defaultMessage="Name of the form definition used in this form step"
                             description="Form step name field help text" />}
-                        errors={errors.name}
                         required
                         fieldBox
                     >
@@ -79,7 +77,6 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
                         helpText={<FormattedMessage
                             defaultMessage="Internal name of the form definition used in this form step"
                             description="Form step internal name field help text" />}
-                        errors={errors.name}
                         fieldBox
                     >
                         <TextInput value={internalName} onChange={onFieldChange} />
@@ -90,7 +87,6 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
                         helpText={<FormattedMessage
                             defaultMessage="Slug of the form definition used in this form step"
                             description="Form step slug field help text" />}
-                        errors={errors.slug}
                         required
                         fieldBox
                     >
@@ -150,6 +146,7 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
             <h2>Velden</h2>
 
             <div className="formio-builder-wrapper">
+                <ConfigurationErrors errors={errors} />
                 <FormIOBuilder configuration={configuration} onChange={onChange} {...props} />
             </div>
         </>
@@ -170,7 +167,28 @@ FormStepDefinition.propTypes = {
     onChange: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
-    errors: PropTypes.object
+    errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+};
+
+
+const ConfigurationErrors = ({ errors=[] }) => {
+    const configurationErrors = errors.filter(([name, err]) => name === 'configuration');
+    const [hasConfigurationErrors, formattedConfigurationErrors] = normalizeErrors(configurationErrors);
+
+    if (!hasConfigurationErrors) return null;
+    return (
+        <ul className="messagelist">
+            {
+                formattedConfigurationErrors.map((err, index) => (
+                    <li key={index} className="error">{err}</li>
+                ))
+            }
+        </ul>
+    );
+};
+
+ConfigurationErrors.propTypes = {
+    errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
 

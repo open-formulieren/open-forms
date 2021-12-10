@@ -970,7 +970,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                             dispatch({type: 'ADD_STEP'});
                                         }}
                                         submitting={state.submitting}
-                                        errors={state.errors.formSteps}
                                     />
                                 </FormContext.Provider>
                             </PluginsContext.Provider>

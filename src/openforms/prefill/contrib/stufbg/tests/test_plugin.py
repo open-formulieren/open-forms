@@ -1,27 +1,22 @@
-from unittest.mock import patch
-
-from django.template import loader
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.constants import FieldChoices
 
 from ..plugin import StufBgPrefill
+from .utils import mock_stufbg_client
 
 
 class StufBgPrefillTests(TestCase):
     def setUp(self) -> None:
+        super().setUp()
+
         self.plugin = StufBgPrefill("test-plugin")
         self.submission = SubmissionFactory.create(bsn="999992314")
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_get_available_attributes_returns_correct_attributes(self, client_mock):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponse.xml"
-        )
+    def test_get_available_attributes_returns_correct_attributes(self):
+        client_patcher = mock_stufbg_client("StufBgResponse.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
@@ -36,16 +31,9 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["postcode"], "1015 CJ")
         self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_response_external_municipality_returns_correct_attributes(
-        self, client_mock
-    ):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponseGemeenteVanInschrijving.xml"
-        )
+    def test_response_external_municipality_returns_correct_attributes(self):
+        client_patcher = mock_stufbg_client("StufBgResponseGemeenteVanInschrijving.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
@@ -60,16 +48,9 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["postcode"], "1015 CJ")
         self.assertEqual(values["gemeenteVanInschrijving"], "Amsterdam")
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_get_available_attributes_when_some_attributes_are_not_returned(
-        self, client_mock
-    ):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponseMissingSomeData.xml"
-        )
+    def test_get_available_attributes_when_some_attributes_are_not_returned(self):
+        client_patcher = mock_stufbg_client("StufBgResponseMissingSomeData.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
@@ -84,14 +65,9 @@ class StufBgPrefillTests(TestCase):
         self.assertNotIn("huisnummertoevoeging", values)
         self.assertNotIn("huisletter", values)
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_voorvoegsel_is_parsed(self, client_mock):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgResponseWithVoorvoegsel.xml"
-        )
+    def test_voorvoegsel_is_parsed(self):
+        client_patcher = mock_stufbg_client("StufBgResponseWithVoorvoegsel.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
@@ -107,14 +83,9 @@ class StufBgPrefillTests(TestCase):
         self.assertEqual(values["postcode"], "1015 CJ")
         self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_get_available_attributes_when_error_occurs(self, client_mock):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgErrorResponse.xml"
-        )
+    def test_get_available_attributes_when_error_occurs(self):
+        client_patcher = mock_stufbg_client("StufBgErrorResponse.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         with self.assertLogs() as logs:
@@ -130,14 +101,9 @@ class StufBgPrefillTests(TestCase):
             "Error in Assertion Processing",
         )
 
-    @patch("openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo")
-    def test_get_available_attributes_when_no_answer_is_returned(self, client_mock):
-        get_values_for_attributes_mock = (
-            client_mock.return_value.get_client.return_value.get_values_for_attributes
-        )
-        get_values_for_attributes_mock.return_value = loader.render_to_string(
-            "stuf_bg/tests/responses/StufBgNoAnswerResponse.xml"
-        )
+    def test_get_available_attributes_when_no_answer_is_returned(self):
+        client_patcher = mock_stufbg_client("StufBgNoAnswerResponse.xml")
+        self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
         with self.assertLogs() as logs:
