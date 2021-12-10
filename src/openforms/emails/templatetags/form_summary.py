@@ -45,4 +45,4 @@ def display_value(value: Any):
         return value["originalName"]
     if isinstance(value, (list, tuple)):
         return ", ".join(map(display_value, value))
-    return value
+    return str(value)
