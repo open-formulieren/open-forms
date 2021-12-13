@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-10 18:04+0100\n"
-"PO-Revision-Date: 2021-12-10 18:04+0020\n"
+"POT-Creation-Date: 2021-12-13 10:33+0100\n"
+"PO-Revision-Date: 2021-12-13 10:35+0020\n"
 "Last-Translator: b'<joeri.bekker@maykin.nl>'\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -147,7 +147,7 @@ msgstr "Annuleren"
 
 #: openforms/appointments/admin.py:56
 msgid "Appointment actions"
-msgstr "Afspraak acties"
+msgstr "Afspraakacties"
 
 #: openforms/appointments/api/serializers.py:7
 msgid "code"
@@ -286,7 +286,7 @@ msgstr "Afspraken"
 #: openforms/appointments/checks.py:26
 #, python-brace-format
 msgid "Appointment plugin: {config}"
-msgstr "Afspraak plugin: {config}"
+msgstr "Afspraakplugin: {config}"
 
 #: openforms/appointments/checks.py:31
 #: openforms/config/templates/admin/config/overview.html:6
@@ -296,7 +296,7 @@ msgstr "Afspraak plugin: {config}"
 #: openforms/payments/contrib/ogone/plugin.py:149
 #: openforms/prefill/contrib/haalcentraal/plugin.py:149
 #: openforms/prefill/contrib/kvk/plugin.py:114
-#: openforms/prefill/contrib/stufbg/plugin.py:164
+#: openforms/prefill/contrib/stufbg/plugin.py:141
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:100
 #: openforms/registrations/contrib/objects_api/plugin.py:145
 #: openforms/registrations/contrib/stuf_zds/plugin.py:218
@@ -355,12 +355,11 @@ msgstr "Qmatic configuratie"
 
 #: openforms/appointments/models.py:11
 msgid "appointment plugin"
-msgstr "afspraak plugin"
+msgstr "afspraakplugin"
 
 #: openforms/appointments/models.py:18
-#| msgid "Appointment information"
 msgid "Appointment configuration"
-msgstr "Afspraak configuratie"
+msgstr "Afspraakconfiguratie"
 
 #: openforms/appointments/models.py:24
 msgid "status"
@@ -485,7 +484,7 @@ msgstr "Optioneel logo"
 
 #: openforms/authentication/api/views.py:14
 msgid "List available authentication plugins"
-msgstr "Toon alle beschikbare authenticatie plugins"
+msgstr "Toon alle beschikbare authenticatieplugins"
 
 #: openforms/authentication/api/views.py:42
 msgid "Delete session"
@@ -499,7 +498,7 @@ msgstr "Verwijdert de sessie van de huidige gebruiker."
 
 #: openforms/authentication/apps.py:8
 msgid "Authentication module"
-msgstr "Authenticatie module"
+msgstr "Authenticatiemodule"
 
 #: openforms/authentication/constants.py:15
 #: openforms/authentication/contrib/demo/plugin.py:34
@@ -522,7 +521,7 @@ msgstr "Pseudo-ID"
 
 #: openforms/authentication/contrib/demo/apps.py:8
 msgid "Demo authentication plugin"
-msgstr "Demo authenticatie plugin"
+msgstr "Demo authenticatieplugin"
 
 #: openforms/authentication/contrib/demo/plugin.py:48
 #: openforms/payments/contrib/demo/plugin.py:11
@@ -540,7 +539,7 @@ msgstr "Demo KvK-nummer (test)"
 
 #: openforms/authentication/contrib/digid/apps.py:8
 msgid "DigiD authentication plugin"
-msgstr "DigiD authenticatie plugin"
+msgstr "DigiD authenticatieplugin"
 
 #: openforms/authentication/contrib/digid/plugin.py:21
 msgid "DigiD"
@@ -548,7 +547,7 @@ msgstr "DigiD"
 
 #: openforms/authentication/contrib/digid_mock/apps.py:8
 msgid "DigiD Mock authentication plugin"
-msgstr "Authenticatie plugin die DigiD simuleert."
+msgstr "Authenticatieplugin die DigiD simuleert."
 
 #: openforms/authentication/contrib/digid_mock/plugin.py:21
 msgid "DigiD Mock"
@@ -556,7 +555,7 @@ msgstr "DigiD simulatie"
 
 #: openforms/authentication/contrib/eherkenning/apps.py:8
 msgid "eHerkenning authentication plugin"
-msgstr "eHerkenning authenticatie plugin"
+msgstr "eHerkenning authenticatieplugin"
 
 #: openforms/authentication/contrib/eherkenning/plugin.py:52
 msgid "eHerkenning"
@@ -567,12 +566,12 @@ msgid ""
 "Login failed due to no KvK number/Pseudo ID being returned by "
 "eHerkenning/eIDAS."
 msgstr ""
-"Inloggen mislukt omdat er geen geldig KvK-nummer/Pseudo ID terugkwam uit "
+"Inloggen mislukt omdat er geen geldig KvK-nummer/Pseudo-ID terugkwam uit "
 "eHerkenning."
 
 #: openforms/authentication/contrib/eidas/apps.py:8
 msgid "eIDAS authentication plugin"
-msgstr "eIDAS authenticatie plugin"
+msgstr "eIDAS authenticatieplugin"
 
 #: openforms/authentication/contrib/eidas/plugin.py:14
 msgid "eIDAS"
@@ -580,7 +579,7 @@ msgstr "eIDAS"
 
 #: openforms/authentication/contrib/outage/apps.py:8
 msgid "Always outage authentication plugin"
-msgstr "Authenticatie plugin die uitval simuleert."
+msgstr "Authenticatieplugin die uitval simuleert."
 
 #: openforms/authentication/contrib/outage/plugin.py:14
 msgid "Demo Outage"
@@ -631,7 +630,7 @@ msgid ""
 "Identifier of the authentication plugin. Note that this is validated against"
 " the configured available plugins for this particular form."
 msgstr ""
-"Unieke identificatie van de authenticatie plugin. Merk op dat deze waarde "
+"Unieke identificatie van de authenticatieplugin. Merk op dat deze waarde "
 "gevalideerd wordt met de beschikbare plugins voor dit formulier."
 
 #: openforms/authentication/views.py:103 openforms/payments/views.py:77
@@ -656,7 +655,7 @@ msgid ""
 "redirected to. The value is specific to the selected authentication plugin."
 msgstr ""
 "URL van de externe authenticatie service waar de gebruiker naar toe verwezen"
-" wordt. Deze waarde is specifiek voor de geselecteerde authenticatie plugin"
+" wordt. Deze waarde is specifiek voor de geselecteerde authenticatieplugin"
 
 #: openforms/authentication/views.py:134
 msgid "OK. A login page is rendered."
@@ -677,8 +676,8 @@ msgid ""
 "Method not allowed. The authentication plugin requires `POST` or `GET`, and "
 "the wrong method was used."
 msgstr ""
-"Methode niet toegestaan. De authenticatie plugin moet worden benaderd "
-"middels een `POST` of `GET`."
+"Methode niet toegestaan. De authenticatieplugin moet worden benaderd middels"
+" een `POST` of `GET`."
 
 #: openforms/authentication/views.py:211
 msgid "Return from external login flow"
@@ -696,9 +695,9 @@ msgid ""
 "* logging in is required on the form\n"
 "* the redirect target must match the CORS policy"
 msgstr ""
-"Authenticatie plugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
 "\n"
-"Authenticatie plugins zullen typisch een redirect uitvoeren naar de SDK.\n"
+"Authenticatieplugins zullen typisch een redirect uitvoeren naar de SDK.\n"
 "\n"
 "Diverse validaties worden uitgevoerd:\n"
 "* het formulier moet actief zijn\n"
@@ -708,7 +707,7 @@ msgstr ""
 
 #: openforms/authentication/views.py:234
 msgid "Identifier of the authentication plugin."
-msgstr "Unieke identificatie van de authenticatie plugin"
+msgstr "Unieke identificatie van de authenticatieplugin"
 
 #: openforms/authentication/views.py:250
 msgid "URL where the SDK initiated the authentication flow."
@@ -1290,7 +1289,7 @@ msgstr "Acties"
 
 #: openforms/config/views.py:27
 msgid "Appointment plugins"
-msgstr "Afspraak plugins"
+msgstr "Afspraakplugins"
 
 #: openforms/config/views.py:31
 msgid "Address lookup plugins"
@@ -1298,15 +1297,15 @@ msgstr "Adresopzoekplugins"
 
 #: openforms/config/views.py:39
 msgid "Registration plugins"
-msgstr "Registratie plugins"
+msgstr "Registratieplugins"
 
 #: openforms/config/views.py:40
 msgid "Prefill plugins"
-msgstr "Prefill plugins"
+msgstr "Prefillplugins"
 
 #: openforms/config/views.py:41
 msgid "Payment plugins"
-msgstr "Betaalprovider plugins"
+msgstr "Betaalproviderplugins"
 
 #: openforms/config/views.py:109
 msgid "unknown"
@@ -1427,6 +1426,29 @@ msgstr "Secret voor dit Client ID"
 #: openforms/registrations/contrib/microsoft_graph/models.py:19
 msgid "Microsoft Graph service"
 msgstr "Microsoft Graph service"
+
+#: openforms/custom_field_types/constants.py:7
+#: openforms/prefill/contrib/haalcentraal/plugin.py:25
+msgid "Haal Centraal"
+msgstr "Haal Centraal"
+
+#: openforms/custom_field_types/constants.py:8
+msgid "StufBg"
+msgstr "StUF-BG"
+
+#: openforms/custom_field_types/models.py:11
+#| msgid "data"
+msgid "data api"
+msgstr "gegevens API"
+
+#: openforms/custom_field_types/models.py:12
+msgid "Which API to use to retrieve the data of the family members."
+msgstr "Welke API gebruikt wordt om familiegegevens op te halen."
+
+#: openforms/custom_field_types/models.py:18
+#| msgid "Email security configuration"
+msgid "Family members type configuration"
+msgstr "Familieleden typeconfiguratie"
 
 #: openforms/data_removal/constants.py:8
 msgid "Submissions will be deleted"
@@ -1799,7 +1821,7 @@ msgstr "gebruikt in"
 
 #: openforms/forms/api/filters.py:11
 msgid "The UUID of a form associated with logic rules"
-msgstr "De UUID van het formulier gekoppeld aan deze logica regels."
+msgstr "De UUID van het formulier gekoppeld aan deze logicaregels."
 
 #: openforms/forms/api/serializers.py:139
 msgid "product"
@@ -2011,51 +2033,51 @@ msgstr "Formulierstap verwijderen"
 
 #: openforms/forms/api/viewsets.py:83
 msgid "List logic rules"
-msgstr "Logica regels weergeven"
+msgstr "Logicaregels weergeven"
 
 #: openforms/forms/api/viewsets.py:84
 msgid "Retrieve logic rule details"
-msgstr "Logica regel details weergeven"
+msgstr "Logicaregel details weergeven"
 
 #: openforms/forms/api/viewsets.py:85
 msgid "Create a logic rule"
-msgstr "Logica regel aanmaken"
+msgstr "Logicaregel aanmaken"
 
 #: openforms/forms/api/viewsets.py:86
 msgid "Update all details of a logic rule"
-msgstr "Logica regel in zijn geheel bijwerken"
+msgstr "Logicaregel in zijn geheel bijwerken"
 
 #: openforms/forms/api/viewsets.py:87
 msgid "Update some details of a logic rule"
-msgstr "Logica regel gedeeltelijk bijwerken"
+msgstr "Logicaregel gedeeltelijk bijwerken"
 
 #: openforms/forms/api/viewsets.py:88
 msgid "Delete a logic rule"
-msgstr "Logica regel verwijderen"
+msgstr "Logicaregel verwijderen"
 
 #: openforms/forms/api/viewsets.py:105
 msgid "List pricing logic rules"
-msgstr "Logica prijsregels weergeven"
+msgstr "Logica-prijsregels weergeven"
 
 #: openforms/forms/api/viewsets.py:106
 msgid "Retrieve pricing logic rule details"
-msgstr "Logica prijsregel details weergeven"
+msgstr "Logica-prijsregel details weergeven"
 
 #: openforms/forms/api/viewsets.py:107
 msgid "Create a pricing logic rule"
-msgstr "Logica prijsregel aanmaken"
+msgstr "Logica-prijsregel aanmaken"
 
 #: openforms/forms/api/viewsets.py:108
 msgid "Update all details of a pricing logic rule"
-msgstr "Logica prijsregel in zijn geheel bijwerken"
+msgstr "Logica-prijsregel in zijn geheel bijwerken"
 
 #: openforms/forms/api/viewsets.py:110
 msgid "Update some details of a pricing logic rule"
-msgstr "Logica prijsregel gedeeltelijk bijwerken"
+msgstr "Logica-prijsregel gedeeltelijk bijwerken"
 
 #: openforms/forms/api/viewsets.py:112
 msgid "Delete a pricing logic rule"
-msgstr "Logica prijsregel verwijderen"
+msgstr "Logica-prijsregel verwijderen"
 
 #: openforms/forms/api/viewsets.py:127
 msgid "List form step definitions"
@@ -2388,8 +2410,8 @@ msgid ""
 "Content that will be shown on the start page of the form, below the title "
 "and above the log in text."
 msgstr ""
-"Inhoud die op de formulier startpagina wordt getoond, onder de titel en "
-"boven de start knop(pen)."
+"Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven"
+" de startknop(pen)."
 
 #: openforms/forms/models/form.py:148
 msgid "maintenance mode"
@@ -2616,11 +2638,11 @@ msgstr "prijs"
 
 #: openforms/forms/models/pricing_logic.py:47
 msgid "form price rule"
-msgstr "Formulierprijs logica regel"
+msgstr "Formulierlogica-prijsregel"
 
 #: openforms/forms/models/pricing_logic.py:48
 msgid "form price rules"
-msgstr "Formulier prijsregels"
+msgstr "Formulierlogica-prijsregels"
 
 #: openforms/forms/templates/admin/forms/form/_snippet.html:9
 msgid "Copy snippet"
@@ -2963,7 +2985,7 @@ msgid ""
 "%(lead)s: Prefill plugin %(plugin)s reported: Failed to retrieve "
 "information."
 msgstr ""
-"%(lead)s: Prefill plugin %(plugin)s meldt: Informatie kon niet worden "
+"%(lead)s: Prefillplugin %(plugin)s meldt: Informatie kon niet worden "
 "opgehaald."
 
 #: openforms/logging/templates/logging/events/prefill_retrieve_success.txt:2
@@ -2972,8 +2994,8 @@ msgid ""
 "%(lead)s: Prefill plugin %(plugin)s reported: Successfully retrieved "
 "information to prefill fields: %(fields)s"
 msgstr ""
-"%(lead)s: Prefill plugin %(plugin)s meldt: Informatie met succes opgehaald "
-"om velden te prefillen: %(fields)s."
+"%(lead)s: Prefillplugin %(plugin)s meldt: Informatie met succes opgehaald om"
+" velden te prefillen: %(fields)s."
 
 #: openforms/logging/templates/logging/events/registration_failure.txt:2
 #, python-format
@@ -3158,7 +3180,7 @@ msgstr "Gegevens"
 
 #: openforms/payments/api/views.py:13
 msgid "List available payment plugins"
-msgstr "Lijst van beschikbare betaalprovider plugins"
+msgstr "Lijst van beschikbare betaalproviderplugins"
 
 #: openforms/payments/apps.py:7
 msgid "OpenForms Payments App"
@@ -3186,11 +3208,11 @@ msgstr "Voltooid en geregistreerd"
 
 #: openforms/payments/contrib/demo/apps.py:8
 msgid "Demo payments plugin"
-msgstr "Demo betaalprovider plugin"
+msgstr "Demo betaalproviderplugin"
 
 #: openforms/payments/contrib/ogone/apps.py:8
 msgid "Ogone payment plugin"
-msgstr "Ogone betaalprovider plugin"
+msgstr "Ogone betaalproviderplugin"
 
 #: openforms/payments/contrib/ogone/constants.py:17
 msgid "Ogone Test"
@@ -3383,7 +3405,7 @@ msgid ""
 "Identifier of the payment plugin. Note that this is validated against the "
 "configured available plugins for this particular form."
 msgstr ""
-"Unieke identificatie van de betaalprovider plugin. Merk op dat deze waarde "
+"Unieke identificatie van de betaalproviderplugin. Merk op dat deze waarde "
 "gevalideerd wordt met de beschikbare plugins voor dit formulier."
 
 #: openforms/payments/views.py:93
@@ -3410,9 +3432,9 @@ msgid ""
 "* payment is required and configured on the form\n"
 "* the redirect target must match the CORS policy"
 msgstr ""
-"Betaalprovider plugins roepen dit endpoint aan zodra het externe betaalproces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Betaalproviderplugins roepen dit endpoint aan zodra het externe betaalproces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
 "\n"
-"Betaalprovider plugins zullen typisch een redirect uitvoeren naar de SDK.\n"
+"Betaalproviderplugins zullen typisch een redirect uitvoeren naar de SDK.\n"
 "\n"
 "Diverse validaties worden uitgevoerd:\n"
 "* het formulier vereist betaling\n"
@@ -3451,7 +3473,7 @@ msgid ""
 "* the `plugin_id` is configured on the form\n"
 "* payment is required and configured on the form"
 msgstr ""
-"Authenticatie plugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
 "\n"
 "\n"
 "Dit endpoint wordt gebruikt voor server-naar-server communicatie. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
@@ -3512,7 +3534,7 @@ msgstr "De eenvoudige naam van het attribuut."
 
 #: openforms/prefill/api/views.py:18
 msgid "List available prefill plugins"
-msgstr "Lijst van beschikbare prefill plugins"
+msgstr "Lijst van beschikbare prefillplugins"
 
 #: openforms/prefill/api/views.py:34
 msgid "List available attributes"
@@ -3529,7 +3551,7 @@ msgstr "Prefill"
 
 #: openforms/prefill/contrib/demo/apps.py:8
 msgid "Demo prefill plugin"
-msgstr "Demo prefill plugin"
+msgstr "Demo prefillplugin"
 
 #: openforms/prefill/contrib/demo/constants.py:7
 msgid "Random number"
@@ -3541,7 +3563,7 @@ msgstr "Willekeurige tekens"
 
 #: openforms/prefill/contrib/haalcentraal/apps.py:8
 msgid "Haal Centraal prefill plugin"
-msgstr "Haal Centraal prefill plugin"
+msgstr "Haal Centraal prefillplugin"
 
 #: openforms/prefill/contrib/haalcentraal/models.py:20
 msgid "Haal Centraal API"
@@ -3551,18 +3573,14 @@ msgstr "Haal Centraal API"
 msgid "Haal Centraal configuration"
 msgstr "Haal Centraal configuratie"
 
-#: openforms/prefill/contrib/haalcentraal/plugin.py:25
-msgid "Haal Centraal"
-msgstr "Haal Centraal"
-
 #: openforms/prefill/contrib/haalcentraal/plugin.py:115
-#: openforms/prefill/contrib/stufbg/plugin.py:134
+#: openforms/prefill/contrib/stufbg/plugin.py:111
 msgid "Service not selected"
 msgstr "Service is niet geselecteerd."
 
 #: openforms/prefill/contrib/haalcentraal/plugin.py:129
 #: openforms/prefill/contrib/kvk/plugin.py:94
-#: openforms/prefill/contrib/stufbg/plugin.py:143
+#: openforms/prefill/contrib/stufbg/plugin.py:120
 #: openforms/registrations/contrib/objects_api/checks.py:38
 #, python-brace-format
 msgid "Client error: {exception}"
@@ -3575,11 +3593,11 @@ msgstr "Geen 404 in antwoord bericht gevonden."
 #: openforms/prefill/contrib/haalcentraal/plugin.py:141
 msgid "Check call unexpectedly succeeded for test BSN '{}'"
 msgstr ""
-"Controle verzoek geeft onverwacht een resultaat voor een test BSN: '{}'"
+"Controleverzoek geeft onverwacht een resultaat voor een test BSN: '{}'"
 
 #: openforms/prefill/contrib/kvk/apps.py:8
 msgid "KvK prefill plugin"
-msgstr "KvK prefill plugin"
+msgstr "KvK prefillplugin"
 
 #: openforms/prefill/contrib/kvk/plugin.py:26
 msgid "KvK Company by KvK number"
@@ -3601,49 +3619,49 @@ msgstr "Antwoord bevat geen resultaten"
 #: openforms/prefill/contrib/kvk/plugin.py:108
 #, python-brace-format
 msgid "Did not find kvkNummer='{kvk}' in results"
-msgstr "Kon KvK nummer {kvk} niet vinden in de resultaten."
+msgstr "Kon KvK-nummer {kvk} niet vinden in de resultaten."
 
 #: openforms/prefill/contrib/stufbg/apps.py:8
 msgid "StUF-BG prefill plugin"
-msgstr "StUF-BG prefill plugin"
+msgstr "StUF-BG prefillplugin"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:43
+#: openforms/prefill/contrib/stufbg/plugin.py:42
 msgid "StUF-BG"
 msgstr "StUF-BG"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:150
+#: openforms/prefill/contrib/stufbg/plugin.py:127
 #, python-brace-format
 msgid "SyntaxError in response: {exception}"
 msgstr "Structuurfout in antwoord: {exception}"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:157 stuf/stuf_zds/client.py:427
+#: openforms/prefill/contrib/stufbg/plugin.py:134 stuf/stuf_zds/client.py:427
 #, python-brace-format
 msgid "Unexpected response: expected '{message}' SOAP response"
 msgstr "Onverwacht antwoord: Verwacht '{message}' SOAP antwoord"
 
 #: openforms/prefill/models.py:13
 msgid "default person plugin"
-msgstr "standaard persoonsinformatie plugin"
+msgstr "standaard persoonsinformatieplugin"
 
 #: openforms/prefill/models.py:15
 msgid "Default prefill plugin to use for person data"
-msgstr "Standaard prefill-plug-in om te gebruiken voor persoonsgegevens"
+msgstr "Standaard prefillplugin om te gebruiken voor persoonsgegevens"
 
 #: openforms/prefill/models.py:18
 msgid "default company plugin"
-msgstr "standaard bedrijfsinformatie plugin"
+msgstr "standaard bedrijfsinformatieplugin"
 
 #: openforms/prefill/models.py:20
 msgid "Default prefill plugin to use for company data"
-msgstr "Standaard prefill-plug-in om te gebruiken voor bedrijfsgegevens"
+msgstr "Standaard prefillplugin om te gebruiken voor bedrijfsgegevens"
 
 #: openforms/prefill/models.py:24
 msgid "global prefill configuration"
-msgstr "Globale prefill configuratie"
+msgstr "Globale prefillconfiguratie"
 
 #: openforms/prefill/validators.py:22
 msgid "The co-sign component is missing the authPlugin configuration option"
-msgstr "Het mede-onderteken component mist de autorisatie-configuratieoptie"
+msgstr "Het mede-ondertekencomponent mist de autorisatie-configuratieoptie"
 
 #: openforms/prefill/validators.py:37
 #, python-brace-format
@@ -3651,7 +3669,7 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-onderteken component vereist de configuratie van '{field_label}' "
+"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
 "({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
@@ -3680,7 +3698,7 @@ msgstr "Product"
 
 #: openforms/registrations/api/views.py:18
 msgid "List available registration plugins"
-msgstr "Lijst van beschikbare registratie plugins"
+msgstr "Lijst van beschikbare registratieplugins"
 
 #: openforms/registrations/api/views.py:37
 msgid "List available registration attributes"
@@ -4005,7 +4023,7 @@ msgstr "StUF-ZDS"
 
 #: openforms/registrations/contrib/stuf_zds/plugin.py:200
 msgid "StufService not selected"
-msgstr "StUF service is niet ingesteld"
+msgstr "StUF-service is niet ingesteld"
 
 #: openforms/registrations/contrib/zgw_apis/apps.py:7
 msgid "ZGW API's plugin"
@@ -4446,7 +4464,7 @@ msgstr ""
 
 #: openforms/submissions/api/viewsets.py:115
 msgid "Retrieve co-sign state"
-msgstr "Haal mede-ondertekening status op"
+msgstr "Haal mede-ondertekeningstatus op"
 
 #: openforms/submissions/api/viewsets.py:136
 msgid "Complete a submission"
@@ -4542,7 +4560,7 @@ msgstr "onderbroken op"
 
 #: openforms/submissions/models.py:156
 msgid "auth plugin"
-msgstr "authenticatie plugin"
+msgstr "authenticatieplugin"
 
 #: openforms/submissions/models.py:159
 msgid "The plugin used by the user for authentication."
@@ -4550,11 +4568,11 @@ msgstr "De plugin die gebruikt is voor authenticatie."
 
 #: openforms/submissions/models.py:179
 msgid "Pseudo ID provided by authentication with eIDAS"
-msgstr "Pseudo ID verkregen vanuit eIDAS"
+msgstr "Pseudo-ID verkregen vanuit eIDAS"
 
 #: openforms/submissions/models.py:182
 msgid "co-sign data"
-msgstr "Mede-ondertekenaar gegevens"
+msgstr "Mede-ondertekenaargegevens"
 
 #: openforms/submissions/models.py:186
 msgid "Authentication details of a co-signer."
@@ -4567,8 +4585,8 @@ msgid ""
 "submission completion."
 msgstr ""
 "Kosten van deze inzending. Deze zijn gebaseerd op het gerelateerde product "
-"of door logica regels. De prijs wordt berekend en opgeslagen op de inzending"
-" zodra deze is afgerond."
+"of door logicaregels. De prijs wordt berekend en opgeslagen op de inzending "
+"zodra deze is afgerond."
 
 #: openforms/submissions/models.py:206
 msgid "last register attempt date"
