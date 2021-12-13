@@ -207,5 +207,20 @@
   "Co-sign": "Mede-ondertekenen",
   "Password": "Wachtwoord",
   "Authentication method": "Authenticatiemethode",
-  "Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+  "Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier.",
+  "Decimal Places": "Decimalen",
+  "Invalid BSN": "Ongeldig BSN",
+  "Invalid RSIN": "Ongeldig RSIN",
+  "Invalid Phone Number": "Ongeldig telefoonnummer",
+  "Invalid IBAN": "Ongeldig IBAN",
+  "Invalid Kvk Number": "Ongeldig KvK-nummer",
+  "Invalid Branch Number": "Ongeldig vestigingsnummer",
+  "Sign above": "Plaats hierboven uw handtekening",
+  " remaining.": "over",
+  "{{ count }} characters": "{{ count }} karakters",
+  "{{ count }} words": "{{ count }} woorden",
+  "{{ remaining }} characters remaining.": "{{ remaining }} karakters over.",
+  "{{ remaining }} words remaining.": "{{ remaining }} woorden over.",
+  "Auto Expand": "Maak automatisch groter",
+  "Number of rows": "Aantal rijen"
 }
