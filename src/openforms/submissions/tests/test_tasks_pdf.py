@@ -23,3 +23,26 @@ class SubmissionReportGenerationTests(TestCase):
         self.assertEqual(submission, report.submission)
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
         self.assertEqual("some-id", report.task_id)
+
+    def test_multiple_value_report_rendering_issue_990(self):
+        # regression test for Github #990
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "email",
+                    "label": "email",
+                    "type": "email",
+                    "multiple": True,
+                }
+            ],
+            # a multiple email field with no value entered sends a [None]
+            {"email": [None]},
+            completed=True,
+            with_report=False,
+        )
+
+        generate_submission_report.request.id = "some-id"
+        generate_submission_report.run(submission.id)
+
+        report = SubmissionReport.objects.get()
+        self.assertEqual(submission, report.submission)
