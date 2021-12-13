@@ -10,7 +10,7 @@ from typing import List, Optional
 from rest_framework import serializers
 from rest_framework.request import Request
 
-from openforms.forms.constants import CanSubmitChoices
+from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
@@ -26,7 +26,7 @@ class InvalidCompletion:
     def validate(self) -> Optional["CompletionValidationSerializer"]:
         checks = [
             any([self.incomplete_steps]),
-            self.submission.form.can_submit != CanSubmitChoices.yes,
+            self.submission.form.submission_allowed != SubmissionAllowedChoices.yes,
         ]
         invalid = any(checks)
         if not invalid:
@@ -50,9 +50,9 @@ class IncompleteStepSerializer(serializers.Serializer):
 
 class CompletionValidationSerializer(serializers.Serializer):
     incomplete_steps = IncompleteStepSerializer(many=True)
-    can_submit = serializers.ChoiceField(
-        choices=CanSubmitChoices,
-        source="submission.form.can_submit",
+    submission_allowed = serializers.ChoiceField(
+        choices=SubmissionAllowedChoices,
+        source="submission.form.submission_allowed",
         read_only=True,
     )
 

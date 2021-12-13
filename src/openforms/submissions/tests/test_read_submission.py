@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.constants import CanSubmitChoices
+from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
     FormPriceLogicFactory,
@@ -91,7 +91,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                     }
                 ],
                 "nextStep": f"http://testserver{submission_step_path}",
-                "canSubmit": CanSubmitChoices.yes,
+                "submissionAllowed": SubmissionAllowedChoices.yes,
                 "payment": {
                     "isRequired": False,
                     "hasPaid": False,

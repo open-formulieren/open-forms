@@ -25,7 +25,7 @@ class ConfirmationEmailOptions(DjangoChoices):
     no_email = ChoiceItem("no_email", _("No email"))
 
 
-class CanSubmitChoices(DjangoChoices):
+class SubmissionAllowedChoices(DjangoChoices):
     yes = ChoiceItem("yes", _("Yes"))
     no_with_overview = ChoiceItem("no_with_overview", _("No (with overview page)"))
     no_without_overview = ChoiceItem(

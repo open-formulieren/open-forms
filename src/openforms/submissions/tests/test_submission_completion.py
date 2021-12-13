@@ -18,7 +18,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.constants import CanSubmitChoices
+from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
     FormPriceLogicFactory,
@@ -64,7 +64,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 "incompleteSteps": [
                     {"formStep": f"http://testserver{form_step_url}"},
                 ],
-                "canSubmit": CanSubmitChoices.yes,
+                "submissionAllowed": SubmissionAllowedChoices.yes,
             },
         )
 
@@ -193,7 +193,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_submit_form_with_submission_disabled_with_overview(self):
         submission = SubmissionFactory.create(
-            form__can_submit=CanSubmitChoices.no_with_overview
+            form__submission_allowed=SubmissionAllowedChoices.no_with_overview
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -204,12 +204,15 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response_data = response.json()
         self.assertEqual(
             response_data,
-            {"incompleteSteps": [], "canSubmit": CanSubmitChoices.no_with_overview},
+            {
+                "incompleteSteps": [],
+                "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
+            },
         )
 
     def test_submit_form_with_submission_disabled_without_overview(self):
         submission = SubmissionFactory.create(
-            form__can_submit=CanSubmitChoices.no_without_overview
+            form__submission_allowed=SubmissionAllowedChoices.no_without_overview
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -220,7 +223,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response_data = response.json()
         self.assertEqual(
             response_data,
-            {"incompleteSteps": [], "canSubmit": CanSubmitChoices.no_without_overview},
+            {
+                "incompleteSteps": [],
+                "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
+            },
         )
 
 

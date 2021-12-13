@@ -16,7 +16,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
-from openforms.forms.constants import CanSubmitChoices
+from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_maintainance_mode
 
@@ -129,10 +129,10 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "submission_uuid": "submission__uuid",
         },
     )
-    can_submit = serializers.ChoiceField(
-        choices=CanSubmitChoices,
-        label=_("can submit"),
-        source="form.can_submit",
+    submission_allowed = serializers.ChoiceField(
+        choices=SubmissionAllowedChoices,
+        label=_("submission allowed"),
+        source="form.submission_allowed",
         help_text=_(
             "Whether the user is allowed to submit this form and whether the user should see the overview page."
         ),
@@ -154,7 +154,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "form",
             "steps",
             "next_step",
-            "can_submit",
+            "submission_allowed",
             "payment",
             "form_url",
         )
