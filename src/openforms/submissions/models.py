@@ -484,7 +484,7 @@ class Submission(models.Model):
             for key, value in step.data.items():
                 if key in merged_data:
                     logger.warning(
-                        "%s was previously in merged_data and will be overwritten by %s",
+                        'Key "%s" was previously in merged_data and will be overwritten by: %s',
                         key,
                         value,
                     )
@@ -533,6 +533,19 @@ class Submission(models.Model):
                     if selected_values.get(entry["value"])
                 ]
                 printable_data[label] = ", ".join(selected_labels)
+            elif type(info["value"]) is dict:
+                printable_value = info["value"]
+                if "name" in printable_value:
+                    printable_data[label] = printable_value["name"]
+                else:
+                    printable_value = list(printable_value.values())[0]
+                    logger.warning(
+                        'Key "%s" is a dict with unknown values (%s). The first value "%s" was stored.',
+                        key,
+                        info["value"],
+                        printable_value,
+                    )
+                    printable_data[label] = printable_value["name"]
             else:
                 printable_value = info["value"]
                 if info.get("values"):
