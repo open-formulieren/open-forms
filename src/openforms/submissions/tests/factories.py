@@ -62,13 +62,18 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 form=factory.SelfAttribute("..form"),
             )
         )
+        with_report = factory.Trait(
+            report=factory.RelatedFactory(
+                "openforms.submissions.tests.factories.SubmissionReportFactory",
+                factory_related_name="submission",
+            )
+        )
 
     @classmethod
     def from_components(
         cls,
         components_list: List[dict],
         submitted_data: dict = None,
-        with_report=True,
         **kwargs,
     ) -> Submission:
         """
@@ -76,7 +81,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         remember to generate from privates.test import temp_private_root
         """
-
+        kwargs.setdefault("with_report", True)
         submission = cls.create(**kwargs)
         form = submission.form
 
@@ -102,9 +107,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         SubmissionStepFactory.create(
             submission=submission, form_step=form_step, data=submitted_data
         )
-
-        if with_report:
-            SubmissionReportFactory.create(submission=submission)
 
         return submission
 
