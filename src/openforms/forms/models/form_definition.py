@@ -139,6 +139,10 @@ class FormDefinition(models.Model):
                         configuration=component, recursive=recursive
                     )
 
+    def get_all_keys(self) -> List[str]:
+        keys = [field["key"] for field in self.iter_components(recursive=True)]
+        return keys
+
     def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
         """Return the key and the label of fields to include in the email summary"""
         keys_for_email_summary = []
