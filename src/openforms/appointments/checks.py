@@ -23,7 +23,7 @@ def check_single_config(config):
     """
     entry = Entry(
         # we might not have any appointment backend at all
-        name=_("Afspraken plugin: {config}").format(
+        name=_("Appointment plugin: {config}").format(
             config=str(config._meta.verbose_name)
         ),
         actions=[

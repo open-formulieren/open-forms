@@ -350,7 +350,7 @@
         "app_group": [
             "configuratie"
         ],
-        "name": "Configuratie overview",
+        "name": "Configuratie overzicht",
         "link": "/admin/config/overview/"
     }
 }
