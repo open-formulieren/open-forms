@@ -639,3 +639,105 @@ class FormEditTests(WebTest):
                 obj=self.form.name,
             ),
         )
+
+
+@disable_2fa
+class FormChangeTests(WebTest):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.admin_user = SuperUserFactory.create(is_staff=True)
+        cls.form = FormFactory.create()
+        cls.message_endpoint = reverse(
+            "api:form-admin-message", kwargs={"uuid_or_slug": cls.form.uuid}
+        )
+
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch(
+            "rest_framework.authentication.SessionAuthentication.enforce_csrf",
+            return_value=None,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_form_change_duplicate_keys_warning_message(self):
+        """
+        Assert that a warning message is displayed when a form has duplicate
+        keys in multiple form definitions
+        """
+        formdef1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "duplicate-field1",
+                        "label": "Location",
+                    },
+                    {
+                        "key": "non-duplicate-field1",
+                        "label": "Product",
+                    },
+                ],
+            }
+        )
+        formdef2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "duplicate-field1",
+                        "label": "Location",
+                    },
+                    {
+                        "key": "duplicate-field2",
+                        "label": "Foo",
+                    },
+                ],
+            }
+        )
+        formdef3 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "duplicate-field2",
+                        "label": "Foo",
+                    },
+                    {
+                        "key": "non-duplicate-field2",
+                        "label": "Bar",
+                    },
+                ],
+            }
+        )
+        FormStepFactory.create(form=self.form, form_definition=formdef1)
+        FormStepFactory.create(form=self.form, form_definition=formdef2)
+        FormStepFactory.create(form=self.form, form_definition=formdef3)
+        response = self.app.get(
+            reverse("admin:forms_form_change", args=(self.form.pk,)),
+            user=self.admin_user,
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        messagelist = response.pyquery(".messagelist")
+        warning_message = messagelist.find(".warning").text()
+
+        self.assertEqual(
+            warning_message,
+            _(
+                "The following form definitions contain fields with duplicate keys: "
+                "{} occurs in both {}, {}; "
+                "{} occurs in both {}, {}"
+            ).format(
+                "duplicate-field1",
+                formdef1.name,
+                formdef2.name,
+                "duplicate-field2",
+                formdef2.name,
+                formdef3.name,
+            ),
+        )
