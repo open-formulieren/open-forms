@@ -3,14 +3,41 @@ global URLify;
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import {TextInput, Checkbox} from '../forms/Inputs';
+import Select from '../forms/Select';
 import AuthPluginField from './AuthPluginField';
 import TinyMCEEditor from './Editor';
+import {getTranslatedChoices} from '../../../utils/i18n';
+
+
+export const SUMBISSION_ALLOWED_CHOICES = [
+    [
+        'yes',
+        defineMessage({
+            description: 'option "yes" of "submission_allowed"',
+            defaultMessage: 'Yes',
+        })
+    ],
+    [
+        'no_with_overview',
+        defineMessage({
+            description: 'option "no_with_overview" of "submission_allowed"',
+            defaultMessage: 'No (with overview page)',
+        })
+    ],
+    [
+        'no_without_overview',
+        defineMessage({
+            description: 'option "no_without_overview" of "submission_allowed"',
+            defaultMessage: 'No (without overview page)',
+        })
+    ],
+];
 
 
 /**
@@ -32,9 +59,11 @@ const FormMetaFields = ({
         active,
         isDeleted,
         maintenanceMode,
-        canSubmit,
+        submissionAllowed,
         explanationTemplate,
     } = form;
+
+    const intl = useIntl();
 
     const onCheckboxChange = (event, currentValue) => {
         const { target: {name} } = event;
@@ -142,13 +171,27 @@ const FormMetaFields = ({
                 />
             </FormRow>
             <FormRow>
-                <Checkbox
-                    name="form.canSubmit"
-                    label={<FormattedMessage defaultMessage="Submit button enabled" description="Form canSubmit field label" />}
-                    helpText={<FormattedMessage defaultMessage="If checked, the user can submit the form. Uncheck this for 'decision' trees." description="Form canSubmit field help text" />}
-                    checked={canSubmit}
-                    onChange={(event) => onCheckboxChange(event, canSubmit)}
-                />
+                <Field
+                    name="form.submissionAllowed"
+                    label={
+                        <FormattedMessage
+                            defaultMessage="Submission allowed"
+                            description="Form submissionAllowed field label"
+                        />
+                    }
+                    helpText={
+                        <FormattedMessage
+                            defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+                            description="Form submissionAllowed field help text"
+                        />
+                    }
+                >
+                    <Select
+                        choices={getTranslatedChoices(intl, SUMBISSION_ALLOWED_CHOICES)}
+                        value={submissionAllowed}
+                        onChange={onChange}
+                    />
+                </Field>
             </FormRow>
             <FormRow>
                 <Field
