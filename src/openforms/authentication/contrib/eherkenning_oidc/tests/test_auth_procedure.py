@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlparse
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+import requests_mock
 from rest_framework import status
 
 from openforms.forms.tests.factories import (
@@ -29,17 +30,15 @@ class eHerkenningOIDCTests(TestCase):
         config.oidc_redirect_allowed_hosts = []
 
         config.oidc_op_jwks_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/certs"
+            "http://identityprovider/auth/realms/master/protocol/openid-connect/certs"
         )
         config.oidc_op_authorization_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/auth"
+            "http://identityprovider/auth/realms/master/protocol/openid-connect/auth"
         )
         config.oidc_op_token_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/token"
+            "http://identityprovider/auth/realms/master/protocol/openid-connect/token"
         )
-        config.oidc_op_user_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/userinfo"
-        )
+        config.oidc_op_user_endpoint = "http://identityprovider/auth/realms/master/protocol/openid-connect/userinfo"
         config.save()
 
     def test_redirect_to_eherkenning_oidc(self):
@@ -48,7 +47,8 @@ class eHerkenningOIDCTests(TestCase):
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         login_url = reverse(
-            "eherkenning_oidc:oidc_authentication_init",
+            "authentication:start",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
         )
 
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
@@ -60,8 +60,34 @@ class eHerkenningOIDCTests(TestCase):
 
         parsed = urlparse(response.url)
         query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "testserver")
+        self.assertEqual(
+            parsed.path, reverse("eherkenning_oidc:oidc_authentication_init")
+        )
 
-        self.assertEqual(parsed.hostname, "provider.com")
+        parsed = urlparse(query_params["next"][0])
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(
+            parsed.path,
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
+            ),
+        )
+        self.assertEqual(query_params["next"][0], form_url)
+
+        with requests_mock.Mocker() as m:
+            m.head(
+                "http://identityprovider/auth/realms/master/protocol/openid-connect/auth",
+                status_code=200,
+            )
+            response = self.client.get(response.url)
+
+        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        parsed = urlparse(response.url)
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "identityprovider")
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
@@ -72,7 +98,47 @@ class eHerkenningOIDCTests(TestCase):
             f"http://testserver{reverse('eherkenning_oidc:oidc_authentication_callback')}",
         )
 
-        self.assertEqual(self.client.session["oidc_login_next"], form_url)
+        parsed = urlparse(self.client.session["oidc_login_next"])
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(
+            parsed.path,
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
+            ),
+        )
+        self.assertEqual(query_params["next"][0], form_url)
+
+    def test_redirect_to_eherkenning_oidc_internal_server_error(self):
+        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse(
+            "authentication:start",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
+        )
+
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"http://testserver{form_path}?_start=1"
+
+        response = self.client.get(f"{login_url}?next={form_url}")
+
+        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        with requests_mock.Mocker() as m:
+            m.head(
+                "http://identityprovider/auth/realms/master/protocol/openid-connect/auth",
+                status_code=500,
+            )
+            response = self.client.get(response.url)
+
+        parsed = urlparse(response.url)
+        query_params = parse_qs(parsed.query)
+
+        self.assertEqual(parsed.hostname, "testserver")
+        self.assertEqual(parsed.path, form_path)
+        self.assertEqual(query_params["of-auth-problem"][0], "eherkenning_oidc")
 
     def test_redirect_to_disallowed_domain(self):
         config = OpenIDConnectEHerkenningConfig().get_solo()
@@ -104,10 +170,10 @@ class eHerkenningOIDCTests(TestCase):
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         login_url = reverse(
-            "eherkenning_oidc:oidc_authentication_init",
+            "authentication:start",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
         )
 
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = "http://example.com"
 
         response = self.client.get(f"{login_url}?next={form_url}")
@@ -116,8 +182,34 @@ class eHerkenningOIDCTests(TestCase):
 
         parsed = urlparse(response.url)
         query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "testserver")
+        self.assertEqual(
+            parsed.path, reverse("eherkenning_oidc:oidc_authentication_init")
+        )
 
-        self.assertEqual(parsed.hostname, "provider.com")
+        parsed = urlparse(query_params["next"][0])
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(
+            parsed.path,
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
+            ),
+        )
+        self.assertEqual(query_params["next"][0], form_url)
+
+        with requests_mock.Mocker() as m:
+            m.head(
+                "http://identityprovider/auth/realms/master/protocol/openid-connect/auth",
+                status_code=200,
+            )
+            response = self.client.get(response.url)
+
+        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        parsed = urlparse(response.url)
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "identityprovider")
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
@@ -127,8 +219,6 @@ class eHerkenningOIDCTests(TestCase):
             query_params["redirect_uri"][0],
             f"http://testserver{reverse('eherkenning_oidc:oidc_authentication_callback')}",
         )
-
-        self.assertEqual(self.client.session["oidc_login_next"], form_url)
 
     def test_redirect_with_keycloak_identity_provider_hint(self):
         config = OpenIDConnectEHerkenningConfig.get_solo()
@@ -140,7 +230,8 @@ class eHerkenningOIDCTests(TestCase):
         FormStepFactory.create(form_definition=form_definition, form=form)
 
         login_url = reverse(
-            "eherkenning_oidc:oidc_authentication_init",
+            "authentication:start",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
         )
 
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
@@ -152,8 +243,34 @@ class eHerkenningOIDCTests(TestCase):
 
         parsed = urlparse(response.url)
         query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "testserver")
+        self.assertEqual(
+            parsed.path, reverse("eherkenning_oidc:oidc_authentication_init")
+        )
 
-        self.assertEqual(parsed.hostname, "provider.com")
+        parsed = urlparse(query_params["next"][0])
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(
+            parsed.path,
+            reverse(
+                "authentication:return",
+                kwargs={"slug": form.slug, "plugin_id": "eherkenning_oidc"},
+            ),
+        )
+        self.assertEqual(query_params["next"][0], form_url)
+
+        with requests_mock.Mocker() as m:
+            m.head(
+                "http://identityprovider/auth/realms/master/protocol/openid-connect/auth",
+                status_code=200,
+            )
+            response = self.client.get(response.url)
+
+        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+        parsed = urlparse(response.url)
+        query_params = parse_qs(parsed.query)
+        self.assertEqual(parsed.hostname, "identityprovider")
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
@@ -163,8 +280,4 @@ class eHerkenningOIDCTests(TestCase):
             query_params["redirect_uri"][0],
             f"http://testserver{reverse('eherkenning_oidc:oidc_authentication_callback')}",
         )
-
-        # Verify that the Identity provider hint is passed to Keycloak
         self.assertEqual(query_params["kc_idp_hint"][0], "oidc-eHerkenning")
-
-        self.assertEqual(self.client.session["oidc_login_next"], form_url)
