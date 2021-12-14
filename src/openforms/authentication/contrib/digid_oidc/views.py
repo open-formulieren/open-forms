@@ -1,15 +1,21 @@
+import logging
 import time
 
 from django.core.exceptions import DisallowedRedirect
 from django.http import HttpResponseRedirect
 
+import requests
+from furl import furl
 from mozilla_django_oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
     OIDCAuthenticationRequestView as _OIDCAuthenticationRequestView,
     get_next_url,
 )
 
+from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .mixins import SoloConfigMixin
+
+logger = logging.getLogger(__name__)
 
 
 class OIDCAuthenticationRequestView(SoloConfigMixin, _OIDCAuthenticationRequestView):
@@ -18,6 +24,25 @@ class OIDCAuthenticationRequestView(SoloConfigMixin, _OIDCAuthenticationRequestV
         next_url = get_next_url(request, redirect_field_name)
         if not next_url:
             raise DisallowedRedirect
+
+        try:
+            # Verify that the identity provider endpoint can be reached
+            response = requests.head(self.OIDC_OP_AUTH_ENDPOINT)
+            if response.status_code > 400:
+                response.raise_for_status()
+        except Exception as e:
+            logger.exception(
+                "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
+                {"plugin_id": "digid_oidc"},
+                exc_info=e,
+            )
+            # append failure parameter and return to form
+            f = furl(next_url)
+            failure_url = f.args["next"]
+
+            f = furl(failure_url)
+            f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "digid_oidc"
+            return HttpResponseRedirect(f.url)
 
         return super().get(request)
 
