@@ -1,15 +1,9 @@
-import json
 from copy import deepcopy
 
-from django import forms
 from django.core.validators import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-import requests
-from mozilla_django_oidc_db.constants import (
-    OIDC_MAPPING as _OIDC_MAPPING,
-    OPEN_ID_CONFIG_PATH,
-)
+from mozilla_django_oidc_db.constants import OIDC_MAPPING as _OIDC_MAPPING
 from mozilla_django_oidc_db.forms import OpenIDConnectConfigForm
 
 from openforms.forms.models import Form
