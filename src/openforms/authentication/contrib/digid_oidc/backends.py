@@ -8,8 +8,7 @@ from mozilla_django_oidc.auth import (
     OIDCAuthenticationBackend as _OIDCAuthenticationBackend,
 )
 
-from openforms.authentication.constants import AuthAttribute
-
+from .constants import DIGID_OIDC_AUTH_SESSION_KEY
 from .mixins import SoloConfigMixin
 from .models import OpenIDConnectPublicConfig
 from .settings import OIDC_AUTHENTICATION_CALLBACK_URL
@@ -48,7 +47,7 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
             msg = "Claims verification failed"
             raise SuspiciousOperation(msg)
 
-        self.request.session[AuthAttribute.bsn] = payload[
+        self.request.session[DIGID_OIDC_AUTH_SESSION_KEY] = payload[
             self.get_settings("bsn_claim_name")
         ]
         user = AnonymousUser()
