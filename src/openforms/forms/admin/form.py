@@ -16,7 +16,7 @@ from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
 from ..models import Form, FormStep
-from ..utils import export_form, import_form
+from ..utils import export_form, get_duplicates_keys_for_form, import_form
 
 
 class FormStepInline(OrderedTabularInline):
@@ -101,6 +101,27 @@ class FormAdmin(
         return super().get_inline_instances(request, *args, **kwargs)
 
     def get_form(self, request, *args, **kwargs):
+        if kwargs.get("change"):
+            # Display a warning if duplicate keys are used in form definitions
+            duplicate_keys = get_duplicates_keys_for_form(args[0])
+
+            if duplicate_keys:
+                error_message = _("{} occurs in both {}")
+                error_messages = "; ".join(
+                    [
+                        error_message.format(key, ", ".join(form_definitions))
+                        for key, form_definitions in duplicate_keys.items()
+                    ]
+                )
+                self.message_user(
+                    request,
+                    _(
+                        "The following form definitions contain fields with duplicate keys: %s"
+                    )
+                    % (error_messages),
+                    level=messages.WARNING,
+                )
+
         if self.use_react(request):
             # no actual changes to the fields are triggered, we're only ending up here
             # because of the copy/export actions.
