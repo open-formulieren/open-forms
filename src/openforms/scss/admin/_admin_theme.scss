@@ -361,7 +361,13 @@ div.help:hover {
   text-indent: inherit;
   width: auto;
   background-image: none;
-  padding-left: 5px !important;
+  background-color: $color-tooltip-background;
+  border: 1px solid $color-tooltip-border;
+  color: $color-tooltip-text;;
+  padding: 5px 5px 3px 5px !important;
+  max-width: 300px;
+  height: auto !important;
+  z-index: 10;
 }
 
 div.help {
@@ -372,11 +378,23 @@ div.help {
   display: inline-block;
   background-repeat: no-repeat;
   background-size: 14px;
-  margin-left: 0 !important;
+  margin-left: 2px !important;
+  position: absolute;
   text-indent: -9999px;
 }
 
-.aligned label + div.readonly {
+/* Overrides default Django CSS */
+.aligned label + p, .aligned label + div.readonly {
+  display: inline-block;
+  margin-left: inherit !important;
+}
+.aligned label + div.help {
+  margin-left: 2px !important;
+}
+
+/* Additional components seem to need the same behaviour */
+/* TODO: TinyMCE is different... */
+.aligned label + ul {
   display: inline-block;
   margin-left: inherit !important;
 }
