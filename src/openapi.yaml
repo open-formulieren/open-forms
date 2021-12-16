@@ -2676,12 +2676,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IncompleteStep'
-        canSubmit:
-          type: boolean
+        submissionAllowed:
+          allOf:
+          - $ref: '#/components/schemas/SubmissionAllowedEnum'
           readOnly: true
       required:
-      - canSubmit
       - incompleteSteps
+      - submissionAllowed
     ComponentProperty:
       type: object
       properties:
@@ -2863,9 +2864,11 @@ components:
           type: string
           description: Content that will be shown on the start page of the form, below
             the title and above the log in text.
-        canSubmit:
-          type: boolean
-          description: Whether the user is allowed to submit this form or not.
+        submissionAllowed:
+          allOf:
+          - $ref: '#/components/schemas/SubmissionAllowedEnum'
+          description: Whether the user is allowed to submit this form or not, and
+            whether the overview page should be shown if they are not.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -3578,9 +3581,11 @@ components:
           type: string
           description: Content that will be shown on the start page of the form, below
             the title and above the log in text.
-        canSubmit:
-          type: boolean
-          description: Whether the user is allowed to submit this form or not.
+        submissionAllowed:
+          allOf:
+          - $ref: '#/components/schemas/SubmissionAllowedEnum'
+          description: Whether the user is allowed to submit this form or not, and
+            whether the overview page should be shown if they are not.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -3917,10 +3922,12 @@ components:
           format: uri
           readOnly: true
           nullable: true
-        canSubmit:
-          type: boolean
+        submissionAllowed:
+          allOf:
+          - $ref: '#/components/schemas/SubmissionAllowedEnum'
           readOnly: true
-          description: Whether the user is allowed to submit this form.
+          description: Whether the user is allowed to submit this form and whether
+            the user should see the overview page.
         payment:
           allOf:
           - $ref: '#/components/schemas/NestedSubmissionPaymentDetail'
@@ -3932,14 +3939,20 @@ components:
           description: URL where the user initialized the submission.
           maxLength: 255
       required:
-      - canSubmit
       - form
       - formUrl
       - id
       - nextStep
       - payment
       - steps
+      - submissionAllowed
       - url
+    SubmissionAllowedEnum:
+      enum:
+      - 'yes'
+      - no_with_overview
+      - no_without_overview
+      type: string
     SubmissionCoSignStatus:
       type: object
       properties:
