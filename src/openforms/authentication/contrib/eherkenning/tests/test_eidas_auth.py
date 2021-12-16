@@ -8,14 +8,16 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+import requests_mock
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
-from requests_mock import Mocker
 
 from openforms.forms.tests.factories import FormFactory
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import (
     create_test_artifact,
     get_artifact_response,
@@ -175,7 +177,7 @@ class AuthenticationStep2Tests(TestCase):
     EIDAS_SERVICE_INDEX=EIDAS_SERVICE_INDEX,
     CORS_ALLOW_ALL_ORIGINS=True,
 )
-@Mocker()
+@requests_mock.Mocker()
 class AuthenticationStep5Tests(TestCase):
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
@@ -288,4 +290,117 @@ class AuthenticationStep5Tests(TestCase):
         self.assertEquals(
             response.redirect_chain[-1],
             (form_url.url, 302),
+        )
+
+
+@override_settings(EHERKENNING=EHERKENNING, CORS_ALLOW_ALL_ORIGINS=True)
+@requests_mock.Mocker()
+class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
+    @freeze_time("2020-04-09T08:31:46Z")
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_for_co_sign(self, m, mock_id):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__slug="myform",
+            form__authentication_backends=["eidas"],
+        )
+        self._add_submission_to_session(submission)
+        form_url = "http://localhost:3000"
+        login_url = reverse(
+            "authentication:start",
+            kwargs={"slug": "myform", "plugin_id": "eidas"},
+        )
+
+        start_response = self.client.get(
+            login_url,
+            {"next": form_url, CO_SIGN_PARAMETER: submission.uuid},
+            follow=True,
+        )
+
+        # form that auto-submits to DigiD
+        self.assertEqual(start_response.status_code, 200)
+        relay_state = furl(start_response.context["form"].initial["RelayState"])
+        self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
+        self.assertEqual(relay_state.args[CO_SIGN_PARAMETER], str(submission.uuid))
+
+    @patch(
+        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
+    )
+    @patch(
+        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="_1330416516",
+    )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
+    )
+    @patch(
+        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
+        return_value=True,
+    )
+    def test_return_with_samlart_from_eherkenning(
+        self,
+        m,
+        mock_verification,
+        mock_validation,
+        mock_id,
+        mock_xml_validation,
+    ):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form__slug="myform",
+            form__authentication_backends=["eidas"],
+        )
+        self._add_submission_to_session(submission)
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": "myform", "plugin_id": "eidas"},
+        )
+        auth_return_url = furl(auth_return_url).set({"next": "http://localhost:3000"})
+        encrypted_attribute = _get_encrypted_attribute("112233445")
+        m.post(
+            "https://test-iwelcome.nl/broker/ars/1.13",
+            content=_get_artifact_response(
+                "ArtifactResponse.xml",
+                {"encrypted_attribute": mark_safe(encrypted_attribute)},
+            ),
+        )
+        # set the relay-state, see test ``test_authn_request_for_co_sign`` for the
+        # expected querystring args
+        relay_state = auth_return_url.add(
+            {
+                CO_SIGN_PARAMETER: str(submission.uuid),
+            }
+        )
+        url = furl(reverse("eherkenning:acs")).set(
+            {
+                "SAMLart": _create_test_artifact(),
+                "RelayState": relay_state,
+            }
+        )
+
+        response = self.client.get(url)
+        self.assertRedirects(
+            response, str(auth_return_url), fetch_redirect_response=False
+        )
+        response = self.client.get(response["Location"])
+
+        self.assertRedirects(
+            response, "http://localhost:3000", fetch_redirect_response=False
+        )
+        # we don't expect the auth parameters to be set, as this is a co-sign request
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.co_sign_data,
+            {
+                "plugin": "eidas",
+                "identifier": "112233445",
+                "representation": "",
+                "fields": {},
+            },
         )
