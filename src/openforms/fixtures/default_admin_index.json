@@ -147,6 +147,10 @@
                 "cookiegroup"
             ],
             [
+                "custom_field_types",
+                "familymemberstypeconfig"
+            ],
+            [
                 "django_yubin",
                 "blacklist"
             ],
@@ -217,10 +221,6 @@
             [
                 "zgw_consumers",
                 "service"
-            ],
-            [
-                "custom_field_types",
-                "familymemberstypeconfig"
             ]
         ]
     }
@@ -336,17 +336,6 @@
     "model": "admin_index.applink",
     "fields": {
         "order": 4,
-        "app_group": [
-            "logs"
-        ],
-        "name": "Audit log",
-        "link": "/admin/logging/timelinelogproxy/auditlog/"
-    }
-},
-{
-    "model": "admin_index.applink",
-    "fields": {
-        "order": 5,
         "app_group": [
             "configuratie"
         ],
