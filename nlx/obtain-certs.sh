@@ -47,4 +47,7 @@ do
     read  -n 1 -p "Hit any key to continue:"
 done
 
+echo "Attempting to fix/set the correct private key owner..."
+chown 1000 org.key
+
 echo "Found your certificate!"
