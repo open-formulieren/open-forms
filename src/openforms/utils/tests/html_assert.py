@@ -7,6 +7,10 @@ from lxml.html.clean import Cleaner
 
 
 class HTMLAssertMixin:
+    """
+    Mixin HTML-related assertions.
+    """
+
     def assertTagWithTextIn(self, tag, text, document_str):
         """
         check for html tags and their content while ignoring tag attributes

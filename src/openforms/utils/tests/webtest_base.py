@@ -1,4 +1,8 @@
 class WebTestPyQueryMixin:
+    """
+    Mixin PyQuery assertions for WebTest tests.
+    """
+
     def assertPyQueryExists(self, response, query):
         pq = response.pyquery(query)
         pl = len(pq)
