@@ -219,8 +219,8 @@
   " remaining.": "over",
   "{{ count }} characters": "{{ count }} karakters",
   "{{ count }} words": "{{ count }} woorden",
-  "{{ remaining }} characters remaining.": "{{ remaining }} karakters over.",
-  "{{ remaining }} words remaining.": "{{ remaining }} woorden over.",
+  "{{ remaining }} karakters remaining.": "{{ remaining }} karakters over.",
+  "{{ remaining }} woorden remaining.": "{{ remaining }} woorden over.",
   "Auto Expand": "Maak automatisch groter",
   "Number of rows": "Aantal rijen"
 }
