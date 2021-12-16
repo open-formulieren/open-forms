@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
-from django.shortcuts import render
 from django.template import Context, Template
+from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -694,19 +694,24 @@ class SubmissionReport(models.Model):
     def __str__(self):
         return self.title
 
-    def generate_submission_report_pdf(self) -> None:
+    def generate_submission_report_pdf(self) -> str:
+        """
+        Generate the submission report as a PDF.
+
+        :return: string with the HTML used for the PDF generation, so that contents
+          can be tested.
+        """
         form = self.submission.form
         printable_data = self.submission.get_printable_data()
 
-        html_report = render(
-            request=None,
-            template_name="report/submission_report.html",
+        html_report = render_to_string(
+            "report/submission_report.html",
             context={
                 "form": form,
                 "submission_data": printable_data,
                 "submission": self.submission,
             },
-        ).content.decode("utf8")
+        )
 
         html_object = HTML(string=html_report)
         pdf_report = html_object.write_pdf()
@@ -716,6 +721,7 @@ class SubmissionReport(models.Model):
             name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
         )
         self.save()
+        return html_report
 
     def get_celery_task(self) -> Optional[AsyncResult]:
         if not self.task_id:
