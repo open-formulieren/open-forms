@@ -233,6 +233,38 @@ class SubmissionTests(TestCase):
         self.assertEqual(submission.bsn, "")
         self.assertEqual(submission.kvk, "")
 
+    def test_submission_remove_sensitive_co_sign_data(self):
+        """
+        Assert that the sensitive (source) data for co-signed submissions is wiped.
+
+        We do keep the representation, as that is used in PDF and confirmation e-mail
+        generation and is usually a label derived from the source fields.
+        """
+        submission = SubmissionFactory.create(
+            co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "representation": "T. Hulk",
+                "fields": {
+                    "firstName": "The",
+                    "lastName": "Hulk",
+                },
+            }
+        )
+
+        submission.remove_sensitive_data()
+
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.co_sign_data,
+            {
+                "plugin": "digid",
+                "identifier": "",
+                "fields": {},
+                "representation": "T. Hulk",
+            },
+        )
+
     def test_get_merged_appointment_data(self):
         form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(

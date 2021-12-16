@@ -328,6 +328,7 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""
+        self.pseudo = ""
         for submission_step in self.submissionstep_set.select_related(
             "form_step", "form_step__form_definition"
         ).select_for_update():
@@ -336,6 +337,15 @@ class Submission(models.Model):
             submission_step.data.update(removed_data)
             submission_step.save()
         self._is_cleaned = True
+
+        if self.co_sign_data:
+            self.co_sign_data.update(
+                {
+                    "identifier": "",
+                    "fields": {},
+                }
+            )
+
         self.save()
 
     def load_execution_state(self) -> SubmissionState:
