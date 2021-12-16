@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from openforms.appointments.base import (
@@ -31,7 +32,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.submissions.utils import send_confirmation_email
 from openforms.tests.utils import NOOP_CACHES
-from openforms.utils.tests.html_assert import HTMLAssertMixin
+from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
 from openforms.utils.urls import build_absolute_uri
 
 from ..confirmation_emails import (
@@ -454,6 +455,15 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             form__product__information="<p>info line 1</p>\r\n<p>info line 2</p>\r\n<p>info line 3</p>",
             form__payment_backend="test",
             form_url="http://server/form",
+            co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "fields": {
+                    "voornaam": "Tina",
+                    "geslachtsnaam": "Shikari",
+                },
+                "representation": "T. Shikari",
+            },
         )
         AppointmentInfoFactory.create(
             status=AppointmentDetailsStatus.success,
@@ -498,6 +508,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             - Name: Foo
             - Last name: de Bar & de Baas
             - File: my-image.jpg
+            - {_("Co-signed by")}: T. Shikari
 
             {_("Appointment information")}
 
@@ -555,6 +566,16 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             self.assertTagWithTextIn("td", "Name", message_html)
             self.assertTagWithTextIn("td", "Foo", message_html)
             self.assertIn('<a href="http://gemeente.nl">', message_html)
+
+            message_html_only_tags = strip_all_attributes(message_html)
+            # check co-sign data presence
+            self.assertInHTML(
+                format_html(
+                    "<tr> <td>{label}</td> <td>T. Shikari</td> </tr>",
+                    label=_("Co-signed by"),
+                ),
+                message_html_only_tags,
+            )
 
 
 class UtilsTest(TestCase):

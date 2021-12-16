@@ -13,7 +13,7 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -556,6 +556,12 @@ class Submission(models.Model):
 
                 # more here? like getComponentValue() in the SDK?
                 printable_data[label] = printable_value
+
+        # finally, check if we have co-sign information to append
+        if self.co_sign_data:
+            if not (co_signer := self.co_sign_data.get("representation", "")):
+                logger.warning("Incomplete co-sign data for submission %s", self.uuid)
+            printable_data[gettext("Co-signed by")] = co_signer
 
         return printable_data
 
