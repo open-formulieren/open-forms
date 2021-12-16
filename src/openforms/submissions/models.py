@@ -10,9 +10,11 @@ from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
+from django.template.defaultfilters import date as fmt_date
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -511,7 +513,23 @@ class Submission(models.Model):
         for possible_value in possible_values:
             if possible_value["value"] == value:
                 return possible_value["label"]
+        # TODO what if value is not a string? shouldn't it be passed through something to covert for display?
         return value
+
+    @staticmethod
+    def _get_values(value, filter_func=bool):
+        # filter a single or multiple value into a list of acceptable values
+        if isinstance(value, list):
+            return list(filter(filter_func, value))
+        elif not filter_func(value):
+            return []
+        else:
+            return [value]
+
+    @classmethod
+    def _join_mapped(cls, func, value, seperator=", "):
+        # filter and map a single or multiple value into a joined string
+        return seperator.join(map(func, cls._get_values(value)))
 
     def get_printable_data(
         self, limit_keys_to: Optional[List[str]] = None, use_merged_data_fallback=False
@@ -521,11 +539,11 @@ class Submission(models.Model):
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
         for key, info in self.get_ordered_data_with_component_type().items():
-
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
             label = info["label"]
+
             if info["type"] == "file":
                 files = attachment_data.get(key)
                 if files:
@@ -537,6 +555,15 @@ class Submission(models.Model):
                     printable_data[label] = merged_data.get(key)
                 else:
                     printable_data[label] = _("empty")
+
+            elif info["type"] == "date":
+                fmt = lambda v: fmt_date(parse_date(v), "SHORT_DATE_FORMAT")
+                printable_data[label] = self._join_mapped(fmt, info["value"])
+
+            elif info["type"] == "datetime":
+                fmt = lambda v: fmt_date(parse_datetime(v), "SHORT_DATETIME_FORMAT")
+                printable_data[label] = self._join_mapped(fmt, info["value"])
+
             elif info["type"] == "selectboxes":
                 selected_values: Dict[str, bool] = info["value"]
                 selected_labels = [
@@ -545,6 +572,7 @@ class Submission(models.Model):
                     if selected_values.get(entry["value"])
                 ]
                 printable_data[label] = ", ".join(selected_labels)
+
             elif type(info["value"]) is dict:
                 printable_value = info["value"]
                 if "name" in printable_value:
