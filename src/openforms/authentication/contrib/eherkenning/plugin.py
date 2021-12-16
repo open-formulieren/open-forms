@@ -2,15 +2,17 @@ from typing import Optional
 
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.reverse import reverse
 
-from openforms.authentication.base import BasePlugin, LoginLogo
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import register
+from openforms.forms.models import Form
+
+from ...base import BasePlugin, LoginLogo
+from ...constants import AuthAttribute
+from ...registry import register
 
 
 class AuthenticationBasePlugin(BasePlugin):
@@ -21,9 +23,15 @@ class AuthenticationBasePlugin(BasePlugin):
         }
         return indices[self.identifier]
 
-    def start_login(self, request, form, form_url):
-        """Redirect to the /eherkenning/login endpoint to start the authentication. The distinction between the eIDAS
-        and eHerkenning flow is determined by the AttributeConsumingServiceIndex"""
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str
+    ) -> HttpResponseRedirect:
+        """
+        Redirect to the /eherkenning/login endpoint to start the authentication.
+
+        The distinction between the eIDAS and eHerkenning flow is determined by the
+        ``AttributeConsumingServiceIndex``.
+        """
         login_url = reverse("eherkenning:login", request=request)
 
         auth_return_url = reverse(
@@ -39,7 +47,7 @@ class AuthenticationBasePlugin(BasePlugin):
         url = f"{login_url}?{urlencode(auth_return_params)}"
         return HttpResponseRedirect(url)
 
-    def handle_return(self, request, form):
+    def handle_return(self, request: HttpRequest, form: Form):
         """Redirect to form URL."""
         form_url = request.GET.get("next")
         if not form_url:

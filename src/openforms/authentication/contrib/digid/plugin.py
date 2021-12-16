@@ -21,7 +21,9 @@ class DigidAuthentication(BasePlugin):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str
+    ) -> HttpResponseRedirect:
         """Redirect to the /digid/login endpoint to start step 2 of the authentication
 
         https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiD/Koppelvlakspecificatie-SAML-DigiD.pdf
