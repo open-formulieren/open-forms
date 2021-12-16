@@ -1,11 +1,9 @@
 import os
-from base64 import b64decode, b64encode
-from hashlib import sha1
+from base64 import b64decode
 from typing import Optional
 from unittest.mock import patch
 
 from django.conf import settings
-from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -14,13 +12,17 @@ import requests_mock
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....contrib.tests.saml_utils import (
+    create_test_artifact,
+    get_artifact_response,
+    get_encrypted_attribute,
+)
 
 TEST_FILES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
@@ -71,35 +73,17 @@ EHERKENNING = {
 
 
 def _create_test_artifact(service_entity_id: str = "") -> str:
-    if not service_entity_id:
-        service_entity_id = settings.EHERKENNING["service_entity_id"]
-    type_code = b"\x00\x04"
-    endpoint_index = b"\x00\x00"
-    sha_entity_id = sha1(service_entity_id.encode("utf-8")).digest()
-    message_handle = b"01234567890123456789"  # something random
-    b64encoded = b64encode(type_code + endpoint_index + sha_entity_id + message_handle)
-    return b64encoded.decode("ascii")
+    return create_test_artifact(
+        service_entity_id or settings.EHERKENNING["service_entity_id"]
+    )
 
 
 def _get_artifact_response(filename: str, context: Optional[dict] = None) -> bytes:
-    filepath = os.path.join(TEST_FILES, filename)
-    with open(filepath, "r") as template_source_file:
-        template = Template(template_source_file.read())
-
-    rendered = template.render(Context(context or {}))
-    return rendered.encode("utf-8")
+    return get_artifact_response(os.path.join(TEST_FILES, filename), context=context)
 
 
 def _get_encrypted_attribute(kvk: str):
-    with open(settings.EHERKENNING["cert_file"], "r") as cert_file:
-        cert = cert_file.read()
-    return OneLogin_Saml2_Utils.generate_name_id(
-        kvk,
-        sp_nq=None,
-        nq="urn:etoegang:1.9:EntityConcernedID:KvKnr",
-        sp_format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
-        cert=cert,
-    )
+    return get_encrypted_attribute("KvKnr", kvk)
 
 
 @override_settings(
