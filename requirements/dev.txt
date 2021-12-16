@@ -494,7 +494,7 @@ lockfile==0.12.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
-lxml==4.6.3
+lxml==4.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

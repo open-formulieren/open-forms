@@ -224,7 +224,7 @@ kombu==4.6.11
     # via celery
 lockfile==0.12.2
     # via django-yubin
-lxml==4.6.3
+lxml==4.7.1
     # via
     #   -r requirements/base.in
     #   python3-saml
