@@ -105,3 +105,17 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
             image_src=request.build_absolute_uri(static("img/eherkenning.svg")),
             href="https://www.eherkenning.nl/",
         )
+
+
+@register("eidas")
+class EIDASAuthentication(AuthenticationBasePlugin):
+    verbose_name = _("eIDAS")
+    provides_auth = AuthAttribute.pseudo
+    session_key = EIDAS_AUTH_SESSION_KEY
+
+    def get_logo(self, request) -> Optional[LoginLogo]:
+        return LoginLogo(
+            title=self.get_label(),
+            image_src=request.build_absolute_uri(static("img/eidas.png")),
+            href="https://digital-strategy.ec.europa.eu/en/policies/eu-trust-mark",
+        )

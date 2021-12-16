@@ -15,13 +15,8 @@ from furl import furl
 from lxml import etree
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 from requests_mock import Mocker
-from rest_framework import status
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.forms.tests.factories import FormFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 
