@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import openforms.emails.validators
+import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             field=models.TextField(
                 help_text="The content of the email message can contain variables that will be templated from the submitted form data.",
                 validators=[
-                    openforms.emails.validators.DjangoTemplateValidator(
+                    openforms.utils.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",

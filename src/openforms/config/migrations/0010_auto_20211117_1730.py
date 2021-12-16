@@ -5,7 +5,7 @@ from django.db import migrations, models
 import tinymce.models
 
 import openforms.config.models
-import openforms.emails.validators
+import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             field=tinymce.models.HTMLField(
                 default=openforms.config.models.get_confirmation_email_content,
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
-                validators=[openforms.emails.validators.DjangoTemplateValidator()],
+                validators=[openforms.utils.validators.DjangoTemplateValidator()],
                 verbose_name="content",
             ),
         ),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 default=openforms.config.models.get_confirmation_email_subject,
                 help_text="Subject of the confirmation email message. Can be overridden on the form level",
                 max_length=1000,
-                validators=[openforms.emails.validators.DjangoTemplateValidator()],
+                validators=[openforms.utils.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),

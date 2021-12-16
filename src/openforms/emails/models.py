@@ -4,8 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from openforms.forms.models import Form
-
-from .validators import DjangoTemplateValidator
+from openforms.utils.validators import DjangoTemplateValidator
 
 
 class ConfirmationEmailTemplateManager(models.Manager):

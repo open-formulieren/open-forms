@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import openforms.emails.validators
+import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Subject of the email message",
                 max_length=1000,
-                validators=[openforms.emails.validators.DjangoTemplateValidator()],
+                validators=[openforms.utils.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
