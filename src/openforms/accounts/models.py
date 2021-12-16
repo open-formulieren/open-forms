@@ -58,6 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 fields=["email"], condition=~Q(email=""), name="filled_email_unique"
             )
         ]
+        permissions = (("email_backend_test", _("Can use email backend test")),)
 
     def get_full_name(self):
         """
