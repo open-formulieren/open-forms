@@ -13,8 +13,8 @@ from digid_eherkenning.views import (
 from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ..digid.mixins import AssertionConsumerServiceMixin
+from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -103,16 +103,13 @@ class eHerkenningAssertionConsumerServiceView(
             raise ExpectedIdNotPresentError
 
         if "urn:etoegang:1.9:EntityConcernedID:KvKnr" in qualifiers:
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": plugin_id,
-                "attribute": AuthAttribute.kvk,
-                "value": qualifiers["urn:etoegang:1.9:EntityConcernedID:KvKnr"],
-            }
+            request.session[EHERKENNING_AUTH_SESSION_KEY] = qualifiers[
+                "urn:etoegang:1.9:EntityConcernedID:KvKnr"
+            ]
+
         if "urn:etoegang:1.9:EntityConcernedID:Pseudo" in qualifiers:
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": plugin_id,
-                "attribute": AuthAttribute.pseudo,
-                "value": qualifiers["urn:etoegang:1.9:EntityConcernedID:Pseudo"],
-            }
+            request.session[EIDAS_AUTH_SESSION_KEY] = qualifiers[
+                "urn:etoegang:1.9:EntityConcernedID:Pseudo"
+            ]
 
         return HttpResponseRedirect(self.get_success_url())

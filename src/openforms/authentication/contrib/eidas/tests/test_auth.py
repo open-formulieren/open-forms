@@ -2,13 +2,11 @@ import os
 from base64 import b64decode, b64encode
 from hashlib import sha1
 from unittest.mock import patch
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils.http import urlencode
 from django.utils.safestring import mark_safe
 
 from freezegun import freeze_time
@@ -116,14 +114,19 @@ class AuthenticationStep2Tests(TestCase):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
-        return_url_with_param = f"{return_url}?next={form_url}"
+        return_url_with_param = furl(return_url).set({"next": form_url})
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
         # We always get redirected to the /eherkenning/login/ url, but the attr_consuming_service_index differentiates
         # between the eHerkenning and the eIDAS flow
-        self.assertEqual(
-            f"http://testserver/eherkenning/login/?{urlencode({'next': return_url_with_param, 'attr_consuming_service_index': '9999'})}",
-            response.url,
+        expected_redirect_url = furl("http://testserver/eherkenning/login/").set(
+            {
+                "next": return_url_with_param,
+                "attr_consuming_service_index": "9999",
+            }
+        )
+        self.assertRedirects(
+            response, str(expected_redirect_url), fetch_redirect_response=False
         )
 
     @freeze_time("2020-04-09T08:31:46Z")
@@ -152,8 +155,8 @@ class AuthenticationStep2Tests(TestCase):
         )
 
         self.assertEqual(
-            f"{return_url}?next={form_url}",
             response.context["form"].initial["RelayState"],
+            str(furl(return_url).set({"next": form_url})),
         )
 
         saml_request = b64decode(

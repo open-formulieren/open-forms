@@ -5,7 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.base import LoginLogo
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.eherkenning.plugin import AuthenticationBasePlugin
+from openforms.authentication.contrib.eherkenning.plugin import (
+    EIDAS_AUTH_SESSION_KEY,
+    AuthenticationBasePlugin,
+)
 from openforms.authentication.registry import register
 
 
@@ -13,6 +16,7 @@ from openforms.authentication.registry import register
 class EIDASAuthentication(AuthenticationBasePlugin):
     verbose_name = _("eIDAS")
     provides_auth = AuthAttribute.pseudo
+    session_key = EIDAS_AUTH_SESSION_KEY
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(
