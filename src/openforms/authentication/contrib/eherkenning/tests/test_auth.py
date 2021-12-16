@@ -114,10 +114,11 @@ def _get_encrypted_attribute(kvk: str):
 )
 class AuthenticationStep2Tests(TestCase):
     def test_redirect_to_eherkenning_login(self):
-        form = FormFactory.create(authentication_backends=["eherkenning"])
-        form_definition = FormDefinitionFactory.create(login_required=True)
-        FormStepFactory.create(form_definition=form_definition, form=form)
-
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
         login_url = reverse(
             "authentication:start",
             kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
@@ -125,7 +126,7 @@ class AuthenticationStep2Tests(TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"http://testserver{form_path}"
 
-        response = self.client.get(f"{login_url}?next={form_url}")
+        response = self.client.get(login_url, {"next": form_url})
 
         return_url = reverse(
             "authentication:return",
@@ -149,10 +150,11 @@ class AuthenticationStep2Tests(TestCase):
         return_value="ONELOGIN_123456",
     )
     def test_authn_request(self, mock_id):
-        form = FormFactory.create(authentication_backends=["eherkenning"])
-        form_definition = FormDefinitionFactory.create(login_required=True)
-        FormStepFactory.create(form_definition=form_definition, form=form)
-
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
         login_url = reverse(
             "authentication:start",
             kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
