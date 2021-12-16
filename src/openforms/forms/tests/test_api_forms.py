@@ -817,6 +817,25 @@ class FormsAPITests(APITestCase):
                     ),
                 )
 
+    def test_submission_confirmation_template_invalid_template(self):
+        """
+        Test 1064 regression: invalid template code was accepted.
+        """
+        user = StaffUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create()
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        data = {
+            "submission_confirmation_template": "yo {% invalid_tag %}",
+        }
+
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["name"], "submissionConfirmationTemplate")
+        self.assertEqual(error["code"], "syntax_error")
+
 
 class CopyFormAPITests(APITestCase):
     def setUp(self):

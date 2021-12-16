@@ -18,6 +18,7 @@ from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
+from openforms.utils.validators import DjangoTemplateValidator
 
 from ..constants import ConfirmationEmailOptions
 from .utils import literal_getter
@@ -75,6 +76,7 @@ class Form(models.Model):
             "templated from the submitted form data. If not specified, the global template will be used."
         ),
         blank=True,
+        validators=[DjangoTemplateValidator()],
     )
     can_submit = models.BooleanField(
         _("can submit"),

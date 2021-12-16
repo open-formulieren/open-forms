@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
+from django.utils.translation import gettext_lazy as _
 
 from ..validators import DjangoTemplateValidator, validate_bsn, validate_rsin
 
