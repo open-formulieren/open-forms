@@ -67,7 +67,7 @@ const AdvancedTrigger = ({ name, logic, onChange, error }) => {
 
     return (
         <div className="logic-trigger">
-            <div className="logic-trigger__json-editor">
+            <div className={`logic-trigger__json-editor ${ error ? 'logic-trigger__json-editor--error' : ''}`}>
                 <JsonWidget name={name} logic={logic} onChange={onChange}/>
                 {
                     error
