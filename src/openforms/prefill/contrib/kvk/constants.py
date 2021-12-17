@@ -196,4 +196,4 @@ class Attributes(DjangoChoices):
     voltijdWerkzamePersonen = ChoiceItem(
         "voltijdWerkzamePersonen", _("voltijdWerkzamePersonen")
     )
-    websites_i = ChoiceItem("websites[]", _("websites > []"))
+    # websites_i = ChoiceItem("websites[]", _("websites > []"))
