@@ -1,11 +1,12 @@
 from django.test import TestCase
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from privates.test import temp_private_root
 
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionReportFactory
 
 
 @temp_private_root()
@@ -46,3 +47,36 @@ class SubmissionReportGenerationTests(TestCase):
 
         report = SubmissionReport.objects.get()
         self.assertEqual(submission, report.submission)
+
+
+@temp_private_root()
+class SubmissionReportCoSignTests(TestCase):
+    def test_cosign_data_included(self):
+        report = SubmissionReportFactory.create(
+            content="",
+            submission__completed=True,
+            submission__co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "fields": {
+                    "voornaam": "Tina",
+                    "geslachtsnaam": "Shikari",
+                },
+                "representation": "T. Shikari",
+            },
+        )
+
+        rendered: str = report.generate_submission_report_pdf()
+
+        report.refresh_from_db()
+        self.assertTrue(report.content.name.endswith(".pdf"))
+        expected = format_html(
+            """
+            <tr>
+                <td class="table-cell-key">{key}</td>
+                <td>T. Shikari</td>
+            </tr>
+            """,
+            key=_("Co-signed by"),
+        )
+        self.assertInHTML(expected, rendered, count=1)

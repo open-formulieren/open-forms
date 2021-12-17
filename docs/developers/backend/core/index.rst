@@ -38,3 +38,4 @@ same thing twice.
    submissions
    utils
    tokens
+   testing-tools

@@ -9,11 +9,11 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
-from django.shortcuts import render
 from django.template import Context, Template
+from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -328,6 +328,7 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         self.bsn = ""
         self.kvk = ""
+        self.pseudo = ""
         for submission_step in self.submissionstep_set.select_related(
             "form_step", "form_step__form_definition"
         ).select_for_update():
@@ -336,6 +337,17 @@ class Submission(models.Model):
             submission_step.data.update(removed_data)
             submission_step.save()
         self._is_cleaned = True
+
+        if self.co_sign_data:
+            # We do keep the representation, as that is used in PDF and confirmation e-mail
+            # generation and is usually a label derived from the source fields.
+            self.co_sign_data.update(
+                {
+                    "identifier": "",
+                    "fields": {},
+                }
+            )
+
         self.save()
 
     def load_execution_state(self) -> SubmissionState:
@@ -557,6 +569,12 @@ class Submission(models.Model):
                 # more here? like getComponentValue() in the SDK?
                 printable_data[label] = printable_value
 
+        # finally, check if we have co-sign information to append
+        if self.co_sign_data:
+            if not (co_signer := self.co_sign_data.get("representation", "")):
+                logger.warning("Incomplete co-sign data for submission %s", self.uuid)
+            printable_data[gettext("Co-signed by")] = co_signer
+
         return printable_data
 
     def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
@@ -694,19 +712,24 @@ class SubmissionReport(models.Model):
     def __str__(self):
         return self.title
 
-    def generate_submission_report_pdf(self) -> None:
+    def generate_submission_report_pdf(self) -> str:
+        """
+        Generate the submission report as a PDF.
+
+        :return: string with the HTML used for the PDF generation, so that contents
+          can be tested.
+        """
         form = self.submission.form
         printable_data = self.submission.get_printable_data()
 
-        html_report = render(
-            request=None,
-            template_name="report/submission_report.html",
+        html_report = render_to_string(
+            "report/submission_report.html",
             context={
                 "form": form,
                 "submission_data": printable_data,
                 "submission": self.submission,
             },
-        ).content.decode("utf8")
+        )
 
         html_object = HTML(string=html_report)
         pdf_report = html_object.write_pdf()
@@ -716,6 +739,7 @@ class SubmissionReport(models.Model):
             name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
         )
         self.save()
+        return html_report
 
     def get_celery_task(self) -> Optional[AsyncResult]:
         if not self.task_id:
