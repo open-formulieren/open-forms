@@ -234,6 +234,11 @@
     "description": "Move down icon title",
     "originalDefault": "Move down"
   },
+  "Dwnqdq": {
+    "defaultMessage": "Advanced Logic",
+    "description": "Advanced logic fieldset title",
+    "originalDefault": "Advanced Logic"
+  },
   "DxGKNm": {
     "defaultMessage": "Logic",
     "description": "Logic fieldset title",
