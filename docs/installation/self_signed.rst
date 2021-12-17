@@ -63,3 +63,19 @@ example:
 
 Of course, you will need to adapt this solution to your deployment method (Helm,
 Kubernetes, single-server...).
+
+PKIO
+----
+
+The Dutch government uses a CA-certificate which is not publicaly trusted. You
+will need to add the so called PKIO G1 private root certificate.
+
+1. Download the G1 certificate ("Stamcertificaat") from 
+   `pkioverheid.nl/ <https://www.pkioverheid.nl/>`__
+2. Convert it from the binary X.509 encoding (DER) to the base64 encoding (CRT)
+
+   .. code-block:: bash
+
+      openssl x509 -inform DER -in PrivateRootCA-G1.crt -out PrivateRootCA-G1.crt
+
+3. Make sure it's added as ``EXTRA_VERIFY_CERTS``. See above for instructions.
