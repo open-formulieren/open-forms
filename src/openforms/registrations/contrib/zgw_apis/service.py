@@ -88,6 +88,7 @@ def create_document(
         "status": options["status"],
         "bestandsnaam": options["filename"],
         "beschrijving": options["description"],
+        "indicatieGebruiksrecht": False,
     }
     if "vertrouwelijkheidaanduiding" in options:
         data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
