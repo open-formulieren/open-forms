@@ -29,4 +29,8 @@ $logic-line-breakpoint: 1800px !default;
     padding-top: 7px;
     flex-grow: 0;
   }
+
+  &__json-editor {
+    flex-grow: 1;
+  }
 }

@@ -1,0 +1,9 @@
+@import '~microscope-sass/lib/color';
+
+
+.json-widget {
+  &__error {
+    @include color-danger;
+    padding-top: 0.5em;
+  }
+}
