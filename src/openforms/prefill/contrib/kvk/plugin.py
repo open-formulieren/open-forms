@@ -9,7 +9,7 @@ from requests import RequestException
 from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.kvk.client import KVKClient, KVKClientError
+from openforms.contrib.kvk.client import KVKClientError, KVKProfileClient
 from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
@@ -25,9 +25,6 @@ logger = logging.getLogger(__name__)
 class KVK_KVKNumberPrefill(BasePlugin):
     verbose_name = _("KvK Company by KvK number")
 
-    # the KVK api also supports lookup by RSIN and branchNumber but we only support kvkNumber
-    query_param = "kvkNummer"
-    submission_attr = "kvk"
     requires_auth = AuthAttribute.kvk
 
     def get_available_attributes(self):
@@ -37,53 +34,55 @@ class KVK_KVKNumberPrefill(BasePlugin):
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
-        if not self.get_submission_attr(submission):
+        if not submission.kvk:
             return {}
 
-        client = KVKClient()
+        client = KVKProfileClient()
 
         try:
-            results = client.query(
-                **{self.get_query_param(): self.get_submission_attr(submission)}
-            )
+            result = client.query(submission.kvk)
         except (RequestException, ClientError, KVKClientError):
             return {}
 
-        data = self.select_item(results["resultaten"])
-        if not data:
-            return {}
+        self.modify_result(result)
 
         values = dict()
         for attr in attributes:
             try:
-                values[attr] = glom(data, attr)
+                values[attr] = glom(result, attr)
             except GlomError:
                 logger.warning(
                     f"missing expected attribute '{attr}' in backend response"
                 )
         return values
 
-    def select_item(self, items):
+    @classmethod
+    def modify_result(cls, result):
+        # move the desired item from the unordered list to a know place
+        address = cls.select_address(result["adressen"], "bezoekadres")
+        if address:
+            result["bezoekadres"] = address
+        address = cls.select_address(result["adressen"], "correspondentieadres")
+        if address:
+            result["correspondentieadres"] = address
+
+    @classmethod
+    def select_address(cls, items, type_):
         if not items:
             return None
         for item in items:
-            if item.get("type") == "hoofdvestiging":
+            if item.get("type") == type_:
                 return item
-        return items[0]
-
-    def get_submission_attr(self, submission):
-        assert self.submission_attr
-        return getattr(submission, self.submission_attr)
-
-    def get_query_param(self):
-        assert self.query_param
-        return self.query_param
+        for item in items:
+            # take the first
+            return item
+        return None
 
     def check_config(self):
         check_kvk = "68750110"
         try:
-            client = KVKClient()
-            results = client.query(kvkNummer=check_kvk)
+            client = KVKProfileClient()
+            result = client.query(check_kvk)
         except KVKClientError as e:
             raise InvalidPluginConfiguration(
                 _("Configuration error: {exception}").format(exception=e)
@@ -97,12 +96,9 @@ class KVK_KVKNumberPrefill(BasePlugin):
             # pass it on
             raise
         else:
-            if not isinstance(results, dict):
+            if not isinstance(result, dict):
                 raise InvalidPluginConfiguration(_("Response not a dictionary"))
-            items = results.get("resultaten")
-            if not items or not isinstance(items, list):
-                raise InvalidPluginConfiguration(_("Response does not contain results"))
-            num = items[0].get("kvkNummer", None)
+            num = result.get("kvkNummer", None)
             if num != check_kvk:
                 raise InvalidPluginConfiguration(
                     _("Did not find kvkNummer='{kvk}' in results").format(check_kvk)

@@ -13,8 +13,11 @@ from ..plugin import KVK_KVKNumberPrefill
 
 class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_defined_attributes_paths_resolve(self):
-        data = self.load_json_mock("companies.json")
-        data = data["resultaten"][0]
+        data = self.load_json_mock("basisprofiel_hoofdvestiging.json")
+
+        # apply transform
+        KVK_KVKNumberPrefill.modify_result(data)
+
         for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
             # TODO support array elements
             if "[]" in key:
@@ -27,30 +30,34 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(
+            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+        )
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
             status_code=200,
-            json=self.load_json_mock("companies.json"),
+            json=self.load_json_mock("basisprofiel_hoofdvestiging.json"),
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.straatnaam, Attributes.plaats],
+            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
         )
         expected = {
-            "straatnaam": "Abebe Bikilalaan",
-            "plaats": "Amsterdam",
+            "bezoekadres.straatnaam": "string",
+            "kvkNummer": "69599084",
         }
         self.assertEqual(values, expected)
 
     @requests_mock.Mocker()
     def test_get_prefill_values_404(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(
+            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+        )
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
             status_code=404,
         )
 
@@ -58,16 +65,18 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.straatnaam, Attributes.plaats],
+            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
         )
         expected = {}
         self.assertEqual(values, expected)
 
     @requests_mock.Mocker()
     def test_get_prefill_values_500(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(
+            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+        )
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
             status_code=500,
         )
 
@@ -75,7 +84,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         submission = SubmissionFactory(kvk="69599084")
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.straatnaam, Attributes.plaats],
+            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
         )
         expected = {}
         self.assertEqual(values, expected)

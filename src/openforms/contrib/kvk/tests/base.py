@@ -16,9 +16,12 @@ class KVKTestMixin:
         super().setUpTestData()
 
         config = KVKConfig.get_solo()
-        service = ServiceFactory(
+        config.service = ServiceFactory(
             api_root="https://companies/",
             oas="https://companies/api/schema/openapi.yaml",
         )
-        config.service = service
+        config.profiles = ServiceFactory(
+            api_root="https://hoofdvestiging/",
+            oas="https://hoofdvestiging/schema/openapi.yaml",
+        )
         config.save()
