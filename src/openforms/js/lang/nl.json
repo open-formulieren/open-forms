@@ -224,6 +224,11 @@
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
+  "CtjZFq": {
+    "defaultMessage": "Submission allowed",
+    "description": "Form submissionAllowed field label",
+    "originalDefault": "Submission allowed"
+  },
   "DGpAyT": {
     "defaultMessage": "Verplaats omlaag",
     "description": "Move down icon title",
@@ -278,11 +283,6 @@
     "defaultMessage": "Selecteer betaalprovider backend",
     "description": "Payment backend label",
     "originalDefault": "Select payment backend"
-  },
-  "GWkSOd": {
-    "defaultMessage": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren.",
-    "description": "Form canSubmit field help text",
-    "originalDefault": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
   },
   "Gc7gu3": {
     "defaultMessage": "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
@@ -449,6 +449,16 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "QXfH7G": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+  },
+  "QaPqxz": {
+    "defaultMessage": "No (with overview page)",
+    "description": "option \"no_with_overview\" of \"submission_allowed\"",
+    "originalDefault": "No (with overview page)"
+  },
   "Qr2wnR": {
     "defaultMessage": "Betaalprovider backendopties",
     "description": "Payment backend options label",
@@ -554,6 +564,11 @@
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
   },
+  "a4gS07": {
+    "defaultMessage": "No (without overview page)",
+    "description": "option \"no_without_overview\" of \"submission_allowed\"",
+    "originalDefault": "No (without overview page)"
+  },
   "a9RqmQ": {
     "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
     "description": "Form step slug field help text",
@@ -658,6 +673,11 @@
     "defaultMessage": "Opslaan en opnieuw bewerken",
     "description": "Admin save and continue editing submit button",
     "originalDefault": "Save and continue editing"
+  },
+  "h/tRGs": {
+    "defaultMessage": "Yes",
+    "description": "option \"yes\" of \"submission_allowed\"",
+    "originalDefault": "Yes"
   },
   "h1EURI": {
     "defaultMessage": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -768,11 +788,6 @@
     "defaultMessage": "Voeg actie toe",
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
-  },
-  "pd8iHF": {
-    "defaultMessage": "Inzenden mogelijk",
-    "description": "Form canSubmit field label",
-    "originalDefault": "Submit button enabled"
   },
   "piUWzT": {
     "defaultMessage": "Registratiemethode",

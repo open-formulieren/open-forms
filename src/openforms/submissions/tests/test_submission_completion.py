@@ -18,6 +18,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
     FormPriceLogicFactory,
@@ -63,7 +64,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 "incompleteSteps": [
                     {"formStep": f"http://testserver{form_step_url}"},
                 ],
-                "canSubmit": True,
+                "submissionAllowed": SubmissionAllowedChoices.yes,
             },
         )
 
@@ -190,8 +191,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertTrue(submission.is_completed)
 
-    def test_submit_form_with_submission_disabled(self):
-        submission = SubmissionFactory.create(form__can_submit=False)
+    def test_submit_form_with_submission_disabled_with_overview(self):
+        submission = SubmissionFactory.create(
+            form__submission_allowed=SubmissionAllowedChoices.no_with_overview
+        )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
@@ -201,7 +204,29 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response_data = response.json()
         self.assertEqual(
             response_data,
-            {"incompleteSteps": [], "canSubmit": False},
+            {
+                "incompleteSteps": [],
+                "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
+            },
+        )
+
+    def test_submit_form_with_submission_disabled_without_overview(self):
+        submission = SubmissionFactory.create(
+            form__submission_allowed=SubmissionAllowedChoices.no_without_overview
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(
+            response_data,
+            {
+                "incompleteSteps": [],
+                "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
+            },
         )
 
 

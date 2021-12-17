@@ -186,7 +186,7 @@ class FormSerializer(serializers.ModelSerializer):
             "is_deleted",
             "submission_confirmation_template",
             "explanation_template",
-            "can_submit",
+            "submission_allowed",
             "submissions_removal_options",
             "confirmation_email_template",
             "confirmation_email_option",

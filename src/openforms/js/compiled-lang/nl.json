@@ -317,6 +317,12 @@
       "value": "Selecteer de toegestane authenticatie-plugins om in te loggen aan het begin van het formulier."
     }
   ],
+  "CtjZFq": [
+    {
+      "type": 0,
+      "value": "Submission allowed"
+    }
+  ],
   "DGpAyT": [
     {
       "type": 0,
@@ -381,12 +387,6 @@
     {
       "type": 0,
       "value": "Selecteer betaalprovider backend"
-    }
-  ],
-  "GWkSOd": [
-    {
-      "type": 0,
-      "value": "Indien aangevinkt, dan kunnen inzendingen ingestuurd worden. Vink dit uit voor beslisboomformulieren."
     }
   ],
   "Gc7gu3": [
@@ -595,6 +595,18 @@
       "value": "'Opslaan' tekst"
     }
   ],
+  "QXfH7G": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+    }
+  ],
+  "QaPqxz": [
+    {
+      "type": 0,
+      "value": "No (with overview page)"
+    }
+  ],
   "Qr2wnR": [
     {
       "type": 0,
@@ -737,6 +749,12 @@
       "value": "'Vorige' tekst"
     }
   ],
+  "a4gS07": [
+    {
+      "type": 0,
+      "value": "No (without overview page)"
+    }
+  ],
   "a9RqmQ": [
     {
       "type": 0,
@@ -861,6 +879,12 @@
     {
       "type": 0,
       "value": "Opslaan en opnieuw bewerken"
+    }
+  ],
+  "h/tRGs": [
+    {
+      "type": 0,
+      "value": "Yes"
     }
   ],
   "h1EURI": [
@@ -997,12 +1021,6 @@
     {
       "type": 0,
       "value": "Voeg actie toe"
-    }
-  ],
-  "pd8iHF": [
-    {
-      "type": 0,
-      "value": "Inzenden mogelijk"
     }
   ],
   "piUWzT": [

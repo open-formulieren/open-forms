@@ -224,6 +224,11 @@
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
+  "CtjZFq": {
+    "defaultMessage": "Submission allowed",
+    "description": "Form submissionAllowed field label",
+    "originalDefault": "Submission allowed"
+  },
   "DGpAyT": {
     "defaultMessage": "Move down",
     "description": "Move down icon title",
@@ -278,11 +283,6 @@
     "defaultMessage": "Select payment backend",
     "description": "Payment backend label",
     "originalDefault": "Select payment backend"
-  },
-  "GWkSOd": {
-    "defaultMessage": "If checked, the user can submit the form. Uncheck this for 'decision' trees.",
-    "description": "Form canSubmit field help text",
-    "originalDefault": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
   },
   "Gc7gu3": {
     "defaultMessage": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
@@ -449,6 +449,16 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "QXfH7G": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+  },
+  "QaPqxz": {
+    "defaultMessage": "No (with overview page)",
+    "description": "option \"no_with_overview\" of \"submission_allowed\"",
+    "originalDefault": "No (with overview page)"
+  },
   "Qr2wnR": {
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
@@ -554,6 +564,11 @@
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
   },
+  "a4gS07": {
+    "defaultMessage": "No (without overview page)",
+    "description": "option \"no_without_overview\" of \"submission_allowed\"",
+    "originalDefault": "No (without overview page)"
+  },
   "a9RqmQ": {
     "defaultMessage": "Slug of the form definition used in this form step",
     "description": "Form step slug field help text",
@@ -658,6 +673,11 @@
     "defaultMessage": "Save and continue editing",
     "description": "Admin save and continue editing submit button",
     "originalDefault": "Save and continue editing"
+  },
+  "h/tRGs": {
+    "defaultMessage": "Yes",
+    "description": "option \"yes\" of \"submission_allowed\"",
+    "originalDefault": "Yes"
   },
   "h1EURI": {
     "defaultMessage": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration.",
@@ -768,11 +788,6 @@
     "defaultMessage": "Add action",
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
-  },
-  "pd8iHF": {
-    "defaultMessage": "Submit button enabled",
-    "description": "Form canSubmit field label",
-    "originalDefault": "Submit button enabled"
   },
   "piUWzT": {
     "defaultMessage": "Select registration backend",

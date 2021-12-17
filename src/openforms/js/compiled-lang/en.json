@@ -313,6 +313,12 @@
       "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
+  "CtjZFq": [
+    {
+      "type": 0,
+      "value": "Submission allowed"
+    }
+  ],
   "DGpAyT": [
     {
       "type": 0,
@@ -377,12 +383,6 @@
     {
       "type": 0,
       "value": "Select payment backend"
-    }
-  ],
-  "GWkSOd": [
-    {
-      "type": 0,
-      "value": "If checked, the user can submit the form. Uncheck this for 'decision' trees."
     }
   ],
   "Gc7gu3": [
@@ -591,6 +591,18 @@
       "value": "Save text"
     }
   ],
+  "QXfH7G": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+    }
+  ],
+  "QaPqxz": [
+    {
+      "type": 0,
+      "value": "No (with overview page)"
+    }
+  ],
   "Qr2wnR": [
     {
       "type": 0,
@@ -733,6 +745,12 @@
       "value": "Previous text"
     }
   ],
+  "a4gS07": [
+    {
+      "type": 0,
+      "value": "No (without overview page)"
+    }
+  ],
   "a9RqmQ": [
     {
       "type": 0,
@@ -857,6 +875,12 @@
     {
       "type": 0,
       "value": "Save and continue editing"
+    }
+  ],
+  "h/tRGs": [
+    {
+      "type": 0,
+      "value": "Yes"
     }
   ],
   "h1EURI": [
@@ -993,12 +1017,6 @@
     {
       "type": 0,
       "value": "Add action"
-    }
-  ],
-  "pd8iHF": [
-    {
-      "type": 0,
-      "value": "Submit button enabled"
     }
   ],
   "piUWzT": [
