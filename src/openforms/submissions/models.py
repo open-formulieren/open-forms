@@ -339,6 +339,8 @@ class Submission(models.Model):
         self._is_cleaned = True
 
         if self.co_sign_data:
+            # We do keep the representation, as that is used in PDF and confirmation e-mail
+            # generation and is usually a label derived from the source fields.
             self.co_sign_data.update(
                 {
                     "identifier": "",

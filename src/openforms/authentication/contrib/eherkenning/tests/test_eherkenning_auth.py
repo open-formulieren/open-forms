@@ -318,7 +318,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             follow=True,
         )
 
-        # form that auto-submits to DigiD
+        # form that auto-submits to eHerkenning
         self.assertEqual(start_response.status_code, 200)
         relay_state = furl(start_response.context["form"].initial["RelayState"])
         self.assertIn(CO_SIGN_PARAMETER, relay_state.args)

@@ -321,7 +321,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             follow=True,
         )
 
-        # form that auto-submits to DigiD
+        # form that auto-submits to eIDAS
         self.assertEqual(start_response.status_code, 200)
         relay_state = furl(start_response.context["form"].initial["RelayState"])
         self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
@@ -341,7 +341,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
         "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
         return_value=True,
     )
-    def test_return_with_samlart_from_eherkenning(
+    def test_return_with_samlart_from_eidas(
         self,
         m,
         mock_verification,
