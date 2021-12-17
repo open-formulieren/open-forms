@@ -50,7 +50,7 @@ export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDele
                 let errors = [...response.data.invalidParams].map((err, _) => {
                     return {
                         ...err,
-                        name: `${fieldPrefix}.${index}.${err.name}`,
+                        name: '.'.join([fieldPrefix, index, err.name]),
                     };
                 });
                 throw new ValidationErrors(

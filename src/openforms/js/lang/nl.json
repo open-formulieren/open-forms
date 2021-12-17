@@ -144,6 +144,11 @@
     "description": "Form step save text field help text",
     "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
+  "9N67XB": {
+    "defaultMessage": "Invalid JSON syntax",
+    "description": "Advanced logic rule invalid json message",
+    "originalDefault": "Invalid JSON syntax"
+  },
   "9bGp7h": {
     "defaultMessage": "Actief",
     "description": "Form active field label",
@@ -553,6 +558,11 @@
     "defaultMessage": "Onderwerp",
     "description": "Confirmation Email Subject label",
     "originalDefault": "Subject"
+  },
+  "XOgJDS": {
+    "defaultMessage": "Invalid JSON logic expression",
+    "description": "Advanced logic rule invalid JSON-logic message",
+    "originalDefault": "Invalid JSON logic expression"
   },
   "YQ/Vx0": {
     "defaultMessage": "Opslaan",

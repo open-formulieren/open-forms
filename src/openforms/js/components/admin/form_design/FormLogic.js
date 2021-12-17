@@ -148,6 +148,7 @@ Rule.propTypes = {
     isAdvanced: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    errors: PropTypes.object,
 };
 
 

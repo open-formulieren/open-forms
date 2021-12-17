@@ -1,14 +1,25 @@
 import React, {useState} from 'react';
 import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
+import {useIntl} from 'react-intl';
 
 import {TextArea} from '../../forms/Inputs';
 import DataPreview from './DataPreview';
 
 
 const JsonWidget = ({name, logic, onChange}) => {
+    const intl = useIntl();
     const [jsonError, setJsonError] = useState('');
     const [editorValue, setEditorValue] = useState(JSON.stringify(logic));
+
+    const invalidSyntaxMessage = intl.formatMessage({
+        description: 'Advanced logic rule invalid json message',
+        defaultMessage: 'Invalid JSON syntax',
+    });
+    const invalidLogicMessage = intl.formatMessage({
+        description: 'Advanced logic rule invalid JSON-logic message',
+        defaultMessage: 'Invalid JSON logic expression',
+    });
 
     const onJsonChange = (event) => {
         const newValue = event.target.value;
@@ -21,7 +32,7 @@ const JsonWidget = ({name, logic, onChange}) => {
             updatedJson = JSON.parse(newValue);
         } catch (error) {
             if (error instanceof SyntaxError) {
-                setJsonError('Invalid JSON syntax');
+                setJsonError(invalidSyntaxMessage);
                 return;
             } else {
                 throw error;
@@ -29,7 +40,7 @@ const JsonWidget = ({name, logic, onChange}) => {
         }
 
         if (!jsonLogic.is_logic(updatedJson)) {
-            setJsonError('Invalid JSON logic expression');
+            setJsonError(invalidLogicMessage);
             return;
         }
 
