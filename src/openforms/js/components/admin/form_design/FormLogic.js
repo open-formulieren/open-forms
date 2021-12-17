@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 
@@ -8,6 +8,7 @@ import {ComponentsContext} from '../forms/Context';
 import ActionSet from './logic/ActionSet';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
+import {ValidationErrorContext} from '../forms/ValidationErrors';
 
 
 const EMPTY_RULE = {
@@ -16,6 +17,23 @@ const EMPTY_RULE = {
     jsonLogicTrigger: {},
     isAdvanced: false,
     actions: [],
+};
+
+const parseValidationErrors = (errors) => {
+    let parsedErrors = {};
+    for (const [errorName, errorReason] of errors) {
+        const errorNameBits = errorName.split('.');
+        if (errorNameBits[0] === 'logicRules') {
+            const ruleIndex = Number(errorNameBits[1]);
+            if (parsedErrors[ruleIndex]) {
+                parsedErrors[ruleIndex][errorNameBits[2]] = errorReason;
+            } else {
+                parsedErrors[ruleIndex] = {};
+                parsedErrors[ruleIndex][errorNameBits[2]] = errorReason;
+            }
+        }
+    }
+    return parsedErrors;
 };
 
 
@@ -56,6 +74,7 @@ FormLogic.propTypes = {
 
 
 const FormLogicRules = ({rules, advanced, onAdd, onChange, onDelete}) => {
+    const validationErrors = parseValidationErrors(useContext(ValidationErrorContext));
     return (
         <>
             {
@@ -67,6 +86,7 @@ const FormLogicRules = ({rules, advanced, onAdd, onChange, onDelete}) => {
                                 {...rule}
                                 onChange={onChange.bind(null, i)}
                                 onDelete={onDelete.bind(null, i)}
+                                errors={validationErrors[i]}
                             />
                         );
                     }
@@ -98,7 +118,7 @@ FormLogicRules.propTypes = {
 };
 
 
-const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete}) => {
+const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors={}}) => {
     const intl = useIntl();
     const deleteConfirmMessage = intl.formatMessage({
         description: 'Logic rule deletion confirm message',
@@ -113,7 +133,7 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete}) => {
             <div className="logic-rule__rule">
                 {
                     isAdvanced
-                    ? (<AdvancedTrigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange}/>)
+                    ? (<AdvancedTrigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} error={errors['jsonLogicTrigger']}/>)
                     : (<Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />)
                 }
                 <ActionSet name="actions" actions={actions} onChange={onChange} />

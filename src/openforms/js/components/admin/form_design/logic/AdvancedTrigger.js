@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import jsonLogic from 'json-logic-js';
+import PropTypes from 'prop-types';
 
 import {TextArea} from '../../forms/Inputs';
 import DataPreview from './DataPreview';
@@ -55,14 +56,24 @@ const JsonWidget = ({name, logic, onChange}) => {
     );
 };
 
+JsonWidget.propTypes = {
+    name: PropTypes.string.isRequired,
+    logic: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+};
 
 
-const AdvancedTrigger = ({ name, logic, onChange }) => {
+const AdvancedTrigger = ({ name, logic, onChange, error }) => {
 
     return (
         <div className="logic-trigger">
             <div className="logic-trigger__json-editor">
                 <JsonWidget name={name} logic={logic} onChange={onChange}/>
+                {
+                    error
+                    ? <div className="logic-trigger__error">{error}</div>
+                    : null
+                }
             </div>
             <div className="logic-trigger__data-preview">
                 <DataPreview data={logic} />
@@ -70,5 +81,13 @@ const AdvancedTrigger = ({ name, logic, onChange }) => {
         </div>
     );
 };
+
+AdvancedTrigger.propTypes = {
+    name: PropTypes.string.isRequired,
+    logic: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+    error: PropTypes.string,
+};
+
 
 export default AdvancedTrigger;

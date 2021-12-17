@@ -144,6 +144,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     submissionsRemovalOptions: 'submission-removal-options',
     literals: 'literals',
     explanationTemplate: 'form',
+    logicRules: 'logic-rules',
 };
 
 
@@ -480,6 +481,8 @@ function reducer(draft, action) {
                 let key;
                 // literals are tracked separately in the state
                 if (fieldPrefix === 'form' && fieldName === 'literals') {
+                    key = err.name;
+                } else if (fieldPrefix === 'logic-rules') {
                     key = err.name;
                 } else {
                     key = `${fieldPrefix}.${err.name}`;
@@ -827,8 +830,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 payload: createdRules,
             });
         } catch (e) {
-            console.error(e);
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            dispatch({
+                type: 'PROCESS_VALIDATION_ERRORS',
+                payload: {
+                    fieldPrefix: 'logic-rules',
+                    errors: e.errors,
+                },
+            });
             window.scrollTo(0, 0);
             return;
         }
@@ -929,7 +937,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
                         <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                     <Tab>

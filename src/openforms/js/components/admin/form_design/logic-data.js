@@ -1,4 +1,5 @@
-import {post, put, apiDelete} from '../../../utils/fetch';
+import {post, put, apiDelete, ValidationErrors} from '../../../utils/fetch';
+import {LOGICS_ENDPOINT} from './constants';
 
 /**
  * Generic collection of rules saving.
@@ -12,6 +13,7 @@ import {post, put, apiDelete} from '../../../utils/fetch';
  * @return {Array}                     Array of newly created rules
  */
 export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete) => {
+    const fieldPrefix = endpoint === LOGICS_ENDPOINT ? 'logicRules' : 'priceRules';
     // updating and creating rules
     const updateOrCreatePromises = Promise.all(
         rules.map(rule => {
@@ -44,8 +46,21 @@ export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDele
     const createdRules = [];
     updateOrCreateResponses.forEach( (response, index) => {
         if (!response.ok) {
-            // TODO: include more information -> which rule was it etc.
-            throw new Error('An error occurred while saving the form logic.');
+            if (response.status === 400) {
+                let errors = [...response.data.invalidParams].map((err, _) => {
+                    return {
+                        ...err,
+                        name: `${fieldPrefix}.${index}.${err.name}`,
+                    };
+                });
+                throw new ValidationErrors(
+                    'Invalid logic rule',
+                    errors,
+                );
+            } else {
+                // TODO: include more information -> which rule was it etc.
+                throw new Error('An error occurred while saving the form logic.');
+            }
         }
         const rule = rules[index];
         if (!rule.uuid) {
