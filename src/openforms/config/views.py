@@ -9,6 +9,7 @@ from django.views.generic import TemplateView
 # from openforms.appointments.registry import register as appointments_register
 from openforms.appointments.checks import check_configs as check_appointment_configs
 from openforms.config.data import Entry
+from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
@@ -49,6 +50,14 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                 {
                     "name": _("Address lookup plugins"),
                     "entries": self.get_address_entries(),
+                },
+            ]
+
+        if _subset_match(module, "validators"):
+            sections += [
+                {
+                    "name": _("Validator plugins"),
+                    "entries": [check_kvk_remote_validator()],
                 },
             ]
 
