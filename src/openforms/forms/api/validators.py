@@ -115,10 +115,10 @@ class JsonLogicTriggerComponentValidator:
 
         # executes if the break was not hit
         else:
-            error = serializers.ValidationError(
-                self.default_message, code=self.default_code
+            raise serializers.ValidationError(
+                detail={self.trigger_field: self.default_message},
+                code=self.default_code,
             )
-            raise serializers.ValidationError({self.trigger_field: error})
 
 
 class FormIOComponentsValidator:
