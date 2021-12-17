@@ -392,8 +392,9 @@ function reducer(draft, action) {
          */
         case 'ADD_RULE': {
             const {form: {url}} = draft;
+            const emptyRule = action.payload;
             draft.logicRules.push({
-                ...EMPTY_RULE,
+                ...emptyRule,
                 form: url
             });
             break;
@@ -1024,17 +1025,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
-                        <FormStepsContext.Provider value={state.formSteps}>
-                            <FormLogic
-                                logicRules={state.logicRules}
-                                availableComponents={availableComponents}
-                                onChange={onRuleChange}
-                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                                onAdd={() => dispatch({type: 'ADD_RULE'})}
-                            />
-                        </FormStepsContext.Provider>
-                    </Fieldset>
+                    <FormStepsContext.Provider value={state.formSteps}>
+                        <FormLogic
+                            logicRules={state.logicRules}
+                            availableComponents={availableComponents}
+                            onChange={onRuleChange}
+                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                            onAdd={(rule) => dispatch({type: 'ADD_RULE', payload: rule})}
+                        />
+                    </FormStepsContext.Provider>
                 </TabPanel>
 
                 <TabPanel>
