@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0007_form_explanation_template"),
+        ("forms", "0010_remove_form_can_submit"),
     ]
 
     operations = [
