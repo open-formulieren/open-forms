@@ -403,6 +403,14 @@ function reducer(draft, action) {
         case 'CHANGED_RULE': {
             const {index, name, value} = action.payload;
             draft.logicRules[index][name] = value;
+
+            // Remove the validation error for the updated field
+            draft.validationErrors = draft.validationErrors.filter(([key]) => !(key === `logicRules.${index}.${name}`));
+            // Update the error badge in the tabs
+            const logicRulesErrors = draft.validationErrors.filter(([key]) => key.startsWith('logicRules'));
+            if (!logicRulesErrors.length) {
+                draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']);
+            }
             break;
         }
         case 'DELETED_RULE': {
