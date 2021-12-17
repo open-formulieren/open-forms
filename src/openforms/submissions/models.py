@@ -560,10 +560,6 @@ class Submission(models.Model):
                 fmt = lambda v: fmt_date(parse_date(v), "SHORT_DATE_FORMAT")
                 printable_data[label] = self._join_mapped(fmt, info["value"])
 
-            elif info["type"] == "datetime":
-                fmt = lambda v: fmt_date(parse_datetime(v), "SHORT_DATETIME_FORMAT")
-                printable_data[label] = self._join_mapped(fmt, info["value"])
-
             elif info["type"] == "selectboxes":
                 selected_values: Dict[str, bool] = info["value"]
                 selected_labels = [

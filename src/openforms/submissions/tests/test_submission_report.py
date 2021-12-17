@@ -144,22 +144,6 @@ class DownloadSubmissionReportTests(APITestCase):
                         "label": "Test date 2",
                         "multiple": True,
                     },
-                    {
-                        "key": "datetime0",
-                        "type": "datetime",
-                        "label": "Test datetime 0",
-                    },
-                    {
-                        "key": "datetime1",
-                        "type": "datetime",
-                        "label": "Test datetime 1",
-                    },
-                    {
-                        "key": "datetime2",
-                        "type": "datetime",
-                        "label": "Test datetime 2",
-                        "multiple": True,
-                    },
                 ]
             }
         )
@@ -171,8 +155,6 @@ class DownloadSubmissionReportTests(APITestCase):
                 "select1": "testOption2",
                 "date1": "2022-01-02",
                 "date2": ["2022-01-02", "2022-02-03"],
-                "datetime1": "2022-01-02T12:34:56Z",
-                "datetime2": ["2022-01-02T12:34:56Z", "2022-02-03T12:34:56Z"],
             },
             submission=submission,
             form_step=form_step,
@@ -185,8 +167,6 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test Select", "Test Option 2"),
             ("Test date 1", "2-1-2022"),
             ("Test date 2", "2-1-2022, 3-2-2022"),
-            ("Test datetime 1", "2-1-2022 12:34"),
-            ("Test datetime 2", "2-1-2022 12:34, 3-2-2022 12:34"),
         ]
         for label, value in values:
             with self.subTest(label):
@@ -195,7 +175,6 @@ class DownloadSubmissionReportTests(APITestCase):
 
         not_values = [
             "Test date 0",
-            "Test datetime 0",
         ]
         for label in not_values:
             with self.subTest(label):
