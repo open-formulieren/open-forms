@@ -18,7 +18,6 @@ from django.conf import settings
 
 import requests
 
-from openforms import setup
 from openforms.setup import load_self_signed_certs
 
 from .utils import can_connect
@@ -39,7 +38,9 @@ class SelfSignedCertificateTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        setup._certs_initialized = False
+        cls._original_requests_ca = os.environ.get("REQUESTS_CA_BUNDLE")
+        if "REQUESTS_CA_BUNDLE" in os.environ:
+            del os.environ["REQUESTS_CA_BUNDLE"]
         cls._original_certs = os.environ.get(EXTRA_CERTS_ENVVAR)
         os.environ[EXTRA_CERTS_ENVVAR] = cls.root_cert
         load_self_signed_certs()
@@ -52,6 +53,9 @@ class SelfSignedCertificateTests(TestCase):
             del os.environ[EXTRA_CERTS_ENVVAR]
         else:
             os.environ[EXTRA_CERTS_ENVVAR] = cls._original_certs
+
+        if cls._original_requests_ca is not None:
+            os.environ["REQUESTS_CA_BUNDLE"] = cls._original_requests_ca
 
     @skipIf(not can_connect(HOST), "Can't connect to host")
     def test_self_signed_ok(self):

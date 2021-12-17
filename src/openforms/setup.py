@@ -24,8 +24,6 @@ from dotenv import load_dotenv
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
-_certs_initialized = False
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,7 +43,7 @@ def setup_env():
 
 
 def load_self_signed_certs() -> None:
-    global _certs_initialized
+    _certs_initialized = bool(os.environ.get("REQUESTS_CA_BUNDLE"))
     if _certs_initialized:
         return
 
