@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import capfirst
 from django.test import TestCase
 from django.utils.translation import gettext as _
@@ -5,11 +6,13 @@ from django.utils.translation import gettext as _
 from freezegun import freeze_time
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging import logevent
 from openforms.logging.models import AVGTimelineLogProxy
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -22,6 +25,17 @@ class TimelineLogProxyTests(TestCase):
         log = TimelineLogProxyFactory.create(content_object=submission)
         self.assertTrue(log.is_submission)
 
+        # generic foreign key is messy
+        log = TimelineLogProxyFactory.create(
+            content_type=ContentType.objects.get_for_model(Submission), object_id=None
+        )
+        self.assertFalse(log.is_submission)
+        self.assertEqual(log.fmt_sub, "")
+
+        log = TimelineLogProxyFactory.create(content_type=None, object_id=1)
+        self.assertFalse(log.is_submission)
+        self.assertEqual(log.fmt_sub, "")
+
     def test_is_form(self):
         log = TimelineLogProxyFactory.create(content_object=None)
         self.assertFalse(log.is_form)
@@ -29,6 +43,17 @@ class TimelineLogProxyTests(TestCase):
         form = FormFactory.create()
         log = TimelineLogProxyFactory.create(content_object=form)
         self.assertTrue(log.is_form)
+
+        # generic foreign key is messy
+        log = TimelineLogProxyFactory.create(
+            content_type=ContentType.objects.get_for_model(Form), object_id=None
+        )
+        self.assertFalse(log.is_form)
+        self.assertEqual(log.fmt_form, "")
+
+        log = TimelineLogProxyFactory.create(content_type=None, object_id=1)
+        self.assertFalse(log.is_form)
+        self.assertEqual(log.fmt_form, "")
 
     def test_get_formatted_fields(self):
         submission = SubmissionFactory.from_components(

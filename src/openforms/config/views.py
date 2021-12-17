@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from django.conf import settings
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -12,10 +13,14 @@ from openforms.payments.registry import register as payments_register
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.registry import register as registrations_register
+from openforms.utils.mixins import UserIsStaffMixin
 
 
-class ConfigurationView(TemplateView):
+class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView):
     template_name = "admin/config/overview.html"
+    permission_required = [
+        "accounts.configuration_overview",
+    ]
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)

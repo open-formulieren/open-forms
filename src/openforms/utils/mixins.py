@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 from drf_jsonschema import to_jsonschema
 
 from openforms.api.utils import underscore_to_camel
@@ -33,3 +35,8 @@ class JsonSchemaSerializerMixin:
         json_schema = to_jsonschema(cls())
         json_schema = _camelize_required(json_schema)
         return json_schema
+
+
+class UserIsStaffMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff

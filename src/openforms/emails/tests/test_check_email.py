@@ -5,6 +5,7 @@ from unittest.mock import patch
 from urllib.parse import quote
 
 from django.conf import settings
+from django.contrib.auth.models import Permission
 from django.core import mail
 from django.template.defaultfilters import yesno
 from django.test import TestCase, override_settings
@@ -168,28 +169,39 @@ class CheckEmailSettingsFunctionTests(TestCase):
 
 @disable_2fa
 class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
-    def test_requires_staff(self):
+    def setUp(self):
+        super().setUp()
+        self.permission = Permission.objects.get(codename="email_backend_test")
+
+    def test_requires_auth(self):
         url = reverse("admin_email_test")
         redirect_url = f"{settings.LOGIN_URL}?next={quote(url)}"
 
         with self.subTest("anon"):
-            response = self.app.get(url, status=302)
+            response = self.app.get(url, status=302)  # to login
             self.assertRedirects(response, redirect_url)
 
         with self.subTest("user"):
             user = UserFactory(app=self.app)
             self.app.set_user(user)
-            response = self.app.get(url, status=302)
+            response = self.app.get(url, status=302)  # to login
             self.assertRedirects(response, redirect_url)
 
         with self.subTest("staff"):
             user = StaffUserFactory(app=self.app)
+            self.app.set_user(user)
+            response = self.app.get(url, status=403)  # no perms
+
+        with self.subTest("staff with permission"):
+            user = StaffUserFactory(app=self.app)
+            user.user_permissions.add(self.permission)
             self.app.set_user(user)
             response = self.app.get(url, status=200)
 
     def test_run_check_pass(self):
         url = reverse("admin_email_test")
         user = StaffUserFactory(app=self.app)
+        user.user_permissions.add(self.permission)
         self.app.set_user(user)
         response = self.app.get(url, status=200)
 
@@ -227,6 +239,7 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
 
             url = reverse("admin_email_test")
             user = StaffUserFactory(app=self.app)
+            user.user_permissions.add(self.permission)
             self.app.set_user(user)
             response = self.app.get(url, status=200)
 

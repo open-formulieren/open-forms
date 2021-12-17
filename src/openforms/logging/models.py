@@ -73,11 +73,11 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def is_submission(self) -> bool:
-        return bool(self.content_type == ContentType.objects.get_for_model(Submission))
+        return isinstance(self.content_object, Submission)
 
     @property
     def is_form(self) -> bool:
-        return bool(self.content_type == ContentType.objects.get_for_model(Form))
+        return isinstance(self.content_object, Form)
 
     @property
     def fmt_plugin(self) -> str:

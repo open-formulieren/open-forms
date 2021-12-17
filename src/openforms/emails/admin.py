@@ -1,7 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
+from ..utils.mixins import UserIsStaffMixin
 from .connection_check import check_email_backend
 from .forms import ConfirmationEmailTemplateForm, EmailTestForm
 from .models import ConfirmationEmailTemplate
@@ -12,10 +14,13 @@ class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
     form = ConfirmationEmailTemplateForm
 
 
-class EmailTestAdminView(FormView):
+class EmailTestAdminView(UserIsStaffMixin, PermissionRequiredMixin, FormView):
     form_class = EmailTestForm
     template_name = "admin/emails/connection_check.html"
     title = _("Email connection test")
+    permission_required = [
+        "accounts.email_backend_test",
+    ]
 
     def get_context_data(self, **kwargs):
         kwargs.setdefault("title", self.title)
