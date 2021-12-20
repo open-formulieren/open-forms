@@ -10,10 +10,12 @@ import {LOGICS_ENDPOINT} from './constants';
  * @param  {string} csrftoken          Cross-Site Request Forgery token value
  * @param  {Array}  rules         Array of rules to create or update, desired state
  * @param  {Array}  rulesToDelete Array of rules to delete in the backend
+ * @param  {String} rulePrefix Prefix that will be used to format errors (differentiates between logic and price rules)
  * @return {Array}                     Array of newly created rules
  */
-export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete) => {
-    const fieldPrefix = endpoint === LOGICS_ENDPOINT ? 'logicRules' : 'priceRules';
+export const saveRules = async (
+    endpoint, formUrl, csrftoken, rules, rulesToDelete, rulePrefix
+) => {
     // updating and creating rules
     const updateOrCreatePromises = Promise.all(
         rules.map(rule => {
@@ -50,7 +52,7 @@ export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDele
                 let errors = [...response.data.invalidParams].map((err, _) => {
                     return {
                         ...err,
-                        name: [fieldPrefix, index, err.name].join('.'),
+                        name: [rulePrefix, index, err.name].join('.'),
                     };
                 });
                 throw new ValidationErrors(

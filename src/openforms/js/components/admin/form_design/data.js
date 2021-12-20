@@ -150,6 +150,7 @@ const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete
         csrftoken,
         logicRules,
         logicRulesToDelete,
+        'logicRules',
     );
     return createdRules;
 };
@@ -162,6 +163,7 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
         csrftoken,
         priceRules,
         priceRulesToDelete,
+        'priceRules',
     );
     return createdRules;
 };
