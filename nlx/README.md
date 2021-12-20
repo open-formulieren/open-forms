@@ -26,13 +26,14 @@ git submodule update --init  # First time only
 Next, open `docker-compose.yml` and find the `postgres` service. Remove the `ports`
 configuration completely, as it will conflict with your local PostgreSQL instance.
 
-The included certificates are expired, at the time of writing. Please follow the docs
-in [`nlx-try-me/pki/README.md`](./nlx-try-me/pki/README.md) to re-generate the
-intermediate and host certificate. Note that you need to install the `cfssl` tooling
-if you don't have it yet.
+The included certificates are expired, at the time of writing. Please go to the 
+`nlx-try-me` folder and follow the docs in 
+[`nlx-try-me/pki/README.md`](./nlx-try-me/pki/README.md) to re-generate the intermediate
+and host certificate. Note that you need to install the `cfssl` tooling if you don't 
+have it yet.
 
-Finally, we need to generate our own local certificates. This has been scripted as much
-as possible:
+Finally, go back to the `nlx` folder and generate your own local certificates. Follow
+the directions presented by the script:
 
 ```bash
 ./obtain-certs.sh
@@ -50,7 +51,7 @@ sudo chmod go-rwx nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
 
 ## Running the NLX stack
 
-Navigate to this directory and start the components using docker-compose:
+Navigate to this (`nlx`) directory and start the components using docker-compose:
 
 ```bash
 docker-compose up
