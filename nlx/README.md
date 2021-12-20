@@ -1,11 +1,12 @@
 # NLX support
 
-[NLX][NLX] integration is optional, but available.
+[NLX][NLX] integration is optional.
 
 This directory contains the docker-compose tooling and instructions on how to enable
 NLX on the demo network and connect Open Forms services with it.
 
-Ensure you are in the Open Forms repository `nlx` directory for any steps dcumented here:
+Ensure you are in the Open Forms repository `nlx` directory for any steps documented
+here:
 
 ```bash
 cd nlx
@@ -29,6 +30,13 @@ The included certificates are expired, at the time of writing. Please follow the
 in [`nlx-try-me/pki/README.md`](./nlx-try-me/pki/README.md) to re-generate the
 intermediate and host certificate. Note that you need to install the `cfssl` tooling
 if you don't have it yet.
+
+Finally, we need to generate our own local certificates. This has been scripted as much
+as possible:
+
+```bash
+./obtain-certs.sh
+```
 
 **Fixing the permissions**
 
@@ -59,6 +67,23 @@ the lines of:
 
 ```
 nlx outway: invalid /serialNumber/service/ url: valid organization serial numbers : [01632483782218484652, 01634811383832203175, 01636643885025837843, 01637938919941400046, 12345678901234567890, 12345678901234567891]
+```
+
+## Inspecting the directory
+
+After obtaining the certificates, we can also inspect the services offered on the
+demo directory by running the included python script:
+
+```bash
+./main.py
+```
+
+Note that this uses the generated organization certificates from the set-up and you
+may have to fix the ownership of the key value if your local system user does not have
+`UID: 1000`:
+
+```bash
+sudo chown $UID ./certs/org.key
 ```
 
 ## Updating the NLX stack
