@@ -3050,6 +3050,10 @@ components:
             $ref: '#/components/schemas/LogicComponentAction'
           description: Actions triggered when the trigger expression evaluates to
             'truthy'.
+        isAdvanced:
+          type: boolean
+          description: Is this an advanced rule (the admin user manually wrote the
+            trigger as JSON)?
       required:
       - actions
       - form
@@ -3654,6 +3658,10 @@ components:
             $ref: '#/components/schemas/LogicComponentAction'
           description: Actions triggered when the trigger expression evaluates to
             'truthy'.
+        isAdvanced:
+          type: boolean
+          description: Is this an advanced rule (the admin user manually wrote the
+            trigger as JSON)?
     PatchedFormPriceLogic:
       type: object
       properties:

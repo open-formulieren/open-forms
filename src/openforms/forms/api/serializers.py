@@ -612,7 +612,7 @@ class FormLogicSerializer(FormLogicBaseSerializer):
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
-        fields = FormLogicBaseSerializer.Meta.fields + ("actions",)
+        fields = FormLogicBaseSerializer.Meta.fields + ("actions", "is_advanced")
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {

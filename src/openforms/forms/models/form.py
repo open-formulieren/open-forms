@@ -373,3 +373,10 @@ class FormLogic(models.Model):
         verbose_name=_("actions"),
         help_text=_("Which action(s) to perform if the JSON logic evaluates to true."),
     )
+    is_advanced = models.BooleanField(
+        verbose_name=_("is advanced"),
+        help_text=_(
+            "Is this an advanced rule (the admin user manually wrote the trigger as JSON)?"
+        ),
+        default=False,
+    )

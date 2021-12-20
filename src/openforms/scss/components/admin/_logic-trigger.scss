@@ -1,4 +1,5 @@
 @import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/color';
 
 $logic-line-breakpoint: 1800px !default;
 
@@ -28,5 +29,20 @@ $logic-line-breakpoint: 1800px !default;
     max-width: 800px;
     padding-top: 7px;
     flex-grow: 0;
+  }
+
+  &__json-editor {
+    flex-grow: 1;
+  }
+
+  &__json-editor--error {
+    textarea {
+      border-color: $color-danger;
+    }
+  }
+
+  &__error {
+    @include color-danger;
+    padding-top: 0.5em;
   }
 }

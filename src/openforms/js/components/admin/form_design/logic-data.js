@@ -1,4 +1,5 @@
-import {post, put, apiDelete} from '../../../utils/fetch';
+import {post, put, apiDelete, ValidationErrors} from '../../../utils/fetch';
+import {LOGICS_ENDPOINT} from './constants';
 
 /**
  * Generic collection of rules saving.
@@ -9,9 +10,12 @@ import {post, put, apiDelete} from '../../../utils/fetch';
  * @param  {string} csrftoken          Cross-Site Request Forgery token value
  * @param  {Array}  rules         Array of rules to create or update, desired state
  * @param  {Array}  rulesToDelete Array of rules to delete in the backend
+ * @param  {String} rulePrefix Prefix that will be used to format errors (differentiates between logic and price rules)
  * @return {Array}                     Array of newly created rules
  */
-export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete) => {
+export const saveRules = async (
+    endpoint, formUrl, csrftoken, rules, rulesToDelete, rulePrefix
+) => {
     // updating and creating rules
     const updateOrCreatePromises = Promise.all(
         rules.map(rule => {
@@ -44,8 +48,21 @@ export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDele
     const createdRules = [];
     updateOrCreateResponses.forEach( (response, index) => {
         if (!response.ok) {
-            // TODO: include more information -> which rule was it etc.
-            throw new Error('An error occurred while saving the form logic.');
+            if (response.status === 400) {
+                let errors = [...response.data.invalidParams].map((err, _) => {
+                    return {
+                        ...err,
+                        name: [rulePrefix, index, err.name].join('.'),
+                    };
+                });
+                throw new ValidationErrors(
+                    'Invalid logic rule',
+                    errors,
+                );
+            } else {
+                // TODO: include more information -> which rule was it etc.
+                throw new Error('An error occurred while saving the form logic.');
+            }
         }
         const rule = rules[index];
         if (!rule.uuid) {

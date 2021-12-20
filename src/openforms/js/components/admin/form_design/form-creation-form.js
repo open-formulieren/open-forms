@@ -144,6 +144,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
     submissionsRemovalOptions: 'submission-removal-options',
     literals: 'literals',
     explanationTemplate: 'form',
+    logicRules: 'logic-rules',
 };
 
 
@@ -392,8 +393,11 @@ function reducer(draft, action) {
          */
         case 'ADD_RULE': {
             const {form: {url}} = draft;
+            const ruleOverrides = action.payload;
+
             draft.logicRules.push({
                 ...EMPTY_RULE,
+                ...ruleOverrides,
                 form: url
             });
             break;
@@ -401,6 +405,14 @@ function reducer(draft, action) {
         case 'CHANGED_RULE': {
             const {index, name, value} = action.payload;
             draft.logicRules[index][name] = value;
+
+            // Remove the validation error for the updated field
+            draft.validationErrors = draft.validationErrors.filter(([key]) => !(key === `logicRules.${index}.${name}`));
+            // Update the error badge in the tabs
+            const logicRulesErrors = draft.validationErrors.filter(([key]) => key.startsWith('logicRules'));
+            if (!logicRulesErrors.length) {
+                draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']);
+            }
             break;
         }
         case 'DELETED_RULE': {
@@ -479,6 +491,8 @@ function reducer(draft, action) {
                 let key;
                 // literals are tracked separately in the state
                 if (fieldPrefix === 'form' && fieldName === 'literals') {
+                    key = err.name;
+                } else if (fieldPrefix === 'logic-rules') {
                     key = err.name;
                 } else {
                     key = `${fieldPrefix}.${err.name}`;
@@ -826,8 +840,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 payload: createdRules,
             });
         } catch (e) {
-            console.error(e);
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            dispatch({
+                type: 'PROCESS_VALIDATION_ERRORS',
+                payload: {
+                    fieldPrefix: 'logic-rules',
+                    errors: e.errors,
+                },
+            });
             window.scrollTo(0, 0);
             return;
         }
@@ -928,7 +947,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
                         <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
                     </Tab>
-                    <Tab>
+                    <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
                         <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
                     </Tab>
                     <Tab>
@@ -1024,17 +1043,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
-                        <FormStepsContext.Provider value={state.formSteps}>
-                            <FormLogic
-                                logicRules={state.logicRules}
-                                availableComponents={availableComponents}
-                                onChange={onRuleChange}
-                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                                onAdd={() => dispatch({type: 'ADD_RULE'})}
-                            />
-                        </FormStepsContext.Provider>
-                    </Fieldset>
+                    <FormStepsContext.Provider value={state.formSteps}>
+                        <FormLogic
+                            logicRules={state.logicRules}
+                            availableComponents={availableComponents}
+                            onChange={onRuleChange}
+                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                            onAdd={(ruleOverrides) => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+                        />
+                    </FormStepsContext.Provider>
                 </TabPanel>
 
                 <TabPanel>
