@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./camunda/0001-init-db.sh:/docker-entrypoint-initdb.d/0001-init-db.sh
+      - postgres-data:/var/lib/postgresql/data
+
+  camunda:
+    build:
+      context: ./camunda
+      args:
+        BASE_VERSION: '7.16.0'
+    image: openformulieren/camunda
+    environment:
+      - DB_DRIVER=org.postgresql.Driver
+      - DB_URL=jdbc:postgresql://postgres:5432/camunda?sslmode=disable
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_VALIDATE_ON_BORROW="true"
+      - WAIT_FOR=postgres:5432
+    ports:
+      - "${CAMUNDA_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
