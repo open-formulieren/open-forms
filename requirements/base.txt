@@ -33,7 +33,6 @@ celery==4.4.7
     # via
     #   -r requirements/base.in
     #   celery-once
-    #   django-camunda
     #   flower
 certifi==2021.10.8
     # via
@@ -81,7 +80,7 @@ django-better-admin-arrayfield==1.4.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
-django-camunda==0.10.0
+django-camunda==0.11.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in

@@ -77,7 +77,6 @@ celery==4.4.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery-once
-    #   django-camunda
     #   flower
 certifi==2021.10.8
     # via
@@ -170,7 +169,7 @@ django-better-admin-arrayfield==1.4.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-django-camunda==0.10.0
+django-camunda==0.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
