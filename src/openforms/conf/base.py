@@ -150,6 +150,7 @@ INSTALLED_APPS = [
     "django_filters",
     "csp",
     "cspreports",
+    "django_camunda",
     # Project applications.
     "openforms.accounts",
     "openforms.appointments.apps.AppointmentsAppConfig",
