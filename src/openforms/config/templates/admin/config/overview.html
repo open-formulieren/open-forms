@@ -31,7 +31,7 @@
                         {% for entry in section.entries %}
                             <tr>
                                 <td><strong>{{ entry.name }}</strong></td>
-                                <td>{{ entry.status_icon }}{% if entry.status_message %} {{ entry.status_message }}{% endif %}</td>
+                                <td>{{ entry.status_icon }}{% if entry.status_message %} {{ entry.status_message|linebreaksbr }}{% endif %}</td>
                                 <td>
                                     {% for label, url in entry.actions %}
                                         {% if url %}
