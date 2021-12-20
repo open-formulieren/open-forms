@@ -224,6 +224,7 @@ django-privates==1.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   zgw-consumers
 django-redis==4.12.1
     # via
     #   -c requirements/base.txt
@@ -818,7 +819,7 @@ zeep==4.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.16.0
+zgw-consumers==0.17.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
