@@ -1,30 +1,11 @@
-import {Formio, Utils} from 'formiojs';
+import {Formio} from 'formiojs';
+
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 const Select = Formio.Components.components.select;
 
+
 const values = [
-    {
-        label: 'Widget Type',
-        key: 'widget',
-        type: 'select',
-        data: {
-            values: [
-                {
-                    value: 'choicesjs',
-                    label: 'Dropdown with search'
-                },
-                {
-                    value: 'html5',
-                    label: 'Native browser dropdown'
-                }
-            ]
-        },
-        dataSrc: 'values',
-        template: '<span>{{ item.label }}</span>',
-        input: true,
-        defaultValue: 'html5'
-    },
     {
         type: 'datagrid',
         input: true,
