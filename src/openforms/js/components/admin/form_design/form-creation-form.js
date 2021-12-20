@@ -393,9 +393,11 @@ function reducer(draft, action) {
          */
         case 'ADD_RULE': {
             const {form: {url}} = draft;
-            const emptyRule = action.payload;
+            const ruleOverrides = action.payload;
+
             draft.logicRules.push({
-                ...emptyRule,
+                ...EMPTY_RULE,
+                ...ruleOverrides,
                 form: url
             });
             break;
@@ -1047,7 +1049,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                             availableComponents={availableComponents}
                             onChange={onRuleChange}
                             onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                            onAdd={(rule) => dispatch({type: 'ADD_RULE', payload: rule})}
+                            onAdd={(ruleOverrides) => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
                         />
                     </FormStepsContext.Provider>
                 </TabPanel>

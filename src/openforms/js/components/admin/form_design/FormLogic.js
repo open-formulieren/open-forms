@@ -38,22 +38,36 @@ const parseValidationErrors = (errors) => {
 
 
 const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, onAdd }) => {
+    const filterLogicRules = (rules) => {
+        let basicRules = [];
+        let advancedRules = [];
+        rules.map((rule, index) => {
+           if (rule.isAdvanced) {
+               advancedRules.push([index, rule]);
+           } else {
+               basicRules.push([index, rule]);
+           }
+        });
+
+        return [basicRules, advancedRules];
+    };
+
+    const [basicLogicRules, advancedLogicRules] = filterLogicRules(logicRules);
+
     return (
         <ComponentsContext.Provider value={availableComponents}>
             <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
                 <FormLogicRules
-                    rules={logicRules}
-                    advanced={false}
-                    onAdd={onAdd}
+                    rules={basicLogicRules}
+                    onAdd={() => onAdd({isAdvanced: false})}
                     onChange={onChange}
                     onDelete={onDelete}
                 />
             </Fieldset>
             <Fieldset title={<FormattedMessage description="Advanced logic fieldset title" defaultMessage="Advanced Logic" />}>
                 <FormLogicRules
-                    rules={logicRules}
-                    advanced={true}
-                    onAdd={onAdd}
+                    rules={advancedLogicRules}
+                    onAdd={() => onAdd({isAdvanced: true})}
                     onChange={onChange}
                     onDelete={onDelete}
                 />
@@ -73,32 +87,28 @@ FormLogic.propTypes = {
 };
 
 
-const FormLogicRules = ({rules, advanced, onAdd, onChange, onDelete}) => {
+const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
     const validationErrors = parseValidationErrors(useContext(ValidationErrorContext));
     return (
         <>
             {
-                rules.map((rule, i) => {
-                    if (rule.isAdvanced === advanced) {
-                        return (
-                            <Rule
-                                key={i}
-                                {...rule}
-                                onChange={onChange.bind(null, i)}
-                                onDelete={onDelete.bind(null, i)}
-                                errors={validationErrors[i]}
-                            />
-                        );
-                    }
+                rules.map(([index, rule], _) => {
+                    return (
+                        <Rule
+                            key={index}
+                            {...rule}
+                            onChange={onChange.bind(null, index)}
+                            onDelete={onDelete.bind(null, index)}
+                            errors={validationErrors[index]}
+                        />
+                    );
                 })
             }
             <div className="button-container button-container--padded">
                 <button
                     type="button"
                     className="button button--plain"
-                    onClick={() => {
-                        onAdd({...EMPTY_RULE, isAdvanced: advanced});
-                    }}
+                    onClick={onAdd}
                 >
                     <span className="addlink">
                         <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
@@ -110,8 +120,7 @@ const FormLogicRules = ({rules, advanced, onAdd, onChange, onDelete}) => {
 };
 
 FormLogicRules.propTypes = {
-    rules:  PropTypes.arrayOf(PropTypes.object).isRequired,
-    advanced: PropTypes.bool.isRequired,
+    rules:  PropTypes.arrayOf(PropTypes.array).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -124,6 +133,9 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors
         description: 'Logic rule deletion confirm message',
         defaultMessage: 'Are you sure you want to delete this rule?',
     });
+
+    const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
+
     return (
         <div className="logic-rule">
             <div className="logic-rule__actions">
@@ -131,11 +143,12 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors
             </div>
 
             <div className="logic-rule__rule">
-                {
-                    isAdvanced
-                    ? (<AdvancedTrigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} error={errors['jsonLogicTrigger']}/>)
-                    : (<Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange} />)
-                }
+                <TriggerComponent
+                    name="jsonLogicTrigger"
+                    logic={jsonLogicTrigger}
+                    onChange={onChange}
+                    error={errors.jsonLogicTrigger}
+                />
                 <ActionSet name="actions" actions={actions} onChange={onChange} />
             </div>
         </div>
