@@ -10,7 +10,7 @@ ROOT_CERT=https://certportal.demo.nlx.io/root.crt
 
 # this DNS entry does not exist (yet) as we will not be setting up an inway. The CN
 # does not have to resolve for an outway.
-COMMON_NAME=inway.open-forms.test.maykin.opengem.nl
+COMMON_NAME=inway.example.com
 
 cd certs
 
