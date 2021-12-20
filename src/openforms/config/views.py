@@ -16,6 +16,12 @@ from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
 
 
+def _subset_match(requested: str, checking: str) -> bool:
+    if not requested:
+        return True
+    return requested == checking
+
+
 class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView):
     template_name = "admin/config/overview.html"
     permission_required = [
@@ -26,27 +32,37 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         context = super().get_context_data(**kwargs)
         sections = []
 
+        # undocumented query string support - helps for developers ;)
+        module = self.request.GET.get("module")
+
         # add custom non-generic
-        sections += [
-            {
-                "name": _("Appointment plugins"),
-                "entries": check_appointment_configs(),
-            },
-            {
-                "name": _("Address lookup plugins"),
-                "entries": self.get_address_entries(),
-            },
-        ]
+        if _subset_match(module, "appointments"):
+            sections += [
+                {
+                    "name": _("Appointment plugins"),
+                    "entries": check_appointment_configs(),
+                }
+            ]
+
+        if _subset_match(module, "address_lookup"):
+            sections += [
+                {
+                    "name": _("Address lookup plugins"),
+                    "entries": self.get_address_entries(),
+                },
+            ]
 
         # Iterate over all plugin registries.
         plugin_registries = [
             # (_("Appointment plugins"), appointments_register),
-            (_("Registration plugins"), registrations_register),
-            (_("Prefill plugins"), prefill_register),
-            (_("Payment plugins"), payments_register),
+            ("registrations", _("Registration plugins"), registrations_register),
+            ("prefill", _("Prefill plugins"), prefill_register),
+            ("payments", _("Payment plugins"), payments_register),
         ]
 
-        for name, register in plugin_registries:
+        for registry_module, name, register in plugin_registries:
+            if not _subset_match(module, registry_module):
+                continue
             sections.append(
                 {
                     "name": name,
@@ -66,6 +82,18 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                 yield self.get_plugin_entry(plugin)
 
     def get_plugin_entry(self, plugin: Any) -> Entry:
+        # undocumented query string support - helps for developers ;)
+        requested_plugin = self.request.GET.get("plugin")
+        if hasattr(plugin, "identifier") and not _subset_match(
+            requested_plugin, plugin.identifier
+        ):
+            return Entry(
+                name=plugin.verbose_name,
+                status=None,
+                status_message=_("Skipped"),
+                actions=[],
+            )
+
         try:
             plugin.check_config()
         except InvalidPluginConfiguration as e:
