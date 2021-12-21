@@ -168,4 +168,5 @@ FormRjsfWrapper.propTypes = {
 };
 
 
+export {CustomFieldTemplate};
 export default FormRjsfWrapper;
