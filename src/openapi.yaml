@@ -1516,6 +1516,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/RegistrationPlugin'
           description: ''
+  /api/v1/registration/plugins/camunda/process-definitions:
+    get:
+      operationId: registration_plugins_camunda_process_definitions_list
+      description: List the available process definitions & their versions.
+      summary: List available Camunda process definitions
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessDefinition'
+          description: ''
   /api/v1/submissions:
     get:
       operationId: submissions_list
@@ -3834,6 +3852,26 @@ components:
             getoond wanneer de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid.
       required:
       - requiresPrivacyConsent
+    ProcessDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+          description: The process definition identifier, used to group different
+            versions.
+        name:
+          type: string
+          description: The human-readable name of the process definition.
+        version:
+          type: integer
+          description: The version identifier relative to the 'key'.
+      required:
+      - id
+      - key
+      - name
+      - version
     Product:
       type: object
       properties:
