@@ -23,7 +23,7 @@ class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer
         help_text=_("The process definition for which to start a process instance."),
     )
     # TODO: get choices from django-camunda
-    process_definition_version = serializers.CharField(
+    process_definition_version = serializers.IntegerField(
         required=False,
         help_text=_(
             "Which version of the process definition to start. The latest version is "
