@@ -92,6 +92,10 @@ class AuthenticationBasePlugin(BasePlugin):
 
         return HttpResponseRedirect(form_url)
 
+    @property
+    def is_enabled(self) -> bool:
+        return "metadata_file" in settings.EHERKENNING
+
 
 @register("eherkenning")
 class EHerkenningAuthentication(AuthenticationBasePlugin):

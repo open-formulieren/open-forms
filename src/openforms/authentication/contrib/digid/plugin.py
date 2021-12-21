@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
@@ -86,3 +87,7 @@ class DigidAuthentication(BasePlugin):
             image_src=request.build_absolute_uri(static("img/digid-46x46.png")),
             href="https://www.digid.nl/",
         )
+
+    @property
+    def is_enabled(self) -> bool:
+        return "metadata_file" in settings.DIGID
