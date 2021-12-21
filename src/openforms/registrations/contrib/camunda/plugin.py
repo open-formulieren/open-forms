@@ -29,6 +29,7 @@ class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer
             "Which version of the process definition to start. The latest version is "
             "used if not specified."
         ),
+        allow_null=True,
     )
     # TODO: derived_variables, variables_to_include (from component keys) - might have
     # to be done in react alltogether
@@ -37,6 +38,7 @@ class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer
 @register("camunda")
 class CamundaRegistration(BasePlugin):
     verbose_name = _("Camunda")
+    configuration_options = CamundaOptionsSerializer
 
     def register_submission(
         self, submission: Submission, options: dict
