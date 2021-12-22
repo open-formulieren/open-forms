@@ -155,7 +155,7 @@ class StufZDSRegistration(BasePlugin):
         if submission.public_registration_reference:
             zaak_data.update({"kenmerken": [submission.public_registration_reference]})
 
-        client.create_zaak(zaak_id, zaak_data, extra_data)
+        client.create_zaak(zaak_id, zaak_data, extra_data, submission.payment_required)
 
         doc_id = client.create_document_identificatie()
 
@@ -190,8 +190,8 @@ class StufZDSRegistration(BasePlugin):
 
     def update_payment_status(self, submission: "Submission", options: dict):
         config = StufZDSConfig.get_solo()
-        client = config.get_client(submission.form.registration_backend_options)
-
+        config.apply_defaults_to(options)
+        client = config.get_client(options)
         client.set_zaak_payment(submission.registration_result["zaak"])
 
     def check_config(self):
