@@ -236,6 +236,9 @@ class Plugin(BasePlugin):
             # missing. This would include the product descriptions but now we
             # need to make an additional call to get those.
             details = self.client.service.getGovAppointmentDetails(appID=identifier)
+            if details is None:
+                raise AppointmentException("No appointment details could be retrieved.")
+
             location = self.client.service.getGovLocationDetails(
                 locationID=details.locationID
             )
