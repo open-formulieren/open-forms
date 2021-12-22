@@ -10,11 +10,11 @@ from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
-from django.template.defaultfilters import date as fmt_date
+from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_datetime
+from django.utils.dateparse import parse_date, parse_time
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -557,7 +557,12 @@ class Submission(models.Model):
                     printable_data[label] = _("empty")
 
             elif info["type"] == "date":
-                fmt = lambda v: fmt_date(parse_date(v), "SHORT_DATE_FORMAT")
+                fmt = lambda v: fmt_date(parse_date(v))
+                printable_data[label] = self._join_mapped(fmt, info["value"])
+
+            elif info["type"] == "time":
+                # strip off the seconds
+                fmt = lambda v: fmt_time(parse_time(v))
                 printable_data[label] = self._join_mapped(fmt, info["value"])
 
             elif info["type"] == "selectboxes":

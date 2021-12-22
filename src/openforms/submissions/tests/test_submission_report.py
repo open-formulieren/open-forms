@@ -103,6 +103,7 @@ class DownloadSubmissionReportTests(APITestCase):
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
+    @override_settings(LANGUAGE_CODE="nl")
     def test_submission_printable_data(self):
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
@@ -144,6 +145,11 @@ class DownloadSubmissionReportTests(APITestCase):
                         "label": "Test date 2",
                         "multiple": True,
                     },
+                    {
+                        "key": "time0",
+                        "type": "time",
+                        "label": "Test time 1",
+                    },
                 ]
             }
         )
@@ -155,6 +161,7 @@ class DownloadSubmissionReportTests(APITestCase):
                 "select1": "testOption2",
                 "date1": "2022-01-02",
                 "date2": ["2022-01-02", "2022-02-03"],
+                "time0": "17:30:00",
             },
             submission=submission,
             form_step=form_step,
@@ -165,8 +172,9 @@ class DownloadSubmissionReportTests(APITestCase):
         values = [
             ("Test Radio", "Test Option 1"),
             ("Test Select", "Test Option 2"),
-            ("Test date 1", "2-1-2022"),
-            ("Test date 2", "2-1-2022, 3-2-2022"),
+            ("Test date 1", "2 januari 2022"),
+            ("Test date 2", "2 januari 2022, 3 februari 2022"),
+            ("Test time 1", "17:30"),
         ]
         for label, value in values:
             with self.subTest(label):
