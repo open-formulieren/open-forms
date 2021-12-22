@@ -3,7 +3,7 @@ import os.path
 import uuid
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from django.contrib.postgres.fields import JSONField
@@ -446,6 +446,8 @@ class Submission(models.Model):
                     # The select component has the values/labels nested in a 'data' field
                     "values": component.get("values")
                     or component.get("data", {}).get("values"),
+                    # appointments stuff...
+                    "appointments": component.get("appointments", {}),
                 }
 
         # now append remaining data that doesn't have a matching component
@@ -556,13 +558,18 @@ class Submission(models.Model):
                 else:
                     printable_data[label] = _("empty")
 
-            elif info["type"] == "date":
+            elif info["type"] == "date" or (
+                info.get("appointments", {}).get("showDates", False)
+            ):
                 fmt = lambda v: fmt_date(parse_date(v))
                 printable_data[label] = self._join_mapped(fmt, info["value"])
 
-            elif info["type"] == "time":
+            elif info["type"] == "time" or (
+                appointment_time := info.get("appointments", {}).get("showTimes", False)
+            ):
+                _parse_time = datetime.fromisoformat if appointment_time else parse_time
                 # strip off the seconds
-                fmt = lambda v: fmt_time(parse_time(v))
+                fmt = lambda v: fmt_time(_parse_time(v))
                 printable_data[label] = self._join_mapped(fmt, info["value"])
 
             elif info["type"] == "selectboxes":
