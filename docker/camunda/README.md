@@ -11,7 +11,7 @@ for production usage.
 Start a Camunda instance in your local environment from the parent directory:
 
 ```bash
-docker-compse -f docker-compose.camunda.yml up -d
+docker-compose -f docker-compose.camunda.yml up -d
 ```
 
 This brings up the database and Camunda stack. The Camunda cockpit is accessible on

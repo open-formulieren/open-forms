@@ -14,21 +14,21 @@ Camunda_ is a process engine using BPM models. Open Forms supports Camunda 7.x
 What does the Open Forms administator need?
 ===========================================
 
-The values for these parameters should be provided to the Open Forms
-administrator by the service provider.
+The values for these parameters should be provided to the Open Forms administrator by
+the service provider.
 
-============================  =======================================================================================
-Parameter                     Description
-============================  =======================================================================================
+==============================  =======================================================================================
+Parameter                       Description
+==============================  =======================================================================================
 **Camunda instance**
-Version                       7.x. 7.16 is actively tested, 7.12 and up are expected to work. Other 7.x versions *should* work.
-REST API root endpoint        The Camunda instance must expose its REST API on a URL reachable by Open Forms.
-Username                      Username for the REST API user (Basic Auth)
-Password                      Password for the REST API user (Basic Auth)
-**Permissions**
-List process definitions      Open Forms must be able to read the available process definitions to connect a form to a process.
-Start process instances       Open Forms must be able to start process instances of the selected process definition(s).
-============================  =======================================================================================
+Camunda root                    The domain where the Camunda instance runs.
+REST api path                   The path where the API of the above Camunda instance can be found.
+Username                        Username for the REST API user (Basic Auth)
+Password                        Password for the REST API user (Basic Auth)
+**Permissions within Camunda**
+List process definitions        Open Forms must be able to read the available process definitions to connect a form to a process.
+Start process instances         Open Forms must be able to start process instances of the selected process definition(s).
+==============================  =======================================================================================
 
 What does the service provider need?
 ====================================
