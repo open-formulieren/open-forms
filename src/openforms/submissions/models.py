@@ -122,6 +122,22 @@ def _get_config_field(field: str) -> str:
     return qs.first()
 
 
+def _get_values(value: Any, filter_func=bool) -> List[Any]:
+    """
+    Filter a single or multiple value into a list of acceptable values.
+    """
+    # normalize values into a list
+    if not isinstance(value, (list, tuple)):
+        value = [value]
+    return [item for item in value if filter_func(item)]
+
+
+def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
+    # filter and map a single or multiple value into a joined string
+    formatted_values = [formatter(x) for x in _get_values(value)]
+    return seperator.join(formatted_values)
+
+
 def get_default_bsn() -> str:
     default_test_bsn = _get_config_field("default_test_bsn")
     return default_test_bsn or ""
@@ -518,21 +534,6 @@ class Submission(models.Model):
         # TODO what if value is not a string? shouldn't it be passed through something to covert for display?
         return value
 
-    @staticmethod
-    def _get_values(value, filter_func=bool):
-        # filter a single or multiple value into a list of acceptable values
-        if isinstance(value, list):
-            return list(filter(filter_func, value))
-        elif not filter_func(value):
-            return []
-        else:
-            return [value]
-
-    @classmethod
-    def _join_mapped(cls, func, value, seperator=", "):
-        # filter and map a single or multiple value into a joined string
-        return seperator.join(map(func, cls._get_values(value)))
-
     def get_printable_data(
         self, limit_keys_to: Optional[List[str]] = None, use_merged_data_fallback=False
     ) -> Dict[str, str]:
@@ -561,16 +562,18 @@ class Submission(models.Model):
             elif info["type"] == "date" or (
                 info.get("appointments", {}).get("showDates", False)
             ):
-                fmt = lambda v: fmt_date(parse_date(v))
-                printable_data[label] = self._join_mapped(fmt, info["value"])
+                printable_data[label] = _join_mapped(
+                    lambda v: fmt_date(parse_date(v)), info["value"]
+                )
 
             elif info["type"] == "time" or (
                 appointment_time := info.get("appointments", {}).get("showTimes", False)
             ):
                 _parse_time = datetime.fromisoformat if appointment_time else parse_time
                 # strip off the seconds
-                fmt = lambda v: fmt_time(_parse_time(v))
-                printable_data[label] = self._join_mapped(fmt, info["value"])
+                printable_data[label] = _join_mapped(
+                    lambda v: fmt_time(_parse_time(v)), info["value"]
+                )
 
             elif info["type"] == "selectboxes":
                 selected_values: Dict[str, bool] = info["value"]
