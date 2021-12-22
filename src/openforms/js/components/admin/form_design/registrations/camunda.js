@@ -5,13 +5,11 @@ import {useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
 import {get} from '../../../../utils/fetch';
+import {PROCESS_DEFINITIONS_ENDPOINT} from '../constants';
 import Field from '../../forms/Field';
 import Select from '../../forms/Select';
 import {CustomFieldTemplate} from '../../RJSFWrapper';
 import Loader from '../../Loader';
-
-
-const PROCESS_DEFINITIONS_ENDPOINT = '/api/v1/registration/plugins/camunda/process-definitions';
 
 
 const useLoadProcessDefinitions = () => {
@@ -21,7 +19,7 @@ const useLoadProcessDefinitions = () => {
             const response = await get(PROCESS_DEFINITIONS_ENDPOINT);
             if (!response.ok) throw new Error(`Response status: ${response.status}`);
             return response.data;
-        }, [PROCESS_DEFINITIONS_ENDPOINT]
+        }, []
     );
 
     if (!loading && !error) {
@@ -97,6 +95,10 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                     description: 'Camunda \'process definition\' label'
                 })}
                 rawErrors={null} errors={null} // TODO
+                rawDescription={intl.formatMessage({
+                    description: 'Camunda \'process definition\' help text',
+                    defaultMessage: 'The process definition for which to start a process instance.'
+                })}
                 required
                 displayLabel
             >

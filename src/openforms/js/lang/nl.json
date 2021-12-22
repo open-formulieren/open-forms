@@ -49,6 +49,11 @@
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
   },
+  "2uIYst": {
+    "defaultMessage": "The process definition for which to start a process instance.",
+    "description": "Camunda 'process definition' help text",
+    "originalDefault": "The process definition for which to start a process instance."
+  },
   "2utbek": {
     "defaultMessage": "E-mailsjabloon",
     "description": "Form confirmation email label",
