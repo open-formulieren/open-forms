@@ -8,3 +8,6 @@ Testing tools
 
 .. automodule:: openforms.utils.tests.webtest_base
    :members:
+
+.. automodule:: openforms.utils.tests.test_migrations
+   :members:
