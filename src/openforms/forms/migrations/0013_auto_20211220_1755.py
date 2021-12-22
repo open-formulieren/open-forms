@@ -17,10 +17,6 @@ def remove_html5_widget_from_forms(apps, schema_editor):
     FormDefinition.objects.bulk_update(form_definitions, ["configuration"])
 
 
-def backward_function(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -28,5 +24,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(remove_html5_widget_from_forms, backward_function),
+        migrations.RunPython(remove_html5_widget_from_forms, migrations.RunPython.noop),
     ]
