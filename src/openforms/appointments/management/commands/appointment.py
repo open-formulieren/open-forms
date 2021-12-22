@@ -82,28 +82,50 @@ class Command(BaseCommand):
 
     def create_booking(self):
 
-        # Products
+        product_first = input("Want to select a product first? [Y/n] ") != "n"
 
-        available_products = self.client.get_available_products()
+        if product_first:
 
-        if not available_products:
-            self.stderr.write("No products found.")
-            return
+            # Products
+            available_products = self.client.get_available_products()
 
-        selected_products = self._show_options(
-            available_products, lambda x: x.name, "product", allow_multi=True
-        )
+            if not available_products:
+                self.stderr.write("No products found.")
+                return
 
-        # Locations
+            selected_products = self._show_options(
+                available_products, lambda x: x.name, "product", allow_multi=True
+            )
 
-        available_locations = self.client.get_locations(selected_products)
+            # Locations
+            available_locations = self.client.get_locations(selected_products)
 
-        selected_location = self._show_options(
-            available_locations, lambda x: x.name, "location"
-        )
+            selected_location = self._show_options(
+                available_locations, lambda x: x.name, "location"
+            )
+        else:
+
+            # Locations
+            available_locations = self.client.get_locations()
+
+            selected_location = self._show_options(
+                available_locations, lambda x: x.name, "location"
+            )
+
+            # Products
+            available_products = self.client.get_available_products(
+                location=selected_location
+            )
+
+            if not available_products:
+                self.stderr.write("No products found.")
+                return
+
+            selected_products = self._show_options(
+                available_products, lambda x: x.name, "product", allow_multi=True
+            )
 
         # Dates
-
         available_dates = self.client.get_dates(selected_products, selected_location)
 
         selected_date = self._show_options(
@@ -111,7 +133,6 @@ class Command(BaseCommand):
         )
 
         # Times
-
         available_times = self.client.get_times(
             selected_products, selected_location, selected_date
         )
@@ -121,11 +142,9 @@ class Command(BaseCommand):
         )
 
         # Customer
-
         customer = AppointmentClient(last_name="Doe", birthdate=date(1970, 1, 1))
 
         # Book
-
         booking_id = None
 
         self.stdout.write(

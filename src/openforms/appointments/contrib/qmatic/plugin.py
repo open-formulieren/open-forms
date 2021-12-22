@@ -38,11 +38,16 @@ class Plugin(BasePlugin):
     identifier = "Qmatic-Plugin"
     verbose_name = "Qmatic-Plugin"
 
+    supports_multiple_products = False
+    supports_products_by_location = True
+
     def __init__(self):
         self.client = QmaticClient()
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
+        self,
+        current_products: Optional[List[AppointmentProduct]] = None,
+        location: Optional[AppointmentLocation] = None,
     ) -> List[AppointmentProduct]:
         """
         Retrieve all available products and services to create an appointment for.
@@ -50,11 +55,26 @@ class Plugin(BasePlugin):
         NOTE: The API does not support making an appointment for multiple
         products. The ``current_products`` argument is ignored.
         """
+        if current_products:
+            logger.warning(
+                "Plugin %s does not support products by products.", self.identifier
+            )
+
         try:
-            response = self.client.get("services")
+            if location:
+                response = self.client.get(f"branches/{location.identifier}/services")
+            else:
+                response = self.client.get("services")
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
-            logger.exception("Could not retrieve available products", exc_info=e)
+            if not location:
+                logger.exception("Could not retrieve available products", exc_info=e)
+            else:
+                logger.exception(
+                    "Could not retrieve available products for location '%s'",
+                    location.identifier,
+                    exc_info=e,
+                )
             return []
         except Exception as exc:
             raise AppointmentException from exc
@@ -68,31 +88,36 @@ class Plugin(BasePlugin):
         ]
 
     def get_locations(
-        self, products: List[AppointmentProduct]
+        self, products: List[AppointmentProduct] = None
     ) -> List[AppointmentLocation]:
-        if len(products) > 1:
+        if products and len(products) > 1:
             logger.warning("Attempt to retrieve locations for more than one product.")
 
-        product_id = products[0].identifier
+        product_id = None
 
         try:
-            response = self.client.get(f"services/{product_id}/branches")
+            if products:
+                product_id = products[0].identifier
+                response = self.client.get(f"services/{product_id}/branches")
+            else:
+                response = self.client.get(f"branches")
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
-            logger.exception(
-                "Could not retrieve locations for product '%s'", product_id, exc_info=e
-            )
+            if product_id:
+                logger.exception(
+                    "Could not retrieve locations for product '%s'",
+                    product_id,
+                    exc_info=e,
+                )
+            else:
+                logger.exception("Could not retrieve locations", exc_info=e)
             return []
         except Exception as exc:
             raise AppointmentException from exc
 
-        # NOTE: Filter out locations that do not have a postal code to prevent
-        # non-physical addresses.
-
         return [
             AppointmentLocation(entry["publicId"], entry["name"])
             for entry in response.json()["branchList"]
-            if entry["addressZip"]
         ]
 
     def get_dates(

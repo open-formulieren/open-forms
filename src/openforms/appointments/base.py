@@ -77,10 +77,15 @@ class BasePlugin(AbstractBasePlugin):
     Base Appointment plugin.
     """
 
+    supports_multiple_products = False
+    supports_products_by_location = False
+
     configuration_options = EmptyOptions
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
+        self,
+        current_products: Optional[List[AppointmentProduct]] = None,
+        location: Optional[AppointmentLocation] = None,
     ) -> List[AppointmentProduct]:
         """
         Retrieve all available products and services to create an appointment for.
@@ -90,15 +95,16 @@ class BasePlugin(AbstractBasePlugin):
 
         :param current_products: List of :class:`AppointmentProduct`, as obtained from
           another :meth:`get_available_products` call.
+        :param location: A specific :class:`AppointmentLocation` to show products for.
         :returns: List of :class:`AppointmentProduct`
         """
         raise NotImplementedError()
 
     def get_locations(
-        self, products: List[AppointmentProduct]
+        self, products: List[AppointmentProduct] = None
     ) -> List[AppointmentLocation]:
         """
-        Retrieve all available locations for given ``products``.
+        Retrieve all available locations for given ``products``, if provided.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from
           :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`

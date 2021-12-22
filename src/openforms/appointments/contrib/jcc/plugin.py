@@ -42,12 +42,28 @@ class Plugin(BasePlugin):
     identifier = "JCC-Plugin"
     verbose_name = "JCC-Plugin"
 
+    supports_multiple_products = True
+    supports_products_by_location = False
+
     def __init__(self, wsdl):
         self.client = Client(wsdl)
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
+        self,
+        current_products: Optional[List[AppointmentProduct]] = None,
+        location: Optional[AppointmentLocation] = None,
     ) -> List[AppointmentProduct]:
+        """
+        Retrieve all available products and services to create an appointment for.
+
+        NOTE: The API does not support retrieving products for a specific location.
+        The ``location`` argument is ignored.
+        """
+        if location:
+            logger.warning(
+                "Plugin %s does not support products by location.", self.identifier
+            )
+
         try:
             if current_products:
                 current_product_ids = squash_ids(current_products)
@@ -70,20 +86,32 @@ class Plugin(BasePlugin):
         ]
 
     def get_locations(
-        self, products: List[AppointmentProduct]
+        self, products: List[AppointmentProduct] = None
     ) -> List[AppointmentLocation]:
-        product_ids = squash_ids(products)
+        product_ids = None
 
         try:
-            result = self.client.service.getGovLocationsForProduct(
-                productID=product_ids
-            )
+            if products:
+                product_ids = squash_ids(products)
+                result = self.client.service.getGovLocationsForProduct(
+                    productID=product_ids
+                )
+            else:
+                # The result here is different from getGovLocationsForProduct.
+                # We just fake that we get a proper LocationType here.
+                result = [
+                    {"locationID": l, "locationDesc": "dummy"}
+                    for l in self.client.service.getGovLocations()
+                ]
         except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve locations for products '%s'",
-                product_ids,
-                exc_info=e,
-            )
+            if product_ids:
+                logger.exception(
+                    "Could not retrieve locations for products '%s'",
+                    product_ids,
+                    exc_info=e,
+                )
+            else:
+                logger.exception("Could not retrieve locations", exc_info=e)
             return []
         except Exception as exc:
             raise AppointmentException from exc
