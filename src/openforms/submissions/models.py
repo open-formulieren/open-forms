@@ -3,16 +3,18 @@ import os.path
 import uuid
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
+from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_time
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -118,6 +120,22 @@ def _get_config_field(field: str) -> str:
     # hasn't fully migrated yet
     qs = GlobalConfiguration.objects.values_list(field, flat=True)
     return qs.first()
+
+
+def _get_values(value: Any, filter_func=bool) -> List[Any]:
+    """
+    Filter a single or multiple value into a list of acceptable values.
+    """
+    # normalize values into a list
+    if not isinstance(value, (list, tuple)):
+        value = [value]
+    return [item for item in value if filter_func(item)]
+
+
+def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
+    # filter and map a single or multiple value into a joined string
+    formatted_values = [formatter(x) for x in _get_values(value)]
+    return seperator.join(formatted_values)
 
 
 def get_default_bsn() -> str:
@@ -444,6 +462,8 @@ class Submission(models.Model):
                     # The select component has the values/labels nested in a 'data' field
                     "values": component.get("values")
                     or component.get("data", {}).get("values"),
+                    # appointments stuff...
+                    "appointments": component.get("appointments", {}),
                 }
 
         # now append remaining data that doesn't have a matching component
@@ -511,6 +531,7 @@ class Submission(models.Model):
         for possible_value in possible_values:
             if possible_value["value"] == value:
                 return possible_value["label"]
+        # TODO what if value is not a string? shouldn't it be passed through something to covert for display?
         return value
 
     def get_printable_data(
@@ -521,11 +542,11 @@ class Submission(models.Model):
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
         for key, info in self.get_ordered_data_with_component_type().items():
-
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
             label = info["label"]
+
             if info["type"] == "file":
                 files = attachment_data.get(key)
                 if files:
@@ -537,6 +558,23 @@ class Submission(models.Model):
                     printable_data[label] = merged_data.get(key)
                 else:
                     printable_data[label] = _("empty")
+
+            elif info["type"] == "date" or (
+                info.get("appointments", {}).get("showDates", False)
+            ):
+                printable_data[label] = _join_mapped(
+                    lambda v: fmt_date(parse_date(v)), info["value"]
+                )
+
+            elif info["type"] == "time" or (
+                appointment_time := info.get("appointments", {}).get("showTimes", False)
+            ):
+                _parse_time = datetime.fromisoformat if appointment_time else parse_time
+                # strip off the seconds
+                printable_data[label] = _join_mapped(
+                    lambda v: fmt_time(_parse_time(v)), info["value"]
+                )
+
             elif info["type"] == "selectboxes":
                 selected_values: Dict[str, bool] = info["value"]
                 selected_labels = [
@@ -545,6 +583,7 @@ class Submission(models.Model):
                     if selected_values.get(entry["value"])
                 ]
                 printable_data[label] = ", ".join(selected_labels)
+
             elif type(info["value"]) is dict:
                 printable_value = info["value"]
                 if "name" in printable_value:

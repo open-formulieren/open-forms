@@ -103,6 +103,7 @@ class DownloadSubmissionReportTests(APITestCase):
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
+    @override_settings(LANGUAGE_CODE="nl")
     def test_submission_printable_data(self):
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
@@ -119,6 +120,7 @@ class DownloadSubmissionReportTests(APITestCase):
                     },
                     {
                         "key": "select1",
+                        "type": "select",
                         "label": "Test Select",
                         "data": {
                             "values": [
@@ -126,7 +128,44 @@ class DownloadSubmissionReportTests(APITestCase):
                                 {"label": "Test Option 2", "value": "testOption2"},
                             ]
                         },
+                    },
+                    {
+                        "key": "date0",
+                        "type": "date",
+                        "label": "Test date 0",
+                    },
+                    {
+                        "key": "date1",
+                        "type": "date",
+                        "label": "Test date 1",
+                    },
+                    {
+                        "key": "date2",
+                        "type": "date",
+                        "label": "Test date 2",
+                        "multiple": True,
+                    },
+                    {
+                        "key": "time0",
+                        "type": "time",
+                        "label": "Test time 1",
+                    },
+                    # appointment fields are special...
+                    {
+                        "key": "date3",
                         "type": "select",
+                        "label": "Afspraakdatum",
+                        "appointments": {
+                            "showDates": True,
+                        },
+                    },
+                    {
+                        "key": "time1",
+                        "type": "select",
+                        "label": "Afspraaktijdstip",
+                        "appointments": {
+                            "showTimes": True,
+                        },
                     },
                 ]
             }
@@ -134,15 +173,41 @@ class DownloadSubmissionReportTests(APITestCase):
         form_step = FormStepFactory.create(form_definition=form_def, form=form)
         submission = SubmissionFactory.create(completed=True, form=form)
         SubmissionStepFactory.create(
-            data={"radio1": "testOption1", "select1": "testOption2"},
+            data={
+                "radio1": "testOption1",
+                "select1": "testOption2",
+                "date1": "2022-01-02",
+                "date2": ["2022-01-02", "2022-02-03"],
+                "time0": "17:30:00",
+                "date3": "2021-12-24",
+                "time1": "2021-12-24T08:10:00+01:00",
+            },
             submission=submission,
             form_step=form_step,
         )
 
         printable_data = submission.get_printable_data()
 
-        self.assertEqual("Test Option 1", printable_data["Test Radio"])
-        self.assertEqual("Test Option 2", printable_data["Test Select"])
+        values = [
+            ("Test Radio", "Test Option 1"),
+            ("Test Select", "Test Option 2"),
+            ("Test date 1", "2 januari 2022"),
+            ("Test date 2", "2 januari 2022, 3 februari 2022"),
+            ("Test time 1", "17:30"),
+            ("Afspraakdatum", "24 december 2021"),
+            ("Afspraaktijdstip", "08:10"),
+        ]
+        for label, value in values:
+            with self.subTest(label):
+                self.assertIn(label, printable_data)
+                self.assertEqual(value, printable_data[label])
+
+        not_values = [
+            "Test date 0",
+        ]
+        for label in not_values:
+            with self.subTest(label):
+                self.assertNotIn(label, printable_data)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}

@@ -85,6 +85,7 @@ class SubmissionTests(TestCase):
                         "label": "Label",
                         "multiple": False,
                         "values": None,
+                        "appointments": {},
                     },
                 ),
                 (
@@ -95,6 +96,7 @@ class SubmissionTests(TestCase):
                         "label": "Label2",
                         "multiple": False,
                         "values": None,
+                        "appointments": {},
                     },
                 ),
                 (
@@ -105,6 +107,7 @@ class SubmissionTests(TestCase):
                         "label": "Label3",
                         "multiple": False,
                         "values": None,
+                        "appointments": {},
                     },
                 ),
                 (
@@ -115,6 +118,7 @@ class SubmissionTests(TestCase):
                         "label": "key5",
                         "multiple": False,
                         "values": None,
+                        "appointments": {},
                     },
                 ),
             ]
@@ -162,6 +166,7 @@ class SubmissionTests(TestCase):
                         {"value": "test3", "label": "test 3", "shortcut": ""},
                     ],
                     "multiple": False,
+                    "appointments": {},
                 }
             },
         )
