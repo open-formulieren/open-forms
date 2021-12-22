@@ -94,7 +94,7 @@ class CamundaRegistration(BasePlugin):
         try:
             meta_information = start_process(**process_options)
         except requests.RequestException as exc:
-            if response := exc.response:
+            if (response := exc.response) is not None:
                 camunda_response = response.json()
 
                 if response.status_code >= 500:

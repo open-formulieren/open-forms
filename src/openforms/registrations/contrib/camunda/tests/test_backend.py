@@ -10,6 +10,7 @@ from privates.test import temp_private_root
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ....exceptions import RegistrationFailed
 from ..plugin import VARS, CamundaRegistration, serialize_variables
 
 
@@ -170,3 +171,60 @@ class InitialRegistrationTests(TestCase):
                 }
             },
         )
+
+    @patch("openforms.registrations.contrib.camunda.plugin.start_process")
+    def test_process_version_does_not_exist(self, m, mock_start_process):
+        get_process_defs_patcher = patch(
+            "openforms.registrations.contrib.camunda.plugin.get_process_definitions",
+            return_value=[],
+        )
+        get_process_defs_patcher.start()
+        self.addCleanup(get_process_defs_patcher.stop)
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": 2,  # indicates latest version
+        }
+        plugin = CamundaRegistration("camunda")
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.register_submission(self.submission, registration_backend_options)
+
+        mock_start_process.assert_not_called()
+
+    def test_camunda_http_500(self, m):
+        m.post(
+            "https://camunda.example.com/engine-rest/process-definition/key/invoice/start",
+            status_code=500,
+            json={"error": "information"},
+        )
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+        }
+        plugin = CamundaRegistration("camunda")
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.register_submission(self.submission, registration_backend_options)
+
+        start_process_request = m.last_request
+        request_body = start_process_request.json()
+        self.assertIsInstance(request_body, dict)
+
+    def test_camunda_http_400(self, m):
+        m.post(
+            "https://camunda.example.com/engine-rest/process-definition/key/invoice/start",
+            status_code=400,
+            json={"error": "information"},
+        )
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+        }
+        plugin = CamundaRegistration("camunda")
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.register_submission(self.submission, registration_backend_options)
+
+        start_process_request = m.last_request
+        request_body = start_process_request.json()
+        self.assertIsInstance(request_body, dict)
