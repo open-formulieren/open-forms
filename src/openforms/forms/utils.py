@@ -215,3 +215,17 @@ def get_duplicates_keys_for_form(form: Form) -> Dict[str, List]:
         key: formdefs for key, formdefs in seen.items() if len(formdefs) > 1
     }
     return duplicate_keys
+
+
+def iter_components(configuration: dict, recursive=True) -> dict:
+    components = configuration.get("components")
+    if configuration.get("type") == "columns" and recursive:
+        assert not components, "Both nested components and columns found"
+        for column in configuration["columns"]:
+            yield from iter_components(configuration=column, recursive=recursive)
+
+    if components:
+        for component in components:
+            yield component
+            if recursive:
+                yield from iter_components(configuration=component, recursive=recursive)

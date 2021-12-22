@@ -120,24 +120,12 @@ class FormDefinition(models.Model):
         return super().delete(using=using, keep_parents=keep_parents)
 
     def iter_components(self, configuration=None, recursive=True):
+        from ..utils import iter_components
+
         if configuration is None:
             configuration = self.configuration
 
-        components = configuration.get("components")
-        if configuration.get("type") == "columns" and recursive:
-            assert not components, "Both nested components and columns found"
-            for column in configuration["columns"]:
-                yield from self.iter_components(
-                    configuration=column, recursive=recursive
-                )
-
-        if components:
-            for component in components:
-                yield component
-                if recursive:
-                    yield from self.iter_components(
-                        configuration=component, recursive=recursive
-                    )
+        return iter_components(configuration=configuration, recursive=recursive)
 
     def get_all_keys(self) -> List[str]:
         keys = [field["key"] for field in self.iter_components(recursive=True)]
