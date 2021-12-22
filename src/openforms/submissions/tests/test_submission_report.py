@@ -150,6 +150,23 @@ class DownloadSubmissionReportTests(APITestCase):
                         "type": "time",
                         "label": "Test time 1",
                     },
+                    # appointment fields are special...
+                    {
+                        "key": "date3",
+                        "type": "select",
+                        "label": "Afspraakdatum",
+                        "appointments": {
+                            "showDates": True,
+                        },
+                    },
+                    {
+                        "key": "time1",
+                        "type": "select",
+                        "label": "Afspraaktijdstip",
+                        "appointments": {
+                            "showTimes": True,
+                        },
+                    },
                 ]
             }
         )
@@ -162,6 +179,8 @@ class DownloadSubmissionReportTests(APITestCase):
                 "date1": "2022-01-02",
                 "date2": ["2022-01-02", "2022-02-03"],
                 "time0": "17:30:00",
+                "date3": "2021-12-24",
+                "time1": "2021-12-24T08:10:00+01:00",
             },
             submission=submission,
             form_step=form_step,
@@ -175,6 +194,8 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test date 1", "2 januari 2022"),
             ("Test date 2", "2 januari 2022, 3 februari 2022"),
             ("Test time 1", "17:30"),
+            ("Afspraakdatum", "24 december 2021"),
+            ("Afspraaktijdstip", "08:10"),
         ]
         for label, value in values:
             with self.subTest(label):
