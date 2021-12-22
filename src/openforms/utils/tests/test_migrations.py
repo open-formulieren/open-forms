@@ -5,6 +5,8 @@ from django.test import TestCase
 
 class TestMigrations(TestCase):
     """
+    Test the effect of applying a migration
+
     Adapted from https://www.caktusgroup.com/blog/2016/02/02/writing-unit-tests-django-migrations/
     """
 
