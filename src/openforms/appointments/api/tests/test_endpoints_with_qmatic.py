@@ -2,13 +2,13 @@ from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
-from zds_client import ClientError
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ...constants import AppointmentDetailsStatus
+from ...contrib.qmatic.client import QmaticException
 from ...contrib.qmatic.tests.factories import QmaticConfigFactory
 from ...contrib.qmatic.tests.test_plugin import mock_response
 from ...models import AppointmentsConfig
@@ -282,7 +282,7 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.delete(f"{self.api_root}appointments/{identifier}", exc=ClientError)
+        m.delete(f"{self.api_root}appointments/{identifier}", exc=QmaticException)
 
         data = {
             "email": "maykin@media.nl",
