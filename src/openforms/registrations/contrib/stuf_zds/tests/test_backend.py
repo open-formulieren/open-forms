@@ -1,15 +1,18 @@
 import dataclasses
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.template import loader
 from django.test import TestCase
 
 import requests_mock
+from freezegun import freeze_time
 from lxml import etree
 from lxml.etree import ElementTree
 from privates.test import temp_private_root
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -197,6 +200,7 @@ class StufZDSHelperTests(StufTestBase):
         self.assertEqual("J", actual.indicator)
 
 
+@freeze_time("2020-12-22")
 @temp_private_root()
 @requests_mock.Mocker()
 class StufZDSPluginTests(StufTestBase):
@@ -325,6 +329,7 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo-zaak",
                 "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:betalingsIndicatie": "N.v.t.",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
@@ -402,6 +407,155 @@ class StufZDSPluginTests(StufTestBase):
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
             6,
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_payment(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+            ],
+            form__name="my-form",
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            bsn="111222333",
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+            },
+        )
+        self.assertTrue(submission.payment_required)
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        result = plugin.register_submission(submission, form_options)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:betalingsIndicatie": "(Nog) niet",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
+            },
+        )
+
+        # PDF report
+        xml_doc = xml_from_request_history(m, 2)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 3)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
+                "//zkn:object/zkn:formaat": "application/pdf",
+            },
+        )
+
+        # registration system would save the result
+        submission.registration_result = {"zaak": "foo-zaak"}
+        submission.save()
+
+        # process the payment
+        plugin.update_payment_status(submission, form_options)
+
+        xml_doc = xml_from_request_history(m, 4)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:betalingsIndicatie": "Geheel",
+                "//zkn:object/zkn:laatsteBetaaldatum": "20201222",
+            },
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            5,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            5,
         )
 
     @patch("celery.app.task.Task.request")
