@@ -55,6 +55,12 @@ class ReplateWidgetDataMigrationTests(TestMigrations):
                         "type": "fieldset",
                         "components": [{"type": "select", "widget": "html5"}],
                     },
+                    {
+                        "type": "columns",
+                        "columns": [
+                            {"components": [{"type": "select", "widget": "html5"}]}
+                        ],
+                    },
                 ]
             },
         ).uuid
@@ -73,4 +79,10 @@ class ReplateWidgetDataMigrationTests(TestMigrations):
             update_form_definition.configuration["components"][1]["components"][0][
                 "widget"
             ],
+        )
+        self.assertEqual(
+            "choicesjs",
+            update_form_definition.configuration["components"][2]["columns"][0][
+                "components"
+            ][0]["widget"],
         )

@@ -2,16 +2,7 @@
 
 from django.db import migrations
 
-
-def search_and_replace_widget(components: list) -> list:
-    for component in components:
-        if component["type"] == "select" and component["widget"] == "html5":
-            component["widget"] = "choicesjs"
-
-        if "components" in component:
-            component["components"] = search_and_replace_widget(component["components"])
-
-    return components
+from openforms.forms.utils import iter_components
 
 
 def remove_html5_widget_from_forms(apps, schema_editor):
@@ -19,10 +10,9 @@ def remove_html5_widget_from_forms(apps, schema_editor):
 
     form_definitions = FormDefinition.objects.all()
     for form_definition in form_definitions:
-        if "components" in form_definition.configuration:
-            form_definition.configuration["components"] = search_and_replace_widget(
-                form_definition.configuration["components"]
-            )
+        for component in iter_components(form_definition.configuration):
+            if component["type"] == "select" and component["widget"] == "html5":
+                component["widget"] = "choicesjs"
 
     FormDefinition.objects.bulk_update(form_definitions, ["configuration"])
 
