@@ -151,6 +151,10 @@
                 "familymemberstypeconfig"
             ],
             [
+                "django_camunda",
+                "camundaconfig"
+            ],
+            [
                 "django_yubin",
                 "blacklist"
             ],

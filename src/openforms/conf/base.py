@@ -150,6 +150,7 @@ INSTALLED_APPS = [
     "django_filters",
     "csp",
     "cspreports",
+    "django_camunda",
     # Project applications.
     "openforms.accounts",
     "openforms.appointments.apps.AppointmentsAppConfig",
@@ -173,6 +174,7 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.stuf_zds",
     "openforms.registrations.contrib.objects_api",
     "openforms.registrations.contrib.microsoft_graph.apps.MicrosoftGraphApp",
+    "openforms.registrations.contrib.camunda.apps.CamundaApp",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",

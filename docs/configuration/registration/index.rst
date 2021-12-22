@@ -10,6 +10,7 @@ Registration plugins
    objects
    stufzds
    zgw
+   camunda
    msgraph
    email
    local
