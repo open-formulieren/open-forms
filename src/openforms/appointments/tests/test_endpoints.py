@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timezone
+from decimal import Decimal
 
 from django.test import TestCase
 from django.urls import reverse
@@ -9,6 +10,9 @@ from furl import furl
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.tests.factories import FormFactory
+from openforms.logging.models import TimelineLogProxy
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -758,3 +762,63 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
 
         self.assertEqual(403, response.status_code)
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_change_appointment_details_after_payment(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "product",
+                    "appointments": {"showProducts": True},
+                    "label": "Product",
+                },
+                {
+                    "key": "time",
+                    "appointments": {"showTimes": True},
+                    "label": "Time",
+                },
+            ],
+            submitted_data={
+                "product": {"identifier": "79", "name": "Paspoort"},
+                "time": "2021-08-25T17:00:00",
+            },
+            form_url="http://maykinmedia.nl/myform/",
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        submission_payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.completed
+        )
+        AppointmentInfoFactory.create(
+            submission=submission,
+            registration_ok=True,
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+        )
+
+        endpoint = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        self.assertTrue(submission.payment_required)
+        self.assertTrue(submission.payment_user_has_paid)
+
+        # one day after token generation
+        with freeze_time("2021-07-16T21:15:00Z"):
+            self.client.get(endpoint)
+
+        new_submission = Submission.objects.exclude(id=submission.id).get()
+        submission_payment.refresh_from_db()
+
+        self.assertTrue(new_submission.payment_required)
+        self.assertTrue(new_submission.payment_user_has_paid)
+        self.assertEqual(submission_payment.submission, new_submission)
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/transfer_payment_to_submission_copy.txt"
+            ).count(),
+            1,
+        )
