@@ -23,16 +23,7 @@ The NLX demo/test stack is set up as a git submodule, which needs to be initiali
 git submodule update --init  # First time only
 ````
 
-Next, open `docker-compose.yml` and find the `postgres` service. Remove the `ports`
-configuration completely, as it will conflict with your local PostgreSQL instance.
-
-The included certificates are expired, at the time of writing. Please go to the 
-`nlx-try-me` folder and follow the docs in 
-[`nlx-try-me/pki/README.md`](./nlx-try-me/pki/README.md) to re-generate the intermediate
-and host certificate. Note that you need to install the `cfssl` tooling if you don't 
-have it yet.
-
-Finally, go back to the `nlx` folder and generate your own local certificates. Follow
+Then, go back to the `nlx` folder and generate your own local certificates. Follow
 the directions presented by the script:
 
 ```bash
@@ -41,11 +32,14 @@ the directions presented by the script:
 
 **Fixing the permissions**
 
-Private keys need locked-down file permissions. The containers run as `UID: 1000`, which
+Private keys need locked-down file permissions. The containers run as `UID: 1001`, which
 means this must be owner of the private keys:
 
+If your local user ID is different than `UID: 1001`, then you should fix these
+permissions:
+
 ```bash
-sudo chown 1000 nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
+sudo chown 1001 nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
 sudo chmod go-rwx nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
 ```
 
@@ -63,7 +57,7 @@ and follow the rest of the guide at the
 * Create local user
 * Log in to the management API
 
-Your outway should now be available at http://localhost:80/ and return a response along
+Your outway should now be available at http://localhost:8081/ and return a response along
 the lines of:
 
 ```
@@ -81,7 +75,7 @@ demo directory by running the included python script:
 
 Note that this uses the generated organization certificates from the set-up and you
 may have to fix the ownership of the key value if your local system user does not have
-`UID: 1000`:
+`UID: 1001`:
 
 ```bash
 sudo chown $UID ./certs/org.key
