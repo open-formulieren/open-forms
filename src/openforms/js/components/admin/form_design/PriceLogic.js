@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
 import {getTranslatedChoices} from '../../../utils/i18n';
+import ButtonContainer from '../forms/ButtonContainer';
 import Field from '../forms/Field';
 import {NumberInput} from '../forms/Inputs';
 import FormRow from '../forms/FormRow';
@@ -107,13 +108,9 @@ export const PriceLogic = ({ rules=[], onChange, onDelete, onAdd }) => {
                 ))
             }
 
-            <div className="button-container button-container--padded">
-                <button type="button" className="button button--plain" onClick={onAdd}>
-                    <span className="addlink">
-                        <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
-                    </span>
-                </button>
-            </div>
+            <ButtonContainer onClick={onAdd}>
+                <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
+            </ButtonContainer>
 
         </Fieldset>
     );

@@ -46,6 +46,14 @@ const reducer = (draft, action) => {
             draft.processVariables[index][name] = value;
             break;
         }
+        case 'ADD_PROCESS_VAR': {
+            draft.processVariables.push({
+                enabled: true,
+                componentKey: '',
+                alias: '',
+            });
+            break;
+        }
         default:
             throw new Error(`Unknown action type: ${action.type}`);
     }

@@ -5,6 +5,7 @@ import {useIntl, FormattedMessage} from 'react-intl';
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/ActionSet';
+import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import {ValidationErrorContext} from '../forms/ValidationErrors';
@@ -100,18 +101,10 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
                     );
                 })
             }
-            <div className="button-container button-container--padded">
-                <button
-                    type="button"
-                    className="button button--plain"
-                    onClick={onAdd}
-                >
-                    <span className="addlink">
-                        <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
-                    </span>
-                </button>
-            </div>
-      </>
+            <ButtonContainer onClick={onAdd}>
+                <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
+            </ButtonContainer>
+        </>
   );
 };
 
