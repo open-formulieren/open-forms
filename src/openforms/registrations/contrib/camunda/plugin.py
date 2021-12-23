@@ -10,15 +10,14 @@ from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
 from django_camunda.types import ProcessVariables
 from django_camunda.utils import serialize_variable
-from rest_framework import serializers
 
 from openforms.submissions.models import Submission
-from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .checks import check_config
+from .serializers import CamundaOptionsSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -28,23 +27,6 @@ VARS = {
     "amount": 10,
     "invoiceCategory": "Misc",
 }
-
-
-class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    process_definition = serializers.CharField(
-        required=True,
-        help_text=_("The process definition for which to start a process instance."),
-    )
-    process_definition_version = serializers.IntegerField(
-        required=False,
-        help_text=_(
-            "Which version of the process definition to start. The latest version is "
-            "used if not specified."
-        ),
-        allow_null=True,
-    )
-    # TODO: derived_variables, variables_to_include (from component keys) - might have
-    # to be done in react alltogether
 
 
 def serialize_variables(variables: Optional[Dict[str, Any]]) -> ProcessVariables:
