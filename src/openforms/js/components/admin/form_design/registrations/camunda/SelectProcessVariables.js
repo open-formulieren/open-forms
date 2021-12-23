@@ -4,30 +4,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {Checkbox, TextInput} from '../../../forms/Inputs';
 import ComponentSelection from '../../../forms/ComponentSelection';
-import {ComponentsContext} from '../../../forms/Context';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
-
-
-const ALL_COMPONENTS = [
-    {
-        type: 'textfield',
-        key: 'text1',
-        label: 'Textfield 1',
-        stepLabel: 'Stap 1',
-    },
-    {
-        type: 'textfield',
-        key: 'text2',
-        label: 'Textfield 2',
-        stepLabel: 'Stap 2',
-    },
-    {
-        type: 'select',
-        key: 'select1',
-        label: 'Dropdown',
-        stepLabel: 'Stap 2',
-    },
-];
 
 
 const HeadColumns = () => {
@@ -70,7 +47,6 @@ const HeadColumns = () => {
 };
 
 
-
 const ProcessVariable = ({ index, enabled=true, componentKey='', alias='' }) => {
 
     const onChange = (event) => {
@@ -96,25 +72,15 @@ ProcessVariable.propTypes = {
 };
 
 
-
-
-
 const SelectProcessVariables = ({ onChange }) => {
-
-    const allComponents = ALL_COMPONENTS.map(component => [component.key, component]);
-
     return (
-        <ComponentsContext.Provider value={allComponents}>
+        <ChangelistTableWrapper headColumns={<HeadColumns />}>
 
-            <ChangelistTableWrapper headColumns={<HeadColumns />}>
+            <ProcessVariable index={0} enabled />
+            <ProcessVariable index={1} enabled={false} />
+            <ProcessVariable index={2} enabled />
 
-                <ProcessVariable index={0} enabled />
-                <ProcessVariable index={1} enabled={false} />
-                <ProcessVariable index={2} enabled />
-
-            </ChangelistTableWrapper>
-
-        </ComponentsContext.Provider>
+        </ChangelistTableWrapper>
     );
 };
 

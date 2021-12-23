@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
 import {getTranslatedChoices} from '../../../utils/i18n';
-import {ComponentsContext} from '../forms/Context';
 import Field from '../forms/Field';
 import {NumberInput} from '../forms/Inputs';
 import FormRow from '../forms/FormRow';
@@ -56,7 +55,7 @@ PricingMode.propTypes = {
 };
 
 
-export const PriceLogic = ({ rules=[], availableComponents={}, onChange, onDelete, onAdd }) => {
+export const PriceLogic = ({ rules=[], onChange, onDelete, onAdd }) => {
     const hasDynamicPricing = rules.length > 0;
 
     // TODO: de-duplicate/validate duplicate rules (identical triggers?)
@@ -97,25 +96,24 @@ export const PriceLogic = ({ rules=[], availableComponents={}, onChange, onDelet
                 </Field>
             </FormRow>
 
-            <ComponentsContext.Provider value={availableComponents}>
-                {
-                    rules.map((rule, i) => (
-                        <Rule
-                            key={i}
-                            {...rule}
-                            onChange={onChange.bind(null, i)}
-                            onDelete={onDelete.bind(null, i)}
-                        />
-                    ))
-                }
-                <div className="button-container button-container--padded">
-                    <button type="button" className="button button--plain" onClick={onAdd}>
-                        <span className="addlink">
-                            <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
-                        </span>
-                    </button>
-                </div>
-            </ComponentsContext.Provider>
+            {
+                rules.map((rule, i) => (
+                    <Rule
+                        key={i}
+                        {...rule}
+                        onChange={onChange.bind(null, i)}
+                        onDelete={onDelete.bind(null, i)}
+                    />
+                ))
+            }
+
+            <div className="button-container button-container--padded">
+                <button type="button" className="button button--plain" onClick={onAdd}>
+                    <span className="addlink">
+                        <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
+                    </span>
+                </button>
+            </div>
 
         </Fieldset>
     );
@@ -123,9 +121,6 @@ export const PriceLogic = ({ rules=[], availableComponents={}, onChange, onDelet
 
 PriceLogic.propTypes = {
     rules: PropTypes.arrayOf(PropTypes.object),
-    availableComponents: PropTypes.objectOf(
-        PropTypes.object, // Formio component objects
-    ).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
