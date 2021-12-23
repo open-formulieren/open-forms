@@ -48,7 +48,7 @@ const HeadColumns = () => {
 };
 
 
-const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', onChange }) => {
+const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', componentFilterFunc, onChange }) => {
     const onCheckboxChange = (event, current) => {
         const { target: {name} } = event;
         onChange({target: {name, value: !current}});
@@ -62,8 +62,7 @@ const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', onCha
                 checked={enabled}
                 onChange={event => onCheckboxChange(event, enabled)}
             />
-            {/* TODO: add filter prop to only show unmapped components */}
-            <ComponentSelection name="componentKey" value={componentKey} onChange={onChange} />
+            <ComponentSelection name="componentKey" value={componentKey} onChange={onChange} filter={componentFilterFunc.bind(null, componentKey)} />
             <TextInput name="alias" value={alias} onChange={onChange} placeholder={componentKey} />
         </TableRow>
     );
@@ -74,17 +73,29 @@ ProcessVariable.propTypes = {
     enabled: PropTypes.bool,
     componentKey: PropTypes.string,
     alias: PropTypes.string,
+    componentFilterFunc: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
 };
 
 
 const SelectProcessVariables = ({ processVariables=[], onChange, onAdd }) => {
+    const usedComponents = processVariables
+        .filter(variable => variable.componentKey !== '')
+        .map(variable => variable.componentKey);
+
+    const filterFunc = (componentKey, { key }) => componentKey === key || !usedComponents.includes(key);
+
     return (
         <>
             <ChangelistTableWrapper headColumns={<HeadColumns />}>
                 {
                     processVariables.map((processVar, index) => (
-                        <ProcessVariable key={index} index={index} onChange={onChange.bind(null, index)} {...processVar} />
+                        <ProcessVariable
+                            key={index}
+                            index={index}
+                            componentFilterFunc={filterFunc}
+                            onChange={onChange.bind(null, index)} {...processVar}
+                        />
                     ))
                 }
             </ChangelistTableWrapper>
