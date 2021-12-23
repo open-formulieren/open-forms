@@ -926,7 +926,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 : null
             }
 
-            <Tabs defaultIndex={activeTab}>
+            <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
                 <TabList>
                     <Tab hasErrors={state.tabsWithErrors.includes('form')}>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />

@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {ChangelistTableWrapper, HeadColumn} from '../../../tables';
+
 
 const ALL_COMPONENTS = [
     {
@@ -22,7 +24,6 @@ const ALL_COMPONENTS = [
         stepLabel: 'Stap 2',
     },
 ];
-
 
 
 const SelectProcessVariables = ({ onChange }) => {
