@@ -24,11 +24,7 @@ const Wrapper = ({children}) => (
 
 const initialState = {
     modalOpen: true,
-    processVariables: [
-        {enabled: true, componentKey: '', alias: ''},
-        {enabled: false, componentKey: '', alias: 'explicit'},
-        {enabled: true, componentKey: '', alias: ''},
-    ],
+    processVariables: [],
 };
 
 const reducer = (draft, action) => {
@@ -183,6 +179,7 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 <SelectProcessVariables
                     processVariables={processVariables}
                     onChange={(index, event) => dispatch({type: 'MODIFY_PROCESS_VAR', payload: {index, event}})}
+                    onAdd={() => dispatch({type: 'ADD_PROCESS_VAR'})}
                 />
             </FormModal>
         </>

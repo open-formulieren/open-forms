@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {Checkbox, TextInput} from '../../../forms/Inputs';
+import ButtonContainer from '../../../forms/ButtonContainer';
 import ComponentSelection from '../../../forms/ComponentSelection';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
 
@@ -77,15 +78,21 @@ ProcessVariable.propTypes = {
 };
 
 
-const SelectProcessVariables = ({ processVariables=[], onChange }) => {
+const SelectProcessVariables = ({ processVariables=[], onChange, onAdd }) => {
     return (
-        <ChangelistTableWrapper headColumns={<HeadColumns />}>
-            {
-                processVariables.map((processVar, index) => (
-                    <ProcessVariable key={index} index={index} onChange={onChange.bind(null, index)} {...processVar} />
-                ))
-            }
-        </ChangelistTableWrapper>
+        <>
+            <ChangelistTableWrapper headColumns={<HeadColumns />}>
+                {
+                    processVariables.map((processVar, index) => (
+                        <ProcessVariable key={index} index={index} onChange={onChange.bind(null, index)} {...processVar} />
+                    ))
+                }
+            </ChangelistTableWrapper>
+
+            <ButtonContainer onClick={onAdd}>
+                <FormattedMessage description="Add process variable button" defaultMessage="Add variable" />
+            </ButtonContainer>
+        </>
     );
 };
 
@@ -96,7 +103,7 @@ SelectProcessVariables.propTypes = {
         alias: PropTypes.string,
     })),
     onChange: PropTypes.func.isRequired,
-    // onAdd: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
     // onDelete: PropTypes.func.isRequired,
 };
 
