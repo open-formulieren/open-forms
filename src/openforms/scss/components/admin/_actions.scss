@@ -13,6 +13,18 @@
     }
   }
 
+  &--horizontal {
+    align-items: center;
+  }
+
+  &--roomy {
+    & > * {
+      & + * {
+        margin-left: 4px;
+      }
+    }
+  }
+
   &__action {
     cursor: pointer;
 

@@ -50,6 +50,11 @@ const reducer = (draft, action) => {
             });
             break;
         }
+        case 'REMOVE_PROCESS_VAR': {
+            const {index} = action.payload;
+            draft.processVariables.splice(index, 1);
+            break;
+        }
         default:
             throw new Error(`Unknown action type: ${action.type}`);
     }
@@ -180,6 +185,7 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                     processVariables={processVariables}
                     onChange={(index, event) => dispatch({type: 'MODIFY_PROCESS_VAR', payload: {index, event}})}
                     onAdd={() => dispatch({type: 'ADD_PROCESS_VAR'})}
+                    onDelete={(index) => dispatch({type: 'REMOVE_PROCESS_VAR', payload: {index}})}
                 />
             </FormModal>
         </>

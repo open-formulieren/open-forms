@@ -429,6 +429,16 @@
     "description": "Copy form button",
     "originalDefault": "Copy"
   },
+  "LaovNg": {
+    "defaultMessage": "Add variable",
+    "description": "Add process variable button",
+    "originalDefault": "Add variable"
+  },
+  "M0kOz9": {
+    "defaultMessage": "Are you sure you want to remove this variable?",
+    "description": "Camunda process variable mapping delete confirmation message",
+    "originalDefault": "Are you sure you want to remove this variable?"
+  },
   "M1L9/1": {
     "defaultMessage": "'Wijzigen' tekst",
     "description": "literals.changeText form label",

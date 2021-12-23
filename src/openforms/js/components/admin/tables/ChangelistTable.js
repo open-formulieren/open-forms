@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import ChangelistColumn from './ChangelistColumn';
 import {IconYes, IconNo, IconUnknown} from '../BooleanIcons';
 
 
-const ChangelistTableWrapper = ({ headColumns, children: body }) => (
-    <div className="changelist changelist--react">
+const ChangelistTableWrapper = ({ headColumns, children: body, extraModifiers=[] }) => (
+    <div className={classNames('changelist', 'changelist--react', ...extraModifiers.map(mod => `changelist--${mod}`))}>
         <div className="results">
             <table>
                 <thead>
@@ -21,6 +22,7 @@ const ChangelistTableWrapper = ({ headColumns, children: body }) => (
 ChangelistTableWrapper.propTypes = {
     headColumns: PropTypes.node,
     children: PropTypes.node,
+    extraModifiers: PropTypes.arrayOf(PropTypes.string),
 };
 
 
