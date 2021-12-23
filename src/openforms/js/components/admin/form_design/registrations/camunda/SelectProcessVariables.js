@@ -47,19 +47,23 @@ const HeadColumns = () => {
 };
 
 
-const ProcessVariable = ({ index, enabled=true, componentKey='', alias='' }) => {
-
-    const onChange = (event) => {
-        const {name, value} = event.target;
-        console.log(name, value);
+const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', onChange }) => {
+    const onCheckboxChange = (event, current) => {
+        const { target: {name} } = event;
+        onChange({target: {name, value: !current}});
     };
 
     return (
         <TableRow index={index}>
-            <Checkbox name="enabled" label="" onChange={onChange} checked={enabled} />
+            <Checkbox
+                name="enabled"
+                label=""
+                checked={enabled}
+                onChange={event => onCheckboxChange(event, enabled)}
+            />
             {/* TODO: add filter prop to only show unmapped components */}
-            <ComponentSelection name="component" value={componentKey} onChange={onChange} />
-            <TextInput name="alias" value={alias} onChange={onChange} />
+            <ComponentSelection name="componentKey" value={componentKey} onChange={onChange} />
+            <TextInput name="alias" value={alias} onChange={onChange} placeholder={componentKey} />
         </TableRow>
     );
 };
@@ -69,23 +73,31 @@ ProcessVariable.propTypes = {
     enabled: PropTypes.bool,
     componentKey: PropTypes.string,
     alias: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
 };
 
 
-const SelectProcessVariables = ({ onChange }) => {
+const SelectProcessVariables = ({ processVariables=[], onChange }) => {
     return (
         <ChangelistTableWrapper headColumns={<HeadColumns />}>
-
-            <ProcessVariable index={0} enabled />
-            <ProcessVariable index={1} enabled={false} />
-            <ProcessVariable index={2} enabled />
-
+            {
+                processVariables.map((processVar, index) => (
+                    <ProcessVariable key={index} index={index} onChange={onChange.bind(null, index)} {...processVar} />
+                ))
+            }
         </ChangelistTableWrapper>
     );
 };
 
 SelectProcessVariables.propTypes = {
+    processVariables: PropTypes.arrayOf(PropTypes.shape({
+        enabled: PropTypes.bool,
+        componentKey: PropTypes.string,
+        alias: PropTypes.string,
+    })),
     onChange: PropTypes.func.isRequired,
+    // onAdd: PropTypes.func.isRequired,
+    // onDelete: PropTypes.func.isRequired,
 };
 
 

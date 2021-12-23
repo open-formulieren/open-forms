@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
 import ActionButton from '../../../forms/ActionButton';
 import Select from '../../../forms/Select';
@@ -21,12 +22,37 @@ const Wrapper = ({children}) => (
 );
 
 
-const FormFields = ({processDefinitions, formData, onChange}) => {
-    const { processDefinition='', processDefinitionVersion=null } = formData;
+const initialState = {
+    modalOpen: true,
+    processVariables: [
+        {enabled: true, componentKey: '', alias: ''},
+        {enabled: false, componentKey: '', alias: 'explicit'},
+        {enabled: true, componentKey: '', alias: ''},
+    ],
+};
 
-    const intl = useIntl();
-    const [modalOpen, setModalOpen] = useState(true);
+const reducer = (draft, action) => {
+    switch(action.type) {
+        case 'TOGGLE_PROCESS_VARS_MODAL': {
+            draft.modalOpen = !draft.modalOpen;
+            break;
+        }
+        case 'CLOSE_PROCESS_VARS_MODAL': {
+            draft.modalOpen = false;
+            break;
+        }
+        case 'MODIFY_PROCESS_VAR': {
+            const {index, event: {target: {name, value}}} = action.payload;
+            draft.processVariables[index][name] = value;
+            break;
+        }
+        default:
+            throw new Error(`Unknown action type: ${action.type}`);
+    }
+};
 
+
+const getProcessSelectionChoices = (processDefinitions, processDefinition) => {
     const processDefinitionChoices = Object.entries(processDefinitions).map(([processKey, versions]) => {
         // grab the first version name - it is theoretically possible the process name has changed in
         // another version, but not much we can do about that
@@ -40,6 +66,20 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
             return [`${version.version}`, `v${version.version}`];
         });
 
+    return [processDefinitionChoices, versionChoices];
+};
+
+
+const FormFields = ({processDefinitions, formData, onChange}) => {
+    const {
+        processDefinition='',
+        processDefinitionVersion=null,
+        // TODO: read procssVariables from formData instead of local state once backend is updated
+    } = formData;
+
+    const intl = useIntl();
+    const [{modalOpen, processVariables}, dispatch] = useImmerReducer(reducer, initialState);
+    const [processDefinitionChoices, versionChoices] = getProcessSelectionChoices(processDefinitions, processDefinition);
 
     const onFieldChange = (event) => {
         const {name, value} = event.target;
@@ -121,7 +161,7 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                             defaultMessage: 'Manage process variables'
                         })}
                         type="button"
-                        onClick={() => setModalOpen(!modalOpen)}
+                        onClick={() => dispatch({type: 'TOGGLE_PROCESS_VARS_MODAL'})}
                     />
                 </CustomFieldTemplate>
 
@@ -130,10 +170,11 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
             <FormModal
                 isOpen={modalOpen}
                 title={<FormattedMessage description="Camunda process var selection modal title" defaultMessage="Manage process variables" />}
-                closeModal={() => setModalOpen(false)}
+                closeModal={() => dispatch({type: 'CLOSE_PROCESS_VARS_MODAL'})}
             >
                 <SelectProcessVariables
-                    onChange={console.log}
+                    processVariables={processVariables}
+                    onChange={(index, event) => dispatch({type: 'MODIFY_PROCESS_VAR', payload: {index, event}})}
                 />
             </FormModal>
         </>
