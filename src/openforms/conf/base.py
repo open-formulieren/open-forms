@@ -168,6 +168,7 @@ INSTALLED_APPS = [
     "openforms.contrib.kvk",
     "openforms.contrib.bag.apps.BAGConfig",
     "openforms.contrib.microsoft.apps.MicrosoftApp",
+    "openforms.registrations",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
     "openforms.registrations.contrib.email",
