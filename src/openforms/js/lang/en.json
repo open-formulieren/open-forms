@@ -594,6 +594,11 @@
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
   },
+  "a3dhuP": {
+    "defaultMessage": "Manage process variables",
+    "description": "Open manage camnda process vars modal button",
+    "originalDefault": "Manage process variables"
+  },
   "a4gS07": {
     "defaultMessage": "No (without overview page)",
     "description": "option \"no_without_overview\" of \"submission_allowed\"",
@@ -668,6 +673,11 @@
     "defaultMessage": "Show progress indicator",
     "description": "Progress indicator field label",
     "originalDefault": "Show progress indicator"
+  },
+  "eBk+W0": {
+    "defaultMessage": "Manage process variables",
+    "description": "Camunda process var selection modal title",
+    "originalDefault": "Manage process variables"
   },
   "eJEu3L": {
     "defaultMessage": "Are you sure you want to delete this rule?",

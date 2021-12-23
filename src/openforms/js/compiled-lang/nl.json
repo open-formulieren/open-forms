@@ -785,6 +785,12 @@
       "value": "'Vorige' tekst"
     }
   ],
+  "a3dhuP": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
+    }
+  ],
   "a4gS07": [
     {
       "type": 0,
@@ -873,6 +879,12 @@
     {
       "type": 0,
       "value": "Toon voortgang"
+    }
+  ],
+  "eBk+W0": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
     }
   ],
   "eJEu3L": [

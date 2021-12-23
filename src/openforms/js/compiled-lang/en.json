@@ -781,6 +781,12 @@
       "value": "Previous text"
     }
   ],
+  "a3dhuP": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
+    }
+  ],
   "a4gS07": [
     {
       "type": 0,
@@ -869,6 +875,12 @@
     {
       "type": 0,
       "value": "Show progress indicator"
+    }
+  ],
+  "eBk+W0": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
     }
   ],
   "eJEu3L": [
