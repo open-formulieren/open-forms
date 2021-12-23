@@ -1,36 +1,11 @@
-import groupBy from 'lodash/groupBy';
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
-import useAsync from 'react-use/esm/useAsync';
 
-import {get} from '../../../../utils/fetch';
-import {PROCESS_DEFINITIONS_ENDPOINT} from '../constants';
-import ActionButton from '../../forms/ActionButton';
-import Field from '../../forms/Field';
-import Select from '../../forms/Select';
-import FormModal from '../../FormModal';
-import Loader from '../../Loader';
-import {CustomFieldTemplate} from '../../RJSFWrapper';
-
-
-const useLoadProcessDefinitions = () => {
-    let processDefinitions;
-    const { loading, value, error } = useAsync(
-        async () => {
-            const response = await get(PROCESS_DEFINITIONS_ENDPOINT);
-            if (!response.ok) throw new Error(`Response status: ${response.status}`);
-            return response.data;
-        }, []
-    );
-
-    if (!loading && !error) {
-        // transform the process definitions in a grouped structure
-        processDefinitions = groupBy(value, 'key');
-    }
-
-    return {loading, processDefinitions, error};
-};
+import ActionButton from '../../../forms/ActionButton';
+import Select from '../../../forms/Select';
+import FormModal from '../../../FormModal';
+import {CustomFieldTemplate} from '../../../RJSFWrapper';
 
 
 // use rjsf wrapper to keep consistent markup/styling
@@ -176,39 +151,4 @@ FormFields.propTypes = {
     onChange: PropTypes.func.isRequired,
 };
 
-
-// TODO: handle validation errors properly
-const CamundaOptionsForm = ({ name, label, formData, onChange }) => {
-    const {loading, processDefinitions, error} = useLoadProcessDefinitions();
-    if (error) {
-        console.error(error);
-        return 'Unexpected error, see console';
-    }
-    return (
-        <Field name={name} label={label} errors={[]}>
-            {loading
-                ? <Loader />
-                : (
-                    <FormFields
-                        formData={formData}
-                        onChange={(formData) => onChange({ formData })}
-                        processDefinitions={processDefinitions}
-                    />
-                )
-            }
-        </Field>
-    );
-};
-
-CamundaOptionsForm.propTypes = {
-    name: PropTypes.string.isRequired,
-    label: PropTypes.node.isRequired,
-    formData: PropTypes.shape({ // matches the backend serializer!
-        processDefinition: PropTypes.string,
-        processDefinitionVersion: PropTypes.number,
-    }),
-    onChange: PropTypes.func.isRequired,
-};
-
-
-export default CamundaOptionsForm;
+export default FormFields;
