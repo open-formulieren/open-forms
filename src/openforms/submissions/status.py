@@ -101,6 +101,9 @@ class SubmissionProcessingStatus:
         if not self.submission.payment_required:
             return ""
 
+        if self.submission.payment_user_has_paid:
+            return ""
+
         payment_start_url = reverse(
             "payments:start",
             kwargs={
