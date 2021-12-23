@@ -70,7 +70,7 @@
   "2uIYst": [
     {
       "type": 0,
-      "value": "The process definition for which to start a process instance."
+      "value": "De procesdefinitie waarvoor een proces instantie gestart moet worden."
     }
   ],
   "2utbek": [
@@ -446,7 +446,7 @@
   "Hfdfv2": [
     {
       "type": 0,
-      "value": "Which version of the process definition to start. The latest version is used if not specified."
+      "value": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt."
     }
   ],
   "HqVHBq": [
@@ -578,7 +578,7 @@
   "PaEo2j": [
     {
       "type": 0,
-      "value": "Process"
+      "value": "Proces"
     }
   ],
   "PdaMqg": [
@@ -1032,7 +1032,7 @@
   "n4Y2ex": [
     {
       "type": 0,
-      "value": "Version"
+      "value": "Versie"
     }
   ],
   "naInSZ": [

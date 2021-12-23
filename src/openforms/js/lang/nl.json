@@ -50,7 +50,7 @@
     "originalDefault": "Registration backend options"
   },
   "2uIYst": {
-    "defaultMessage": "The process definition for which to start a process instance.",
+    "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
     "description": "Camunda 'process definition' help text",
     "originalDefault": "The process definition for which to start a process instance."
   },
@@ -330,7 +330,7 @@
     "originalDefault": "Slug of the form, used in URLs"
   },
   "Hfdfv2": {
-    "defaultMessage": "Which version of the process definition to start. The latest version is used if not specified.",
+    "defaultMessage": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt.",
     "description": "Camunda 'process definition version' help text",
     "originalDefault": "Which version of the process definition to start. The latest version is used if not specified."
   },
@@ -440,7 +440,7 @@
     "originalDefault": "Save and add another"
   },
   "PaEo2j": {
-    "defaultMessage": "Process",
+    "defaultMessage": "Proces",
     "description": "Camunda 'process definition' label",
     "originalDefault": "Process"
   },
@@ -795,7 +795,7 @@
     "originalDefault": "months"
   },
   "n4Y2ex": {
-    "defaultMessage": "Version",
+    "defaultMessage": "Versie",
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
   },
