@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {ChangelistTableWrapper, HeadColumn} from '../../../tables';
+import {Checkbox, TextInput} from '../../../forms/Inputs';
+import ComponentSelection from '../../../forms/ComponentSelection';
+import {ComponentsContext} from '../../../forms/Context';
+import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
 
 
 const ALL_COMPONENTS = [
@@ -67,12 +70,51 @@ const HeadColumns = () => {
 };
 
 
-const SelectProcessVariables = ({ onChange }) => {
+
+const ProcessVariable = ({ index, enabled=true, componentKey='', alias='' }) => {
+
+    const onChange = (event) => {
+        const {name, value} = event.target;
+        console.log(name, value);
+    };
 
     return (
-        <ChangelistTableWrapper headColumns={<HeadColumns />}>
+        <TableRow index={index}>
+            <Checkbox name="enabled" label="" onChange={onChange} checked={enabled} />
+            {/* TODO: add filter prop to only show unmapped components */}
+            <ComponentSelection name="component" value={componentKey} onChange={onChange} />
+            <TextInput name="alias" value={alias} onChange={onChange} />
+        </TableRow>
+    );
+};
 
-        </ChangelistTableWrapper>
+ProcessVariable.propTypes = {
+    index: PropTypes.number.isRequired,
+    enabled: PropTypes.bool,
+    componentKey: PropTypes.string,
+    alias: PropTypes.string,
+};
+
+
+
+
+
+const SelectProcessVariables = ({ onChange }) => {
+
+    const allComponents = ALL_COMPONENTS.map(component => [component.key, component]);
+
+    return (
+        <ComponentsContext.Provider value={allComponents}>
+
+            <ChangelistTableWrapper headColumns={<HeadColumns />}>
+
+                <ProcessVariable index={0} enabled />
+                <ProcessVariable index={1} enabled={false} />
+                <ProcessVariable index={2} enabled />
+
+            </ChangelistTableWrapper>
+
+        </ComponentsContext.Provider>
     );
 };
 

@@ -37,6 +37,22 @@ HeadColumn.propTypes = {
 };
 
 
+const TableRow = ({index, children, ...extra}) => {
+    return (
+        <tr className={`row${(index % 2) + 1}`} {...extra}>
+            {
+                React.Children.map(children, (child) => (<td>{child}</td>))
+            }
+        </tr>
+    );
+};
+
+TableRow.propTypes = {
+    index: PropTypes.number.isRequired,
+    children: PropTypes.arrayOf(PropTypes.element),
+};
+
+
 const ChangelistTable = ({ linkColumn=0, linkProp="", data=[], rowKey="", children }) => {
     const renderLink = linkColumn != null && Boolean(linkProp);
     const tableColumns = [];
@@ -130,4 +146,4 @@ RowColumn.propTypes = {
 };
 
 export default ChangelistTable;
-export {ChangelistTableWrapper, HeadColumn, ChangelistTable};
+export {ChangelistTableWrapper, HeadColumn, TableRow, ChangelistTable};
