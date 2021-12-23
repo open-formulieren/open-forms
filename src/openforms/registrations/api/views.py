@@ -4,7 +4,8 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 
-from ...utils.api.views import ListMixin
+from openforms.utils.api.views import ListMixin
+
 from ..constants import RegistrationAttribute
 from ..registry import register
 from .serializers import (

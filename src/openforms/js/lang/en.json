@@ -49,6 +49,11 @@
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
   },
+  "2uIYst": {
+    "defaultMessage": "The process definition for which to start a process instance.",
+    "description": "Camunda 'process definition' help text",
+    "originalDefault": "The process definition for which to start a process instance."
+  },
   "2utbek": {
     "defaultMessage": "Email option",
     "description": "Form confirmation email label",
@@ -324,6 +329,11 @@
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
   },
+  "Hfdfv2": {
+    "defaultMessage": "Which version of the process definition to start. The latest version is used if not specified.",
+    "description": "Camunda 'process definition version' help text",
+    "originalDefault": "Which version of the process definition to start. The latest version is used if not specified."
+  },
   "HqVHBq": {
     "defaultMessage": "Will send the email specified.",
     "description": "Form confirmation email help text",
@@ -428,6 +438,11 @@
     "defaultMessage": "Save and add another",
     "description": "Admin save and add another submit button",
     "originalDefault": "Save and add another"
+  },
+  "PaEo2j": {
+    "defaultMessage": "Process",
+    "description": "Camunda 'process definition' label",
+    "originalDefault": "Process"
   },
   "PdaMqg": {
     "defaultMessage": "Add rule",
@@ -778,6 +793,11 @@
     "defaultMessage": "months",
     "description": "Logic trigger number of months",
     "originalDefault": "months"
+  },
+  "n4Y2ex": {
+    "defaultMessage": "Version",
+    "description": "Camunda 'process definition version' label",
+    "originalDefault": "Version"
   },
   "naInSZ": {
     "defaultMessage": "Toggle DSL preview",

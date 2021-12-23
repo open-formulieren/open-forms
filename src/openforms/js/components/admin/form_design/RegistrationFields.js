@@ -7,6 +7,47 @@ import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
 import FormRjsfWrapper from '../RJSFWrapper';
+import {BACKEND_OPTIONS_FORMS} from './registrations';
+
+
+const BackendType = PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    schema: PropTypes.shape({
+        type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
+        properties: PropTypes.object,
+        required: PropTypes.arrayOf(PropTypes.string),
+    }),
+});
+
+
+const BackendOptionsFormRow = ({backend=null, currentOptions={}, onChange}) => {
+    if (!backend) return null;
+
+    const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
+    // either use the custom backend-specific defined form, or fall back to the generic react-json-schema-form
+    const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backend.id] ?? FormRjsfWrapper;
+    if (!hasOptionsForm && !BACKEND_OPTIONS_FORMS[backend.id]) {
+        return null;
+    }
+    return (
+        <FormRow>
+            <OptionsFormComponent
+                name="form.registrationBackendOptions"
+                label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
+                schema={backend.schema}
+                formData={currentOptions}
+                onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
+            />
+        </FormRow>
+    );
+};
+
+BackendOptionsFormRow.propTypes = {
+    backend: BackendType,
+    currentOptions: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
+};
 
 
 const RegistrationFields = ({
@@ -48,32 +89,14 @@ const RegistrationFields = ({
                     />
                 </Field>
             </FormRow>
-            {hasOptionsForm
-                ? (<FormRow>
-                    <FormRjsfWrapper
-                        name="form.registrationBackendOptions"
-                        label={<FormattedMessage defaultMessage="Registration backend options" description="Registration backend options label" />}
-                        schema={backend.schema}
-                        formData={backendOptions}
-                        onChange={({ formData }) => onChange({target: {name: 'form.registrationBackendOptions', value: formData}})}
-                    />
-                </FormRow> )
-                : null
-            }
+
+            <BackendOptionsFormRow backend={backend} currentOptions={backendOptions} onChange={onChange} />
         </Fieldset>
     );
 };
 
 RegistrationFields.propTypes = {
-    backends: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-        schema: PropTypes.shape({
-            type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
-            properties: PropTypes.object,
-            required: PropTypes.arrayOf(PropTypes.string),
-        }),
-    })),
+    backends: PropTypes.arrayOf(BackendType),
     selectedBackend: PropTypes.string,
     backendOptions: PropTypes.object,
     onChange: PropTypes.func.isRequired,

@@ -49,6 +49,11 @@
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
   },
+  "2uIYst": {
+    "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
+    "description": "Camunda 'process definition' help text",
+    "originalDefault": "The process definition for which to start a process instance."
+  },
   "2utbek": {
     "defaultMessage": "E-mailsjabloon",
     "description": "Form confirmation email label",
@@ -324,6 +329,11 @@
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
   },
+  "Hfdfv2": {
+    "defaultMessage": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt.",
+    "description": "Camunda 'process definition version' help text",
+    "originalDefault": "Which version of the process definition to start. The latest version is used if not specified."
+  },
   "HqVHBq": {
     "defaultMessage": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven.",
     "description": "Form confirmation email help text",
@@ -428,6 +438,11 @@
     "defaultMessage": "Opslaan en nieuwe toevoegen",
     "description": "Admin save and add another submit button",
     "originalDefault": "Save and add another"
+  },
+  "PaEo2j": {
+    "defaultMessage": "Proces",
+    "description": "Camunda 'process definition' label",
+    "originalDefault": "Process"
   },
   "PdaMqg": {
     "defaultMessage": "Regel toevoegen",
@@ -778,6 +793,11 @@
     "defaultMessage": "maanden",
     "description": "Logic trigger number of months",
     "originalDefault": "months"
+  },
+  "n4Y2ex": {
+    "defaultMessage": "Versie",
+    "description": "Camunda 'process definition version' label",
+    "originalDefault": "Version"
   },
   "naInSZ": {
     "defaultMessage": "Toon/verberg DSL weergave",

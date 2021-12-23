@@ -7,3 +7,4 @@ export const PAYMENT_PLUGINS_ENDPOINT = '/api/v1/payment/plugins';
 export const PRODUCTS_ENDPOINT = '/api/v1/products';
 export const LOGICS_ENDPOINT = '/api/v1/logic-rules';
 export const PRICE_RULES_ENDPOINT = '/api/v1/price-rules';
+export const PROCESS_DEFINITIONS_ENDPOINT = '/api/v1/registration/plugins/camunda/process-definitions';

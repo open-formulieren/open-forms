@@ -67,6 +67,12 @@
       "value": "Opties"
     }
   ],
+  "2uIYst": [
+    {
+      "type": 0,
+      "value": "De procesdefinitie waarvoor een proces instantie gestart moet worden."
+    }
+  ],
   "2utbek": [
     {
       "type": 0,
@@ -437,6 +443,12 @@
       "value": "URL-deel van het formulier."
     }
   ],
+  "Hfdfv2": [
+    {
+      "type": 0,
+      "value": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt."
+    }
+  ],
   "HqVHBq": [
     {
       "type": 0,
@@ -561,6 +573,12 @@
     {
       "type": 0,
       "value": "Opslaan en nieuwe toevoegen"
+    }
+  ],
+  "PaEo2j": [
+    {
+      "type": 0,
+      "value": "Proces"
     }
   ],
   "PdaMqg": [
@@ -1009,6 +1027,12 @@
     {
       "type": 0,
       "value": "maanden"
+    }
+  ],
+  "n4Y2ex": [
+    {
+      "type": 0,
+      "value": "Versie"
     }
   ],
   "naInSZ": [
