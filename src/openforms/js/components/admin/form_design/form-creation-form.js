@@ -908,6 +908,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     }
 
     const availableComponents = getFormComponents(state.formSteps);
+    // dev/debug helper
+    const activeTab = new URLSearchParams(window.location.search).get('tab');
 
     return (
         <ValidationErrorsProvider errors={state.validationErrors}>
@@ -924,7 +926,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 : null
             }
 
-            <Tabs>
+            <Tabs defaultIndex={activeTab}>
                 <TabList>
                     <Tab hasErrors={state.tabsWithErrors.includes('form')}>
                         <FormattedMessage defaultMessage="Form" description="Form fields tab title" />

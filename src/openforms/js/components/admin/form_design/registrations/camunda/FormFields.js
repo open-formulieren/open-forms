@@ -6,6 +6,7 @@ import ActionButton from '../../../forms/ActionButton';
 import Select from '../../../forms/Select';
 import FormModal from '../../../FormModal';
 import {CustomFieldTemplate} from '../../../RJSFWrapper';
+import SelectProcessVariables from './SelectProcessVariables';
 
 
 // use rjsf wrapper to keep consistent markup/styling
@@ -131,7 +132,9 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 title={<FormattedMessage description="Camunda process var selection modal title" defaultMessage="Manage process variables" />}
                 closeModal={() => setModalOpen(false)}
             >
-                yolo
+                <SelectProcessVariables
+                    onChange={console.log}
+                />
             </FormModal>
         </>
     );
