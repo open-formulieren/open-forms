@@ -12,7 +12,7 @@ const ComponentSelection = ({name, value, onChange, filter=allowAny}) => {
     const allComponents = useContext(ComponentsContext);
     const choices = Object.entries(allComponents)
         // turn components map of {key: component} into choices list [key, component]
-        .map( ([key, comp]) => [key, comp.label || comp.key] )
+        .map( ([key, comp]) => [key, comp.stepLabel || comp.label || comp.key] )
         // apply passed in filter to restrict valid choices
         .filter( ([key]) => filter(allComponents[key]) );
 
