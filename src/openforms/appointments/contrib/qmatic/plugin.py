@@ -1,11 +1,13 @@
+import json
 import logging
 from datetime import date, datetime, time
 from typing import List, Optional
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 
+from dateutil.parser import isoparse
 from requests.exceptions import RequestException
-from zds_client import ClientError
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
@@ -21,7 +23,7 @@ from ...exceptions import (
     AppointmentDeleteFailed,
     AppointmentException,
 )
-from .client import QmaticClient
+from .client import QmaticClient, QmaticException
 
 logger = logging.getLogger(__name__)
 
@@ -51,15 +53,18 @@ class Plugin(BasePlugin):
         try:
             response = self.client.get("services")
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
             return []
         except Exception as exc:
             raise AppointmentException from exc
 
+        # NOTE: Filter out products that are not active or public.
+
         return [
             AppointmentProduct(entry["publicId"], entry["name"])
             for entry in response.json()["serviceList"]
+            if entry["publicEnabled"] and entry["active"]
         ]
 
     def get_locations(
@@ -73,7 +78,7 @@ class Plugin(BasePlugin):
         try:
             response = self.client.get(f"services/{product_id}/branches")
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             logger.exception(
                 "Could not retrieve locations for product '%s'", product_id, exc_info=e
             )
@@ -81,9 +86,13 @@ class Plugin(BasePlugin):
         except Exception as exc:
             raise AppointmentException from exc
 
+        # NOTE: Filter out locations that do not have a postal code to prevent
+        # non-physical addresses.
+
         return [
             AppointmentLocation(entry["publicId"], entry["name"])
             for entry in response.json()["branchList"]
+            if entry["addressZip"]
         ]
 
     def get_dates(
@@ -109,7 +118,7 @@ class Plugin(BasePlugin):
                 f"branches/{location.identifier}/services/{product_id}/dates"
             )
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             logger.exception(
                 "Could not retrieve dates for product '%s' at location '%s'",
                 product_id,
@@ -120,9 +129,7 @@ class Plugin(BasePlugin):
         except Exception as exc:
             raise AppointmentException from exc
 
-        return [
-            datetime.fromisoformat(entry).date() for entry in response.json()["dates"]
-        ]
+        return [isoparse(entry).date() for entry in response.json()["dates"]]
 
     def get_times(
         self,
@@ -140,7 +147,7 @@ class Plugin(BasePlugin):
                 f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
             )
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             logger.exception(
                 "Could not retrieve times for product '%s' at location '%s' on %s",
                 product_id,
@@ -196,15 +203,16 @@ class Plugin(BasePlugin):
             f"dates/{start_date}/times/{start_time}/book"
         )
         try:
-            response = self.client.post(url, data)
+            response = self.client.post(url, json.dumps(data, cls=DjangoJSONEncoder))
             response.raise_for_status()
             return response.json()["publicId"]
-        except (ClientError, RequestException, KeyError):
+        except (QmaticException, RequestException, KeyError) as exc:
             raise AppointmentCreateFailed(
-                "Could not create appointment for products '%s' at location '%s' starting at %s",
+                "Could not create appointment for products '%s' at location '%s' starting at %s: %s",
                 product_id,
                 location,
                 start_at,
+                exc,
             )
         except Exception as exc:
             raise AppointmentException from exc
@@ -218,7 +226,7 @@ class Plugin(BasePlugin):
                 )
 
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             raise AppointmentDeleteFailed(e)
 
     def get_appointment_details(self, identifier: str) -> str:
@@ -239,29 +247,29 @@ class Plugin(BasePlugin):
                     name=details["branch"]["name"],
                     address=" ".join(
                         [
-                            details["branch"]["addressLine1"],
-                            details["branch"]["addressLine2"],
+                            details["branch"]["addressLine1"] or "",
+                            details["branch"]["addressLine2"] or "",
                         ]
                     ),
                     postalcode=details["branch"]["addressZip"],
                     city=details["branch"]["addressCity"],
                 ),
-                start_at=datetime.fromisoformat(details["start"]),
-                end_at=datetime.fromisoformat(details["end"]),
+                start_at=isoparse(details["start"]),
+                end_at=isoparse(details["end"]),
                 remarks=details["notes"],
                 other={},
             )
 
             return result
 
-        except (ClientError, RequestException, KeyError) as e:
+        except (QmaticException, RequestException, KeyError) as e:
             raise AppointmentException(e)
 
     def check_config(self):
         try:
             response = self.client.get("services")
             response.raise_for_status()
-        except (ClientError, RequestException) as e:
+        except (QmaticException, RequestException) as e:
             raise InvalidPluginConfiguration(
                 _("Invalid response: {exception}").format(exception=e)
             )
