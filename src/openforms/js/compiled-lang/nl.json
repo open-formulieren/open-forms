@@ -97,6 +97,12 @@
       "value": "Naam"
     }
   ],
+  "5AC1+x": [
+    {
+      "type": 0,
+      "value": "The value of the selected field will be the process variable value."
+    }
+  ],
   "5OXIff": [
     {
       "type": 0,
@@ -353,6 +359,12 @@
       "value": "Logica"
     }
   ],
+  "EBsxTk": [
+    {
+      "type": 0,
+      "value": "Field"
+    }
+  ],
   "EtAvFF": [
     {
       "type": 0,
@@ -423,6 +435,12 @@
     {
       "type": 0,
       "value": "Gebruik gekoppelde productprijs"
+    }
+  ],
+  "H3dRU6": [
+    {
+      "type": 0,
+      "value": "Check to include the field as process variable"
     }
   ],
   "H6VxhG": [
@@ -575,6 +593,12 @@
       "value": "Opslaan en nieuwe toevoegen"
     }
   ],
+  "PC7ICN": [
+    {
+      "type": 0,
+      "value": "Enabled"
+    }
+  ],
   "PaEo2j": [
     {
       "type": 0,
@@ -591,6 +615,12 @@
     {
       "type": 0,
       "value": "Tijd veld"
+    }
+  ],
+  "PtZ96W": [
+    {
+      "type": 0,
+      "value": "Alias"
     }
   ],
   "PwUKIe": [
@@ -921,6 +951,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "gz32s2": [
+    {
+      "type": 0,
+      "value": "If desired, you can specify a different process variable name."
     }
   ],
   "gzAzdU": [

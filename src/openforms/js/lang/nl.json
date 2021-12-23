@@ -74,6 +74,11 @@
     "description": "Form name field label",
     "originalDefault": "Name"
   },
+  "5AC1+x": {
+    "defaultMessage": "The value of the selected field will be the process variable value.",
+    "description": "Manage process vars component help text",
+    "originalDefault": "The value of the selected field will be the process variable value."
+  },
   "5OXIff": {
     "defaultMessage": "Veld waar de geboortedatum voor een afspraak komt te staan",
     "description": "Birth Date Component field help text",
@@ -254,6 +259,11 @@
     "description": "Logic fieldset title",
     "originalDefault": "Logic"
   },
+  "EBsxTk": {
+    "defaultMessage": "Field",
+    "description": "Manage process vars component column title",
+    "originalDefault": "Field"
+  },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
     "description": "Copy form button title",
@@ -313,6 +323,11 @@
     "defaultMessage": "Gebruik gekoppelde productprijs",
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
+  },
+  "H3dRU6": {
+    "defaultMessage": "Check to include the field as process variable",
+    "description": "Manage process vars enabled checkbox help text",
+    "originalDefault": "Check to include the field as process variable"
   },
   "H6VxhG": {
     "defaultMessage": "Onderhoudsmodus",
@@ -439,6 +454,11 @@
     "description": "Admin save and add another submit button",
     "originalDefault": "Save and add another"
   },
+  "PC7ICN": {
+    "defaultMessage": "Enabled",
+    "description": "Manage process vars enabled checkbox column title",
+    "originalDefault": "Enabled"
+  },
   "PaEo2j": {
     "defaultMessage": "Proces",
     "description": "Camunda 'process definition' label",
@@ -453,6 +473,11 @@
     "defaultMessage": "Tijd veld",
     "description": "Times Component field label",
     "originalDefault": "Times Component"
+  },
+  "PtZ96W": {
+    "defaultMessage": "Alias",
+    "description": "Manage process vars alias column title",
+    "originalDefault": "Alias"
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
@@ -708,6 +733,11 @@
     "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "gz32s2": {
+    "defaultMessage": "If desired, you can specify a different process variable name.",
+    "description": "Manage process vars alias help text",
+    "originalDefault": "If desired, you can specify a different process variable name."
   },
   "gzAzdU": {
     "defaultMessage": "Opslaan en opnieuw bewerken",
