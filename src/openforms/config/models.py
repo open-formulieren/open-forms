@@ -417,6 +417,16 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Amount of days when all submissions will be permanently deleted"),
     )
 
+    plugin_configuration = JSONField(
+        _("plugin configuration"),
+        blank=True,
+        default=dict,
+        help_text=_(
+            "Configuration of plugins for authentication, payments, prefill, "
+            "registrations and validation"
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
@@ -440,3 +450,6 @@ class GlobalConfiguration(SingletonModel):
         rendered_content = Template(template).render(Context({}))
 
         return rendered_content
+
+    def plugin_enabled(self, plugin_identifier: str):
+        return self.plugin_configuration.get(plugin_identifier, True)
