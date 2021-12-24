@@ -83,7 +83,7 @@ div.flatpickr-calendar.open
   :not([ref="editForm"]) {
 
     .form-row {
-      &, * {
+      &, :not(select) {
         box-sizing: initial;
       }
     }
