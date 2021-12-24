@@ -26,7 +26,7 @@ class RegisteredValidator:
     verbose_name: str
     callable: ValidatorType
     is_demo_plugin: bool = False
-    is_enabled: bool = False  # TODO always enabled for now
+    is_enabled: bool = True  # TODO always enabled for now
 
     def __call__(self, value):
         return self.callable(value)

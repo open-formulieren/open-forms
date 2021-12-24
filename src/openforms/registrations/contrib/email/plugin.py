@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks.registration import set_submission_reference
@@ -28,6 +29,9 @@ class EmailRegistration(BasePlugin):
     configuration_options = EmailOptionsSerializer
 
     def register_submission(self, submission: Submission, options: dict) -> None:
+        if not self.is_enabled:
+            raise PluginNotEnabled()
+
         submitted_data = submission.get_printable_data()
 
         # explicitly get a reference before registering

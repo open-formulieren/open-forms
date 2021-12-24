@@ -10,7 +10,7 @@ from lxml import etree
 from requests import HTTPError, RequestException
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
 from openforms.submissions.models import Submission
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
@@ -117,6 +117,9 @@ class StufBgPrefill(BasePlugin):
     def get_prefill_values(
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
+        if not self.is_enabled:
+            raise PluginNotEnabled()
+
         if not submission.bsn:
             #  If there is no bsn we can't prefill any values so just return
             return {}

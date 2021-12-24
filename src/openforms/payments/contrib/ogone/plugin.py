@@ -12,6 +12,7 @@ from rest_framework.exceptions import ParseError
 
 from openforms.config.data import Entry
 from openforms.logging import logevent
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -44,6 +45,9 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
     configuration_options = OgoneOptionsSerializer
 
     def start_payment(self, request, payment: SubmissionPayment):
+        if not self.is_enabled:
+            raise PluginNotEnabled()
+
         # decimal to cents
         amount_cents = int((payment.amount * 100).to_integral_exact())
 

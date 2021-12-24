@@ -18,6 +18,7 @@ from django_camunda.tasks import start_process
 from django_camunda.types import ProcessVariables
 from django_camunda.utils import serialize_variable
 
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -86,6 +87,9 @@ class CamundaRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Dict[str, str]:
+        if not self.is_enabled:
+            raise PluginNotEnabled()
+
         process_definition = options["process_definition"]
         version = options["process_definition_version"]
 
