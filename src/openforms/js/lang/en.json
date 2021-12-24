@@ -194,6 +194,11 @@
     "description": "Phone Number Component field help text",
     "originalDefault": "Component where the phone number should be entered"
   },
+  "BKTOtD": {
+    "defaultMessage": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }",
+    "description": "Managed Camunda process vars state feedback",
+    "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
+  },
   "BStu9Z": {
     "defaultMessage": "Form",
     "description": "Form fields tab title",
@@ -568,6 +573,11 @@
     "defaultMessage": "All Submissions Removal Limit",
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
+  },
+  "V21YkS": {
+    "defaultMessage": "Confirm",
+    "description": "Camunda process variables confirm button",
+    "originalDefault": "Confirm"
   },
   "VMMOA0": {
     "defaultMessage": "Page content",

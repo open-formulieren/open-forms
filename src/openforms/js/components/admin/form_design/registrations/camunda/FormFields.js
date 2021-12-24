@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
-import {useImmerReducer} from 'use-immer';
+import produce from 'immer';
 
-import ActionButton from '../../../forms/ActionButton';
+import ActionButton, {SubmitAction} from '../../../forms/ActionButton';
 import Select from '../../../forms/Select';
+import SubmitRow from '../../../forms/SubmitRow';
 import FormModal from '../../../FormModal';
 import {CustomFieldTemplate} from '../../../RJSFWrapper';
 import SelectProcessVariables from './SelectProcessVariables';
@@ -21,45 +22,11 @@ const Wrapper = ({children}) => (
     </form>
 );
 
-
-const initialState = {
-    modalOpen: true,
-    processVariables: [],
+const EMPTY_PROCESS_VARIABLE = {
+    enabled: true,
+    componentKey: '',
+    alias: '',
 };
-
-const reducer = (draft, action) => {
-    switch(action.type) {
-        case 'TOGGLE_PROCESS_VARS_MODAL': {
-            draft.modalOpen = !draft.modalOpen;
-            break;
-        }
-        case 'CLOSE_PROCESS_VARS_MODAL': {
-            draft.modalOpen = false;
-            break;
-        }
-        case 'MODIFY_PROCESS_VAR': {
-            const {index, event: {target: {name, value}}} = action.payload;
-            draft.processVariables[index][name] = value;
-            break;
-        }
-        case 'ADD_PROCESS_VAR': {
-            draft.processVariables.push({
-                enabled: true,
-                componentKey: '',
-                alias: '',
-            });
-            break;
-        }
-        case 'REMOVE_PROCESS_VAR': {
-            const {index} = action.payload;
-            draft.processVariables.splice(index, 1);
-            break;
-        }
-        default:
-            throw new Error(`Unknown action type: ${action.type}`);
-    }
-};
-
 
 const getProcessSelectionChoices = (processDefinitions, processDefinition) => {
     const processDefinitionChoices = Object.entries(processDefinitions).map(([processKey, versions]) => {
@@ -83,11 +50,11 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
     const {
         processDefinition='',
         processDefinitionVersion=null,
-        // TODO: read procssVariables from formData instead of local state once backend is updated
+        processVariables=[],
     } = formData;
 
     const intl = useIntl();
-    const [{modalOpen, processVariables}, dispatch] = useImmerReducer(reducer, initialState);
+    const [modalOpen, setModalOpen] = useState(false);
     const [processDefinitionChoices, versionChoices] = getProcessSelectionChoices(processDefinitions, processDefinition);
 
     const onFieldChange = (event) => {
@@ -113,6 +80,29 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
 
         // call parent event-handler with fully updated form data object
         onChange(updatedFormData);
+    };
+
+    const onAddProcessVariable = () => {
+        const nextFormData = produce(formData, draft => {
+            if (!draft.processVariables) draft.processVariables = [];
+            draft.processVariables.push(EMPTY_PROCESS_VARIABLE);
+        });
+        onChange(nextFormData);
+    };
+
+    const onChangeProcessVariable = (index, event) => {
+        const {name, value} = event.target;
+        const nextFormData = produce(formData, draft => {
+            draft.processVariables[index][name] = value;
+        });
+        onChange(nextFormData);
+    };
+
+    const onDeleteProcessVariable = (index) => {
+        const nextFormData = produce(formData, draft => {
+            draft.processVariables.splice(index, 1);
+        });
+        onChange(nextFormData);
     };
 
     return (
@@ -165,12 +155,22 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
 
                 <CustomFieldTemplate id="camundaOptions.manageProcessVars" displayLabel={false} rawErrors={null}>
                     <ActionButton
-                        text={intl.formatMessage({
+                        text={ intl.formatMessage({
                             description: 'Open manage camnda process vars modal button',
                             defaultMessage: 'Manage process variables'
                         })}
                         type="button"
-                        onClick={() => dispatch({type: 'TOGGLE_PROCESS_VARS_MODAL'})}
+                        onClick={() => setModalOpen(!modalOpen)}
+                    />
+                    &nbsp;
+                    <FormattedMessage
+                        description="Managed Camunda process vars state feedback"
+                        defaultMessage="{varCount, plural,
+                            =0 {}
+                            one {(1 variable mapped)}
+                            other {({varCount} variables mapped)}
+                        }"
+                        values={{varCount: processVariables.length}}
                     />
                 </CustomFieldTemplate>
 
@@ -179,14 +179,23 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
             <FormModal
                 isOpen={modalOpen}
                 title={<FormattedMessage description="Camunda process var selection modal title" defaultMessage="Manage process variables" />}
-                closeModal={() => dispatch({type: 'CLOSE_PROCESS_VARS_MODAL'})}
+                closeModal={() => setModalOpen(false)}
             >
                 <SelectProcessVariables
                     processVariables={processVariables}
-                    onChange={(index, event) => dispatch({type: 'MODIFY_PROCESS_VAR', payload: {index, event}})}
-                    onAdd={() => dispatch({type: 'ADD_PROCESS_VAR'})}
-                    onDelete={(index) => dispatch({type: 'REMOVE_PROCESS_VAR', payload: {index}})}
+                    onChange={onChangeProcessVariable}
+                    onAdd={onAddProcessVariable}
+                    onDelete={onDeleteProcessVariable}
                 />
+                <SubmitRow>
+                    <SubmitAction
+                        text={intl.formatMessage({description: 'Camunda process variables confirm button', defaultMessage: 'Confirm'})}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            setModalOpen(false);
+                        }}
+                    />
+                </SubmitRow>
             </FormModal>
         </>
     );
@@ -202,6 +211,11 @@ FormFields.propTypes = {
     formData: PropTypes.shape({ // matches the backend serializer!
         processDefinition: PropTypes.string,
         processDefinitionVersion: PropTypes.number,
+        processVariables: PropTypes.arrayOf(PropTypes.shape({
+            enabled: PropTypes.bool.isRequired,
+            componentKey: PropTypes.string.isRequired,
+            alias: PropTypes.string.isRequired,
+        })),
     }),
     onChange: PropTypes.func.isRequired,
 };

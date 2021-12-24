@@ -57,6 +57,11 @@ CamundaOptionsForm.propTypes = {
     formData: PropTypes.shape({ // matches the backend serializer!
         processDefinition: PropTypes.string,
         processDefinitionVersion: PropTypes.number,
+        processVariables: PropTypes.arrayOf(PropTypes.shape({
+            enabled: PropTypes.bool.isRequired,
+            componentKey: PropTypes.string.isRequired,
+            alias: PropTypes.string.isRequired,
+        })),
     }),
     onChange: PropTypes.func.isRequired,
 };

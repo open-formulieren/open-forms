@@ -277,6 +277,44 @@
       "value": "Component where the phone number should be entered"
     }
   ],
+  "BKTOtD": [
+    {
+      "offset": 0,
+      "options": {
+        "=0": {
+          "value": [
+          ]
+        },
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(1 variable mapped)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "("
+            },
+            {
+              "type": 1,
+              "value": "varCount"
+            },
+            {
+              "type": 0,
+              "value": " variables mapped)"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "varCount"
+    }
+  ],
   "BStu9Z": [
     {
       "type": 0,
@@ -733,6 +771,12 @@
     {
       "type": 0,
       "value": "All Submissions Removal Limit"
+    }
+  ],
+  "V21YkS": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "VMMOA0": [
