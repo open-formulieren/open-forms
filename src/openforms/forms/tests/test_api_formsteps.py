@@ -537,8 +537,11 @@ class FormsStepsAPITests(APITestCase):
             reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
 
-        # The form is still visible for staff users (Needed for the CRUD admin page)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # The form is no longer visible for staff users
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
 
         # Submission still exists
         submission.refresh_from_db()
