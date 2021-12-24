@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -276,12 +277,12 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
             "process_variables": [
                 {
                     "enabled": True,
-                    "componentKey": "currency",
+                    "component_key": "currency",
                     "alias": "amount",
                 },
                 {
                     "enabled": True,
-                    "componentKey": "invoiceCategory",
+                    "component_key": "invoiceCategory",
                     "alias": "",
                 },
             ],
@@ -294,7 +295,7 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
             process_key="invoice",
             variables=serialize_variables(
                 {
-                    "amount": "25.00",
+                    "amount": Decimal("25.00"),
                     "invoiceCategory": "Misc",
                 }
             ),

@@ -6,6 +6,7 @@ so that django-camunda can map it to the appropriate Camunda type information.
 
 The work in #1068 should eventually make this module obsolete.
 """
+from decimal import Decimal
 from typing import Any, Dict, List
 
 from dateutil import parser
@@ -60,6 +61,7 @@ TYPE_MAP = {
     "map": noop,  # list of coordinates (lng, lat) in float format
     "password": to_str,
     "licenseplate": to_str,
+    "currency": lambda c, value: Decimal(str(value)),
 }
 
 

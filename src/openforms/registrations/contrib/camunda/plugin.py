@@ -47,7 +47,7 @@ def get_process_variables(
     # dict of {componentKey: camundaProcesVar} mapping
     simple_mappings = dict(
         [
-            (key := process_var["componentKey"], process_var.get("alias") or key)
+            (key := process_var["component_key"], process_var.get("alias") or key)
             for process_var in process_variables
             if process_var.get("enabled")
         ]
