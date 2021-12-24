@@ -18,7 +18,10 @@ from openforms.emails.utils import send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
-from openforms.forms.validators import validate_not_maintainance_mode
+from openforms.forms.validators import (
+    validate_not_deleted,
+    validate_not_maintainance_mode,
+)
 
 from ...utils.urls import build_absolute_uri
 from ..constants import ProcessingResults, ProcessingStatuses
@@ -173,6 +176,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
                 "validators": [
                     validate_not_maintainance_mode,
+                    validate_not_deleted,
                 ],
             },
             "form_url": {

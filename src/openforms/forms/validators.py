@@ -36,3 +36,11 @@ def validate_not_maintainance_mode(form):
             _("Form is in maintenance mode."),
             code="invalid",
         )
+
+
+def validate_not_deleted(form):
+    if form._is_deleted:
+        raise ValidationError(
+            _("Form is deleted."),
+            code="invalid",
+        )
