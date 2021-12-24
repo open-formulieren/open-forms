@@ -79,47 +79,47 @@ class SubmissionTests(TestCase):
             [
                 (
                     "key",
-                    {
-                        "type": "textfield",
-                        "value": "this is some text",
-                        "label": "Label",
-                        "multiple": False,
-                        "values": None,
-                        "appointments": {},
-                    },
+                    (
+                        {
+                            "key": "key",
+                            "type": "textfield",
+                            "label": "Label",
+                        },
+                        "this is some text",
+                    ),
                 ),
                 (
                     "key2",
-                    {
-                        "type": "textarea",
-                        "value": "this is other text in a text area",
-                        "label": "Label2",
-                        "multiple": False,
-                        "values": None,
-                        "appointments": {},
-                    },
+                    (
+                        {
+                            "key": "key2",
+                            "type": "textarea",
+                            "label": "Label2",
+                        },
+                        "this is other text in a text area",
+                    ),
                 ),
                 (
                     "key3",
-                    {
-                        "type": "checkbox",
-                        "value": True,
-                        "label": "Label3",
-                        "multiple": False,
-                        "values": None,
-                        "appointments": {},
-                    },
+                    (
+                        {
+                            "key": "key3",
+                            "type": "checkbox",
+                            "label": "Label3",
+                        },
+                        True,
+                    ),
                 ),
                 (
                     "key5",
-                    {
-                        "type": "textfield",
-                        "value": "this is some inner text",
-                        "label": "key5",
-                        "multiple": False,
-                        "values": None,
-                        "appointments": {},
-                    },
+                    (
+                        {
+                            "key": "key5",
+                            "type": "textfield",
+                            "label": "key5",
+                        },
+                        "this is some inner text",
+                    ),
                 ),
             ]
         )
@@ -156,18 +156,19 @@ class SubmissionTests(TestCase):
         self.assertEqual(
             ordered,
             {
-                "testSelectBoxes": {
-                    "type": "selectboxes",
-                    "label": "My Boxes",
-                    "value": {"test1": True, "test2": True, "test3": False},
-                    "values": [
-                        {"value": "test1", "label": "test 1", "shortcut": ""},
-                        {"value": "test2", "label": "test 2", "shortcut": ""},
-                        {"value": "test3", "label": "test 3", "shortcut": ""},
-                    ],
-                    "multiple": False,
-                    "appointments": {},
-                }
+                "testSelectBoxes": (
+                    {
+                        "key": "testSelectBoxes",
+                        "type": "selectboxes",
+                        "label": "My Boxes",
+                        "values": [
+                            {"value": "test1", "label": "test 1", "shortcut": ""},
+                            {"value": "test2", "label": "test 2", "shortcut": ""},
+                            {"value": "test3", "label": "test 3", "shortcut": ""},
+                        ],
+                    },
+                    {"test1": True, "test2": True, "test3": False},
+                )
             },
         )
         printable_data = submission.get_printable_data()

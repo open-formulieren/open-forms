@@ -3,18 +3,16 @@ import os.path
 import uuid
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
-from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_time
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -26,6 +24,7 @@ from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
+from openforms.formio.formatters.registry import register
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.validators import (
@@ -454,26 +453,22 @@ class Submission(models.Model):
         for component in self.form.iter_components(recursive=True):
             key = component["key"]
             if key in merged_data:
-                ordered_data[key] = {
-                    "type": component["type"],
-                    "value": merged_data[key],
-                    "label": component.get("label", key),
-                    "multiple": component.get("multiple", False),
-                    # The select component has the values/labels nested in a 'data' field
-                    "values": component.get("values")
-                    or component.get("data", {}).get("values"),
-                    # appointments stuff...
-                    "appointments": component.get("appointments", {}),
-                }
+                component.setdefault("label", key)
+                ordered_data[key] = (
+                    component,
+                    merged_data[key],
+                )
 
         # now append remaining data that doesn't have a matching component
         for key, value in merged_data.items():
             if key not in ordered_data:
-                ordered_data[key] = {
-                    "type": "unknown component",
-                    "value": merged_data[key],
-                    "label": key,
-                }
+                ordered_data[key] = (
+                    {
+                        "type": "unknown component",
+                        "label": key,
+                    },
+                    merged_data[key],
+                )
 
         return ordered_data
 
@@ -535,78 +530,27 @@ class Submission(models.Model):
         return value
 
     def get_printable_data(
-        self, limit_keys_to: Optional[List[str]] = None, use_merged_data_fallback=False
+        self,
+        limit_keys_to: Optional[List[str]] = None,
+        use_merged_data_fallback=False,
     ) -> Dict[str, str]:
         printable_data = OrderedDict()
         attachment_data = self.get_merged_attachments()
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
-        for key, info in self.get_ordered_data_with_component_type().items():
+        for key, (info, value) in self.get_ordered_data_with_component_type().items():
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
+            formatter = (
+                register[info["type"]]
+                if info["type"] in register
+                else register["default"]
+            )
+
             label = info["label"]
-
-            if info["type"] == "file":
-                files = attachment_data.get(key)
-                if files:
-                    printable_data[label] = _("attachment: %s") % (
-                        ", ".join(file.get_display_name() for file in files)
-                    )
-                # FIXME: ugly workaround to patch the demo, this should be fixed properly
-                elif use_merged_data_fallback:
-                    printable_data[label] = merged_data.get(key)
-                else:
-                    printable_data[label] = _("empty")
-
-            elif info["type"] == "date" or (
-                info.get("appointments", {}).get("showDates", False)
-            ):
-                printable_data[label] = _join_mapped(
-                    lambda v: fmt_date(parse_date(v)), info["value"]
-                )
-
-            elif info["type"] == "time" or (
-                appointment_time := info.get("appointments", {}).get("showTimes", False)
-            ):
-                _parse_time = datetime.fromisoformat if appointment_time else parse_time
-                # strip off the seconds
-                printable_data[label] = _join_mapped(
-                    lambda v: fmt_time(_parse_time(v)), info["value"]
-                )
-
-            elif info["type"] == "selectboxes":
-                selected_values: Dict[str, bool] = info["value"]
-                selected_labels = [
-                    entry["label"]
-                    for entry in info["values"]
-                    if selected_values.get(entry["value"])
-                ]
-                printable_data[label] = ", ".join(selected_labels)
-
-            elif type(info["value"]) is dict:
-                printable_value = info["value"]
-                if "name" in printable_value:
-                    printable_data[label] = printable_value["name"]
-                else:
-                    printable_value = list(printable_value.values())[0]
-                    logger.warning(
-                        'Key "%s" is a dict with unknown values (%s). The first value "%s" was stored.',
-                        key,
-                        info["value"],
-                        printable_value,
-                    )
-                    printable_data[label] = printable_value["name"]
-            else:
-                printable_value = info["value"]
-                if info.get("values"):
-                    # Case in which each value has a label (for example select and radio components)
-                    printable_value = self._get_value_label(
-                        info["values"], info["value"]
-                    )
-
-                # more here? like getComponentValue() in the SDK?
-                printable_data[label] = printable_value
+            formatted = formatter(info, value)
+            printable_data[label] = formatted
 
         # finally, check if we have co-sign information to append
         if self.co_sign_data:
