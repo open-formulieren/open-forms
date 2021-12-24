@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with payment_uuid=log.extra_data.payment_uuid old_submission_id=log.extra_data.old_submission_id new_submission_id=log.extra_data.new_submission_id lead=log.fmt_lead %}
+   {{ lead }}: SubmissionPayment '{{ payment_uuid }}' was transferred from Submission {{ old_submission_id }} to Submission {{ new_submission_id }}.
+{% endblocktrans %}

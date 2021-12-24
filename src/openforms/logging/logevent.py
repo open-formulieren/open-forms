@@ -307,11 +307,12 @@ def payment_transfer_to_new_submission(
     new_submission: "Submission",
 ):
     _create_log(
-        object=submission_payment,
+        object=old_submission,
         event="transfer_payment_to_submission_copy",
         extra_data={
-            "old_submission_uuid": str(old_submission.uuid),
-            "new_submission_uuid": str(new_submission.uuid),
+            "payment_uuid": str(submission_payment.uuid),
+            "old_submission_id": old_submission.id,
+            "new_submission_id": new_submission.id,
         },
     )
 
