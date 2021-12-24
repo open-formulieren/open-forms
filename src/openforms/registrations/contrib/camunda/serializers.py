@@ -20,6 +20,7 @@ class MappedVariableSerializer(serializers.Serializer):
     alias = serializers.CharField(
         required=False,
         allow_blank=True,
+        default="",
         label=_("Alias"),
         help_text=_(
             "If provided, the Camunda process variable will have this alias as name "

@@ -290,6 +290,8 @@ class FormSerializer(serializers.ModelSerializer):
             # like registrationBackendOptions.toEmails.0 if the first email was invalid
             detail = {options_field: e.detail}
             raise serializers.ValidationError(detail) from e
+        # serializer does some normalization, so make sure to update the data
+        attrs[options_field] = serializer.validated_data
 
 
 class FormExportSerializer(FormSerializer):
