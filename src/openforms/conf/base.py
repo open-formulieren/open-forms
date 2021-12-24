@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     "openforms.appointments.contrib.qmatic.apps.QmaticPlugin",
     "openforms.config",
     "openforms.emails",
+    "openforms.formio",
     "openforms.forms",
     "openforms.multidomain",
     "openforms.products",
