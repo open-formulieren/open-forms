@@ -244,7 +244,10 @@ class Form(models.Model):
         verbose_name_plural = _("forms")
 
     def __str__(self):
-        return self.admin_name
+        if self._is_deleted:
+            return "{}{}".format(self.admin_name, _(" (deleted)"))
+        else:
+            return self.admin_name
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
