@@ -59,24 +59,27 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
 
     const onFieldChange = (event) => {
         const {name, value} = event.target;
-        const updatedFormData = {...formData, [name]: value};
+        const updatedFormData = produce(formData, draft => {
+            draft[name] = value;
 
-        switch (name) {
-            // if the definition changes, reset the version
-            case 'processDefinition': {
-                updatedFormData.processDefinitionVersion = null;
-                break;
-            }
-            // normalize blank option to null
-            case 'processDefinitionVersion': {
-                if (value === '') {
-                    updatedFormData.processDefinitionVersion = null;
-                } else {
-                    updatedFormData.processDefinitionVersion = parseInt(value, 10);
+            switch (name) {
+                // if the definition changes, reset the version & mapped variables
+                case 'processDefinition': {
+                    draft.processDefinitionVersion = null;
+                    draft.processVariables = []; // reset variables if a different process is used
+                    break;
                 }
-                break;
+                // normalize blank option to null
+                case 'processDefinitionVersion': {
+                    if (value === '') {
+                        draft.processDefinitionVersion = null;
+                    } else {
+                        draft.processDefinitionVersion = parseInt(value, 10);
+                    }
+                    break;
+                }
             }
-        }
+        });
 
         // call parent event-handler with fully updated form data object
         onChange(updatedFormData);

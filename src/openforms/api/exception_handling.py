@@ -51,15 +51,28 @@ def get_validation_errors(validation_errors: dict):
         for error in error_list:
             if isinstance(error, dict):
                 continue
-            yield OrderedDict(
-                [
-                    # see https://tools.ietf.org/html/rfc7807#section-3.1
-                    # ('type', 'about:blank'),
-                    ("name", underscore_to_camel(field_name)),
-                    ("code", error.code),
-                    ("reason", str(error)),
-                ]
-            )
+
+            if isinstance(error, list):
+                for err in error:
+                    yield OrderedDict(
+                        [
+                            # see https://tools.ietf.org/html/rfc7807#section-3.1
+                            # ('type', 'about:blank'),
+                            ("name", underscore_to_camel(field_name)),
+                            ("code", err.code),
+                            ("reason", str(err)),
+                        ]
+                    )
+            else:
+                yield OrderedDict(
+                    [
+                        # see https://tools.ietf.org/html/rfc7807#section-3.1
+                        # ('type', 'about:blank'),
+                        ("name", underscore_to_camel(field_name)),
+                        ("code", error.code),
+                        ("reason", str(error)),
+                    ]
+                )
 
 
 class HandledException:

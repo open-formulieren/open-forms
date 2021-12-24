@@ -92,3 +92,42 @@ class FormRegistrationBackendOptionsTests(APITestCase):
             ],
         }
         self.assertEqual(self.form.registration_backend_options, expected)
+
+    def test_incomplete_data(self):
+        invalid_vars = [
+            {},
+            None,
+            {"enabled": True, "componentKey": ""},
+            # {"enabled": True, "componentKey": "non-existent"},
+        ]
+        expected_errors = [
+            {
+                "registrationBackendOptions.processVariables.0.enabled": "required",
+                "registrationBackendOptions.processVariables.0.componentKey": "required",
+            },
+            {
+                "registrationBackendOptions.processVariables": "null",
+            },
+            {
+                "registrationBackendOptions.processVariables.0.componentKey": "blank",
+            },
+        ]
+
+        for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
+            with self.subTest(invalid_var=invalid_var):
+                data = {
+                    "registrationBackendOptions": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [invalid_var],
+                    },
+                }
+
+                response = self.client.patch(self.endpoint, data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                error_codes = {
+                    param["name"]: param["code"]
+                    for param in response.json()["invalidParams"]
+                }
+                self.assertEqual(error_codes, expected_error_codes)
