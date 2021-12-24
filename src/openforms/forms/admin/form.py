@@ -86,6 +86,7 @@ class FormAdmin(
         return (
             super()
             .get_queryset(request)
+            .filter(_is_deleted=False)
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
 
@@ -274,3 +275,12 @@ class FormAdmin(
     remove_from_maintenance_mode.short_description = _(
         "Remove %(verbose_name_plural)s from maintenance mode"
     )
+
+    def delete_model(self, request, form):
+        # override for soft-delete
+        form._is_deleted = True
+        form.save(update_fields=["_is_deleted"])
+
+    def delete_queryset(self, request, queryset):
+        # override for soft-delete
+        queryset.update(_is_deleted=True)
