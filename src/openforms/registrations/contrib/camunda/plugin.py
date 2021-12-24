@@ -1,3 +1,10 @@
+"""
+Send submission data to a (new) process instance in Camunda.
+
+See the `documentation <_variables>` to learn more about Camunda variable types.
+
+.. _variables: https://docs.camunda.org/manual/7.16/reference/rest/overview/variables/
+"""
 import logging
 from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
