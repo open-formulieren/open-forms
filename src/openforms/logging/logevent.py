@@ -301,6 +301,22 @@ def payment_register_failure(payment: "SubmissionPayment", plugin, error: Except
     )
 
 
+def payment_transfer_to_new_submission(
+    submission_payment: "SubmissionPayment",
+    old_submission: "Submission",
+    new_submission: "Submission",
+):
+    _create_log(
+        object=old_submission,
+        event="transfer_payment_to_submission_copy",
+        extra_data={
+            "payment_uuid": str(submission_payment.uuid),
+            "old_submission_id": old_submission.id,
+            "new_submission_id": new_submission.id,
+        },
+    )
+
+
 # - - -
 
 

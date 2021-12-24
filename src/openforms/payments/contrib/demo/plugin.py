@@ -13,7 +13,7 @@ class DemoPayment(BasePlugin):
 
     def start_payment(self, request, payment):
         url = self.get_return_url(request, payment)
-        return PaymentInfo(url=url)
+        return PaymentInfo(url=url, data={})
 
     def handle_return(self, request, payment):
         payment.status = PaymentStatus.completed

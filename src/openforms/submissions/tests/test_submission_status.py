@@ -13,7 +13,9 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.payments.constants import PaymentStatus
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..tasks import cleanup_on_completion_results
@@ -307,6 +309,31 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(
                 response_data["paymentUrl"], f"http://testserver{expected_url}"
             )
+
+    def test_payment_already_received(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            on_completion_task_ids=["some-id"],
+            public_registration_reference="OF-ABCDE",
+            form__product__price=Decimal("12.34"),
+            form__payment_backend="test",
+        )
+        SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.completed
+        )
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+
+            response = self.client.get(check_status_url)
+            response_data = response.json()
+
+            # Payment is required, but has already been done -> No URL
+            self.assertEqual(response_data["paymentUrl"], "")
 
 
 @patch("openforms.submissions.status.AsyncResult.forget", return_value=None)

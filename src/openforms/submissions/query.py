@@ -15,6 +15,8 @@ from django.db.models import (
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+from openforms.logging import logevent
+from openforms.payments.models import SubmissionPayment
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission
@@ -89,6 +91,18 @@ class BaseSubmissionManager(models.Manager):
                 )
             )
         related_steps_manager.bulk_create(new_steps)
+
+        if original.payment_required and original.payment_user_has_paid:
+            submission_payment = SubmissionPayment.objects.get(submission=original)
+            submission_payment.submission = new_instance
+            submission_payment.save()
+
+            logevent.payment_transfer_to_new_submission(
+                submission_payment=submission_payment,
+                old_submission=original,
+                new_submission=new_instance,
+            )
+
         return new_instance
 
 
