@@ -6,7 +6,7 @@ so that django-camunda can map it to the appropriate Camunda type information.
 
 The work in #1068 should eventually make this module obsolete.
 """
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 from dateutil import parser
 
@@ -15,16 +15,8 @@ def to_str(c, value) -> str:
     return str(value)
 
 
-def number(c, value) -> Union[float, int, str]:
-    if isinstance(value, (int, float)):
-        return value
-
-    try:
-        return int(value)
-    except ValueError:
-        pass
-
-    return str(value)
+def noop(c, value: Any) -> Any:
+    return value
 
 
 def select(component, value) -> str:
@@ -36,6 +28,9 @@ def select(component, value) -> str:
 
     if appointment_config.get("showTimes"):
         return parser.parse(value)
+
+    if isinstance(value, dict):
+        return value
 
     return str(value)
 
@@ -53,16 +48,16 @@ TYPE_MAP = {
     "date": lambda c, value: parser.parse(value).date(),
     "signature": to_str,  # TODO: file like obj?
     "time": lambda c, value: parser.parse(value).time(),
-    "number": number,
+    "number": noop,
     "phoneNumber": to_str,
     "bsn": to_str,
     "postcode": to_str,
-    "file": lambda c, value: value,  # TODO: file like, dict that needs formatting?
+    "file": noop,  # TODO: file like, dict that needs formatting?
     "select": select,
     "radio": to_str,
     "selectboxes": selectboxes,
     "email": to_str,
-    "map": lambda c, value: value,  # list of coordinates (lng, lat) in float format
+    "map": noop,  # list of coordinates (lng, lat) in float format
     "password": to_str,
     "licenseplate": to_str,
 }

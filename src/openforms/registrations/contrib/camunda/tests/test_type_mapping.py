@@ -56,3 +56,34 @@ class TypeMappingTests(SimpleTestCase):
                 result = to_python(component, value)
 
                 self.assertEqual(result, expected_python_value)
+
+    def test_multiple_component(self):
+        component = {
+            "type": "number",
+            "multiple": True,
+        }
+
+        result = to_python(component, [42, 420.69])
+
+        self.assertEqual(result, [42, 420.69])
+
+    def test_appointment_select_product(self):
+        component = {
+            "type": "select",
+            "appointments": {
+                "showProducts": True,
+            },
+        }
+        value = {"name": "Example name", "identifier": "123"}
+
+        result = to_python(component, value)
+
+        self.assertEqual(result, value)
+
+    def test_partial_appointment_config(self):
+        component = {"type": "select", "appointments": {"showDates": False}}
+        value = "option1"
+
+        result = to_python(component, value)
+
+        self.assertEqual(result, "option1")
