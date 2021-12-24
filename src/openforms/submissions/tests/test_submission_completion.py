@@ -18,6 +18,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -228,6 +229,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
             },
         )
+
+    def test_form_auth_cleaned_after_completion(self):
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        # The auth details are cleaned by the signal handler
+        self.client.post(endpoint)
+        cleaned_session = self.client.session
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, cleaned_session)
 
 
 @temp_private_root()
