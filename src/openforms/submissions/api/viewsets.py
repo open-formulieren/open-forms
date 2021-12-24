@@ -23,7 +23,7 @@ from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser
-from ..signals import submission_start
+from ..signals import submission_complete, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
@@ -172,6 +172,9 @@ class SubmissionViewSet(
             return Response(
                 validation_serializer.data, status=status.HTTP_400_BAD_REQUEST
             )
+
+        # dispatch signal for modules to tap into
+        submission_complete.send(sender=self.__class__, request=self.request)
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()

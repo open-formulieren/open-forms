@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 # import specific module functionality and also allows third party apps/extensions to
 # tap into certain events.
 submission_start = Signal(providing_args=["instance", "request"])
+submission_complete = Signal(providing_args=["request"])
 
 
 @receiver(post_delete, sender=SubmissionReport)

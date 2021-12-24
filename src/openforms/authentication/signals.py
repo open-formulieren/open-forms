@@ -5,7 +5,7 @@ from django.dispatch import Signal, receiver
 from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
-from openforms.submissions.signals import submission_start
+from openforms.submissions.signals import submission_complete, submission_start
 
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 
@@ -49,3 +49,11 @@ def set_auth_attribute_on_session(
     instance.auth_plugin = plugin
     setattr(instance, attribute, identifier)
     instance.save(update_fields=["auth_plugin", attribute])
+
+
+@receiver(submission_complete, dispatch_uid="auth.clean_submission_form_auth")
+def clean_submission_form_auth(sender, request: Request, **kwargs):
+    if FORM_AUTH_SESSION_KEY not in request.session:
+        return
+
+    del request.session[FORM_AUTH_SESSION_KEY]
