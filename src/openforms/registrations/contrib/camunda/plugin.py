@@ -25,21 +25,44 @@ from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .checks import check_config
 from .serializers import CamundaOptionsSerializer
+from .type_mapping import to_python
 
 logger = logging.getLogger(__name__)
-
-
-# temporary to debug the demo process instances from Camunda
-VARS = {
-    "amount": 10,
-    "invoiceCategory": "Misc",
-}
 
 
 def serialize_variables(variables: Optional[Dict[str, Any]]) -> ProcessVariables:
     if variables is None:
         return {}
     return {key: serialize_variable(value) for key, value in variables.items()}
+
+
+def get_process_variables(
+    submission: Submission, options: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Extract the values from the submission and map onto the requested process variables.
+    """
+    variables = {}
+    process_variables = options.get("process_variables", [])
+    # dict of {componentKey: camundaProcesVar} mapping
+    simple_mappings = dict(
+        [
+            (key := process_var["componentKey"], process_var.get("alias") or key)
+            for process_var in process_variables
+            if process_var.get("enabled")
+        ]
+    )
+
+    merged_data: Dict[str, Any] = submission.get_merged_data()
+    for component in submission.form.iter_components(recursive=True):
+        if (key := component.get("key")) not in simple_mappings:
+            continue
+
+        value = merged_data.get(key, None)
+        alias = simple_mappings[key]
+        variables[alias] = to_python(component, value)
+
+    return variables
 
 
 @register("camunda")
@@ -55,7 +78,9 @@ class CamundaRegistration(BasePlugin):
 
         process_options = {
             "process_key": process_definition,
-            "variables": serialize_variables(VARS),
+            "variables": serialize_variables(
+                get_process_variables(submission, options)
+            ),
         }
 
         # if we have a specific version, we need to get the actual process id

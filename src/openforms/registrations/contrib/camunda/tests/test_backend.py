@@ -261,7 +261,7 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
                 },
             ],
             submitted_data={
-                "amount": "25.00",
+                "currency": "25.00",
                 "invoiceCategory": "Misc",
             },
             with_report=False,
@@ -278,7 +278,12 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
                     "enabled": True,
                     "componentKey": "currency",
                     "alias": "amount",
-                }
+                },
+                {
+                    "enabled": True,
+                    "componentKey": "invoiceCategory",
+                    "alias": "",
+                },
             ],
         }
         plugin = CamundaRegistration("camunda")
