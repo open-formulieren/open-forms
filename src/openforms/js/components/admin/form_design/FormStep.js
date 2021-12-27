@@ -6,7 +6,7 @@ import FormStepDefinition from './FormStepDefinition';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
 
-const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace}) => {
+const FormStep = ({ data, onEdit, onComponentMutated, onFieldChange, onLiteralFieldChange, onReplace}) => {
     const {
         configuration,
         formDefinition,
@@ -52,6 +52,7 @@ const FormStep = ({ data, onEdit, onFieldChange, onLiteralFieldChange, onReplace
             onFieldChange={onFieldChange}
             onLiteralFieldChange={onLiteralFieldChange}
             onChange={onEdit}
+            onComponentMutated={onComponentMutated}
             forceUpdate={forceBuilderUpdate}
             errors={validationErrors}
         />
@@ -74,6 +75,7 @@ FormStep.propTypes = {
         validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     }).isRequired,
     onEdit: PropTypes.func.isRequired,
+    onComponentMutated: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
     onReplace: PropTypes.func.isRequired,

@@ -26,7 +26,7 @@ const BackendOptionsFormRow = ({backend=null, currentOptions={}, onChange}) => {
 
     const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
     // either use the custom backend-specific defined form, or fall back to the generic react-json-schema-form
-    const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backend.id] ?? FormRjsfWrapper;
+    const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backend.id]?.form ?? FormRjsfWrapper;
     if (!hasOptionsForm && !BACKEND_OPTIONS_FORMS[backend.id]) {
         return null;
     }

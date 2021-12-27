@@ -63,7 +63,7 @@ const BUILDER_OPTIONS = {
 };
 
 
-const FormIOBuilder = ({ configuration, onChange, forceUpdate=false }) => {
+const FormIOBuilder = ({ configuration, onChange, onComponentMutated, forceUpdate=false }) => {
     // the deep clone is needed to create a mutable object, as the FormBuilder
     // mutates this object when forms are edited.
     const clone = cloneDeep(configuration);
@@ -97,6 +97,8 @@ const FormIOBuilder = ({ configuration, onChange, forceUpdate=false }) => {
             form={formRef.current}
             options={BUILDER_OPTIONS}
             onChange={formSchema => onChange(cloneDeep(formSchema))}
+            onSaveComponent={onComponentMutated.bind(null, 'changed')}
+            onDeleteComponent={onComponentMutated.bind(null, 'removed')}
         />
     );
 };
@@ -104,6 +106,7 @@ const FormIOBuilder = ({ configuration, onChange, forceUpdate=false }) => {
 FormIOBuilder.propTypes = {
     configuration: PropTypes.object,
     onChange: PropTypes.func,
+    onComponentMutated: PropTypes.func,
     forceUpdate: PropTypes.bool,
 };
 

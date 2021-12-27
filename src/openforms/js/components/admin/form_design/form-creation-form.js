@@ -45,6 +45,7 @@ import DataRemoval from './DataRemoval';
 import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
+import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents} from './utils';
 
 const initialFormState = {
@@ -283,8 +284,35 @@ function reducer(draft, action) {
         }
         case 'EDIT_STEP': {
             const {index, configuration} = action.payload;
-            // const currentConfiguration = original(draft.formSteps[index].configuration);
             draft.formSteps[index].configuration = configuration;
+            break;
+        }
+        case 'EDIT_STEP_COMPONENT_MUTATED':  {
+            const {mutationType, schema, args} = action.payload;
+
+            // check if we need updates to the backendRegistrationOptions
+            const {registrationBackend, registrationBackendOptions} = draft.form;
+            const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
+            if (handler == null) break;
+
+
+            let originalComp;
+            switch (mutationType) {
+                case 'changed': {
+                    [originalComp] = args;
+                    break;
+                }
+                case 'removed': {
+                    originalComp = null;
+                    break;
+                }
+                throw new Error(`Unknown mutation type '${mutationType}'`);
+            }
+
+            const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+            if (updatedOptions) {
+                draft.form.registrationBackendOptions = updatedOptions;
+            }
             break;
         }
         case 'STEP_FIELD_CHANGED': {
@@ -680,6 +708,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         });
     };
 
+    // TODO: we can probably remove a lot of state updates by tapping into onComponentMutated
+    // rather than onChange
     const onStepEdit = (index, configuration) => {
         dispatch({
             type: 'EDIT_STEP',
@@ -687,7 +717,19 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 index: index,
                 configuration: configuration
             }
-        })
+        });
+    };
+
+    // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
+    const onComponentMutated = (mutationType, schema, ...rest) => {
+        dispatch({
+            type: 'EDIT_STEP_COMPONENT_MUTATED',
+            payload: {
+                mutationType,
+                schema,
+                args: rest,
+            }
+        });
     };
 
     const onStepFieldChange = (index, event) => {
@@ -983,6 +1025,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                             steps={state.formSteps}
                                             loadingErrors={state.errors.loadingErrors}
                                             onEdit={onStepEdit}
+                                            onComponentMutated={onComponentMutated}
                                             onFieldChange={onStepFieldChange}
                                             onLiteralFieldChange={onStepLiteralFieldChange}
                                             onDelete={onStepDelete}

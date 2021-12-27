@@ -25,14 +25,15 @@ const emptyConfiguration = {
  * actual builder state is maintained by FormioJS itself and we are not driven that
  * state via props - only the initial state!
  *
- * We can solely use the onChange handler to * keep track of our own 'application'
- * state to eventually persist the data. This goes * against React's best practices,
+ * We can solely use the onChange handler to keep track of our own 'application'
+ * state to eventually persist the data. This goes against React's best practices,
  * but we're fighting the library at this point.
  *
  */
 const FormStepDefinition = ({ url='', name='', internalName='', slug='', previousText='', saveText='', nextText='',
-                                loginRequired=false, isReusable=false, configuration=emptyConfiguration, onChange,
-                                onFieldChange, onLiteralFieldChange, errors, ...props }) => {
+                                loginRequired=false, isReusable=false, configuration=emptyConfiguration,
+                                onChange, onComponentMutated, onFieldChange, onLiteralFieldChange, errors,
+                                ...props }) => {
 
     const setSlug = () => {
         // do nothing if there's already a slug set
@@ -147,7 +148,12 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
 
             <div className="formio-builder-wrapper">
                 <ConfigurationErrors errors={errors} />
-                <FormIOBuilder configuration={configuration} onChange={onChange} {...props} />
+                <FormIOBuilder
+                    configuration={configuration}
+                    onChange={onChange}
+                    onComponentMutated={onComponentMutated}
+                    {...props}
+                />
             </div>
         </>
     );
@@ -165,6 +171,7 @@ FormStepDefinition.propTypes = {
     loginRequired: PropTypes.bool,
     isReusable: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
+    onComponentMutated: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
     errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
