@@ -8,6 +8,8 @@ import {TinyMceContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 
+import Debug from './debug';
+
 const loadLocaleData = (locale) => {
     switch (locale) {
         case 'nl':
@@ -58,6 +60,13 @@ const mountFormVersions = (locale, messages) => {
 };
 
 
+const mountDebugComponent = () => {
+    const node = document.getElementById('react');
+    if (!node) return;
+    ReactDOM.render(<Debug />, node);
+};
+
+
 const bootstrapApplication = async () => {
     const lang = document.querySelector('html').getAttribute("lang");
     const messages = await loadLocaleData(lang);
@@ -67,3 +76,4 @@ const bootstrapApplication = async () => {
 };
 
 bootstrapApplication();
+mountDebugComponent();
