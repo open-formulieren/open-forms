@@ -39,6 +39,57 @@ class FormStepInline(OrderedTabularInline):
     extra = 1
 
 
+class FormDeletedListFilter(admin.ListFilter):
+    title = _("is deleted")
+    parameter_name = "deleted"
+
+    def __init__(self, request, params, model, model_admin):
+        super().__init__(request, params, model, model_admin)
+
+        self.request = request
+
+        if self.parameter_name in params:
+            value = params.pop(self.parameter_name)
+            self.used_parameters[self.parameter_name] = value
+
+    def show_deleted(self):
+        return self.used_parameters.get(self.parameter_name) == "deleted"
+
+    def has_output(self):
+        """
+        This needs to return ``True`` to work.
+        """
+        return True
+
+    def choices(self, changelist):
+        result = [
+            {
+                "selected": not self.show_deleted(),
+                "query_string": changelist.get_query_string(
+                    {self.parameter_name: "available"}
+                ),
+                "display": _("Available forms"),
+            },
+            {
+                "selected": self.show_deleted(),
+                "query_string": changelist.get_query_string(
+                    {self.parameter_name: "deleted"}
+                ),
+                "display": _("Deleted forms"),
+            },
+        ]
+        return result
+
+    def queryset(self, request, queryset):
+        if self.show_deleted():
+            return queryset.filter(_is_deleted=True)
+        else:
+            return queryset.filter(_is_deleted=False)
+
+    def expected_parameters(self):
+        return [self.parameter_name]
+
+
 @admin.register(Form)
 class FormAdmin(
     RegistrationBackendFieldMixin,
@@ -57,7 +108,7 @@ class FormAdmin(
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
-    list_filter = ("active", "maintenance_mode")
+    list_filter = ("active", "maintenance_mode", FormDeletedListFilter)
     search_fields = ("name", "internal_name")
 
     change_list_template = "admin/forms/form/change_list.html"
@@ -82,11 +133,10 @@ class FormAdmin(
         return super().changelist_view(request, context)
 
     def get_queryset(self, request):
-        # annotate .name
+        # annotate .name for ordering
         return (
             super()
             .get_queryset(request)
-            .filter(_is_deleted=False)
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
 
