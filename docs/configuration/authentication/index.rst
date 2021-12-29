@@ -7,5 +7,6 @@ Authentication plugins
 .. toctree::
    :maxdepth: 1
 
-   oidc
+   digid
+   eherkenning_eidas
 

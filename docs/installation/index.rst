@@ -12,3 +12,4 @@ Installation
    deployment
    self_signed
    form_hosting
+   issues/index
