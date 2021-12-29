@@ -74,8 +74,6 @@
                     {% if voornamen %}
                         <ns:voornamen xsi:nil="true"/>
                     {% endif %}
-
-
                     {% if geslachtsaanduiding %}
                         <ns:geslachtsaanduiding xsi:nil="true"/>
                     {% endif %}
@@ -83,10 +81,10 @@
                         <ns:geboortedatum xsi:nil="true"/>
                     {% endif %}
                     {% if geboorteplaats %}
-                        <ns:geboorteplaats xsi:nil="true"/>
+                        <ns:inp.geboorteplaats xsi:nil="true"/>
                     {% endif %}
-                    {% if geboorteLand %}
-                        <ns:geboorteLand xsi:nil="true"/>
+                    {% if geboorteland %}
+                        <ns:inp.geboorteLand xsi:nil="true"/>
                     {% endif %}
                     {% if overlijdensdatum %}
                         <ns:overlijdensdatum xsi:nil="true"/>
@@ -114,9 +112,9 @@
                             {% endif %}
                         </ns:verblijfsadres>
                     {% endif %}
-                    {% if landnaam or adresBuitenland1 or adresBuitenland2 or adresBuitenland3%}
+                    {% if landAdresBuitenland or adresBuitenland1 or adresBuitenland2 or adresBuitenland3%}
                         <ns:sub.verblijfBuitenland>
-                            {% if landnaam %}
+                            {% if landAdresBuitenland %}
                                 <ns:lnd.landnaam xsi:nil="true"/>
                             {% endif %}
                             {% if adresBuitenland1 %}

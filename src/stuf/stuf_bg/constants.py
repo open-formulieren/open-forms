@@ -41,15 +41,9 @@ class FieldChoices(DjangoChoices):
     landAdresBuitenland = ChoiceItem(
         "landAdresBuitenland", _("Foreign address country")
     )
-    regel1AdresBuitenland = ChoiceItem(
-        "regel1AdresBuitenland", _("Foreign address line 1")
-    )
-    regel2AdresBuitenland = ChoiceItem(
-        "regel2AdresBuitenland", _("Foreign address line 2")
-    )
-    regel3AdresBuitenland = ChoiceItem(
-        "regel3AdresBuitenland", _("Foreign address line 3")
-    )
+    adresBuitenland1 = ChoiceItem("adresBuitenland1", _("Foreign address line 1"))
+    adresBuitenland2 = ChoiceItem("adresBuitenland2", _("Foreign address line 2"))
+    adresBuitenland3 = ChoiceItem("adresBuitenland3", _("Foreign address line 3"))
 
     geboorteplaats = ChoiceItem("geboorteplaats", _("Place of birth"))
     geboortedatum = ChoiceItem("geboortedatum", _("Date of birth"))

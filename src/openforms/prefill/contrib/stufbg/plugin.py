@@ -77,13 +77,13 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.woonplaatsNaam: Target["verblijfsadres"]["wpl.woonplaatsNaam"],
     FieldChoices.gemeenteVanInschrijving: Target["inp.gemeenteVanInschrijving"],
     FieldChoices.landAdresBuitenland: Target["sub.verblijfBuitenland"]["lnd.landnaam"],
-    FieldChoices.regel1AdresBuitenland: Target["sub.verblijfBuitenland"][
+    FieldChoices.adresBuitenland1: Target["sub.verblijfBuitenland"][
         "sub.adresBuitenland1"
     ],
-    FieldChoices.regel2AdresBuitenland: Target["sub.verblijfBuitenland"][
+    FieldChoices.adresBuitenland2: Target["sub.verblijfBuitenland"][
         "sub.adresBuitenland2"
     ],
-    FieldChoices.regel3AdresBuitenland: Target["sub.verblijfBuitenland"][
+    FieldChoices.adresBuitenland3: Target["sub.verblijfBuitenland"][
         "sub.adresBuitenland3"
     ],
 }
