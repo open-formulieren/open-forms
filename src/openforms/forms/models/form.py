@@ -245,7 +245,7 @@ class Form(models.Model):
 
     def __str__(self):
         if self._is_deleted:
-            return "{}{}".format(self.admin_name, _(" (deleted)"))
+            return _("{name} (deleted)").format(name=self.admin_name)
         else:
             return self.admin_name
 
