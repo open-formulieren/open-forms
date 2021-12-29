@@ -17,7 +17,18 @@ class KVKConfig(SingletonModel):
 
     service = models.OneToOneField(
         "zgw_consumers.Service",
-        verbose_name=_("KvK API"),
+        verbose_name=_("KvK API Zoeken"),
+        help_text=_("API used for validation of KvK, RSIN and vestigingsnummer's"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.orc},
+        related_name="+",
+        null=True,
+    )
+
+    profiles = models.OneToOneField(
+        "zgw_consumers.Service",
+        verbose_name=_("KvK API Basisprofiel"),
+        help_text=_("API used to retrieve basis profielen"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
