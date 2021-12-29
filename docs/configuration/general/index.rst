@@ -6,5 +6,6 @@ General configuration
 .. toctree::
    :maxdepth: 1
 
+   styling
    analytics
    cookies
