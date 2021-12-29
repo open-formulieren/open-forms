@@ -13,8 +13,8 @@ class KVKClientError(Exception):
 
 
 class KVKSearchClient:
-    # https://api.kvk.nl/api/v1//v1/zoeken?x=y
-    # https://api.kvk.nl/test/api/vv1/zoeken?x=y
+    # https://api.kvk.nl/api/v1/zoeken?x=y
+    # https://api.kvk.nl/test/api/v1/zoeken?x=y
     # docs: https://developers.kvk.nl/apis/zoeken
 
     def query(self, **query_params):

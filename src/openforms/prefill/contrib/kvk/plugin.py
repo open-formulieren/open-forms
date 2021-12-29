@@ -21,6 +21,15 @@ from .constants import Attributes
 logger = logging.getLogger(__name__)
 
 
+def _select_address(items, type_):
+    if not items:
+        return None
+    for item in items:
+        if item.get("type") == type_:
+            return item
+    return items[0]  # fall back to the first one
+
+
 @register("kvk-kvknumber")
 class KVK_KVKNumberPrefill(BasePlugin):
     verbose_name = _("KvK Company by KvK number")
@@ -59,24 +68,12 @@ class KVK_KVKNumberPrefill(BasePlugin):
     @classmethod
     def modify_result(cls, result):
         # move the desired item from the unordered list to a know place
-        address = cls.select_address(result["adressen"], "bezoekadres")
+        address = _select_address(result["adressen"], "bezoekadres")
         if address:
             result["bezoekadres"] = address
-        address = cls.select_address(result["adressen"], "correspondentieadres")
+        address = _select_address(result["adressen"], "correspondentieadres")
         if address:
             result["correspondentieadres"] = address
-
-    @classmethod
-    def select_address(cls, items, type_):
-        if not items:
-            return None
-        for item in items:
-            if item.get("type") == type_:
-                return item
-        for item in items:
-            # take the first
-            return item
-        return None
 
     def check_config(self):
         check_kvk = "68750110"
@@ -101,7 +98,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
             num = result.get("kvkNummer", None)
             if num != check_kvk:
                 raise InvalidPluginConfiguration(
-                    _("Did not find kvkNummer='{kvk}' in results").format(check_kvk)
+                    _("Did not find kvkNummer='{kvk}' in results").format(kvk=check_kvk)
                 )
 
     def get_config_actions(self):

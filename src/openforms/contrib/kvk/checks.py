@@ -10,7 +10,7 @@ from openforms.contrib.kvk.models import KVKConfig
 
 def check_kvk_remote_validator():
     entry = Entry(
-        # we might not have any appointment backend at all
+        # we might not have any prefill backend at all
         name=_("Validation plugin config: {config}").format(config="KVK numbers"),
         actions=[
             (
@@ -51,7 +51,7 @@ def check_kvk_remote_validator():
             entry.status = False
             entry.status_message = _(
                 "Did not find kvkNummer='{kvk}' in results"
-            ).format(check_kvk)
+            ).format(kvk=check_kvk)
             return results
 
         entry.status = True
