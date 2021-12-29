@@ -16,7 +16,7 @@ TRANSLATION_REGEX_PATTERNS = [
 
 class Command(BaseCommand):
     help = (
-        "Best effort to extract messages from FormIO javascripts. "
+        "Best effort to extract messages from FormIO javascript source code. "
         "Existing translations (even unknown keys) will remain untouched."
     )
 
@@ -36,7 +36,7 @@ class Command(BaseCommand):
             "--dryrun",
             "--dry-run",
             action="store_true",
-            help="Do not write to translations back to file.",
+            help="Do not write translations back to file.",
         )
         parser.add_argument(
             "--no-empty-values",
