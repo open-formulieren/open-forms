@@ -18,6 +18,16 @@ class FormTestCase(TestCase):
             form=self.form, form_definition=self.form_def_2
         )
 
+    def test_str(self):
+        form = FormFactory.create(name="my-form")
+        self.assertEqual(str(form), "my-form")
+
+        form.internal_name = "internal"
+        self.assertEqual(str(form), "internal")
+
+        form._is_deleted = True
+        self.assertEqual(str(form), "internal{}".format(_(" (deleted)")))
+
     def test_login_required(self):
         self.assertFalse(self.form.login_required)
         self.form_def_2.login_required = True

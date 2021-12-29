@@ -233,7 +233,7 @@ class FormViewSet(viewsets.ModelViewSet):
     re-used among different forms.
     """
 
-    queryset = Form.objects.all().prefetch_related(
+    queryset = Form.objects.filter(_is_deleted=False).prefetch_related(
         Prefetch(
             "formstep_set",
             queryset=FormStep.objects.select_related("form_definition").order_by(
@@ -249,7 +249,8 @@ class FormViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         if not self.request.user.is_staff:
-            queryset = queryset.filter(active=True, _is_deleted=False)
+            # if not staff then only show active
+            queryset = queryset.filter(active=True)
         return queryset
 
     def initialize_request(self, request, *args, **kwargs):
