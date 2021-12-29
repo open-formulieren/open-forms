@@ -9,12 +9,12 @@ the integration possibilities within Open Forms.
 
 .. warning::
 
-    If you enable external data analytics tools, you **need** to setup a proper
+    If you enable external data analytics tools, you **need** to set up a proper
     :ref:`cookie policy <configuration_general_cookies>` in accordance with
     the `GDPR`_ and your local privacy authority.
 
     Also, these data analytics tools will **only work** if the user allowed 
-    these cookies. If you do not setup cookies, these tools will simply not 
+    these cookies. If you do not set up cookies, these tools will simply not 
     work because the user never allowed their cookies.
 
 .. _`GDPR`: https://gdpr.eu/

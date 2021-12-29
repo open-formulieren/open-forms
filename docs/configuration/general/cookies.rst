@@ -5,8 +5,8 @@ Privacy and cookies
 
 By default, Open Forms only uses (first party) `strictly necessary cookies`_ 
 (although sometimes confusingly called "functionality cookies"). These cookies 
-are needed to make Open Forms work: The browser should remembers which form 
-someone is currently doing and whether you are authenticated in or not.
+are needed to make Open Forms work: the browser has to remember which form 
+someone is currently filling out and whether you are authenticated or not.
 
 For this purpose, Open Forms does not require consent according to the `GDPR`_
 (although local laws may differ in this aspect). You are encouraged to at least 
@@ -97,7 +97,8 @@ and to ask to user for consent).
 
 8. For all other cookies, you can create similar entries as done in step 6. If
    you enable Google Analytics for example, you need entries with the names:
-   ``_ga`` and ``_gid``, and set their cookie group to ``Analytics cookies``.
+   ``_ga``, ``_gat`` and ``_gid``, and set their cookie group to 
+   ``Analytics cookies``.
 
 .. note::
 
