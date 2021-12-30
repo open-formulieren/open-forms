@@ -10,3 +10,4 @@ General configuration
    analytics
    cookies
    oidc
+   cms_integration
