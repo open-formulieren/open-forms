@@ -17,6 +17,18 @@
         white-space: nowrap;
         vertical-align: middle;
       }
+
+      th[title] {
+        .text > span:after {
+          content: "";
+          cursor: help;
+          display: inline-block;
+          background-image: url(../admin/img/icon-unknown.svg);
+          width: 13px;
+          height: 13px;
+          margin-left: 3px;
+        }
+      }
     }
 
     tbody {

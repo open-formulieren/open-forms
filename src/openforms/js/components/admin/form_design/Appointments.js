@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -39,7 +39,8 @@ AppointmentConfigurationComponentSelection.propTypes = {
 };
 
 
-const Appointments = ({ availableComponents={}, onChange }) => {
+const Appointments = ({ onChange }) => {
+    const availableComponents = useContext(ComponentsContext);
     // extract the current values from the component definitions
     const configuration = {}; // key: appointment configuration key, value: component key
     Object.entries(availableComponents).forEach(([componentKey, component]) =>{
@@ -78,7 +79,7 @@ const Appointments = ({ availableComponents={}, onChange }) => {
     };
 
     return (
-        <ComponentsContext.Provider value={availableComponents}>
+        <>
             <Fieldset extraClassName="admin-fieldset">
                 <FormRow>
                     <Field
@@ -191,14 +192,11 @@ const Appointments = ({ availableComponents={}, onChange }) => {
                     </Field>
                 </FormRow>
             </Fieldset>
-        </ComponentsContext.Provider>
+        </>
     )
 };
 
 Appointments.propTypes = {
-    availableComponents: PropTypes.objectOf(
-        PropTypes.object, // Formio component objects
-    ).isRequired,
     onChange: PropTypes.func.isRequired,
 };
 

@@ -3,6 +3,7 @@ import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
+import ButtonContainer from '../../forms/ButtonContainer';
 import Action from './Action';
 import {useOnChanged} from './hooks';
 
@@ -160,13 +161,9 @@ const ActionSet = ({name, actions, onChange}) => {
                     onDelete={() => dispatch({type: 'ACTION_DELETED', payload: {index}})}
                 />
             ))}
-            <div className="button-container button-container--padded">
-                <button type="button" className="button button--plain" onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
-                    <span className="addlink">
-                        <FormattedMessage description="Add form logic rule action button" defaultMessage="Add action" />
-                    </span>
-                </button>
-            </div>
+            <ButtonContainer onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
+                <FormattedMessage description="Add form logic rule action button" defaultMessage="Add action" />
+            </ButtonContainer>
         </>
     );
 };

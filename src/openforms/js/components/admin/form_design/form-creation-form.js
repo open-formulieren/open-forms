@@ -11,6 +11,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
 import FAIcon from '../FAIcon';
+import {ComponentsContext} from '../forms/Context';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
@@ -44,6 +45,7 @@ import DataRemoval from './DataRemoval';
 import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
+import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents} from './utils';
 
 const initialFormState = {
@@ -282,8 +284,35 @@ function reducer(draft, action) {
         }
         case 'EDIT_STEP': {
             const {index, configuration} = action.payload;
-            // const currentConfiguration = original(draft.formSteps[index].configuration);
             draft.formSteps[index].configuration = configuration;
+            break;
+        }
+        case 'EDIT_STEP_COMPONENT_MUTATED':  {
+            const {mutationType, schema, args} = action.payload;
+
+            // check if we need updates to the backendRegistrationOptions
+            const {registrationBackend, registrationBackendOptions} = draft.form;
+            const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
+            if (handler == null) break;
+
+
+            let originalComp;
+            switch (mutationType) {
+                case 'changed': {
+                    [originalComp] = args;
+                    break;
+                }
+                case 'removed': {
+                    originalComp = null;
+                    break;
+                }
+                throw new Error(`Unknown mutation type '${mutationType}'`);
+            }
+
+            const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+            if (updatedOptions) {
+                draft.form.registrationBackendOptions = updatedOptions;
+            }
             break;
         }
         case 'STEP_FIELD_CHANGED': {
@@ -679,6 +708,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         });
     };
 
+    // TODO: we can probably remove a lot of state updates by tapping into onComponentMutated
+    // rather than onChange
     const onStepEdit = (index, configuration) => {
         dispatch({
             type: 'EDIT_STEP',
@@ -686,7 +717,19 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 index: index,
                 configuration: configuration
             }
-        })
+        });
+    };
+
+    // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
+    const onComponentMutated = (mutationType, schema, ...rest) => {
+        dispatch({
+            type: 'EDIT_STEP_COMPONENT_MUTATED',
+            payload: {
+                mutationType,
+                schema,
+                args: rest,
+            }
+        });
     };
 
     const onStepFieldChange = (index, event) => {
@@ -908,6 +951,8 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
     }
 
     const availableComponents = getFormComponents(state.formSteps);
+    // dev/debug helper
+    const activeTab = new URLSearchParams(window.location.search).get('tab');
 
     return (
         <ValidationErrorsProvider errors={state.validationErrors}>
@@ -924,147 +969,147 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 : null
             }
 
-            <Tabs>
-                <TabList>
-                    <Tab hasErrors={state.tabsWithErrors.includes('form')}>
-                        <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
-                        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
-                        <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
-                        <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
-                        <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
-                        <FormattedMessage defaultMessage="Product & payment" description="Product & payments tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
-                        <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
-                    </Tab>
-                    <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
-                        <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
-                    </Tab>
-                    <Tab>
-                        <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
-                    </Tab>
-                </TabList>
+            <ComponentsContext.Provider value={availableComponents}>
+                <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
+                    <TabList>
+                        <Tab hasErrors={state.tabsWithErrors.includes('form')}>
+                            <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
+                            <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
+                            <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
+                            <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
+                            <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
+                            <FormattedMessage defaultMessage="Product & payment" description="Product & payments tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
+                            <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
+                        </Tab>
+                        <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
+                            <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
+                        </Tab>
+                        <Tab>
+                            <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
+                        </Tab>
+                    </TabList>
 
-                <TabPanel>
-                    <FormMetaFields
-                        form={state.form}
-                        literals={state.literals}
-                        onChange={onFieldChange}
-                        availableAuthPlugins={state.availableAuthPlugins}
-                        selectedAuthPlugins={state.selectedAuthPlugins}
-                        onAuthPluginChange={onAuthPluginChange}
-                    />
-                </TabPanel>
-
-                <TabPanel>
-                    <Fieldset title={<FormattedMessage defaultMessage="Form design" description="Form design/editor fieldset title" />}>
-                        <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                            <PluginsContext.Provider value={{
-                                availableAuthPlugins: state.availableAuthPlugins,
-                                selectedAuthPlugins: state.selectedAuthPlugins,
-                                availablePrefillPlugins: state.availablePrefillPlugins
-                            }}>
-                                <FormContext.Provider value={{url: state.form.url}}>
-                                    <StepsFieldSet
-                                        steps={state.formSteps}
-                                        loadingErrors={state.errors.loadingErrors}
-                                        onEdit={onStepEdit}
-                                        onFieldChange={onStepFieldChange}
-                                        onLiteralFieldChange={onStepLiteralFieldChange}
-                                        onDelete={onStepDelete}
-                                        onReorder={onStepReorder}
-                                        onReplace={onStepReplace}
-                                        onAdd={ (e) => {
-                                            e.preventDefault();
-                                            dispatch({type: 'ADD_STEP'});
-                                        }}
-                                        submitting={state.submitting}
-                                    />
-                                </FormContext.Provider>
-                            </PluginsContext.Provider>
-                        </FormDefinitionsContext.Provider>
-                    </Fieldset>
-                </TabPanel>
-
-                <TabPanel>
-                    <Confirmation
-                        pageTemplate={state.form.submissionConfirmationTemplate}
-                        emailOption={state.form.confirmationEmailOption}
-                        emailTemplate={state.form.confirmationEmailTemplate || {}}
-                        onChange={onFieldChange}
-                    />
-                </TabPanel>
-
-                <TabPanel>
-                    <RegistrationFields
-                        backends={state.availableRegistrationBackends}
-                        selectedBackend={state.form.registrationBackend}
-                        backendOptions={state.form.registrationBackendOptions}
-                        onChange={onFieldChange}
-                    />
-                </TabPanel>
-
-                <TabPanel>
-                    <TextLiterals literals={state.literals} onChange={onFieldChange} />
-                </TabPanel>
-
-                <TabPanel>
-                    <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
-                    <PaymentFields
-                        backends={state.availablePaymentBackends}
-                        selectedBackend={state.form.paymentBackend}
-                        backendOptions={state.form.paymentBackendOptions}
-                        onChange={onFieldChange}
-                    />
-                    <PriceLogic
-                        rules={state.priceRules}
-                        availableComponents={availableComponents}
-                        onChange={onPriceRuleChange}
-                        onDelete={(index) => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
-                        onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
-                    />
-                </TabPanel>
-
-                <TabPanel>
-                    <DataRemoval
-                        submissionsRemovalOptions={state.form.submissionsRemovalOptions}
-                        onChange={onFieldChange}
-                    />
-                </TabPanel>
-
-                <TabPanel>
-                    <FormStepsContext.Provider value={state.formSteps}>
-                        <FormLogic
-                            logicRules={state.logicRules}
-                            availableComponents={availableComponents}
-                            onChange={onRuleChange}
-                            onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                            onAdd={(ruleOverrides) => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+                    <TabPanel>
+                        <FormMetaFields
+                            form={state.form}
+                            literals={state.literals}
+                            onChange={onFieldChange}
+                            availableAuthPlugins={state.availableAuthPlugins}
+                            selectedAuthPlugins={state.selectedAuthPlugins}
+                            onAuthPluginChange={onAuthPluginChange}
                         />
-                    </FormStepsContext.Provider>
-                </TabPanel>
+                    </TabPanel>
 
-                <TabPanel>
-                    <Appointments
-                        availableComponents={availableComponents}
-                        onChange={(event) => {
-                            dispatch({
-                                type: 'APPOINTMENT_CONFIGURATION_CHANGED',
-                                payload: event,
-                            });
-                        }} />
-                </TabPanel>
-            </Tabs>
+                    <TabPanel>
+                        <Fieldset title={<FormattedMessage defaultMessage="Form design" description="Form design/editor fieldset title" />}>
+                            <FormDefinitionsContext.Provider value={state.formDefinitions}>
+                                <PluginsContext.Provider value={{
+                                    availableAuthPlugins: state.availableAuthPlugins,
+                                    selectedAuthPlugins: state.selectedAuthPlugins,
+                                    availablePrefillPlugins: state.availablePrefillPlugins
+                                }}>
+                                    <FormContext.Provider value={{url: state.form.url}}>
+                                        <StepsFieldSet
+                                            steps={state.formSteps}
+                                            loadingErrors={state.errors.loadingErrors}
+                                            onEdit={onStepEdit}
+                                            onComponentMutated={onComponentMutated}
+                                            onFieldChange={onStepFieldChange}
+                                            onLiteralFieldChange={onStepLiteralFieldChange}
+                                            onDelete={onStepDelete}
+                                            onReorder={onStepReorder}
+                                            onReplace={onStepReplace}
+                                            onAdd={ (e) => {
+                                                e.preventDefault();
+                                                dispatch({type: 'ADD_STEP'});
+                                            }}
+                                            submitting={state.submitting}
+                                        />
+                                    </FormContext.Provider>
+                                </PluginsContext.Provider>
+                            </FormDefinitionsContext.Provider>
+                        </Fieldset>
+                    </TabPanel>
+
+                    <TabPanel>
+                        <Confirmation
+                            pageTemplate={state.form.submissionConfirmationTemplate}
+                            emailOption={state.form.confirmationEmailOption}
+                            emailTemplate={state.form.confirmationEmailTemplate || {}}
+                            onChange={onFieldChange}
+                        />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <RegistrationFields
+                            backends={state.availableRegistrationBackends}
+                            selectedBackend={state.form.registrationBackend}
+                            backendOptions={state.form.registrationBackendOptions}
+                            onChange={onFieldChange}
+                        />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <TextLiterals literals={state.literals} onChange={onFieldChange} />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
+                        <PaymentFields
+                            backends={state.availablePaymentBackends}
+                            selectedBackend={state.form.paymentBackend}
+                            backendOptions={state.form.paymentBackendOptions}
+                            onChange={onFieldChange}
+                        />
+                        <PriceLogic
+                            rules={state.priceRules}
+                            onChange={onPriceRuleChange}
+                            onDelete={(index) => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
+                            onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
+                        />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <DataRemoval
+                            submissionsRemovalOptions={state.form.submissionsRemovalOptions}
+                            onChange={onFieldChange}
+                        />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <FormStepsContext.Provider value={state.formSteps}>
+                            <FormLogic
+                                logicRules={state.logicRules}
+                                onChange={onRuleChange}
+                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                                onAdd={(ruleOverrides) => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+                            />
+                        </FormStepsContext.Provider>
+                    </TabPanel>
+
+                    <TabPanel>
+                        <Appointments
+                            onChange={(event) => {
+                                dispatch({
+                                    type: 'APPOINTMENT_CONFIGURATION_CHANGED',
+                                    payload: event,
+                                });
+                            }} />
+                    </TabPanel>
+                </Tabs>
+            </ComponentsContext.Provider>
 
             <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
 

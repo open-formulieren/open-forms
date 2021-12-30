@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -11,12 +12,27 @@ from privates.test import temp_private_root
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ....exceptions import RegistrationFailed
-from ..plugin import VARS, CamundaRegistration, serialize_variables
+from ..plugin import CamundaRegistration, serialize_variables
+
+
+class CamundaMixin:
+    def setUp(self):
+        super().setUp()
+
+        # set up a CamundaConfig mocker
+        config_patcher = patch("django_camunda.client.CamundaConfig.get_solo")
+        self.config_mock = config_patcher.start()
+        self.config_mock.return_value = CamundaConfig(
+            enabled=True,
+            root_url="https://camunda.example.com",
+            rest_api_path="engine-rest/",
+        )
+        self.addCleanup(config_patcher.stop)
 
 
 @temp_private_root()
 @requests_mock.Mocker(real_http=False)
-class InitialRegistrationTests(TestCase):
+class InitialRegistrationTests(CamundaMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -40,19 +56,6 @@ class InitialRegistrationTests(TestCase):
             form__registration_backend="camunda",
         )
 
-    def setUp(self):
-        super().setUp()
-
-        # set up a CamundaConfig mocker
-        config_patcher = patch("django_camunda.client.CamundaConfig.get_solo")
-        self.config_mock = config_patcher.start()
-        self.config_mock.return_value = CamundaConfig(
-            enabled=True,
-            root_url="https://camunda.example.com",
-            rest_api_path="engine-rest/",
-        )
-        self.addCleanup(config_patcher.stop)
-
     @patch("openforms.registrations.contrib.camunda.plugin.start_process")
     def test_submission_with_camunda_backend_latest_version(
         self, m, mock_start_process
@@ -67,6 +70,7 @@ class InitialRegistrationTests(TestCase):
         registration_backend_options = {
             "process_definition": "invoice",
             "process_definition_version": None,  # indicates latest version
+            "process_variables": [],
         }
         plugin = CamundaRegistration("camunda")
 
@@ -76,7 +80,7 @@ class InitialRegistrationTests(TestCase):
 
         mock_start_process.assert_called_once_with(
             process_key="invoice",
-            variables=serialize_variables(VARS),
+            variables={},
         )
         self.assertIsInstance(result, dict)
         self.assertEqual(
@@ -147,6 +151,7 @@ class InitialRegistrationTests(TestCase):
         registration_backend_options = {
             "process_definition": "invoice",
             "process_definition_version": 2,  # indicates latest version
+            "process_variables": [],
         }
         plugin = CamundaRegistration("camunda")
 
@@ -156,7 +161,7 @@ class InitialRegistrationTests(TestCase):
 
         mock_start_process.assert_called_once_with(
             process_id="invoice:2:7a249a3d-86f8-4c33-9ce4-fd87d7f2ee91",
-            variables=serialize_variables(VARS),
+            variables={},
         )
         self.assertIsInstance(result, dict)
         self.assertEqual(
@@ -228,3 +233,70 @@ class InitialRegistrationTests(TestCase):
         start_process_request = m.last_request
         request_body = start_process_request.json()
         self.assertIsInstance(request_body, dict)
+
+
+@temp_private_root()
+@requests_mock.Mocker(real_http=False)
+class MappedProcessVariableTests(CamundaMixin, TestCase):
+    """
+    Test that form values are mapped correctly onto process variables.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "currency",
+                    "key": "currency",
+                },
+                {
+                    "type": "textfield",
+                    "key": "invoiceCategory",
+                },
+                {
+                    "type": "textfield",
+                    "key": "extra",
+                },
+            ],
+            submitted_data={
+                "currency": "25.00",
+                "invoiceCategory": "Misc",
+            },
+            with_report=False,
+            form__registration_backend="camunda",
+        )
+
+    @patch("openforms.registrations.contrib.camunda.plugin.start_process")
+    def test_submission_with_mapped_variables(self, m, mock_start_process):
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+            "process_variables": [
+                {
+                    "enabled": True,
+                    "component_key": "currency",
+                    "alias": "amount",
+                },
+                {
+                    "enabled": True,
+                    "component_key": "invoiceCategory",
+                    "alias": "",
+                },
+            ],
+        }
+        plugin = CamundaRegistration("camunda")
+
+        plugin.register_submission(self.submission, registration_backend_options)
+
+        mock_start_process.assert_called_once_with(
+            process_key="invoice",
+            variables=serialize_variables(
+                {
+                    "amount": Decimal("25.00"),
+                    "invoiceCategory": "Misc",
+                }
+            ),
+        )

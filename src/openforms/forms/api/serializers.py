@@ -273,8 +273,12 @@ class FormSerializer(serializers.ModelSerializer):
         return attrs
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):
-        plugin_id = attrs.get(backend_field)
-        options = attrs.get(options_field)
+        plugin_id = get_from_serializer_data_or_instance(
+            backend_field, data=attrs, serializer=self
+        )
+        options = get_from_serializer_data_or_instance(
+            options_field, data=attrs, serializer=self
+        )
         if not plugin_id:
             return
         plugin = registry[plugin_id]
@@ -290,6 +294,8 @@ class FormSerializer(serializers.ModelSerializer):
             # like registrationBackendOptions.toEmails.0 if the first email was invalid
             detail = {options_field: e.detail}
             raise serializers.ValidationError(detail) from e
+        # serializer does some normalization, so make sure to update the data
+        attrs[options_field] = serializer.data
 
 
 class FormExportSerializer(FormSerializer):

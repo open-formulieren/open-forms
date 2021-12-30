@@ -43,6 +43,10 @@
     height: 30px;
   }
 
+  input[type="button"] {
+    height: auto;
+  }
+
   .array-item {
     min-width: 170px;
     margin-bottom: 2px;

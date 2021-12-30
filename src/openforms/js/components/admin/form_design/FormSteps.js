@@ -9,7 +9,13 @@ import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
 
 
-const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDelete, onReorder, onReplace, onAdd, submitting=false }) => {
+const FormSteps = ({
+    steps=[],
+    onEdit, onComponentMutated,
+    onFieldChange, onLiteralFieldChange,
+    onDelete, onReorder, onReplace, onAdd,
+    submitting=false
+}) => {
     const [activeStepIndex, setActiveStepIndex] = useState(steps.length ? 0 : null);
     const activeStep = steps.length ? steps[activeStepIndex] : null;
 
@@ -45,6 +51,7 @@ const FormSteps = ({ steps=[], onEdit, onFieldChange, onLiteralFieldChange, onDe
                             <FormStep
                                 data={activeStep}
                                 onEdit={onEdit.bind(null, activeStepIndex)}
+                                onComponentMutated={onComponentMutated}
                                 onFieldChange={onFieldChange.bind(null, activeStepIndex)}
                                 onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
                                 onReplace={onReplace.bind(null, activeStepIndex)}
@@ -76,6 +83,7 @@ FormSteps.propTypes = {
         validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
     })),
     onEdit: PropTypes.func.isRequired,
+    onComponentMutated: PropTypes.func.isRequired,
     onFieldChange: PropTypes.func.isRequired,
     onLiteralFieldChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,

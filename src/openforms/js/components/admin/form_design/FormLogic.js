@@ -4,8 +4,8 @@ import {useIntl, FormattedMessage} from 'react-intl';
 
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
-import {ComponentsContext} from '../forms/Context';
 import ActionSet from './logic/ActionSet';
+import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import {ValidationErrorContext} from '../forms/ValidationErrors';
@@ -37,7 +37,7 @@ const parseValidationErrors = (errors) => {
 };
 
 
-const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, onAdd }) => {
+const FormLogic = ({ logicRules=[], onChange, onDelete, onAdd }) => {
     const filterLogicRules = (rules) => {
         let basicRules = [];
         let advancedRules = [];
@@ -55,7 +55,7 @@ const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, 
     const [basicLogicRules, advancedLogicRules] = filterLogicRules(logicRules);
 
     return (
-        <ComponentsContext.Provider value={availableComponents}>
+        <>
             <Fieldset title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}>
                 <FormLogicRules
                     rules={basicLogicRules}
@@ -72,15 +72,12 @@ const FormLogic = ({ logicRules=[], availableComponents={}, onChange, onDelete, 
                     onDelete={onDelete}
                 />
             </Fieldset>
-        </ComponentsContext.Provider>
+        </>
     );
 };
 
 FormLogic.propTypes = {
     logicRules: PropTypes.arrayOf(PropTypes.object).isRequired,
-    availableComponents: PropTypes.objectOf(
-        PropTypes.object, // Formio component objects
-    ).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
@@ -104,18 +101,10 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
                     );
                 })
             }
-            <div className="button-container button-container--padded">
-                <button
-                    type="button"
-                    className="button button--plain"
-                    onClick={onAdd}
-                >
-                    <span className="addlink">
-                        <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
-                    </span>
-                </button>
-            </div>
-      </>
+            <ButtonContainer onClick={onAdd}>
+                <FormattedMessage description="Add form logic rule button" defaultMessage="Add rule" />
+            </ButtonContainer>
+        </>
   );
 };
 

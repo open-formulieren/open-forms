@@ -1,3 +1,6 @@
+import FormioUtils from 'formiojs/utils';
+
+
 const stripIdFromComponents = (obj) => {
     const {id, ...objWithoutId} = obj;
     if (objWithoutId.components) {

@@ -97,6 +97,12 @@
       "value": "Name"
     }
   ],
+  "5AC1+x": [
+    {
+      "type": 0,
+      "value": "The value of the selected field will be the process variable value."
+    }
+  ],
   "5OXIff": [
     {
       "type": 0,
@@ -271,6 +277,44 @@
       "value": "Component where the phone number should be entered"
     }
   ],
+  "BKTOtD": [
+    {
+      "offset": 0,
+      "options": {
+        "=0": {
+          "value": [
+          ]
+        },
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(1 variable mapped)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "("
+            },
+            {
+              "type": 1,
+              "value": "varCount"
+            },
+            {
+              "type": 0,
+              "value": " variables mapped)"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "varCount"
+    }
+  ],
   "BStu9Z": [
     {
       "type": 0,
@@ -349,6 +393,12 @@
       "value": "Logic"
     }
   ],
+  "EBsxTk": [
+    {
+      "type": 0,
+      "value": "Field"
+    }
+  ],
   "EtAvFF": [
     {
       "type": 0,
@@ -419,6 +469,12 @@
     {
       "type": 0,
       "value": "Use linked product price"
+    }
+  ],
+  "H3dRU6": [
+    {
+      "type": 0,
+      "value": "Check to include the field as process variable"
     }
   ],
   "H6VxhG": [
@@ -541,6 +597,18 @@
       "value": "Copy"
     }
   ],
+  "LaovNg": [
+    {
+      "type": 0,
+      "value": "Add variable"
+    }
+  ],
+  "M0kOz9": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to remove this variable?"
+    }
+  ],
   "M1L9/1": [
     {
       "type": 0,
@@ -571,6 +639,12 @@
       "value": "Save and add another"
     }
   ],
+  "PC7ICN": [
+    {
+      "type": 0,
+      "value": "Enabled"
+    }
+  ],
   "PaEo2j": [
     {
       "type": 0,
@@ -587,6 +661,12 @@
     {
       "type": 0,
       "value": "Times Component"
+    }
+  ],
+  "PtZ96W": [
+    {
+      "type": 0,
+      "value": "Alias"
     }
   ],
   "PwUKIe": [
@@ -693,6 +773,12 @@
       "value": "All Submissions Removal Limit"
     }
   ],
+  "V21YkS": [
+    {
+      "type": 0,
+      "value": "Confirm"
+    }
+  ],
   "VMMOA0": [
     {
       "type": 0,
@@ -779,6 +865,12 @@
     {
       "type": 0,
       "value": "Previous text"
+    }
+  ],
+  "a3dhuP": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
     }
   ],
   "a4gS07": [
@@ -871,6 +963,12 @@
       "value": "Show progress indicator"
     }
   ],
+  "eBk+W0": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -905,6 +1003,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "gz32s2": [
+    {
+      "type": 0,
+      "value": "If desired, you can specify a different process variable name."
     }
   ],
   "gzAzdU": [

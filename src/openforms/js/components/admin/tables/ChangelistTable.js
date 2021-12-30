@@ -1,8 +1,58 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {getBEMClassName} from '../../../utils/bem';
 import ChangelistColumn from './ChangelistColumn';
 import {IconYes, IconNo, IconUnknown} from '../BooleanIcons';
+
+
+const ChangelistTableWrapper = ({ headColumns, children: body, extraModifiers=[] }) => (
+    <div className={getBEMClassName('changelist', ['react', ...extraModifiers])}>
+        <div className="results">
+            <table>
+                <thead>
+                    <tr>{headColumns}</tr>
+                </thead>
+                <tbody>{body}</tbody>
+            </table>
+        </div>
+    </div>
+);
+
+ChangelistTableWrapper.propTypes = {
+    headColumns: PropTypes.node,
+    children: PropTypes.node,
+    extraModifiers: PropTypes.arrayOf(PropTypes.string),
+};
+
+
+const HeadColumn = ({ content, ...extra }) => (
+    <th scope="col" {...extra}>
+        <div className="text">
+            <span>{content}</span>
+        </div>
+    </th>
+);
+
+HeadColumn.propTypes = {
+    content: PropTypes.node.isRequired,
+};
+
+
+const TableRow = ({index, children, ...extra}) => {
+    return (
+        <tr className={`row${(index % 2) + 1}`} {...extra}>
+            {
+                React.Children.map(children, (child) => (<td>{child}</td>))
+            }
+        </tr>
+    );
+};
+
+TableRow.propTypes = {
+    index: PropTypes.number.isRequired,
+    children: PropTypes.arrayOf(PropTypes.element),
+};
 
 
 const ChangelistTable = ({ linkColumn=0, linkProp="", data=[], rowKey="", children }) => {
@@ -21,48 +71,30 @@ const ChangelistTable = ({ linkColumn=0, linkProp="", data=[], rowKey="", childr
         });
     });
 
-    return (
-        <div className="changelist changelist--react">
-            <div className="results">
-                <table>
-                    <thead>
-                        <tr>
-                            {
-                                tableColumns.map((col, colIndex) => (
-                                    <th scope="col" key={colIndex}>
-                                        <div className="text">
-                                            <span>{col.header}</span>
-                                        </div>
-                                    </th>
-                                ))
-                            }
-                        </tr>
-                    </thead>
+    const headColumns = tableColumns.map((col, colIndex) => (<HeadColumn key={colIndex} content={col.header} />));
 
-                    <tbody>
-                        {
-                            data.map((obj, index) => (
-                                <tr key={rowKey ? obj[rowKey] : index} className={`row${(index % 2) + 1}`}>
-                                    {
-                                        tableColumns.map((col, colIndex) => (
-                                            <RowColumn
-                                                key={colIndex}
-                                                obj={obj}
-                                                index={colIndex}
-                                                objProp={col.objProp}
-                                                linkColumn={linkColumn}
-                                                linkProp={linkProp}
-                                                isBool={col.isBool}
-                                            />
-                                        ))
-                                    }
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    return (
+        <ChangelistTableWrapper headColumns={headColumns}>
+        {
+            data.map((obj, index) => (
+                <tr key={rowKey ? obj[rowKey] : index} className={`row${(index % 2) + 1}`}>
+                    {
+                        tableColumns.map((col, colIndex) => (
+                            <RowColumn
+                                key={colIndex}
+                                obj={obj}
+                                index={colIndex}
+                                objProp={col.objProp}
+                                linkColumn={linkColumn}
+                                linkProp={linkProp}
+                                isBool={col.isBool}
+                            />
+                        ))
+                    }
+                </tr>
+            ))
+        }
+        </ChangelistTableWrapper>
     );
 };
 
@@ -116,3 +148,4 @@ RowColumn.propTypes = {
 };
 
 export default ChangelistTable;
+export {ChangelistTableWrapper, HeadColumn, TableRow, ChangelistTable};
