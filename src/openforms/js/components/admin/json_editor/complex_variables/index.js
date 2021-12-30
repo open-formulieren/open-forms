@@ -24,7 +24,10 @@ const ComplexVariable = ({ type, definition=null, onChange, onEditDefinition }) 
 
 ComplexVariable.propTypes = {
     type: PropTypes.oneOf(COMPLEX_TYPES).isRequired,
-    definition: Types.VariableDefinition,
+    definition: PropTypes.oneOfType([
+        PropTypes.arrayOf(Types.VariableDefinition),
+        PropTypes.objectOf(Types.VariableDefinition),
+    ]),
     onChange: PropTypes.func.isRequired,
     onEditDefinition: PropTypes.func.isRequired,
 };
