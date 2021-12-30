@@ -217,10 +217,19 @@ class StufZDSRegistration(BasePlugin):
         config = StufZDSConfig.get_solo()
         if not config.service_id:
             raise InvalidPluginConfiguration(_("StufService not selected"))
+        if not config.gemeentecode:
+            raise InvalidPluginConfiguration(
+                _("StufService missing setting '{name}'").format(name="gemeentecode")
+            )
 
         options = {
             "omschrijving": "MyForm",
             "referentienummer": "123",
+            "zds_zaaktype_code": "test",
+            "zds_zaaktype_omschrijving": "test",
+            "zds_zaaktype_status_code": "test",
+            "zds_zaaktype_status_omschrijving": "test",
+            "zds_documenttype_omschrijving_inzending": "test",
         }
         config.apply_defaults_to(options)
         client = config.get_client(options)
