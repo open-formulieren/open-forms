@@ -9,3 +9,4 @@ General configuration
    styling
    analytics
    cookies
+   oidc
