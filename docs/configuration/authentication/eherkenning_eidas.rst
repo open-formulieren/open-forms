@@ -46,7 +46,7 @@ Step by step overview
    communication with your eHerkenning supplier (if you already have one for 
    Open Forms, it can be re-used).
 
-3. Sent the following information to your Open Forms supplier:
+3. Send the following information to your Open Forms supplier:
 
    * Public and private certificate (obtained in step 2)
    * Name of the approved eHerkenning supplier

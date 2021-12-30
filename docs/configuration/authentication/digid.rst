@@ -34,7 +34,7 @@ Step by step overview
    communication with Logius (if you already have one for Open Forms, it can be
    re-used).
 
-3. Sent the following information to your Open Forms supplier in a secure way:
+3. Send the following information to your Open Forms supplier in a secure way:
 
    * Public and private certificate (obtained in step 2)
    * Desired service name (for example: "Digitaal Loket") shown in DigiD
