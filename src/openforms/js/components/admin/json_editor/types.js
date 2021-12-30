@@ -21,8 +21,8 @@ Meta-information about the JSON type of a variable.
  */
 export const VariableType = PropTypes.oneOf(
     [''] // empty/unset
-    + jsonPrimitives
-    + jsonComplex
+    .concat(jsonPrimitives)
+    .concat(jsonComplex)
 );
 
 /*
@@ -40,12 +40,15 @@ export const LeafVariableDefinition = PropTypes.oneOfType([
 ]);
 
 
+export const VariableSource = PropTypes.oneOf([
+    '',
+    'manual',
+    'component'
+]);
+
+
 export const VariableDefinition = PropTypes.shape({
-    source: PropTypes.oneOf([
-        '',
-        'manual',
-        'component'
-    ]).isRequired,
+    source: VariableSource,
     definition: PropTypes.oneOfType([
         LeafVariableDefinition,
         PropTypes.object, // TODO: recursive `VariableDefinition` prop type
@@ -71,6 +74,7 @@ export const VariableParent = PropTypes.shape({
 
 const Types = {
     LeafVariableDefinition,
+    VariableSource,
     VariableDefinition,
     VariableType,
     VariableParent,
