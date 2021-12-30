@@ -1,8 +1,8 @@
-.. _deployment:
+.. _installation_ansible:
 
-==========
-Deployment
-==========
+=====================
+Install using Ansible
+=====================
 
 Deployment is done via `Ansible`_. Currently, only single server deployments
 are described but you can just as easily deploy the application in a Kubernetes
@@ -12,17 +12,25 @@ environment.
    simplistic and also contains sensitive values. This makes the playbook more
    readable but is not following best practices!
 
+Prerequisites
+=============
+
+You will only need Ansible tooling and nothing more on your own machine:
+
+* `Ansible`_
+
+
 Server preparation
 ==================
 
 You can configure the Ansible playbook to install relevant services, do it
 manually, or have these pre-installed. You will need:
 
-    * PostgreSQL
-    * Nginx
-    * Docker
-    * Python 3.6+
-    * Python PIP
+* PostgreSQL 10 or above
+* Nginx
+* Docker
+* Python 3.6+ (needed for Ansible, not Open Forms)
+* Python PIP
 
 Apart from Docker, you can install all these with something like:
 
@@ -74,9 +82,7 @@ Installation
    .. code:: shell
 
       $ ansible-galaxy collection install community.docker
-      $ ansible-galaxy collection install git+https://github.com/maykinmedia/commonground-ansible.git
-
-   .. note:: The last collection might require explicit access.
+      $ ansible-galaxy collection install maykinmedia.commonground
 
 4. Edit the playbook ``app.yml`` to match your setup. Take special note of all
    **TODO** settings and **read through all the comments and variables**.
