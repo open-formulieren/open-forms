@@ -30,45 +30,11 @@ class StufZDSConfig(SingletonModel):
         help_text=_("Municipality code to register zaken"),
         validators=[validate_digits],
     )
-    zds_zaaktype_code = models.CharField(
-        _("Zaaktype code"),
-        max_length=10,
-        help_text=_("Zaaktype code for newly created zaken in StUF-ZDS"),
-    )
-    zds_zaaktype_omschrijving = models.CharField(
-        _("Zaaktype description"),
-        max_length=80,
-        help_text=_("Zaaktype description for newly created zaken in StUF-ZDS"),
-    )
-    zds_zaaktype_status_code = models.CharField(
-        _("Zaaktype status code"),
-        max_length=10,
-        help_text=_("Zaaktype status code for newly created zaken in StUF-ZDS"),
-    )
-    zds_zaaktype_status_omschrijving = models.CharField(
-        _("Zaaktype status omschrijving"),
-        max_length=80,
-        help_text=_("Zaaktype status omschrijving for newly created zaken in StUF-ZDS"),
-    )
-    zds_documenttype_omschrijving = models.CharField(
-        _("Documenttype description"),
-        max_length=80,
-        help_text=_("Documenttype description for newly created zaken in StUF-ZDS"),
-    )
 
     objects = StufZDSConfigManager()
 
     def apply_defaults_to(self, options):
         options.setdefault("gemeentecode", self.gemeentecode)
-        options.setdefault("zds_zaaktype_code", self.zds_zaaktype_code)
-        options.setdefault("zds_zaaktype_omschrijving", self.zds_zaaktype_omschrijving)
-        options.setdefault("zds_zaaktype_status_code", self.zds_zaaktype_status_code)
-        options.setdefault(
-            "zds_zaaktype_status_omschrijving", self.zds_zaaktype_status_omschrijving
-        )
-        options.setdefault(
-            "zds_documenttype_omschrijving", self.zds_documenttype_omschrijving
-        )
 
     def get_client(self, options):
         from .client import StufZDSClient
