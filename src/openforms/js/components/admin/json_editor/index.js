@@ -6,3 +6,8 @@
  * you have a pre-defined schema for which you want to render a form, look into
  * react-json-schema-form.
  */
+import ComplexVariable from './complex_variables';
+import EditPanel from './edit_panel';
+import TypeSelector from './TypeSelector';
+
+export {EditPanel, ComplexVariable, TypeSelector};
