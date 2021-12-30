@@ -35,41 +35,52 @@ You will only need Docker tooling and nothing more:
 Getting started
 ===============
 
-1. Create a folder to store everything in:
+1. Download the project as ZIP-file:
 
    .. code:: bash
 
-      $ mkdir open-forms
-      $ cd open-forms
+      $ wget https://github.com/open-formulieren/open-forms/archive/refs/heads/master.zip -O
+      $ unzip master.zip
+      $ cd open-forms-master
 
-2. Download the ``docker-compose.yml`` file:
-
-   .. code:: bash
-
-      $ wget https://raw.githubusercontent.com/open-formulieren/open-forms/master/docker-compose.yml
-
-3. Start the docker containers with ``docker-compose``. If you want to run the 
-   containers in the background, add the ``-d`` option to the command below.
+2. Start the docker containers with ``docker-compose``. If you want to run the 
+   containers in the background, add the ``-d`` option to the command below:
 
    .. code:: bash
 
       $ docker-compose up
 
-      Creating open-forms_db_1 ... done
-      Creating open-forms_redis_1 ... done
-      Creating open-forms_sdk_1 ... done
-      Creating open-forms_web_1 ... done
-      Creating open-forms_nginx_1 ... done
-      Creating open-forms_celery_1 ... done
-      Creating open-forms_celery-beat_1 ... done
-      Creating open-forms_celery-flower_1 ... done
+      Creating network "open-forms-master_default" with the default driver
+      Creating volume "open-forms-master_db" with default driver
+      Creating volume "open-forms-master_private_media" with default driver
+      Creating open-forms-master_db_1 ... done
+      Creating open-forms-master_redis_1 ... done
+      Creating open-forms-master_sdk_1 ... done
+      Creating open-forms-master_web_1 ... done
+      Creating open-forms-master_nginx_1 ... done
+      Creating open-forms-master_celery_1 ... done
+      Creating open-forms-master_celery-beat_1 ... done
+      Creating open-forms-master_celery-flower_1 ... done
       ...
 
-4. Create a super-user.
+3. Create a super-user.
 
    .. code:: bash
 
       $ docker-compose exec web src/manage.py createsuperuser
 
-5. Navigate to ``http://127.0.0.1:8000/admin/`` and use the credentials created 
+4. Navigate to ``http://127.0.0.1:8000/admin/`` and use the credentials created 
    above to log in.
+
+5. To stop the containers, press *CTRL-C* or if you used the ``-d`` option:
+
+   .. code:: bash
+
+      $ docker-compose stop
+
+6. If you want to get newer versions, you need to ``pull`` because the 
+   ``docker-compose.yml`` contains no explicit versions:
+
+   .. code:: bash
+
+      $ docker-compose pull

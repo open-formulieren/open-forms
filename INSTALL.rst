@@ -156,7 +156,7 @@ file or as part of the ``(post)activate`` of your virtualenv.
 
 
 Settings
-=============
+========
 
 All settings for the project can be found in
 ``src/openforms/conf``.
