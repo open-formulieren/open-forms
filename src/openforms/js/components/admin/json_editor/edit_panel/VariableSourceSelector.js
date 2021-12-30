@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {defineMessage, useIntl} from 'react-intl';
+import {defineMessage} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../../utils/i18n';
 import Select from '../../forms/Select';
 import Types from '../types';
 
@@ -20,12 +19,9 @@ const VARIABLE_SOURCES = {
 
 
 
-const VariableSourceSelector = ({ varSource='', ...props }) => {
-    const intl = useIntl();
-    return (
-        <Select choices={getTranslatedChoices(intl, VARIABLE_SOURCES)} value={varSource} {...props} />
-    );
-};
+const VariableSourceSelector = ({ varSource='', ...props }) => (
+    <Select choices={VARIABLE_SOURCES} translateChoices value={varSource} {...props} />
+);
 
 VariableSourceSelector.propTypes = {
     varSource: Types.VariableSource,

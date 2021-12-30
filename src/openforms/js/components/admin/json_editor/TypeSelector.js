@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../utils/i18n';
 import Select from '../forms/Select';
 import {TYPE_MESSAGES} from './TypeRepresentation';
 
@@ -53,13 +51,12 @@ export const TYPE_CHOICES = [
  * @return {JSX}                           A Select dropdown with pre-defined choices.
  */
 const TypeSelector = ({ complexOnly=false, ...extra }) => {
-    const intl = useIntl();
     const choices = TYPE_CHOICES
         .filter(opt => !complexOnly || (complexOnly && opt.complex))
         .map(opt => [opt.value, opt.label])
     ;
     return (
-        <Select choices={getTranslatedChoices(intl, choices)} allowBlank={false} {...extra} />
+        <Select choices={choices} translateChoices allowBlank={false} {...extra} />
     );
 };
 
