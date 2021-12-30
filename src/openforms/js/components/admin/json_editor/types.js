@@ -9,12 +9,17 @@ const jsonPrimitives = [
     'null',
 ];
 
-const jsonComplex = [
+export const jsonComplex = [
     'object',
     'array',
 ];
 
 // (React) proptypes
+
+export const VariableIdentifier = PropTypes.oneOfType([
+    PropTypes.string,  // key in an object
+    PropTypes.number,  // index in an array
+]);
 
 /*
 Meta-information about the JSON type of a variable.
@@ -73,6 +78,7 @@ export const VariableParent = PropTypes.shape({
 
 
 const Types = {
+    VariableIdentifier,
     LeafVariableDefinition,
     VariableSource,
     VariableDefinition,
