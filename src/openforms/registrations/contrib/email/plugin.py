@@ -77,7 +77,7 @@ class EmailRegistration(BasePlugin):
                 extra_attachments.append(attachment)
             elif attachment_format == AttachmentFormat.pdf:
                 attachment = (
-                    submission.report.title,
+                    f"{submission.report.title}.pdf",
                     submission.report.content.read(),
                     mime_type,
                 )

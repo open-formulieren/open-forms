@@ -339,8 +339,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(file2[1], "content")  # this is text now
         self.assertEqual(file2[2], "text/bar")
 
-        qs = Submission.objects.filter(pk=submission.pk)
-        self.assertEqual(pdf_export[0], report.title)
+        self.assertEqual(pdf_export[0], f"{report.title}.pdf")
         self.assertEqual(pdf_export[1], report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
 
