@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -9,7 +10,7 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import FormStep
@@ -19,17 +20,11 @@ from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 class FormsStepsAPITests(APITestCase):
     def setUp(self):
         # TODO: Replace with API-token
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john", password="secret", email="john@example.com"
-        )
+        self.user = UserFactory.create()
         self.step = FormStepFactory.create()
         self.other_form_definition = FormDefinitionFactory.create()
 
-        # TODO: Axes requires HttpRequest, should we have that in the API at all?
-        assert self.client.login(
-            request=HttpRequest(), username=self.user.username, password="secret"
-        )
+        self.client.force_login(self.user)
 
     def test_steps_list(self):
         url = reverse(
@@ -40,6 +35,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_form_step_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -59,6 +55,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_create_form_step_successful_with_custom_button_text(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -94,6 +91,7 @@ class FormsStepsAPITests(APITestCase):
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_create_form_step_unsuccessful_with_bad_data(self, _mock):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -131,6 +129,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_create_form_step_unsuccessful_when_form_is_not_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": uuid.uuid4()})
@@ -157,6 +156,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 1)
 
     def test_complete_form_step_update_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -177,6 +177,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_complete_form_step_update_with_custom_texts_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -209,6 +210,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(form_step.next_text, "Different Next Text")
 
     def test_complete_form_step_update_unsuccessful_when_form_step_not_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -234,6 +236,7 @@ class FormsStepsAPITests(APITestCase):
     def test_complete_form_step_update_unsuccessful_with_non_existant_form_definition(
         self, _mock
     ):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -275,6 +278,7 @@ class FormsStepsAPITests(APITestCase):
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_complete_form_step_update_unsuccessful_with_bad_data(self, _mock):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -329,6 +333,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_partial_form_step_update_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -349,6 +354,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_partial_form_step_update_with_texts_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -380,6 +386,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(form_step.next_text, "Different Next Text")
 
     def test_partial_form_step_update_with_of_single_text_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -407,6 +414,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(form_step.previous_text, "Different Previous Text")
 
     def test_partial_form_step_update_unsuccessful_when_form_step_not_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -431,6 +439,7 @@ class FormsStepsAPITests(APITestCase):
     def test_partial_form_step_update_unsuccessful_when_form_definition_not_found(
         self, _mock
     ):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -483,6 +492,7 @@ class FormsStepsAPITests(APITestCase):
         )
 
     def test_delete_form_step_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -495,6 +505,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertFalse(FormStep.objects.exists())
 
     def test_delete_form_step_unsuccessful_when_form_not_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse(
@@ -517,6 +528,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 1)
 
     def test_form_delete(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         token = TokenFactory(user=self.user)

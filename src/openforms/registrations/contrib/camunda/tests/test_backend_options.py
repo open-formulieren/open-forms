@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormFactory
 
 
@@ -19,7 +19,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.user = StaffUserFactory.create()
+        cls.user = SuperUserFactory.create()
         cls.form = FormFactory.create(
             generate_minimal_setup=True,
             registration_backend="camunda",

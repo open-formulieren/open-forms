@@ -1,13 +1,13 @@
 import datetime
 
-from django.http import HttpRequest
+from django.contrib.auth.models import Permission
 from django.urls import reverse
 
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 
 from ...submissions.tests.form_logic.factories import FormLogicFactory
 from ..models import FormDefinition, FormLogic, FormStep, FormVersion
@@ -29,17 +29,27 @@ class FormVersionSaveAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-    def test_must_be_staff_user(self):
-        user = UserFactory.create(username="test", password="test", is_staff=False)
+    def test_staff_required(self):
+        user = UserFactory.create()
+        self.client.force_login(user)
+
+        form = FormFactory.create()
+        url = reverse("api:form-versions-list", args=(form.uuid,))
+
+        response = self.client.post(url)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_must_have_permission(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
         form = FormFactory.create()
 
         versions = FormVersion.objects.filter(form=form)
 
         self.assertEqual(0, versions.count())
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
         url = reverse("api:form-versions-list", args=(form.uuid,))
         response = self.client.post(url)
 
@@ -47,16 +57,16 @@ class FormVersionSaveAPITests(APITestCase):
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_save_version(self):
-        user = UserFactory.create(username="test", password="test", is_staff=True)
+        user = StaffUserFactory.create()
+        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.client.force_login(user)
+
         form = FormFactory.create()
 
         versions = FormVersion.objects.filter(form=form)
 
         self.assertEqual(0, versions.count())
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
         url = reverse("api:form-versions-list", args=(form.uuid,))
         response = self.client.post(url)
 
@@ -77,7 +87,10 @@ class FormVersionSaveAPITests(APITestCase):
         )
 
     def test_list_versions(self):
-        user = UserFactory.create(username="test", password="test", is_staff=True)
+        user = StaffUserFactory.create()
+        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.client.force_login(user)
+
         form_1 = FormFactory.create()
         form_2 = FormFactory.create()
 
@@ -86,9 +99,6 @@ class FormVersionSaveAPITests(APITestCase):
 
         self.assertEqual(2, FormVersion.objects.all().count())
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
         url = reverse("api:form-versions-list", args=(form_1.uuid,))
         response = self.client.get(url)
 
@@ -110,13 +120,12 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
     def test_must_be_staff_user(self):
-        user = UserFactory.create(username="test", password="test", is_staff=False)
+        user = UserFactory.create()
+        self.client.force_login(user)
+
         form = FormFactory.create()
         form_version = FormVersionFactory.create(form=form)
 
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
         url = reverse(
             "api:form-versions-restore",
             kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_version.uuid},
@@ -126,6 +135,10 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_restore_version(self):
+        user = StaffUserFactory.create()
+        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.client.force_login(user)
+
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-2", configuration={"test": "2"}
         )
@@ -139,10 +152,6 @@ class FormVersionRestoreAPITests(APITestCase):
             export_blob=EXPORT_BLOB,
         )
 
-        user = UserFactory.create(username="test", password="test", is_staff=True)
-        self.client.login(
-            request=HttpRequest(), username=user.username, password="test"
-        )
         url = reverse(
             "api:form-versions-restore",
             kwargs={"form_uuid_or_slug": form.uuid, "uuid": version.uuid},

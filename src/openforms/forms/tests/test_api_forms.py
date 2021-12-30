@@ -3,6 +3,7 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.http import HttpRequest
 from django.test import override_settings
 from django.urls import reverse
@@ -32,7 +33,9 @@ class FormsAPITests(APITestCase):
         self.user = UserFactory.create()
         self.client.force_authenticate(user=self.user)
 
-    def test_list(self):
+    def test_list_anon(self):
+        self.client.logout()
+
         FormFactory.create_batch(2)
         FormFactory.create(active=False)
         FormFactory.create(deleted_=True)
@@ -40,7 +43,7 @@ class FormsAPITests(APITestCase):
         url = reverse("api:form-list")
         response = self.client.get(url, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_staff(self):
         FormFactory.create_batch(2)
@@ -53,8 +56,38 @@ class FormsAPITests(APITestCase):
         url = reverse("api:form-list")
         response = self.client.get(url, format="json")
 
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_non_staff_with_permission(self):
+        FormFactory.create_batch(2)
+        FormFactory.create(active=False)
+        FormFactory.create(deleted_=True)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="view_form"))
+        self.user.is_staff = False
+        self.user.save()
+
+        url = reverse("api:form-list")
+        response = self.client.get(url, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # staff can see in-active but not deleted
+        # two forms are hidden
+        self.assertEqual(len(response.json()), 2)
+
+    def test_list_staff_with_permission(self):
+        FormFactory.create_batch(2)
+        FormFactory.create(active=False)
+        FormFactory.create(deleted_=True)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # show all forms excl deleted
         self.assertEqual(len(response.json()), 3)
 
     def test_non_staff_cant_access_deleted_form(self):
@@ -94,6 +127,15 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["slug"], form.slug)
 
+    def test_not_retrieve_inactive_anon(self):
+        self.client.logout()
+        form = FormFactory.create(active=False)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_retrieve_inactive_staff(self):
         form = FormFactory.create(active=False)
 
@@ -105,8 +147,9 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_not_retrieve_inactive_anon(self):
-        form = FormFactory.create(active=False)
+    def test_not_retrieve_deleted_anon(self):
+        self.client.logout()
+        form = FormFactory.create(deleted_=True)
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.get(url, format="json")
@@ -121,7 +164,18 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_retrieve_deleted_staff(self):
+        form = FormFactory.create(deleted_=True)
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_create_form_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -143,6 +197,7 @@ class FormsAPITests(APITestCase):
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_create_form_unsuccessful_with_bad_data(self, _mock):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -190,6 +245,7 @@ class FormsAPITests(APITestCase):
 
     def test_partial_update_of_form(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -212,10 +268,16 @@ class FormsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        form.refresh_from_db()
-        self.assertNotEqual(form.name, "Test Patch Form")
+
+        # as staff
+        self.user.is_staff = True
+        self.user.save()
+
+        response = self.client.patch(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_partial_update_of_form_unsuccessful_when_form_cannot_be_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -229,6 +291,7 @@ class FormsAPITests(APITestCase):
 
     def test_complete_update_of_form_successful(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -266,6 +329,7 @@ class FormsAPITests(APITestCase):
         config.save()
 
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -294,6 +358,7 @@ class FormsAPITests(APITestCase):
 
         form = FormFactory.create()
         FormStepFactory.create(form=form)
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -359,8 +424,7 @@ class FormsAPITests(APITestCase):
             save_text="Overridden Save Text",
             next_text="Overridden Next Text",
         )
-        self.user.is_staff = True
-        self.user.save()
+        # self.client.logout()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
@@ -389,6 +453,7 @@ class FormsAPITests(APITestCase):
         )
 
     def test_create_form_in_maintenance_mode_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -407,6 +472,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.maintenance_mode, True)
 
     def test_create_form_with_custom_texts_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -435,6 +501,7 @@ class FormsAPITests(APITestCase):
     def test_updating_of_form_to_put_it_in_maintenance_mode(self):
         form = FormFactory.create()
         self.user.is_staff = True
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.save()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -449,6 +516,7 @@ class FormsAPITests(APITestCase):
 
     def test_updating_of_form_texts_successful(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -472,6 +540,7 @@ class FormsAPITests(APITestCase):
 
     def test_updating_of_single_form_text_successful(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -493,6 +562,7 @@ class FormsAPITests(APITestCase):
     )
     def test_complete_update_of_form_with_incomplete_data_unsuccessful(self, _mock):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -542,6 +612,7 @@ class FormsAPITests(APITestCase):
     )
     def test_complete_update_of_form_unsuccessful_with_bad_data(self, _mock):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -576,6 +647,7 @@ class FormsAPITests(APITestCase):
         )
 
     def test_complete_update_of_form_when_form_cannot_be_found(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -589,6 +661,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_form_with_confirmation_email_template_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
         url = reverse("api:form-list")
@@ -615,6 +688,7 @@ class FormsAPITests(APITestCase):
 
     def test_creating_a_confirmation_email_template_for_an_existing_form(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -637,6 +711,7 @@ class FormsAPITests(APITestCase):
 
     def test_creating_a_confirmation_email_fails_for_missing_template_tags(self):
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -673,6 +748,7 @@ class FormsAPITests(APITestCase):
             subject="Initial subject",
             content="Initial content",
         )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -700,6 +776,7 @@ class FormsAPITests(APITestCase):
             subject="Initial subject",
             content="Initial content",
         )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -722,6 +799,7 @@ class FormsAPITests(APITestCase):
             content="Initial content",
             update_form_confirmation_email_option=False,
         )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -747,6 +825,7 @@ class FormsAPITests(APITestCase):
             subject="Initial subject",
             content="Initial content",
         )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -780,6 +859,7 @@ class FormsAPITests(APITestCase):
             subject="Initial subject",
             content="Initial content",
         )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -799,9 +879,11 @@ class FormsAPITests(APITestCase):
 
         Unusable is defined as having an empty subject or content.
         """
-        user = StaffUserFactory.create()
-        self.client.force_authenticate(user=user)
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         invalid_templates = [
             None,
@@ -831,9 +913,10 @@ class FormsAPITests(APITestCase):
         """
         Test 1064 regression: invalid template code was accepted.
         """
-        user = StaffUserFactory.create()
-        self.client.force_authenticate(user=user)
         form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
         data = {
@@ -857,6 +940,7 @@ class CopyFormAPITests(APITestCase):
 
     @override_settings(CACHES=NOOP_CACHES)
     def test_form_copy(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -911,6 +995,7 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(copied_form_step.order, form_step.order)
 
     def test_form_copy_already_exists(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
