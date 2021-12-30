@@ -5,7 +5,7 @@ import {defineMessage, useIntl} from 'react-intl';
 import Types from './types';
 
 
-const TYPE_MESSAGES = {
+export const TYPE_MESSAGES = {
     unset: defineMessage({
         description: 'JSON variable type unset representation',
         defaultMessage: '(unset)',
