@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import serializers, status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.payments.base import BasePlugin as PaymentBasePlugin
 from openforms.payments.registry import Registry as PaymentRegistry
 from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
@@ -38,7 +38,7 @@ class FormPluginOptionTest(APITestCase):
     def setUp(self):
         super().setUp()
         self.user = SuperUserFactory()
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
 
     def test_registration_backend_options(self):
         form = FormFactory.create()

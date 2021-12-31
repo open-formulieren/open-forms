@@ -24,7 +24,7 @@ class FormsStepsAPITests(APITestCase):
         self.step = FormStepFactory.create()
         self.other_form_definition = FormDefinitionFactory.create()
 
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
 
     def test_steps_list(self):
         url = reverse(

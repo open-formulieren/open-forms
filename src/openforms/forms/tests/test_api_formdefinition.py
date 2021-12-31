@@ -75,7 +75,7 @@ class FormDefinitionsAPITests(APITestCase):
             response = self.client.patch(url, data=data)
             self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_user_without_permissionr_cant_create(self):
+    def test_user_without_permission_cant_create(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
         url = reverse("api:formdefinition-list")
@@ -121,8 +121,7 @@ class FormDefinitionsAPITests(APITestCase):
             self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_update(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
 
         definition = FormDefinitionFactory.create(
@@ -159,8 +158,7 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertIn({"label": "New field"}, definition.configuration["components"])
 
     def test_create(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
 
         url = reverse("api:formdefinition-list")
@@ -187,8 +185,7 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
     def test_create_no_camelcase_snakecase_conversion(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
 
         url = reverse("api:formdefinition-list")
@@ -209,8 +206,7 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertNotIn("some_amel_case", config)
 
     def test_delete(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
 
         definition = FormDefinitionFactory.create(

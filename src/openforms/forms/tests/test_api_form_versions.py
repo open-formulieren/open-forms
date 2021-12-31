@@ -30,8 +30,11 @@ class FormVersionSaveAPITests(APITestCase):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
     def test_staff_required(self):
-        user = UserFactory.create()
-        self.client.force_login(user)
+        # add the permissions to verify we specifically check is_staff
+        user = UserFactory.create(
+            is_staff=False, user_permissions=["change_form", "view_form"]
+        )
+        self.client.force_authenticate(user=user)
 
         form = FormFactory.create()
         url = reverse("api:form-versions-list", args=(form.uuid,))
@@ -42,7 +45,7 @@ class FormVersionSaveAPITests(APITestCase):
 
     def test_must_have_permission(self):
         user = StaffUserFactory.create()
-        self.client.force_login(user)
+        self.client.force_authenticate(user=user)
 
         form = FormFactory.create()
 
@@ -57,9 +60,9 @@ class FormVersionSaveAPITests(APITestCase):
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_save_version(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.client.force_login(user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+        self.assertEqual(user.user_permissions.all().count(), 1)
 
         form = FormFactory.create()
 
@@ -87,9 +90,8 @@ class FormVersionSaveAPITests(APITestCase):
         )
 
     def test_list_versions(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.client.force_login(user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         form_1 = FormFactory.create()
         form_2 = FormFactory.create()
@@ -121,7 +123,7 @@ class FormVersionRestoreAPITests(APITestCase):
 
     def test_must_be_staff_user(self):
         user = UserFactory.create()
-        self.client.force_login(user)
+        self.client.force_authenticate(user=user)
 
         form = FormFactory.create()
         form_version = FormVersionFactory.create(form=form)
@@ -135,9 +137,8 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_restore_version(self):
-        user = StaffUserFactory.create()
-        user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.client.force_login(user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-2", configuration={"test": "2"}
