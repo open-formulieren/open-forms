@@ -34,6 +34,11 @@
     "description": "Step delete confirmation",
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
+  "1ArmQ5": {
+    "defaultMessage": "Confirm",
+    "description": "Camunda complex process variables confirm button",
+    "originalDefault": "Confirm"
+  },
   "1fD+K4": {
     "defaultMessage": "Incomplete Submissions Removal Method",
     "description": "Incomplete Submissions Removal Method field label",
@@ -43,6 +48,16 @@
     "defaultMessage": "Is deleted",
     "description": "Form deleted field label",
     "originalDefault": "Is deleted"
+  },
+  "2MK7iF": {
+    "defaultMessage": "Number",
+    "description": "JSON variable type \"number\" representation",
+    "originalDefault": "Number"
+  },
+  "2Z/hNo": {
+    "defaultMessage": "Type",
+    "description": "Camunda complex process var 'type' label",
+    "originalDefault": "Type"
   },
   "2d5RfI": {
     "defaultMessage": "Registration backend options",
@@ -63,6 +78,11 @@
     "defaultMessage": "Add another",
     "description": "Button text to add extra item",
     "originalDefault": "Add another"
+  },
+  "4FQxD/": {
+    "defaultMessage": "Configure",
+    "description": "JSON editor: 'configure' header label",
+    "originalDefault": "Configure"
   },
   "4iGsG1": {
     "defaultMessage": "Birth Date Component",
@@ -154,10 +174,25 @@
     "description": "Form step save text field help text",
     "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
+  "8VqmbG": {
+    "defaultMessage": "Type",
+    "description": "JSON editor: 'type' header label",
+    "originalDefault": "Type"
+  },
+  "8pemD3": {
+    "defaultMessage": "Edit variable {name}",
+    "description": "JSON editor: variable edit panel title",
+    "originalDefault": "Edit variable {name}"
+  },
   "9N67XB": {
     "defaultMessage": "Invalid JSON syntax",
     "description": "Advanced logic rule invalid json message",
     "originalDefault": "Invalid JSON syntax"
+  },
+  "9RDDDn": {
+    "defaultMessage": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }",
+    "description": "Managed complex Camunda process vars state feedback",
+    "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
   },
   "9bGp7h": {
     "defaultMessage": "Active",
@@ -168,6 +203,11 @@
     "defaultMessage": "and",
     "description": "Extra logic action prefix",
     "originalDefault": "and"
+  },
+  "9y3/ek": {
+    "defaultMessage": "Confirm",
+    "description": "JSON editor: confirm edited variable definition",
+    "originalDefault": "Confirm"
   },
   "9zJefY": {
     "defaultMessage": "Errored Submissions Removal Limit",
@@ -249,6 +289,11 @@
     "description": "Form submissionAllowed field label",
     "originalDefault": "Submission allowed"
   },
+  "DEAqyQ": {
+    "defaultMessage": "Boolean",
+    "description": "JSON variable type \"boolean\" representation",
+    "originalDefault": "Boolean"
+  },
   "DGpAyT": {
     "defaultMessage": "Move down",
     "description": "Move down icon title",
@@ -328,6 +373,11 @@
     "defaultMessage": "Use linked product price",
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
+  },
+  "GjcAY2": {
+    "defaultMessage": "Null",
+    "description": "JSON variable type \"null\" representation",
+    "originalDefault": "Null"
   },
   "H3dRU6": {
     "defaultMessage": "Check to include the field as process variable",
@@ -419,10 +469,20 @@
     "description": "Confirmation Email Content label",
     "originalDefault": "Content"
   },
+  "KjDolH": {
+    "defaultMessage": "Manually defined",
+    "description": "JSON editor: \"manual\" variable source label",
+    "originalDefault": "Manually defined"
+  },
   "L0g8AL": {
     "defaultMessage": "Payment provider",
     "description": "Payment provider fieldset title",
     "originalDefault": "Payment provider"
+  },
+  "LHBcNe": {
+    "defaultMessage": "Variable definition",
+    "description": "JSON editor: complex variable definition title",
+    "originalDefault": "Variable definition"
   },
   "LN58C1": {
     "defaultMessage": "Sensitive data within the submissions will be deleted",
@@ -449,10 +509,25 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
+  "MEkGHD": {
+    "defaultMessage": "Component",
+    "description": "Formio component selection label",
+    "originalDefault": "Component"
+  },
   "NwTdLM": {
     "defaultMessage": "Component where locations for an appointment will be shown",
     "description": "Locations Component field help text",
     "originalDefault": "Component where locations for an appointment will be shown"
+  },
+  "O/wKJh": {
+    "defaultMessage": "Value",
+    "description": "JSON (primitive) value label",
+    "originalDefault": "Value"
+  },
+  "O3l+pQ": {
+    "defaultMessage": "Type",
+    "description": "JSON datatype selector label",
+    "originalDefault": "Type"
   },
   "OFAJVW": {
     "defaultMessage": "Registration",
@@ -544,6 +619,11 @@
     "description": "action type \"property\" label",
     "originalDefault": "change a property of a component."
   },
+  "T0OLUV": {
+    "defaultMessage": "Add key-value pair",
+    "description": "JSON editor: add object key-value pair button",
+    "originalDefault": "Add key-value pair"
+  },
   "TCQic2": {
     "defaultMessage": "Confirm text",
     "description": "literals.confirmText form label",
@@ -589,6 +669,11 @@
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
+  "VUOOSy": {
+    "defaultMessage": "Name",
+    "description": "Camunda complex process var 'name' label",
+    "originalDefault": "Name"
+  },
   "VV2TCH": {
     "defaultMessage": "disable continuing to the next form step.",
     "description": "action type \"disable-next\" label",
@@ -629,6 +714,11 @@
     "description": "Admin save submit button",
     "originalDefault": "Save"
   },
+  "YdIu8k": {
+    "defaultMessage": "Add item",
+    "description": "JSON editor: add array value button",
+    "originalDefault": "Add item"
+  },
   "YzLSHY": {
     "defaultMessage": "Are you sure you want to delete this?",
     "description": "Default delete confirmation message",
@@ -638,11 +728,6 @@
     "defaultMessage": "Previous text",
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
-  },
-  "a3dhuP": {
-    "defaultMessage": "Manage process variables",
-    "description": "Open manage camnda process vars modal button",
-    "originalDefault": "Manage process variables"
   },
   "a4gS07": {
     "defaultMessage": "No (without overview page)",
@@ -684,6 +769,11 @@
     "description": "Incomplete Submissions Removal Limit field label",
     "originalDefault": "Incomplete Submissions Removal Limit"
   },
+  "cID9dz": {
+    "defaultMessage": "(complex value)",
+    "description": "JSON editor: complex value representation",
+    "originalDefault": "(complex value)"
+  },
   "cUVVbl": {
     "defaultMessage": "is greater than or equal to",
     "description": "\">=\" operator description",
@@ -704,10 +794,20 @@
     "description": "no_email option label",
     "originalDefault": "No email"
   },
+  "d1W41c": {
+    "defaultMessage": "From form field",
+    "description": "JSON editor: \"component\" variable source label",
+    "originalDefault": "From form field"
+  },
   "d45v2X": {
     "defaultMessage": "Export this form",
     "description": "Export form button title",
     "originalDefault": "Export this form"
+  },
+  "ddDA6+": {
+    "defaultMessage": "Array",
+    "description": "JSON variable type \"array\" representation",
+    "originalDefault": "Array"
   },
   "ddR92A": {
     "defaultMessage": "Explanation template",
@@ -809,6 +909,11 @@
     "description": "action type \"value\" label",
     "originalDefault": "change the value of a component"
   },
+  "jU/t8O": {
+    "defaultMessage": "Edit complex variable",
+    "description": "Camunda complex process var configuration modal title",
+    "originalDefault": "Edit complex variable"
+  },
   "jZIu+e": {
     "defaultMessage": "No",
     "description": "Component property boolean value \"false\"",
@@ -824,10 +929,20 @@
     "description": "Form list 'name' column header",
     "originalDefault": "Name"
   },
+  "kHn5Yw": {
+    "defaultMessage": "Edit definition",
+    "description": "JSON editor: edit value definition",
+    "originalDefault": "Edit definition"
+  },
   "kNOyt+": {
     "defaultMessage": "disabled",
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
+  },
+  "l1fi1t": {
+    "defaultMessage": "(missing information)",
+    "description": "JSON editor: unknown FormIO component key",
+    "originalDefault": "(missing information)"
   },
   "l2Wag+": {
     "defaultMessage": "Mark the form step as not-applicable",
@@ -854,6 +969,16 @@
     "description": "Logic trigger number of months",
     "originalDefault": "months"
   },
+  "mZ5Rrx": {
+    "defaultMessage": "Form field",
+    "description": "JSON variable type \"Form field\" representation",
+    "originalDefault": "Form field"
+  },
+  "myvtu0": {
+    "defaultMessage": "Manage process variables",
+    "description": "Open manage camunda process vars modal button",
+    "originalDefault": "Manage process variables"
+  },
   "n4Y2ex": {
     "defaultMessage": "Version",
     "description": "Camunda 'process definition version' label",
@@ -869,6 +994,11 @@
     "description": "All Submissions Removal Limit help text",
     "originalDefault": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
   },
+  "o8CfuS": {
+    "defaultMessage": "String",
+    "description": "JSON variable type \"string\" representation",
+    "originalDefault": "String"
+  },
   "ow5AAO": {
     "defaultMessage": "The form is invalid. Please correct the errors below.",
     "description": "Generic error message",
@@ -879,10 +1009,20 @@
     "description": "Successful Submissions Removal Method help text",
     "originalDefault": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
+  "p18yml": {
+    "defaultMessage": "Complex process variables",
+    "description": "Open manage complex camunda process vars modal button",
+    "originalDefault": "Complex process variables"
+  },
   "p8LSwF": {
     "defaultMessage": "Add action",
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
+  },
+  "pWHOT1": {
+    "defaultMessage": "Value",
+    "description": "JSON editor: 'value' header label",
+    "originalDefault": "Value"
   },
   "piUWzT": {
     "defaultMessage": "Select registration backend",
@@ -913,6 +1053,11 @@
     "defaultMessage": "Step slug",
     "description": "Form step slug label",
     "originalDefault": "Step slug"
+  },
+  "r5Olb9": {
+    "defaultMessage": "Manage complex process variables",
+    "description": "Camunda complex process vars modal title",
+    "originalDefault": "Manage complex process variables"
   },
   "r6Wa2m": {
     "defaultMessage": "the field",
@@ -959,10 +1104,20 @@
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
+  "vng/5K": {
+    "defaultMessage": "Set a key name before you can configure this variable",
+    "description": "JSON editor: object entry has empty key name",
+    "originalDefault": "Set a key name before you can configure this variable"
+  },
   "wIaGgb": {
     "defaultMessage": "Errored Submissions Removal Method",
     "description": "Errored Submissions Removal Method field label",
     "originalDefault": "Errored Submissions Removal Method"
+  },
+  "wOMoEs": {
+    "defaultMessage": "Source",
+    "description": "JSON editor: value source selector label",
+    "originalDefault": "Source"
   },
   "wjwFwT": {
     "defaultMessage": "Component where times for an appointment will be shown",
@@ -973,6 +1128,11 @@
     "defaultMessage": "Component where products for an appointment will be shown",
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
+  },
+  "x4gaYf": {
+    "defaultMessage": "Cancel",
+    "description": "JSON editor: cancel variable edit",
+    "originalDefault": "Cancel"
   },
   "xJBMaf": {
     "defaultMessage": "Submission confirmation template",
@@ -994,6 +1154,11 @@
     "description": "select definition icon title",
     "originalDefault": "Select definition"
   },
+  "yTpHh0": {
+    "defaultMessage": "(unset)",
+    "description": "JSON variable type unset representation",
+    "originalDefault": "(unset)"
+  },
   "yYw2Rb": {
     "defaultMessage": "Phone Number Component",
     "description": "Phone Number Component field label",
@@ -1008,6 +1173,11 @@
     "defaultMessage": "There are validation errors",
     "description": "Step validation errors icon title",
     "originalDefault": "There are validation errors"
+  },
+  "zV3nNZ": {
+    "defaultMessage": "Object",
+    "description": "JSON variable type \"object\" representation",
+    "originalDefault": "Object"
   },
   "zeXZzX": {
     "defaultMessage": "Use logic rules to determine the price",

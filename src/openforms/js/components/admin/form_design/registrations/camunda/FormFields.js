@@ -51,10 +51,12 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
         processDefinition='',
         processDefinitionVersion=null,
         processVariables=[],
+        complexProcessVariables=[],
     } = formData;
 
     const intl = useIntl();
-    const [modalOpen, setModalOpen] = useState(false);
+    const [simpleVarsModalOpen, setSimpleVarsModalOpen] = useState(false);
+    const [complexVarsModalOpen, setComplexVarsModalOpen] = useState(false);
     const [processDefinitionChoices, versionChoices] = getProcessSelectionChoices(processDefinitions, processDefinition);
 
     const onFieldChange = (event) => {
@@ -159,11 +161,11 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 <CustomFieldTemplate id="camundaOptions.manageProcessVars" displayLabel={false} rawErrors={null}>
                     <ActionButton
                         text={ intl.formatMessage({
-                            description: 'Open manage camnda process vars modal button',
+                            description: 'Open manage camunda process vars modal button',
                             defaultMessage: 'Manage process variables'
                         })}
                         type="button"
-                        onClick={() => setModalOpen(!modalOpen)}
+                        onClick={() => setSimpleVarsModalOpen(!simpleVarsModalOpen)}
                     />
                     &nbsp;
                     <FormattedMessage
@@ -177,12 +179,33 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                     />
                 </CustomFieldTemplate>
 
+                <CustomFieldTemplate id="camundaOptions.manageComplexProcessVars" displayLabel={false} rawErrors={null}>
+                    <ActionButton
+                        text={ intl.formatMessage({
+                            description: 'Open manage complex camunda process vars modal button',
+                            defaultMessage: 'Complex process variables'
+                        })}
+                        type="button"
+                        onClick={() => setComplexVarsModalOpen(!complexVarsModalOpen)}
+                    />
+                    &nbsp;
+                    <FormattedMessage
+                        description="Managed complex Camunda process vars state feedback"
+                        defaultMessage="{varCount, plural,
+                            =0 {}
+                            one {(1 variable defined)}
+                            other {({varCount} variables defined)}
+                        }"
+                        values={{varCount: complexProcessVariables.length}}
+                    />
+                </CustomFieldTemplate>
+
             </Wrapper>
 
             <FormModal
-                isOpen={modalOpen}
+                isOpen={simpleVarsModalOpen}
                 title={<FormattedMessage description="Camunda process var selection modal title" defaultMessage="Manage process variables" />}
-                closeModal={() => setModalOpen(false)}
+                closeModal={() => setSimpleVarsModalOpen(false)}
             >
                 <SelectProcessVariables
                     processVariables={processVariables}
@@ -195,7 +218,25 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                         text={intl.formatMessage({description: 'Camunda process variables confirm button', defaultMessage: 'Confirm'})}
                         onClick={(event) => {
                             event.preventDefault();
-                            setModalOpen(false);
+                            setSimpleVarsModalOpen(false);
+                        }}
+                    />
+                </SubmitRow>
+            </FormModal>
+
+            <FormModal
+                isOpen={complexVarsModalOpen}
+                title={<FormattedMessage description="Camunda complex process vars modal title" defaultMessage="Manage complex process variables" />}
+                closeModal={() => setComplexVarsModalOpen(false)}
+            >
+                Complicated
+
+                <SubmitRow>
+                    <SubmitAction
+                        text={intl.formatMessage({description: 'Camunda complex process variables confirm button', defaultMessage: 'Confirm'})}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            setComplexVarsModalOpen(false);
                         }}
                     />
                 </SubmitRow>

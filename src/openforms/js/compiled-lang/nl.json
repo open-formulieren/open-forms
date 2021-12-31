@@ -49,6 +49,12 @@
       "value": " wil verwijderen?"
     }
   ],
+  "1ArmQ5": [
+    {
+      "type": 0,
+      "value": "Confirm"
+    }
+  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -59,6 +65,18 @@
     {
       "type": 0,
       "value": "Verwijderd"
+    }
+  ],
+  "2MK7iF": [
+    {
+      "type": 0,
+      "value": "Number"
+    }
+  ],
+  "2Z/hNo": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "2d5RfI": [
@@ -83,6 +101,12 @@
     {
       "type": 0,
       "value": "Voeg nog één toe"
+    }
+  ],
+  "4FQxD/": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "4iGsG1": [
@@ -233,10 +257,64 @@
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "8VqmbG": [
+    {
+      "type": 0,
+      "value": "Type"
+    }
+  ],
+  "8pemD3": [
+    {
+      "type": 0,
+      "value": "Edit variable "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
       "value": "Invalid JSON syntax"
+    }
+  ],
+  "9RDDDn": [
+    {
+      "offset": 0,
+      "options": {
+        "=0": {
+          "value": [
+          ]
+        },
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(1 variable defined)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "("
+            },
+            {
+              "type": 1,
+              "value": "varCount"
+            },
+            {
+              "type": 0,
+              "value": " variables defined)"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "varCount"
     }
   ],
   "9bGp7h": [
@@ -249,6 +327,12 @@
     {
       "type": 0,
       "value": "en"
+    }
+  ],
+  "9y3/ek": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "9zJefY": [
@@ -379,6 +463,12 @@
       "value": "Submission allowed"
     }
   ],
+  "DEAqyQ": [
+    {
+      "type": 0,
+      "value": "Boolean"
+    }
+  ],
   "DGpAyT": [
     {
       "type": 0,
@@ -473,6 +563,12 @@
     {
       "type": 0,
       "value": "Gebruik gekoppelde productprijs"
+    }
+  ],
+  "GjcAY2": [
+    {
+      "type": 0,
+      "value": "Null"
     }
   ],
   "H3dRU6": [
@@ -583,10 +679,22 @@
       "value": "Inhoud"
     }
   ],
+  "KjDolH": [
+    {
+      "type": 0,
+      "value": "Manually defined"
+    }
+  ],
   "L0g8AL": [
     {
       "type": 0,
       "value": "Betaalprovider"
+    }
+  ],
+  "LHBcNe": [
+    {
+      "type": 0,
+      "value": "Variable definition"
     }
   ],
   "LN58C1": [
@@ -619,10 +727,28 @@
       "value": "'Wijzigen' tekst"
     }
   ],
+  "MEkGHD": [
+    {
+      "type": 0,
+      "value": "Component"
+    }
+  ],
   "NwTdLM": [
     {
       "type": 0,
       "value": "Veld waar beschikbare lokaties voor een afspraak komen te staan"
+    }
+  ],
+  "O/wKJh": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
+  "O3l+pQ": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "OFAJVW": [
@@ -741,6 +867,12 @@
       "value": "wijzig een attribuut van een veld/component."
     }
   ],
+  "T0OLUV": [
+    {
+      "type": 0,
+      "value": "Add key-value pair"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -811,6 +943,12 @@
       "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
     }
   ],
+  "VUOOSy": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "VV2TCH": [
     {
       "type": 0,
@@ -859,6 +997,12 @@
       "value": "Opslaan"
     }
   ],
+  "YdIu8k": [
+    {
+      "type": 0,
+      "value": "Add item"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -869,12 +1013,6 @@
     {
       "type": 0,
       "value": "'Vorige' tekst"
-    }
-  ],
-  "a3dhuP": [
-    {
-      "type": 0,
-      "value": "Manage process variables"
     }
   ],
   "a4gS07": [
@@ -925,6 +1063,12 @@
       "value": "bewaartermijn voor sessies"
     }
   ],
+  "cID9dz": [
+    {
+      "type": 0,
+      "value": "(complex value)"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -949,10 +1093,22 @@
       "value": "Geen e-mail"
     }
   ],
+  "d1W41c": [
+    {
+      "type": 0,
+      "value": "From form field"
+    }
+  ],
   "d45v2X": [
     {
       "type": 0,
       "value": "Exporteer dit formulier"
+    }
+  ],
+  "ddDA6+": [
+    {
+      "type": 0,
+      "value": "Array"
     }
   ],
   "ddR92A": [
@@ -1079,6 +1235,12 @@
       "value": "wijzig de waarde van een veld"
     }
   ],
+  "jU/t8O": [
+    {
+      "type": 0,
+      "value": "Edit complex variable"
+    }
+  ],
   "jZIu+e": [
     {
       "type": 0,
@@ -1097,10 +1259,22 @@
       "value": "Naam"
     }
   ],
+  "kHn5Yw": [
+    {
+      "type": 0,
+      "value": "Edit definition"
+    }
+  ],
   "kNOyt+": [
     {
       "type": 0,
       "value": "uitgeschakeld"
+    }
+  ],
+  "l1fi1t": [
+    {
+      "type": 0,
+      "value": "(missing information)"
     }
   ],
   "l2Wag+": [
@@ -1133,6 +1307,18 @@
       "value": "maanden"
     }
   ],
+  "mZ5Rrx": [
+    {
+      "type": 0,
+      "value": "Form field"
+    }
+  ],
+  "myvtu0": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
+    }
+  ],
   "n4Y2ex": [
     {
       "type": 0,
@@ -1151,6 +1337,12 @@
       "value": "Aantal dagen dat een inzending bewaard blijft voordat deze definitief verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "o8CfuS": [
+    {
+      "type": 0,
+      "value": "String"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
@@ -1163,10 +1355,22 @@
       "value": "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "p18yml": [
+    {
+      "type": 0,
+      "value": "Complex process variables"
+    }
+  ],
   "p8LSwF": [
     {
       "type": 0,
       "value": "Voeg actie toe"
+    }
+  ],
+  "pWHOT1": [
+    {
+      "type": 0,
+      "value": "Value"
     }
   ],
   "piUWzT": [
@@ -1203,6 +1407,12 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "r5Olb9": [
+    {
+      "type": 0,
+      "value": "Manage complex process variables"
     }
   ],
   "r6Wa2m": [
@@ -1259,10 +1469,22 @@
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "vng/5K": [
+    {
+      "type": 0,
+      "value": "Set a key name before you can configure this variable"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
       "value": "Opschoonmethode voor niet voltooide inzendingen"
+    }
+  ],
+  "wOMoEs": [
+    {
+      "type": 0,
+      "value": "Source"
     }
   ],
   "wjwFwT": [
@@ -1275,6 +1497,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare producten voor een afspraak komen te staan"
+    }
+  ],
+  "x4gaYf": [
+    {
+      "type": 0,
+      "value": "Cancel"
     }
   ],
   "xJBMaf": [
@@ -1301,6 +1529,12 @@
       "value": "Formulierdefinitie selecteren"
     }
   ],
+  "yTpHh0": [
+    {
+      "type": 0,
+      "value": "(unset)"
+    }
+  ],
   "yYw2Rb": [
     {
       "type": 0,
@@ -1317,6 +1551,12 @@
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "zV3nNZ": [
+    {
+      "type": 0,
+      "value": "Object"
     }
   ],
   "zeXZzX": [

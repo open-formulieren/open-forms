@@ -49,6 +49,12 @@
       "value": "?"
     }
   ],
+  "1ArmQ5": [
+    {
+      "type": 0,
+      "value": "Confirm"
+    }
+  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -59,6 +65,18 @@
     {
       "type": 0,
       "value": "Is deleted"
+    }
+  ],
+  "2MK7iF": [
+    {
+      "type": 0,
+      "value": "Number"
+    }
+  ],
+  "2Z/hNo": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "2d5RfI": [
@@ -83,6 +101,12 @@
     {
       "type": 0,
       "value": "Add another"
+    }
+  ],
+  "4FQxD/": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "4iGsG1": [
@@ -229,10 +253,64 @@
       "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
     }
   ],
+  "8VqmbG": [
+    {
+      "type": 0,
+      "value": "Type"
+    }
+  ],
+  "8pemD3": [
+    {
+      "type": 0,
+      "value": "Edit variable "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
       "value": "Invalid JSON syntax"
+    }
+  ],
+  "9RDDDn": [
+    {
+      "offset": 0,
+      "options": {
+        "=0": {
+          "value": [
+          ]
+        },
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(1 variable defined)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "("
+            },
+            {
+              "type": 1,
+              "value": "varCount"
+            },
+            {
+              "type": 0,
+              "value": " variables defined)"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "varCount"
     }
   ],
   "9bGp7h": [
@@ -245,6 +323,12 @@
     {
       "type": 0,
       "value": "and"
+    }
+  ],
+  "9y3/ek": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "9zJefY": [
@@ -375,6 +459,12 @@
       "value": "Submission allowed"
     }
   ],
+  "DEAqyQ": [
+    {
+      "type": 0,
+      "value": "Boolean"
+    }
+  ],
   "DGpAyT": [
     {
       "type": 0,
@@ -469,6 +559,12 @@
     {
       "type": 0,
       "value": "Use linked product price"
+    }
+  ],
+  "GjcAY2": [
+    {
+      "type": 0,
+      "value": "Null"
     }
   ],
   "H3dRU6": [
@@ -579,10 +675,22 @@
       "value": "Content"
     }
   ],
+  "KjDolH": [
+    {
+      "type": 0,
+      "value": "Manually defined"
+    }
+  ],
   "L0g8AL": [
     {
       "type": 0,
       "value": "Payment provider"
+    }
+  ],
+  "LHBcNe": [
+    {
+      "type": 0,
+      "value": "Variable definition"
     }
   ],
   "LN58C1": [
@@ -615,10 +723,28 @@
       "value": "Change text"
     }
   ],
+  "MEkGHD": [
+    {
+      "type": 0,
+      "value": "Component"
+    }
+  ],
   "NwTdLM": [
     {
       "type": 0,
       "value": "Component where locations for an appointment will be shown"
+    }
+  ],
+  "O/wKJh": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
+  "O3l+pQ": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "OFAJVW": [
@@ -737,6 +863,12 @@
       "value": "change a property of a component."
     }
   ],
+  "T0OLUV": [
+    {
+      "type": 0,
+      "value": "Add key-value pair"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -807,6 +939,12 @@
       "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
+  "VUOOSy": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "VV2TCH": [
     {
       "type": 0,
@@ -855,6 +993,12 @@
       "value": "Save"
     }
   ],
+  "YdIu8k": [
+    {
+      "type": 0,
+      "value": "Add item"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -865,12 +1009,6 @@
     {
       "type": 0,
       "value": "Previous text"
-    }
-  ],
-  "a3dhuP": [
-    {
-      "type": 0,
-      "value": "Manage process variables"
     }
   ],
   "a4gS07": [
@@ -921,6 +1059,12 @@
       "value": "Incomplete Submissions Removal Limit"
     }
   ],
+  "cID9dz": [
+    {
+      "type": 0,
+      "value": "(complex value)"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -945,10 +1089,22 @@
       "value": "No email"
     }
   ],
+  "d1W41c": [
+    {
+      "type": 0,
+      "value": "From form field"
+    }
+  ],
   "d45v2X": [
     {
       "type": 0,
       "value": "Export this form"
+    }
+  ],
+  "ddDA6+": [
+    {
+      "type": 0,
+      "value": "Array"
     }
   ],
   "ddR92A": [
@@ -1075,6 +1231,12 @@
       "value": "change the value of a component"
     }
   ],
+  "jU/t8O": [
+    {
+      "type": 0,
+      "value": "Edit complex variable"
+    }
+  ],
   "jZIu+e": [
     {
       "type": 0,
@@ -1093,10 +1255,22 @@
       "value": "Name"
     }
   ],
+  "kHn5Yw": [
+    {
+      "type": 0,
+      "value": "Edit definition"
+    }
+  ],
   "kNOyt+": [
     {
       "type": 0,
       "value": "disabled"
+    }
+  ],
+  "l1fi1t": [
+    {
+      "type": 0,
+      "value": "(missing information)"
     }
   ],
   "l2Wag+": [
@@ -1129,6 +1303,18 @@
       "value": "months"
     }
   ],
+  "mZ5Rrx": [
+    {
+      "type": 0,
+      "value": "Form field"
+    }
+  ],
+  "myvtu0": [
+    {
+      "type": 0,
+      "value": "Manage process variables"
+    }
+  ],
   "n4Y2ex": [
     {
       "type": 0,
@@ -1147,6 +1333,12 @@
       "value": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
     }
   ],
+  "o8CfuS": [
+    {
+      "type": 0,
+      "value": "String"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
@@ -1159,10 +1351,22 @@
       "value": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
+  "p18yml": [
+    {
+      "type": 0,
+      "value": "Complex process variables"
+    }
+  ],
   "p8LSwF": [
     {
       "type": 0,
       "value": "Add action"
+    }
+  ],
+  "pWHOT1": [
+    {
+      "type": 0,
+      "value": "Value"
     }
   ],
   "piUWzT": [
@@ -1199,6 +1403,12 @@
     {
       "type": 0,
       "value": "Step slug"
+    }
+  ],
+  "r5Olb9": [
+    {
+      "type": 0,
+      "value": "Manage complex process variables"
     }
   ],
   "r6Wa2m": [
@@ -1255,10 +1465,22 @@
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
     }
   ],
+  "vng/5K": [
+    {
+      "type": 0,
+      "value": "Set a key name before you can configure this variable"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
       "value": "Errored Submissions Removal Method"
+    }
+  ],
+  "wOMoEs": [
+    {
+      "type": 0,
+      "value": "Source"
     }
   ],
   "wjwFwT": [
@@ -1271,6 +1493,12 @@
     {
       "type": 0,
       "value": "Component where products for an appointment will be shown"
+    }
+  ],
+  "x4gaYf": [
+    {
+      "type": 0,
+      "value": "Cancel"
     }
   ],
   "xJBMaf": [
@@ -1297,6 +1525,12 @@
       "value": "Select definition"
     }
   ],
+  "yTpHh0": [
+    {
+      "type": 0,
+      "value": "(unset)"
+    }
+  ],
   "yYw2Rb": [
     {
       "type": 0,
@@ -1313,6 +1547,12 @@
     {
       "type": 0,
       "value": "There are validation errors"
+    }
+  ],
+  "zV3nNZ": [
+    {
+      "type": 0,
+      "value": "Object"
     }
   ],
   "zeXZzX": [
