@@ -27,13 +27,32 @@ from stuf.stuf_zds.models import StufZDSConfig
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    zds_zaaktype_code = serializers.CharField(
+    gemeentecode = serializers.CharField(
         required=False,
+        help_text=_("Municipality code to register zaken"),
+    )
+
+    zds_zaaktype_code = serializers.CharField(
+        required=True,
         help_text=_("Zaaktype code for newly created Zaken in StUF-ZDS"),
     )
     zds_zaaktype_omschrijving = serializers.CharField(
-        required=False,
+        required=True,
         help_text=_("Zaaktype description for newly created Zaken in StUF-ZDS"),
+    )
+
+    zds_zaaktype_status_code = serializers.CharField(
+        required=True,
+        help_text=_("Zaaktype status code for newly created zaken in StUF-ZDS"),
+    )
+    zds_zaaktype_status_omschrijving = serializers.CharField(
+        required=True,
+        help_text=_("Zaaktype status omschrijving for newly created zaken in StUF-ZDS"),
+    )
+
+    zds_documenttype_omschrijving_inzending = serializers.CharField(
+        required=True,
+        help_text=_("Documenttype description for newly created zaken in StUF-ZDS"),
     )
 
 
@@ -198,10 +217,19 @@ class StufZDSRegistration(BasePlugin):
         config = StufZDSConfig.get_solo()
         if not config.service_id:
             raise InvalidPluginConfiguration(_("StufService not selected"))
+        if not config.gemeentecode:
+            raise InvalidPluginConfiguration(
+                _("StufService missing setting '{name}'").format(name="gemeentecode")
+            )
 
         options = {
             "omschrijving": "MyForm",
             "referentienummer": "123",
+            "zds_zaaktype_code": "test",
+            "zds_zaaktype_omschrijving": "test",
+            "zds_zaaktype_status_code": "test",
+            "zds_zaaktype_status_omschrijving": "test",
+            "zds_documenttype_omschrijving_inzending": "test",
         }
         config.apply_defaults_to(options)
         client = config.get_client(options)

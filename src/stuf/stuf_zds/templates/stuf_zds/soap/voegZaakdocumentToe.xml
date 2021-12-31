@@ -14,7 +14,7 @@
     </ZKN:parameters>
     <ZKN:object StUF:entiteittype="EDC" StUF:verwerkingssoort="T">
         <ZKN:identificatie>{{ document_identificatie }}</ZKN:identificatie>
-        <ZKN:dct.omschrijving>{{ zds_documenttype_omschrijving }}</ZKN:dct.omschrijving>
+        <ZKN:dct.omschrijving>{{ zds_documenttype_omschrijving_inzending }}</ZKN:dct.omschrijving>
         <ZKN:creatiedatum>{{ datum_vandaag }}</ZKN:creatiedatum>
         <ZKN:ontvangstdatum>{{ datum_vandaag }}</ZKN:ontvangstdatum>
 

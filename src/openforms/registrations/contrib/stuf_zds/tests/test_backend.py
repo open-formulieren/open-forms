@@ -12,7 +12,6 @@ from lxml.etree import ElementTree
 from privates.test import temp_private_root
 
 from openforms.logging.models import TimelineLogProxy
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -305,6 +304,9 @@ class StufZDSPluginTests(StufTestBase):
         form_options = {
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
         }
 
         plugin = StufZDSRegistration("stuf")
@@ -472,6 +474,9 @@ class StufZDSPluginTests(StufTestBase):
         form_options = {
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
         }
 
         plugin = StufZDSRegistration("stuf")
@@ -606,6 +611,9 @@ class StufZDSPluginTests(StufTestBase):
         form_options = {
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
         }
 
         plugin = StufZDSRegistration("stuf")

@@ -121,8 +121,8 @@ class StufZDSClient:
                 "zds_zaaktype_status_omschrijving"
             ],
             "zaak_omschrijving": self.options["omschrijving"],
-            "zds_documenttype_omschrijving": self.options[
-                "zds_documenttype_omschrijving"
+            "zds_documenttype_omschrijving_inzending": self.options[
+                "zds_documenttype_omschrijving_inzending"
             ],
             "referentienummer": self.options["referentienummer"],
             "global_config": self._global_config,
