@@ -74,6 +74,22 @@
                     {% if voornamen %}
                         <ns:voornamen xsi:nil="true"/>
                     {% endif %}
+                    {% if geslachtsaanduiding %}
+                        <ns:geslachtsaanduiding xsi:nil="true"/>
+                    {% endif %}
+                    {% if geboortedatum %}
+                        <ns:geboortedatum xsi:nil="true"/>
+                    {% endif %}
+                    {% if geboorteplaats %}
+                        <ns:inp.geboorteplaats xsi:nil="true"/>
+                    {% endif %}
+                    {% if geboorteland %}
+                        <ns:inp.geboorteLand xsi:nil="true"/>
+                    {% endif %}
+                    {% if overlijdensdatum %}
+                        <ns:overlijdensdatum xsi:nil="true"/>
+                    {% endif %}
+
                     {% if straatnaam or huisnummer or huisletter or huisnummertoevoeging or postcode or woonplaatsNaam %}
                         <ns:verblijfsadres>
                             {% if woonplaatsNaam %}
@@ -95,6 +111,22 @@
                                 <ns:aoa.huisnummertoevoeging xsi:nil="true"/>
                             {% endif %}
                         </ns:verblijfsadres>
+                    {% endif %}
+                    {% if landAdresBuitenland or adresBuitenland1 or adresBuitenland2 or adresBuitenland3%}
+                        <ns:sub.verblijfBuitenland>
+                            {% if landAdresBuitenland %}
+                                <ns:lnd.landnaam xsi:nil="true"/>
+                            {% endif %}
+                            {% if adresBuitenland1 %}
+                                <ns:sub.adresBuitenland1 xsi:nil="true"/>
+                            {% endif %}
+                            {% if adresBuitenland2 %}
+                                <ns:sub.adresBuitenland2 xsi:nil="true"/>
+                            {% endif %}
+                            {% if adresBuitenland3 %}
+                                <ns:sub.adresBuitenland3 xsi:nil="true"/>
+                            {% endif %}
+                        </ns:sub.verblijfBuitenland>
                     {% endif %}
                     {% if gemeenteVanInschrijving %}
                         <ns:inp.gemeenteVanInschrijving xsi:nil="true"/>

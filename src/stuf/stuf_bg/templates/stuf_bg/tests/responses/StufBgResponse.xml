@@ -28,7 +28,13 @@
                 <ns:object StUF:entiteittype="NPS">
                     <ns:inp.bsn>999992314</ns:inp.bsn>
                     <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
+                    <ns:voorvoegselGeslachtsnaam>van</ns:voorvoegselGeslachtsnaam>
                     <ns:voornamen>Media</ns:voornamen>
+                    <ns:geslachtsaanduiding>M</ns:geslachtsaanduiding>
+                    <ns:geboortedatum>19800915</ns:geboortedatum>
+                    <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
+                    <ns:inp.geboorteLand>6030</ns:inp.geboorteLand>
+                    <ns:overlijdensdatum>19800915</ns:overlijdensdatum>
                     <ns:verblijfsadres>
                         <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
                         <ns:gor.straatnaam>Keizersgracht</ns:gor.straatnaam>
@@ -37,6 +43,13 @@
                         <ns:aoa.huisletter>A</ns:aoa.huisletter>
                         <ns:aoa.huisnummertoevoeging>B</ns:aoa.huisnummertoevoeging>
                     </ns:verblijfsadres>
+                    <ns:sub.verblijfBuitenland>
+                      <ns:lnd.landnaam>Paris</ns:lnd.landnaam>
+                      <ns:sub.adresBuitenland1>Buitenland regel 1</ns:sub.adresBuitenland1>
+                      <ns:sub.adresBuitenland2>Buitenland regel 2</ns:sub.adresBuitenland2>
+                      <ns:sub.adresBuitenland3>Buitenland regel 3</ns:sub.adresBuitenland3>
+                   </ns:sub.verblijfBuitenland>
+                    <ns:inp.datumInschrijving>20051216</ns:inp.datumInschrijving>
                 </ns:object>
             </ns:antwoord>
         </ns:npsLa01>

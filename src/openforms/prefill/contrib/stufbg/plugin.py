@@ -20,11 +20,53 @@ from ...registry import register
 
 logger = logging.getLogger(__name__)
 
+
+"""
+    # original
+    Bsn
+    Voornamen
+    VoorvoegselGeslachtsnaam
+    Geslachtsnaam
+    Straatnaam
+    Huisnummer
+    Huisletter
+    HuisnummerToevoeging
+    Postcode
+    Woonplaatsnaam
+
+    # added
+    Geboorteplaats
+    Geslachtsaanduiding
+    Geboortedatum
+    Geboorteland
+    DatumOverlijden
+
+    # not in bg0310
+    # AanduidingBijHuisnummer
+
+
+    LandAdresBuitenland
+    Regel1AdresBuitenland
+    Regel2AdresBuitenland
+    Regel3AdresBuitenland
+
+"""
+
+"""
+plenty of examples for responses can be found in open-personen:
+https://github.com/maykinmedia/open-personen/tree/master/src/openpersonen/templates/response
+"""
+
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.bsn: Target["inp.bsn"],
     FieldChoices.voornamen: Target["voornamen"],
     FieldChoices.geslachtsnaam: Target["geslachtsnaam"],
     FieldChoices.voorvoegselGeslachtsnaam: Target["voorvoegselGeslachtsnaam"],
+    FieldChoices.geboorteplaats: Target["inp.geboorteplaats"],
+    FieldChoices.geslachtsaanduiding: Target["geslachtsaanduiding"],
+    FieldChoices.geboortedatum: Target["geboortedatum"],
+    FieldChoices.geboorteland: Target["inp.geboorteLand"],
+    FieldChoices.overlijdensdatum: Target["overlijdensdatum"],
     FieldChoices.straatnaam: Target["verblijfsadres"]["gor.straatnaam"],
     FieldChoices.huisnummer: Target["verblijfsadres"]["aoa.huisnummer"],
     FieldChoices.huisletter: Target["verblijfsadres"]["aoa.huisletter"],
@@ -34,6 +76,16 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.postcode: Target["verblijfsadres"]["aoa.postcode"],
     FieldChoices.woonplaatsNaam: Target["verblijfsadres"]["wpl.woonplaatsNaam"],
     FieldChoices.gemeenteVanInschrijving: Target["inp.gemeenteVanInschrijving"],
+    FieldChoices.landAdresBuitenland: Target["sub.verblijfBuitenland"]["lnd.landnaam"],
+    FieldChoices.adresBuitenland1: Target["sub.verblijfBuitenland"][
+        "sub.adresBuitenland1"
+    ],
+    FieldChoices.adresBuitenland2: Target["sub.verblijfBuitenland"][
+        "sub.adresBuitenland2"
+    ],
+    FieldChoices.adresBuitenland3: Target["sub.verblijfBuitenland"][
+        "sub.adresBuitenland3"
+    ],
 }
 
 

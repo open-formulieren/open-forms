@@ -1,4 +1,3 @@
-import itertools
 import uuid
 from io import BytesIO
 from unittest.mock import patch
@@ -9,15 +8,18 @@ from django.test import TestCase
 from django.utils import timezone
 
 import requests_mock
+import xmltodict
 from freezegun import freeze_time
+from glom import glom
 from lxml import etree
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from stuf.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
+from stuf.stuf_bg.models import StufBGConfig
+from stuf.stuf_zds.client import nsmap
 from stuf.tests.factories import StufServiceFactory
-
-from ..constants import FieldChoices
-from ..models import StufBGConfig
 
 
 class StufBGConfigTests(TestCase):
@@ -105,18 +107,17 @@ class StufBGConfigTests(TestCase):
             1,
         )
 
+    def test_all_attributes_are_mapped(self):
+        available_attributes = FieldChoices.attributes.keys()
+        for attribute in available_attributes:
+            with self.subTest(attribute=attribute):
+                glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
+                if not glom_target:
+                    self.fail(f"unmapped attribute: {attribute}")
+
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.attributes.keys()
         test_bsn = "999992314"
-
-        subsets = []
-
-        # This gets all possible subsets that can be requested and tests them
-        # Since the order of attributes matter it is important all possible combinations
-        #   are tested to ensure certain combinations aren't invalid
-        for L in range(1, len(available_attributes) + 1):
-            for subset in itertools.combinations(available_attributes, L):
-                subsets.append(list(subset))
 
         with open(
             f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
@@ -125,25 +126,42 @@ class StufBGConfigTests(TestCase):
             xmlschema_doc = etree.parse(f)
             xmlschema = etree.XMLSchema(xmlschema_doc)
 
-            for subset in subsets:
-                with self.subTest(subset=subset):
-                    data = self.client.get_request_data(test_bsn, subset)
-                    doc = etree.parse(BytesIO(bytes(data, encoding="UTF-8")))
-                    el = (
-                        doc.getroot()
-                        .xpath(
-                            "soap:Body",
-                            namespaces={
-                                "soap": "http://schemas.xmlsoap.org/soap/envelope/"
-                            },
-                        )[0]
-                        .getchildren()[0]
-                    )
-                    if not xmlschema.validate(el):
-                        self.fail(
-                            f'Attributes "{subset}" produces an invalid StUF-BG. '
-                            f"Error: {xmlschema.error_log.last_error.message}"
-                        )
-                    for attribute in subset:
-                        with self.subTest(subset=subset, attribute=attribute):
-                            self.assertIn(attribute, data)
+            data = self.client.get_request_data(test_bsn, available_attributes)
+            doc = etree.parse(BytesIO(bytes(data, encoding="UTF-8")))
+            el = (
+                doc.getroot()
+                .xpath(
+                    "soap:Body",
+                    namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+                )[0]
+                .getchildren()[0]
+            )
+
+            if not xmlschema.validate(el):
+                self.fail(
+                    f'Attributes "{available_attributes}" produces an invalid StUF-BG. '
+                    f"Error: {xmlschema.error_log.last_error.message}"
+                )
+
+            # convert to dict to glom
+            bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
+            data_dict = xmltodict.parse(
+                etree.tostring(bg_obj[0]),
+                process_namespaces=True,
+                namespaces=NAMESPACE_REPLACEMENTS,
+            )["object"]
+            sentinel = object()
+
+            # now test if all attributes appear as nodes in the request data
+            # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
+            for attribute in available_attributes:
+                with self.subTest(attribute=attribute):
+                    glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
+                    if not glom_target:
+                        self.fail(f"unmapped attribute: {attribute}")
+                    else:
+                        value = glom(data_dict, glom_target, default=sentinel)
+                        if value == sentinel:
+                            self.fail(
+                                f"missing attribute in request {attribute} (as {glom_target}"
+                            )

@@ -19,11 +19,13 @@ STUF_BG_EXPIRY_MINUTES = 5
 
 class FieldChoices(DjangoChoices):
     bsn = ChoiceItem("bsn", _("BSN"))
+
     voornamen = ChoiceItem("voornamen", _("First name"))
     geslachtsnaam = ChoiceItem("geslachtsnaam", _("Last name"))
     voorvoegselGeslachtsnaam = ChoiceItem(
         "voorvoegselGeslachtsnaam", _("Last name prefix")
     )
+
     straatnaam = ChoiceItem("straatnaam", _("Street Name"))
     huisnummer = ChoiceItem("huisnummer", _("House number"))
     huisletter = ChoiceItem("huisletter", _("House letter"))
@@ -35,3 +37,17 @@ class FieldChoices(DjangoChoices):
     gemeenteVanInschrijving = ChoiceItem(
         "gemeenteVanInschrijving", _("Municipality where registered")
     )
+
+    landAdresBuitenland = ChoiceItem(
+        "landAdresBuitenland", _("Foreign address country")
+    )
+    adresBuitenland1 = ChoiceItem("adresBuitenland1", _("Foreign address line 1"))
+    adresBuitenland2 = ChoiceItem("adresBuitenland2", _("Foreign address line 2"))
+    adresBuitenland3 = ChoiceItem("adresBuitenland3", _("Foreign address line 3"))
+
+    geboorteplaats = ChoiceItem("geboorteplaats", _("Place of birth"))
+    geboortedatum = ChoiceItem("geboortedatum", _("Date of birth"))
+    geboorteland = ChoiceItem("geboorteland", _("Country of birth"))
+    geslachtsaanduiding = ChoiceItem("geslachtsaanduiding", _("Gender indication"))
+
+    overlijdensdatum = ChoiceItem("overlijdensdatum", _("Date of death"))
