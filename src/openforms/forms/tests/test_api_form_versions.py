@@ -1,6 +1,5 @@
 import datetime
 
-from django.contrib.auth.models import Permission
 from django.urls import reverse
 
 from freezegun import freeze_time
