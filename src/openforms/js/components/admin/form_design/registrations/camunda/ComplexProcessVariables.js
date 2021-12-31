@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
+import FormModal from '../../../FormModal';
 import ButtonContainer from '../../../forms/ButtonContainer';
 import {Checkbox} from '../../../forms/Inputs';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
@@ -45,7 +47,7 @@ const HeadColumns = () => {
 };
 
 
-const ProcessVariable = ({ index, enabled=true, alias='', type, definition, onChange, onDelete }) => {
+const ProcessVariable = ({ index, enabled=true, alias='', onChange, onDelete, onConfigure }) => {
     const intl = useIntl();
 
     const onCheckboxChange = (event, current) => {
@@ -72,7 +74,7 @@ const ProcessVariable = ({ index, enabled=true, alias='', type, definition, onCh
 
             <span>{alias}</span>
 
-            <a href="#" onClick={(e) => {e.preventDefault(); console.log('edit')}}>
+            <a href="#" onClick={onConfigure}>
                 <FormattedMessage
                     description="Manage complex process vars configure link text"
                     defaultMessage="Configure"
@@ -86,17 +88,43 @@ ProcessVariable.propTypes = {
     index: PropTypes.number.isRequired,
     enabled: PropTypes.bool,
     alias: PropTypes.string,
-    type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
-    definition: PropTypes.oneOfType([
-        PropTypes.array,
-        PropTypes.object,
-    ]).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    onConfigure: PropTypes.func.isRequired,
 };
 
 
+const initialState = {
+    modalOpen: false,
+    editVariableIndex: null,
+};
+
+const reducer = (draft, action) => {
+    switch (action.type) {
+        case 'CONFIGURE_VARIABLE': {
+            const index = action.payload;
+            draft.modalOpen = true;
+            draft.editVariableIndex = index;
+            break;
+        }
+        case 'RESET': {
+            return initialState;
+        }
+        default: {
+            throw new Error(`Unknown action type '${action.type}'`);
+        }
+    }
+};
+
 const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) => {
+
+    const [
+        {modalOpen, editVariableIndex},
+        dispatch,
+    ] = useImmerReducer(reducer, initialState);
+
+    const editVariable = variables[editVariableIndex];
+
     return (
         <>
             <ChangelistTableWrapper headColumns={<HeadColumns />} extraModifiers={['camunda-vars']}>
@@ -107,6 +135,10 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
                             index={index}
                             onChange={onChange.bind(null, index)}
                             onDelete={onDelete.bind(null, index)}
+                            onConfigure={(event) => {
+                                event.preventDefault();
+                                dispatch({type: 'CONFIGURE_VARIABLE', payload: index})
+                            }}
                             {...processVar}
                         />
                     ))
@@ -116,6 +148,25 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
             <ButtonContainer onClick={onAdd}>
                 <FormattedMessage description="Add process variable button" defaultMessage="Add variable" />
             </ButtonContainer>
+
+            <FormModal
+                isOpen={modalOpen}
+                closeModal={() => dispatch({type: 'RESET'}) }
+                title={<FormattedMessage
+                    description="Camunda complex process var configuration modal title"
+                    defaultMessage="Edit complex variable"
+                />}
+            >
+                {
+                    editVariable
+                    ? (
+                        <code>
+                            <pre>{JSON.stringify(editVariable, null, 4)}</pre>
+                        </code>
+                    )
+                    : null
+                }
+            </FormModal>
         </>
     );
 };
