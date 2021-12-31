@@ -828,6 +828,7 @@ DIGID = {
         "en": DIGID_SERVICE_NAME_EN,
     },
     "requested_attributes": ["bsn"],
+    "want_assertions_signed": True,
 }
 
 #
