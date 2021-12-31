@@ -15,6 +15,9 @@ const TinyMCEEditor = ({content, onEditorChange}) => {
                 onInit={(evt, editor) => editorRef.current = editor}
                 value={content}
                 init={{
+                    /*
+                    NOTE: manually synchronise changes with Django's copy in settings.TINYMCE_DEFAULT_CONFIG
+                     */
                     height: 250,
                     menubar: false,
                     plugins: [
@@ -25,8 +28,14 @@ const TinyMCEEditor = ({content, onEditorChange}) => {
                     toolbar: 'undo redo | formatselect | ' +
                     'bold italic backcolor | alignleft aligncenter ' +
                     'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                    'link unlink removeformat | help',
+                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                    default_link_target: '_blank',
+                    link_default_protocol: 'https',
+                    link_assume_external_targets: 'https',
+
+                    // Django would set this in its own widget
+                    language: 'nl'
                 }}
                 onEditorChange={onEditorChange}
             />

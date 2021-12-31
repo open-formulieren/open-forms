@@ -1012,3 +1012,26 @@ CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
 CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
+
+#
+# Tiny MCE default settings
+#
+TINYMCE_DEFAULT_CONFIG = {
+    #
+    # NOTE: manually synchronise changes with React's copy in components/admin/form_design/Editor.js
+    #
+    "menubar": False,
+    "plugins": [
+        "advlist autolink lists link image charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "insertdatetime media table paste code help wordcount",
+    ],
+    "toolbar": "undo redo | formatselect | "
+    + "bold italic backcolor | alignleft aligncenter "
+    + "alignright alignjustify | bullist numlist outdent indent | "
+    + "link unlink removeformat | help",
+    "content_style": "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+    "default_link_target": "_blank",
+    "link_default_protocol": "https",
+    "link_assume_external_targets": "https",
+}
