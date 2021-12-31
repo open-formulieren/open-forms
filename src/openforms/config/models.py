@@ -1,5 +1,5 @@
 from django.contrib.postgres.fields import JSONField
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -212,8 +212,16 @@ class GlobalConfiguration(SingletonModel):
     )
     form_session_timeout = models.PositiveIntegerField(
         _("form session timeout"),
-        default=60,
-        validators=[MinValueValidator(5)],
+        default=15,
+        validators=[
+            MinValueValidator(5),
+            MaxValueValidator(
+                15,
+                message=_(
+                    "Due to DigiD requirements this value has to be less than or equal to %(limit_value)s minutes."
+                ),
+            ),
+        ],
         help_text=_(
             "Amount of time in minutes a user filling in a form can be inactive for before being logged out"
         ),
