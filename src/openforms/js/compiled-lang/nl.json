@@ -5,6 +5,12 @@
       "value": "Ben je zeker dat je deze actie wil verwijderen?"
     }
   ],
+  "+BicbW": [
+    {
+      "type": 0,
+      "value": "Configure"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -401,6 +407,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "varCount"
+    }
+  ],
+  "BR6rKB": [
+    {
+      "type": 0,
+      "value": "Check to include the field as process variable"
     }
   ],
   "BStu9Z": [
@@ -1195,6 +1207,18 @@
       "value": "Formulierontwerp"
     }
   ],
+  "hZl34s": [
+    {
+      "type": 0,
+      "value": "Enabled"
+    }
+  ],
+  "huHjRm": [
+    {
+      "type": 0,
+      "value": "Configure"
+    }
+  ],
   "hzx+WF": [
     {
       "type": 0,
@@ -1439,6 +1463,12 @@
       "value": "Bevestingsmailsjabloon"
     }
   ],
+  "twWsC2": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -1473,6 +1503,12 @@
     {
       "type": 0,
       "value": "Set a key name before you can configure this variable"
+    }
+  ],
+  "vp12ou": [
+    {
+      "type": 0,
+      "value": "The variable name to be used for the process instance."
     }
   ],
   "wIaGgb": [

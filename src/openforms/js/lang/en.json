@@ -4,6 +4,11 @@
     "description": "Logic rule action deletion confirm message",
     "originalDefault": "Are you sure you want to delete this action?"
   },
+  "+BicbW": {
+    "defaultMessage": "Configure",
+    "description": "Manage complex process vars configure link text",
+    "originalDefault": "Configure"
+  },
   "+hAGg7": {
     "defaultMessage": "Users will not be able to start the form if it is in maintenance mode.",
     "description": "Form maintenance mode field help text",
@@ -238,6 +243,11 @@
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }",
     "description": "Managed Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
+  },
+  "BR6rKB": {
+    "defaultMessage": "Check to include the field as process variable",
+    "description": "Manage complex process vars enabled checkbox help text",
+    "originalDefault": "Check to include the field as process variable"
   },
   "BStu9Z": {
     "defaultMessage": "Form",
@@ -879,6 +889,16 @@
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
   },
+  "hZl34s": {
+    "defaultMessage": "Enabled",
+    "description": "Manage complex process vars enabled checkbox column title",
+    "originalDefault": "Enabled"
+  },
+  "huHjRm": {
+    "defaultMessage": "Configure",
+    "description": "Manage complex process vars configure column title",
+    "originalDefault": "Configure"
+  },
   "hzx+WF": {
     "defaultMessage": "Internal name",
     "description": "Form name field label",
@@ -1079,6 +1099,11 @@
     "description": "Submission confirmation email fieldset title",
     "originalDefault": "Submission confirmation email template"
   },
+  "twWsC2": {
+    "defaultMessage": "Name",
+    "description": "Manage complex process vars alias column title",
+    "originalDefault": "Name"
+  },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
     "description": "No-active-step-selected notice",
@@ -1108,6 +1133,11 @@
     "defaultMessage": "Set a key name before you can configure this variable",
     "description": "JSON editor: object entry has empty key name",
     "originalDefault": "Set a key name before you can configure this variable"
+  },
+  "vp12ou": {
+    "defaultMessage": "The variable name to be used for the process instance.",
+    "description": "Manage process vars alias help text",
+    "originalDefault": "The variable name to be used for the process instance."
   },
   "wIaGgb": {
     "defaultMessage": "Errored Submissions Removal Method",

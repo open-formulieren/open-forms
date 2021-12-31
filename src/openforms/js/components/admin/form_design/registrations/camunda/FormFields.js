@@ -9,6 +9,7 @@ import SubmitRow from '../../../forms/SubmitRow';
 import FormModal from '../../../FormModal';
 import {CustomFieldTemplate} from '../../../RJSFWrapper';
 import SelectProcessVariables from './SelectProcessVariables';
+import ComplexProcessVariables from './ComplexProcessVariables';
 
 
 // use rjsf wrapper to keep consistent markup/styling
@@ -25,6 +26,13 @@ const Wrapper = ({children}) => (
 const EMPTY_PROCESS_VARIABLE = {
     enabled: true,
     componentKey: '',
+    alias: '',
+};
+
+const EMPTY_COMPLEX_PROCESS_VARIABLE = {
+    enabled: true,
+    type: 'object',
+    definition: {},
     alias: '',
 };
 
@@ -106,6 +114,27 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
     const onDeleteProcessVariable = (index) => {
         const nextFormData = produce(formData, draft => {
             draft.processVariables.splice(index, 1);
+        });
+        onChange(nextFormData);
+    };
+
+    const onAddComplexProcessVariable = () => {
+        const nextFormData = produce(formData, draft => {
+            if (!draft.complexProcessVariables) draft.complexProcessVariables = [];
+            draft.complexProcessVariables.push(EMPTY_COMPLEX_PROCESS_VARIABLE);
+        });
+        onChange(nextFormData);
+    };
+    const onChangeComplexProcessVariable = (index, event) => {
+        const {name, value} = event.target;
+        const nextFormData = produce(formData, draft => {
+            draft.complexProcessVariables[index][name] = value;
+        });
+        onChange(nextFormData);
+    };
+    const onDeleteComplexProcessVariable = (index, event) => {
+        const nextFormData = produce(formData, draft => {
+            draft.complexProcessVariables.splice(index, 1);
         });
         onChange(nextFormData);
     };
@@ -229,8 +258,12 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 title={<FormattedMessage description="Camunda complex process vars modal title" defaultMessage="Manage complex process variables" />}
                 closeModal={() => setComplexVarsModalOpen(false)}
             >
-                Complicated
-
+                <ComplexProcessVariables
+                    variables={complexProcessVariables}
+                    onChange={onChangeComplexProcessVariable}
+                    onAdd={onAddComplexProcessVariable}
+                    onDelete={onDeleteComplexProcessVariable}
+                />
                 <SubmitRow>
                     <SubmitAction
                         text={intl.formatMessage({description: 'Camunda complex process variables confirm button', defaultMessage: 'Confirm'})}

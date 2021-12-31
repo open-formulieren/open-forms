@@ -2,54 +2,50 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {Checkbox, TextInput} from '../../../forms/Inputs';
 import ButtonContainer from '../../../forms/ButtonContainer';
-import ComponentSelection from '../../../forms/ComponentSelection';
+import {Checkbox} from '../../../forms/Inputs';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
 import DeleteIcon from '../../../DeleteIcon';
+import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 
 
 const HeadColumns = () => {
     const intl = useIntl();
 
     const enabledText = (<FormattedMessage
-        description="Manage process vars enabled checkbox column title"
+        description="Manage complex process vars enabled checkbox column title"
         defaultMessage="Enabled"
     />);
     const enabledHelp = intl.formatMessage({
-        description: 'Manage process vars enabled checkbox help text',
+        description: 'Manage complex process vars enabled checkbox help text',
         defaultMessage: 'Check to include the field as process variable',
     });
 
-    const componentText = (<FormattedMessage
-        description="Manage process vars component column title"
-        defaultMessage="Field"
-    />);
-    const componentHelp = intl.formatMessage({
-        description: 'Manage process vars component help text',
-        defaultMessage: 'The value of the selected field will be the process variable value.',
-    });
-
     const aliasText = (<FormattedMessage
-        description="Manage process vars alias column title"
-        defaultMessage="Alias"
+        description="Manage complex process vars alias column title"
+        defaultMessage="Name"
     />);
     const aliasHelp = intl.formatMessage({
         description: 'Manage process vars alias help text',
-        defaultMessage: 'If desired, you can specify a different process variable name.',
+        defaultMessage: 'The variable name to be used for the process instance.',
     });
+
+    const editText = (<FormattedMessage
+        description="Manage complex process vars configure column title"
+        defaultMessage="Configure"
+    />);
 
     return (
         <>
             <HeadColumn content={enabledText} title={enabledHelp} />
-            <HeadColumn content={componentText} title={componentHelp} />
             <HeadColumn content={aliasText} title={aliasHelp} />
+            <HeadColumn content={editText} />
         </>
     );
 };
 
 
-const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', componentFilterFunc, onChange, onDelete }) => {
+const ProcessVariable = ({ index, enabled=true, alias='', type, definition, onChange, onDelete }) => {
     const intl = useIntl();
 
     const onCheckboxChange = (event, current) => {
@@ -74,8 +70,14 @@ const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', compo
                 />
             </div>
 
-            <ComponentSelection name="componentKey" value={componentKey} onChange={onChange} filter={componentFilterFunc.bind(null, componentKey)} />
-            <TextInput name="alias" value={alias} onChange={onChange} placeholder={componentKey} />
+            <span>{alias}</span>
+
+            <a href="#" onClick={(e) => {e.preventDefault(); console.log('edit')}}>
+                <FormattedMessage
+                    description="Manage complex process vars configure link text"
+                    defaultMessage="Configure"
+                />
+            </a>
         </TableRow>
     );
 };
@@ -83,30 +85,26 @@ const ProcessVariable = ({ index, enabled=true, componentKey='', alias='', compo
 ProcessVariable.propTypes = {
     index: PropTypes.number.isRequired,
     enabled: PropTypes.bool,
-    componentKey: PropTypes.string,
     alias: PropTypes.string,
-    componentFilterFunc: PropTypes.func.isRequired,
+    type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
+    definition: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object,
+    ]).isRequired,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 };
 
 
-const SelectProcessVariables = ({ processVariables=[], onChange, onAdd, onDelete }) => {
-    const usedComponents = processVariables
-        .filter(variable => variable.componentKey !== '')
-        .map(variable => variable.componentKey);
-
-    const filterFunc = (componentKey, { key }) => componentKey === key || !usedComponents.includes(key);
-
+const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) => {
     return (
         <>
-            <ChangelistTableWrapper headColumns={<HeadColumns />}>
+            <ChangelistTableWrapper headColumns={<HeadColumns />} extraModifiers={['camunda-vars']}>
                 {
-                    processVariables.map((processVar, index) => (
+                    variables.map((processVar, index) => (
                         <ProcessVariable
                             key={index}
                             index={index}
-                            componentFilterFunc={filterFunc}
                             onChange={onChange.bind(null, index)}
                             onDelete={onDelete.bind(null, index)}
                             {...processVar}
@@ -122,16 +120,12 @@ const SelectProcessVariables = ({ processVariables=[], onChange, onAdd, onDelete
     );
 };
 
-SelectProcessVariables.propTypes = {
-    processVariables: PropTypes.arrayOf(PropTypes.shape({
-        enabled: PropTypes.bool,
-        componentKey: PropTypes.string,
-        alias: PropTypes.string,
-    })),
+ComplexProcessVariables.propTypes = {
+    variables: PropTypes.array,
     onChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 };
 
 
-export default SelectProcessVariables;
+export default ComplexProcessVariables;
