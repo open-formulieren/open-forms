@@ -183,7 +183,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("https://allowed.com", message.body)
         self.assertIn("https://allowed.com", message_html)
 
-    @freeze_time("2021-01-01 10:00")
     def test_register_and_update_paid_product(self):
         submission = SubmissionFactory.from_data(
             {"voornaam": "Foo"},
@@ -215,6 +214,29 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+
+    def test_register_and_update_paid_product_with_payment_email_recipient(self):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        self.assertTrue(submission.payment_required)
+
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            payment_emails=["payment@bar.nl", "payment@foo.nl"],
+        )
+        email_submission = EmailRegistration("email")
+        email_submission.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
 
     def test_no_reference_can_be_extracted(self):
         submission = SubmissionFactory.create(

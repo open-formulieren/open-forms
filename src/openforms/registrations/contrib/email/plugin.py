@@ -112,11 +112,15 @@ class EmailRegistration(BasePlugin):
 
         html_message = format_html("<p>{}</p>", message)
 
+        recipients = options.get("payment_emails")
+        if not recipients:
+            recipients = options["to_emails"]
+
         send_mail_html(
             subject,
             html_message,
             settings.DEFAULT_FROM_EMAIL,
-            options["to_emails"],
+            recipients,
             fail_silently=False,
         )
 
