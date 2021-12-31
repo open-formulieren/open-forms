@@ -1,6 +1,6 @@
 import uuid
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
@@ -66,6 +66,13 @@ class SubmissionPaymentManager(models.Manager):
 class SubmissionPaymentQuerySet(models.QuerySet):
     def sum_amount(self) -> Decimal:
         return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
+
+    def get_completed_public_order_ids(self) -> List[int]:
+        return list(
+            self.filter(
+                status__in=(PaymentStatus.registered, PaymentStatus.completed)
+            ).values_list("public_order_id", flat=True)
+        )
 
 
 class SubmissionPayment(models.Model):
