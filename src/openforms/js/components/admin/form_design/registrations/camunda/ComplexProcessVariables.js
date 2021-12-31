@@ -8,7 +8,7 @@ import ButtonContainer from '../../../forms/ButtonContainer';
 import {Checkbox} from '../../../forms/Inputs';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
 import DeleteIcon from '../../../DeleteIcon';
-import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
+import ComplexProcessVariable from './ComplexProcessVariable';
 
 
 const HeadColumns = () => {
@@ -158,11 +158,17 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
                 />}
             >
                 {
-                    editVariable
+                    // TODO: currently we rely on the mount/unmount to turn props into local state
+                    // instead, ComplexProcessVariable should have an useEffect to synchronize this, or we
+                    // pass an onChange handler
+                    modalOpen && editVariable
                     ? (
-                        <code>
-                            <pre>{JSON.stringify(editVariable, null, 4)}</pre>
-                        </code>
+                        /* TODO: onChange etc. */
+                        <ComplexProcessVariable
+                            name={editVariable.alias}
+                            type={editVariable.type}
+                            definition={editVariable.definition}
+                        />
                     )
                     : null
                 }

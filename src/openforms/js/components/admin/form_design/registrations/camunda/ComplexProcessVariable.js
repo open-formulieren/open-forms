@@ -11,11 +11,10 @@ import Fieldset from '../../../forms/Fieldset';
 import FormRow from '../../../forms/FormRow';
 import Select from '../../../forms/Select';
 import {ComplexVariable, EditPanel, TypeSelector} from '../../../json_editor';
+import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 
 
 const initialState = {
-    // modal state
-    modalOpen: true,
     // variable definition/state
     name: '',
     type: 'object',
@@ -32,10 +31,6 @@ const initialState = {
 
 const reducer = (draft, action) => {
     switch (action.type) {
-        case 'CLOSE_MODAL': {
-            draft.modalOpen = false;
-            break;
-        }
         case 'FIELD_CHANGED': {
             const {name, value} = action.payload;
             draft[name] = value;
@@ -119,12 +114,20 @@ const editPanelStyle = {
 };
 
 
-const ComplexProcessVariable = () => {
+const ComplexProcessVariable = ({ name: initialName, type: initialType, definition: initialDefinition }) => {
     // state
     const [
-        {modalOpen, name, type, definition, editPanelOpen, editVariable},
+        {
+            name, type, definition,
+            editPanelOpen, editVariable,
+        },
         dispatch
-    ] = useImmerReducer(reducer, initialState);
+    ] = useImmerReducer(reducer, {
+        ...initialState,
+        name: initialName,
+        type: initialType,
+        definition: initialDefinition,
+    });
 
     // event handlers
     const onChange = (event) => dispatch({type: 'FIELD_CHANGED', payload: event.target});
@@ -141,86 +144,84 @@ const ComplexProcessVariable = () => {
     };
 
     return (
-        <FormModal
-            isOpen={modalOpen}
-            closeModal={() => dispatch({type: 'CLOSE_MODAL'}) }
-            title={<FormattedMessage
-                description="Camunda complex process var configuration modal title"
-                defaultMessage="Edit complex variable"
-            />}
-        >
+        /* container */
+        <section>
 
-            {/* container */}
-            <section>
+            {/* main body */}
+            <div>
+                <Fieldset>
+                    <FormRow>
+                        <Field name="name" label={<FormattedMessage
+                            description="Camunda complex process var 'name' label"
+                            defaultMessage="Name"
+                        />}>
+                            <TextInput value={name} onChange={onChange} placeholder="Camunda variable name" />
+                        </Field>
+                    </FormRow>
 
-                {/* main body */}
-                <div>
-                    <Fieldset>
-                        <FormRow>
-                            <Field name="name" label={<FormattedMessage
-                                description="Camunda complex process var 'name' label"
-                                defaultMessage="Name"
-                            />}>
-                                <TextInput value={name} onChange={onChange} placeholder="Camunda variable name" />
-                            </Field>
-                        </FormRow>
+                    <FormRow>
+                        <Field name="type" label={<FormattedMessage
+                            description="Camunda complex process var 'type' label"
+                            defaultMessage="Type"
+                        />}>
+                            <TypeSelector value={type} onChange={onChange} complexOnly />
+                        </Field>
+                    </FormRow>
+                </Fieldset>
 
-                        <FormRow>
-                            <Field name="type" label={<FormattedMessage
-                                description="Camunda complex process var 'type' label"
-                                defaultMessage="Type"
-                            />}>
-                                <TypeSelector value={type} onChange={onChange} complexOnly />
-                            </Field>
-                        </FormRow>
-                    </Fieldset>
+                <Fieldset title={<FormattedMessage
+                    description="JSON editor: complex variable definition title"
+                    defaultMessage="Variable definition"
+                />}>
+                    {/* Root node of an arbitrarily deep tree. */}
+                    <ComplexVariable
+                        type={type}
+                        definition={definition}
+                        onChange={(newDefinition) => dispatch({
+                            type: 'FIELD_CHANGED',
+                            payload: {name: 'definition', value: newDefinition}
+                        })}
+                        onEditDefinition={onEditDefinition}
+                    />
+                </Fieldset>
+            </div>
 
-                    <Fieldset title={<FormattedMessage
-                        description="JSON editor: complex variable definition title"
-                        defaultMessage="Variable definition"
-                    />}>
-                        {/* Root node of an arbitrarily deep tree. */}
-                        <ComplexVariable
-                            type={type}
-                            definition={definition}
-                            onChange={(newDefinition) => dispatch({
-                                type: 'FIELD_CHANGED',
-                                payload: {name: 'definition', value: newDefinition}
-                            })}
-                            onEditDefinition={onEditDefinition}
-                        />
-                    </Fieldset>
-                </div>
+            {/* variable edit panel */}
+            <aside style={{
+                ...editPanelStyle,
+                display: editPanelOpen ? 'flex' : 'none',
+            }}>
+                {editPanelOpen
+                    ? (<EditPanel
+                        name={editVariable.name}
+                        definition={editVariable.definition}
+                        parent={editVariable.parent}
+                        onEditDefinition={onEditDefinition}
+                        onCancel={() => dispatch({type: 'CANCEL_EDIT_VARIABLE_DEFINITION'})}
+                        onChange={(definition, parent) => dispatch({
+                            type: 'SAVE_VARIABLE_DEFINITION',
+                            payload: {
+                                name: editVariable.name,
+                                definition,
+                                parent,
+                            },
+                        })}
+                    />)
+                    : null
+                }
+            </aside>
 
-                {/* variable edit panel */}
-                <aside style={{
-                    ...editPanelStyle,
-                    display: editPanelOpen ? 'flex' : 'none',
-                }}>
-                    {editPanelOpen
-                        ? (<EditPanel
-                            name={editVariable.name}
-                            definition={editVariable.definition}
-                            parent={editVariable.parent}
-                            onEditDefinition={onEditDefinition}
-                            onCancel={() => dispatch({type: 'CANCEL_EDIT_VARIABLE_DEFINITION'})}
-                            onChange={(definition, parent) => dispatch({
-                                type: 'SAVE_VARIABLE_DEFINITION',
-                                payload: {
-                                    name: editVariable.name,
-                                    definition,
-                                    parent,
-                                },
-                            })}
-                        />)
-                        : null
-                    }
-                </aside>
-
-            </section>
-
-        </FormModal>
+        </section>
     );
+};
+
+ComplexProcessVariable.propTypes = {
+    name: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
+    definition: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array,
+    ]).isRequired,
 };
 
 
