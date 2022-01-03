@@ -6,7 +6,7 @@ Elk formulier dat wordt gestart, start tevens een inzending. In de inzending
 wordt alle informatie opgeslagen van het formulier voor zover dat tot op dat
 moment is ingevuld. Velden op een formulier worden per stap opgeslagen.
 
-Zodra een gebruiker een inzending voltooid kan de inzending (inhoudelijk) niet
+Zodra een gebruiker een inzending voltooit kan de inzending (inhoudelijk) niet
 meer aangepast worden.
 
 Raadplegen
