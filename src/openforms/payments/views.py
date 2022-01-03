@@ -20,7 +20,6 @@ from rest_framework.views import APIView
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.logging import logevent
-from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
 from openforms.utils.redirect import allow_redirect_url
 
@@ -114,7 +113,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             raise ParseError(detail="payment not required")
 
         if not plugin.is_enabled:
-            raise PluginNotEnabled()
+            raise ParseError(detail="plugin not enabled")
 
         if plugin_id != submission.form.payment_backend:
             raise ParseError(detail="plugin not allowed")

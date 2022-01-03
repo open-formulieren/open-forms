@@ -26,7 +26,7 @@ class RegisteredValidator:
     verbose_name: str
     callable: ValidatorType
     is_demo_plugin: bool = False
-    is_enabled: bool = True  # TODO always enabled for now
+    is_enabled: bool = True  # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
 
     def __call__(self, value):
         return self.callable(value)
@@ -94,6 +94,11 @@ class Registry(BaseRegistry):
             logger.warning(f"called unregistered plugin_id '{plugin_id}'")
             return ValidationResult(
                 False, messages=[f"unknown validation plugin_id '{plugin_id}'"]
+            )
+
+        if not getattr(validator.callable, "is_enabled", True):
+            return ValidationResult(
+                False, messages=[f"plugin '{plugin_id}' not enabled"]
             )
 
         try:
