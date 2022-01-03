@@ -27,6 +27,10 @@ class BasePlugin(ABC, AbstractBasePlugin):
     in the database, and de-serialize them into native Python/Django objects when the
     plugin is called.
     """
+    camel_case_ignore_fields = None
+    """
+    Iterable of JSON keys to ignore when converting between snake_case/camelCase.
+    """
 
     @abstractmethod
     def register_submission(

@@ -69,6 +69,8 @@ def get_process_variables(
 class CamundaRegistration(BasePlugin):
     verbose_name = _("Camunda")
     configuration_options = CamundaOptionsSerializer
+    # may be a dict with user-supplied keys in both snake_case and/or camelCase
+    camel_case_ignore_fields = ("definition",)
 
     def register_submission(
         self, submission: Submission, options: dict

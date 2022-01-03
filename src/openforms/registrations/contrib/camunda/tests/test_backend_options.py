@@ -148,6 +148,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         """
         Test that complex variables are not converted into camelCase.
         """
+        self.maxDiff = None
         form = FormFactory.create(
             generate_minimal_setup=True,
             registration_backend="camunda",
