@@ -1,11 +1,16 @@
 from unittest.mock import patch
 
+from django.contrib.auth.models import Permission
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
 from openforms.prefill.models import PrefillConfig
 
 from ..models import FormDefinition
@@ -13,9 +18,18 @@ from .factories import FormDefinitionFactory, FormStepFactory
 
 
 class FormDefinitionsAPITests(APITestCase):
+    def test_list_anon(self):
+        FormDefinitionFactory.create_batch(2)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
+
         FormDefinitionFactory.create_batch(2)
 
         url = reverse("api:formdefinition-list")
@@ -23,9 +37,10 @@ class FormDefinitionsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_non_staff_user_cant_update(self):
+    def test_user_without_permission_cant_update(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
+
         definition = FormDefinitionFactory.create(
             name="test form definition",
             slug="test-form-definition",
@@ -36,39 +51,53 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
         url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
-        response = self.client.patch(
-            url,
-            data={
-                "name": "Updated name",
-                "slug": "updated-slug",
-                "configuration": {
-                    "display": "form",
-                    "components": [{"label": "Existing field"}, {"label": "New field"}],
-                },
+        data = {
+            "name": "Updated name",
+            "slug": "updated-slug",
+            "configuration": {
+                "display": "form",
+                "components": [{"label": "Existing field"}, {"label": "New field"}],
             },
-        )
+        }
+        with self.subTest("user"):
+            response = self.client.patch(url, data=data)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+        with self.subTest("staff"):
+            user.is_staff = True
+            user.save()
+            response = self.client.patch(url, data=data)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_non_staff_user_cant_create(self):
+        with self.subTest("permissions"):
+            user.is_staff = True
+            user.save()
+            response = self.client.patch(url, data=data)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_user_without_permission_cant_create(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
         url = reverse("api:formdefinition-list")
-        response = self.client.post(
-            url,
-            data={
-                "name": "Name",
-                "slug": "a-slug",
-                "configuration": {
-                    "display": "form",
-                    "components": [{"label": "New field"}],
-                },
+        data = {
+            "name": "Name",
+            "slug": "a-slug",
+            "configuration": {
+                "display": "form",
+                "components": [{"label": "New field"}],
             },
-        )
+        }
+        with self.subTest("user"):
+            response = self.client.post(url, data=data)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+        with self.subTest("staff"):
+            user.is_staff = True
+            user.save()
+            response = self.client.post(url, data=data)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_non_staff_user_cant_delete(self):
+    def test_user_without_permission_cant_delete(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
         definition = FormDefinitionFactory.create(
@@ -79,15 +108,21 @@ class FormDefinitionsAPITests(APITestCase):
                 "components": [{"label": "Existing field"}],
             },
         )
-
         url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
-        response = self.client.delete(url)
 
-        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+        with self.subTest("user"):
+            response = self.client.delete(url)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+        with self.subTest("staff"):
+            user.is_staff = True
+            user.save()
+            response = self.client.delete(url)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_update(self):
-        staff_user = StaffUserFactory.create()
-        self.client.force_authenticate(user=staff_user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         definition = FormDefinitionFactory.create(
             name="test form definition",
@@ -123,8 +158,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertIn({"label": "New field"}, definition.configuration["components"])
 
     def test_create(self):
-        staff_user = StaffUserFactory.create()
-        self.client.force_authenticate(user=staff_user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         url = reverse("api:formdefinition-list")
         response = self.client.post(
@@ -150,8 +185,8 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
     def test_create_no_camelcase_snakecase_conversion(self):
-        staff_user = StaffUserFactory.create()
-        self.client.force_authenticate(user=staff_user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         url = reverse("api:formdefinition-list")
         response = self.client.post(
@@ -171,8 +206,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertNotIn("some_amel_case", config)
 
     def test_delete(self):
-        staff_user = StaffUserFactory.create()
-        self.client.force_authenticate(user=staff_user)
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
 
         definition = FormDefinitionFactory.create(
             name="test form definition",
@@ -217,11 +252,11 @@ class FormioCoSignComponentValidationTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.staff_user = StaffUserFactory.create()
+        cls.user = SuperUserFactory.create()
 
     def setUp(self):
         super().setUp()
-        self.client.force_authenticate(user=self.staff_user)
+        self.client.force_authenticate(user=self.user)
 
     def test_configuration_with_co_sign_but_missing_auth_plugin(self):
         url = reverse("api:formdefinition-list")

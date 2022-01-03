@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import Permission
 
 import factory
 
@@ -6,6 +7,18 @@ import factory
 class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: f"user-{n}")
     password = factory.PostGenerationMethodCall("set_password", "secret")
+
+    @factory.post_generation
+    def user_permissions(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for permission in extracted:
+                if isinstance(permission, str):
+                    # TODO support appname/model/action, for now lets assume we have unique codenames
+                    permission = Permission.objects.get(codename=permission)
+                self.user_permissions.add(permission)
 
     class Meta:
         model = "accounts.User"

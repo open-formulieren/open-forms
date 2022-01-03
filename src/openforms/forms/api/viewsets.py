@@ -31,7 +31,7 @@ from ..models import (
 from ..utils import export_form, form_to_json, import_form
 from .filters import FormLogicFilter, FormPriceLogicFilter
 from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
-from .permissions import IsStaffOrReadOnlyNoList
+from .permissions import FormAPIPermissions
 from .serializers import (
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
@@ -69,7 +69,7 @@ class FormStepViewSet(
 ):
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all().order_by("order")
-    permission_classes = [IsStaffOrReadOnlyNoList]
+    permission_classes = [FormAPIPermissions]
     lookup_field = "uuid"
 
     def get_serializer_context(self):
@@ -92,9 +92,7 @@ class FormLogicViewSet(
 ):
     serializer_class = FormLogicSerializer
     queryset = FormLogic.objects.all()
-    permission_classes = [
-        permissions.IsAdminUser
-    ]  # TODO: connect with can_change_form admin permission!
+    permission_classes = [FormAPIPermissions]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FormLogicFilter
     lookup_field = "uuid"
@@ -114,9 +112,7 @@ class FormLogicViewSet(
 class FormPriceLogicViewSet(viewsets.ModelViewSet):
     serializer_class = FormPriceLogicSerializer
     queryset = FormPriceLogic.objects.all()
-    permission_classes = [
-        permissions.IsAdminUser
-    ]  # TODO: connect with can_change_form admin permission!
+    permission_classes = [FormAPIPermissions]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FormPriceLogicFilter
     lookup_field = "uuid"
@@ -156,7 +152,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse
-    permission_classes = [IsStaffOrReadOnlyNoList]
+    permission_classes = [FormAPIPermissions]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -244,7 +240,7 @@ class FormViewSet(viewsets.ModelViewSet):
     lookup_url_kwarg = "uuid_or_slug"
     # lookup_value_regex = "[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
     serializer_class = FormSerializer
-    permission_classes = [IsStaffOrReadOnlyNoList]
+    permission_classes = [FormAPIPermissions]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -435,7 +431,7 @@ class FormViewSet(viewsets.ModelViewSet):
 class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericViewSet):
     serializer_class = FormVersionSerializer
     queryset = FormVersion.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [FormAPIPermissions]
     lookup_field = "uuid"
     parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
 
@@ -465,7 +461,7 @@ class FormsImportAPIView(views.APIView):
     serializer_class = FormImportSerializer
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [FormAPIPermissions]
 
     @extend_schema(
         summary=_("Import form"),

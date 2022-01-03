@@ -4,6 +4,7 @@ from unittest.mock import patch
 from zipfile import ZipFile
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.urls import reverse
@@ -12,7 +13,7 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
 
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -20,13 +21,11 @@ from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 class ImportExportAPITests(APITestCase):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(
-            username="john", password="secret", email="john@example.com"
-        )
+        self.user = UserFactory.create()
         self.token = TokenFactory(user=self.user)
 
     def test_form_export(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -114,6 +113,7 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_form_import(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
@@ -190,6 +190,7 @@ class ImportExportAPITests(APITestCase):
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_form_import_error_slug_already_exists(self, _mock):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 

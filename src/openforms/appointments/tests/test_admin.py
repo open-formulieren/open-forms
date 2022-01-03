@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Permission
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -17,15 +16,9 @@ class AppointmentInfoAdminTests(WebTest):
     @freeze_time("2021-11-26T17:00:00+01:00")
     def test_cancel_and_change_links_only_for_superuser(self):
         normal, staff = non_superusers = [
-            UserFactory.create(),
-            StaffUserFactory.create(),
+            UserFactory.create(user_permissions=["view_appointmentinfo"]),
+            StaffUserFactory.create(user_permissions=["view_appointmentinfo"]),
         ]
-        permission = Permission.objects.get(
-            content_type__app_label="appointments", codename="view_appointmentinfo"
-        )
-        # set up changelist permissions
-        for user in non_superusers:
-            user.user_permissions.add(permission)
 
         # appointment in the future
         AppointmentInfoFactory.create(
