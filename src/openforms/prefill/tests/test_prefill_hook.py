@@ -2,7 +2,9 @@ from copy import deepcopy
 
 from django.test import TransactionTestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import apply_prefill
@@ -88,6 +90,13 @@ CONFIGURATION = {
 
 
 class PrefillHookTests(TransactionTestCase):
+    def setUp(self):
+        super().setUp()
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {}
+        config.save()
+
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
@@ -172,3 +181,18 @@ class PrefillHookTests(TransactionTestCase):
             )
         except Exception:
             self.fail("Pre-fill can't handle empty/no plugins")
+
+    def test_applying_prefill_plugins_not_enabled(self):
+        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {"prefill": {"demo": {"enabled": False}}}
+        config.save()
+
+        with self.assertRaises(PluginNotEnabled):
+            apply_prefill(
+                configuration=form_step.form_definition.configuration,
+                submission=submission,
+                register=register,
+            )

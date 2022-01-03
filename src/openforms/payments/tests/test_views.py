@@ -7,6 +7,7 @@ from django.test.client import RequestFactory
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin, PaymentInfo
@@ -31,6 +32,13 @@ class Plugin(BasePlugin):
 
 
 class ViewsTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {}
+        config.save()
+
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
@@ -168,3 +176,42 @@ class ViewsTests(TestCase):
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
             update_payments_mock.assert_not_called()
+
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
+    )
+    @patch("openforms.payments.views.update_submission_payment_status.delay")
+    def test_start_plugin_not_enabled(self, update_payments_mock):
+        register = Registry()
+        register("plugin1")(Plugin)
+        plugin = register["plugin1"]
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {"payments": {"plugin1": {"enabled": False}}}
+        config.save()
+
+        base_request = RequestFactory().get("/foo")
+
+        registry_mock = patch("openforms.payments.views.register", new=register)
+        registry_mock.start()
+        self.addCleanup(registry_mock.stop)
+
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="plugin1",
+            form_url="http://allowed.foo/my-form",
+        )
+        self.assertTrue(submission.payment_required)
+
+        # check the start url
+        url = plugin.get_start_url(base_request, submission)
+        self.assertRegex(url, r"^http://")
+
+        with self.subTest("start ok"):
+            response = self.client.post(url)
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.data["code"], "parse_error")
+            self.assertEqual(response.data["detail"], "plugin not enabled")
+
+        self.assertFalse(SubmissionPayment.objects.exists())

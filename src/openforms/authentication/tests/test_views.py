@@ -8,6 +8,7 @@ from furl import furl
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
@@ -23,6 +24,13 @@ from .mocks import FailingPlugin, Plugin, mock_register
 
 
 class AuthenticationFlowTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {}
+        config.save()
+
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
@@ -139,6 +147,44 @@ class AuthenticationFlowTests(APITestCase):
         expected = furl("http://foo.bar?bazz=buzz")
         expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
         self.assertEqual(furl(response["Location"]), expected)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_start_failure_not_enabled(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        plugin = register["plugin1"]
+
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {
+            "authentication": {"plugin1": {"enabled": False}}
+        }
+        config.save()
+
+        step = FormStepFactory(
+            form__slug="myform",
+            form__authentication_backends=["plugin1"],
+            form_definition__login_required=True,
+        )
+        form = step.form
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        init_request = factory.get("/foo")
+
+        # actual test starts here
+        next_url_enc = quote("http://foo.bar?bazz=buzz")
+
+        url = plugin.get_start_url(init_request, form)
+
+        start_view = AuthenticationStartView.as_view(register=register)
+        response = start_view(
+            factory.get(f"{url}?next={next_url_enc}"),
+            slug=form.slug,
+            plugin_id="plugin1",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content.decode(), "authentication plugin not enabled")
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)

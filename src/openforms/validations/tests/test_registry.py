@@ -7,12 +7,24 @@ from openforms.validations.registry import Registry
 
 
 class DjangoValidator:
+    is_enabled = True
+
     def __call__(self, value):
         if value != "VALID":
             raise DjangoValidationError("not VALID value")
 
 
 class DRFValidator:
+    is_enabled = True
+
+    def __call__(self, value):
+        if value != "VALID":
+            raise DRFValidationError("not VALID value")
+
+
+class DisabledValidator:
+    is_enabled = False
+
     def __call__(self, value):
         if value != "VALID":
             raise DRFValidationError("not VALID value")
@@ -85,3 +97,11 @@ class RegistryTest(TestCase):
         self.assertEqual(
             res.messages, ["unknown validation plugin_id 'NOT_REGISTERED'"]
         )
+
+    def test_validate_plugin_not_enabled(self):
+        registry = Registry()
+        registry("disabled", "Disabled")(DisabledValidator())
+
+        res = registry.validate("disabled", "VALID")
+        self.assertEqual(res.is_valid, False)
+        self.assertEqual(res.messages, ["plugin 'disabled' not enabled"])
