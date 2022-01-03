@@ -1143,6 +1143,12 @@
       "value": "Are you sure you want to delete this rule?"
     }
   ],
+  "evbysh": [
+    {
+      "type": 0,
+      "value": "Variable definition"
+    }
+  ],
   "f590Rb": [
     {
       "type": 0,
@@ -1403,6 +1409,12 @@
     {
       "type": 0,
       "value": "Step name"
+    }
+  ],
+  "pyX2Tl": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "qUYLVg": [

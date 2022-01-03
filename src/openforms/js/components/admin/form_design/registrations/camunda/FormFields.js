@@ -7,6 +7,7 @@ import ActionButton, {SubmitAction} from '../../../forms/ActionButton';
 import Select from '../../../forms/Select';
 import SubmitRow from '../../../forms/SubmitRow';
 import FormModal from '../../../FormModal';
+import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 import {CustomFieldTemplate} from '../../../RJSFWrapper';
 import SelectProcessVariables from './SelectProcessVariables';
 import ComplexProcessVariables from './ComplexProcessVariables';
@@ -293,6 +294,12 @@ FormFields.propTypes = {
             componentKey: PropTypes.string.isRequired,
             alias: PropTypes.string.isRequired,
         })),
+        complexProcessVariables: PropTypes.arrayOf(PropTypes.shape({
+            enabled: PropTypes.bool,
+            alias: PropTypes.string,
+            type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
+            definition: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+        }))
     }),
     onChange: PropTypes.func.isRequired,
 };

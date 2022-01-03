@@ -5,9 +5,10 @@ import {useImmerReducer} from 'use-immer';
 
 import FormModal from '../../../FormModal';
 import ButtonContainer from '../../../forms/ButtonContainer';
-import {Checkbox} from '../../../forms/Inputs';
+import {Checkbox, TextInput} from '../../../forms/Inputs';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
 import DeleteIcon from '../../../DeleteIcon';
+import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 import ComplexProcessVariable from './ComplexProcessVariable';
 
 
@@ -72,7 +73,7 @@ const ProcessVariable = ({ index, enabled=true, alias='', onChange, onDelete, on
                 />
             </div>
 
-            <span>{alias}</span>
+            <TextInput name="alias" value={alias} onChange={onChange} />
 
             <a href="#" onClick={onConfigure}>
                 <FormattedMessage
@@ -125,6 +126,14 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
 
     const editVariable = variables[editVariableIndex];
 
+    const onVariableConfirm = ({ name, type, definition }) => {
+        const variable = variables.find(variable => variable.alias);
+        const index = variables.indexOf(variable);
+        onChange(index, {target: {name: 'type', value: type}});
+        onChange(index, {target: {name: 'definition', value: definition}});
+        dispatch({type: 'RESET'});
+    };
+
     return (
         <>
             <ChangelistTableWrapper headColumns={<HeadColumns />} extraModifiers={['camunda-vars']}>
@@ -163,11 +172,11 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
                     // pass an onChange handler
                     modalOpen && editVariable
                     ? (
-                        /* TODO: onChange etc. */
                         <ComplexProcessVariable
                             name={editVariable.alias}
                             type={editVariable.type}
                             definition={editVariable.definition}
+                            onConfirm={onVariableConfirm}
                         />
                     )
                     : null
@@ -178,7 +187,12 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
 };
 
 ComplexProcessVariables.propTypes = {
-    variables: PropTypes.array,
+    variables: PropTypes.arrayOf(PropTypes.shape({
+        enabled: PropTypes.bool,
+        alias: PropTypes.string,
+        type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
+        definition: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    })),
     onChange: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,

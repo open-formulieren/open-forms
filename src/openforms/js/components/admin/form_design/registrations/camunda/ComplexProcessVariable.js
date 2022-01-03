@@ -2,21 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {produce} from 'immer';
 import {useImmerReducer} from 'use-immer';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import FormModal from '../../../FormModal';
+import {SubmitAction} from '../../../forms/ActionButton';
 import {TextInput} from '../../../forms/Inputs';
 import Field from '../../../forms/Field';
 import Fieldset from '../../../forms/Fieldset';
 import FormRow from '../../../forms/FormRow';
 import Select from '../../../forms/Select';
+import SubmitRow from '../../../forms/SubmitRow';
 import {ComplexVariable, EditPanel, TypeSelector} from '../../../json_editor';
 import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 
 
 const initialState = {
     // variable definition/state
-    name: '',
     type: 'object',
     definition: {},
     // edit panel state
@@ -124,17 +125,21 @@ const editPanelStyle = {
 };
 
 
-const ComplexProcessVariable = ({ name: initialName, type: initialType, definition: initialDefinition }) => {
+const ComplexProcessVariable = ({
+    name, type: initialType, definition: initialDefinition,
+    onConfirm,
+}) => {
+    const intl = useIntl();
+
     // state
     const [
         {
-            name, type, definition,
+            type, definition,
             editPanelOpen, editVariable,
         },
         dispatch
     ] = useImmerReducer(reducer, {
         ...initialState,
-        name: initialName,
         type: initialType,
         definition: initialDefinition,
     });
@@ -153,19 +158,24 @@ const ComplexProcessVariable = ({ name: initialName, type: initialType, definiti
         });
     };
 
+    const onConfirmDefinition = (event) => {
+        event.preventDefault();
+        onConfirm({name, type, definition});
+    };
+
     return (
         /* container */
-        <section>
+        <section style={{display: 'flex', flexDirection: 'column', flexGrow: '1'}}>
 
             {/* main body */}
-            <div>
+            <div className="react-modal__form">
                 <Fieldset>
                     <FormRow>
                         <Field name="name" label={<FormattedMessage
                             description="Camunda complex process var 'name' label"
                             defaultMessage="Name"
                         />}>
-                            <TextInput value={name} onChange={onChange} placeholder="Camunda variable name" />
+                            <div className="readonly">{name}</div>
                         </Field>
                     </FormRow>
 
@@ -180,7 +190,7 @@ const ComplexProcessVariable = ({ name: initialName, type: initialType, definiti
                 </Fieldset>
 
                 <Fieldset title={<FormattedMessage
-                    description="JSON editor: complex variable definition title"
+                    description="Camunda complex variable definition title"
                     defaultMessage="Variable definition"
                 />}>
                     {/* Root node of an arbitrarily deep tree. */}
@@ -194,6 +204,13 @@ const ComplexProcessVariable = ({ name: initialName, type: initialType, definiti
                         onEditDefinition={onEditDefinition}
                     />
                 </Fieldset>
+
+                <SubmitRow>
+                    <SubmitAction text={intl.formatMessage({
+                        description: 'Confirm complex Camunda variable definition',
+                        defaultMessage: 'Confirm',
+                    })} onClick={onConfirmDefinition} />
+                </SubmitRow>
             </div>
 
             {/* variable edit panel */}
@@ -232,6 +249,7 @@ ComplexProcessVariable.propTypes = {
         PropTypes.object,
         PropTypes.array,
     ]).isRequired,
+    onConfirm: PropTypes.func.isRequired,
 };
 
 
