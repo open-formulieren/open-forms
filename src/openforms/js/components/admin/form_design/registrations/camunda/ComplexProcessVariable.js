@@ -84,7 +84,17 @@ const reducer = (draft, action) => {
 
             // fall through to reset edit panel so it gets closed and state is reset
         }
-        case 'CANCEL_EDIT_VARIABLE_DEFINITION':
+        case 'CANCEL_EDIT_VARIABLE_DEFINITION': {
+            const {parent} = draft.editVariable;
+            if (parent) {
+                draft.editVariable = {
+                    name: parent.name,
+                    definition: parent.definition,
+                    parent: parent.parent,
+                };
+                break;
+            }
+        }
         case 'RESET_EDIT_PANEL': {
             // reset edit state
             draft.editVariable = initialState.editVariable;
