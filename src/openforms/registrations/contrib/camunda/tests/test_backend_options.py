@@ -144,6 +144,90 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         }
         self.assertEqual(self.form.registration_backend_options, expected)
 
+    def test_read_complex_variables(self):
+        """
+        Test that complex variables are not converted into camelCase.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            registration_backend="camunda",
+            formstep__form_definition__configuration=[
+                {
+                    "key": "test1",
+                    "type": "textfield",
+                },
+            ],
+            registration_backend_options={
+                "process_definition": "invoice",
+                "process_definition_version": None,
+                "process_variables": [],
+                "complex_process_variables": [
+                    {
+                        "enabled": True,
+                        "alias": "complex1",
+                        "type": "object",
+                        "definition": {
+                            "snake_case": {
+                                "source": "manual",
+                                "type": "object",
+                                "definition": {
+                                    "nested_var1": {
+                                        "source": "manual",
+                                        "type": "null",
+                                        "definition": None,
+                                    },
+                                },
+                            },
+                            "camelCase": {
+                                "source": "manual",
+                                "type": "object",
+                                "definition": {
+                                    "nestedVar2": {
+                                        "source": "manual",
+                                        "type": "null",
+                                        "definition": None,
+                                    },
+                                },
+                            },
+                        },
+                    }
+                ],
+            },
+        )
+        endpoint = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        complex_var = response.json()["registrationBackendOptions"][
+            "complexProcessVariables"
+        ][0]
+        expected = {
+            "snake_case": {
+                "source": "manual",
+                "type": "object",
+                "definition": {
+                    "nested_var1": {
+                        "source": "manual",
+                        "type": "null",
+                        "definition": None,
+                    },
+                },
+            },
+            "camelCase": {
+                "source": "manual",
+                "type": "object",
+                "definition": {
+                    "nestedVar2": {
+                        "source": "manual",
+                        "type": "null",
+                        "definition": None,
+                    },
+                },
+            },
+        }
+        self.assertEqual(complex_var["definition"], expected)
+
     def test_process_vars_incomplete_data(self):
         invalid_vars = [
             {},
