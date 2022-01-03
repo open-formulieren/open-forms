@@ -3,6 +3,7 @@ import logging
 from typing import Callable, Iterable, List, Type, Union
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 from rest_framework.serializers import as_serializer_error
@@ -93,12 +94,13 @@ class Registry(BaseRegistry):
         except KeyError:
             logger.warning(f"called unregistered plugin_id '{plugin_id}'")
             return ValidationResult(
-                False, messages=[f"unknown validation plugin_id '{plugin_id}'"]
+                False,
+                messages=[_("unknown validation plugin_id '{}'").format(plugin_id)],
             )
 
         if not getattr(validator.callable, "is_enabled", True):
             return ValidationResult(
-                False, messages=[f"plugin '{plugin_id}' not enabled"]
+                False, messages=[_("plugin '{}' not enabled").format(plugin_id)]
             )
 
         try:

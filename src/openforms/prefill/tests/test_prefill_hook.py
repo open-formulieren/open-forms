@@ -1,4 +1,5 @@
 from copy import deepcopy
+from unittest.mock import patch
 
 from django.test import TransactionTestCase
 
@@ -90,13 +91,6 @@ CONFIGURATION = {
 
 
 class PrefillHookTests(TransactionTestCase):
-    def setUp(self):
-        super().setUp()
-
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {}
-        config.save()
-
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
@@ -182,13 +176,14 @@ class PrefillHookTests(TransactionTestCase):
         except Exception:
             self.fail("Pre-fill can't handle empty/no plugins")
 
-    def test_applying_prefill_plugins_not_enabled(self):
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_applying_prefill_plugins_not_enabled(self, mock_get_solo):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
 
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {"prefill": {"demo": {"enabled": False}}}
-        config.save()
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"prefill": {"demo": {"enabled": False}}}
+        )
 
         with self.assertRaises(PluginNotEnabled):
             apply_prefill(

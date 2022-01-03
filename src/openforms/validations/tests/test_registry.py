@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
@@ -95,7 +96,7 @@ class RegistryTest(TestCase):
         res = registry.validate("NOT_REGISTERED", "VALID")
         self.assertEqual(res.is_valid, False)
         self.assertEqual(
-            res.messages, ["unknown validation plugin_id 'NOT_REGISTERED'"]
+            res.messages, [_("unknown validation plugin_id 'NOT_REGISTERED'")]
         )
 
     def test_validate_plugin_not_enabled(self):
@@ -104,4 +105,4 @@ class RegistryTest(TestCase):
 
         res = registry.validate("disabled", "VALID")
         self.assertEqual(res.is_valid, False)
-        self.assertEqual(res.messages, ["plugin 'disabled' not enabled"])
+        self.assertEqual(res.messages, [_("plugin 'disabled' not enabled")])

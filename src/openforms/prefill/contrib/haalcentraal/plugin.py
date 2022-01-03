@@ -9,7 +9,6 @@ from requests import RequestException
 from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.config.models import GlobalConfiguration
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 

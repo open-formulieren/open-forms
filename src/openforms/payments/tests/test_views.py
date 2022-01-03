@@ -32,13 +32,6 @@ class Plugin(BasePlugin):
 
 
 class ViewsTests(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {}
-        config.save()
-
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
@@ -180,38 +173,30 @@ class ViewsTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     @patch("openforms.payments.views.update_submission_payment_status.delay")
-    def test_start_plugin_not_enabled(self, update_payments_mock):
+    def test_start_plugin_not_enabled(self, update_payments_mock, mock_get_solo):
         register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
-
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {"payments": {"plugin1": {"enabled": False}}}
-        config.save()
-
-        base_request = RequestFactory().get("/foo")
-
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"payments": {"plugin1": {"enabled": False}}}
+        )
         registry_mock = patch("openforms.payments.views.register", new=register)
         registry_mock.start()
         self.addCleanup(registry_mock.stop)
-
         submission = SubmissionFactory.create(
             completed=True,
             form__product__price=Decimal("11.25"),
             form__payment_backend="plugin1",
             form_url="http://allowed.foo/my-form",
         )
-        self.assertTrue(submission.payment_required)
-
-        # check the start url
+        base_request = RequestFactory().get("/foo")
         url = plugin.get_start_url(base_request, submission)
-        self.assertRegex(url, r"^http://")
 
-        with self.subTest("start ok"):
-            response = self.client.post(url)
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.data["code"], "parse_error")
-            self.assertEqual(response.data["detail"], "plugin not enabled")
+        response = self.client.post(url)
 
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "parse_error")
+        self.assertEqual(response.data["detail"], "plugin not enabled")
         self.assertFalse(SubmissionPayment.objects.exists())

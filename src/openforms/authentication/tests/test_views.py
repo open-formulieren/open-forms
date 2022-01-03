@@ -24,13 +24,6 @@ from .mocks import FailingPlugin, Plugin, mock_register
 
 
 class AuthenticationFlowTests(APITestCase):
-    def setUp(self):
-        super().setUp()
-
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {}
-        config.save()
-
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
     )
@@ -148,17 +141,16 @@ class AuthenticationFlowTests(APITestCase):
         expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
         self.assertEqual(furl(response["Location"]), expected)
 
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-    def test_plugin_start_failure_not_enabled(self):
+    def test_plugin_start_failure_not_enabled(self, mock_get_solo):
         register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "authentication": {"plugin1": {"enabled": False}}
-        }
-        config.save()
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"authentication": {"plugin1": {"enabled": False}}}
+        )
 
         step = FormStepFactory(
             form__slug="myform",
@@ -177,8 +169,13 @@ class AuthenticationFlowTests(APITestCase):
         url = plugin.get_start_url(init_request, form)
 
         start_view = AuthenticationStartView.as_view(register=register)
+        encoded_url = furl(url).set(
+            {
+                "next": next_url_enc,
+            }
+        )
         response = start_view(
-            factory.get(f"{url}?next={next_url_enc}"),
+            factory.get(encoded_url),
             slug=form.slug,
             plugin_id="plugin1",
         )

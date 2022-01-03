@@ -2,6 +2,7 @@
 Test the registration hook on submissions.
 """
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
@@ -221,8 +222,9 @@ class RegistrationHookTests(TestCase):
         with self.assertRaises(RegistrationFailed):
             register_submission(submission.id)
 
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     @freeze_time("2021-08-04T12:00:00+02:00")
-    def test_registration_plugin_not_enabled(self):
+    def test_registration_plugin_not_enabled(self, mock_get_solo):
         register = Registry()
 
         # register the callback
@@ -237,11 +239,9 @@ class RegistrationHookTests(TestCase):
             def get_reference_from_result(self, result: dict) -> None:
                 pass
 
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "registrations": {"callback": {"enabled": False}}
-        }
-        config.save()
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"registrations": {"callback": {"enabled": False}}}
+        )
 
         # # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")

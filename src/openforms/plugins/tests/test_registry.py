@@ -38,30 +38,31 @@ class TestPluginDifferentNamespace(AbstractBasePlugin):
     verbose_name = "Test2"
 
 
+@patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
 class RegistryTestCase(TestCase):
-    def test_registry_iter_enabled_plugins(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "test": {
-                "plugin1": {"enabled": False},
-                "plugin2": {"enabled": True},
-            },
-        }
-        config.save()
+    def test_registry_iter_enabled_plugins(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "test": {
+                    "plugin1": {"enabled": False},
+                    "plugin2": {"enabled": True},
+                },
+            }
+        )
 
         plugins = [x for x in register1.iter_enabled_plugins()]
 
         self.assertEqual(len(plugins), 1)
         self.assertEqual(plugins[0].identifier, "plugin2")
 
-    def test_registry_iter_enabled_plugins_default_enabled(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "test": {
-                "plugin1": {"enabled": True},
-            },
-        }
-        config.save()
+    def test_registry_iter_enabled_plugins_default_enabled(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "test": {
+                    "plugin1": {"enabled": True},
+                },
+            }
+        )
 
         plugins = [x for x in register1.iter_enabled_plugins()]
 
@@ -69,10 +70,10 @@ class RegistryTestCase(TestCase):
         self.assertEqual(plugins[0].identifier, "plugin1")
         self.assertEqual(plugins[1].identifier, "plugin2")
 
-    def test_registry_iter_enabled_plugins_no_config_default_enabled(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {}
-        config.save()
+    def test_registry_iter_enabled_plugins_no_config_default_enabled(
+        self, mock_get_solo
+    ):
+        mock_get_solo.return_value = GlobalConfiguration(plugin_configuration={})
 
         plugins = [x for x in register1.iter_enabled_plugins()]
 
@@ -80,18 +81,18 @@ class RegistryTestCase(TestCase):
         self.assertEqual(plugins[0].identifier, "plugin1")
         self.assertEqual(plugins[1].identifier, "plugin2")
 
-    def test_registry_iter_enabled_plugins_multiple_namespaces(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "test": {
-                "plugin1": {"enabled": True},
-                "plugin2": {"enabled": True},
-            },
-            "test2": {
-                "plugin1": {"enabled": False},
-            },
-        }
-        config.save()
+    def test_registry_iter_enabled_plugins_multiple_namespaces(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "test": {
+                    "plugin1": {"enabled": True},
+                    "plugin2": {"enabled": True},
+                },
+                "test2": {
+                    "plugin1": {"enabled": False},
+                },
+            }
+        )
 
         plugins_namespace1 = [x for x in register1.iter_enabled_plugins()]
 
@@ -107,15 +108,15 @@ class RegistryTestCase(TestCase):
         self.assertEqual(plugins_namespace2[0].identifier, "plugin2")
         self.assertEqual(plugins_namespace2[0].registry, register2)
 
-    def test_registry_iter_enabled_plugins_no_database_enable_all(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "test": {
-                "plugin1": {"enabled": False},
-                "plugin2": {"enabled": False},
-            },
-        }
-        config.save()
+    def test_registry_iter_enabled_plugins_no_database_enable_all(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "test": {
+                    "plugin1": {"enabled": False},
+                    "plugin2": {"enabled": False},
+                },
+            }
+        )
 
         # When the OAS is generated, the database is not used
         with patch("openforms.config.models.GlobalConfiguration.get_solo") as m:
