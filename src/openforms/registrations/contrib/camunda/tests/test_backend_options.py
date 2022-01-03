@@ -51,6 +51,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         """
         Assert that options are saved correctly.
         """
+        self.maxDiff = None
         detail_response = self.client.get(self.endpoint).json()
         data = {
             **detail_response,
@@ -66,6 +67,31 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                         "enabled": False,
                         "componentKey": "test2",
                         "alias": "test2Alias",
+                    },
+                ],
+                "complexProcessVariables": [
+                    {
+                        "enabled": True,
+                        "alias": "complex1",
+                        "type": "object",
+                        "definition": {
+                            "fooBar": {  # deliberate camelCase key - should not be converted to underscore
+                                "source": "manual",
+                                "type": "string",
+                                "definition": "bar",
+                            }
+                        },
+                    },
+                    {
+                        "enabled": False,
+                        "alias": "complex2",
+                        "type": "array",
+                        "definition": [
+                            {
+                                "source": "component",
+                                "definition": {"var": "test1"},
+                            },
+                        ],
                     },
                 ],
             },
@@ -90,10 +116,35 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                     "alias": "test2Alias",
                 },
             ],
+            "complex_process_variables": [
+                {
+                    "enabled": True,
+                    "alias": "complex1",
+                    "type": "object",
+                    "definition": {
+                        "fooBar": {
+                            "source": "manual",
+                            "type": "string",
+                            "definition": "bar",
+                        }
+                    },
+                },
+                {
+                    "enabled": False,
+                    "alias": "complex2",
+                    "type": "array",
+                    "definition": [
+                        {
+                            "source": "component",
+                            "definition": {"var": "test1"},
+                        }
+                    ],
+                },
+            ],
         }
         self.assertEqual(self.form.registration_backend_options, expected)
 
-    def test_incomplete_data(self):
+    def test_process_vars_incomplete_data(self):
         invalid_vars = [
             {},
             None,
@@ -120,6 +171,60 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                         "processDefinition": "invoice",
                         "processDefinitionVersion": None,
                         "processVariables": [invalid_var],
+                        "complexProcessVariables": [],
+                    },
+                }
+
+                response = self.client.patch(self.endpoint, data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                error_codes = {
+                    param["name"]: param["code"]
+                    for param in response.json()["invalidParams"]
+                }
+                self.assertEqual(error_codes, expected_error_codes)
+
+    def test_complex_process_vars_incomplete_data(self):
+        invalid_vars = [
+            {},
+            None,
+            {"enabled": True, "alias": ""},
+            {"enabled": True, "alias": "test", "type": ""},
+            {"enabled": True, "alias": "test", "type": "object", "definition": None},
+            {"enabled": True, "alias": "test", "type": "object", "definition": []},
+        ]
+        expected_errors = [
+            {
+                "registrationBackendOptions.complexProcessVariables.0.enabled": "required",
+                "registrationBackendOptions.complexProcessVariables.0.alias": "required",
+                "registrationBackendOptions.complexProcessVariables.0.type": "required",
+            },
+            {
+                "registrationBackendOptions.complexProcessVariables": "null",
+            },
+            {
+                "registrationBackendOptions.complexProcessVariables.0.alias": "blank",
+                "registrationBackendOptions.complexProcessVariables.0.type": "required",
+            },
+            {
+                "registrationBackendOptions.complexProcessVariables.0.type": "invalid_choice",
+            },
+            {
+                "registrationBackendOptions.complexProcessVariables.0.definition": "null",
+            },
+            {
+                "registrationBackendOptions.complexProcessVariables.0.definition": "not_a_dict",
+            },
+        ]
+
+        for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
+            with self.subTest(invalid_var=invalid_var):
+                data = {
+                    "registrationBackendOptions": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [],
+                        "complexProcessVariables": [invalid_var],
                     },
                 }
 
