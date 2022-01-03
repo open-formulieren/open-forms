@@ -24,6 +24,7 @@ from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .checks import check_config
+from .complex_variables import get_complex_process_variables
 from .serializers import CamundaOptionsSerializer
 from .type_mapping import to_python
 
@@ -61,6 +62,16 @@ def get_process_variables(
         value = merged_data.get(key, None)
         alias = simple_mappings[key]
         variables[alias] = to_python(component, value)
+
+    complex_variables = get_complex_process_variables(
+        options.get("complex_process_variables", []),
+        merged_data,
+    )
+
+    if intersection := set(complex_variables).intersection(set(variables)):
+        logger.warning("Complex variables overlap, check the keys %r", intersection)
+
+    variables.update(**complex_variables)
 
     return variables
 

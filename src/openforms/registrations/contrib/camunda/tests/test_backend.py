@@ -433,6 +433,16 @@ class ComplexProcessVariableTests(CamundaMixin, TestCase):
                             "type": "boolean",
                             "definition": False,
                         },
+                        {
+                            "source": "manual",
+                            "type": "number",
+                            "definition": 42,
+                        },
+                        {
+                            "source": "manual",
+                            "type": "number",
+                            "definition": 3.14,
+                        },
                     ],
                 },
             ],
@@ -444,7 +454,7 @@ class ComplexProcessVariableTests(CamundaMixin, TestCase):
 
         plugin.register_submission(self.submission, registration_backend_options)
 
-        expected_evaluated_value = [False]
+        expected_evaluated_value = [False, 42, 3.14]
         mock_start_process.assert_called_once_with(
             process_key="invoice",
             variables=serialize_variables(
