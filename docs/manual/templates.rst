@@ -1,152 +1,155 @@
 .. _manual_templates:
 
 =========
-Templates
+Sjablonen
 =========
 
-Open Forms supports templating for various aspects. Templates are basically
-text areas that can have customized content using **variables**.
+Open Forms ondersteunt sjablonen voor verschillende aspecten. Sjablonen zijn
+teksten die aangepaste kunnen worden op basis van het ingevulde formulier.
 
-Currently, templates are used for:
+Momenteel worden sjablonen gebruikt voor:
 
-* Confirmation emails
-* Confirmation pages
+* Bevestigingsmail
+* Bevestigingspagina
 
-There are two ways to customize : **dynamic variables** and
-**conditional rendering**. The variables that are available depends on the type
-of template and is explained below.
+De tekst kan in deze elementen aangepast worden met **variabelen** en 
+**voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn 
+afhankelijk van het type sjabloon en het formulier.
 
-Let's assume these variables are available for a template:
+Stel, we hebben een formulier met daarin onderstaande velden en een gebruiker
+heeft voor elk formulierveld een bepaalde *waarde* ingevuld. Technisch heeft 
+elk veld een *eigenschap*-attribuut wat het veld uniek identifieert.
 
 ==========  =============
-Variable    Value
+Eigenschap  Waarde
 ==========  =============
-age         19
-gender      M
-firstName   John
-lastName    Doe
+leeftijd    19
+geslacht    M
+voornaam    John
+achternaam  Doe
 ==========  =============
 
-How it works
-============
 
-Dynamic variables
------------------
+Hoe het werkt
+=============
 
-Using dynamic variables you can have content added to the email that will be
-equal to the value of the variable.
+Variabelen
+----------
 
-To do this you will use ``{{ variable }}`` where ``variable`` is the name of
-the value you want to display in the email.
+Met behulp van variabelen kunt u de waarden uit formuliervelden toevoegen aan
+de sjabloon.
 
-**Example**
+Om dit te doen gebruikt u de naam van de *eigenschap* tussen dubbele accolades:
+``{{ <eigenschap> }}``. Hierbij is ``<eigenschap>`` de daadwerkelijk naam van
+de eigenschap, bijvoorbeeld: ``{{ leeftijd }}``.
+
+**Voorbeeld**
 
 .. tabs::
 
-   .. tab:: Template
+   .. tab:: Sjabloon
 
       .. code:: django
 
-         Hello {{ firstName }} {{ lastName }}!
+         Hallo {{ voornaam }} {{ achternaam }}!
 
-   .. tab:: Rendered
+   .. tab:: Weergave
 
       .. code:: text
 
-         Hello John Doe!
+         Hallo John Doe!
 
 
-Conditional rendering
----------------------
+Voorwaardelijke weergave
+------------------------
 
-Using conditional rendering you can show or hide certain content from the emails
-based on certain conditions.
+Met behulp van voorwaardelijke weergave kunt u bepaalde teksten in sjablonen
+tonen of verbergen op basis van bepaalde voorwaarden. Dit zijn zogenaamde 
+**Als** *dit* **dan** *dat*-constructies.
 
-To do this you can use ``{% if variable %}``, ``{% elif variable %}``,
-``{% else %}`` and ``{% endif %}`` statements in the email template.
-The condition (``variable``) will evalate to either true or false and the text
-you want to display is between two of the ``{% %}`` statements. An
-``if``-statement needs to closed with an ``endif``-statement.
+Om dit te doen kunt u ``{% if <eigenschap> %}``, ``{% elif <eigenschap> %}``,
+``{% else %}`` en ``{% endif %}`` opnemen in sjablonen. De voorwaarde 
+(``if <eigenschap>``) wordt geëvalueerd naar waar of onwaar. Indien waar, dan
+wordt de tekst tussen twee van de ``{% %}``-instructies weergeven. Een
+``if``-instructie moet worden afgesloten met een ``endif``-instructie.
 
-You can use ``and``, ``or`` to evaluate multiple ``variables`` and you can
-compare variables to some value by using various operators: ``==`` (equal),
-``!=`` (not equal), ``>`` (greater than) or ``<`` (smaller than). The last two
-can only be done with numeric values.
+U kunt ``and`` en ``or`` gebruiken om meerdere ``eigenschappen`` te evalueren 
+en u kunt variabelen vergelijken met een bepaalde waarde door verschillende 
+operatoren te gebruiken: ``==`` (gelijk aan), ``!=`` (niet gelijk aan), ``>`` 
+(groter dan) of ``<`` (kleiner dan). De laatste twee kunnen alleen met 
+numerieke waarden.
 
-If you don't make a comparison, it will simply check if the ``variable`` is not
-empty. Finally, you can check if a variable is empty by adding ``not`` before
-the ``variable``: ``{% if not variable %}...``
+Als u geen vergelijking maakt, controleert de ``if``-instructie simpelweg of 
+de waarde van de ``eigenschap`` niet leeg is. Ten slotte kunt u controleren 
+of een variabele leeg is door ``not`` ervoor te zetten: 
+``{% if not <eigenschap> %}...``
 
-It is possible to nest conditions for even more customization.
+Het is mogelijk om voorwaarden binnen aandere voorwaarden te gebruiken.
 
-**Example**
+**Voorbeeld**
 
 .. tabs::
 
-   .. tab:: Template
+   .. tab:: Sjabloon
 
       .. code:: django
 
-         Hello {% if gender == 'M' %} Mr. {% elif gender == 'F' %} Mrs. {% else %} Mr/Mrs. {% endif %} {{ lastName }}!
+         Hallo {% if geslacht == 'M' %} Dhr. {% elif geslacht == 'V' %} Mevr. {% else %} Dhr/Mevr. {% endif %} {{ achternaam }}!
 
       .. code:: django
 
-         {% if age < 21 and firstName %} Hi {{ firstName }} {% else %} Hello {{ lastName }} {% endif %}
+         {% if leeftijd < 21 and voornaam %} Hallo {{ firstName }} {% else %} Hallo {{ achternaam }} {% endif %}
 
 
-   .. tab:: Rendered
-
-      .. code:: text
-
-         Hello Mr. Doe!
+   .. tab:: Weergave
 
       .. code:: text
 
-         Hi Joe!
+         Hallo meneer Doe!
+
+      .. code:: text
+
+         Hoi Joe!
 
 
-Confirmation email
+Bevestigingsmail
+================
+
+De bevestigingsmail is een optionele e-mail die wordt verzonden wanneer een 
+gebruiker een formulier verstuurd. De bevestigingsmail heeft toegang tot alle
+gegevens uit het formulier en de waarden ingevuld door de gebruiker.
+
+**Speciale instructies**
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de 
+sjabloon.
+
+==================================  ===========================================================================
+Element                             Beschrijving
+==================================  ===========================================================================
+``{% summary %}``                   Een volledige samenvatting van alle formuliervelden die zijn gemarkeerd om in de e-mail weer te geven.
+``{{ public_reference }}``          De openbare referentie van de inzending, bijvoorbeeld het zaaknummer.
+``{% appointment_information %}``   De informatie over de afspraak, zoals product, locatie, datum en tijdstip.
+``{% product_information %}``       Geeft de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
+``{% payment_information %}``       Als de inzending betaling vereist, bevestigt dit ofwel het bedrag en de status, of geeft het een link weer waar de betaling kan worden voltooid. Geeft niets weer als er geen betaling nodig is.
+==================================  ===========================================================================
+
+
+Bevestigingspagina
 ==================
 
-The Confirmation email is an optional email that will be sent when a user fills
-out a form. It has access to the submission data, filled in by the user, by
-accessing the `Property Name` of each element in the form.
+De bevestigingspagina is de pagina die wordt weergegeven nadat het formulier is
+verstuurd. De bevestigingspagina heeft toegang tot alle gegevens uit het 
+formulier en de waarden ingevuld door de gebruiker.
 
-The `Property Names` are therefore equal to the ``variables`` that are available
-in the template. Typically, these vary per form!
+**Speciale instructies**
 
-**Special variables or statements**
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de 
+sjabloon.
 
-These are additional variables and statements available to the template.
-
-===================================  ===========================================================================
-Element                              Description
-===================================  ===========================================================================
-``{% summary %}``                    A full summary of all elements marked to show in the email.
-``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
-``{% appointment_information %}``    The information about the appointment to show in the email.
-``{% product_information %}``        Display the text from the optional "information" field of the Product linked to this form.
-``{% payment_information %}``        If the submission required payment this will either confirm the amount and status, or displays a link where payment can be completed. Displays nothing if submission is free.
-===================================  ===========================================================================
-
-
-Confirmation page
-=================
-
-The Confirmation page is the page that shows after the submission is completed.
-It has access to the submission data, filled in by the user, by accessing the
-`Property Name` of each element in the form.
-
-The `Property Names` are therefore equal to the ``variables`` that are available
-in the template. Typically, these vary per form!
-
-**Special variables or statements**
-
-These are additional variables and statements available to the template.
-
-===================================  ===========================================================================
-Element                              Description
-===================================  ===========================================================================
-``{{ public_reference }}``           The public reference of the submission, e.g. the "zaaknummer".
-``{% product_information %}``        Display the text from the optional "information" field of the Product linked to this form.
-===================================  ===========================================================================
+==================================  ===========================================================================
+Element                             Beschrijving
+==================================  ===========================================================================
+``{{ public_reference }}``          De openbare referentie van de inzending, bijvoorbeeld het zaaknummer.
+``{% product_information %}``       Geeft de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
+==================================  ===========================================================================
