@@ -10,7 +10,7 @@ from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -68,10 +68,6 @@ class HaalCentraalPrefill(BasePlugin):
     def get_prefill_values(
         cls, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
-        # FIXME workaround because this method is a classmethod
-        config = GlobalConfiguration.get_solo()
-        if not config.plugin_enabled("haalcentraal"):
-            raise PluginNotEnabled()
         if not submission.bsn:
             return {}
         return cls._get_values_for_bsn(submission.bsn, attributes)

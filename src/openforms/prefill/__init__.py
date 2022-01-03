@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 from zgw_consumers.concurrent import parallel
 
 from openforms.logging import logevent
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -77,6 +78,9 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item
         plugin = register[plugin_id]
+
+        if not plugin.is_enabled:
+            raise PluginNotEnabled()
 
         try:
             values = plugin.get_prefill_values(submission, fields)

@@ -27,6 +27,7 @@ class BaseRegistry:
                 )
             plugin = plugin_cls(identifier=unique_identifier)
             self.check_plugin(plugin)
+            plugin.registry = self
             self._registry[unique_identifier] = plugin
             return plugin_cls
 

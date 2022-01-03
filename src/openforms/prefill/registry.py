@@ -6,7 +6,7 @@ class Registry(BaseRegistry):
     A registry for the prefill module plugins.
     """
 
-    pass
+    module = "prefill"
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

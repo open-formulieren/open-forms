@@ -22,7 +22,7 @@ class AbstractBasePlugin:
     @property
     def is_enabled(self):
         config = GlobalConfiguration.get_solo()
-        return config.plugin_enabled(self.identifier)
+        return config.plugin_enabled(self.registry.module, self.identifier)
 
     def check_config(self):
         """

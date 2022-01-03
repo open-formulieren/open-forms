@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.microsoft.client import MSGraphClient, MSGraphUploadHelper
 from openforms.contrib.microsoft.exceptions import MSAuthenticationError
-from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.contrib.microsoft_graph.models import (
     MSGraphRegistrationConfig,
 )
@@ -26,9 +26,6 @@ class MSGraphRegistration(BasePlugin):
         return f"open-forms/{slugify(submission.form.admin_name)}/{submission.public_registration_reference}"
 
     def register_submission(self, submission: Submission, options: dict) -> None:
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         # explicitly get a reference before registering
         set_submission_reference(submission)
 

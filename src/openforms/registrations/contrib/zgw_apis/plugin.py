@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
-from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -86,9 +85,6 @@ class ZGWRegistration(BasePlugin):
         :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
         celery tasks are chained to guarantee this.
         """
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
 

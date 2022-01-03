@@ -7,6 +7,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
+from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
@@ -451,5 +452,10 @@ class GlobalConfiguration(SingletonModel):
 
         return rendered_content
 
-    def plugin_enabled(self, plugin_identifier: str):
-        return self.plugin_configuration.get(plugin_identifier, True)
+    def plugin_enabled(self, module: str, plugin_identifier: str):
+        enabled = glom(
+            self.plugin_configuration,
+            f"{module}.{plugin_identifier}.enabled",
+            default=True,
+        )
+        return enabled

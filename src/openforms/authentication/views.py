@@ -20,6 +20,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 
 from openforms.forms.models import Form
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
@@ -171,6 +172,9 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
             return HttpResponseBadRequest("redirect not allowed")
 
         self._validate_co_sign_submission(plugin)
+
+        if not plugin.is_enabled:
+            raise PluginNotEnabled()
 
         try:
             response = plugin.start_login(request, form, form_url)

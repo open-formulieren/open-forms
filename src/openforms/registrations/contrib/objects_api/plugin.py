@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from zgw_consumers.models import Service
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 # "Borrow" the functions from another plugin.
 from openforms.registrations.contrib.zgw_apis.service import (
@@ -53,9 +53,6 @@ class ObjectsAPIRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Dict[str, Any]:
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         config = ObjectsAPIConfig.get_solo()
         config.apply_defaults_to(options)
 

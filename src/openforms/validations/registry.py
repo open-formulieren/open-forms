@@ -54,6 +54,8 @@ class Registry(BaseRegistry):
         eg: a function or callable class (or instance thereof) that raises either a Django or DRF ValidationError
     """
 
+    module = "validations"
+
     def __call__(
         self,
         identifier: str,

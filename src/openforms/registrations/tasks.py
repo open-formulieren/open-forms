@@ -8,6 +8,7 @@ from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.logging import logevent
+from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
@@ -72,6 +73,10 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
     plugin = registry[backend]
+
+    if not plugin.is_enabled:
+        logger.debug("Plugin '%s' is not enabled", backend)
+        raise PluginNotEnabled()
 
     logger.debug("De-serializing the plugin configuration options")
     options_serializer = plugin.configuration_options(

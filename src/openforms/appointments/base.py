@@ -83,6 +83,8 @@ class BasePlugin(AbstractBasePlugin):
     def is_enabled(self):
         # TODO currently not configurable,
         # see https://github.com/open-formulieren/open-forms/issues/1103
+        # https://github.com/open-formulieren/open-forms/issues/623 should be
+        # implemented to properly set up generic plugin enable/disable behaviour
         return True
 
     def get_available_products(

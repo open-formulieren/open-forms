@@ -9,7 +9,6 @@ from furl import furl
 from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
-from openforms.plugins.exceptions import PluginNotEnabled
 
 from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -37,9 +36,6 @@ class AuthenticationBasePlugin(BasePlugin):
         The distinction between the eIDAS and eHerkenning flow is determined by the
         ``AttributeConsumingServiceIndex``.
         """
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         login_url = reverse("eherkenning:login", request=request)
 
         auth_return_url = reverse(

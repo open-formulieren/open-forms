@@ -12,6 +12,8 @@ class Registry(BaseRegistry):
     A registry for the payment module plugins.
     """
 
+    module = "payments"
+
     #
     # def check_plugin(self, plugin):
     #     if not plugin.configuration_options:

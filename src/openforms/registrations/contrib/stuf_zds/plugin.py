@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.constants import (
     REGISTRATION_ATTRIBUTE,
@@ -147,9 +147,6 @@ class StufZDSRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
 

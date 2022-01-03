@@ -11,7 +11,7 @@ from zds_client import ClientError
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.kvk.client import KVKClientError, KVKProfileClient
 from openforms.contrib.kvk.models import KVKConfig
-from openforms.plugins.exceptions import InvalidPluginConfiguration, PluginNotEnabled
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -42,9 +42,6 @@ class KVK_KVKNumberPrefill(BasePlugin):
     def get_prefill_values(
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
-        if not self.is_enabled:
-            raise PluginNotEnabled()
-
         # check if submission was logged in with the identifier we're interested
         if not submission.kvk:
             return {}

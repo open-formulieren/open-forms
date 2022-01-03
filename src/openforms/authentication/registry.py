@@ -13,6 +13,8 @@ class Registry(BaseRegistry):
     A registry for the authentication module plugins.
     """
 
+    module = "authentication"
+
     def get_options(self, request: HttpRequest, form=None) -> List["LoginInfo"]:
         options = list()
         plugins = form.authentication_backends if form else self.iter_enabled_plugins()
