@@ -286,6 +286,7 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
                     "alias": "",
                 },
             ],
+            "complex_process_variables": [],
         }
         plugin = CamundaRegistration("camunda")
 
@@ -297,6 +298,158 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
                 {
                     "amount": Decimal("25.00"),
                     "invoiceCategory": "Misc",
+                }
+            ),
+        )
+
+
+@temp_private_root()
+@requests_mock.Mocker(real_http=False)
+class ComplexProcessVariableTests(CamundaMixin, TestCase):
+    """
+    Assert that complex variables are correctly mapped to JSON variables in Camunda.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "currency",
+                    "key": "currency",
+                },
+                {
+                    "type": "textfield",
+                    "key": "text",
+                },
+                {
+                    "type": "number",
+                    "key": "number",
+                },
+            ],
+            submitted_data={
+                "currency": "25.00",
+                "text": "Misc",
+                "number": 12.50,
+            },
+            with_report=False,
+            form__registration_backend="camunda",
+        )
+
+    @patch("openforms.registrations.contrib.camunda.plugin.start_process")
+    def test_json_object_type(self, m, mock_start_process):
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+            "process_variables": [],
+            "complex_process_variables": [
+                {
+                    "enabled": True,
+                    "alias": "variable_1",
+                    "type": "object",
+                    "definition": {
+                        "nested_object": {
+                            "source": "manual",
+                            "type": "object",
+                            "definition": {
+                                "amount": {
+                                    "source": "component",
+                                    "definition": {"var": "currency"},
+                                },
+                                "fixed_string": {
+                                    "source": "manual",
+                                    "type": "string",
+                                    "definition": "a fixed string",
+                                },
+                            },
+                        },
+                        "nestedList": {
+                            "source": "manual",
+                            "type": "array",
+                            "definition": [
+                                {
+                                    "source": "manual",
+                                    "type": "null",
+                                    "definition": None,
+                                },
+                                {
+                                    "source": "manual",
+                                    "type": "array",
+                                    "definition": [
+                                        {
+                                            "source": "component",
+                                            "definition": {"var": "number"},
+                                        }
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+        }
+        plugin = CamundaRegistration("camunda")
+        with self.subTest("validate data setup"):
+            serializer = plugin.configuration_options(data=registration_backend_options)
+            self.assertTrue(serializer.is_valid())
+
+        plugin.register_submission(self.submission, registration_backend_options)
+
+        expected_evaluated_value = {
+            "nested_object": {
+                "amount": "25.00",
+                "fixed_string": "a fixed string",
+            },
+            "nestedList": [
+                None,
+                [12.50],
+            ],
+        }
+        mock_start_process.assert_called_once_with(
+            process_key="invoice",
+            variables=serialize_variables(
+                {
+                    "variable_1": expected_evaluated_value,
+                }
+            ),
+        )
+
+    @patch("openforms.registrations.contrib.camunda.plugin.start_process")
+    def test_json_array_type(self, m, mock_start_process):
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+            "process_variables": [],
+            "complex_process_variables": [
+                {
+                    "enabled": True,
+                    "alias": "variable_2",
+                    "type": "array",
+                    "definition": [
+                        {
+                            "source": "manual",
+                            "type": "boolean",
+                            "definition": False,
+                        },
+                    ],
+                },
+            ],
+        }
+        plugin = CamundaRegistration("camunda")
+        with self.subTest("validate data setup"):
+            serializer = plugin.configuration_options(data=registration_backend_options)
+            self.assertTrue(serializer.is_valid())
+
+        plugin.register_submission(self.submission, registration_backend_options)
+
+        expected_evaluated_value = [False]
+        mock_start_process.assert_called_once_with(
+            process_key="invoice",
+            variables=serialize_variables(
+                {
+                    "variable_2": expected_evaluated_value,
                 }
             ),
         )

@@ -133,10 +133,10 @@ class ArrayVariableDefinitionSerializer(serializers.Serializer):
 
 
 # recursive references, fun!
-VariableDefinitionSerializer.serializer_mapping[
+ManualVariableSerializer.serializer_mapping[
     JSONVariableTypes.object
 ] = ObjectVariableDefinitionSerializer
-VariableDefinitionSerializer.serializer_mapping[
+ManualVariableSerializer.serializer_mapping[
     JSONVariableTypes.array
 ] = ArrayVariableDefinitionSerializer
 

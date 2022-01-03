@@ -11,6 +11,10 @@ class NullField(fields.Field):
     default_error_messages = {"invalid": _("Must be 'null'.")}
     initial = None
 
+    def __init__(self, *args, **kwargs):
+        kwargs["allow_null"] = True
+        super().__init__(*args, **kwargs)
+
     def to_internal_value(self, data):
         if data is not None:
             self.fail("invalid", input=data)
