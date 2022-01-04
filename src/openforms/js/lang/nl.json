@@ -5,7 +5,7 @@
     "originalDefault": "Are you sure you want to delete this action?"
   },
   "+BicbW": {
-    "defaultMessage": "Configure",
+    "defaultMessage": "Configureren",
     "description": "Manage complex process vars configure link text",
     "originalDefault": "Configure"
   },
@@ -40,7 +40,7 @@
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
   "1ArmQ5": {
-    "defaultMessage": "Confirm",
+    "defaultMessage": "Bevestigen",
     "description": "Camunda complex process variables confirm button",
     "originalDefault": "Confirm"
   },
@@ -55,7 +55,7 @@
     "originalDefault": "Is deleted"
   },
   "2MK7iF": {
-    "defaultMessage": "Number",
+    "defaultMessage": "Getal (number)",
     "description": "JSON variable type \"number\" representation",
     "originalDefault": "Number"
   },
@@ -85,7 +85,7 @@
     "originalDefault": "Add another"
   },
   "4FQxD/": {
-    "defaultMessage": "Configure",
+    "defaultMessage": "Configureren",
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
@@ -185,7 +185,7 @@
     "originalDefault": "Type"
   },
   "8pemD3": {
-    "defaultMessage": "Edit variable {name}",
+    "defaultMessage": "Wijzig variabele {name}",
     "description": "JSON editor: variable edit panel title",
     "originalDefault": "Edit variable {name}"
   },
@@ -195,7 +195,7 @@
     "originalDefault": "Invalid JSON syntax"
   },
   "9RDDDn": {
-    "defaultMessage": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }",
+    "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele ingesteld)} other {({varCount} variabelen ingesteld)} }",
     "description": "Managed complex Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
   },
@@ -210,7 +210,7 @@
     "originalDefault": "and"
   },
   "9y3/ek": {
-    "defaultMessage": "Confirm",
+    "defaultMessage": "Bevestigen",
     "description": "JSON editor: confirm edited variable definition",
     "originalDefault": "Confirm"
   },
@@ -245,7 +245,7 @@
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
   },
   "BR6rKB": {
-    "defaultMessage": "Check to include the field as process variable",
+    "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
     "description": "Manage complex process vars enabled checkbox help text",
     "originalDefault": "Check to include the field as process variable"
   },
@@ -300,7 +300,7 @@
     "originalDefault": "Submission allowed"
   },
   "DEAqyQ": {
-    "defaultMessage": "Boolean",
+    "defaultMessage": "Waar/Niet waar (boolean)",
     "description": "JSON variable type \"boolean\" representation",
     "originalDefault": "Boolean"
   },
@@ -385,7 +385,7 @@
     "originalDefault": "Use linked product price"
   },
   "GjcAY2": {
-    "defaultMessage": "Null",
+    "defaultMessage": "Leeg (null)",
     "description": "JSON variable type \"null\" representation",
     "originalDefault": "Null"
   },
@@ -480,7 +480,7 @@
     "originalDefault": "Content"
   },
   "KjDolH": {
-    "defaultMessage": "Manually defined",
+    "defaultMessage": "Handmatig ingesteld",
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
   },
@@ -490,7 +490,7 @@
     "originalDefault": "Payment provider"
   },
   "LHBcNe": {
-    "defaultMessage": "Variable definition",
+    "defaultMessage": "Variabeledefinitie",
     "description": "JSON editor: complex variable definition title",
     "originalDefault": "Variable definition"
   },
@@ -530,7 +530,7 @@
     "originalDefault": "Component where locations for an appointment will be shown"
   },
   "O/wKJh": {
-    "defaultMessage": "Value",
+    "defaultMessage": "Waarde",
     "description": "JSON (primitive) value label",
     "originalDefault": "Value"
   },
@@ -630,7 +630,7 @@
     "originalDefault": "change a property of a component."
   },
   "T0OLUV": {
-    "defaultMessage": "Add key-value pair",
+    "defaultMessage": "Voeg sleutel-waarde paar toe",
     "description": "JSON editor: add object key-value pair button",
     "originalDefault": "Add key-value pair"
   },
@@ -680,7 +680,7 @@
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
   "VUOOSy": {
-    "defaultMessage": "Name",
+    "defaultMessage": "Naam",
     "description": "Camunda complex process var 'name' label",
     "originalDefault": "Name"
   },
@@ -725,7 +725,7 @@
     "originalDefault": "Save"
   },
   "YdIu8k": {
-    "defaultMessage": "Add item",
+    "defaultMessage": "Voeg item toe",
     "description": "JSON editor: add array value button",
     "originalDefault": "Add item"
   },
@@ -780,7 +780,7 @@
     "originalDefault": "Incomplete Submissions Removal Limit"
   },
   "cID9dz": {
-    "defaultMessage": "(complex value)",
+    "defaultMessage": "(complexe waarde)",
     "description": "JSON editor: complex value representation",
     "originalDefault": "(complex value)"
   },
@@ -805,7 +805,7 @@
     "originalDefault": "No email"
   },
   "d1W41c": {
-    "defaultMessage": "From form field",
+    "defaultMessage": "Van formulierveld",
     "description": "JSON editor: \"component\" variable source label",
     "originalDefault": "From form field"
   },
@@ -815,7 +815,7 @@
     "originalDefault": "Export this form"
   },
   "ddDA6+": {
-    "defaultMessage": "Array",
+    "defaultMessage": "Lijst (array)",
     "description": "JSON variable type \"array\" representation",
     "originalDefault": "Array"
   },
@@ -840,7 +840,7 @@
     "originalDefault": "Are you sure you want to delete this rule?"
   },
   "evbysh": {
-    "defaultMessage": "Variable definition",
+    "defaultMessage": "Variabeledefinitie",
     "description": "Camunda complex variable definition title",
     "originalDefault": "Variable definition"
   },
@@ -895,12 +895,12 @@
     "originalDefault": "Form design"
   },
   "hZl34s": {
-    "defaultMessage": "Enabled",
+    "defaultMessage": "Ingeschakeld",
     "description": "Manage complex process vars enabled checkbox column title",
     "originalDefault": "Enabled"
   },
   "huHjRm": {
-    "defaultMessage": "Configure",
+    "defaultMessage": "Configureren",
     "description": "Manage complex process vars configure column title",
     "originalDefault": "Configure"
   },
@@ -935,7 +935,7 @@
     "originalDefault": "change the value of a component"
   },
   "jU/t8O": {
-    "defaultMessage": "Edit complex variable",
+    "defaultMessage": "Wijzig complexe waarde",
     "description": "Camunda complex process var configuration modal title",
     "originalDefault": "Edit complex variable"
   },
@@ -955,7 +955,7 @@
     "originalDefault": "Name"
   },
   "kHn5Yw": {
-    "defaultMessage": "Edit definition",
+    "defaultMessage": "Wijzig definitie",
     "description": "JSON editor: edit value definition",
     "originalDefault": "Edit definition"
   },
@@ -965,7 +965,7 @@
     "originalDefault": "disabled"
   },
   "l1fi1t": {
-    "defaultMessage": "(missing information)",
+    "defaultMessage": "(ontbrekende informatie)",
     "description": "JSON editor: unknown FormIO component key",
     "originalDefault": "(missing information)"
   },
@@ -995,12 +995,12 @@
     "originalDefault": "months"
   },
   "mZ5Rrx": {
-    "defaultMessage": "Form field",
+    "defaultMessage": "Formulierveld",
     "description": "JSON variable type \"Form field\" representation",
     "originalDefault": "Form field"
   },
   "myvtu0": {
-    "defaultMessage": "Manage process variables",
+    "defaultMessage": "Beheer procesvariabelen",
     "description": "Open manage camunda process vars modal button",
     "originalDefault": "Manage process variables"
   },
@@ -1020,7 +1020,7 @@
     "originalDefault": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
   },
   "o8CfuS": {
-    "defaultMessage": "String",
+    "defaultMessage": "Tekst (string)",
     "description": "JSON variable type \"string\" representation",
     "originalDefault": "String"
   },
@@ -1035,7 +1035,7 @@
     "originalDefault": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
   "p18yml": {
-    "defaultMessage": "Complex process variables",
+    "defaultMessage": "Complexe procesvariabelen",
     "description": "Open manage complex camunda process vars modal button",
     "originalDefault": "Complex process variables"
   },
@@ -1045,7 +1045,7 @@
     "originalDefault": "Add action"
   },
   "pWHOT1": {
-    "defaultMessage": "Value",
+    "defaultMessage": "Waarde",
     "description": "JSON editor: 'value' header label",
     "originalDefault": "Value"
   },
@@ -1060,7 +1060,7 @@
     "originalDefault": "Step name"
   },
   "pyX2Tl": {
-    "defaultMessage": "Confirm",
+    "defaultMessage": "Bevestigen",
     "description": "Confirm complex Camunda variable definition",
     "originalDefault": "Confirm"
   },
@@ -1085,7 +1085,7 @@
     "originalDefault": "Step slug"
   },
   "r5Olb9": {
-    "defaultMessage": "Manage complex process variables",
+    "defaultMessage": "Beheer complexe procesvariabelen",
     "description": "Camunda complex process vars modal title",
     "originalDefault": "Manage complex process variables"
   },
@@ -1110,7 +1110,7 @@
     "originalDefault": "Submission confirmation email template"
   },
   "twWsC2": {
-    "defaultMessage": "Name",
+    "defaultMessage": "Naam",
     "description": "Manage complex process vars alias column title",
     "originalDefault": "Name"
   },
@@ -1140,12 +1140,12 @@
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
   "vng/5K": {
-    "defaultMessage": "Set a key name before you can configure this variable",
+    "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
     "description": "JSON editor: object entry has empty key name",
     "originalDefault": "Set a key name before you can configure this variable"
   },
   "vp12ou": {
-    "defaultMessage": "The variable name to be used for the process instance.",
+    "defaultMessage": "De variabelenaam om te gebruiken in de procesinstantie.",
     "description": "Manage process vars alias help text",
     "originalDefault": "The variable name to be used for the process instance."
   },
@@ -1155,7 +1155,7 @@
     "originalDefault": "Errored Submissions Removal Method"
   },
   "wOMoEs": {
-    "defaultMessage": "Source",
+    "defaultMessage": "Bron",
     "description": "JSON editor: value source selector label",
     "originalDefault": "Source"
   },
@@ -1170,7 +1170,7 @@
     "originalDefault": "Component where products for an appointment will be shown"
   },
   "x4gaYf": {
-    "defaultMessage": "Cancel",
+    "defaultMessage": "Annuleren",
     "description": "JSON editor: cancel variable edit",
     "originalDefault": "Cancel"
   },
@@ -1195,7 +1195,7 @@
     "originalDefault": "Select definition"
   },
   "yTpHh0": {
-    "defaultMessage": "(unset)",
+    "defaultMessage": "(niet ingesteld)",
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
   },
@@ -1215,7 +1215,7 @@
     "originalDefault": "There are validation errors"
   },
   "zV3nNZ": {
-    "defaultMessage": "Object",
+    "defaultMessage": "Sleutel-waarde paar (object)",
     "description": "JSON variable type \"object\" representation",
     "originalDefault": "Object"
   },
