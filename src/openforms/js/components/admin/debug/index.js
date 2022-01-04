@@ -25,8 +25,13 @@ const allComponents = {
 
 const definition = [
     {
-        source: 'component',
-        definition: {'var': 'comp2'},
+        source: 'interpolate',
+        definition: {
+            cat: [
+                'interpolation test: ',
+                {var: 'comp2'},
+            ],
+        },
     },
 ];
 

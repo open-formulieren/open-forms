@@ -5,6 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import FormioComponentRepresentation from '../FormioComponentRepresentation'
 
 import Types from './types';
+import {displayInterpolateExpression} from './edit_panel/InterpolatedVariable';
 
 
 const ValueRepresentation = ({ definition=null }) => {
@@ -51,6 +52,13 @@ const ValueRepresentation = ({ definition=null }) => {
                     break;
                 }
             }
+            break;
+        }
+        case 'interpolate': {
+            valueRepresentation = displayInterpolateExpression(
+                definition?.definition || {},
+                true,
+            );
             break;
         }
     }

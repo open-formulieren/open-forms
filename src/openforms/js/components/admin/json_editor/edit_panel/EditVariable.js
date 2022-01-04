@@ -9,6 +9,7 @@ import FormRow from '../../forms/FormRow';
 import Types from '../types';
 
 import ComplexManualVariable from './ComplexManualVariable';
+import InterpolatedVariable from './InterpolatedVariable';
 import PrimitiveManualVariable from './PrimitiveManualVariable';
 import VariableSourceSelector from './VariableSourceSelector';
 
@@ -32,7 +33,7 @@ ComponentSelectionRow.propTypes = {
 };
 
 
-const DependentFields = ({ source, component, manual, onChange }) => {
+const DependentFields = ({ source, component, expression, manual, onChange }) => {
     let fields = null;
 
     switch (source) {
@@ -43,6 +44,12 @@ const DependentFields = ({ source, component, manual, onChange }) => {
         case 'manual': {
             fields = (
                 <PrimitiveManualVariable {...manual} onChange={onChange} />
+            );
+            break;
+        }
+        case 'interpolate': {
+            fields = (
+                <InterpolatedVariable expression={expression} onChange={onChange} />
             );
             break;
         }
@@ -57,12 +64,13 @@ DependentFields.propTypes = {
         type: Types.VariableType,
         definition: Types.LeafVariableDefinition,
     }),
+    expression: PropTypes.object,  // JSON logic expression
     onChange: PropTypes.func.isRequired,
 };
 
 
 const EditVariable = ({
-    name, source, component='', manual, parent=null,
+    name, source, component='', manual, expression, parent=null,
     onFieldChange, onManualChange, dependentFieldsOnChange, onEditDefinition,
 }) => {
     return (
@@ -81,6 +89,7 @@ const EditVariable = ({
                 <DependentFields
                     source={source}
                     component={component}
+                    expression={expression}
                     manual={manual}
                     onChange={dependentFieldsOnChange}
                 />
@@ -107,6 +116,7 @@ EditVariable.propTypes = {
     name: Types.VariableIdentifier.isRequired,
     source: Types.VariableSource.isRequired,
     component: PropTypes.string,
+    expression: PropTypes.object,
     manual: PropTypes.shape({
         type: Types.VariableType,
         definition: Types.LeafVariableDefinition,

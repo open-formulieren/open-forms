@@ -12,6 +12,7 @@ import EditVariable from './EditVariable';
 const initialState = {
     source: 'component',
     component: '',
+    expression: {},
     manual: {
         type: '',
         definition: null,
@@ -33,6 +34,10 @@ const reducer = (draft, action) => {
                 case 'manual': {
                     draft.manual.type = type;
                     draft.manual.definition = definition;
+                    break;
+                }
+                case 'interpolate': {
+                    draft.expression = definition;
                     break;
                 }
                 default: {
@@ -80,7 +85,7 @@ const EditPanel = ({ name, definition=null, parent=null, onEditDefinition, onCha
     // hooks
     const intl = useIntl();
     const [
-        {source, component, manual},
+        {source, component, manual, expression},
         dispatch,
     ] = useImmerReducer(reducer, initialState)
 
@@ -118,7 +123,7 @@ const EditPanel = ({ name, definition=null, parent=null, onEditDefinition, onCha
         switch (source) {
             case 'component': {
                 // most simple json logic expression initially, later this can become
-                // more complex
+                // more complex - see also the interpolate variant.
                 variableDefinition = {
                     definition: {var: component}
                 };
@@ -129,6 +134,10 @@ const EditPanel = ({ name, definition=null, parent=null, onEditDefinition, onCha
                     type: manual.type,
                     definition: manual.definition,
                 };
+                break;
+            }
+            case 'interpolate': {
+                variableDefinition = {definition: expression};
                 break;
             }
             // TODO: if none match, throw error/render validation errors
@@ -148,6 +157,10 @@ const EditPanel = ({ name, definition=null, parent=null, onEditDefinition, onCha
         }
         case 'manual': {
             dependentFieldsOnChange = onManualChange;
+            break;
+        }
+        case 'interpolate': {
+            dependentFieldsOnChange = onFieldChange;
             break;
         }
     }
@@ -179,6 +192,7 @@ const EditPanel = ({ name, definition=null, parent=null, onEditDefinition, onCha
                     source={source}
                     component={component}
                     manual={manual}
+                    expression={expression}
                     parent={originalParent}
                     onFieldChange={onFieldChange}
                     onManualChange={onManualChange}
