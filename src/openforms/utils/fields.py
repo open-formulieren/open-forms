@@ -4,23 +4,13 @@ from . import form_fields
 
 
 class StringUUIDField(models.UUIDField):
-    system_check_deprecated_details = {
+    system_check_removed_details = {
         "msg": (
-            "StringUUIDField has been deprecated. Support for it (except "
-            "in historical migrations) will be removed soon."
+            "StringUUIDField has been removed except for support in historical migrations."
         ),
         "hint": "Use models.UUIDField instead.",
-        "id": "fields.F001",
+        "id": "openforms.utils.fields.E001",
     }
-
-    def from_db_value(self, value, expression, connection, context):
-        if value is None:
-            return value
-        return str(value)
-
-    def to_python(self, value):
-        value = super().to_python(value)
-        return str(value)
 
 
 class SVGOrImageField(models.ImageField):
