@@ -639,6 +639,12 @@
       "value": "Submissions will be deleted"
     }
   ],
+  "InHf6+": [
+    {
+      "type": 0,
+      "value": "Text with (embedded) form field(s)"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,

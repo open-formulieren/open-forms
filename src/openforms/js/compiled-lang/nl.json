@@ -8,7 +8,7 @@
   "+BicbW": [
     {
       "type": 0,
-      "value": "Configure"
+      "value": "Configureren"
     }
   ],
   "+hAGg7": [
@@ -58,7 +58,7 @@
   "1ArmQ5": [
     {
       "type": 0,
-      "value": "Confirm"
+      "value": "Bevestigen"
     }
   ],
   "1fD+K4": [
@@ -76,7 +76,7 @@
   "2MK7iF": [
     {
       "type": 0,
-      "value": "Number"
+      "value": "Getal (number)"
     }
   ],
   "2Z/hNo": [
@@ -112,7 +112,7 @@
   "4FQxD/": [
     {
       "type": 0,
-      "value": "Configure"
+      "value": "Configureren"
     }
   ],
   "4iGsG1": [
@@ -272,7 +272,7 @@
   "8pemD3": [
     {
       "type": 0,
-      "value": "Edit variable "
+      "value": "Wijzig variabele "
     },
     {
       "type": 1,
@@ -297,7 +297,7 @@
           "value": [
             {
               "type": 0,
-              "value": "(1 variable defined)"
+              "value": "(1 variabele ingesteld)"
             }
           ]
         },
@@ -313,7 +313,7 @@
             },
             {
               "type": 0,
-              "value": " variables defined)"
+              "value": " variabelen ingesteld)"
             }
           ]
         }
@@ -338,7 +338,7 @@
   "9y3/ek": [
     {
       "type": 0,
-      "value": "Confirm"
+      "value": "Bevestigen"
     }
   ],
   "9zJefY": [
@@ -412,7 +412,7 @@
   "BR6rKB": [
     {
       "type": 0,
-      "value": "Check to include the field as process variable"
+      "value": "Vink aan om het veld op te nemen als procesvariabele"
     }
   ],
   "BStu9Z": [
@@ -478,7 +478,7 @@
   "DEAqyQ": [
     {
       "type": 0,
-      "value": "Boolean"
+      "value": "Waar/Niet waar (boolean)"
     }
   ],
   "DGpAyT": [
@@ -580,7 +580,7 @@
   "GjcAY2": [
     {
       "type": 0,
-      "value": "Null"
+      "value": "Leeg (null)"
     }
   ],
   "H3dRU6": [
@@ -643,6 +643,12 @@
       "value": "Inzendingen worden permanent verwijderd"
     }
   ],
+  "InHf6+": [
+    {
+      "type": 0,
+      "value": "Tekst met (ingesloten) formulierveldwaarde(n)"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,
@@ -694,7 +700,7 @@
   "KjDolH": [
     {
       "type": 0,
-      "value": "Manually defined"
+      "value": "Handmatig ingesteld"
     }
   ],
   "L0g8AL": [
@@ -706,7 +712,7 @@
   "LHBcNe": [
     {
       "type": 0,
-      "value": "Variable definition"
+      "value": "Variabeledefinitie"
     }
   ],
   "LN58C1": [
@@ -754,7 +760,7 @@
   "O/wKJh": [
     {
       "type": 0,
-      "value": "Value"
+      "value": "Waarde"
     }
   ],
   "O3l+pQ": [
@@ -882,7 +888,7 @@
   "T0OLUV": [
     {
       "type": 0,
-      "value": "Add key-value pair"
+      "value": "Voeg sleutel-waarde paar toe"
     }
   ],
   "TCQic2": [
@@ -958,7 +964,7 @@
   "VUOOSy": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "VV2TCH": [
@@ -1012,7 +1018,7 @@
   "YdIu8k": [
     {
       "type": 0,
-      "value": "Add item"
+      "value": "Voeg item toe"
     }
   ],
   "YzLSHY": [
@@ -1078,7 +1084,7 @@
   "cID9dz": [
     {
       "type": 0,
-      "value": "(complex value)"
+      "value": "(complexe waarde)"
     }
   ],
   "cUVVbl": [
@@ -1108,7 +1114,7 @@
   "d1W41c": [
     {
       "type": 0,
-      "value": "From form field"
+      "value": "Van formulierveld"
     }
   ],
   "d45v2X": [
@@ -1120,7 +1126,7 @@
   "ddDA6+": [
     {
       "type": 0,
-      "value": "Array"
+      "value": "Lijst (array)"
     }
   ],
   "ddR92A": [
@@ -1150,7 +1156,7 @@
   "evbysh": [
     {
       "type": 0,
-      "value": "Variable definition"
+      "value": "Variabeledefinitie"
     }
   ],
   "f590Rb": [
@@ -1216,13 +1222,13 @@
   "hZl34s": [
     {
       "type": 0,
-      "value": "Enabled"
+      "value": "Ingeschakeld"
     }
   ],
   "huHjRm": [
     {
       "type": 0,
-      "value": "Configure"
+      "value": "Configureren"
     }
   ],
   "hzx+WF": [
@@ -1268,7 +1274,7 @@
   "jU/t8O": [
     {
       "type": 0,
-      "value": "Edit complex variable"
+      "value": "Wijzig complexe waarde"
     }
   ],
   "jZIu+e": [
@@ -1292,7 +1298,7 @@
   "kHn5Yw": [
     {
       "type": 0,
-      "value": "Edit definition"
+      "value": "Wijzig definitie"
     }
   ],
   "kNOyt+": [
@@ -1304,7 +1310,7 @@
   "l1fi1t": [
     {
       "type": 0,
-      "value": "(missing information)"
+      "value": "(ontbrekende informatie)"
     }
   ],
   "l2Wag+": [
@@ -1340,13 +1346,13 @@
   "mZ5Rrx": [
     {
       "type": 0,
-      "value": "Form field"
+      "value": "Formulierveld"
     }
   ],
   "myvtu0": [
     {
       "type": 0,
-      "value": "Manage process variables"
+      "value": "Beheer procesvariabelen"
     }
   ],
   "n4Y2ex": [
@@ -1370,7 +1376,7 @@
   "o8CfuS": [
     {
       "type": 0,
-      "value": "String"
+      "value": "Tekst (string)"
     }
   ],
   "ow5AAO": [
@@ -1388,7 +1394,7 @@
   "p18yml": [
     {
       "type": 0,
-      "value": "Complex process variables"
+      "value": "Complexe procesvariabelen"
     }
   ],
   "p8LSwF": [
@@ -1400,7 +1406,7 @@
   "pWHOT1": [
     {
       "type": 0,
-      "value": "Value"
+      "value": "Waarde"
     }
   ],
   "piUWzT": [
@@ -1418,7 +1424,7 @@
   "pyX2Tl": [
     {
       "type": 0,
-      "value": "Confirm"
+      "value": "Bevestigen"
     }
   ],
   "qUYLVg": [
@@ -1448,7 +1454,7 @@
   "r5Olb9": [
     {
       "type": 0,
-      "value": "Manage complex process variables"
+      "value": "Beheer complexe procesvariabelen"
     }
   ],
   "r6Wa2m": [
@@ -1478,7 +1484,7 @@
   "twWsC2": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "uBO/Al": [
@@ -1514,13 +1520,13 @@
   "vng/5K": [
     {
       "type": 0,
-      "value": "Set a key name before you can configure this variable"
+      "value": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden"
     }
   ],
   "vp12ou": [
     {
       "type": 0,
-      "value": "The variable name to be used for the process instance."
+      "value": "De variabelenaam om te gebruiken in de procesinstantie."
     }
   ],
   "wIaGgb": [
@@ -1532,7 +1538,7 @@
   "wOMoEs": [
     {
       "type": 0,
-      "value": "Source"
+      "value": "Bron"
     }
   ],
   "wjwFwT": [
@@ -1550,7 +1556,7 @@
   "x4gaYf": [
     {
       "type": 0,
-      "value": "Cancel"
+      "value": "Annuleren"
     }
   ],
   "xJBMaf": [
@@ -1580,7 +1586,7 @@
   "yTpHh0": [
     {
       "type": 0,
-      "value": "(unset)"
+      "value": "(niet ingesteld)"
     }
   ],
   "yYw2Rb": [
@@ -1604,7 +1610,7 @@
   "zV3nNZ": [
     {
       "type": 0,
-      "value": "Object"
+      "value": "Sleutel-waarde paar (object)"
     }
   ],
   "zeXZzX": [
