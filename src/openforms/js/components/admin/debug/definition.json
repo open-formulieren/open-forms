@@ -1,0 +1,61 @@
+{
+    "name": "foo",
+    "source": "manual",
+    "type": "object",
+    "definition": {
+        "fixed1": {
+            "source": "manual",
+            "type": "string",
+            "definition": "test1"
+        },
+        "fixed2": {
+            "source": "manual",
+            "type": "number",
+            "definition": 123
+        },
+        "fixed3": {
+            "source": "manual",
+            "type": "boolean",
+            "definition": false
+        },
+        "component1": {
+            "source": "component",
+            "definition": {
+                "var": "component1"
+            },
+        },
+        "nested1": {
+            "source": "manual",
+            "type": "object",
+            "definition": {
+                "fixed4": {
+                    "source": "manual",
+                    "type": "string",
+                    "definition": "nested"
+                }
+            }
+        },
+        "nested2": {
+            "source": "manual",
+            "type": "list",
+            "definition": [
+                {
+                    "source": "manual",
+                    "type": "number",
+                    "definition": 456
+                },
+                {
+                    "source": "manual",
+                    "type": "object",
+                    "definition": {
+                        "fixed5": {
+                            "source": "manual",
+                            "type": "string",
+                            "definition": "final node"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

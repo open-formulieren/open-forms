@@ -30,8 +30,12 @@ from ..models import (
 )
 from ..utils import export_form, form_to_json, import_form
 from .filters import FormLogicFilter, FormPriceLogicFilter
-from .parsers import IgnoreConfigurationFieldCamelCaseJSONParser
+from .parsers import (
+    FormCamelCaseJSONParser,
+    IgnoreConfigurationFieldCamelCaseJSONParser,
+)
 from .permissions import FormAPIPermissions
+from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
@@ -229,6 +233,8 @@ class FormViewSet(viewsets.ModelViewSet):
     re-used among different forms.
     """
 
+    parser_classes = (FormCamelCaseJSONParser,)
+    renderer_classes = (FormCamelCaseJSONRenderer,)
     queryset = Form.objects.filter(_is_deleted=False).prefetch_related(
         Prefetch(
             "formstep_set",

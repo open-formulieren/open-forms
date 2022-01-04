@@ -7,8 +7,10 @@ import ActionButton, {SubmitAction} from '../../../forms/ActionButton';
 import Select from '../../../forms/Select';
 import SubmitRow from '../../../forms/SubmitRow';
 import FormModal from '../../../FormModal';
+import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
 import {CustomFieldTemplate} from '../../../RJSFWrapper';
 import SelectProcessVariables from './SelectProcessVariables';
+import ComplexProcessVariables from './ComplexProcessVariables';
 
 
 // use rjsf wrapper to keep consistent markup/styling
@@ -25,6 +27,13 @@ const Wrapper = ({children}) => (
 const EMPTY_PROCESS_VARIABLE = {
     enabled: true,
     componentKey: '',
+    alias: '',
+};
+
+const EMPTY_COMPLEX_PROCESS_VARIABLE = {
+    enabled: true,
+    type: 'object',
+    definition: {},
     alias: '',
 };
 
@@ -51,10 +60,12 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
         processDefinition='',
         processDefinitionVersion=null,
         processVariables=[],
+        complexProcessVariables=[],
     } = formData;
 
     const intl = useIntl();
-    const [modalOpen, setModalOpen] = useState(false);
+    const [simpleVarsModalOpen, setSimpleVarsModalOpen] = useState(false);
+    const [complexVarsModalOpen, setComplexVarsModalOpen] = useState(false);
     const [processDefinitionChoices, versionChoices] = getProcessSelectionChoices(processDefinitions, processDefinition);
 
     const onFieldChange = (event) => {
@@ -104,6 +115,27 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
     const onDeleteProcessVariable = (index) => {
         const nextFormData = produce(formData, draft => {
             draft.processVariables.splice(index, 1);
+        });
+        onChange(nextFormData);
+    };
+
+    const onAddComplexProcessVariable = () => {
+        const nextFormData = produce(formData, draft => {
+            if (!draft.complexProcessVariables) draft.complexProcessVariables = [];
+            draft.complexProcessVariables.push(EMPTY_COMPLEX_PROCESS_VARIABLE);
+        });
+        onChange(nextFormData);
+    };
+    const onChangeComplexProcessVariable = (index, event) => {
+        const {name, value} = event.target;
+        const nextFormData = produce(formData, draft => {
+            draft.complexProcessVariables[index][name] = value;
+        });
+        onChange(nextFormData);
+    };
+    const onDeleteComplexProcessVariable = (index, event) => {
+        const nextFormData = produce(formData, draft => {
+            draft.complexProcessVariables.splice(index, 1);
         });
         onChange(nextFormData);
     };
@@ -159,11 +191,11 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 <CustomFieldTemplate id="camundaOptions.manageProcessVars" displayLabel={false} rawErrors={null}>
                     <ActionButton
                         text={ intl.formatMessage({
-                            description: 'Open manage camnda process vars modal button',
+                            description: 'Open manage camunda process vars modal button',
                             defaultMessage: 'Manage process variables'
                         })}
                         type="button"
-                        onClick={() => setModalOpen(!modalOpen)}
+                        onClick={() => setSimpleVarsModalOpen(!simpleVarsModalOpen)}
                     />
                     &nbsp;
                     <FormattedMessage
@@ -177,12 +209,33 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                     />
                 </CustomFieldTemplate>
 
+                <CustomFieldTemplate id="camundaOptions.manageComplexProcessVars" displayLabel={false} rawErrors={null}>
+                    <ActionButton
+                        text={ intl.formatMessage({
+                            description: 'Open manage complex camunda process vars modal button',
+                            defaultMessage: 'Complex process variables'
+                        })}
+                        type="button"
+                        onClick={() => setComplexVarsModalOpen(!complexVarsModalOpen)}
+                    />
+                    &nbsp;
+                    <FormattedMessage
+                        description="Managed complex Camunda process vars state feedback"
+                        defaultMessage="{varCount, plural,
+                            =0 {}
+                            one {(1 variable defined)}
+                            other {({varCount} variables defined)}
+                        }"
+                        values={{varCount: complexProcessVariables.length}}
+                    />
+                </CustomFieldTemplate>
+
             </Wrapper>
 
             <FormModal
-                isOpen={modalOpen}
+                isOpen={simpleVarsModalOpen}
                 title={<FormattedMessage description="Camunda process var selection modal title" defaultMessage="Manage process variables" />}
-                closeModal={() => setModalOpen(false)}
+                closeModal={() => setSimpleVarsModalOpen(false)}
             >
                 <SelectProcessVariables
                     processVariables={processVariables}
@@ -195,7 +248,29 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                         text={intl.formatMessage({description: 'Camunda process variables confirm button', defaultMessage: 'Confirm'})}
                         onClick={(event) => {
                             event.preventDefault();
-                            setModalOpen(false);
+                            setSimpleVarsModalOpen(false);
+                        }}
+                    />
+                </SubmitRow>
+            </FormModal>
+
+            <FormModal
+                isOpen={complexVarsModalOpen}
+                title={<FormattedMessage description="Camunda complex process vars modal title" defaultMessage="Manage complex process variables" />}
+                closeModal={() => setComplexVarsModalOpen(false)}
+            >
+                <ComplexProcessVariables
+                    variables={complexProcessVariables}
+                    onChange={onChangeComplexProcessVariable}
+                    onAdd={onAddComplexProcessVariable}
+                    onDelete={onDeleteComplexProcessVariable}
+                />
+                <SubmitRow>
+                    <SubmitAction
+                        text={intl.formatMessage({description: 'Camunda complex process variables confirm button', defaultMessage: 'Confirm'})}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            setComplexVarsModalOpen(false);
                         }}
                     />
                 </SubmitRow>
@@ -219,6 +294,12 @@ FormFields.propTypes = {
             componentKey: PropTypes.string.isRequired,
             alias: PropTypes.string.isRequired,
         })),
+        complexProcessVariables: PropTypes.arrayOf(PropTypes.shape({
+            enabled: PropTypes.bool,
+            alias: PropTypes.string,
+            type: PropTypes.oneOf(COMPLEX_JSON_TYPES).isRequired,
+            definition: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+        }))
     }),
     onChange: PropTypes.func.isRequired,
 };

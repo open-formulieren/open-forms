@@ -1,0 +1,16 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n static openforms admin_urls %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
+{% endblock %}
+
+{% block content %}<div id="content-main">
+<form>
+    <div id="react"></div>
+</form>
+</div>
+<script src="{% static 'bundles/core-js.js' %}"></script>
+{% endblock %}

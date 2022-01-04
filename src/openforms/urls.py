@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 
 from decorator_include import decorator_include
 
@@ -90,6 +91,8 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
     ] + urlpatterns
 
 if settings.DEBUG:
+    from openforms.forms.models import Form
+
     urlpatterns += [
         path(
             "dev/email/wrapper",
@@ -100,6 +103,13 @@ if settings.DEBUG:
             "dev/email/confirmation/<int:submission_id>",
             EmailWrapperTestView.as_view(),
             name="dev-email-confirm",
+        ),
+        path(
+            "dev/react",
+            TemplateView.as_view(
+                template_name="debug.html",
+                extra_context={"opts": Form._meta},
+            ),
         ),
     ]
 

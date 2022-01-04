@@ -445,12 +445,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Form'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Form'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Form'
         required: true
       security:
       - tokenAuth: []
@@ -827,12 +821,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Form'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Form'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Form'
         required: true
       security:
       - tokenAuth: []
@@ -866,12 +854,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedForm'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedForm'
-          multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedForm'
       security:
@@ -929,12 +911,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/FormAdminMessage'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FormAdminMessage'
-          multipart/form-data:
             schema:
               $ref: '#/components/schemas/FormAdminMessage'
         required: true

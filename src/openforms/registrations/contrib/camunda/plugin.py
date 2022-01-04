@@ -24,6 +24,7 @@ from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .checks import check_config
+from .complex_variables import get_complex_process_variables
 from .serializers import CamundaOptionsSerializer
 from .type_mapping import to_python
 
@@ -62,6 +63,16 @@ def get_process_variables(
         alias = simple_mappings[key]
         variables[alias] = to_python(component, value)
 
+    complex_variables = get_complex_process_variables(
+        options.get("complex_process_variables", []),
+        merged_data,
+    )
+
+    if intersection := set(complex_variables).intersection(set(variables)):
+        logger.warning("Complex variables overlap, check the keys %r", intersection)
+
+    variables.update(**complex_variables)
+
     return variables
 
 
@@ -69,6 +80,8 @@ def get_process_variables(
 class CamundaRegistration(BasePlugin):
     verbose_name = _("Camunda")
     configuration_options = CamundaOptionsSerializer
+    # may be a dict with user-supplied keys in both snake_case and/or camelCase
+    camel_case_ignore_fields = ("definition",)
 
     def register_submission(
         self, submission: Submission, options: dict

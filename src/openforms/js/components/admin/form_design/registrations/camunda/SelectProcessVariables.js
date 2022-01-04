@@ -100,7 +100,7 @@ const SelectProcessVariables = ({ processVariables=[], onChange, onAdd, onDelete
 
     return (
         <>
-            <ChangelistTableWrapper headColumns={<HeadColumns />} extraModifiers={['camunda-vars']}>
+            <ChangelistTableWrapper headColumns={<HeadColumns />}>
                 {
                     processVariables.map((processVar, index) => (
                         <ProcessVariable

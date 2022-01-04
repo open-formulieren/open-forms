@@ -1,5 +1,7 @@
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
 
+from .drf_camel_case import FormCamelCaseMixin
+
 
 class IgnoreConfigurationFieldCamelCaseJSONParser(CamelCaseJSONParser):
     # This is SUPER important - when using the API to manage forms, form steps and form
@@ -11,3 +13,17 @@ class IgnoreConfigurationFieldCamelCaseJSONParser(CamelCaseJSONParser):
     # functionality. This can happen because JSON objects DO NOT HAVE inherent ordering
     # and the spec is non-deterministic.
     json_underscoreize = {"ignore_fields": ("configuration",)}
+
+
+class FormCamelCaseJSONParser(FormCamelCaseMixin, CamelCaseJSONParser):
+    """
+    Parser for Form resource.
+
+    A camelcase JSON parser subclass to deal with registration-backend specific keys
+    that should not be converted from camelCase to snake_case. Rather than using the
+    "global" ``ignore_fields`` option, we defer to the registration backend plugin
+    to re-instate the keys that should not have been converted, which allows for
+    more context.
+    """
+
+    pass
