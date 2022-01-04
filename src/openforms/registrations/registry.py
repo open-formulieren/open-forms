@@ -6,6 +6,8 @@ class Registry(BaseRegistry):
     A registry for registrations module plugins.
     """
 
+    module = "registrations"
+
     def check_plugin(self, plugin):
         if not plugin.configuration_options:
             raise ValueError(

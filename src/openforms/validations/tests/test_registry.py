@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
@@ -7,12 +8,24 @@ from openforms.validations.registry import Registry
 
 
 class DjangoValidator:
+    is_enabled = True
+
     def __call__(self, value):
         if value != "VALID":
             raise DjangoValidationError("not VALID value")
 
 
 class DRFValidator:
+    is_enabled = True
+
+    def __call__(self, value):
+        if value != "VALID":
+            raise DRFValidationError("not VALID value")
+
+
+class DisabledValidator:
+    is_enabled = False
+
     def __call__(self, value):
         if value != "VALID":
             raise DRFValidationError("not VALID value")
@@ -83,5 +96,21 @@ class RegistryTest(TestCase):
         res = registry.validate("NOT_REGISTERED", "VALID")
         self.assertEqual(res.is_valid, False)
         self.assertEqual(
-            res.messages, ["unknown validation plugin_id 'NOT_REGISTERED'"]
+            res.messages,
+            [
+                _("unknown validation plugin_id '{plugin_id}'").format(
+                    plugin_id="NOT_REGISTERED"
+                )
+            ],
+        )
+
+    def test_validate_plugin_not_enabled(self):
+        registry = Registry()
+        registry("disabled", "Disabled")(DisabledValidator())
+
+        res = registry.validate("disabled", "VALID")
+        self.assertEqual(res.is_valid, False)
+        self.assertEqual(
+            res.messages,
+            [_("plugin '{plugin_id}' not enabled").format(plugin_id="disabled")],
         )

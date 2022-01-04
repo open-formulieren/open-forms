@@ -27,6 +27,7 @@ class BaseRegistry:
                 )
             plugin = plugin_cls(identifier=unique_identifier)
             self.check_plugin(plugin)
+            plugin.registry = self
             self._registry[unique_identifier] = plugin
             return plugin_cls
 
@@ -48,15 +49,17 @@ class BaseRegistry:
     def iter_enabled_plugins(self):
         try:
             with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+            enable_all = False
         except OperationalError:
             # fix CI trying to access non-existing database to generate OAS
             with_demos = False
+            enable_all = True
 
         for plugin in self:
             is_demo = getattr(plugin, "is_demo_plugin", False)
             if is_demo and not with_demos:
                 continue
-            else:
+            elif enable_all or plugin.is_enabled:  # plugins are enabled by default
                 yield plugin
 
     def items(self):

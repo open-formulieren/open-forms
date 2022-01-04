@@ -7,6 +7,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
+from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
@@ -417,6 +418,16 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Amount of days when all submissions will be permanently deleted"),
     )
 
+    plugin_configuration = JSONField(
+        _("plugin configuration"),
+        blank=True,
+        default=dict,
+        help_text=_(
+            "Configuration of plugins for authentication, payments, prefill, "
+            "registrations and validation"
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
@@ -440,3 +451,11 @@ class GlobalConfiguration(SingletonModel):
         rendered_content = Template(template).render(Context({}))
 
         return rendered_content
+
+    def plugin_enabled(self, module: str, plugin_identifier: str):
+        enabled = glom(
+            self.plugin_configuration,
+            f"{module}.{plugin_identifier}.enabled",
+            default=True,
+        )
+        return enabled

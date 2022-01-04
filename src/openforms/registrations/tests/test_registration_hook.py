@@ -2,6 +2,7 @@
 Test the registration hook on submissions.
 """
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
@@ -11,6 +12,7 @@ from rest_framework import serializers
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import Form
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -219,3 +221,39 @@ class RegistrationHookTests(TestCase):
 
         with self.assertRaises(RegistrationFailed):
             register_submission(submission.id)
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @freeze_time("2021-08-04T12:00:00+02:00")
+    def test_registration_plugin_not_enabled(self, mock_get_solo):
+        register = Registry()
+
+        # register the callback
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                pass
+
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"registrations": {"callback": {"enabled": False}}}
+        )
+
+        # # call the hook for the submission, while patching the model field registry
+        model_field = Form._meta.get_field("registration_backend")
+        with patch_registry(model_field, register):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+        self.submission.refresh_from_db()
+        self.assertTrue(self.submission.needs_on_completion_retry)
+        self.assertEqual(
+            self.submission.registration_status, RegistrationStatuses.failed
+        )
+        tb = self.submission.registration_result["traceback"]
+        self.assertIn("Registration plugin is not enabled", tb)
+        self.assertEqual(self.submission.last_register_date, timezone.now())

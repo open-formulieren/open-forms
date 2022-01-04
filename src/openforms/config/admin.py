@@ -114,6 +114,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 ),
             },
         ),
+        (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
         (
             _("Feature flags & fields for testing"),
             {

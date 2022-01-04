@@ -73,6 +73,15 @@ def register_submission(submission_id: int) -> Optional[dict]:
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
     plugin = registry[backend]
 
+    if not plugin.is_enabled:
+        logger.debug("Plugin '%s' is not enabled", backend)
+        e = RegistrationFailed("Registration plugin is not enabled")
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": str(e)}
+        )
+        logevent.registration_failure(submission, e)
+        raise e
+
     logger.debug("De-serializing the plugin configuration options")
     options_serializer = plugin.configuration_options(
         data=form.registration_backend_options

@@ -3,6 +3,7 @@ import logging
 from typing import Callable, Iterable, List, Type, Union
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 from rest_framework.serializers import as_serializer_error
@@ -26,6 +27,8 @@ class RegisteredValidator:
     verbose_name: str
     callable: ValidatorType
     is_demo_plugin: bool = False
+    # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
+    is_enabled: bool = True
 
     def __call__(self, value):
         return self.callable(value)
@@ -52,6 +55,8 @@ class Registry(BaseRegistry):
     The plugins can be any Django or DRF style validator;
         eg: a function or callable class (or instance thereof) that raises either a Django or DRF ValidationError
     """
+
+    module = "validations"
 
     def __call__(
         self,
@@ -90,7 +95,20 @@ class Registry(BaseRegistry):
         except KeyError:
             logger.warning(f"called unregistered plugin_id '{plugin_id}'")
             return ValidationResult(
-                False, messages=[f"unknown validation plugin_id '{plugin_id}'"]
+                False,
+                messages=[
+                    _("unknown validation plugin_id '{plugin_id}'").format(
+                        plugin_id=plugin_id
+                    )
+                ],
+            )
+
+        if not getattr(validator.callable, "is_enabled", True):
+            return ValidationResult(
+                False,
+                messages=[
+                    _("plugin '{plugin_id}' not enabled").format(plugin_id=plugin_id)
+                ],
             )
 
         try:

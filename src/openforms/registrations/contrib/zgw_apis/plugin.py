@@ -85,7 +85,6 @@ class ZGWRegistration(BasePlugin):
         :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
         celery tasks are chained to guarantee this.
         """
-
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
 

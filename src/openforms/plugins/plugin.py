@@ -2,6 +2,8 @@ from typing import List, Tuple
 
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.models import GlobalConfiguration
+
 
 class AbstractBasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
@@ -16,6 +18,11 @@ class AbstractBasePlugin:
 
     def get_label(self):
         return self.verbose_name
+
+    @property
+    def is_enabled(self):
+        config = GlobalConfiguration.get_solo()
+        return config.plugin_enabled(self.registry.module, self.identifier)
 
     def check_config(self):
         """
