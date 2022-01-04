@@ -23,12 +23,26 @@ const allComponents = {
 };
 
 
+const definition = [
+    {
+        source: 'component',
+        definition: {'var': 'comp2'},
+    },
+];
+
 
 const Debug = () => {
     return (
         <IntlProvider messages={{}} locale="en" defaultLocale="en">
             <ComponentsContext.Provider value={allComponents}>
-                <ComplexProcessVariable />
+                <div style={{position: 'relative'}}>
+                    <ComplexProcessVariable
+                        name="debug"
+                        type="array"
+                        definition={definition}
+                        onConfirm={console.log}
+                    />
+                </div>
             </ComponentsContext.Provider>
         </IntlProvider>
     );
