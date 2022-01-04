@@ -28,3 +28,4 @@ familiarize yourself with the design principles.
    manual_testing
    i18n
    npm
+   roadmap
