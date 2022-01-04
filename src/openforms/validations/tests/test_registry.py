@@ -96,7 +96,12 @@ class RegistryTest(TestCase):
         res = registry.validate("NOT_REGISTERED", "VALID")
         self.assertEqual(res.is_valid, False)
         self.assertEqual(
-            res.messages, [_("unknown validation plugin_id 'NOT_REGISTERED'")]
+            res.messages,
+            [
+                _("unknown validation plugin_id '{plugin_id}'").format(
+                    plugin_id="NOT_REGISTERED"
+                )
+            ],
         )
 
     def test_validate_plugin_not_enabled(self):
@@ -105,4 +110,7 @@ class RegistryTest(TestCase):
 
         res = registry.validate("disabled", "VALID")
         self.assertEqual(res.is_valid, False)
-        self.assertEqual(res.messages, [_("plugin 'disabled' not enabled")])
+        self.assertEqual(
+            res.messages,
+            [_("plugin '{plugin_id}' not enabled").format(plugin_id="disabled")],
+        )
