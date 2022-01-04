@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_polymorphic.serializers import PolymorphicSerializer
 from rest_framework import serializers
 
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import (
@@ -189,3 +190,44 @@ class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer
         many=True,
         label=_("Complex process variables"),
     )
+
+    def validate(self, attrs: dict) -> dict:
+        # check for duplicated variable names
+        mapped_variables = (
+            get_from_serializer_data_or_instance(
+                "process_variables", attrs, serializer=self
+            )
+            or []
+        )
+        complex_process_variables = (
+            get_from_serializer_data_or_instance(
+                "complex_process_variables", attrs, serializer=self
+            )
+            or []
+        )
+
+        var_names_seen = set()
+        var_names_duplicated = []
+        simple_var_names = [
+            variable["alias"] or variable["component_key"]
+            for variable in mapped_variables
+        ]
+        complex_var_names = [
+            variable["alias"] for variable in complex_process_variables
+        ]
+        for var_name in simple_var_names + complex_var_names:
+            if var_name in var_names_seen:
+                var_names_duplicated.append(var_name)
+            else:
+                var_names_seen.add(var_name)
+
+        if var_names_duplicated:
+            raise serializers.ValidationError(
+                _(
+                    "The variable name(s) '{var_names}' occur(s) multiple times. Hint: check that "
+                    "they are not specified in both the process variables and complex process variables."
+                ).format(var_names=", ".join(set(var_names_duplicated))),
+                code="duplicate-variables",
+            )
+
+        return attrs

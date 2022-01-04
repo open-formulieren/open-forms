@@ -321,3 +321,55 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                     for param in response.json()["invalidParams"]
                 }
                 self.assertEqual(error_codes, expected_error_codes)
+
+    def test_simple_and_complex_overlapping_variable_names(self):
+        detail_response = self.client.get(self.endpoint).json()
+        data = {
+            **detail_response,
+            "registrationBackendOptions": {
+                "processDefinition": "invoice",
+                "processDefinitionVersion": None,
+                "processVariables": [
+                    {
+                        "enabled": True,
+                        "componentKey": "test1",
+                    },
+                    {
+                        "enabled": True,
+                        "componentKey": "test2",
+                        "alias": "test2Alias",
+                    },
+                ],
+                "complexProcessVariables": [
+                    {
+                        "enabled": True,
+                        "alias": "test1",
+                        "type": "object",
+                        "definition": {
+                            "fooBar": {
+                                "source": "manual",
+                                "type": "string",
+                                "definition": "bar",
+                            }
+                        },
+                    },
+                    {
+                        "enabled": False,
+                        "alias": "test2Alias",
+                        "type": "array",
+                        "definition": [
+                            {
+                                "source": "component",
+                                "definition": {"var": "test1"},
+                            },
+                        ],
+                    },
+                ],
+            },
+        }
+
+        response = self.client.put(self.endpoint, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["code"], "duplicate-variables")
