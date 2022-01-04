@@ -99,8 +99,18 @@ class ComponentJSONLogicLookupSerializer(serializers.Serializer):
     )
 
 
+class CatJSONLogicSerializer(serializers.Serializer):
+    # TODO: this can be replaced in the future with full-fledged JSON logic, see
+    # ComponentJSONLogicLookupSerializer
+    cat = serializers.JSONField()  # can be strings or nested objects in a list...
+
+
 class ComponentVariableSerializer(serializers.Serializer):
     definition = ComponentJSONLogicLookupSerializer()
+
+
+class InterpolateVariableSerializer(serializers.Serializer):
+    definition = CatJSONLogicSerializer(label=_("Definition"))
 
 
 class VariableDefinitionSerializer(PolymorphicSerializer):
@@ -114,6 +124,7 @@ class VariableDefinitionSerializer(PolymorphicSerializer):
     serializer_mapping = {
         VariableSourceChoices.component: ComponentVariableSerializer,
         VariableSourceChoices.manual: ManualVariableSerializer,
+        VariableSourceChoices.interpolate: InterpolateVariableSerializer,
     }
 
 

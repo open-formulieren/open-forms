@@ -22,3 +22,4 @@ class JSONVariableTypes(JSONComplexVariableTypes, JSONPrimitiveVariableTypes):
 class VariableSourceChoices(DjangoChoices):
     component = ChoiceItem("component", _("Component"))
     manual = ChoiceItem("manual", _("Manual"))
+    interpolate = ChoiceItem("interpolate", _("Interpolation"))

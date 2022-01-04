@@ -6,7 +6,7 @@ is injected and evaluated using json-logic expressions, while the remainder of t
 data may be static/hardcoded.
 """
 from dataclasses import dataclass
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, TypedDict, Union
 
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
@@ -22,6 +22,10 @@ AnyVariable = Union[
 ]
 
 
+class VarLogicExpression(TypedDict):
+    var: str
+
+
 @dataclass
 class Variable:
     source: str
@@ -31,6 +35,7 @@ class Variable:
         _source_map = {
             "manual": ManualVariable,
             "component": ComponentVariable,
+            "interpolate": InterpolationVariable,
         }
         cls = _source_map[kwargs["source"]]
         return cls.build(**kwargs)
@@ -43,7 +48,24 @@ class Variable:
 
 @dataclass
 class ComponentVariable(Variable):
-    definition: Dict[str, Any]  # JSON-logic
+    definition: VarLogicExpression
+
+    @classmethod
+    def build(cls, **kwargs):
+        return cls(**kwargs)
+
+    def evaluate(self, data: dict) -> JSONValue:
+        return jsonLogic(self.definition, data)
+
+
+class CatLogicExpression(TypedDict):
+    cat: List[Union[str, VarLogicExpression]]  # JSON-logic
+
+
+@dataclass
+class InterpolationVariable(Variable):
+    # Essentially the same as ComponentVariabel - both are json-logic based.
+    definition: CatLogicExpression
 
     @classmethod
     def build(cls, **kwargs):

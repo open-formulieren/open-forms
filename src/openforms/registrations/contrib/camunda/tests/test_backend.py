@@ -463,3 +463,49 @@ class ComplexProcessVariableTests(CamundaMixin, TestCase):
                 }
             ),
         )
+
+    @patch("openforms.registrations.contrib.camunda.plugin.start_process")
+    def test_interpolated_variable_type(self, m, mock_start_process):
+        registration_backend_options = {
+            "process_definition": "invoice",
+            "process_definition_version": None,  # indicates latest version
+            "process_variables": [],
+            "complex_process_variables": [
+                {
+                    "enabled": True,
+                    "alias": "interpolated",
+                    "type": "array",
+                    "definition": [
+                        {
+                            "source": "interpolate",
+                            "definition": {
+                                "cat": [
+                                    "prefix ",
+                                    {"var": "text"},
+                                    " inbetween ",
+                                    {"var": "number"},
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        }
+        plugin = CamundaRegistration("camunda")
+        with self.subTest("validate data setup"):
+            serializer = plugin.configuration_options(data=registration_backend_options)
+            self.assertTrue(serializer.is_valid())
+
+        plugin.register_submission(self.submission, registration_backend_options)
+
+        expected_evaluated_value = [
+            "prefix Misc inbetween 12.5",
+        ]
+        mock_start_process.assert_called_once_with(
+            process_key="invoice",
+            variables=serialize_variables(
+                {
+                    "interpolated": expected_evaluated_value,
+                }
+            ),
+        )
