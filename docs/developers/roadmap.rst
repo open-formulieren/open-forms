@@ -3,14 +3,16 @@
 Roadmap
 =======
 
-Open Forms has known quite a challenging development history - many features have been
-implemented in a short time, and as any software project, this means some corners have
-been cut or situations came to be that weren't easy to predict.
+The Open Forms roadmap describes broader topics that will be picked up in the
+nearby future. 
 
-This section of the documentation describes the roadmap to deal with this kind of
-technical debt, but also possible new features. It serves as a context of what the
-future plans are for the Open Forms codebase, which may influence decisions for
-features/bugfixes that are currently being worked on.
+As with most software projects, the codebase of Open Forms grows dynamically, driven
+by user stories, user feedback and developer experience. Inevitably, some technical
+debt is created and needs to be addressed. This is included in our roadmap to keep
+Open Forms a healthy and developer-friendly project.
+
+The roadmap also offers some context to smaller issues that might linger a bit, waiting
+to be picked up in a broader topic.
 
 Backend
 -------
