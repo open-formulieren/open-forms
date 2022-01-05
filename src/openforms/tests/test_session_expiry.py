@@ -10,13 +10,16 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.test import override_settings
+from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
-from rest_framework import status
+from rest_framework import permissions, status
+from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from rest_framework.views import APIView
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
@@ -26,6 +29,19 @@ from .utils import NOOP_CACHES, disable_2fa
 
 SESSION_CACHES = deepcopy(NOOP_CACHES)
 SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+
+
+class SessionTestView(APIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        return Response({"ok": True})
+
+
+urlpatterns = [
+    path("tests/session", SessionTestView.as_view()),
+]
 
 
 @override_settings(
@@ -40,15 +56,21 @@ class FormUserSessionExpiryTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        config = GlobalConfiguration.get_solo()
-        config.form_session_timeout = 5  # minimum value
-        config.save()
-
         cls.form = FormFactory.create()
         cls.steps = FormStepFactory.create_batch(2, form=cls.form)
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
+
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch("openforms.middleware.GlobalConfiguration.get_solo")
+        self.mock_global_config = patcher.start()
+        self.addCleanup(patcher.stop)
+        self.mock_global_config.return_value = GlobalConfiguration(
+            form_session_timeout=5
+        )  # minimum value
 
     def test_activity_within_expiry_does_not_expire_session(self):
         """
@@ -154,6 +176,18 @@ class FormUserSessionExpiryTests(APITestCase):
                         "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                     },
                 )
+
+    @override_settings(ROOT_URLCONF=__name__)
+    def test_session_expiry_header_included(self):
+        """
+        Assert that the response contains a header indicating when the session expires.
+        """
+        response = self.client.get("/tests/session")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response["X-Session-Expires-In"], "300"
+        )  # 5 minutes * 60s = 300s
 
 
 @disable_2fa
