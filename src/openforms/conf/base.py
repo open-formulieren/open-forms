@@ -631,7 +631,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = config(
 CORS_ALLOW_HEADERS = list(default_cors_headers) + config(
     "CORS_EXTRA_ALLOW_HEADERS", split=True, default=[]
 )
-CORS_EXPOSE_HEADERS = []
+CORS_EXPOSE_HEADERS = ["X-Session-Expires-In"]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
 #
