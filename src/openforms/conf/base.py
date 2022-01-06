@@ -1,3 +1,4 @@
+import json
 import os
 
 # Django-hijack (and Django-hijack-admin)
@@ -1012,3 +1013,10 @@ CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
 CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
+
+#
+# Tiny MCE default settings
+#
+with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
+    # NOTE django-tinymce will add locale/language settings automatically
+    TINYMCE_DEFAULT_CONFIG = json.load(f)

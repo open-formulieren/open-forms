@@ -3,6 +3,7 @@ from typing import Optional
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.emails.validators import URLSanitationValidator
 from openforms.forms.models import Form
 from openforms.utils.validators import DjangoTemplateValidator
 
@@ -38,7 +39,8 @@ class ConfirmationEmailTemplate(models.Model):
                     "appointment_information",
                     "payment_information",
                 ]
-            )
+            ),
+            URLSanitationValidator(),
         ],
     )
     form = models.OneToOneField(

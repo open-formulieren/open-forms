@@ -106,6 +106,32 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ):
             email.full_clean()
 
+    def test_validate_content_netloc_sanitation_validation(self):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["good.net"]
+        config.save()
+
+        with self.subTest("valid"):
+            email = ConfirmationEmailTemplate(
+                subject="foo",
+                content="bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+            )
+
+            email.full_clean()
+
+        with self.subTest("invalid"):
+            email = ConfirmationEmailTemplate(
+                subject="foo",
+                content="bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+            )
+            with self.assertRaisesMessage(
+                ValidationError,
+                _("This domain is not in the global netloc allowlist: {netloc}").format(
+                    netloc="bad.net"
+                ),
+            ):
+                email.full_clean()
+
     def test_cant_delete_model_instances(self):
         form_step = FormStepFactory.create()
         subm_step = SubmissionStepFactory.create(
