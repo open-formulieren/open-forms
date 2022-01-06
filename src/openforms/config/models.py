@@ -68,7 +68,15 @@ class GlobalConfiguration(SingletonModel):
             "Content of the confirmation email message. Can be overridden on the form level"
         ),
         default=get_confirmation_email_content,
-        validators=[DjangoTemplateValidator(), URLSanitationValidator()],
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "appointment_information",
+                    "payment_information",
+                ]
+            ),
+            URLSanitationValidator(),
+        ],
     )
 
     allow_empty_initiator = models.BooleanField(

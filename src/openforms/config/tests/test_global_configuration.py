@@ -115,17 +115,35 @@ class GlobalConfirmationEmailTests(TestCase):
         config.email_template_netloc_allowlist = ["good.net"]
         config.save()
 
+    def test_validate_content_syntax(self):
+        config = GlobalConfiguration.get_solo()
+        config.confirmation_email_content = "{{{}}}"
+
+        with self.assertRaisesRegex(ValidationError, "Could not parse the remainder:"):
+            config.full_clean()
+
+    def test_validate_content_required_tags(self):
+        config = GlobalConfiguration.get_solo()
+        config.confirmation_email_content = "no tags here"
+        with self.assertRaisesRegex(
+            ValidationError,
+            _("Missing required template-tag {tag}").format(
+                tag="{% appointment_information %}"
+            ),
+        ):
+            config.full_clean()
+
     def test_validate_content_netloc_sanitation_validation(self):
         config = GlobalConfiguration.get_solo()
         config.confirmation_email_content = "no tags here"
 
         with self.subTest("valid"):
-            config.confirmation_email_content = "bla bla http://good.net/bla?x=1"
+            config.confirmation_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}"
 
             config.full_clean()
 
         with self.subTest("invalid"):
-            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1"
+            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
             with self.assertRaisesMessage(
                 ValidationError,
                 _("This domain is not in the global netloc allowlist: {netloc}").format(
