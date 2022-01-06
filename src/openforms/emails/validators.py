@@ -3,9 +3,7 @@ from urllib.parse import urlparse
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from openforms.config.models import GlobalConfiguration
 from openforms.emails.constants import URL_REGEX
-from openforms.emails.utils import get_system_netloc_allowlist
 
 
 class URLSanitationValidator:
@@ -13,6 +11,11 @@ class URLSanitationValidator:
         """
         this operation matches the logic of .utils.sanitize_content()
         """
+
+        # local imports because we use this on GlobalConfiguration itself
+        from openforms.config.models import GlobalConfiguration
+        from openforms.emails.utils import get_system_netloc_allowlist
+
         config = GlobalConfiguration.get_solo()
 
         allowlist = (
