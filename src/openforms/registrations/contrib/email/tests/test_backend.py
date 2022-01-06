@@ -14,6 +14,8 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -85,24 +87,23 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
+        message_text = message.body
         message_html = message.alternatives[0][0]
         self.assertHTMLValid(message_html)
         self.assertIn("<table", message_html)
-        self.assertNotIn("<table", message.body)
+        self.assertNotIn("<table", message_text)
 
-        self.assertIn(
-            _("Submission details for %(form_name)s (submitted on %(datetime)s)")
-            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
-            message_html,
+        detail_line = _(
+            "Submission details for %(form_name)s (submitted on %(datetime)s)"
+        ) % dict(
+            form_name=self.form.admin_name,
+            datetime="12:00:00 01-01-2021",
         )
-        self.assertIn(
-            _("Submission details for %(form_name)s (submitted on %(datetime)s)")
-            % dict(form_name=self.form.admin_name, datetime="12:00:00 01-01-2021"),
-            message.body,
-        )
+        self.assertIn(detail_line, message_html)
+        self.assertIn(detail_line, message_text)
 
-        self.assertIn("foo: bar", message.body)
-        self.assertIn("some_list: value1, value2", message.body)
+        self.assertIn("foo: bar", message_text)
+        self.assertIn("some_list: value1, value2", message_text)
 
         self.assertTagWithTextIn("td", "foo", message_html)
         self.assertTagWithTextIn("td", "bar", message_html)
@@ -183,19 +184,35 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("https://allowed.com", message.body)
         self.assertIn("https://allowed.com", message_html)
 
-    @freeze_time("2021-01-01 10:00")
     def test_register_and_update_paid_product(self):
+        """
+        the update payment email is now based on the registration email and includes attachments
+        """
         submission = SubmissionFactory.from_data(
             {"voornaam": "Foo"},
+            form__name="MyName",
+            form__internal_name="MyInternalName",
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             registration_success=True,
             public_registration_reference="XYZ",
         )
+        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
+        payment = SubmissionPaymentFactory.for_submission(
+            submission=submission, status=PaymentStatus.completed
+        )
+        report = submission.report
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-foo.bin",
+            content_type="application/foo",
+        )
+
         self.assertTrue(submission.payment_required)
 
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
+            attachment_formats=[AttachmentFormat.pdf],
         )
         email_submission = EmailRegistration("email")
         email_submission.update_payment_status(submission, email_form_options)
@@ -215,6 +232,73 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
+
+        # Check that the template is used
+        message_text = message.body
+        message_html = message.alternatives[0][0]
+        self.assertHTMLValid(message_html)
+        self.assertIn("<table", message_html)
+        self.assertNotIn("<table", message_text)
+
+        detail_line = _(
+            "Submission payment received for %(form_name)s (submitted on %(datetime)s)"
+        ) % dict(
+            form_name=self.form.admin_name,
+            datetime="12:00:00 01-01-2021",
+        )
+        self.assertIn(detail_line, message_html)
+        self.assertIn(detail_line, message_text)
+
+        reference_line = _("Our reference: %(public_reference)s") % dict(
+            public_reference=submission.public_registration_reference,
+        )
+        self.assertIn(reference_line, message_html)
+        self.assertIn(reference_line, message_text)
+
+        order_line = _("Payment order ID: %(order_id)s") % dict(
+            order_id=payment.public_order_id,
+        )
+        self.assertIn(order_line, message_html)
+        self.assertIn(order_line, message_text)
+
+        self.assertIn("Voornaam: Foo", message_text)
+
+        self.assertTagWithTextIn("td", "Voornaam", message_html)
+        self.assertTagWithTextIn("td", "Foo", message_html)
+
+        self.assertEqual(len(message.attachments), 2)
+        file1, pdf_export = message.attachments
+        self.assertEqual(file1[0], "my-foo.bin")
+        self.assertEqual(file1[1], b"content")  # still bytes
+        self.assertEqual(file1[2], "application/foo")
+
+        self.assertEqual(pdf_export[0], f"{report.title}.pdf")
+        self.assertEqual(pdf_export[1], report.content.read())
+        self.assertEqual(pdf_export[2], "application/pdf")
+
+    def test_register_and_update_paid_product_with_payment_email_recipient(self):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        self.assertTrue(submission.payment_required)
+
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            # payment_emails would override to_emails
+            payment_emails=["payment@bar.nl", "payment@foo.nl"],
+        )
+        email_submission = EmailRegistration("email")
+        email_submission.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
 
     def test_no_reference_can_be_extracted(self):
         submission = SubmissionFactory.create(

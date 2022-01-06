@@ -1,5 +1,16 @@
-{% load i18n %}{% autoescape off %}{% blocktrans trimmed %}
-    Submission details for {{form_name}} (submitted on {{datetime}})
+{% load i18n %}{% autoescape off %}{% if payment_received %}{% blocktrans trimmed %}
+Submission payment received for {{form_name}} (submitted on {{datetime}})
 {% endblocktrans %}
+
+{% blocktrans trimmed %}
+Our reference: {{ public_reference }}
+{% endblocktrans %}
+{% blocktrans trimmed %}
+Payment order ID: {{payment_order_id}})
+{% endblocktrans %}
+{% else %}{% blocktrans trimmed %}
+Submission details for {{form_name}} (submitted on {{datetime}})
+{% endblocktrans %}
+{% endif %}
 {% for key, value in submitted_data.items %}
 - {{ key }}: {% display_value value %}{% endfor %}{% endautoescape %}

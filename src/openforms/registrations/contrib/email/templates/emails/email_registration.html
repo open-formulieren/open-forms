@@ -1,8 +1,20 @@
 {% load i18n %}
-<p>{% blocktrans trimmed %}
-    Submission details for {{form_name}} (submitted on {{datetime}})
-{% endblocktrans %}</p>
-<table>
+{% if payment_received %}
+    <p>{% blocktrans trimmed %}
+        Submission payment received for {{form_name}} (submitted on {{datetime}})
+    {% endblocktrans %}</p>
+    <p>{% blocktrans trimmed %}
+        Our reference: {{ public_reference }}
+    {% endblocktrans %}
+        </br>
+    {% blocktrans trimmed %}
+        Payment order ID: {{payment_order_id}})
+    {% endblocktrans %}</p>
+{% else %}
+    <p>{% blocktrans trimmed %}
+        Submission details for {{form_name}} (submitted on {{datetime}})
+    {% endblocktrans %}</p>
+{% endif %}
     <tr>
         <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
         <th style="padding: 1px; text-align: left;">{% trans "Response" %}</th>

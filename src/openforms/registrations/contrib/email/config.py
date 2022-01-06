@@ -18,3 +18,10 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("The format(s) of the attachment(s) containing the submission details"),
         required=False,
     )
+    payment_emails = serializers.ListField(
+        child=serializers.EmailField(),
+        label=_(
+            "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
+        ),
+        required=False,
+    )

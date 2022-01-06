@@ -28,8 +28,6 @@ class EmailRegistration(BasePlugin):
     configuration_options = EmailOptionsSerializer
 
     def register_submission(self, submission: Submission, options: dict) -> None:
-        submitted_data = submission.get_printable_data()
-
         # explicitly get a reference before registering
         set_submission_reference(submission)
 
@@ -37,6 +35,17 @@ class EmailRegistration(BasePlugin):
             form_name=submission.form.admin_name,
             public_reference=submission.public_registration_reference,
         )
+        self.send_registration_email(options["to_emails"], subject, submission, options)
+
+    def send_registration_email(
+        self,
+        recipients,
+        subject,
+        submission: Submission,
+        options: dict,
+        extra_context=None,
+    ):
+        submitted_data = submission.get_printable_data()
 
         context = {
             "form_name": submission.form.admin_name,
@@ -46,6 +55,8 @@ class EmailRegistration(BasePlugin):
             ),
             "submitted_data": submitted_data,
         }
+        if extra_context:
+            context.update(extra_context)
 
         html_template = get_template("emails/email_registration.html")
         text_template = get_template("emails/email_registration.txt")
@@ -87,7 +98,7 @@ class EmailRegistration(BasePlugin):
             subject,
             html_content,
             settings.DEFAULT_FROM_EMAIL,
-            options["to_emails"],
+            recipients,
             fail_silently=False,
             attachment_tuples=attachments + extra_attachments,
             text_message=text_content,
@@ -103,21 +114,20 @@ class EmailRegistration(BasePlugin):
             form_name=submission.form.admin_name,
             public_reference=submission.public_registration_reference,
         )
-        message = _(
-            "Submission payment received for {form_name} (submitted on {datetime})"
-        ).format(
-            form_name=submission.form.admin_name,
-            datetime=submission.completed_on.strftime("%H:%M:%S %d-%m-%Y"),
-        )
+        recipients = options.get("payment_emails")
+        if not recipients:
+            recipients = options["to_emails"]
 
-        html_message = format_html("<p>{}</p>", message)
-
-        send_mail_html(
-            subject,
-            html_message,
-            settings.DEFAULT_FROM_EMAIL,
-            options["to_emails"],
-            fail_silently=False,
+        extra_context = {
+            # switch in the template
+            "payment_received": True,
+            # note: it is not a feature (yet) but the model supports multiple payments
+            "payment_order_id": ", ".join(
+                map(str, submission.payments.get_completed_public_order_ids())
+            ),
+        }
+        self.send_registration_email(
+            recipients, subject, submission, options, extra_context
         )
 
     def check_config(self):
