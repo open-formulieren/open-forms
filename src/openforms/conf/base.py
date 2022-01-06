@@ -1,3 +1,4 @@
+import json
 import os
 
 # Django-hijack (and Django-hijack-admin)
@@ -1016,22 +1017,5 @@ CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 #
 # Tiny MCE default settings
 #
-TINYMCE_DEFAULT_CONFIG = {
-    #
-    # NOTE: manually synchronise changes with React's copy in components/admin/form_design/Editor.js
-    #
-    "menubar": False,
-    "plugins": [
-        "advlist autolink lists link image charmap print preview anchor",
-        "searchreplace visualblocks code fullscreen",
-        "insertdatetime media table paste code help wordcount",
-    ],
-    "toolbar": "undo redo | formatselect | "
-    + "bold italic backcolor | alignleft aligncenter "
-    + "alignright alignjustify | bullist numlist outdent indent | "
-    + "link unlink removeformat | help",
-    "content_style": "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-    "default_link_target": "_blank",
-    "link_default_protocol": "https",
-    "link_assume_external_targets": "https",
-}
+with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
+    TINYMCE_DEFAULT_CONFIG = json.load(f)
