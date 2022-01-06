@@ -1,12 +1,16 @@
 from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from openforms.emails.constants import URL_REGEX
 
 
+@deconstructible
 class URLSanitationValidator:
+    message = _("This domain is not in the global netloc allowlist: {netloc}")
+
     def __call__(self, value):
         """
         this operation matches the logic of .utils.sanitize_content()
@@ -26,7 +30,5 @@ class URLSanitationValidator:
             parsed = urlparse(m.group())
             if parsed.netloc not in allowlist:
                 raise ValidationError(
-                    _(
-                        "This domain is not in the global netloc allowlist: {netloc}"
-                    ).format(netloc=parsed.netloc)
+                    self.message.format(netloc=parsed.netloc), code="invalid"
                 )
