@@ -43,7 +43,8 @@ def add_middleware_headers(result, generator, request, public):
 
     for path in result["paths"].values():
         for operation in path.values():
-            if "operationId" not in operation:
+            # the paths object may be extended with custom, non-standard extensions
+            if "responses" not in operation:  # pragma: no cover
                 continue
 
             for response in operation["responses"].values():
