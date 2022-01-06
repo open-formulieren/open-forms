@@ -102,7 +102,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
         )
     # downstream tasks can still execute, so we return rather than failing.
     except RegistrationFailed as e:
-        logger.debug(
+        logger.warning(
             "Registration using plugin '%r' for submission '%s' failed",
             plugin,
             submission,
@@ -118,18 +118,23 @@ def register_submission(submission_id: int) -> Optional[dict]:
         return
     # unexpected exceptions should fail the entire chain and show up in error monitoring
     except Exception as e:
-        logger.debug(
+        logger.error(
             "Registration using plugin '%r' for submission '%s' unexpectedly errored",
             plugin,
             submission,
+            exc_info=True,
         )
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, e, plugin)
-        raise
+        # if we're inside the retry workflow, continued failures should abort the entire
+        # chain so downstream tasks don't run with incorrect/outdated/missing data
+        if is_retrying:
+            raise
+        return
     else:
-        logger.debug(
+        logger.info(
             "Registration using plugin '%r' for submission '%s' succeeded",
             plugin,
             submission,
