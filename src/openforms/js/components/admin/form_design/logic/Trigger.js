@@ -197,7 +197,7 @@ const Trigger = ({ name, logic, onChange, children }) => {
                 <LiteralValueInput
                     name="operand"
                     componentType={componentType}
-                    value={operand}
+                    value={operand.toString()}
                     onChange={onTriggerChange}
                 />
             );
@@ -276,6 +276,13 @@ const Trigger = ({ name, logic, onChange, children }) => {
         case 'selectboxes': {
             firstOperand = {var: `${triggerComponent}.${compareValue}`}
             compareValue = true;
+            break;
+        }
+        case 'checkbox': {
+            firstOperand = {var: triggerComponent};
+            // cast from string to actual boolean
+            if (compareValue === 'true') compareValue = true;
+            if (compareValue === 'false') compareValue = false;
             break;
         }
         default:

@@ -135,7 +135,7 @@ const COMPONENT_TYPE_TO_OPERAND_TYPE = {
 
 
 const STRING_TO_TYPE = {
-    bool: (stringValue) => (stringValue === "true"),
+    bool: (stringValue) => (stringValue === "true") ? true : (stringValue === 'false') ? false : null,
     json: (stringValue) => (JSON.parse(stringValue)),
 };
 
@@ -177,14 +177,14 @@ const MODIFIABLE_PROPERTIES = {
         type: 'bool',
         options: [
             [
-                true,
+                'true',
                 defineMessage({
                     description: 'Component property boolean value "true"',
                     defaultMessage: 'Yes'
                 })
             ],
             [
-                false,
+                'false',
                 defineMessage({
                     description: 'Component property boolean value "false"',
                     defaultMessage: 'No'
@@ -200,14 +200,14 @@ const MODIFIABLE_PROPERTIES = {
         type: 'bool',
         options: [
             [
-                true,
+                'true',
                 defineMessage({
                     description: 'Component property boolean value "true"',
                     defaultMessage: 'Yes'
                 })
             ],
             [
-                false,
+                'false',
                 defineMessage({
                     description: 'Component property boolean value "false"',
                     defaultMessage: 'No'
