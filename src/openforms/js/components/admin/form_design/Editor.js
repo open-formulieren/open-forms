@@ -1,4 +1,5 @@
 import React, {useContext, useRef} from "react";
+import {useIntl} from 'react-intl';
 import {Editor} from "@tinymce/tinymce-react";
 import {TinyMceContext} from "./Context";
 import tinyMceConfig from "../../../../conf/tinymce_config.json";
@@ -8,6 +9,7 @@ import tinyMceConfig from "../../../../conf/tinymce_config.json";
 const TinyMCEEditor = ({content, onEditorChange}) => {
     const editorRef = useRef(null);
     const tinyMceUrl = useContext(TinyMceContext);
+    const intl = useIntl()
 
     return (
         <>
@@ -16,8 +18,7 @@ const TinyMCEEditor = ({content, onEditorChange}) => {
                 onInit={(evt, editor) => editorRef.current = editor}
                 value={content}
                 init={{...tinyMceConfig,
-                    // Django would set this in its own widget
-                    language: 'nl'
+                    language: intl.locale,
                 }}
                 onEditorChange={onEditorChange}
             />

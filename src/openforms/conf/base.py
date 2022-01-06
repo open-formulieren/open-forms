@@ -1018,4 +1018,5 @@ CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 # Tiny MCE default settings
 #
 with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
+    # NOTE django-tinymce will add locale/language settings automatically
     TINYMCE_DEFAULT_CONFIG = json.load(f)
