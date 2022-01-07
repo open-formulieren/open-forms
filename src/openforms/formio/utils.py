@@ -21,6 +21,8 @@ def iter_components(configuration: dict, recursive=True) -> dict:
                 yield from iter_components(configuration=component, recursive=recursive)
 
 
+# TODO: it might be beneficial to memoize this function if it runs multiple times in
+# the context of the same request
 def get_dynamic_configuration(
     configuration: dict, request: Request, submission: Submission
 ) -> dict:
@@ -37,7 +39,13 @@ def get_dynamic_configuration(
 
 
 def get_default_values(submission: Submission, configuration: dict) -> Dict[str, Any]:
-    import bpdb
+    defaults = {}
 
-    bpdb.set_trace()
-    return {}
+    for component in iter_components(configuration, recursive=True):
+        if "key" not in component:
+            continue
+        if "defaultValue" not in component:
+            continue
+        defaults[component["key"]] = component["defaultValue"]
+
+    return defaults

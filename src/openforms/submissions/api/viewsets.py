@@ -15,7 +15,6 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
-from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.logging import logevent
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -401,6 +400,7 @@ class SubmissionStepViewSet(
                 submission_step,
                 merged_data,
                 dirty=True,
+                request=request,
             )
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(

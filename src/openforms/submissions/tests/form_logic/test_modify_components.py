@@ -1161,3 +1161,62 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertFalse(submission_details["submission"]["steps"][1]["isApplicable"])
+
+
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+    def test_evaluate_logic_with_default_values(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                        "defaultValue": "some-default",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "optional",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "name"}, "some-default"]},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "optional",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        configuration = response.json()["formStep"]["configuration"]
+        self.assertEqual(
+            configuration["components"][1],
+            {
+                "key": "optional",
+                "type": "textfield",
+                "hidden": True,
+            },
+        )

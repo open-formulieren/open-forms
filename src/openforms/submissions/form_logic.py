@@ -56,6 +56,10 @@ def evaluate_form_logic(
     # check what the default data values are
     defaults = get_default_values(submission, configuration)
 
+    # merge the default values and supplied data - supplied data overwrites defaults
+    # if keys are present in both dicts
+    data = {**defaults, **data}
+
     if not step.data:
         step.data = {}
 
