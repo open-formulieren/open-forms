@@ -45,15 +45,7 @@ const FILE_TAB = {
     key: 'file',
     label: 'File',
     components: [
-        // {
-        //     type: 'textfield',
-        //     input: true,
-        //     key: 'fileNameTemplate',
-        //     label: 'File Name Template',
-        //     placeholder: '(optional) {name}-{guid}',
-        //     tooltip: 'Specify template for name of uploaded file(s). Regular template variables are available (`data`, `component`, `user`, `value`, `moment` etc.), also `fileName`, `guid` variables are available. `guid` part must be present, if not found in template, will be added at the end.',
-        //     weight: 25
-        // },
+        // note this is a subset with some additions of the standard formio file component tab
         {
             type: 'textfield',
             input: true,
@@ -67,7 +59,7 @@ const FILE_TAB = {
             type: 'select',
             key: 'file.type',
             input: true,
-            label: 'Select',
+            label: 'File types',
             widget: 'choicesjs',
             tableView: true,
             multiple: true,
@@ -79,14 +71,14 @@ const FILE_TAB = {
         {
             type: 'checkbox',
             input: true,
-            key: 'image.resize.apply',
+            key: 'of.image.resize.apply',
             label: 'Resize image',
             tooltip: 'When this is checked, the image will be resized.',
             weight: 33,
             customConditional: 'show = data.file.type.some(function(v) { return (v.indexOf("image/") > -1) || (v == "*"); });',
         },
         {
-            key: 'image.resize.columns',
+            key: 'of.image.resize.columns',
             type: 'columns',
             input: false,
             tableView: false,
@@ -95,7 +87,7 @@ const FILE_TAB = {
                 {
                     components: [
                         {
-                            key: 'image.resize.width',
+                            key: 'of.image.resize.width',
                             type: 'number',
                             label: 'Maximum width',
                             mask: false,
@@ -118,7 +110,7 @@ const FILE_TAB = {
                 {
                     components: [
                         {
-                            key: 'image.resize.height',
+                            key: 'of.image.resize.height',
                             type: 'number',
                             label: 'Maximum height',
                             mask: false,
@@ -140,9 +132,21 @@ const FILE_TAB = {
                 }
             ],
             conditional: {
-                json: {'==': [{var: 'data.image.resize.apply'}, true]}
+                json: {'==': [{var: 'data.of.image.resize.apply'}, true]}
             }
         },
+        // it would be nice for UIX if this would work
+        // (enabling this show a thumbnail after upload and switches features the SDK (in formio and in our FileField.js override)
+        // {
+        //     // used by the formio widget
+        //     type: 'hidden',
+        //     input: false,
+        //     key: 'image',
+        //     label: 'Show as Image',
+        //     weight: 33,
+        //     // the logic here seems fine (same as for the resize option) but doesn't set the value as expected
+        //     customConditional: 'value = data.file.type.some(function(v) { return (v.indexOf("image/") > -1) || (v == "*"); });',
+        // },
         {
             // used by the formio widget
             type: 'hidden',
@@ -186,6 +190,7 @@ const FILE_TAB = {
         //     tooltip: 'This will allow using an attached camera to directly take a picture instead of uploading an existing file.',
         //     weight: 32,
         //     conditional: {
+        //         // this is not correct, see the conditionals in image.resize (etc)
         //         json: {'==': [{var: 'data.file.type'}, 'image']}
         //     }
         // },

@@ -252,7 +252,9 @@ class SubmissionAttachmentTest(TestCase):
             {
                 "key": "my_file",
                 "type": "file",
-                "image": {"resize": {"apply": True, "width": 100, "height": 100}},
+                "of": {
+                    "image": {"resize": {"apply": True, "width": 100, "height": 100}}
+                },
             },
         ]
         form_step = FormStepFactory.create(

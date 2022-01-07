@@ -79,10 +79,12 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     result = list()
     for key, (component, uploads) in uploads.items():
         # grab resize settings
-        resize_apply = glom(component, "image.resize.apply", default=False)
+        resize_apply = glom(component, "of.image.resize.apply", default=False)
         resize_size = (
-            glom(component, "image.resize.width", default=DEFAULT_IMAGE_MAX_SIZE[0]),
-            glom(component, "image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]),
+            glom(component, "of.image.resize.width", default=DEFAULT_IMAGE_MAX_SIZE[0]),
+            glom(
+                component, "of.image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]
+            ),
         )
 
         base_name = glom(component, "file.name", default="")
