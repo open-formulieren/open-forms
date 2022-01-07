@@ -8,6 +8,7 @@ from django_webtest import WebTest
 from lxml import etree
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
@@ -69,7 +70,44 @@ class TestSubmissionAdmin(WebTest):
             html=True,
         )
 
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_displaying_merged_data_formio_formatters(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertContains(
+            response,
+            "<ul><li>adres: Voorburg</li><li>voornaam: shea</li><li>familienaam: meyers</li></ul>",
+            html=True,
+        )
+
     def test_displaying_merged_data_displays_signature_as_image(self):
+        self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
+        self.submission_step_1.save()
+
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        self.assertContains(
+            response,
+            "<li>signature: <img class='signature-image' src='data:image/png;base64,iVBOR' alt='signature'></li>",
+            html=True,
+        )
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_displaying_merged_data_displays_signature_as_image_formio_formatters(
+        self, mock_get_solo
+    ):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
         self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
         self.submission_step_1.save()
 

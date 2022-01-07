@@ -1,8 +1,10 @@
 from collections import OrderedDict
+from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -36,6 +38,100 @@ class SubmissionTests(TestCase):
         )
 
     def test_get_ordered_data_with_component_type(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "key", "type": "textfield", "label": "Label"},
+                    {"key": "key2", "type": "textarea", "label": "Label2"},
+                    {"key": "key3", "type": "checkbox", "label": "Label3"},
+                    {
+                        "key": "key4",
+                        "type": "fieldset",
+                        "components": [{"key": "key5", "type": "textfield"}],
+                    },
+                ],
+            }
+        )
+        submission = SubmissionFactory.create()
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"key3": True, "key2": "this is text in a text area"},
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "key5": "this is some inner text",
+                "key": "this is some text",
+                "key2": "this is other text in a text area",
+            },
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=FormStepFactory.create(form=submission.form),
+        )
+        actual = submission.get_ordered_data_with_component_type()
+        expected = OrderedDict(
+            [
+                (
+                    "key",
+                    {
+                        "type": "textfield",
+                        "value": "this is some text",
+                        "label": "Label",
+                        "multiple": False,
+                        "values": None,
+                        "appointments": {},
+                    },
+                ),
+                (
+                    "key2",
+                    {
+                        "type": "textarea",
+                        "value": "this is other text in a text area",
+                        "label": "Label2",
+                        "multiple": False,
+                        "values": None,
+                        "appointments": {},
+                    },
+                ),
+                (
+                    "key3",
+                    {
+                        "type": "checkbox",
+                        "value": True,
+                        "label": "Label3",
+                        "multiple": False,
+                        "values": None,
+                        "appointments": {},
+                    },
+                ),
+                (
+                    "key5",
+                    {
+                        "type": "textfield",
+                        "value": "this is some inner text",
+                        "label": "key5",
+                        "multiple": False,
+                        "values": None,
+                        "appointments": {},
+                    },
+                ),
+            ]
+        )
+        self.assertEqual(actual, expected)
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_get_ordered_data_with_component_type_formio_formatters(
+        self, mock_get_solo
+    ):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -126,6 +222,60 @@ class SubmissionTests(TestCase):
         self.assertEqual(actual, expected)
 
     def test_get_printable_data_with_selectboxes(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "testSelectBoxes",
+                        "type": "selectboxes",
+                        "label": "My Boxes",
+                        "values": [
+                            {"value": "test1", "label": "test 1", "shortcut": ""},
+                            {"value": "test2", "label": "test 2", "shortcut": ""},
+                            {"value": "test3", "label": "test 3", "shortcut": ""},
+                        ],
+                    },
+                ],
+            }
+        )
+        submission = SubmissionFactory.create()
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
+        )
+
+        ordered = submission.get_ordered_data_with_component_type()
+        self.assertEqual(
+            ordered,
+            {
+                "testSelectBoxes": {
+                    "type": "selectboxes",
+                    "label": "My Boxes",
+                    "value": {"test1": True, "test2": True, "test3": False},
+                    "values": [
+                        {"value": "test1", "label": "test 1", "shortcut": ""},
+                        {"value": "test2", "label": "test 2", "shortcut": ""},
+                        {"value": "test3", "label": "test 3", "shortcut": ""},
+                    ],
+                    "multiple": False,
+                    "appointments": {},
+                }
+            },
+        )
+        printable_data = submission.get_printable_data()
+
+        self.assertEqual(
+            printable_data["My Boxes"],
+            "test 1, test 2",
+        )
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_get_printable_data_with_selectboxes_formio_formatters(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
