@@ -15,6 +15,8 @@ from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
 
+from openforms.formio.utils import iter_components
+
 from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
 
@@ -120,11 +122,8 @@ class FormDefinition(models.Model):
         return super().delete(using=using, keep_parents=keep_parents)
 
     def iter_components(self, configuration=None, recursive=True):
-        from openforms.formio.utils import iter_components
-
         if configuration is None:
             configuration = self.configuration
-
         return iter_components(configuration=configuration, recursive=recursive)
 
     def get_all_keys(self) -> List[str]:

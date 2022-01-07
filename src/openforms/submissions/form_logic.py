@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from json_logic import jsonLogic
 
-from openforms.formio.utils import get_default_values, get_dynamic_configuration
+from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.utils import get_default_values
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormDefinition, FormLogic
 from openforms.prefill import JSONObject
@@ -54,7 +55,7 @@ def evaluate_form_logic(
     )
 
     # check what the default data values are
-    defaults = get_default_values(submission, configuration)
+    defaults = get_default_values(configuration)
 
     # merge the default values and supplied data - supplied data overwrites defaults
     # if keys are present in both dicts
