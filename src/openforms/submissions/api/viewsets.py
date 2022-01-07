@@ -395,13 +395,14 @@ class SubmissionStepViewSet(
             # with keys bar and baz.
             merged_data = {**submission_step.submission.data, **data}
             submission_step.data = data
-            evaluate_form_logic(
+            new_configuration = evaluate_form_logic(
                 submission_step.submission,
                 submission_step,
                 merged_data,
                 dirty=True,
                 request=request,
             )
+            submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(
