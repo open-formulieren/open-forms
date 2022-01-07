@@ -14,16 +14,15 @@ from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.formio.utils import get_dynamic_configuration
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
-from openforms.prefill import apply_prefill
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
 
 from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
-from ..custom_field_types import handle_custom_types
 from ..models import (
     Form,
     FormDefinition,
@@ -315,13 +314,9 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
         _handle_custom_types = self.context.get("handle_custom_types", True)
         if _handle_custom_types:
-            representation["configuration"] = handle_custom_types(
+            representation["configuration"] = get_dynamic_configuration(
                 representation["configuration"],
                 request=self.context["request"],
-                submission=self.context["submission"],
-            )
-            representation["configuration"] = apply_prefill(
-                representation["configuration"],
                 submission=self.context["submission"],
             )
         return representation

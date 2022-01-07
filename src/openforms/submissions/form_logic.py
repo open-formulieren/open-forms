@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from json_logic import jsonLogic
 
+from openforms.formio.utils import get_default_values, get_dynamic_configuration
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormDefinition, FormLogic
 from openforms.prefill import JSONObject
@@ -36,12 +37,24 @@ def evaluate_form_logic(
     step: "SubmissionStep",
     data: Dict[str, Any],
     dirty=False,
+    **context,
 ) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
     """
     # grab the configuration that can be **mutated**
     configuration = step.form_step.form_definition.configuration
+
+    # we need to apply the context-specific configurations first before we can apply
+    # mutations based on logic, which is then in turn passed to the serializer(s)
+    configuration = get_dynamic_configuration(
+        configuration,
+        request=context.get("request"),
+        submission=submission,
+    )
+
+    # check what the default data values are
+    defaults = get_default_values(submission, configuration)
 
     if not step.data:
         step.data = {}
