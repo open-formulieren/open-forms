@@ -102,7 +102,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(
             title=self.get_label(),
-            image_src=request.build_absolute_uri(static("img/eherkenning.svg")),
+            image_src=request.build_absolute_uri(static("img/eherkenning.png")),
             href="https://www.eherkenning.nl/",
         )
 
