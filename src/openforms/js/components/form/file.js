@@ -11,11 +11,19 @@ const REGISTRATION = {
     label: 'Registration',
     components: [
         {
-            type: 'textfield',
+            type: 'select',
             key: 'registration.informatieobjecttype',
             label: 'Informatieobjecttype',
             description: 'Save the attachment in the Documents API with this InformatieObjectType.',
-            valueProperty: 'id',
+            dataSrc: 'url',
+            data: {
+                // if the url starts with '/', then formio will prefix it with the formio
+                // base URL, which is of course wrong. We there explicitly use the detected
+                // host.
+                url: getFullyQualifiedUrl('/api/v1/registration/informatieobjecttypen'),
+            },
+            valueProperty: 'url',
+            template: '<span>{{ item.description }} ({{ item.catalogusDomain }})</span>',
         }
     ]
 };
