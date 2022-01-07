@@ -15,6 +15,10 @@ const VARIABLE_SOURCES = {
         description: 'JSON editor: "manual" variable source label',
         defaultMessage: 'Manually defined',
     }),
+    interpolate: defineMessage({
+        description: 'JSON editor: "interpolate" variable source label',
+        defaultMessage: 'Text with (embedded) form field(s)',
+    }),
 };
 
 

@@ -48,7 +48,8 @@ export const LeafVariableDefinition = PropTypes.oneOfType([
 export const VariableSource = PropTypes.oneOf([
     '',
     'manual',
-    'component'
+    'component',
+    'interpolate',
 ]);
 
 

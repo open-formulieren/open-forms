@@ -58,6 +58,10 @@ const TypeRepresentation = ({ definition=null }) => {
             typeRepresentationMessage = TYPE_MESSAGES[definition.type] || TYPE_MESSAGES.unset;
             break;
         }
+        case 'interpolate': {
+            typeRepresentationMessage = TYPE_MESSAGES.string;
+            break;
+        }
     }
 
     return intl.formatMessage(typeRepresentationMessage);

@@ -439,6 +439,11 @@
     "description": "delete_permanently removal method option label",
     "originalDefault": "Submissions will be deleted"
   },
+  "InHf6+": {
+    "defaultMessage": "Text with (embedded) form field(s)",
+    "description": "JSON editor: \"interpolate\" variable source label",
+    "originalDefault": "Text with (embedded) form field(s)"
+  },
   "Iv+lBL": {
     "defaultMessage": "The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration.",
     "description": "Form step next text field help text",

@@ -439,6 +439,11 @@
     "description": "delete_permanently removal method option label",
     "originalDefault": "Submissions will be deleted"
   },
+  "InHf6+": {
+    "defaultMessage": "Tekst met (ingesloten) formulierveldwaarde(n)",
+    "description": "JSON editor: \"interpolate\" variable source label",
+    "originalDefault": "Text with (embedded) form field(s)"
+  },
   "Iv+lBL": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en de volgende stap te activeren. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Form step next text field help text",
