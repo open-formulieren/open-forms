@@ -1,8 +1,8 @@
 .. _manual_form_fields:
 
-================
-Formulier velden
-================
+===============
+Formuliervelden
+===============
 
 Alle velden in een formulier zijn van een bepaald type, het veld type.
 
@@ -28,8 +28,8 @@ Basic
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
 
-Advanced
---------
+Geavanceerd
+-----------
 
 * **This component should Display**: Selecteer ``True`` om het veld te tonen als
   onderstaande conditie geldt. Selecteer ``False`` om het veld juist te 
@@ -62,8 +62,8 @@ alleen zichtbaar wordt indien als ``Stelling`` de waarde ``anders`` is gekozen.
     :width: 49%
 
 
-Validation
-----------
+Validatie
+---------
 
 * **Required**: Indien aangevinkt dan is dit veld verplicht voor de 
   eindgebruiker.
@@ -72,20 +72,20 @@ Validation
   valideren. De waarde van het veld wordt naar de plugin gestuurd en 
   gevalideerd.
 
-Registration
-------------
+Registratie
+-----------
 
 * **Registration attribute**: Indien u de waarde van dit veld wilt doorzetten 
   naar het achterliggende registratie systeem, dan kunt u hier een attribuut 
   kiezen dat beschikbaar is in het achterliggende registratie systeem.
 
 
-Text Field
-==========
+Tekstveld
+=========
 
-Het *Text Field* heeft de meest uitgebreide opties van alle veld typen.
+Het *Tekstveld* heeft de meest uitgebreide opties van alle veld typen.
 
-Basic
+Basis
 -----
 
 * **Show Character Count**: Indien aangevinkt, dan wordt een teller getoond aan
@@ -124,3 +124,22 @@ Stel er zijn 4 velden:
 
   Er is nu een formulier gemaakt waarbij de straat en de stad automatisch worden
   ingevuld als de postcode en het huisnummer zijn ingevuld.
+
+
+Keuzelijst
+==========
+
+Met een *Keuzelijst* kunt u voorgedefinieerde lijst van opties aanbieden.
+
+Basis
+-----
+
+* **Values**: Hier voert u de lijst van beschikbare opties op. De kolom ``Label`` dient
+  voor de weergave van de optie, en de kolom ``Value`` bevat de systeemwaarde. Indien u
+  dit veld verder verwerkt, dan moet u de systeemwaarde gebruiken voor vergelijkingen.
+
+  .. note:: Het is niet mogelijk om een lege systeemwaarde op te voeren. Indien u een
+     lege optie wil aanbieden in combinatie met een niet-lege standaardwaarde, dan
+     dient u een hiervoor expliciet een optie op te voeren. Als systeemwaarde kunt u
+     bijvoorbeeld ``-`` gebruiken. Als weergave kunt u bijvoorbeeld ``-------`` of
+     ``- geen keuze -`` gebruiken.
