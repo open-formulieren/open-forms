@@ -1,6 +1,7 @@
 import logging
 import os.path
 import uuid
+import warnings
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -26,7 +27,7 @@ from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import sanitize_content
-from openforms.formio.formatters.registry import register
+from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.validators import (
@@ -569,16 +570,15 @@ class Submission(models.Model):
 
             if GlobalConfiguration.get_solo().enable_formio_formatters:
                 info, value = info
-                formatter = (
-                    register[info["type"]]
-                    if info["type"] in register
-                    else register["default"]
+                label = info["label"]
+                printable_data[label] = format_value(info, value)
+            else:
+                warnings.warn(
+                    "Formatting without using the formio formatters registry is deprecated. "
+                    "Please consider concentrating all future improvements/fixes there.",
+                    DeprecationWarning,
                 )
 
-                label = info["label"]
-                formatted = formatter(info, value)
-                printable_data[label] = formatted
-            else:
                 label = info["label"]
                 if info["type"] == "file":
                     files = attachment_data.get(key)

@@ -1,174 +1,76 @@
-from django.test import TestCase
+import json
+import os
 
-from ..registry import register
+from django.test import TestCase
+from django.utils.translation import gettext as _
+
+from ..service import format_value
+
+FILES_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "files",
+)
+
+
+def load_json(filename: str):
+    with open(os.path.join(FILES_DIR, filename), "r") as infile:
+        return json.load(infile)
 
 
 class DefaultFormatterTestCase(TestCase):
     def test_formatters(self):
-        data = {
-            "textField": (
-                {
-                    "key": "textField",
-                    "type": "textfield",
-                    "label": "Text Field",
-                },
-                "Some Text",
-            ),
-            "emailField": (
-                {
-                    "key": "emailField",
-                    "type": "email",
-                    "label": "Email Field",
-                },
-                "foo@bar.com",
-            ),
-            "dateField": (
-                {
-                    "key": "dateField",
-                    "type": "date",
-                    "label": "Date Field",
-                },
-                "2022-01-02",
-            ),
-            "timeField": (
-                {
-                    "key": "timeField",
-                    "type": "time",
-                    "label": "Time Field",
-                },
-                "17:30:00",
-            ),
-            "phoneNumberField": (
-                {
-                    "key": "phoneNumberField",
-                    "type": "phoneNumber",
-                    "label": "Phone Number Field",
-                },
-                "0612345678",
-            ),
-            "fileField": (
-                {
-                    "key": "fileField",
-                    "type": "file",
-                    "label": "File Field",
-                },
-                [
-                    {
-                        "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
-                        "data": {
-                            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
-                            "form": "",
-                            "name": "my-image.jpg",
-                            "size": 46114,
-                            "baseUrl": "http://server/form",
-                            "project": "",
-                        },
-                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
-                        "size": 46114,
-                        "type": "image/jpg",
-                        "storage": "url",
-                        "originalName": "my-image.jpg",
-                    }
-                ],
-            ),
-            "textArea": (
-                {
-                    "key": "textArea",
-                    "type": "textarea",
-                    "label": "Text Area",
-                },
-                "Some Text area",
-            ),
-            "numberField": (
-                {
-                    "key": "numberField",
-                    "type": "number",
-                    "label": "Number Field",
-                },
-                "42",
-            ),
-            "passwordField": (
-                {
-                    "key": "passwordField",
-                    "type": "password",
-                    "label": "Password",
-                },
-                "some_pwd",
-            ),
-            "checkBox": (
-                {
-                    "key": "checkBox",
-                    "type": "checkbox",
-                    "label": "Checkbox",
-                },
-                True,
-            ),
-            "selectBoxes": (
-                {
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
-                    "label": "Selectboxes",
-                    "values": [
-                        {"label": "Option 1", "value": "option1"},
-                        {"label": "Option 2", "value": "option2"},
-                        {"label": "Option 3", "value": "option3"},
-                    ],
-                },
-                {"option1": True, "option2": False, "option3": True},
-            ),
-            "selectField": (
-                {
-                    "key": "selectField",
-                    "type": "select",
-                    "label": "Select Field",
-                    "data": {
-                        "values": [
-                            {"label": "Option 1", "value": "option1"},
-                            {"label": "Option 2", "value": "option2"},
-                        ]
-                    },
-                },
-                "option2",
-            ),
-            "currencyField": (
-                {
-                    "key": "currencyField",
-                    "type": "currency",
-                    "label": "Currency Field",
-                },
-                "$50",
-            ),
-            "radioButtons": (
-                {
-                    "key": "radioButtons",
-                    "type": "radio",
-                    "label": "Radio buttons",
-                    "values": [
-                        {"label": "Option 1", "value": "option1"},
-                        {"label": "Option 2", "value": "option2"},
-                    ],
-                },
-                "option1",
-            ),
+        all_components = load_json("all_components.json")["components"]
+        data = load_json("all_components_data.json")
+        expected = {
+            "bsn": "123456782",
+            # "map": "52.3782943985417, 4.899629917973432",
+            "date": "24 december 2021",
+            "file": "leeg",
+            "iban": "RO09 BCYP 0000 0012 3456 7890",
+            "time": "16:26",
+            "email": "test@example.com",
+            "radio": "Option 2",
+            "number": "42.123",
+            "select": "Option 1",
+            "password": "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF",
+            "postcode": "1234 AA",
+            "textArea": "Textarea test",
+            # "signature": "data:image/png;base64,iVBO[truncated]",
+            "textField": "Simple text input",
+            "phoneNumber": "+31633924456",
+            "selectBoxes": "Option 1, Option 2",
+            "licenseplate": "1-AAA-BB",
+            "select2": "29 december 2021",
+            "select3": "08:15",
         }
 
-        expected = {
-            "textField": "Some Text",
-            "emailField": "foo@bar.com",
-            "dateField": "2 januari 2022",
-            "timeField": "17:30",
-            "phoneNumberField": "0612345678",
-            "fileField": "my-image.jpg",
-            "textArea": "Some Text area",
-            "numberField": "42",
-            "passwordField": "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF",
-            "checkBox": "ja",
-            "selectBoxes": "Option 1, Option 3",
-            "selectField": "Option 2",
-            "currencyField": "$50",
-            "radioButtons": "Option 1",
-        }
-        for field_name, (component, value) in data.items():
+        for component in all_components:
             with self.subTest(type=component["type"]):
-                formatter = register[component["type"]]
-                self.assertEqual(formatter(component, value), expected[field_name])
+                self.assertEqual(
+                    format_value(component, data[component["key"]]),
+                    expected[component["key"]],
+                )
+
+    def test_formatter_multiple(self):
+        all_components = load_json("all_components.json")["components"]
+        time_component = None
+        for component in all_components:
+            if component["key"] == "time":
+                time_component = component
+                break
+
+        data = ["16:26:00", "8:42:00", "23:01:00"]
+
+        formatted = format_value(time_component, data, multiple=True)
+        expected = ["16:26", "08:42", "23:01"]
+
+        self.assertEqual(formatted, expected)
+
+    def test_formatter_empty_value(self):
+        all_components = load_json("all_components.json")["components"]
+        component = all_components[0]
+
+        formatted = format_value(component, None)
+        expected = _("empty")
+
+        self.assertEqual(formatted, expected)

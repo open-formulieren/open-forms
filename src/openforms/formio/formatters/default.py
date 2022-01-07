@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Union
 
-from django.template.defaultfilters import date as fmt_date, time as fmt_time
+from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.translation import gettext_lazy as _
 
@@ -15,12 +15,21 @@ def _get_value_label(possible_values: list, value: str) -> str:
     for possible_value in possible_values:
         if possible_value["value"] == value:
             return possible_value["label"]
-    # TODO what if value is not a string? shouldn't it be passed through something to covert for display?
+
+    assert isinstance(value, str), "Expected value to be a str"
+
     return value
 
 
 class FormioFormatter(AbstractBasePlugin):
-    def __call__(self, component: dict, value: Any) -> str:
+    def __call__(
+        self, component: dict, value: Any, multiple: bool = False
+    ) -> Union[str, List]:
+        if not value:
+            return _("empty")
+
+        if multiple:
+            return [self.format(component, v) for v in value]
         return self.format(component, value)
 
     def format(self, component: dict, value: Any) -> str:
@@ -31,7 +40,7 @@ class FormioFormatter(AbstractBasePlugin):
 class DefaultFormatter(FormioFormatter):
     def format(self, component: Dict, value: Any) -> str:
         if isinstance(value, list):
-            return ", ".join(v for v in value)
+            return ", ".join(str(v) for v in value)
         return str(value)
 
 
@@ -86,7 +95,7 @@ class TextAreaFormatter(FormioFormatter):
 
 @register("number")
 class NumberFormatter(FormioFormatter):
-    def format(self, component: Dict, value: str) -> str:
+    def format(self, component: Dict, value: Union[int, float]) -> str:
         # TODO custom formatting?
         return str(value)
 
@@ -99,13 +108,13 @@ class PasswordFormatter(FormioFormatter):
 
 @register("checkbox")
 class CheckboxFormatter(FormioFormatter):
-    def format(self, component: Dict, value: str) -> str:
-        return "ja" if value else "nee"
+    def format(self, component: Dict, value: bool) -> str:
+        return yesno(value)
 
 
 @register("selectboxes")
 class SelectBoxesFormatter(FormioFormatter):
-    def format(self, component: Dict, value: List) -> str:
+    def format(self, component: Dict, value: Dict[str, bool]) -> str:
         selected_labels = [
             entry["label"] for entry in component["values"] if value.get(entry["value"])
         ]
@@ -125,7 +134,7 @@ class SelectFormatter(FormioFormatter):
 
 @register("currency")
 class CurrencyFormatter(FormioFormatter):
-    def format(self, component: Dict, value: str) -> str:
+    def format(self, component: Dict, value: float) -> str:
         # TODO custom formatting?
         return str(value)
 
