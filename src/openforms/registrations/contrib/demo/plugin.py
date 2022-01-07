@@ -54,3 +54,25 @@ class DemoFailRegistration(BasePlugin):
         Demo config is always valid.
         """
         pass
+
+
+@register("exception-demo")
+class DemoExceptionRegistration(BasePlugin):
+    verbose_name = _("Demo - exception during registration")
+    configuration_options = DemoOptionsSerializer
+    is_demo_plugin = True
+
+    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
+        raise Exception("Demo exception registration")
+
+    def get_reference_from_result(self, result: None) -> NoReturn:
+        raise NoSubmissionReference("Demo plugin does not emit a reference")
+
+    def update_payment_status(self, submission: "Submission", options: dict):
+        pass
+
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
+        pass

@@ -110,8 +110,16 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
-        with patch_registry(model_field, register):
+        with patch_registry(model_field, register), self.assertLogs(
+            level="WARNING"
+        ) as log:
             register_submission(self.submission.id)
+
+            # check we log an WARNING without stack
+            error_log = log.records[-1]
+            self.assertEqual(error_log.levelname, "WARNING")
+            self.assertIn("failed", error_log.message)
+            self.assertIsNone(error_log.exc_info)
 
         self.submission.refresh_from_db()
         self.assertTrue(self.submission.needs_on_completion_retry)
@@ -141,9 +149,16 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
-        with patch_registry(model_field, register):
-            with self.assertRaises(ZeroDivisionError):
-                register_submission(self.submission.id)
+        with patch_registry(model_field, register), self.assertLogs(
+            level="ERROR"
+        ) as log:
+            register_submission(self.submission.id)
+
+            # check we log an ERROR with stack
+            error_log = log.records[-1]
+            self.assertEqual(error_log.levelname, "ERROR")
+            self.assertIn("unexpectedly errored", error_log.message)
+            self.assertIsNotNone(error_log.exc_info)
 
         self.submission.refresh_from_db()
         self.assertTrue(self.submission.needs_on_completion_retry)
