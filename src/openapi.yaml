@@ -51,18 +51,27 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '403':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: Unable to verify ownership of the appointment.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '502':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: Unable to cancel appointment.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/appointments/dates:
     get:
       operationId: appointments_dates_list
@@ -96,6 +105,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Date'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/appointments/locations:
     get:
       operationId: appointments_locations_list
@@ -123,6 +135,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Location'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/appointments/products:
     get:
       operationId: appointments_products_list
@@ -139,6 +154,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/AppointmentProduct'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/appointments/times:
     get:
       operationId: appointments_times_list
@@ -179,6 +197,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Time'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/authentication/plugins:
     get:
       operationId: authentication_plugins_list
@@ -203,6 +224,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/AuthPlugin'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/authentication/session:
     delete:
       operationId: authentication_session_destroy
@@ -216,6 +240,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
@@ -232,6 +259,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PrivacyPolicyInfo'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/form-definitions:
     get:
       operationId: form_definitions_list
@@ -256,6 +286,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedFormDefinitionList'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: form_definitions_create
       summary: Create a form definition
@@ -278,6 +311,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormDefinition'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
@@ -302,6 +338,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormDefinitionDetail'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: form_definitions_update
       summary: Update all details of a form definition
@@ -331,6 +370,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormDefinition'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     patch:
       operationId: form_definitions_partial_update
       summary: Update some details of a form definition
@@ -359,6 +401,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormDefinition'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: form_definitions_destroy
       summary: Delete a form definition
@@ -378,6 +423,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/form-definitions/{uuid}/configuration:
     get:
       operationId: form_definitions_configuration_retrieve
@@ -408,6 +456,9 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms:
     get:
       operationId: forms_list
@@ -428,6 +479,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Form'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: forms_create
       description: |-
@@ -456,6 +510,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms-import:
     post:
       operationId: forms_import_create
@@ -480,6 +537,9 @@ paths:
               schema:
                 description: No response body
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
@@ -505,6 +565,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/FormStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: forms_steps_create
       summary: Create a form step
@@ -539,6 +602,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
@@ -568,6 +634,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: forms_steps_update
       summary: Update all details of a form step
@@ -608,6 +677,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     patch:
       operationId: forms_steps_partial_update
       summary: Update some details of a form step
@@ -647,6 +719,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: forms_steps_destroy
       summary: Delete a form step
@@ -671,6 +746,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{form_uuid_or_slug}/versions:
     get:
       operationId: forms_versions_list
@@ -696,6 +774,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/FormVersion'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: forms_versions_create
       description: Save the current version of the form so that it can later be retrieved
@@ -730,6 +811,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormVersion'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{form_uuid_or_slug}/versions/{uuid}/restore:
     post:
       operationId: forms_versions_restore_create
@@ -767,6 +851,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
@@ -797,6 +884,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: forms_update
       description: |-
@@ -832,6 +922,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     patch:
       operationId: forms_partial_update
       description: |-
@@ -866,6 +959,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: forms_destroy
       description: Destroying a form leads to a soft-delete to protect related submissions.
@@ -886,6 +982,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{uuid_or_slug}/admin-message:
     post:
       operationId: forms_admin_message_create
@@ -924,6 +1023,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormAdminMessage'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{uuid_or_slug}/copy:
     post:
       operationId: forms_copy_create
@@ -953,6 +1055,8 @@ paths:
                 type: string
                 format: uri
               description: URL of the created resource
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/json:
               schema:
@@ -985,6 +1089,9 @@ paths:
                 type: string
                 format: binary
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
@@ -1013,6 +1120,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetStreetNameAndCityViewResult'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/logic-rules:
     get:
       operationId: logic_rules_list
@@ -1038,6 +1148,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/FormLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: logic_rules_create
       summary: Create a logic rule
@@ -1065,6 +1178,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/logic-rules/{uuid}:
     get:
       operationId: logic_rules_retrieve
@@ -1088,6 +1204,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: logic_rules_update
       summary: Update all details of a logic rule
@@ -1122,6 +1241,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     patch:
       operationId: logic_rules_partial_update
       summary: Update some details of a logic rule
@@ -1155,6 +1277,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: logic_rules_destroy
       summary: Delete a logic rule
@@ -1173,6 +1298,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/payment/plugins:
     get:
       operationId: payment_plugins_list
@@ -1196,6 +1324,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/PaymentPlugin'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/prefill/plugins:
     get:
       operationId: prefill_plugins_list
@@ -1214,6 +1345,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/PrefillPlugin'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/prefill/plugins/{plugin}/attributes:
     get:
       operationId: prefill_plugins_attributes_list
@@ -1238,6 +1372,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/PrefillAttribute'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/price-rules:
     get:
       operationId: price_rules_list
@@ -1263,6 +1400,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/FormPriceLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: price_rules_create
       summary: Create a pricing logic rule
@@ -1290,6 +1430,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormPriceLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/price-rules/{uuid}:
     get:
       operationId: price_rules_retrieve
@@ -1313,6 +1456,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormPriceLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: price_rules_update
       summary: Update all details of a pricing logic rule
@@ -1347,6 +1493,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormPriceLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     patch:
       operationId: price_rules_partial_update
       summary: Update some details of a pricing logic rule
@@ -1380,6 +1529,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/FormPriceLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: price_rules_destroy
       summary: Delete a pricing logic rule
@@ -1398,6 +1550,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/products:
     get:
       operationId: products_list
@@ -1422,6 +1577,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/products/{uuid}:
     get:
       operationId: products_retrieve
@@ -1452,6 +1610,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -1470,6 +1631,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/RegistrationAttribute'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/plugins:
     get:
       operationId: registration_plugins_list
@@ -1492,6 +1656,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/RegistrationPlugin'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/plugins/camunda/process-definitions:
     get:
       operationId: registration_plugins_camunda_process_definitions_list
@@ -1510,6 +1677,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/ProcessDefinition'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions:
     get:
       operationId: submissions_list
@@ -1533,6 +1703,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSubmissionList'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     post:
       operationId: submissions_create
       description: Start a submission for a particular form. The submission is added
@@ -1559,6 +1732,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Submission'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{report_id}/{token}/download:
     get:
       operationId: submissions_download_retrieve
@@ -1588,6 +1764,9 @@ paths:
                 type: string
                 format: binary
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
       operationId: submissions_steps_retrieve
@@ -1617,6 +1796,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     put:
       operationId: submissions_steps_update
       description: |-
@@ -1655,6 +1837,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionStep'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
     post:
       operationId: submissions_steps__check_logic_create
@@ -1687,6 +1872,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionStateLogic'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}:
     get:
       operationId: submissions_retrieve
@@ -1708,6 +1896,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Submission'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}/{token}/status:
     get:
       operationId: submissions_status_retrieve
@@ -1739,18 +1930,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionProcessingStatus'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '403':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '429':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}/_complete:
     post:
       operationId: submissions__complete_create
@@ -1791,12 +1991,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionCompletion'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '400':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompletionValidation'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}/_suspend:
     post:
       operationId: submissions__suspend_create
@@ -1834,6 +2040,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionSuspension'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}/co-sign:
     get:
       operationId: submissions_co_sign_retrieve
@@ -1855,24 +2064,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubmissionCoSignStatus'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '403':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '404':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '405':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -1900,6 +2121,9 @@ paths:
                 type: string
                 format: binary
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
     delete:
       operationId: submissions_files_destroy
       description: "Delete temporary file upload by the uploader. \n\nThis is called\
@@ -1919,6 +2143,9 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/files/upload:
     post:
       operationId: submissions_files_upload_create
@@ -1944,6 +2171,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/TemporaryFileUpload'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/translations/formio:
     get:
       operationId: translations_formio_retrieve
@@ -1956,6 +2186,9 @@ paths:
       responses:
         '200':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/validation/plugins:
     get:
       operationId: validation_plugins_list
@@ -1974,6 +2207,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/ValidationPlugin'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/validation/plugins/{validator}:
     post:
       operationId: validation_run
@@ -2014,6 +2250,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationResult'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /auth/{slug}/{plugin_id}/return:
     get:
       operationId: auth_return_retrieve
@@ -2066,6 +2305,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: No response body
         '400':
           headers:
@@ -2074,6 +2315,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2086,6 +2329,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2098,6 +2343,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2159,6 +2406,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2177,6 +2426,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: No response body
         '400':
           headers:
@@ -2185,6 +2436,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2197,6 +2450,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2209,6 +2464,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             text/html:
               schema:
@@ -2270,6 +2527,9 @@ paths:
               schema:
                 type: string
           description: OK. A login page is rendered.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '302':
           headers:
             Location:
@@ -2280,6 +2540,8 @@ paths:
                 will be redirected to. The value is specific to the selected authentication
                 plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: No response body
         '400':
           content:
@@ -2287,12 +2549,18 @@ paths:
               schema:
                 type: string
           description: Bad request. Invalid parameters were passed.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '404':
           content:
             text/html:
               schema:
                 type: string
           description: Not found. The slug did not point to a live form.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /payment/{plugin_id}/webhook:
     get:
       operationId: payment_webhook_retrieve
@@ -2323,6 +2591,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: No response body
         '400':
           headers:
@@ -2331,6 +2601,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2343,6 +2615,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2377,6 +2651,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: No response body
         '400':
           headers:
@@ -2385,6 +2661,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2397,6 +2675,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2452,12 +2732,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaymentInfo'
           description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '400':
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Exception'
           description: Bad request. Invalid parameters were passed.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
         '404':
           content:
             application/problem+json:
@@ -2465,6 +2751,9 @@ paths:
                 $ref: '#/components/schemas/Exception'
           description: Not found. The slug did not point to a live submission or the
             `plugin_id` does not exist.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /payment/{uuid}/return:
     get:
       operationId: payment_return_retrieve
@@ -2504,6 +2793,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: Tempomrary redirect
         '400':
           headers:
@@ -2512,6 +2803,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2524,6 +2817,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2568,6 +2863,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           description: Tempomrary redirect
         '400':
           headers:
@@ -2576,6 +2873,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2588,6 +2887,8 @@ paths:
                 type: string
               description: Allowed HTTP method(s) for this plugin.
               required: true
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
           content:
             application/problem+json:
               schema:
@@ -2595,6 +2896,14 @@ paths:
           description: Not found. The slug did not point to a live submission payment
             or the `plugin_id` does not exist.
 components:
+  headers:
+    X-Session-Expires-In:
+      schema:
+        type: string
+      description: Amount of time in seconds after which the session expires. After
+        this time has passed, the session is expired and the user is 'logged out'.
+        Note that every subsequent API call resets the expiry.
+      required: true
   schemas:
     AppointmentProduct:
       type: object

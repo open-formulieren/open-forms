@@ -9,6 +9,8 @@ from openforms.config.models import GlobalConfiguration
 # 2.2.x. It's available from Django 3.1 onwards.
 SAMESITE_VALUE = "None"
 
+SESSION_EXPIRES_IN_HEADER = "X-Session-Expires-In"
+
 
 class SameSiteNoneCookieMiddlware:
     def __init__(self, get_response):
@@ -41,5 +43,8 @@ class SessionTimeoutMiddleware:
             else config.form_session_timeout
         )
         # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#django.contrib.sessions.backends.base.SessionBase.set_expiry
-        request.session.set_expiry(int(timedelta(minutes=timeout).total_seconds()))
-        return self.get_response(request)
+        expires_in = int(timedelta(minutes=timeout).total_seconds())
+        request.session.set_expiry(expires_in)
+        response = self.get_response(request)
+        response[SESSION_EXPIRES_IN_HEADER] = expires_in
+        return response

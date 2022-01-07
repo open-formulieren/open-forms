@@ -632,7 +632,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = config(
 CORS_ALLOW_HEADERS = list(default_cors_headers) + config(
     "CORS_EXTRA_ALLOW_HEADERS", split=True, default=[]
 )
-CORS_EXPOSE_HEADERS = []
+CORS_EXPOSE_HEADERS = ["X-Session-Expires-In"]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
 #
@@ -751,6 +751,7 @@ SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
         "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
+        "openforms.api.drf_spectacular.hooks.add_middleware_headers",
     ],
     "TOS": None,
     # Optional: MAY contain "name", "url", "email"
