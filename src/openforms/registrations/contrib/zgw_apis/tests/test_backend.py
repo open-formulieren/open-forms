@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from django.test import TestCase
@@ -9,6 +10,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -433,3 +435,76 @@ class ZGWBackendTests(TestCase):
         reference = extract_submission_reference(submission)
 
         self.assertEqual("abcd1234", reference)
+
+    def test_submission_with_zgw_backend_override_attachment_iotype(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "field1",
+                    "registration": {
+                        "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+                    },
+                },
+                {
+                    "key": "field2",
+                    "registration": {
+                        "informatieobjecttype": "",
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+            },
+        )
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+        )
+
+        attachment1 = SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            file_name="attachment1.jpg",
+            form_key="field1",
+        )
+        attachment2 = SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            file_name="attachment2.jpg",
+            form_key="field2",
+        )
+
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
+
+        document_create_attachment1 = m.request_history[-2]
+        document_create_attachment2 = m.request_history[-4]
+
+        # Verify attachments
+        document_create_attachment1_body = document_create_attachment1.json()
+        self.assertEqual(document_create_attachment1.method, "POST")
+        self.assertEqual(
+            document_create_attachment1.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        # Use override IOType
+        self.assertEqual(
+            document_create_attachment1_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+        )
+
+        # Verify attachments
+        document_create_attachment2_body = document_create_attachment2.json()
+        self.assertEqual(document_create_attachment2.method, "POST")
+        self.assertEqual(
+            document_create_attachment2.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        # Use override IOType
+        self.assertEqual(
+            document_create_attachment2_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+        )
