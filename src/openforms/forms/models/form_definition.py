@@ -120,7 +120,7 @@ class FormDefinition(models.Model):
         return super().delete(using=using, keep_parents=keep_parents)
 
     def iter_components(self, configuration=None, recursive=True):
-        from ..utils import iter_components
+        from openforms.formio.utils import iter_components
 
         if configuration is None:
             configuration = self.configuration

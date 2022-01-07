@@ -7,6 +7,20 @@ from openforms.prefill import apply_prefill
 from openforms.submissions.models import Submission
 
 
+def iter_components(configuration: dict, recursive=True) -> dict:
+    components = configuration.get("components")
+    if configuration.get("type") == "columns" and recursive:
+        assert not components, "Both nested components and columns found"
+        for column in configuration["columns"]:
+            yield from iter_components(configuration=column, recursive=recursive)
+
+    if components:
+        for component in components:
+            yield component
+            if recursive:
+                yield from iter_components(configuration=component, recursive=recursive)
+
+
 def get_dynamic_configuration(
     configuration: dict, request: Request, submission: Submission
 ) -> dict:
@@ -23,4 +37,7 @@ def get_dynamic_configuration(
 
 
 def get_default_values(submission: Submission, configuration: dict) -> Dict[str, Any]:
+    import bpdb
+
+    bpdb.set_trace()
     return {}

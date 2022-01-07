@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from openforms.forms.utils import iter_components
+from openforms.formio.utils import iter_components
 
 
 def remove_html5_widget_from_forms(apps, schema_editor):
