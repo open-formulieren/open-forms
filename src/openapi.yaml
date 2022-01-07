@@ -2081,6 +2081,27 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/registration/informatieobjecttypen:
+    get:
+      operationId: registration_informatieobjecttypen_list
+      description: List the available InformatieObjectTypen.
+      summary: List available InformatieObjectTypen
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectType'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/plugins:
     get:
       operationId: registration_plugins_list
@@ -4115,6 +4136,25 @@ components:
       - delete_permanently
       - make_anonymous
       type: string
+    InformatieObjectType:
+      type: object
+      properties:
+        description:
+          type: string
+          title: omschrijving
+          description: The description of the InformatieObjectType
+        url:
+          type: string
+          format: uri
+          description: The URL of the InformatieObjectType.
+        catalogusDomain:
+          type: string
+          title: catalogus domein
+          description: The domain of the related Catalogus
+      required:
+      - catalogusDomain
+      - description
+      - url
     Location:
       type: object
       properties:

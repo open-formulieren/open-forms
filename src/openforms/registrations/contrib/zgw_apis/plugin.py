@@ -23,6 +23,7 @@ from .service import (
     create_status,
     create_zaak,
     relate_document,
+    retrieve_attachment_iotype,
     set_zaak_payment,
 )
 
@@ -113,6 +114,9 @@ class ZGWRegistration(BasePlugin):
         status = create_status(zaak)
 
         for attachment in submission.attachments:
+            options["informatieobjecttype"] = retrieve_attachment_iotype(
+                attachment, options["informatieobjecttype"]
+            )
             attachment = create_attachment_document(
                 submission.form.admin_name, attachment, options
             )

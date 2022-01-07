@@ -5,6 +5,7 @@ from typing import Any, Dict, NoReturn
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from glom import glom
 from zgw_consumers.models import Service
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -14,6 +15,7 @@ from openforms.registrations.contrib.zgw_apis.service import (
     create_attachment_document,
     create_csv_document,
     create_report_document,
+    retrieve_attachment_iotype,
 )
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -74,6 +76,11 @@ class ObjectsAPIRegistration(BasePlugin):
         ]
         attachments = []
         for attachment in submission.attachments:
+            attachment_options = deepcopy(options)
+
+            attachment_options["informatieobjecttype"] = retrieve_attachment_iotype(
+                attachment, options["informatieobjecttype_attachment"]
+            )
             attachment_document = create_attachment_document(
                 submission.form.admin_name,
                 attachment,

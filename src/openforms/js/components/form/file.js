@@ -5,6 +5,21 @@ import {getFullyQualifiedUrl} from '../../utils/urls';
 
 const BaseFileField = Formio.Components.components.file;
 
+
+const REGISTRATION = {
+    key: 'registration',
+    label: 'Registration',
+    components: [
+        {
+            type: 'textfield',
+            key: 'registration.informatieobjecttype',
+            label: 'Informatieobjecttype',
+            description: 'Save the attachment in the Documents API with this InformatieObjectType.',
+            valueProperty: 'id',
+        }
+    ]
+};
+
 // https://github.com/open-formulieren/open-forms/issues/223
 
 // pdf xls vlsx (xlsx?) csv doc dockx (docx?) jpg png, zip, rar, tar en alle open office formaten
@@ -263,6 +278,7 @@ class FileField extends BaseFileField {
             ADVANCED,
             VALIDATION_BASIC,
             FILE_TAB,
+            REGISTRATION,
           ],
         },
       ],
