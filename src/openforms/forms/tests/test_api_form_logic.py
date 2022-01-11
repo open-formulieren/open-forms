@@ -461,3 +461,51 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_201_CREATED, response_1.status_code)
         self.assertEqual(status.HTTP_201_CREATED, response_2.status_code)
+
+    def test_create_advanced_logic_rule(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = {
+            "form": f"http://testserver{form_url}",
+            "json_logic_trigger": {
+                "and": [
+                    {"==": [{"var": "text1"}, "foo"]},
+                    {"in": ["bar", {"var": "text2"}]},
+                ]
+            },
+            "actions": [
+                {
+                    "component": "text2",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+            "is_advanced": True,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
