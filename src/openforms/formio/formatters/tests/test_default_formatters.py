@@ -53,17 +53,16 @@ class DefaultFormatterTestCase(TestCase):
 
     def test_formatter_multiple(self):
         all_components = load_json("all_components.json")["components"]
-        time_component = None
-        for component in all_components:
-            if component["key"] == "time":
-                time_component = component
-                break
+        time_component = next(
+            (component for component in all_components if component["key"] == "time")
+        )
+        time_component["multiple"] = True
 
         data = ["16:26:00", "8:42:00", "23:01:00"]
 
-        formatted = format_value(time_component, data, multiple=True)
-        expected = ["16:26", "08:42", "23:01"]
+        formatted = format_value(time_component, data)
 
+        expected = "16:26, 08:42, 23:01"
         self.assertEqual(formatted, expected)
 
     def test_formatter_empty_value(self):

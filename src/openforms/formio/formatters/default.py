@@ -22,15 +22,13 @@ def _get_value_label(possible_values: list, value: str) -> str:
 
 
 class FormioFormatter(AbstractBasePlugin):
-    def __call__(
-        self, component: dict, value: Any, multiple: bool = False
-    ) -> Union[str, List]:
+    def __call__(self, component: dict, value: Any) -> str:
         if not value:
             return _("empty")
-
-        if multiple:
-            return [self.format(component, v) for v in value]
-        return self.format(component, value)
+        multiple = component.get("multiple", False)
+        values = value if multiple else [value]  # normalize to list of values
+        formatted_values = [self.format(component, value) for value in values]
+        return ", ".join(formatted_values)
 
     def format(self, component: dict, value: Any) -> str:
         raise NotImplementedError("%r must implement the 'format' method" % type(self))
@@ -39,8 +37,6 @@ class FormioFormatter(AbstractBasePlugin):
 @register("default")
 class DefaultFormatter(FormioFormatter):
     def format(self, component: Dict, value: Any) -> str:
-        if isinstance(value, list):
-            return ", ".join(str(v) for v in value)
         return str(value)
 
 
