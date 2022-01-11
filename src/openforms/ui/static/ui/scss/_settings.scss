@@ -77,7 +77,7 @@ $typography-color-link-hover: $typography-color-link !default;
 $typography-color-h: $typography-color-base !default;
 $typography-default-hover-link: false !default;
 $typography-decoration-link: underline !default;
-$typography-font-family-base: 'RO Sans', Calibri, sans-serif;
+$typography-font-family-base: 'Fira Sans', Calibri, sans-serif;
 $typography-font-family-text: $typography-font-family-base !default;
 $typography-font-family-h: $typography-font-family-base !default;
 $typography-font-size-text: math.div(16, 16)*1rem;
@@ -302,49 +302,34 @@ $util-shadow-default-blur: 1rem !default;
 $util-shadow-default-spread: 0 !default;
 
 @font-face {
-  font-family: 'RO Sans';
-  src: url('/static/ui/fonts/RO-SansWebText-Regular.eot');
-  src: url('/static/ui/fonts/RO-SansWebText-Regular.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SansWebText-Regular.ttf') format('truetype'), url('/static/ui/fonts/RO-SansWebText-Regular.woff') format('woff');
+  font-family: 'Fira Sans';
+  src: url('../ui/fonts/fira-sans-v11-latin-regular.eot');
+  src: local(''),
+       url('../ui/fonts/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-regular.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'RO Sans';
-  src: url('/static/ui/fonts/RO-SansWebText-Bold.eot');
-  src: url('/static/ui/fonts/RO-SansWebText-Bold.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SansWebText-Bold.ttf') format('truetype'), url('/static/ui/fonts/RO-SansWebText-Bold.woff') format('woff');
+  font-family: 'Fira Sans';
+  src: url('../ui/fonts/fira-sans-v11-latin-700.eot');
+  src: local(''),
+       url('../ui/fonts/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-700.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-700.woff') format('woff');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'RO Sans';
-  src: url('/static/ui/fonts/RO-SansWebText-Italic.eot');
-  src: url('/static/ui/fonts/RO-SansWebText-Italic.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SansWebText-Italic.ttf') format('truetype'), url('/static/ui/fonts/RO-SansWebText-Italic.woff') format('woff');
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'RO Serif';
-  src: url('/static/ui/fonts/RO-SerifWeb-Regular.eot');
-  src: url('/static/ui/fonts/RO-SerifWeb-Regular.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SerifWeb-Regular.ttf') format('truetype'), url('/static/ui/fonts/RO-SerifWeb-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'RO Serif';
-  src: url('/static/ui/fonts/RO-SerifWeb-Bold.eot');
-  src: url('/static/ui/fonts/RO-SerifWeb-Bold.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SerifWeb-Bold.ttf') format('truetype'), url('/static/ui/fonts/RO-SerifWeb-Bold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'RO Serif';
-  src: url('/static/ui/fonts/RO-SerifWeb-Italic.eot');
-  src: url('/static/ui/fonts/RO-SerifWeb-Italic.eot?#iefix') format('eot'), url('/static/ui/fonts/RO-SerifWeb-Italic.ttf') format('truetype'), url('/static/ui/fonts/RO-SerifWeb-Italic.woff') format('woff');
+  font-family: 'Fira Sans';
+  src: url('../ui/fonts/fira-sans-v11-latin-italic.eot');
+  src: local(''),
+       url('../ui/fonts/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-italic.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-italic.woff') format('woff');
   font-weight: normal;
   font-style: italic;
 }
