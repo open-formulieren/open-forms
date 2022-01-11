@@ -6,7 +6,6 @@ from django.utils.dateparse import parse_date, parse_time
 from django.utils.translation import gettext_lazy as _
 
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.submissions.models import _join_mapped
 
 from .registry import register
 
@@ -19,6 +18,22 @@ def _get_value_label(possible_values: list, value: str) -> str:
     assert isinstance(value, str), "Expected value to be a str"
 
     return value
+
+
+def _get_values(value: Any, filter_func=bool) -> List[Any]:
+    """
+    Filter a single or multiple value into a list of acceptable values.
+    """
+    # normalize values into a list
+    if not isinstance(value, (list, tuple)):
+        value = [value]
+    return [item for item in value if filter_func(item)]
+
+
+def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
+    # filter and map a single or multiple value into a joined string
+    formatted_values = [formatter(x) for x in _get_values(value)]
+    return seperator.join(formatted_values)
 
 
 class FormioFormatter(AbstractBasePlugin):
