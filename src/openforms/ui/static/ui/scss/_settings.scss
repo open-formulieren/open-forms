@@ -303,33 +303,33 @@ $util-shadow-default-spread: 0 !default;
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('/static/ui/fonts/fira-sans-v11-latin-regular.eot');
+  src: url('../ui/fonts/fira-sans-v11-latin-regular.eot');
   src: local(''),
-       url('/static/ui/fonts/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
-       url('/static/ui/fonts/fira-sans-v11-latin-regular.ttf') format('truetype'),
-       url('/static/ui/fonts/fira-sans-v11-latin-regular.woff') format('woff');
+       url('../ui/fonts/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-regular.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('/static/ui/fonts/fira-sans-v11-latin-700.eot');
+  src: url('../ui/fonts/fira-sans-v11-latin-700.eot');
   src: local(''),
-       url('/static/ui/fonts/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
-       url('/static/ui/fonts/fira-sans-v11-latin-700.ttf') format('truetype'),
-       url('/static/ui/fonts/fira-sans-v11-latin-700.woff') format('woff');
+       url('../ui/fonts/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-700.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-700.woff') format('woff');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('/static/ui/fonts/fira-sans-v11-latin-italic.eot');
+  src: url('../ui/fonts/fira-sans-v11-latin-italic.eot');
   src: local(''),
-       url('/static/ui/fonts/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
-       url('/static/ui/fonts/fira-sans-v11-latin-italic.ttf') format('truetype'),
-       url('/static/ui/fonts/fira-sans-v11-latin-italic.woff') format('woff');
+       url('../ui/fonts/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
+       url('../ui/fonts/fira-sans-v11-latin-italic.ttf') format('truetype'),
+       url('../ui/fonts/fira-sans-v11-latin-italic.woff') format('woff');
   font-weight: normal;
   font-style: italic;
 }
