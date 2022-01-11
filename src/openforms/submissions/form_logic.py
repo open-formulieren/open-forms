@@ -50,6 +50,11 @@ def evaluate_form_logic(
     # mutations based on logic, which is then in turn passed to the serializer(s)
     configuration = get_dynamic_configuration(
         configuration,
+        # context is expected to contain request, as is the default behaviour with DRF
+        # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
+        # planned for refactor as part of #1068, which should drop the ``request``
+        # argument. The required information is available on the ``submission`` object
+        # already.
         request=context.get("request"),
         submission=submission,
     )
