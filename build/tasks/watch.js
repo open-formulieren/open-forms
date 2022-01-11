@@ -23,7 +23,6 @@ function watchBundles() {
         paths.jsSrc,
         paths.jsSpec,
         paths.scssSrc,
-        `${paths.sourcesRoot}js/`,
         `${paths.sourcesRoot}scss/`,
     ],
     gulp.parallel(bundle, lint));

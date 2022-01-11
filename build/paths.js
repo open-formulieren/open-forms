@@ -39,17 +39,8 @@ module.exports = {
     // Path to the fonts directory
     fontsDir: sourcesRoot + 'ui/static/ui/fonts/',
 
-    // Path to the js entry point (source)
-    jsEntry: sourcesRoot + 'ui/static/ui/js/index.js',
-
-    // Path to the compatibility js entry point (source)
-    swEntry: sourcesRoot + 'ui/static/ui/js/sw.js',
-
     // Path to js (sources)
-    jsSrc: sourcesRoot + 'ui/static/ui/js/**/*.js',
-
-    // Path to the js (sources) directory
-    jsSrcDir: sourcesRoot + 'ui/static/ui/js/',
+    jsSrc: sourcesRoot + 'js/**/*.js',
 
     // Path to the (transpiled) js directory
     jsDir: staticRoot + 'bundles/',
@@ -62,10 +53,4 @@ module.exports = {
 
     // Path to js code coverage directory
     coverageDir: 'reports/jstests/',
-
-    // Path to HTML templates directory
-    htmlTemplatesDir: sourcesRoot + 'ui/templates/ui/views/',
-
-    // Path to HTML includes directory
-    htmlIncludesDir: sourcesRoot + 'ui/templates/ui/components/'
 };
