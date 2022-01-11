@@ -2,7 +2,7 @@ import json
 import os
 
 from django.test import TestCase
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from ..service import format_value
 
@@ -69,7 +69,24 @@ class DefaultFormatterTestCase(TestCase):
         all_components = load_json("all_components.json")["components"]
         component = all_components[0]
 
-        formatted = format_value(component, None)
-        expected = _("empty")
+        formatted = format_value(component, "")
 
-        self.assertEqual(formatted, expected)
+        self.assertEqual(formatted, "")
+
+    def test_formatter_checkbox(self):
+        component = {
+            "type": "checkbox",
+            "label": "Some checkbox",
+            "multiple": False,
+        }
+        yes, no, maybe = _("yes,no,maybe").split(",")
+        expected = [
+            (True, yes),
+            (False, no),
+        ]
+
+        for value, expected_formatted in expected:
+            with self.subTest(value=value, expected=expected_formatted):
+                formatted = format_value(component, value)
+
+                self.assertEqual(formatted, expected_formatted)

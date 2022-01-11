@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -38,11 +39,11 @@ def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
 
 class FormioFormatter(AbstractBasePlugin):
     def __call__(self, component: dict, value: Any) -> str:
-        if not value:
-            return _("empty")
         multiple = component.get("multiple", False)
         values = value if multiple else [value]  # normalize to list of values
-        formatted_values = [self.format(component, value) for value in values]
+        formatted_values = [
+            force_str(self.format(component, value)) for value in values
+        ]
         return ", ".join(formatted_values)
 
     def format(self, component: dict, value: Any) -> str:
