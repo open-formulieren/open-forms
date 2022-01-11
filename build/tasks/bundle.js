@@ -11,7 +11,7 @@ var webpackConfig = require('../../webpack.config.js');
  * Runs webpack to compile javascript
  */
 function bundle() {
-    return gulp.src(paths.jsEntry)
+    return gulp.src(`${paths.sourcesRoot}js/index.js`)
         .pipe(webpack(webpackConfig))
             .on('error', function () {
               this.emit('end');
