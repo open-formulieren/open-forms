@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from json_logic import jsonLogic
 from rest_framework import serializers
 
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
 
@@ -70,21 +71,12 @@ class JsonLogicTriggerComponentValidator:
         self.trigger_field = trigger_field
         self.form_field = form_field
 
-    @staticmethod
-    def _get_field_from_data_or_instance(
-        field: str, data: dict, serializer: serializers.Serializer
-    ) -> Any:
-        if not (value := data.get(field)):
-            serializer_field = serializer.fields[field]
-            value = serializer_field.get_attribute(serializer.instance)
-        return value
-
     def __call__(self, data: dict, serializer: serializers.Serializer) -> None:
         """
         Test that the trigger component is present in the form definition(s).
         """
-        form = self._get_field_from_data_or_instance(self.form_field, data, serializer)
-        trigger_expression = self._get_field_from_data_or_instance(
+        form = get_from_serializer_data_or_instance(self.form_field, data, serializer)
+        trigger_expression = get_from_serializer_data_or_instance(
             self.trigger_field, data, serializer
         )
 
