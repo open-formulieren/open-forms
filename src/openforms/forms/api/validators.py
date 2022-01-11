@@ -1,9 +1,8 @@
-from typing import Any
-
 from django.utils.translation import gettext as _
 
 from json_logic import jsonLogic
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.typing import JSONObject
@@ -32,10 +31,29 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
     code = "invalid"
     message = _('The first operand must be a `{"var": "<componentKey>"}` expression.')
+    requires_context = True
 
-    def __call__(self, expression: dict) -> None:
+    def __init__(
+        self,
+        trigger_field: str = "json_logic_trigger",
+        form_field: str = "form",
+        is_advanced_field: str = "is_advanced",
+    ):
+        self.trigger_field = trigger_field
+        self.form_field = form_field
+        self.is_advanced_field = is_advanced_field
+
+    def __call__(self, data: dict, serializer: serializers.Serializer) -> None:
+        expression: dict = get_from_serializer_data_or_instance(
+            self.trigger_field, data, serializer
+        )
+
         # ensure that the expression itself is valid
         super().__call__(expression)
+
+        # check if we need to allow a complex expression through because it's advanced logic
+        if self._is_advanced_logic(data, serializer):
+            return
 
         # at first instance, we don't support nested logic. Once we do, this will need
         # to be adapted so that we only check primitives.
@@ -50,50 +68,24 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         if not isinstance(first_operand, JsonLogicTest) or (
             first_operand.operator != "var" and not is_date_operand
         ):
-            raise serializers.ValidationError(self.message, code=self.code)
+            raise serializers.ValidationError(
+                {
+                    self.trigger_field: ErrorDetail(self.message, code=self.code),
+                }
+            )
 
-
-class JsonLogicTriggerComponentValidator:
-    """
-    Validate that the trigger expression references a valid form component.
-
-    This validator assumes that the trigger expression has been validated, e.g. with
-    :class:`JsonLogicTriggerValidator`.
-    """
-
-    default_message = _("The specified component is not present in the form definition")
-    default_code = "invalid"
-    requires_context = True
-
-    def __init__(
-        self, trigger_field: str = "json_logic_trigger", form_field: str = "form"
-    ):
-        self.trigger_field = trigger_field
-        self.form_field = form_field
-
-    def __call__(self, data: dict, serializer: serializers.Serializer) -> None:
-        """
-        Test that the trigger component is present in the form definition(s).
-        """
+        # finally, validate that it points to a valid component in the form
         form = get_from_serializer_data_or_instance(self.form_field, data, serializer)
-        trigger_expression = get_from_serializer_data_or_instance(
-            self.trigger_field, data, serializer
-        )
 
         # some data missing, can't perform check
-        if not form or not trigger_expression:
+        if not form:
             return
 
-        logic_test = JsonLogicTest.from_expression(trigger_expression)
-        first_operand = logic_test.values[0]
-        if (
-            first_operand.operator == "date"
-            and isinstance(first_operand.values[0], JsonLogicTest)
-            and first_operand.values[0].operator == "var"
-        ):
+        if is_date_operand:
             needle = first_operand.values[0].values[0]
         else:
             needle = first_operand.values[0]
+
         for component in form.iter_components(recursive=True):
             key = component.get("key")
             if key and key == needle:
@@ -108,9 +100,27 @@ class JsonLogicTriggerComponentValidator:
         # executes if the break was not hit
         else:
             raise serializers.ValidationError(
-                detail={self.trigger_field: self.default_message},
-                code=self.default_code,
+                {
+                    self.trigger_field: ErrorDetail(
+                        _(
+                            "The specified component is not present in the form definition"
+                        ),
+                        code=self.code,
+                    ),
+                }
             )
+
+    def _is_advanced_logic(
+        self, data: dict, serializer: serializers.Serializer
+    ) -> bool:
+        # check if we need to allow a complex expression through because it's advanced logic
+        if self.is_advanced_field in serializer.fields:
+            is_advanced = get_from_serializer_data_or_instance(
+                self.is_advanced_field, data, serializer
+            )
+            if is_advanced:
+                return True
+        return False
 
 
 class FormIOComponentsValidator:
