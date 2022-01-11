@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from json_logic import jsonLogic
 
+from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.utils import get_default_values
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormDefinition, FormLogic
 from openforms.prefill import JSONObject
@@ -36,12 +38,33 @@ def evaluate_form_logic(
     step: "SubmissionStep",
     data: Dict[str, Any],
     dirty=False,
+    **context,
 ) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
     """
     # grab the configuration that can be **mutated**
     configuration = step.form_step.form_definition.configuration
+
+    # we need to apply the context-specific configurations first before we can apply
+    # mutations based on logic, which is then in turn passed to the serializer(s)
+    configuration = get_dynamic_configuration(
+        configuration,
+        # context is expected to contain request, as is the default behaviour with DRF
+        # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
+        # planned for refactor as part of #1068, which should drop the ``request``
+        # argument. The required information is available on the ``submission`` object
+        # already.
+        request=context.get("request"),
+        submission=submission,
+    )
+
+    # check what the default data values are
+    defaults = get_default_values(configuration)
+
+    # merge the default values and supplied data - supplied data overwrites defaults
+    # if keys are present in both dicts
+    data = {**defaults, **data}
 
     if not step.data:
         step.data = {}

@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../../utils/i18n';
 import Select from '../../forms/Select';
 import DeleteIcon from '../../DeleteIcon';
 import ComponentSelection from '../../forms/ComponentSelection';
@@ -32,11 +31,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
         }
     };
 
-    // apply i18n to the constants choice labels
-    const actionTypeChoices = getTranslatedChoices(intl, ACTION_TYPES);
-    const modifiablePropertyChoices = getTranslatedChoices(
-        intl,
-        Object.entries(MODIFIABLE_PROPERTIES).map( ([key, info]) => [key, info.label] )
+    const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(
+        ([key, info]) => [key, info.label]
     );
 
     return (
@@ -59,7 +55,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                     <div className="dsl-editor__node">
                         <Select
                             name="actionType"
-                            choices={actionTypeChoices}
+                            choices={ACTION_TYPES}
+                            translateChoices
                             allowBlank
                             onChange={onChange}
                             value={action.actionType}
@@ -86,6 +83,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                                 <Select
                                     name="componentProperty"
                                     choices={modifiablePropertyChoices}
+                                    translateChoices
                                     allowBlank
                                     onChange={(event) => {
                                         const property = event.target.value;
@@ -107,7 +105,8 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                             <div className="dsl-editor__node">
                                 <Select
                                     name="componentPropertyValue"
-                                    choices={getTranslatedChoices(intl, MODIFIABLE_PROPERTIES[action.componentProperty].options)}
+                                    choices={MODIFIABLE_PROPERTIES[action.componentProperty].options}
+                                    translateChoices
                                     allowBlank
                                     onChange={(event) => {
                                         const propertyType = action.componentPropertyType;

@@ -1161,3 +1161,216 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertFalse(submission_details["submission"]["steps"][1]["isApplicable"])
+
+    def test_with_default_values(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "hide",
+                        "defaultValue": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "when-unchecked",
+                        "hidden": False,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "when-checked",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        # display checked textfield when checkbox is checked, hide the unchecked one
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "hide"}, True]},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "when-unchecked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                },
+                {
+                    "formStep": None,
+                    "component": "when-checked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": False,
+                    },
+                },
+            ],
+        )
+        # hide checked textfield when checkbox is unchecked, display the unchecked one
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "hide"}, False]},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "when-unchecked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": False,
+                    },
+                },
+                {
+                    "formStep": None,
+                    "component": "when-checked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                },
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        url_kwargs = {
+            "submission_uuid": submission.uuid,
+            "step_uuid": form.formstep_set.get().uuid,
+        }
+        endpoint = reverse("api:submission-steps-detail", kwargs=url_kwargs)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check", kwargs=url_kwargs
+        )
+
+        with self.subTest("Initial call without data"):
+            response = self.client.get(endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            configuration = response.json()["formStep"]["configuration"]
+            self.assertEqual(
+                configuration["components"][1],
+                {
+                    "key": "when-unchecked",
+                    "type": "textfield",
+                    "hidden": True,
+                },
+            )
+            self.assertEqual(
+                configuration["components"][2],
+                {
+                    "key": "when-checked",
+                    "type": "textfield",
+                    "hidden": False,
+                },
+            )
+
+        with self.subTest("On explicit un-check"):
+            response = self.client.post(logic_check_endpoint, {"data": {"hide": False}})
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            configuration = response.json()["step"]["formStep"]["configuration"]
+            self.assertEqual(
+                configuration["components"][1],
+                {
+                    "key": "when-unchecked",
+                    "type": "textfield",
+                    "hidden": False,
+                },
+            )
+            self.assertEqual(
+                configuration["components"][2],
+                {
+                    "key": "when-checked",
+                    "type": "textfield",
+                    "hidden": True,
+                },
+            )
+
+        with self.subTest("On explicit check"):
+            response = self.client.post(logic_check_endpoint, {"data": {"hide": True}})
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            configuration = response.json()["step"]["formStep"]["configuration"]
+            self.assertEqual(
+                configuration["components"][1],
+                {
+                    "key": "when-unchecked",
+                    "type": "textfield",
+                    "hidden": True,
+                },
+            )
+            self.assertEqual(
+                configuration["components"][2],
+                {
+                    "key": "when-checked",
+                    "type": "textfield",
+                    "hidden": False,
+                },
+            )
+
+
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+    def test_evaluate_logic_with_default_values(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                        "defaultValue": "some-default",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "optional",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "name"}, "some-default"]},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "optional",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        configuration = response.json()["formStep"]["configuration"]
+        self.assertEqual(
+            configuration["components"][1],
+            {
+                "key": "optional",
+                "type": "textfield",
+                "hidden": True,
+            },
+        )
