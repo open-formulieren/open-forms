@@ -1,5 +1,5 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n %}
+{% load i18n solo_tags %}
 
 {% block after_field_sets %}
     <fieldset class="module aligned">
@@ -8,15 +8,30 @@
                 <label>{% trans "Merged Data:" %}</label>
                 <div class="readonly">
                     <ul>
-                        {% for key, value in data.items %}
-                            {% if value.type == 'unknown component' %}
-                                <li>{% trans "Unknown component" %}</li>
-                            {% elif value.type in image_components %}
-                                <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
-                            {% else %}
-                                <li>{{ key }}: {{ value.value }}</li>
-                            {% endif %}
-                        {% endfor %}
+                        {% get_solo 'config.GlobalConfiguration' as config %}
+                        {% if config.enable_formio_formatters %}
+                            {% for key, info in data.items %}
+                                {% with component=info.0 value=info.1 %}
+                                {% if component.type == 'unknown component' %}
+                                    <li>{% trans "Unknown component" %}</li>
+                                {% elif component.type in image_components %}
+                                    <li>{{ key }}: <img class='signature-image' src='{{ value }}' alt='{{ key }}'></li>
+                                {% else %}
+                                    <li>{{ key }}: {{ value }}</li>
+                                {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% else %}
+                            {% for key, value in data.items %}
+                                {% if value.type == 'unknown component' %}
+                                    <li>{% trans "Unknown component" %}</li>
+                                {% elif value.type in image_components %}
+                                    <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
+                                {% else %}
+                                    <li>{{ key }}: {{ value.value }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
             </div>

@@ -123,6 +123,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "display_sdk_information",
                     "enable_react_form",
                     "enable_demo_plugins",
+                    "enable_formio_formatters",
                     "default_test_bsn",
                     "default_test_kvk",
                     "allow_empty_initiator",
