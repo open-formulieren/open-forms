@@ -167,6 +167,23 @@ class DownloadSubmissionReportTests(APITestCase):
                             "showTimes": True,
                         },
                     },
+                    {
+                        "key": "number1",
+                        "type": "number",
+                        "label": "Test number 1",
+                        "decimalLimit": 0,
+                    },
+                    {
+                        "key": "number2",
+                        "type": "number",
+                        "label": "Test number 2",
+                        "decimalLimit": 2,
+                    },
+                    {
+                        "key": "currency",
+                        "type": "currency",
+                        "label": "Test currency",
+                    },
                 ]
             }
         )
@@ -181,6 +198,9 @@ class DownloadSubmissionReportTests(APITestCase):
                 "time0": "17:30:00",
                 "date3": "2021-12-24",
                 "time1": "2021-12-24T08:10:00+01:00",
+                "number1": 1,
+                "number2": 1.23,
+                "currency": 1.23,
             },
             submission=submission,
             form_step=form_step,
@@ -196,6 +216,9 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test time 1", "17:30"),
             ("Afspraakdatum", "24 december 2021"),
             ("Afspraaktijdstip", "08:10"),
+            ("Test number 1", "1"),
+            ("Test number 2", "1,23"),
+            ("Test currency", "1,23"),
         ]
         for label, value in values:
             with self.subTest(label):
