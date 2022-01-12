@@ -90,3 +90,16 @@ class SubmissionConfirmationPageTests(APITestCase):
             "<p>some product information<p/>",
             confirmation_page_content,
         )
+
+    def test_content_not_sanitized(self):
+        config = GlobalConfiguration.get_solo()
+        config.submission_confirmation_template = "See http://example.com/bla"
+        config.save()
+
+        submission = SubmissionFactory.from_data({"name": "john", "last_name": "doe"})
+        confirmation_page_content = submission.render_confirmation_page()
+
+        self.assertEqual(
+            "See http://example.com/bla",
+            confirmation_page_content,
+        )
