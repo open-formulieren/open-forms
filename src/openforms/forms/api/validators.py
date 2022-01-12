@@ -61,7 +61,8 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
         first_operand = logic_test.values[0]
         is_date_operand = (
-            first_operand.operator == "date"
+            isinstance(first_operand, JsonLogicTest)
+            and first_operand.operator == "date"
             and isinstance(first_operand.values[0], JsonLogicTest)
             and first_operand.values[0].operator == "var"
         )
