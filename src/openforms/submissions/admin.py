@@ -86,6 +86,7 @@ class SubmissionStepInline(admin.StackedInline):
         "form_step",
         "data",
     )
+    raw_id_fields = ("form_step",)
 
 
 class SubmissionPaymentInline(admin.StackedInline):

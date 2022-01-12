@@ -426,7 +426,7 @@ class Submission(models.Model):
         }
         rendered_content = Template(template).render(Context(context_data))
 
-        return sanitize_content(rendered_content)
+        return rendered_content
 
     @property
     def steps(self) -> List["SubmissionStep"]:
