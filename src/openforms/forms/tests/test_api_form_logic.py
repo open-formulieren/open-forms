@@ -305,7 +305,7 @@ class FormLogicAPITests(APITestCase):
         self.assertEqual(0, FormLogic.objects.all().count())
 
     def test_invalid_logic_trigger(self):
-        user = SuperUserFactory.create(username="test", password="test")
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         FormStepFactory.create(
             form=form,
@@ -348,6 +348,53 @@ class FormLogicAPITests(APITestCase):
         self.assertEqual(
             "jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
         )
+
+    def test_invalid_logic_trigger_not_component_reference(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "step1_textfield1"},
+                    {
+                        "type": "date",
+                        "key": "step1_date1",
+                    },
+                ]
+            },
+        )
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        url = reverse("api:form-logics-list")
+        invalid = [
+            {"==": [1, 1]},
+            {"==": [{"date": "2022-01-12"}, {"-": [{"today": []}, {"rdelta": [18]}]}]},
+        ]
+
+        for trigger in invalid:
+            with self.subTest(trigger=trigger):
+                form_logic_data = {
+                    "form": f"http://testserver{form_path}",
+                    "json_logic_trigger": trigger,
+                    "actions": [
+                        {
+                            "component": "step1_textfield1",
+                            "action": {
+                                "name": "Hide element",
+                                "type": "property",
+                                "property": {"value": "hidden", "type": "bool"},
+                                "state": True,
+                            },
+                        }
+                    ],
+                }
+
+                response = self.client.post(url, data=form_logic_data)
+
+                self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+                self.assertEqual(
+                    "jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
+                )
 
     def test_create_rule_with_empty_formstep(self):
         user = SuperUserFactory.create(username="test", password="test")
@@ -461,3 +508,135 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_201_CREATED, response_1.status_code)
         self.assertEqual(status.HTTP_201_CREATED, response_2.status_code)
+
+    def test_create_advanced_logic_rule(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = {
+            "form": f"http://testserver{form_url}",
+            "json_logic_trigger": {
+                "and": [
+                    {"==": [{"var": "text1"}, "foo"]},
+                    {"in": ["bar", {"var": "text2"}]},
+                ]
+            },
+            "actions": [
+                {
+                    "component": "text2",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+            "is_advanced": True,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_logic_rule_skip_trigger_validation(self):
+        """
+        Assert that the trigger validation is skipped if dependent data is missing.
+        """
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form_logic_data = {
+            "form": "invalid",
+            "json_logic_trigger": {
+                "invalid_op": [
+                    {"==": [{"var": "text1"}, "foo"]},
+                    {"in": ["bar", {"var": "text2"}]},
+                ]
+            },
+            "actions": [
+                {
+                    "component": "text2",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+            "is_advanced": True,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual("form", response.json()["invalidParams"][0]["name"])
+
+    def test_create_logic_rule_trigger_invalid_reference(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = {
+            "form": f"http://testserver{form_url}",
+            "json_logic_trigger": {
+                "==": [{"var": "text42"}, "foo"],
+            },
+            "actions": [
+                {
+                    "component": "text2",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+            "is_advanced": False,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            "jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
+        )

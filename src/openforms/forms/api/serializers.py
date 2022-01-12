@@ -33,7 +33,6 @@ from ..models import (
 )
 from .validators import (
     FormIOComponentsValidator,
-    JsonLogicTriggerComponentValidator,
     JsonLogicTriggerValidator,
     JsonLogicValidator,
 )
@@ -596,10 +595,12 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
                     "or not. Note that this must be a valid JsonLogic expression, and "
                     "the first operand must be a reference to a component in the form."
                 ),
-                "validators": [JsonLogicTriggerValidator()],
+                "validators": [JsonLogicValidator()],
             },
         }
-        validators = [JsonLogicTriggerComponentValidator()]
+        validators = [
+            JsonLogicTriggerValidator("json_logic_trigger"),
+        ]
 
 
 class FormLogicSerializer(FormLogicBaseSerializer):

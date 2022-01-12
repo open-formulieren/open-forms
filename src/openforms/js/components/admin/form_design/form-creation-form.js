@@ -46,7 +46,7 @@ import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
-import {getFormComponents} from './utils';
+import {getFormComponents, findComponent} from './utils';
 
 const initialFormState = {
     form: {
@@ -350,12 +350,14 @@ function reducer(draft, action) {
 
             // name is in the form "appointments.<key>"
             const [prefix, configKey] = name.split('.');
-            const allComponents = Object.values(getFormComponents(draft.formSteps));
 
             // utility to find the component for a given appointment config option
             const findComponentForConfigKey = (configKey) => {
                 const name = `${prefix}.${configKey}`;
-                return allComponents.find(component => getObjectValue(component, name, false));
+                return findComponent(
+                    draft.formSteps,
+                    (component) => getObjectValue(component, name, false)
+                );
             };
 
             // first, ensure that if the value was changed, the old component is cleared
@@ -366,7 +368,7 @@ function reducer(draft, action) {
             }
 
             // next, handle setting the config to the new component
-            const selectedComponent = allComponents.find(component => component.key === selectedComponentKey);
+            const selectedComponent = findComponent(draft.formSteps, (component) => component.key === selectedComponentKey);
             set(selectedComponent, name, true);
 
             // finally, handle the dependencies of all appointment configuration - we need
