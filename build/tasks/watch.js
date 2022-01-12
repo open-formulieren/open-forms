@@ -1,7 +1,6 @@
 const gulp = require('gulp');
 const paths = require('../paths');
 const {bundle} = require('./bundle');
-const {lint} = require('./lint');
 
 
 /**
@@ -19,13 +18,14 @@ const watch = gulp.parallel(watchBundles);
 function watchBundles() {
     bundle();
     gulp.watch(
-    [
-        paths.jsSrc,
-        paths.jsSpec,
-        paths.scssSrc,
-        `${paths.sourcesRoot}scss/`,
-    ],
-    gulp.parallel(bundle, lint));
+        [
+            paths.jsSrc,
+            paths.jsSpec,
+            paths.scssSrc,
+            `${paths.sourcesRoot}scss/`,
+        ],
+        bundle
+    );
 }
 
 
