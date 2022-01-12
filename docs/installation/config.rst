@@ -242,6 +242,10 @@ Other settings
   to ``50000/hour``. Note that if throttling is disabled altogether, this configuration
   parameter has no effect.
 
+* ``NUM_PROXIES``: The number of application proxies that the API runs behind. See the
+  `upstream documentation <https://www.django-rest-framework.org/api-guide/settings/#num_proxies>`_
+  for more context. Defaults to ``1``.
+
 * ``TWO_FACTOR_FORCE_OTP_ADMIN``: Enforce 2 Factor Authentication in the admin or not.
   Default ``True``. You'll probably want to disable this when using OIDC.
 

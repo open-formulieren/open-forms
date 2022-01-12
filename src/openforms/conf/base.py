@@ -717,7 +717,7 @@ REST_FRAMEWORK = {
     # reverse proxies (X-Forwarded-For).
     "NUM_PROXIES": config(
         "NUM_PROXIES",
-        default=None,
+        default=1,
         cast=lambda val: int(val) if val is not None else None,
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
