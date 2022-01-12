@@ -41,6 +41,7 @@ AppointmentConfigurationComponentSelection.propTypes = {
 
 const Appointments = ({ onChange }) => {
     const availableComponents = useContext(ComponentsContext);
+
     // extract the current values from the component definitions
     const configuration = {}; // key: appointment configuration key, value: component key
     Object.entries(availableComponents).forEach(([componentKey, component]) =>{
