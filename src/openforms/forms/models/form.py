@@ -345,7 +345,9 @@ class Form(models.Model):
         return list(return_keys)
 
     def iter_components(self, recursive=True):
-        for form_step in self.formstep_set.select_related("form_definition"):
+        for form_step in self.formstep_set.order_by("order").select_related(
+            "form_definition"
+        ):
             yield from form_step.iter_components(recursive=recursive)
 
     @transaction.atomic
