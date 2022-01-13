@@ -16,6 +16,7 @@ from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
+from django.utils.formats import localize
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -620,6 +621,12 @@ class Submission(models.Model):
                         if selected_values.get(entry["value"])
                     ]
                     printable_data[label] = ", ".join(selected_labels)
+
+                elif info["type"] == "number":
+                    printable_data[label] = localize(info["value"])
+
+                elif info["type"] == "currency":
+                    printable_data[label] = localize(info["value"])
 
                 elif type(info["value"]) is dict:
                     printable_value = info["value"]
