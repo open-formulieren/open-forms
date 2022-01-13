@@ -11,4 +11,6 @@ exec celery beat \
     --app openforms \
     -l $LOGLEVEL \
     --workdir src \
-    -s ../celerybeat/beat
+    -s ../celerybeat/beat \
+    --pidfile=  # empty on purpose, see #1182
+
