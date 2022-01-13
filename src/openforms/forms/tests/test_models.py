@@ -116,11 +116,8 @@ class FormTestCase(TestCase):
         step_1 = FormStepFactory.create(form=form, form_definition=def_1)
         step_2 = FormStepFactory.create(form=form, form_definition=def_2)
 
-        def take_key(item):
-            return item["key"]
-
         with self.subTest("recursive"):
-            actual = sorted(list(form.iter_components(recursive=True)), key=take_key)
+            actual = list(form.iter_components(recursive=True))
             expected = [
                 {"key": "aaa", "label": "AAA"},
                 {
@@ -145,7 +142,7 @@ class FormTestCase(TestCase):
             self.assertEqual(actual, expected)
 
         with self.subTest("non-recursive"):
-            actual = sorted(list(form.iter_components(recursive=False)), key=take_key)
+            actual = list(form.iter_components(recursive=False))
             expected = [
                 {"key": "aaa", "label": "AAA"},
                 {
@@ -163,6 +160,41 @@ class FormTestCase(TestCase):
             ]
 
             self.assertEqual(actual, expected)
+
+    def test_iter_components_ordering(self):
+        # failing test for Github #750
+        form = FormFactory.create()
+
+        def_2 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "bbb", "label": "BBB"},
+                ],
+            }
+        )
+        def_1 = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "aaa", "label": "AAA"},
+                ],
+            }
+        )
+        # create out of order so related queryset would sort bad
+        step_2 = FormStepFactory.create(form=form, form_definition=def_2)
+        step_1 = FormStepFactory.create(form=form, form_definition=def_1)
+        # set correct expected order
+        step_2.swap(step_1)
+
+        # check we fixed the ordering of form steps
+        actual = list(form.iter_components(recursive=True))
+        expected = [
+            {"key": "aaa", "label": "AAA"},
+            {"key": "bbb", "label": "BBB"},
+        ]
+
+        self.assertEqual(actual, expected)
 
 
 class FormQuerysetTestCase(TestCase):
