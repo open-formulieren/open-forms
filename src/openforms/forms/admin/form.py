@@ -1,9 +1,9 @@
-from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
+from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
@@ -104,6 +104,7 @@ class FormAdmin(
         "get_authentication_backends_display",
         "get_payment_backend_display",
         "get_registration_backend_display",
+        "get_object_actions",
     )
     inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
@@ -139,6 +140,12 @@ class FormAdmin(
             .get_queryset(request)
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
+
+    def get_object_actions(self, obj) -> str:
+        links = ((obj.get_absolute_url(), _("Show form")),)
+        return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
+
+    get_object_actions.short_description = _("Actions")
 
     def anno_name(self, obj):
         return obj.admin_name
