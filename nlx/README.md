@@ -39,8 +39,8 @@ If your local user ID is different than `UID: 1001`, then you should fix these
 permissions:
 
 ```bash
-sudo chown 1001 nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
-sudo chmod go-rwx nlx-try-me/pki/certs/management-api.try-me.nlx.local-key.pem
+sudo chown 1001 nlx-try-me/pki/certs/internal-cert-key.pem
+sudo chmod go-rwx nlx-try-me/pki/certs/internal-cert-key.pem
 ```
 
 ## Running the NLX stack
