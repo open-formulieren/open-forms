@@ -1,7 +1,5 @@
 import logging
-import uuid
 
-from django.core.exceptions import PermissionDenied
 from django.views.generic import RedirectView
 
 from furl import furl
