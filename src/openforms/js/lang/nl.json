@@ -100,7 +100,7 @@
     "originalDefault": "Name"
   },
   "5AC1+x": {
-    "defaultMessage": "The value of the selected field will be the process variable value.",
+    "defaultMessage": "De waarde van het geselecteerde veld is de waarde van de procesvariabele.",
     "description": "Manage process vars component help text",
     "originalDefault": "The value of the selected field will be the process variable value."
   },
@@ -190,7 +190,7 @@
     "originalDefault": "Edit variable {name}"
   },
   "9N67XB": {
-    "defaultMessage": "Invalid JSON syntax",
+    "defaultMessage": "Ongeldige JSON syntax",
     "description": "Advanced logic rule invalid json message",
     "originalDefault": "Invalid JSON syntax"
   },
@@ -295,7 +295,7 @@
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
   "CtjZFq": {
-    "defaultMessage": "Submission allowed",
+    "defaultMessage": "Inzenden toegestaan",
     "description": "Form submissionAllowed field label",
     "originalDefault": "Submission allowed"
   },
@@ -310,7 +310,7 @@
     "originalDefault": "Move down"
   },
   "Dwnqdq": {
-    "defaultMessage": "Advanced Logic",
+    "defaultMessage": "Geavanceerde logica",
     "description": "Advanced logic fieldset title",
     "originalDefault": "Advanced Logic"
   },
@@ -320,7 +320,7 @@
     "originalDefault": "Logic"
   },
   "EBsxTk": {
-    "defaultMessage": "Field",
+    "defaultMessage": "Veld",
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
   },
@@ -340,7 +340,7 @@
     "originalDefault": "the array"
   },
   "FQswyM": {
-    "defaultMessage": "Mode",
+    "defaultMessage": "Modus",
     "description": "Pricing mode label",
     "originalDefault": "Mode"
   },
@@ -390,7 +390,7 @@
     "originalDefault": "Null"
   },
   "H3dRU6": {
-    "defaultMessage": "Check to include the field as process variable",
+    "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
     "description": "Manage process vars enabled checkbox help text",
     "originalDefault": "Check to include the field as process variable"
   },
@@ -510,12 +510,12 @@
     "originalDefault": "Copy"
   },
   "LaovNg": {
-    "defaultMessage": "Add variable",
+    "defaultMessage": "Voeg variabele toe",
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
   "M0kOz9": {
-    "defaultMessage": "Are you sure you want to remove this variable?",
+    "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
     "description": "Camunda process variable mapping delete confirmation message",
     "originalDefault": "Are you sure you want to remove this variable?"
   },
@@ -560,7 +560,7 @@
     "originalDefault": "Save and add another"
   },
   "PC7ICN": {
-    "defaultMessage": "Enabled",
+    "defaultMessage": "Ingeschakeld",
     "description": "Manage process vars enabled checkbox column title",
     "originalDefault": "Enabled"
   },
@@ -605,12 +605,12 @@
     "originalDefault": "Save text"
   },
   "QXfH7G": {
-    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
+    "defaultMessage": "Geeft aan of de gebruiker het formulier kan verzenden en of de gebruiker de overzichtspagina kan zien.",
     "description": "Form submissionAllowed field help text",
     "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
   },
   "QaPqxz": {
-    "defaultMessage": "No (with overview page)",
+    "defaultMessage": "Nee (met overzichtspagina)",
     "description": "option \"no_with_overview\" of \"submission_allowed\"",
     "originalDefault": "No (with overview page)"
   },
@@ -670,7 +670,7 @@
     "originalDefault": "All Submissions Removal Limit"
   },
   "V21YkS": {
-    "defaultMessage": "Confirm",
+    "defaultMessage": "Bevestigen",
     "description": "Camunda process variables confirm button",
     "originalDefault": "Confirm"
   },
@@ -720,7 +720,7 @@
     "originalDefault": "Subject"
   },
   "XOgJDS": {
-    "defaultMessage": "Invalid JSON logic expression",
+    "defaultMessage": "Ongeldige JSON logica expressie",
     "description": "Advanced logic rule invalid JSON-logic message",
     "originalDefault": "Invalid JSON logic expression"
   },
@@ -745,7 +745,7 @@
     "originalDefault": "Previous text"
   },
   "a4gS07": {
-    "defaultMessage": "No (without overview page)",
+    "defaultMessage": "Nee (zonder overzichtspagina)",
     "description": "option \"no_without_overview\" of \"submission_allowed\"",
     "originalDefault": "No (without overview page)"
   },
@@ -875,7 +875,7 @@
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
   "gz32s2": {
-    "defaultMessage": "If desired, you can specify a different process variable name.",
+    "defaultMessage": "Indien gewenst kunt u een andere naam van procesvariabele opgeven.",
     "description": "Manage process vars alias help text",
     "originalDefault": "If desired, you can specify a different process variable name."
   },
@@ -885,7 +885,7 @@
     "originalDefault": "Save and continue editing"
   },
   "h/tRGs": {
-    "defaultMessage": "Yes",
+    "defaultMessage": "Ja",
     "description": "option \"yes\" of \"submission_allowed\"",
     "originalDefault": "Yes"
   },
