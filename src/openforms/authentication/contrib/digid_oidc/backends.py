@@ -4,13 +4,12 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import SuspiciousOperation
 from django.urls import reverse
 
-from mozilla_django_oidc.auth import (
+from mozilla_django_oidc_db.backends import (
     OIDCAuthenticationBackend as _OIDCAuthenticationBackend,
 )
 
 from .constants import DIGID_OIDC_AUTH_SESSION_KEY
 from .mixins import SoloConfigMixin
-from .models import OpenIDConnectPublicConfig
 from .settings import OIDC_AUTHENTICATION_CALLBACK_URL
 
 logger = logging.getLogger(__name__)
@@ -20,14 +19,6 @@ class OIDCAuthenticationDigiDBackend(SoloConfigMixin, _OIDCAuthenticationBackend
     """
     Allows logging in via OIDC with DigiD
     """
-
-    def __init__(self, *args, **kwargs):
-        self.config = OpenIDConnectPublicConfig.get_solo()
-
-        if not self.config.enabled:
-            return
-
-        super().__init__(*args, **kwargs)
 
     def authenticate(self, request, *args, **kwargs):
         # Differentiate between DigiD authentication via OIDC and admin login
