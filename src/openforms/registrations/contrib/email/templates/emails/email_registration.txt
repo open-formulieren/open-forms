@@ -6,7 +6,7 @@ Submission payment received for {{form_name}} (submitted on {{datetime}})
 Our reference: {{ public_reference }}
 {% endblocktrans %}
 {% blocktrans trimmed %}
-Payment order ID: {{payment_order_id}})
+Payment order ID: {{payment_order_id}}
 {% endblocktrans %}
 {% else %}{% blocktrans trimmed %}
 Submission details for {{form_name}} (submitted on {{datetime}})
