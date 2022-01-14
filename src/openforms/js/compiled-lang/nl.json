@@ -130,7 +130,7 @@
   "5AC1+x": [
     {
       "type": 0,
-      "value": "The value of the selected field will be the process variable value."
+      "value": "De ingevulde veldwaarde wordt gebruikt als waarde voor de procesvariabele."
     }
   ],
   "5OXIff": [
@@ -282,7 +282,7 @@
   "9N67XB": [
     {
       "type": 0,
-      "value": "Invalid JSON syntax"
+      "value": "Ongeldige JSON syntax"
     }
   ],
   "9RDDDn": [
@@ -383,7 +383,7 @@
           "value": [
             {
               "type": 0,
-              "value": "(1 variable mapped)"
+              "value": "(1 variabele gekoppeld)"
             }
           ]
         },
@@ -399,7 +399,7 @@
             },
             {
               "type": 0,
-              "value": " variables mapped)"
+              "value": " variabelen gekoppeld)"
             }
           ]
         }
@@ -472,7 +472,7 @@
   "CtjZFq": [
     {
       "type": 0,
-      "value": "Submission allowed"
+      "value": "Inzenden toegestaan"
     }
   ],
   "DEAqyQ": [
@@ -490,7 +490,7 @@
   "Dwnqdq": [
     {
       "type": 0,
-      "value": "Advanced Logic"
+      "value": "Geavanceerde logica"
     }
   ],
   "DxGKNm": [
@@ -502,7 +502,7 @@
   "EBsxTk": [
     {
       "type": 0,
-      "value": "Field"
+      "value": "Veld"
     }
   ],
   "EtAvFF": [
@@ -736,13 +736,13 @@
   "LaovNg": [
     {
       "type": 0,
-      "value": "Add variable"
+      "value": "Variabele toevoegen"
     }
   ],
   "M0kOz9": [
     {
       "type": 0,
-      "value": "Are you sure you want to remove this variable?"
+      "value": "Ben je zeker dat je deze variabele wil verwijderen?"
     }
   ],
   "M1L9/1": [
@@ -754,13 +754,13 @@
   "MEkGHD": [
     {
       "type": 0,
-      "value": "Component"
+      "value": "Veld"
     }
   ],
   "NwTdLM": [
     {
       "type": 0,
-      "value": "Veld waar beschikbare lokaties voor een afspraak komen te staan"
+      "value": "Veld waar beschikbare locaties voor een afspraak komen te staan"
     }
   ],
   "O/wKJh": [
@@ -796,7 +796,7 @@
   "PC7ICN": [
     {
       "type": 0,
-      "value": "Enabled"
+      "value": "Ingeschakeld"
     }
   ],
   "PaEo2j": [
@@ -858,13 +858,13 @@
   "QXfH7G": [
     {
       "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+      "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
     }
   ],
   "QaPqxz": [
     {
       "type": 0,
-      "value": "No (with overview page)"
+      "value": "Nee (met overzichtspagina)"
     }
   ],
   "Qr2wnR": [
@@ -936,7 +936,7 @@
   "V21YkS": [
     {
       "type": 0,
-      "value": "Confirm"
+      "value": "Bevestig"
     }
   ],
   "VMMOA0": [
@@ -1012,7 +1012,7 @@
   "XOgJDS": [
     {
       "type": 0,
-      "value": "Invalid JSON logic expression"
+      "value": "Ongeldige JSON-logic uitdrukking. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
     }
   ],
   "YQ/Vx0": [
@@ -1042,7 +1042,7 @@
   "a4gS07": [
     {
       "type": 0,
-      "value": "No (without overview page)"
+      "value": "Nee (zonder overzichtspagina)"
     }
   ],
   "a9RqmQ": [
@@ -1150,7 +1150,7 @@
   "eBk+W0": [
     {
       "type": 0,
-      "value": "Manage process variables"
+      "value": "Beheer procesvariabelen"
     }
   ],
   "eJEu3L": [
@@ -1198,7 +1198,7 @@
   "gz32s2": [
     {
       "type": 0,
-      "value": "If desired, you can specify a different process variable name."
+      "value": "Indien gewenst, dan kan je een alternatieve naam opgeven voor de procesvariabele."
     }
   ],
   "gzAzdU": [
