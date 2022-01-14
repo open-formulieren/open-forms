@@ -340,7 +340,7 @@
     "originalDefault": "the array"
   },
   "FQswyM": {
-    "defaultMessage": "Mode",
+    "defaultMessage": "Modus",
     "description": "Pricing mode label",
     "originalDefault": "Mode"
   },
@@ -395,7 +395,7 @@
     "originalDefault": "Null"
   },
   "H3dRU6": {
-    "defaultMessage": "Check to include the field as process variable",
+    "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
     "description": "Manage process vars enabled checkbox help text",
     "originalDefault": "Check to include the field as process variable"
   },
@@ -520,7 +520,7 @@
     "originalDefault": "Add variable"
   },
   "M0kOz9": {
-    "defaultMessage": "Ben je zeker dat je deze variabele wil verwijderen?",
+    "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
     "description": "Camunda process variable mapping delete confirmation message",
     "originalDefault": "Are you sure you want to remove this variable?"
   },
@@ -675,7 +675,7 @@
     "originalDefault": "All Submissions Removal Limit"
   },
   "V21YkS": {
-    "defaultMessage": "Bevestig",
+    "defaultMessage": "Bevestigen",
     "description": "Camunda process variables confirm button",
     "originalDefault": "Confirm"
   },
@@ -890,7 +890,7 @@
     "originalDefault": "Save and continue editing"
   },
   "h/tRGs": {
-    "defaultMessage": "Yes",
+    "defaultMessage": "Ja",
     "description": "option \"yes\" of \"submission_allowed\"",
     "originalDefault": "Yes"
   },
