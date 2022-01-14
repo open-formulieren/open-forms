@@ -4,13 +4,12 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import SuspiciousOperation
 from django.urls import reverse
 
-from mozilla_django_oidc.auth import (
+from mozilla_django_oidc_db.backends import (
     OIDCAuthenticationBackend as _OIDCAuthenticationBackend,
 )
 
 from .constants import EHERKENNING_OIDC_AUTH_SESSION_KEY
 from .mixins import SoloConfigMixin
-from .models import OpenIDConnectEHerkenningConfig
 from .settings import OIDC_AUTHENTICATION_CALLBACK_URL
 
 logger = logging.getLogger(__name__)
@@ -20,14 +19,6 @@ class OIDCAuthenticationEHerkenningBackend(SoloConfigMixin, _OIDCAuthenticationB
     """
     Allows logging in via OIDC with eHerkenning
     """
-
-    def __init__(self, *args, **kwargs):
-        self.config = OpenIDConnectEHerkenningConfig.get_solo()
-
-        if not self.config.enabled:
-            return
-
-        super().__init__(*args, **kwargs)
 
     def authenticate(self, request, *args, **kwargs):
         # Differentiate between eHerkenning authentication via OIDC and admin login
