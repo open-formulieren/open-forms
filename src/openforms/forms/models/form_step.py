@@ -65,7 +65,7 @@ class FormStep(OrderedModel):
     get_save_text = literal_getter("save_text", "form_step_save_text")
     get_next_text = literal_getter("next_text", "form_step_next_text")
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = _("form step")
         verbose_name_plural = _("form steps")
 
