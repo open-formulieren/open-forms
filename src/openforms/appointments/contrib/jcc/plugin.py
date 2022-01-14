@@ -167,7 +167,7 @@ class Plugin(BasePlugin):
         location: AppointmentLocation,
         start_at: datetime,
         client: AppointmentClient,
-        remarks: str = None,
+        remarks: str = "",
     ) -> str:
         product_ids = squash_ids(products)
 
