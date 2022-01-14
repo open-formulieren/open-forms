@@ -27,7 +27,6 @@ class LoginInfo:
 class BasePlugin(AbstractBasePlugin):
     provides_auth = None
     return_method = "GET"
-    is_enabled = True
 
     # override
 

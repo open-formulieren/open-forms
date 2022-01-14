@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -74,10 +76,16 @@ class eHerkenningOIDCFormAdminTests(WebTest):
         form = Form.objects.get()
         self.assertEqual(form.authentication_backends, ["eherkenning_oidc"])
 
-    def test_eherkenning_oidc_not_enabled(self):
-        config = OpenIDConnectEHerkenningConfig.get_solo()
-        config.enabled = False
-        config.save()
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_eherkenning_oidc_not_enabled(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "authentication": {
+                    "eherkenning_oidc": {"enabled": False},
+                },
+            },
+            enable_react_form=False,
+        )
 
         response = self.app.get(reverse("admin:forms_form_add"))
 
