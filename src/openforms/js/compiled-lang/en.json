@@ -531,6 +531,12 @@
       "value": "is not equal to"
     }
   ],
+  "FyNxJn": [
+    {
+      "type": 0,
+      "value": "Text"
+    }
+  ],
   "G2rpx2": [
     {
       "type": 0,
@@ -1271,6 +1277,12 @@
     {
       "type": 0,
       "value": "Edit complex variable"
+    }
+  ],
+  "jUPlH5": [
+    {
+      "type": 0,
+      "value": "Resulting string"
     }
   ],
   "jZIu+e": [

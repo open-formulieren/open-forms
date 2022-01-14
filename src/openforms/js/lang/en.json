@@ -349,6 +349,11 @@
     "description": "\"!=\" operator description",
     "originalDefault": "is not equal to"
   },
+  "FyNxJn": {
+    "defaultMessage": "Text",
+    "description": "Interpolation expression field label",
+    "originalDefault": "Text"
+  },
   "G2rpx2": {
     "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
     "description": "Progress indicator help text",
@@ -943,6 +948,11 @@
     "defaultMessage": "Edit complex variable",
     "description": "Camunda complex process var configuration modal title",
     "originalDefault": "Edit complex variable"
+  },
+  "jUPlH5": {
+    "defaultMessage": "Resulting string",
+    "description": "Interpolation expression preview label",
+    "originalDefault": "Resulting string"
   },
   "jZIu+e": {
     "defaultMessage": "No",

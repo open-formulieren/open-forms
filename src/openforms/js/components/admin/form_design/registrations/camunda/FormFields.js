@@ -77,7 +77,9 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
                 // if the definition changes, reset the version & mapped variables
                 case 'processDefinition': {
                     draft.processDefinitionVersion = null;
-                    draft.processVariables = []; // reset variables if a different process is used
+                    // reset variables if a different process is used
+                    draft.processVariables = [];
+                    draft.complexProcessVariables = [];
                     break;
                 }
                 // normalize blank option to null
@@ -127,10 +129,21 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
         onChange(nextFormData);
     };
     const onChangeComplexProcessVariable = (index, event) => {
-        const {name, value} = event.target;
+        const {
+            isFullObject=false,
+            name, value,
+            type, definition,
+        } = event.target;
+
         const nextFormData = produce(formData, draft => {
-            draft.complexProcessVariables[index][name] = value;
+            if (!isFullObject) {
+                draft.complexProcessVariables[index][name] = value;
+            } else {
+                draft.complexProcessVariables[index].type = type;
+                draft.complexProcessVariables[index].definition = definition;
+            }
         });
+
         onChange(nextFormData);
     };
     const onDeleteComplexProcessVariable = (index, event) => {

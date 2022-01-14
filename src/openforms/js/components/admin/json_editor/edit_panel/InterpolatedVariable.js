@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import {FormattedMessage} from 'react-intl';
 
 import DeleteIcon from '../../DeleteIcon';
 import ButtonContainer from '../../forms/ButtonContainer';
@@ -151,7 +152,9 @@ const InterpolatedVariable = ({ expression={}, onChange }) => {
     return (
         <>
             <FormRow>
-                <Field name="expression" label="Text">
+                <Field name="expression" label={
+                    <FormattedMessage description="Interpolation expression field label" defaultMessage="Text" />
+                }>
                     <InterpolationBuilder
                         parts={expression.cat || []}
                         onChange={onDefinitionChange}
@@ -159,7 +162,9 @@ const InterpolatedVariable = ({ expression={}, onChange }) => {
                 </Field>
             </FormRow>
             <FormRow>
-                <Field name="_expression" label="Resulting string">
+                <Field name="_expression" label={
+                    <FormattedMessage description="Interpolation expression preview label" defaultMessage="Resulting string" />
+                }>
                     <textarea
                         cols="40" rows="5"
                         value={displayInterpolateExpression(expression)}
