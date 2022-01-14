@@ -127,10 +127,16 @@ const ComplexProcessVariables = ({ variables=[], onChange, onAdd, onDelete }) =>
     const editVariable = variables[editVariableIndex];
 
     const onVariableConfirm = ({ name, type, definition }) => {
-        const variable = variables.find(variable => variable.alias);
+        const variable = variables.find(variable => variable.alias === name);
         const index = variables.indexOf(variable);
-        onChange(index, {target: {name: 'type', value: type}});
-        onChange(index, {target: {name: 'definition', value: definition}});
+        onChange(
+            index,
+            {target: {
+                type,
+                definition,
+                isFullObject: true,
+            }}
+        );
         dispatch({type: 'RESET'});
     };
 
