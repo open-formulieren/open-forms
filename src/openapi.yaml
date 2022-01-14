@@ -472,6 +472,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `autoLoginAuthenticationBackend`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -529,6 +530,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `autoLoginAuthenticationBackend`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -932,6 +934,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `autoLoginAuthenticationBackend`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -993,6 +996,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `autoLoginAuthenticationBackend`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -1060,6 +1064,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `autoLoginAuthenticationBackend`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -3311,7 +3316,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `autoLoginAuthenticationBackend`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
       properties:
         uuid:
           type: string
@@ -3344,6 +3349,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
         paymentRequired:
           type: boolean
           readOnly: true
@@ -4054,7 +4061,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `autoLoginAuthenticationBackend`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
       properties:
         uuid:
           type: string
@@ -4087,6 +4094,8 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
         paymentRequired:
           type: boolean
           readOnly: true
