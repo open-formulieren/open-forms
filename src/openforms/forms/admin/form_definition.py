@@ -42,9 +42,9 @@ class FormDefinitionAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request=request)
         used_in_forms = Prefetch(
             "formstep_set",
-            queryset=FormStep.objects.select_related("form").distinct(
-                "form", "form_definition"
-            ),
+            queryset=FormStep.objects.select_related("form")
+            .order_by()
+            .distinct("form", "form_definition"),
             to_attr="used_in_steps",
         )
         qs = qs.prefetch_related(used_in_forms)
