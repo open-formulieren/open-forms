@@ -27,7 +27,6 @@ from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.utils import sanitize_content
 from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
