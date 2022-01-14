@@ -144,7 +144,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "created_on",
         "completed_on",
     )
-    list_filter = ("form", SubmissionTypeListFilter)
+    list_filter = (SubmissionTypeListFilter, "form")
     search_fields = (
         "form__name",
         "uuid",
