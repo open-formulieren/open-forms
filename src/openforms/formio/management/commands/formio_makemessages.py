@@ -6,12 +6,18 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError
 
-TRANSLATION_REGEX_PATTERNS = [
-    "label: '([^']+)'",
-    "\.t\('([^']+)'[\),]",
-    "tooltip: '([^']+)'",
-    "errorMessage\('([^']+)'[\),]",
-]
+TRANSLATION_REGEX_PATTERNS = {
+    "labels": "label: '([^']+)'",
+    "other": "\.t\('([^']+)'[\),]",
+    "tooltips": "tooltip: '([^']+)'",
+    "errors": "errorMessage\('([^']+)'[\),]",
+}
+
+
+def separator_label(label):
+    return {
+        f"---------- {label.upper()} ----------": f"---------- {label.upper()} ----------",
+    }
 
 
 class Command(BaseCommand):
@@ -26,11 +32,16 @@ class Command(BaseCommand):
         parser.add_argument(
             "--file",
             help="Point to a specific translation file to use as source and target.",
+            default=os.path.join(settings.DJANGO_PROJECT_DIR, "js/lang/formio/nl.json"),
         )
         parser.add_argument(
             "--formio",
             action="append",
             help="Point to a specific folder where FormIO components are located.",
+            default=[
+                os.path.join(settings.DJANGO_PROJECT_DIR, "js/components"),
+                os.path.join(settings.DJANGO_PROJECT_DIR, "static/bundles"),
+            ],
         )
         parser.add_argument(
             "--dryrun",
@@ -43,16 +54,6 @@ class Command(BaseCommand):
             action="store_true",
             help="Set the untranslated text as translated text to prevent empty values (for new keys only).",
         )
-        parser.add_argument(
-            "--report-unknown",
-            action="store_true",
-            help="Report all existing translations that were not found while scanning FormIO files.",
-        )
-        parser.add_argument(
-            "--report-output",
-            action="store_true",
-            help="Write the output of the translation file also to screen. Useful for dry runs.",
-        )
 
     def _find_translations(self, filepath, no_empty_values):
 
@@ -60,8 +61,12 @@ class Command(BaseCommand):
         result = {}
         with open(filepath, "r") as f:
             data = f.read()
-            for pattern in TRANSLATION_REGEX_PATTERNS:
+            data = data.replace("\\'", "OPENFORMS-ESCAPED-SINGLEQUOTE")
+            for separator, pattern in TRANSLATION_REGEX_PATTERNS.items():
                 matches = re.findall(pattern, data)
+                matches = [
+                    m.replace("OPENFORMS-ESCAPED-SINGLEQUOTE", "\\'") for m in matches
+                ]
                 if no_empty_values:
                     result.update(zip(matches, matches))
                 else:
@@ -72,12 +77,8 @@ class Command(BaseCommand):
         self.verbosity = options.get("verbosity")
         no_empty_values = options.get("no_empty_values")
         dryrun = options.get("dryrun")
-        report_unknown = options.get("report_unknown")
-        report_output = options.get("report_output")
 
-        translations_filepath = options.get("file") or os.path.join(
-            settings.DJANGO_PROJECT_DIR, "js/lang/formio/nl.json"
-        )
+        translations_filepath = options.get("file")
 
         if not os.path.exists(translations_filepath):
             raise CommandError(
@@ -90,15 +91,13 @@ class Command(BaseCommand):
                 existing_translations = json.load(f)
         except Exception as exc:
             self.stderr.write(f"Could not load translations: {exc}")
+            return
 
         if self.verbosity > 0:
             self.stdout.write(f"Using translations file: {translations_filepath}")
 
         # Find new translations.
-        formio_folders = options.get("formio") or [
-            os.path.join(settings.DJANGO_PROJECT_DIR, "js/components"),
-            os.path.join(settings.DJANGO_PROJECT_DIR, "static/bundles"),
-        ]
+        formio_folders = options.get("formio")
         for formio_folder in formio_folders:
             if not os.path.exists(formio_folder):
                 raise CommandError(f"FormIO folder {formio_folder} does not exist.")
@@ -106,9 +105,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Using FormIO folder: {formio_folder}")
 
         # This entry helps to identify newly found translations.
-        found_translations = {
-            "---------- NEW ----------": "---------- NEW ----------",
-        }
+        found_translations = separator_label("new")
 
         for formio_folder in formio_folders:
             for root, subFolders, files in os.walk(formio_folder, topdown=True):
@@ -126,7 +123,7 @@ class Command(BaseCommand):
         self.stdout.write(
             f"WARNING: Could not find matches for {len(diff)} existing translations."
         )
-        if report_unknown:
+        if self.verbosity > 1:
             for item in diff:
                 self.stdout.write(f"Not found: {item}")
 
@@ -143,9 +140,9 @@ class Command(BaseCommand):
         # translation values
         result.update(existing_translations)
 
-        if report_output:
-            self.stdout.write(json.dumps(result, indent=2))
-
         if not dryrun:
             with open(translations_filepath, "w", encoding="utf-8") as f:
                 json.dump(result, f, indent=2)
+        else:
+            if self.verbosity > 1:
+                self.stdout.write(json.dumps(result, indent=2))
