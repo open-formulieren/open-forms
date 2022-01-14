@@ -170,7 +170,7 @@ class Plugin(BasePlugin):
         location: AppointmentLocation,
         start_at: datetime,
         client: AppointmentClient,
-        remarks: str = None,
+        remarks: str = "",
     ) -> str:
         if len(products) != 1:
             return []

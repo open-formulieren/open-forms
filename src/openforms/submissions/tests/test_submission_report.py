@@ -105,6 +105,7 @@ class DownloadSubmissionReportTests(APITestCase):
 
     @override_settings(LANGUAGE_CODE="nl")
     def test_submission_printable_data(self):
+        # TODO: move this test to a separate test module/case?
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
@@ -122,6 +123,18 @@ class DownloadSubmissionReportTests(APITestCase):
                         "key": "select1",
                         "type": "select",
                         "label": "Test Select",
+                        "data": {
+                            "values": [
+                                {"label": "Test Option 1", "value": "testOption1"},
+                                {"label": "Test Option 2", "value": "testOption2"},
+                            ]
+                        },
+                    },
+                    {
+                        "key": "select2",
+                        "type": "select",
+                        "label": "Test Select 2",
+                        "multiple": True,
                         "data": {
                             "values": [
                                 {"label": "Test Option 1", "value": "testOption1"},
@@ -180,10 +193,18 @@ class DownloadSubmissionReportTests(APITestCase):
                         "decimalLimit": 2,
                     },
                     {
+                        "key": "number3",
+                        "type": "number",
+                        "label": "Test number 3",
+                        "decimalLimit": 2,
+                        "multiple": True,
+                    },
+                    {
                         "key": "currency",
                         "type": "currency",
                         "label": "Test currency",
                     },
+                    {"key": "checkbox", "type": "checkbox", "label": "Test checkbox"},
                 ]
             }
         )
@@ -193,6 +214,7 @@ class DownloadSubmissionReportTests(APITestCase):
             data={
                 "radio1": "testOption1",
                 "select1": "testOption2",
+                "select2": ["testOption2", "testOption1"],
                 "date1": "2022-01-02",
                 "date2": ["2022-01-02", "2022-02-03"],
                 "time0": "17:30:00",
@@ -200,7 +222,9 @@ class DownloadSubmissionReportTests(APITestCase):
                 "time1": "2021-12-24T08:10:00+01:00",
                 "number1": 1,
                 "number2": 1.23,
+                "number3": [4.20, 2.71],
                 "currency": 1.23,
+                "checkbox": True,
             },
             submission=submission,
             form_step=form_step,
@@ -211,6 +235,7 @@ class DownloadSubmissionReportTests(APITestCase):
         values = [
             ("Test Radio", "Test Option 1"),
             ("Test Select", "Test Option 2"),
+            ("Test Select 2", "Test Option 2, Test Option 1"),
             ("Test date 1", "2 januari 2022"),
             ("Test date 2", "2 januari 2022, 3 februari 2022"),
             ("Test time 1", "17:30"),
@@ -218,7 +243,9 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Afspraaktijdstip", "08:10"),
             ("Test number 1", "1"),
             ("Test number 2", "1,23"),
+            ("Test number 3", "4,2, 2,71"),
             ("Test currency", "1,23"),
+            ("Test checkbox", "ja"),
         ]
         for label, value in values:
             with self.subTest(label):
