@@ -1,38 +1,18 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-
-from ..models import OpenIDConnectEHerkenningConfig
+from openforms.config.models import GlobalConfiguration
 
 
 class eHerkenningOIDCAuthPluginEndpointTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
-        config = OpenIDConnectEHerkenningConfig.get_solo()
-        config.enabled = True
-        config.oidc_rp_client_id = "testclient"
-        config.oidc_rp_client_secret = "secret"
-        config.oidc_rp_sign_algo = "RS256"
-        config.oidc_rp_scopes_list = ["openid", "kvk"]
-
-        config.oidc_op_jwks_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/certs"
-        )
-        config.oidc_op_authorization_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/auth"
-        )
-        config.oidc_op_token_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/token"
-        )
-        config.oidc_op_user_endpoint = (
-            "http://provider.com/auth/realms/master/protocol/openid-connect/userinfo"
-        )
-        config.save()
 
         cls.user = UserFactory.create(is_staff=True)
 
@@ -41,7 +21,16 @@ class eHerkenningOIDCAuthPluginEndpointTests(APITestCase):
 
         self.client.force_authenticate(user=self.user)
 
-    def test_plugin_list_eherkenning_oidc_enabled(self):
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_plugin_list_eherkenning_oidc_enabled(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "authentication": {
+                    "eherkenning_oidc": {"enabled": True},
+                },
+            },
+        )
+
         endpoint = reverse("api:authentication-plugin-list")
 
         response = self.client.get(endpoint)
@@ -50,10 +39,15 @@ class eHerkenningOIDCAuthPluginEndpointTests(APITestCase):
         plugin_names = [p["id"] for p in response.data]
         self.assertIn("eherkenning_oidc", plugin_names)
 
-    def test_plugin_list_eherkenning_oidc_not_enabled(self):
-        config = OpenIDConnectEHerkenningConfig.get_solo()
-        config.enabled = False
-        config.save()
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_plugin_list_eherkenning_oidc_not_enabled(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={
+                "authentication": {
+                    "eherkenning_oidc": {"enabled": False},
+                },
+            }
+        )
 
         endpoint = reverse("api:authentication-plugin-list")
 
