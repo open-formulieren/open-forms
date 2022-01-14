@@ -62,6 +62,7 @@ CamundaOptionsForm.propTypes = {
             componentKey: PropTypes.string.isRequired,
             alias: PropTypes.string.isRequired,
         })),
+        complexProcessVariables: PropTypes.arrayOf(PropTypes.object),
     }),
     onChange: PropTypes.func.isRequired,
 };
