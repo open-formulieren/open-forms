@@ -77,6 +77,9 @@ class DigiDOIDCAuthentication(BasePlugin):
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
+        if "oidc_id_token" not in request.session:
+            return
+
         params = urlencode({"id_token_hint": request.session["oidc_id_token"]})
         logout_endpoint = OpenIDConnectPublicConfig.get_solo().oidc_op_logout_endpoint
         requests.get(f"{logout_endpoint}?{params}")
