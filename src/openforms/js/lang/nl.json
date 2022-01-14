@@ -349,6 +349,11 @@
     "description": "\"!=\" operator description",
     "originalDefault": "is not equal to"
   },
+  "FyNxJn": {
+    "defaultMessage": "Tekst",
+    "description": "Interpolation expression field label",
+    "originalDefault": "Text"
+  },
   "G2rpx2": {
     "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
     "description": "Progress indicator help text",
@@ -943,6 +948,11 @@
     "defaultMessage": "Wijzig complexe waarde",
     "description": "Camunda complex process var configuration modal title",
     "originalDefault": "Edit complex variable"
+  },
+  "jUPlH5": {
+    "defaultMessage": "Tekstsjabloon",
+    "description": "Interpolation expression preview label",
+    "originalDefault": "Resulting string"
   },
   "jZIu+e": {
     "defaultMessage": "Nee",
