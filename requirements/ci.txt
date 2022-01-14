@@ -495,7 +495,7 @@ mozilla-django-oidc==1.2.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.7.2
+mozilla-django-oidc-db @ git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@9282a02b42f4c9d5460e59176c8c0aae53b0c2af
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
