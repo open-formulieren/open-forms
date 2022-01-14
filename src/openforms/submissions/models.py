@@ -11,7 +11,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
-from django.template.defaultfilters import date as fmt_date, time as fmt_time
+from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
@@ -580,6 +580,7 @@ class Submission(models.Model):
                 )
 
                 label = info["label"]
+                multiple = info.get("multiple", False)
                 if info["type"] == "file":
                     files = attachment_data.get(key)
                     if files:
@@ -621,12 +622,15 @@ class Submission(models.Model):
                     ]
                     printable_data[label] = ", ".join(selected_labels)
 
-                elif info["type"] == "number":
-                    printable_data[label] = localize(info["value"])
-
-                elif info["type"] == "currency":
-                    printable_data[label] = localize(info["value"])
-
+                elif info["type"] == "number" or info["type"] == "currency":
+                    if multiple:
+                        printable_data[label] = _join_mapped(
+                            lambda v: localize(v), info["value"]
+                        )
+                    else:
+                        printable_data[label] = localize(info["value"])
+                elif info["type"] == "checkbox":
+                    printable_data[label] = yesno(info["value"])
                 elif type(info["value"]) is dict:
                     printable_value = info["value"]
                     if "name" in printable_value:
@@ -642,10 +646,17 @@ class Submission(models.Model):
                         printable_data[label] = printable_value["name"]
                 else:
                     printable_value = info["value"]
-                    if info.get("values"):
+                    if values := info.get("values"):
+                        value = printable_value
+                        if not multiple:
+                            value = [value]
+
+                        def _format(val):
+                            return self._get_value_label(values, val)
+
                         # Case in which each value has a label (for example select and radio components)
-                        printable_value = self._get_value_label(
-                            info["values"], info["value"]
+                        printable_value = _join_mapped(
+                            lambda v: self._get_value_label(values, v), value
                         )
 
                     # more here? like getComponentValue() in the SDK?
