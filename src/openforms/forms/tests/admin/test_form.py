@@ -728,16 +728,19 @@ class FormChangeTests(WebTest):
 
         self.assertEqual(
             warning_message,
-            _(
-                "The following form definitions contain fields with duplicate keys: "
-                "{} occurs in both {}, {}; "
-                "{} occurs in both {}, {}"
-            ).format(
-                "duplicate-field1",
-                formdef1.name,
-                formdef2.name,
-                "duplicate-field2",
-                formdef2.name,
-                formdef3.name,
+            _("The following form definitions contain fields with duplicate keys: %s")
+            % (
+                "; ".join(
+                    [
+                        _("{} occurs in both {}").format(
+                            "duplicate-field1",
+                            ", ".join([formdef1.name, formdef2.name]),
+                        ),
+                        _("{} occurs in both {}").format(
+                            "duplicate-field2",
+                            ", ".join([formdef2.name, formdef3.name]),
+                        ),
+                    ]
+                )
             ),
         )

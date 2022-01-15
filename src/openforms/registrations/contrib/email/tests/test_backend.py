@@ -255,8 +255,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn(reference_line, message_html)
         self.assertIn(reference_line, message_text)
 
-        order_line = _("Payment order ID: %(order_id)s") % dict(
-            order_id=payment.public_order_id,
+        order_line = _("Payment order ID: %(payment_order_id)s") % dict(
+            payment_order_id=payment.public_order_id,
         )
         self.assertIn(order_line, message_html)
         self.assertIn(order_line, message_text)
