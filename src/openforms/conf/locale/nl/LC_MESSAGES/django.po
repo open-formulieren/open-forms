@@ -2054,7 +2054,7 @@ msgid ""
 "A valid JsonLogic expression describing the value. This may refer to (other) "
 "Form.io components."
 msgstr ""
-"Een JsonLogic expressie die de waarde beschrijft. Deze mag naar (andere) "
+"Een JSON-logic expressie die de waarde beschrijft. Deze mag naar (andere) "
 "Form.io componenten verwijzen."
 
 #: openforms/forms/api/serializers.py:508
@@ -2100,7 +2100,7 @@ msgid ""
 "must be a reference to a component in the form."
 msgstr ""
 "De expressie om te bepalen of de actie uitgevoerd moet worden of niet. Let "
-"op dat dit een valide JsonLogic expressie moet zijn en de eerste operand "
+"op dat dit een valide JSON-logic expressie moet zijn en de eerste operand "
 "moet een verwijzing zijn naar een component in het formulier."
 
 #: openforms/forms/api/serializers.py:611
@@ -2143,7 +2143,7 @@ msgstr ""
 
 #: openforms/forms/api/validators.py:21
 msgid "Invalid JSON logic."
-msgstr "Ongeldige JsonLogic"
+msgstr "Ongeldige JSON-logic"
 
 #: openforms/forms/api/validators.py:33
 msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
@@ -2677,16 +2677,16 @@ msgstr "{slug}-kopie"
 
 #: openforms/forms/models/form.py:373
 msgid "Form to which the JSON logic applies."
-msgstr "Formulier waar de JsonLogic voor geldt."
+msgstr "Formulier waar de JSON-logic voor geldt."
 
 #: openforms/forms/models/form.py:376
 #: openforms/forms/models/pricing_logic.py:38
 msgid "JSON logic"
-msgstr "JsonLogic"
+msgstr "JSON-logic"
 
 #: openforms/forms/models/form.py:377
 msgid "JSON logic associated with a step in a form."
-msgstr "JsonLogic gekoppeld aan een stap in een formulier."
+msgstr "JSON-logic gekoppeld aan een stap in een formulier."
 
 #: openforms/forms/models/form.py:380
 msgid "actions"
@@ -2695,8 +2695,8 @@ msgstr "acties"
 #: openforms/forms/models/form.py:381
 msgid "Which action(s) to perform if the JSON logic evaluates to true."
 msgstr ""
-"Welke actie(s) moet(en) worden uitgevoerd als de JSON-logic wordt "
-"geëvalueerd als waar."
+"Welke actie(s) moet(en) worden uitgevoerd als de JSON-logic wordt geëvalueerd"
+" als waar."
 
 #: openforms/forms/models/form.py:384
 msgid "is advanced"
@@ -2806,13 +2806,13 @@ msgstr "formulierversies"
 
 #: openforms/forms/models/pricing_logic.py:35
 msgid "Form to which the pricing JSON logic applies."
-msgstr "Formulier waar de prijs JsonLogic voor geldt."
+msgstr "Formulier waar de prijs JSON-logic voor geldt."
 
 #: openforms/forms/models/pricing_logic.py:40
 msgid ""
 "JSON logic expression that must evaluate to \"true\" for the price to apply."
 msgstr ""
-"JsonLogic expressie die evalueert als \"waar\" om deze prijs toe te passen."
+"JSON-logic expressie die evalueert als \"waar\" om deze prijs toe te passen."
 
 #: openforms/forms/models/pricing_logic.py:44
 #: openforms/products/models/product.py:21 openforms/submissions/models.py:211
@@ -2840,7 +2840,7 @@ msgid ""
 "Embed this snippet where you want to display the form in your (CMS) page. "
 "This snippet will load and render the form."
 msgstr ""
-"Voeg dit snippet in op de locatie waar je het formulier wil weergeven in je "
+"Voeg dit snippet toe op de locatie waar u het formulier wilt weergeven in uw "
 "(CMS) pagina. Dit snippet laadt het formulier en geeft het weer."
 
 #: openforms/forms/templates/admin/forms/form/change_form.html:43

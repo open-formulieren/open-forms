@@ -2,7 +2,7 @@
   "+8EnHh": [
     {
       "type": 0,
-      "value": "Ben je zeker dat je deze actie wil verwijderen?"
+      "value": "Weet u zeker dat u deze actie wilt verwijderen?"
     }
   ],
   "+BicbW": [
@@ -44,7 +44,7 @@
   "0ZtMje": [
     {
       "type": 0,
-      "value": "Ben je zeker dat je de stap "
+      "value": "Weet u zeker dat u de stap "
     },
     {
       "type": 1,
@@ -52,7 +52,7 @@
     },
     {
       "type": 0,
-      "value": " wil verwijderen?"
+      "value": " wilt verwijderen?"
     }
   ],
   "1ArmQ5": [
@@ -106,7 +106,7 @@
   "3W3Px9": [
     {
       "type": 0,
-      "value": "Voeg nog één toe"
+      "value": "Nog één toevoegen"
     }
   ],
   "4FQxD/": [
@@ -196,7 +196,7 @@
   "7X6yT4": [
     {
       "type": 0,
-      "value": "Je bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op "
+      "value": "U bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op "
     },
     {
       "children": [
@@ -282,7 +282,7 @@
   "9N67XB": [
     {
       "type": 0,
-      "value": "Ongeldige JSON syntax"
+      "value": "Ongeldige JSON-syntaxis"
     }
   ],
   "9RDDDn": [
@@ -526,7 +526,7 @@
   "FQswyM": [
     {
       "type": 0,
-      "value": "Mode"
+      "value": "Modus"
     }
   ],
   "FceidS": [
@@ -592,7 +592,7 @@
   "H3dRU6": [
     {
       "type": 0,
-      "value": "Check to include the field as process variable"
+      "value": "Vink aan om het veld op te nemen als procesvariabele"
     }
   ],
   "H6VxhG": [
@@ -742,7 +742,7 @@
   "M0kOz9": [
     {
       "type": 0,
-      "value": "Ben je zeker dat je deze variabele wil verwijderen?"
+      "value": "Weet u zeker dat u deze variabele wil verwijderen?"
     }
   ],
   "M1L9/1": [
@@ -894,7 +894,7 @@
   "T0OLUV": [
     {
       "type": 0,
-      "value": "Voeg sleutel-waarde paar toe"
+      "value": "Sleutel-waarde paar (object) toevoegen"
     }
   ],
   "TCQic2": [
@@ -936,7 +936,7 @@
   "V21YkS": [
     {
       "type": 0,
-      "value": "Bevestig"
+      "value": "Bevestigen"
     }
   ],
   "VMMOA0": [
@@ -1012,7 +1012,7 @@
   "XOgJDS": [
     {
       "type": 0,
-      "value": "Ongeldige JSON-logic uitdrukking. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
+      "value": "Ongeldige JSON-logic expressie. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
     }
   ],
   "YQ/Vx0": [
@@ -1024,7 +1024,7 @@
   "YdIu8k": [
     {
       "type": 0,
-      "value": "Voeg item toe"
+      "value": "Item toevoegen"
     }
   ],
   "YzLSHY": [
@@ -1198,7 +1198,7 @@
   "gz32s2": [
     {
       "type": 0,
-      "value": "Indien gewenst, dan kan je een alternatieve naam opgeven voor de procesvariabele."
+      "value": "Indien gewenst, dan kunt u een alternatieve naam opgeven voor de procesvariabele."
     }
   ],
   "gzAzdU": [
@@ -1210,7 +1210,7 @@
   "h/tRGs": [
     {
       "type": 0,
-      "value": "Yes"
+      "value": "Ja"
     }
   ],
   "h1EURI": [
@@ -1334,7 +1334,7 @@
   "lcR5L6": [
     {
       "type": 0,
-      "value": "Voeg item toe"
+      "value": "Item toevoegen"
     }
   ],
   "mH3X/G": [
@@ -1412,7 +1412,7 @@
   "p8LSwF": [
     {
       "type": 0,
-      "value": "Voeg actie toe"
+      "value": "Actie toevoegen"
     }
   ],
   "pWHOT1": [
