@@ -93,7 +93,7 @@ msgid ""
 msgstr ""
 "Aantal seconden waarna een sessie verloopt. Na het verlopen van de sessie is "
 "de gebruiker uitgelogd en kan zijn huidige inzending niet meer afmaken. "
-"Opmerking: Bij elke interactie met de API wordt de sessie verlengt."
+"Opmerking: Bij elke interactie met de API wordt de sessie verlengd."
 
 #: openforms/api/exceptions.py:9
 msgid "A conflict occurred"
@@ -572,7 +572,7 @@ msgstr "DigiD simulatie"
 
 #: openforms/authentication/contrib/eherkenning/apps.py:8
 msgid "eHerkenning/eIDAS authentication plugin"
-msgstr "eHerkenning/eIDAS authenticatie plugin"
+msgstr "eHerkenning/eIDAS authenticatieplugin"
 
 #: openforms/authentication/contrib/eherkenning/plugin.py:98
 msgid "eHerkenning"
@@ -801,7 +801,7 @@ msgstr "Gegevens schonen"
 
 #: openforms/config/admin.py:117
 msgid "Plugin configuration"
-msgstr "Plugin configuratie"
+msgstr "Pluginconfiguratie"
 
 #: openforms/config/admin.py:119
 msgid "Feature flags & fields for testing"
@@ -1304,7 +1304,7 @@ msgstr ""
 
 #: openforms/config/models.py:440
 msgid "plugin configuration"
-msgstr "plugin configuratie"
+msgstr "pluginconfiguratie"
 
 #: openforms/config/models.py:444
 msgid ""
@@ -3983,7 +3983,7 @@ msgstr "Alleen ingeschakelde variabelen worden doorgegeven aan het proces"
 #: openforms/registrations/contrib/camunda/serializers.py:25
 #: openforms/registrations/contrib/camunda/serializers.py:96
 msgid "Component key"
-msgstr "Component sleutel"
+msgstr "Componentsleutel"
 
 #: openforms/registrations/contrib/camunda/serializers.py:26
 #: openforms/registrations/contrib/camunda/serializers.py:97
@@ -4062,7 +4062,7 @@ msgid ""
 "Name of the variable in the Camunda process instance. For complex variables, "
 "the name must be supplied."
 msgstr ""
-"Naam van de variabele in het Camunda proces. For complexe variabelen moet "
+"Naam van de variabele in het Camunda proces. Voor complexe variabelen moet "
 "een naam opgegeven zin."
 
 #: openforms/registrations/contrib/camunda/serializers.py:173
