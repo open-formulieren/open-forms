@@ -26,7 +26,9 @@ class FormTestCase(TestCase):
         self.assertEqual(str(form), "internal")
 
         form._is_deleted = True
-        self.assertEqual(str(form), "internal{}".format(_(" (deleted)")))
+        self.assertEqual(
+            str(form), _("{name} (deleted)").format(name=form.internal_name)
+        )
 
     def test_login_required(self):
         self.assertFalse(self.form.login_required)
