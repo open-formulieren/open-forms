@@ -13,6 +13,7 @@ testfixtures
 pep8
 pytest  # documentation tests
 django-capture-on-commit-callbacks
+selenium
 
 # Code formatting
 black
