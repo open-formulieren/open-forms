@@ -16,4 +16,5 @@ exec celery worker \
     -l $LOGLEVEL \
     --workdir src \
     -O fair \
-    -c $CONCURRENCY
+    -c $CONCURRENCY \
+    --detach

@@ -67,12 +67,19 @@ jobs:
           sudo wget -O webdriver.zip https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip
           sudo unzip webdriver.zip
 
+      - name: Download SDK image
+        run: |
+          docker pull openformulieren/open-forms-sdk
+
       - name: Run tests
         run: |
+          docker run -d -p 127.0.0.1:8080:8080 openformulieren/open-forms-sdk
+          bin/celery_worker.sh
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           coverage run src/manage.py test src
         env:
+          SDK_BASE_URL: http://localhost:8080
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
