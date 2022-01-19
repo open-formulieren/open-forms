@@ -191,3 +191,111 @@ class PrefillHookTests(TransactionTestCase):
                 submission=submission,
                 register=register,
             )
+
+    @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
+    def test_prefill_date_isoformat(self, m_get_prefill_value):
+        m_get_prefill_value.return_value = {"random_isodate": "2020-12-12"}
+
+        configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "e4ty7zs",
+                    "key": "dateOfBirth",
+                    "type": "date",
+                    "input": True,
+                    "label": "Date of Birth",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_isodate",
+                    },
+                    "multiple": False,
+                    "defaultValue": None,
+                }
+            ],
+        }
+        form_step = FormStepFactory.create(form_definition__configuration=configuration)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        new_configuration = apply_prefill(
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        self.assertIsNotNone(field["defaultValue"])
+        self.assertIsInstance(field["defaultValue"], str)
+        self.assertEqual("2020-12-12", field["defaultValue"])
+
+    @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
+    def test_prefill_date_stufbg_format(self, m_get_prefill_value):
+        m_get_prefill_value.return_value = {"random_stufbg_date": "20201212"}
+
+        configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "e4ty7zs",
+                    "key": "dateOfBirth",
+                    "type": "date",
+                    "input": True,
+                    "label": "Date of Birth",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_stufbg_date",
+                    },
+                    "multiple": False,
+                    "defaultValue": None,
+                }
+            ],
+        }
+        form_step = FormStepFactory.create(form_definition__configuration=configuration)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        new_configuration = apply_prefill(
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        self.assertIsNotNone(field["defaultValue"])
+        self.assertIsInstance(field["defaultValue"], str)
+        self.assertEqual("2020-12-12", field["defaultValue"])
+
+    @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
+    def test_prefill_invalid_date(self, m_get_prefill_value):
+        m_get_prefill_value.return_value = {"invalid_date": "123456789"}
+
+        configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "e4ty7zs",
+                    "key": "dateOfBirth",
+                    "type": "date",
+                    "input": True,
+                    "label": "Date of Birth",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "invalid_date",
+                    },
+                    "multiple": False,
+                    "defaultValue": None,
+                }
+            ],
+        }
+        form_step = FormStepFactory.create(form_definition__configuration=configuration)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        new_configuration = apply_prefill(
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        self.assertIsNotNone(field["defaultValue"])
+        self.assertIsInstance(field["defaultValue"], str)
+        self.assertEqual("", field["defaultValue"])
