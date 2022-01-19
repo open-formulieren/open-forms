@@ -28,6 +28,7 @@ So, to recap:
 """
 import logging
 from copy import deepcopy
+from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
@@ -131,6 +132,22 @@ def _group_prefills_by_plugin(fields: List[JSONObject]) -> Dict[str, list]:
     return grouper
 
 
+def format_date_value(date_value: str) -> str:
+    try:
+        parsed_date = date.fromisoformat(date_value)
+    except ValueError:
+        try:
+            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
+        except ValueError:
+            logger.info(
+                "Invalid date %s for prefill of date field. Using empty value.",
+                date_value,
+            )
+            return ""
+
+    return parsed_date.isoformat()
+
+
 def _set_default_values(
     configuration: JSONObject, prefilled_values: Dict[str, Dict[str, Any]]
 ) -> None:
@@ -164,6 +181,8 @@ def _set_default_values(
                 configuration["id"],
             )
         configuration["defaultValue"] = prefill_value
+        if configuration["type"] == "date":
+            configuration["defaultValue"] = format_date_value(prefill_value)
 
     if components := configuration.get("components"):
         for component in components:
