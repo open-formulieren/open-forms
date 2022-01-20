@@ -194,7 +194,7 @@ class Submission(models.Model):
     )
     pseudo = models.CharField(
         _("Pseudo ID"),
-        max_length=9,
+        max_length=64,
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
     )
