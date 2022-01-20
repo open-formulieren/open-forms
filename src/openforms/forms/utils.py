@@ -15,6 +15,7 @@ from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
     FormLogicSerializer,
+    FormSerializer,
     FormStepSerializer,
 )
 from .models import Form, FormDefinition, FormLogic, FormStep
@@ -24,6 +25,13 @@ IMPORT_ORDER = {
     "forms": Form,
     "formSteps": FormStep,
     "formLogic": FormLogic,
+}
+
+SERIALIZERS = {
+    "formDefinitions": FormDefinitionSerializer,
+    "forms": FormSerializer,
+    "formSteps": FormStepSerializer,
+    "formLogic": FormLogicSerializer,
 }
 
 
@@ -113,16 +121,10 @@ def import_form_data(
         for old, new in uuid_mapping.items():
             data = data.replace(old, new)
 
-        if resource == "formDefinitions":
-            serializer = api_serializers.FormDefinitionSerializer
-        elif resource == "forms":
-            serializer = api_serializers.FormSerializer
-        elif resource == "formSteps":
-            serializer = api_serializers.FormStepSerializer
-        elif resource == "formLogic":
-            serializer = api_serializers.FormLogicSerializer
-        else:
-            raise ValidationError("Unknown resource")
+        try:
+            serializer = SERIALIZERS[resource]
+        except KeyError:
+            raise ValidationError(f"Unknown resource {resource}")
 
         for entry in json.loads(data):
             if "uuid" in entry:
