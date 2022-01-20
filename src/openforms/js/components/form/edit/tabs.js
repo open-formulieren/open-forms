@@ -80,6 +80,15 @@ const TEXT_BASIC = {
     components: [
         ...BASIC.components,
         {
+            weight: 100,
+            type: 'textfield',
+            input: true,
+            key: 'placeholder',
+            label: 'Placeholder',
+            placeholder: 'Placeholder',
+            tooltip: 'The placeholder text that will appear when this field is empty.'
+        },
+        {
             weight: 1201,
             type: 'checkbox',
             label: 'Show Character Counter',
