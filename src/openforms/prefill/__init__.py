@@ -85,12 +85,12 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
         try:
             values = plugin.get_prefill_values(submission, fields)
         except Exception as e:
+            logger.exception(f"exception in prefill plugin '{plugin_id}'")
             logevent.prefill_retrieve_failure(submission, plugin, e)
-            raise
+            return plugin_id, {}
         else:
             logevent.prefill_retrieve_success(submission, plugin, fields)
-
-        return (plugin_id, values)
+            return plugin_id, values
 
     with parallel() as executor:
         results = executor.map(invoke_plugin, grouped_fields.items())
