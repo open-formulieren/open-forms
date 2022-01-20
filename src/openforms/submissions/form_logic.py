@@ -122,13 +122,16 @@ def evaluate_form_logic(
     return configuration
 
 
-def check_submission_logic(submission):
+def check_submission_logic(submission, unsaved_data=None):
     logic_rules = FormLogic.objects.filter(
         form=submission.form,
         actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
     )
 
     merged_data = submission.data
+    if unsaved_data:
+        merged_data = {**merged_data, **unsaved_data}
+
     submission_state = submission.load_execution_state()
 
     for rule in logic_rules:

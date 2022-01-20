@@ -159,7 +159,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.slug, old_form_definition_slug)
 
-        form_steps = FormStep.objects.all()
+        form_steps = FormStep.objects.all().order_by("pk")
         fs2 = form_steps.last()
         self.assertEqual(form_steps.count(), 2)
         self.assertNotEqual(fs2.pk, form_step_pk)
@@ -299,7 +299,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
         self.assertEqual(fd2.slug, form_definition.slug)
 
-        form_steps = FormStep.objects.all()
+        form_steps = FormStep.objects.all().order_by("pk")
         fs2 = form_steps.last()
         self.assertEqual(form_steps.count(), 2)
         self.assertNotEqual(fs2.pk, form_step_pk)
@@ -363,7 +363,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
         self.assertEqual(fd2.slug, f"{form_definition.slug}-2")
 
-        form_steps = FormStep.objects.all()
+        form_steps = FormStep.objects.all().order_by("pk")
         fs2 = form_steps.last()
         self.assertEqual(form_steps.count(), 2)
         self.assertNotEqual(fs2.pk, form_step_pk)

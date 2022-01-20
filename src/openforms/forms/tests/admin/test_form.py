@@ -324,7 +324,7 @@ class FormAdminCopyTests(TestCase):
         )
         self.assertEqual(copied_form.authentication_backends, ["digid"])
 
-        copied_form_step = FormStep.objects.last()
+        copied_form_step = FormStep.objects.all().order_by("pk").last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
         self.assertEqual(copied_form_step.form, copied_form)
 
