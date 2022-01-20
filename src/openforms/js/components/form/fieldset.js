@@ -43,7 +43,8 @@ class FieldSet extends FormioFieldSet {
             FIELDSET_BASIC,
             // The 'API' tab is removed, since the only useful attribute it contained was the 'key', but we
             // have this field in the FIELDSET_BASIC tab.
-            // The Conditions, Logic and Layout tabs have also been removed since they are not used
+            // The Conditions and Layout tabs have also been removed since they are not used
+            parentEditForm.components[0].components[3], // Logic tab
         ];
         return parentEditForm;
     }
