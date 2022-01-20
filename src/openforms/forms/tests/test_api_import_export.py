@@ -3,7 +3,6 @@ from io import BytesIO
 from unittest.mock import patch
 from zipfile import ZipFile
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
@@ -15,6 +14,8 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 
+from ...emails.tests.factories import ConfirmationEmailTemplateFactory
+from ..constants import ConfirmationEmailOptions
 from ..models import Form, FormDefinition, FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -117,12 +118,17 @@ class ImportExportAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        form1, form2 = FormFactory.create_batch(2)
+        form1 = FormFactory.create(
+            confirmation_email_option=ConfirmationEmailOptions.form_specific_email
+        )
+        form2 = FormFactory.create()
         form_definition1, form_definition2 = FormDefinitionFactory.create_batch(2)
         form_step1 = FormStepFactory.create(
             form=form1, form_definition=form_definition1
         )
         FormStepFactory.create(form=form2, form_definition=form_definition2)
+
+        email_tpl = ConfirmationEmailTemplateFactory.create(form=form1, with_tags=True)
 
         url = reverse("api:form-export", args=(form1.uuid,))
         response = self.client.post(
@@ -164,6 +170,13 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(imported_form.name, form1.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, form1.slug)
+
+        self.assertEqual(
+            imported_form.confirmation_email_template.content, email_tpl.content
+        )
+        self.assertEqual(
+            imported_form.confirmation_email_template.subject, email_tpl.subject
+        )
 
         self.assertNotEqual(imported_form_definition.pk, form_definition1.pk)
         self.assertNotEqual(imported_form_definition.uuid, str(form_definition1.uuid))

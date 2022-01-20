@@ -11,6 +11,12 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "emails.ConfirmationEmailTemplate"
 
+    class Params:
+        with_tags = factory.Trait(
+            subject="Hello",
+            content="Thanks! {% payment_information %} {% appointment_information %}",
+        )
+
     @factory.post_generation
     def update_form_confirmation_email_option(obj, create, extracted, **kwargs):
         if extracted is False:

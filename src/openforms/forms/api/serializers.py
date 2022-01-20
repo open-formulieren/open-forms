@@ -302,7 +302,6 @@ class FormExportSerializer(FormSerializer):
         # for export we want to use the list of plugin-id's instead of detailed info objects
         del fields["login_options"]
         del fields["payment_options"]
-        del fields["confirmation_email_template"]
         fields["authentication_backends"].write_only = False
         return fields
 
