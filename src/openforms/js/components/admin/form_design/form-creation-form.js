@@ -419,6 +419,16 @@ function reducer(draft, action) {
             draft.submitting = false;
             break;
         }
+        case 'ADD_FORM_DEFINITION': {
+            draft.formDefinitions.push(action.payload);
+            break;
+        }
+        case 'CREATE_FORM_STEP': {
+            const {index, url, formDefinition} = action.payload;
+            draft.formSteps[index].url = url;
+            draft.formSteps[index].formDefinition = formDefinition;
+            break;
+        }
         /**
          * Form Logic rules actions
          */
@@ -742,6 +752,24 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         });
     };
 
+    const onCreateFormStep = (index, stepUrl, formDefinitionUrl) => {
+        dispatch({
+            type: 'CREATE_FORM_STEP',
+            payload: {
+                index: index,
+                url: stepUrl,
+                formDefinition: formDefinitionUrl
+            }
+        });
+    }
+
+    const onFormDefinitionCreate = (formDefinitionData) => {
+      dispatch({
+          type: 'ADD_FORM_DEFINITION',
+          payload: formDefinitionData
+      })
+    };
+
     const onStepLiteralFieldChange = (index, event) => {
         const { name, value } = event.target;
         dispatch({
@@ -833,7 +861,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         }
 
         try {
-            var stepValidationErrors = await updateOrCreateFormSteps(csrftoken, formUrl, state.formSteps);
+            var stepValidationErrors = await updateOrCreateFormSteps(csrftoken, formUrl, state.formSteps, onCreateFormStep, onFormDefinitionCreate);
         } catch (e) {
             dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
             window.scrollTo(0, 0);
