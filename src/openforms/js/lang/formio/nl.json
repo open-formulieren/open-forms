@@ -274,5 +274,7 @@
   "Add Column": "Kolom toevoegen",
   "Auto adjust columns": "Pas kolombreedtes automatisch aan",
   "Hide Label": "Verberg label",
-  "Family members": "Gezinsleden"
+  "Family members": "Gezinsleden",
+  "Placeholder": "Placeholder",
+  "The placeholder text that will appear when this field is empty.": "De placeholder tekst die verschijnt als dit veld leeg is."
 }
