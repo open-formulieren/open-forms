@@ -2,7 +2,7 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, TransactionTestCase, override_settings
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
@@ -95,7 +95,7 @@ CONFIGURATION = {
 @override_settings(
     CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
 )
-class PrefillHookTests(TestCase):
+class PrefillHookTests(TransactionTestCase):
     def setUp(self):
         super().setUp()
 
