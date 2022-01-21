@@ -5,7 +5,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase, override_settings
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -322,7 +322,7 @@ class PrefillHookTests(TestCase):
         self.assertIsInstance(field["defaultValue"], str)
         self.assertEqual("", field["defaultValue"])
 
-    def test_prefill_plugins_caches_values(self):
+    def test_apply_prefill_caches_values(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
 
@@ -361,3 +361,165 @@ class PrefillHookTests(TestCase):
 
         field = new_configuration["components"][0]
         self.assertEqual(field["defaultValue"], "foo")
+
+    def test_apply_prefill_caches_values_across_steps_and_plugins(self):
+        """
+        similar to basic test except we check with multiple plugins, step and recurring prefills
+        """
+        step_one_configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "one1",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "alpha",
+                        "attribute": "alpha_one",
+                    },
+                    "defaultValue": None,
+                },
+                {
+                    "id": "one2",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "bravo",
+                        "attribute": "bravo_one",
+                    },
+                    "defaultValue": None,
+                },
+            ],
+        }
+
+        # in step two we use same plugins but different attributes
+        step_two_configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "two1",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "alpha",
+                        "attribute": "alpha_two",
+                    },
+                    "defaultValue": None,
+                },
+                {
+                    "id": "two2",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "bravo",
+                        "attribute": "bravo_two",
+                    },
+                    "defaultValue": None,
+                },
+                # also add a recurring prefill from step one
+                {
+                    "id": "two2",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "alpha",
+                        "attribute": "alpha_one",
+                    },
+                    "defaultValue": None,
+                },
+            ],
+        }
+
+        form = FormFactory.create()
+        form_step_one = FormStepFactory.create(
+            form=form, form_definition__configuration=step_one_configuration
+        )
+        form_step_two = FormStepFactory.create(
+            form=form, form_definition__configuration=step_two_configuration
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        register = Registry()
+
+        alpha_fetch_log = list()
+        bravo_fetch_log = list()
+
+        @register("alpha")
+        class AlphaPlugin(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                for a in attributes:
+                    alpha_fetch_log.append(a)
+                return {a: f"{a}_value" for a in attributes}
+
+        @register("bravo")
+        class BravoPlugin(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                for a in attributes:
+                    bravo_fetch_log.append(a)
+                return {a: f"{a}_value" for a in attributes}
+
+        # prefill step one
+        new_configuration_one = apply_prefill(
+            self.request,
+            configuration=form_step_one.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        # attributes logged as expected
+        self.assertEqual(alpha_fetch_log, ["alpha_one"])
+        self.assertEqual(bravo_fetch_log, ["bravo_one"])
+
+        # prefill step one again
+        new_configuration_one = apply_prefill(
+            self.request,
+            configuration=form_step_one.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        # no change
+        self.assertEqual(alpha_fetch_log, ["alpha_one"])
+        self.assertEqual(bravo_fetch_log, ["bravo_one"])
+
+        # prefill step two
+        new_configuration_two = apply_prefill(
+            self.request,
+            configuration=form_step_two.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        # step two attributes added as expected, but no repeat of recurring attributes from step one
+        self.assertEqual(alpha_fetch_log, ["alpha_one", "alpha_two"])
+        self.assertEqual(bravo_fetch_log, ["bravo_one", "bravo_two"])
+
+        # call both again, lets do in different order
+        new_configuration_two = apply_prefill(
+            self.request,
+            configuration=form_step_two.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        new_configuration_one = apply_prefill(
+            self.request,
+            configuration=form_step_one.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+
+        # no change
+        self.assertEqual(alpha_fetch_log, ["alpha_one", "alpha_two"])
+        self.assertEqual(bravo_fetch_log, ["bravo_one", "bravo_two"])
+
+        # check values
+        field = new_configuration_one["components"][0]
+        self.assertEqual(field["defaultValue"], "alpha_one_value")
+
+        field = new_configuration_one["components"][1]
+        self.assertEqual(field["defaultValue"], "bravo_one_value")
+
+        field = new_configuration_two["components"][0]
+        self.assertEqual(field["defaultValue"], "alpha_two_value")
+
+        field = new_configuration_two["components"][1]
+        self.assertEqual(field["defaultValue"], "bravo_two_value")
+
+        # (recurring from step one)
+        field = new_configuration_two["components"][2]
+        self.assertEqual(field["defaultValue"], "alpha_one_value")

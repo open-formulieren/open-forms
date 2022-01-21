@@ -125,10 +125,6 @@ def _fetch_prefill_values_cached(
                 cache_key = (plugin_id, field)
                 cache_update[cache_key] = value
 
-    elif grouped_fields:
-        # TODO remove this branch
-        print("\nfull prefill cache hit!\n")
-
     # update cache if we have new values
     if cache_update:
         cache_have.update(cache_update)
