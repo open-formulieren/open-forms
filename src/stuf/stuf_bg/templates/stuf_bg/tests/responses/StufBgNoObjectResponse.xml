@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:npsLa01 xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <ns:stuurgegevens>
+                <StUF:berichtcode>La01</StUF:berichtcode>
+                <StUF:zender>
+                    <StUF:applicatie>XXX</StUF:applicatie>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>XXX</StUF:organisatie>
+                    <StUF:applicatie>XXX</StUF:applicatie>
+                </StUF:ontvanger>
+                <StUF:referentienummer/>
+                <StUF:tijdstipBericht>XXX</StUF:tijdstipBericht>
+                <StUF:crossRefnummer>XXX</StUF:crossRefnummer>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
+            </ns:stuurgegevens>
+            <ns:parameters>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+            </ns:parameters>
+        </ns:npsLa01>
+    </soapenv:Body>
+</soapenv:Envelope>

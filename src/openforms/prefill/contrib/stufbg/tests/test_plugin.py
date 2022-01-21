@@ -1,13 +1,16 @@
 from unittest.mock import patch
 
+from django.template import loader
 from django.test import TestCase
+
+from defusedxml.lxml import fromstring as df_fromstring
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
-from ..plugin import StufBgPrefill
+from ..plugin import StufBgPrefill, is_empty_response
 from .utils import mock_stufbg_client
 
 
@@ -128,3 +131,30 @@ class StufBgPrefillTests(TestCase):
 
             self.assertEqual(values, {})
             self.assertEqual(logs.records[0].fault, {})
+
+    def test_get_available_attributes_when_empty_reponse_is_returned(self):
+        client_patcher = mock_stufbg_client("StufBgNoObjectResponse.xml")
+        self.addCleanup(client_patcher.stop)
+        attributes = FieldChoices.attributes.keys()
+
+        with self.assertLogs() as logs:
+            values = self.plugin.get_prefill_values(self.submission, attributes)
+
+            self.assertEqual(values, {})
+            self.assertEqual(logs.records[0].fault, {})
+
+    def test_is_empty_response(self):
+        # using loader is a bit unusual but it mirrors what the other mocks do
+        with self.subTest("empty"):
+            xml_text = loader.render_to_string(
+                f"stuf_bg/tests/responses/StufBgNoObjectResponse.xml"
+            )
+            xml = df_fromstring(xml_text.encode("utf8"))
+            self.assertTrue(is_empty_response(xml))
+
+        with self.subTest("not empty"):
+            xml_text = loader.render_to_string(
+                f"stuf_bg/tests/responses/StufBgResponse.xml"
+            )
+            xml = df_fromstring(xml_text.encode("utf8"))
+            self.assertFalse(is_empty_response(xml))
