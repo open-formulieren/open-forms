@@ -95,9 +95,13 @@ def _fetch_prefill_values_cached(
     request, grouped_fields: Dict[str, list], submission: "Submission", register
 ) -> Dict[str, Dict[str, Any]]:
     """
-    NOTE as complication the prefill is invoked per FormStep, but different steps could have prefills from same plugin
+    Wraps _fetch_prefill_values() with similar signature but caches on request.session
 
-    so we do a little work to cache actual prefill/field
+    As complication the prefill is invoked per FormStep,
+        but different steps could have same plugin or even repeating prefills from same plugins
+
+    This means the cache may have values we're currently not interested in,
+        but want to keep for a different request
     """
     results: Dict[str, Dict[str, Any]] = defaultdict(dict)
 
@@ -115,15 +119,23 @@ def _fetch_prefill_values_cached(
             except KeyError:
                 fetch_fields[plugin_id].append(field)
 
-    # fetch missing values and copy to results
+    # fetch missing values
     if fetch_fields:
         fetch_results = _fetch_prefill_values(fetch_fields, submission, register)
+
         for plugin_id, values in fetch_results.items():
+            # copy to result and update cache
             for field, value in values.items():
                 results[plugin_id][field] = value
-                # keep
                 cache_key = (plugin_id, field)
                 cache_update[cache_key] = value
+
+            # set None for fields not returned by plugin to block endless re-requesting
+            for field in fetch_fields[plugin_id]:
+                if field not in results[plugin_id]:
+                    results[plugin_id][field] = None
+                    cache_key = (plugin_id, field)
+                    cache_update[cache_key] = None
 
     # update cache if we have new values
     if cache_update:

@@ -362,6 +362,74 @@ class PrefillHookTests(TestCase):
         field = new_configuration["components"][0]
         self.assertEqual(field["defaultValue"], "foo")
 
+    def test_apply_prefill_caches_values_and_doesnt_requery_empty_or_missing(self):
+        configuration = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "one",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "have",
+                        "attribute": "hit",
+                    },
+                    "defaultValue": None,
+                },
+                {
+                    "id": "two",
+                    "type": "text",
+                    "prefill": {
+                        "plugin": "have",
+                        "attribute": "miss",
+                    },
+                    "defaultValue": None,
+                },
+            ],
+        }
+        form_step = FormStepFactory.create(form_definition__configuration=configuration)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        register = Registry()
+        counter = 0
+
+        @register("have")
+        class HavePlugin(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                nonlocal counter
+                counter += 1
+                # only return 'have' and skip 'missing'
+                return {"hit": "foo"}
+
+        # first call increases counter
+        new_configuration = apply_prefill(
+            self.request,
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        self.assertEqual(counter, 1)
+
+        field = new_configuration["components"][0]
+        self.assertEqual(field["defaultValue"], "foo")
+        field = new_configuration["components"][1]
+        self.assertEqual(field["defaultValue"], None)
+
+        # second call hits cache
+        new_configuration = apply_prefill(
+            self.request,
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        # still just one
+        self.assertEqual(counter, 1)
+
+        field = new_configuration["components"][0]
+        self.assertEqual(field["defaultValue"], "foo")
+        field = new_configuration["components"][1]
+        self.assertEqual(field["defaultValue"], None)
+
     def test_apply_prefill_caches_values_across_steps_and_plugins(self):
         """
         similar to basic test except we check with multiple plugins, step and recurring prefills
@@ -412,7 +480,7 @@ class PrefillHookTests(TestCase):
                     },
                     "defaultValue": None,
                 },
-                # also add a recurring prefill from step one
+                # also add a recurring prefill attribute from step one
                 {
                     "id": "two2",
                     "type": "text",
