@@ -18,5 +18,5 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
-    configuration = apply_prefill(request, configuration, submission=submission)
+    configuration = apply_prefill(configuration, submission=submission)
     return configuration

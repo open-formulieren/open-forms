@@ -33,6 +33,7 @@ from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
+from glom import GlomError, Path, assign, glom
 from zgw_consumers.concurrent import parallel
 
 from openforms.logging import logevent
@@ -46,12 +47,8 @@ default_app_config = "openforms.prefill.apps.PrefillConfig"
 
 logger = logging.getLogger(__name__)
 
-CACHE_SESSION_KEY = "_prefill_cache"
 
-
-def apply_prefill(
-    request, configuration: JSONObject, submission: "Submission", register=None
-):
+def apply_prefill(configuration: JSONObject, submission: "Submission", register=None):
     """
     Takes a Formiojs definition and invokes all the pre-fill plugins.
 
@@ -81,9 +78,7 @@ def apply_prefill(
     fields = _extract_prefill_fields(configuration)
     grouped_fields = _group_prefills_by_plugin(fields)
 
-    results = _fetch_prefill_values_cached(
-        request, grouped_fields, submission, register
-    )
+    results = _fetch_prefill_values_cached(grouped_fields, submission, register)
 
     # finally, ensure the ``defaultValue`` is set based on prefill results
     config_copy = deepcopy(configuration)
@@ -92,10 +87,10 @@ def apply_prefill(
 
 
 def _fetch_prefill_values_cached(
-    request, grouped_fields: Dict[str, list], submission: "Submission", register
+    grouped_fields: Dict[str, list], submission: "Submission", register
 ) -> Dict[str, Dict[str, Any]]:
     """
-    Wraps _fetch_prefill_values() with similar signature but caches on request.session
+    Wraps _fetch_prefill_values() with similar signature but caches on submission.prefill_data
 
     As complication the prefill is invoked per FormStep,
         but different steps could have same plugin or even repeating prefills from same plugins
@@ -103,47 +98,49 @@ def _fetch_prefill_values_cached(
     This means the cache may have values we're currently not interested in,
         but want to keep for a different request
     """
-    results: Dict[str, Dict[str, Any]] = defaultdict(dict)
+    results: Dict[str, Dict[str, Any]] = dict()
 
-    # grab the session cache
-    cache_have = request.session.get(CACHE_SESSION_KEY, dict())
-    cache_update = dict()
+    cached = submission.prefill_data
+    cache_dirty = False
 
-    # copy from session cache and collect misses
+    # grab what we want from cache and collect misses
     fetch_fields = defaultdict(list)
     for plugin_id, fields in grouped_fields.items():
         for field in fields:
-            cache_key = (plugin_id, field)
+            path = Path(plugin_id, field)
             try:
-                results[plugin_id][field] = cache_have[cache_key]
-            except KeyError:
+                assign(results, path, glom(cached, path), missing=dict)
+            except GlomError:
                 fetch_fields[plugin_id].append(field)
 
     # fetch missing values
     if fetch_fields:
         fetch_results = _fetch_prefill_values(fetch_fields, submission, register)
 
+        # copy to result and update cache
         for plugin_id, values in fetch_results.items():
-            # copy to result and update cache
             for field, value in values.items():
-                results[plugin_id][field] = value
-                cache_key = (plugin_id, field)
-                cache_update[cache_key] = value
+                path = Path(plugin_id, field)
+                assign(results, path, value, missing=dict)
+                assign(cached, path, value, missing=dict)
+                cache_dirty = True
 
-            # set None for fields not returned by plugin to block endless re-requesting
-            for field in fetch_fields[plugin_id]:
-                if field not in results[plugin_id]:
-                    results[plugin_id][field] = None
-                    cache_key = (plugin_id, field)
-                    cache_update[cache_key] = None
+        # set None for fields not returned by plugin to block endless re-requesting
+        for plugin_id, fields in fetch_fields.items():
+            for field in fields:
+                path = Path(plugin_id, field)
+                try:
+                    glom(results, path)
+                except GlomError:
+                    assign(results, path, None, missing=dict)
+                    assign(cached, path, None, missing=dict)
+                    cache_dirty = True
 
     # update cache if we have new values
-    if cache_update:
-        cache_have.update(cache_update)
-        request.session[CACHE_SESSION_KEY] = cache_have
+    if cache_dirty:
+        submission.prefill_data = cached
+        submission.save(update_fields=["prefill_data"])
 
-    # convert to regular dict for sanity
-    results = dict(results)
     return results
 
 

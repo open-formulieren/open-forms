@@ -205,6 +205,12 @@ class Submission(models.Model):
         validators=[SerializerValidator(CoSignDataSerializer)],
         help_text=_("Authentication details of a co-signer."),
     )
+    prefill_data = JSONField(
+        _("prefill data"),
+        blank=True,
+        default=dict,
+        help_text=_("Data used for prefills."),
+    )
 
     # payment state
     price = models.DecimalField(

@@ -1,15 +1,13 @@
 from copy import deepcopy
 from unittest.mock import patch
 
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import RequestFactory, TransactionTestCase, override_settings
+from django.test import TransactionTestCase
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...tests.utils import NOOP_CACHES
 from .. import apply_prefill
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry
@@ -92,25 +90,12 @@ CONFIGURATION = {
 }
 
 
-@override_settings(
-    CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
-)
 class PrefillHookTests(TransactionTestCase):
-    def setUp(self):
-        super().setUp()
-
-        # create a dummy request with working session
-        self.request = RequestFactory().get("/")
-        middleware = SessionMiddleware()
-        middleware.process_request(self.request)
-        self.request.session.save()
-
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -138,7 +123,6 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -168,7 +152,6 @@ class PrefillHookTests(TransactionTestCase):
                 return {}
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -186,7 +169,6 @@ class PrefillHookTests(TransactionTestCase):
 
         try:
             apply_prefill(
-                self.request,
                 configuration=form_step.form_definition.configuration,
                 submission=submission,
                 register=register,
@@ -205,7 +187,6 @@ class PrefillHookTests(TransactionTestCase):
 
         with self.assertRaises(PluginNotEnabled):
             apply_prefill(
-                self.request,
                 configuration=form_step.form_definition.configuration,
                 submission=submission,
                 register=register,
@@ -237,7 +218,6 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -274,7 +254,6 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -311,7 +290,6 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -339,7 +317,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # first call increases counter
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -351,7 +328,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # second call hits cache
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -403,7 +379,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # first call increases counter
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -417,7 +392,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # second call hits cache
         new_configuration = apply_prefill(
-            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -525,7 +499,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # prefill step one
         new_configuration_one = apply_prefill(
-            self.request,
             configuration=form_step_one.form_definition.configuration,
             submission=submission,
             register=register,
@@ -536,7 +509,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # prefill step one again
         new_configuration_one = apply_prefill(
-            self.request,
             configuration=form_step_one.form_definition.configuration,
             submission=submission,
             register=register,
@@ -547,7 +519,6 @@ class PrefillHookTests(TransactionTestCase):
 
         # prefill step two
         new_configuration_two = apply_prefill(
-            self.request,
             configuration=form_step_two.form_definition.configuration,
             submission=submission,
             register=register,
@@ -559,13 +530,11 @@ class PrefillHookTests(TransactionTestCase):
 
         # call both again, lets do in different order
         new_configuration_two = apply_prefill(
-            self.request,
             configuration=form_step_two.form_definition.configuration,
             submission=submission,
             register=register,
         )
         new_configuration_one = apply_prefill(
-            self.request,
             configuration=form_step_one.form_definition.configuration,
             submission=submission,
             register=register,
