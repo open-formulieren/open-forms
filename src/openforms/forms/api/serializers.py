@@ -14,7 +14,10 @@ from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
-from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.service import (
+    get_dynamic_configuration,
+    update_configuration_for_request,
+)
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
@@ -309,6 +312,12 @@ class FormExportSerializer(FormSerializer):
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance=instance)
+
+        # set upload urls etc
+        update_configuration_for_request(
+            representation["configuration"],
+            request=self.context["request"],
+        )
 
         _handle_custom_types = self.context.get("handle_custom_types", True)
         if _handle_custom_types:

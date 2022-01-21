@@ -204,7 +204,7 @@ class FileField extends BaseFileField {
             label: 'File Upload',
             key: 'file',
             storage: 'url',
-            url: getFullyQualifiedUrl('/api/v1/submissions/files/upload'),
+            url: "", // backend sets this
             options: "{\"withCredentials\": true}",
             webcam: false,
             input: true,
