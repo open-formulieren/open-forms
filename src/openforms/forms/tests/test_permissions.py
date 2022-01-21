@@ -1,4 +1,7 @@
+import itertools
+from copy import deepcopy
 from types import SimpleNamespace
+from typing import List, Tuple
 
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.test import TestCase
@@ -20,37 +23,133 @@ def get_view(action: str):
     return view
 
 
-class FormAPIPermissionsTest(TestCase):
+class APIPermissionTestMixin:
+    full_factors = [
+        ["get", "post", "put", "patch", "delete", "head", "options"],
+        ["detail", "list", "create", "delete"],  # TODO more here
+    ]
+
+    def get_permissions(self) -> List[Permission]:
+        try:
+            return self.permissions
+        except AttributeError:
+            self.fail("set .permissions attribute or override .get_permissions()")
+
+    def get_full_factors(self) -> List[List[str]]:
+        extra = self.get_extra_factors()
+        if not extra:
+            return self.full_factors
+        factors = deepcopy(self.full_factors)
+        extra = set(extra)
+        extra.update(factors[1])
+        factors[1] = list(extra)
+        return factors
+
+    def get_extra_factors(self) -> List[List[str]]:
+        try:
+            return self.extra_factors
+        except AttributeError:
+            return []
+
+    def extend_tests(self, base_tests, *add_test) -> List[Tuple[str, str, str]]:
+        assert add_test, "pass one or more test matrices to add"
+        tests = dict()
+        for add in add_test:
+            for method, view, res in base_tests:
+                tests[(method, view)] = res
+            for method, view, res in add:
+                tests[(method, view)] = res
+        return [(method, view, res) for (method, view), res in tests.items()]
+
+    def assertPermission(self, permission, user, method, action, allowed):
+        res = permission.has_permission(get_request(method, user), get_view(action))
+        msg = (
+            f"{permission} {user} {method} {action}: actual {res} != expected {allowed}"
+        )
+        self.assertEqual(allowed, res, msg)
+
+    def assertPermissionStack(self, permissions, user, method, action, allowed):
+        res = False
+        for permission in permissions:
+            # let's not shortcut the expression and invoke every permission
+            res = (
+                permission.has_permission(get_request(method, user), get_view(action))
+                or res
+            )
+
+        p = ", ".join(map(str, permissions))
+        msg = f"[{p}] {user} {method} {action}: actual {res} != expected {allowed}"
+        self.assertEqual(allowed, res, msg)
+
+    def assertPermissionMatrix(
+        self,
+        tests,
+        user,
+        full_factor_coverage=True,
+        allow_unexplicit=False,
+        map_head_options=False,
+    ):
+        if allow_unexplicit:
+            assert (
+                full_factor_coverage
+            ), "parameter 'allow_unexplicit' requires 'full_factor_coverage'"
+        if map_head_options:
+            assert (
+                full_factor_coverage
+            ), "parameter 'map_head_options' requires 'full_factor_coverage'"
+
+        seen = set()
+        for method, action, allowed in tests:
+            seen.add((method, action))
+
+            s = "allowed" if allowed else "block"
+            with self.subTest(f"{method} {action} {s}"):
+                self.assertPermissionStack(
+                    self.get_permissions(), user, method, action, allowed
+                )
+
+        if full_factor_coverage:
+            for method, action in itertools.product(*self.full_factors):
+                if (method, action) in seen:
+                    continue
+                if map_head_options:
+                    if method in ("head", "options") and ("get", action) in seen:
+                        # ideally we'd log a copy as a subtest here
+                        continue
+
+                s = "block (full check)"
+                with self.subTest(f"{method} {action} {s}"):
+                    # expect to fail
+                    self.assertPermissionStack(
+                        self.get_permissions(), user, method, action, allow_unexplicit
+                    )
+
+
+class FormAPIPermissionsTest(APIPermissionTestMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        self.permission = FormAPIPermissions()
+        self.permissions = [FormAPIPermissions()]
 
+        # generic public read (here without list)
         self.public_read = [
             ("get", "detail", True),
+            ("head", "detail", True),
+            ("options", "detail", True),
+            # custom no list
             ("get", "list", False),
+            # TODO add more actions we'd always want to test even without full factors
             ("post", "create", False),
         ]
 
-    def assertMultiple(self, tests, user):
-        for method, action, allowed in tests:
-            s = "allowed" if allowed else "block"
-            with self.subTest(f"{method} {action} {s}"):
-                self.assertEqual(
-                    allowed,
-                    self.permission.has_permission(
-                        get_request(method, user), get_view(action)
-                    ),
-                )
-
     def test_anon(self):
         tests = self.public_read
-        self.assertMultiple(tests, None)
+        self.assertPermissionMatrix(tests, None)
 
     def test_user_not_authenticated(self):
         user = AnonymousUser()
         tests = self.public_read
-        self.assertMultiple(tests, user)
+        self.assertPermissionMatrix(tests, user)
 
     def test_user_not_staff(self):
         """
@@ -59,7 +158,7 @@ class FormAPIPermissionsTest(TestCase):
         user = UserFactory.create()
         self.client.force_login(user)
         tests = self.public_read
-        self.assertMultiple(tests, user)
+        self.assertPermissionMatrix(tests, user)
 
     def test_user_not_staff_with_change_permission(self):
         """
@@ -69,7 +168,7 @@ class FormAPIPermissionsTest(TestCase):
         user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.client.force_login(user)
         tests = self.public_read
-        self.assertMultiple(tests, user)
+        self.assertPermissionMatrix(tests, user)
 
     def test_user_not_staff_with_view_permission(self):
         """
@@ -78,12 +177,13 @@ class FormAPIPermissionsTest(TestCase):
         user = UserFactory.create()
         user.user_permissions.add(Permission.objects.get(codename="view_form"))
         self.client.force_login(user)
-        tests = [
-            ("get", "detail", True),
-            ("get", "list", True),  # needed for API access
-            ("post", "create", False),
-        ]
-        self.assertMultiple(tests, user)
+        tests = self.extend_tests(
+            self.public_read,
+            [
+                ("get", "list", True),  # needed for API access
+            ],
+        )
+        self.assertPermissionMatrix(tests, user, map_head_options=True)
 
     def test_staff(self):
         """
@@ -92,7 +192,7 @@ class FormAPIPermissionsTest(TestCase):
         user = StaffUserFactory.create()
         self.client.force_login(user)
         tests = self.public_read
-        self.assertMultiple(tests, user)
+        self.assertPermissionMatrix(tests, user)
 
     def test_staff_with_view_permission(self):
         """
@@ -103,7 +203,7 @@ class FormAPIPermissionsTest(TestCase):
         user.user_permissions.add(Permission.objects.get(codename="view_form"))
         self.client.force_login(user)
         tests = self.public_read
-        self.assertMultiple(tests, user)
+        self.assertPermissionMatrix(tests, user)
 
     def test_staff_with_change_permission(self):
         """
@@ -112,9 +212,14 @@ class FormAPIPermissionsTest(TestCase):
         user = StaffUserFactory.create()
         user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.client.force_login(user)
-        tests = [
-            ("get", "detail", True),
-            ("get", "list", True),
-            ("post", "create", True),
-        ]
-        self.assertMultiple(tests, user)
+        tests = self.extend_tests(
+            self.public_read,
+            [
+                # we can do anything so overwrite our custom public_read
+                ("get", "list", True),
+                ("post", "create", True),
+            ],
+        )
+        self.assertPermissionMatrix(
+            tests, user, allow_unexplicit=True, map_head_options=True
+        )
