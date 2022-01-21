@@ -27,6 +27,7 @@ So, to recap:
    form field default values.
 """
 import logging
+from collections import defaultdict
 from copy import deepcopy
 from datetime import date, datetime
 from itertools import groupby
@@ -45,8 +46,12 @@ default_app_config = "openforms.prefill.apps.PrefillConfig"
 
 logger = logging.getLogger(__name__)
 
+CACHE_SESSION_KEY = "_prefill_cache"
 
-def apply_prefill(configuration: JSONObject, submission: "Submission", register=None):
+
+def apply_prefill(
+    request, configuration: JSONObject, submission: "Submission", register=None
+):
     """
     Takes a Formiojs definition and invokes all the pre-fill plugins.
 
@@ -76,6 +81,67 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     fields = _extract_prefill_fields(configuration)
     grouped_fields = _group_prefills_by_plugin(fields)
 
+    results = _fetch_prefill_values_cached(
+        request, grouped_fields, submission, register
+    )
+
+    # finally, ensure the ``defaultValue`` is set based on prefill results
+    config_copy = deepcopy(configuration)
+    _set_default_values(config_copy, results)
+    return config_copy
+
+
+def _fetch_prefill_values_cached(
+    request, grouped_fields: Dict[str, list], submission: "Submission", register
+) -> Dict[str, Dict[str, Any]]:
+    """
+    NOTE as complication the prefill is invoked per FormStep, but different steps could have prefills from same plugin
+
+    so we do a little work to cache actual prefill/field
+    """
+    results: Dict[str, Dict[str, Any]] = defaultdict(dict)
+
+    # grab the session cache
+    cache_have = request.session.get(CACHE_SESSION_KEY, dict())
+    cache_update = dict()
+
+    # copy from session cache and collect misses
+    fetch_fields = defaultdict(list)
+    for plugin_id, fields in grouped_fields.items():
+        for field in fields:
+            cache_key = (plugin_id, field)
+            try:
+                results[plugin_id][field] = cache_have[cache_key]
+            except KeyError:
+                fetch_fields[plugin_id].append(field)
+
+    # fetch missing values and copy to results
+    if fetch_fields:
+        fetch_results = _fetch_prefill_values(fetch_fields, submission, register)
+        for plugin_id, values in fetch_results.items():
+            for field, value in values.items():
+                results[plugin_id][field] = value
+                # keep
+                cache_key = (plugin_id, field)
+                cache_update[cache_key] = value
+
+    elif grouped_fields:
+        # TODO remove this branch
+        print("\nfull prefill cache hit!\n")
+
+    # update cache if we have new values
+    if cache_update:
+        cache_have.update(cache_update)
+        request.session[CACHE_SESSION_KEY] = cache_have
+
+    # convert to regular dict for sanity
+    results = dict(results)
+    return results
+
+
+def _fetch_prefill_values(
+    grouped_fields: Dict[str, list], submission: "Submission", register
+) -> Dict[str, Dict[str, Any]]:
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item
         plugin = register[plugin_id]
@@ -96,13 +162,7 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     with parallel() as executor:
         results = executor.map(invoke_plugin, grouped_fields.items())
 
-    # process the pre-fill results and fill them out
-    prefilled_values: Dict[str, Dict[str, Any]] = dict(results)
-
-    # finally, ensure the ``defaultValue`` is set based on prefill results
-    config_copy = deepcopy(configuration)
-    _set_default_values(config_copy, prefilled_values)
-    return config_copy
+    return dict(results)
 
 
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:

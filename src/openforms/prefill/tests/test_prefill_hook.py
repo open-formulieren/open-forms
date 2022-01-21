@@ -1,13 +1,15 @@
 from copy import deepcopy
 from unittest.mock import patch
 
-from django.test import TransactionTestCase
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import RequestFactory, TestCase, override_settings
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...tests.utils import NOOP_CACHES
 from .. import apply_prefill
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry
@@ -90,12 +92,25 @@ CONFIGURATION = {
 }
 
 
-class PrefillHookTests(TransactionTestCase):
+@override_settings(
+    CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
+)
+class PrefillHookTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # create a dummy request with working session
+        self.request = RequestFactory().get("/")
+        middleware = SessionMiddleware()
+        middleware.process_request(self.request)
+        self.request.session.save()
+
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -123,6 +138,7 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -152,6 +168,7 @@ class PrefillHookTests(TransactionTestCase):
                 return {}
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -169,6 +186,7 @@ class PrefillHookTests(TransactionTestCase):
 
         try:
             apply_prefill(
+                self.request,
                 configuration=form_step.form_definition.configuration,
                 submission=submission,
                 register=register,
@@ -187,6 +205,7 @@ class PrefillHookTests(TransactionTestCase):
 
         with self.assertRaises(PluginNotEnabled):
             apply_prefill(
+                self.request,
                 configuration=form_step.form_definition.configuration,
                 submission=submission,
                 register=register,
@@ -218,6 +237,7 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -254,6 +274,7 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -290,6 +311,7 @@ class PrefillHookTests(TransactionTestCase):
         submission = SubmissionFactory.create(form=form_step.form)
 
         new_configuration = apply_prefill(
+            self.request,
             configuration=form_step.form_definition.configuration,
             submission=submission,
             register=register,
@@ -299,3 +321,43 @@ class PrefillHookTests(TransactionTestCase):
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
         self.assertEqual("", field["defaultValue"])
+
+    def test_prefill_plugins_caches_values(self):
+        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        register = Registry()
+        counter = 0
+
+        @register("demo")
+        class CountPlugin(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                nonlocal counter
+                counter += 1
+                return {a: "foo" for a in attributes}
+
+        # first call increases counter
+        new_configuration = apply_prefill(
+            self.request,
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        self.assertEqual(counter, 1)
+
+        field = new_configuration["components"][0]
+        self.assertEqual(field["defaultValue"], "foo")
+
+        # second call hits cache
+        new_configuration = apply_prefill(
+            self.request,
+            configuration=form_step.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
+        # still just one
+        self.assertEqual(counter, 1)
+
+        field = new_configuration["components"][0]
+        self.assertEqual(field["defaultValue"], "foo")
