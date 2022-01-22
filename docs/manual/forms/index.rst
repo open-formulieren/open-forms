@@ -10,4 +10,5 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    basics
    examples/index
    form_fields
+   logic
    export_import
