@@ -216,7 +216,7 @@ Geslacht (``geslacht``) is mannelijk (``m``): Waar (``true``).
 
 **Voorbeeld 1b**
 
-Geslacht (``geslacht``) is mannelijk (``v``): Onwaar (``false``).
+Geslacht (``geslacht``) is vrouwelijk (``v``): Onwaar (``false``).
 
 .. code:: json
 
