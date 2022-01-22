@@ -4119,7 +4119,7 @@ msgstr "Uitval simulatie (test)"
 
 #: openforms/registrations/contrib/demo/plugin.py:61
 msgid "Demo - exception during registration"
-msgstr "Demo - fotumelding tijdens registratie"
+msgstr "Demo - foutmelding tijdens registratie"
 
 #: openforms/registrations/contrib/email/apps.py:8
 msgid "Email plugin"
