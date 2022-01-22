@@ -61,30 +61,10 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
 * **Inlogopties**: Als voor een formulier ingelogd moet worden kan een van de
   beschikbare inlog opties worden aangevinkt.
 
-  * **DigiD**: Inloggen via DigiD. Hiermee wordt het BSN van de gebruiker
-    verkregen en opgeslagen op de inzending. Het BSN kan ook gebruikt worden
-    om persoonsgegevens voor in te vullen.
-  * **eHerkenning**: Inloggen met eHerkenning via uw broker. Hiermee wordt het
-    KvK-nummer vekregen en opgeslagen op de inzending. Het BSN kan ook gebruikt
-    worden om bedrijfsgegevens voor in te vullen.
+  .. toctree::
+     :maxdepth: 2
 
-  Onderstaande inlogopties zijn **alleen voor testdoeleinden** geschikt:
-
-  * **Demo BSN**: Stelt beheerders in staat inloggen te simuleren
-    waarbij een op te geven BSN opgeslagen wordt op de inzending.
-  * **Demo KvK-nummer**: Stelt beheerders in staat inloggen te simuleren
-    waarbij een op te geven KvK-nummer opgeslagen wordt op de inzending.
-  * **Uitval simulatie (test)**: Stelt beheerders in staat te simuleren dat een
-    willekeurig inlog proces faalt. Het formulier geeft direct een foutmelding.
-  * **BSN Uitval (test)**: Stelt beheerders in staat te simuleren dat een
-    inlog proces dat een BSN teruggeeft faalt. Het formulier geeft direct een
-    foutmelding.
-  * **KvK Uitval (test)**: Stelt beheerders in staat te simuleren dat een
-    inlog proces dat een KvK-nummer teruggeeft faalt. Het formulier geeft
-    direct een foutmelding.
-  * **DigiD simulatie**: Stelt beheerders in staat inloggen te simuleren
-    op een DigiD demo omgeving waarbij de gebruikersnaam wordt opgeslagen als
-    BSN op de inzending.
+     ../../configuration/authentication/index
 
 * **Toon voortgang**: Vink aan om de stappen bij een formulier te tonen. Typisch
   kan deze worden uitgevinkt indien er een slechts beperkt aantal stappen is.
@@ -151,49 +131,101 @@ Bevestiging
 -----------
 
 In dit tabblad kan de bevestiging, die te zien is na het afronden van het
-formulier, worden aangepast.
+formulier, worden aangepast alsmede de e-mailbevestiging die gestuurd word naar
+de indiener van het formulier.
 
-In het veld **Bevestigingspagina tekst** kan een tekst worden opgemaakt die
-wordt getoond na het versturen van het formulier. Indien dit veld leeg wordt
-gelaten zal de globale **Bevestigingspagina tekst** gebruikt worden.
+U kunt in zowel de bevestigingspagina als de e-mailbevestiging gebruik maken 
+van variabelen. Uitleg hierover vind u bij :ref:`manual_templates`
 
-U kunt in deze tekst variabelen gebruiken. Uitleg hierover vind u bij
-:ref:`manual_templates`
+Sjabloon bevestigingspagina
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In het veld **Inhoud** kan een tekst worden opgemaakt die wordt getoond na 
+het indienen van het formulier. Indien dit veld leeg wordt gelaten zal de 
+globale **Bevestigingspagina tekst** gebruikt worden.
+
+Bevestigingsmailsjabloon
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+In het veld **Inhoud** kan een tekst worden opgemaakt die gebruikt wordt in de
+e-mailbevestging. Het **Onderwerp** van de email kan ook worden opgegeven.
+
+U moet in de optie **E-mailsjabloon** expliciet opgeven welk e-mailsjabloon
+gebruikt wordt voor de e-mailbevestiging. U kunt er ook voor kiezen om geen
+e-mailbevestiging te versturen.
+
+
+Registratie
+-----------
+
+In dit tabblad kunt u aangeven op welke manier uw inzendingen moeten worden
+geregistreerd. Alle inzendingen komen altijd binnen bij Open Formulieren zelf
+maar kunnen daarnaast doorgezet worden naar een extern systeem.
+
+.. toctree::
+   :maxdepth: 2
+
+   ../../configuration/registration/index
+
+
+Knopteksten
+-----------
+
+U kunt de knoppen die standaard in het formulier getoond worden een ander label
+geven. De waarden die hier staan overschrijven de labels die globaal zijn 
+geconfigureerd.
+
+
+Product en betaling
+-------------------
+
+Hier kunt u een **Product** kiezen dat gekoppeld is aan het formulier. Het 
+product bevat een prijs die gebruikt kan worden als betaald moet worden voor
+het product. Betaling kan ingesteld worden door de juiste **Betaalprovider** te
+selecteren.
+
+.. toctree::
+   :maxdepth: 2
+
+   ../../configuration/payment/index
+
+Ten slotte kunt u ervoor kiezen om de prijs van het gekoppeld product te 
+gebruiken of logica regels op te stellen voor het bepalen van de prijs. Dit 
+laatste kunt u instellen onder **Prijslogica**. De **Prijslogica** volgt verder 
+dezelfde regels als reguliere **Logica**.
+
+
+Gegevens opschonen
+------------------
+
+In dit tabblad kunt u de standaardwaarden voor het opschonen van inzendingen
+overschrijven.
 
 
 Logica
 ------
 
-In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de gegevens die de gebruikers
-invult, het formulier kunnen wijzigen.
+In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de 
+gegevens die de gebruikers invult, zowel de inhoud als het gedrag van het 
+formulier kunnen wijzigen.
 
-Regels
-^^^^^^
+Logica geeft u krachtige mogelijkheden om het formulier dynamischer te maken.
+Voorbeelden en uitleg over hierover vind u onder :ref:`manual_logic`.
 
-Om een regel op te bouwen, moet een component worden geselecteerd. De component kan worden vergeleken met de waarde
-van een andere component, met een waarde gekozen door de beheerder of met een group van waarden.
-Voor componenten van type 'datum', is het ook mogelijk om te vergelijken met de datum waarop de gebruiker
-het formulier invult.
 
-Acties
-^^^^^^
+Afspraken
+---------
 
-Nadat een regel is gedefinieerd, kunnen een of meerdere acties worden toegevoegd. De acties kunnen het formulier
-wijzigen afhankelijk van de gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
+Als u een formulier wilt koppelen aan een afsprakensysteem, dan kunt u hier
+aangeven welke velden opgenomen moeten worden in de afspraak. Bij de meeste
+afspraaksystemen zijn alle velden verplicht.
 
-* Blokkeer doorgaan naar de volgende stap.
+.. note::
+  
+   U kunt hier niet kiezen voor een gekoppeld afspraaksysteem. Deze is alleen
+   globaal te configureren.
 
-* Wijzig een attribuut van een veld/component. Met dit actie kan:
+.. toctree::
+   :maxdepth: 2
 
-    * Een niet-verplicht veld wordt veranderd in een verplicht veld (of andersom)
-
-    * Een zichtbaar veld wordt verborgen (of een verborgen veld wordt zichtbaar)
-
-    * Een veld kan worden uitgeschakeld
-
-* Wijzig de waarde van een veld/component. Met deze actie kan de waarde van een veld/component worden veranderd naar de waarde van een andere component of een waarde gekozen door de beheerder.
-
-* Markeer een stap als 'niet van toepassing' (n.v.t).
-
-.. image:: _assets/logica_voorbeeld.png
-    :width: 100%
+   ../../configuration/appointment/index

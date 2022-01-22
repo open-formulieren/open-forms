@@ -9,4 +9,5 @@ Authentication plugins
 
    digid
    eherkenning_eidas
+   other
 

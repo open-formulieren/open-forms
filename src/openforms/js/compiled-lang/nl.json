@@ -160,13 +160,13 @@
   "6IAwkJ": [
     {
       "type": 0,
-      "value": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier."
+      "value": "Inloggen is vereist voor deze stap, maar er is geen authenticatiemethode geselecteerd op het formulier."
     }
   ],
   "6PIG4q": [
     {
       "type": 0,
-      "value": "Inlogopties"
+      "value": "Authenticatiemethode"
     }
   ],
   "70Q0CM": [
@@ -562,7 +562,7 @@
   "GV8HnZ": [
     {
       "type": 0,
-      "value": "Selecteer betaalprovider backend"
+      "value": "Betaalprovider"
     }
   ],
   "Gc7gu3": [
@@ -964,7 +964,7 @@
     },
     {
       "type": 0,
-      "value": "\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt."
+      "value": "\"-attribuut nodig heeft. Gebruik een authenticatiemethode die dit attribuut aanbiedt."
     }
   ],
   "VUOOSy": [
@@ -1274,7 +1274,7 @@
   "jAraWj": [
     {
       "type": 0,
-      "value": "wijzig de waarde van een veld"
+      "value": "wijzig de waarde van een veld/component."
     }
   ],
   "jU/t8O": [
@@ -1328,7 +1328,7 @@
   "l2Wag+": [
     {
       "type": 0,
-      "value": "Markeer de formulierstap als niet van toepassing"
+      "value": "markeer de formulierstap als niet van toepassing"
     }
   ],
   "lcR5L6": [

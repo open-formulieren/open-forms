@@ -125,12 +125,12 @@
     "originalDefault": "Name of the form definition used in this form step"
   },
   "6IAwkJ": {
-    "defaultMessage": "Inloggen is vereist voor deze stap, maar er is geen inlogoptie geselecteerd op het formulier.",
+    "defaultMessage": "Inloggen is vereist voor deze stap, maar er is geen authenticatiemethode geselecteerd op het formulier.",
     "description": "No authentication backend selected warning.",
     "originalDefault": "This form step requires a login, but no authentication backend has been specified."
   },
   "6PIG4q": {
-    "defaultMessage": "Inlogopties",
+    "defaultMessage": "Authenticatiemethode",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
   },
@@ -370,7 +370,7 @@
     "originalDefault": "Use existing form definition"
   },
   "GV8HnZ": {
-    "defaultMessage": "Selecteer betaalprovider backend",
+    "defaultMessage": "Betaalprovider",
     "description": "Payment backend label",
     "originalDefault": "Select payment backend"
   },
@@ -685,7 +685,7 @@
     "originalDefault": "Page content"
   },
   "VQYmOD": {
-    "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een inlogoptie die dit attribuut aanbiedt.",
+    "defaultMessage": "De component \"{label}\" gebruikt een prefill die het \"{requiredAuthAttribute}\"-attribuut nodig heeft. Gebruik een authenticatiemethode die dit attribuut aanbiedt.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
@@ -940,7 +940,7 @@
     "originalDefault": "Form definition"
   },
   "jAraWj": {
-    "defaultMessage": "wijzig de waarde van een veld",
+    "defaultMessage": "wijzig de waarde van een veld/component.",
     "description": "action type \"value\" label",
     "originalDefault": "change the value of a component"
   },
@@ -985,7 +985,7 @@
     "originalDefault": "(missing information)"
   },
   "l2Wag+": {
-    "defaultMessage": "Markeer de formulierstap als niet van toepassing",
+    "defaultMessage": "markeer de formulierstap als niet van toepassing",
     "description": "action type \"step-not-applicable\" label",
     "originalDefault": "Mark the form step as not-applicable"
   },
