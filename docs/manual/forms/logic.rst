@@ -22,12 +22,12 @@ opbouw is als volgt:
 
 **Voorbeeld**
 
-**Als** [*Gegevens: geslacht*] [*is gelijk aan*] [*de waarde*] ``m``
-**dan** [*wijzig de waarde van een veld*] [*Gegevens: Aanhef*] [*de waarde*] 
+**Als** [*Persoonlijk: Geslacht*] [*is gelijk aan*] [*de waarde*] ``m``
+**dan** [*wijzig de waarde van een veld*] [*Persoonlijk: Aanhef*] [*de waarde*] 
 ``de heer``
 
 Bovenstaand voorbeeld wijzigt de waarde van het tekstveld *Aanhef*, in de 
-formulierstap *Gegevens*, naar ``de heer`` als het geselecteerde *Geslacht* 
+formulierstap *Persoonlijk*, naar ``de heer`` als het geselecteerde *Geslacht* 
 ``m`` is.
 
 In het voorbeeld staan een aantal woorden tussen blokhaken ([...]). Hiermee
@@ -37,41 +37,92 @@ allerlei mogelijkheden om regels op te stellen en acties uit te voeren.
 Afhankelijk van de gekozen keuzevelden komen andere, meer of minder opties 
 beschikbaar.
 
+.. image:: _assets/logica_voorbeeld.png
+    :width: 100%
+
 
 Regels
 ======
 
-De eerder genoemde **Als** *<voorwaarde>* regel is een kleine abstractie op
-een complexere set van onderdelen:
+De eerder genoemde **Als** *<voorwaarde>* regel is een vereenvoudigde weergave
+van alle onderdelen:
 
-**Als** [*<veld>*] [*<operatie>*] [*<type waarde>*] **<waarde>**
+**Als** [*<veld>*] [*<operatie>*] [*<type waarde>*] *<waarde>*
 
 Hieronder staat per onderdeel uitgelegd wat de mogelijkheden zijn, en wat ze 
 doen.
 
 * *<veld>* - Een veld uit een van de beschikbare formulierstappen. Voorbeeld:
-  [*Gegevens: geslacht*]
+  [*Persoonlijk: Geslacht*]
 * *<operatie>* - Er zijn diverse operaties mogelijk. Niet alle operaties zijn
   mogelijk voor alle *<velden>*:
 
   * **is gelijk aan** - De waarde van het *<veld>* is hetzelfde als 
-    de **<waarde>**
+    de *<waarde>*
   * **is niet gelijk aan** - De waarde van het *<veld>* is niet 
-    hetzelfde als de **<waarde>**
+    hetzelfde als de *<waarde>*
   * **in** - De waarde van het *<veld>* is onderdeel van de 
-    **<waarde>**. De *<waarde>* is hier veelal een lijst of een veld dat 
+    *<waarde>*. De *<waarde>* is hier veelal een lijst of een veld dat 
     meerdere waarden kan bevatten.
   * **is groter dan** - Werkt alleen bij datum- en nummer-velden.
   * **is groter dan of gelijk aan** - Werkt alleen bij datum- en nummer-velden.
   * **is kleiner dan** - Werkt alleen bij datum- en nummer-velden.
   * **is kleiner dan of gelijk aan** - Werkt alleen bij datum- en nummer-velden.
-* *<type waarde>* - De **waarde** waarop de *<operatie>* uitgevoerd wordt kan
+* *<type waarde>* - De *waarde* waarop de *<operatie>* uitgevoerd wordt kan
   op verschillende manieren opgegeven of opgehaald worden. U moet daarom eerst
   het type waarde kiezen:
 
   * **de waarde** - Een handmatig opgegeven waarde.
   * **het veld** - De waarde van een specifiek veld.
   * **de lijst** - Een handmatig opgegeven lijst van waarden.
+  * **vandaag** - Alleen beschikbaar i.c.m. een datum en geeft extra opties om
+    een berekening te maken.
+
+
+Voorbeelden
+-----------
+
+**Voorbeeld formulier**
+
+Onderstaande velden zijn opgenomen in de stap **Persoonlijk**:
+
+========================  ==============
+Veld                      Waarde 
+========================  ==============
+Geslacht (keuzelijst)     ``m``
+Geboortedatum (datum)     ``01-01-1979``
+Uw inkomen (getal)        ``30000``
+Partner inkomen (getal)   ``40000``
+Woonplaats (tekst)        ``Groningen``  
+========================  ==============
+
+
+**Voorbeeld 1**
+
+U bent ouder dan 18 jaar: Waar
+
+**Als** [*Persoonlijk: Geboortedatum*] [*is groter dan*] [*vandaag*] [*minus*] ``18`` *jaren* **dan** ...
+
+
+**Voorbeeld 2**
+
+Uw inkomen is lager dan EUR 35.000: Waar
+
+**Als** [*Persoonlijk: Uw inkomen*] [*is kleiner dan*] [*waarde*] ``35000``
+
+
+**Voorbeeld 3**
+
+Uw inkomen is lager dan dat van uw partner: Waar
+
+**Als** [*Persoonlijk: Uw inkomen*] [*is kleiner dan*] [*het veld*] [*Persoonlijk: Partner inkomen*] **dan** ...
+
+
+**Voorbeeld 4**
+
+U woont in Amsterdam, Haarlem of Utrecht: Onwaar
+
+**Als** [*Persoonlijk: Woonplaats*] [*in*] [*de lijst*] ``Amsterdam``, ``Haarlem``, ``Utrecht`` **dan** ...
 
 
 Acties
@@ -105,10 +156,6 @@ gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
   * *<stap>* - De formulierstap die als n.v.t. wordt aangemerkt.
 
 
-.. image:: _assets/logica_voorbeeld.png
-    :width: 100%
-
-
 Geavanceerde logica
 ===================
 
@@ -122,7 +169,7 @@ JSON-logic achter de regels (en acties) getoond.
 
 We herhalen het voorbeeld dat eerder werd getoond:
 
-**Als** [*Gegevens: geslacht*] [*is gelijk aan*] [*de waarde*] ``m``
+**Als** [*Gegevens: Geslacht*] [*is gelijk aan*] [*de waarde*] ``m``
 **dan** [*wijzig de waarde van een veld*] [*Gegevens: Aanhef*] [*de waarde*] 
 ``de heer``
 
@@ -141,7 +188,7 @@ uit:
    }
 
 
-Als we bovenstaande zouden plakken in regel bij geavanceerde logica, dan geeft
+Als we bovenstaande zouden plakken als regel bij geavanceerde logica, dan geeft
 dat hetzelfde resultaat als de (gebruiksvriendelijkere) regel bij reguliere 
 logica.
 
@@ -182,15 +229,15 @@ waar de JSON-logic op werkt).
 
 .. tabs::
 
-   .. tab:: Formulier gegevens
+   .. tab:: Formulier
 
       ========================  ======================  ==============
       Veld                      Eigenschapsnaam         Waarde 
       ========================  ======================  ==============
-      Geslacht (tekst)          ``geslacht``            ``m``
+      Geslacht (keuzelijst)     ``geslacht``            ``m``
       Leeftijd (getal)          ``leeftijd``            ``18``
-      Uw inkomen (bedrag)       ``uwInkomen``           ``30000``
-      Partner inkomen (bedrag)  ``partnerInkomen``      ``40000``
+      Uw inkomen (getal)        ``uwInkomen``           ``30000``
+      Partner inkomen (getal)   ``partnerInkomen``      ``40000``
       ========================  ======================  ==============
 
    .. tab:: JSON

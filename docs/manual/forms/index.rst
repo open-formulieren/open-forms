@@ -8,7 +8,7 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    :maxdepth: 2
 
    basics
-   examples/index
    form_fields
    logic
+   examples/index
    export_import
