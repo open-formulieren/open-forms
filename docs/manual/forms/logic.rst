@@ -313,7 +313,7 @@ Het inkomen van u en uw partner is samen hoger dan EUR 60.000: Waar
 **Voorbeeld 5**
 
 U bent mannelijk, 18 jaar of ouder, en het gemiddelde inkomen van u en uw 
-partner is hoger dan EUR 35.000: Waar
+partner is hoger dan of gelijk aan EUR 35.000: Waar
 
 .. code:: json
 
