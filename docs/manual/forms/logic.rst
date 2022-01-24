@@ -333,4 +333,10 @@ partner is hoger dan of gelijk aan EUR 35.000: Waar
    ] }
 
 
+.. note::
+
+    Dit voorbeeld is ook opgenomen als 
+    :ref:`voorbeeld formulier <example_advanced_logic>` welke u kunt 
+    downloaden.
+
 .. _`JSON-logic`: https://jsonlogic.com/

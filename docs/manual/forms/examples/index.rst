@@ -10,6 +10,7 @@ Voorbeelden
    simple_form
    autofill_address
    logic_rules
+   advanced_logic
    appointment_creation
    prefill
    fields_for_logintype
