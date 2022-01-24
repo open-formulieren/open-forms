@@ -41,7 +41,13 @@ const BASIC = {
             type: 'checkbox',
             key: 'hidden',
             label: 'Hidden',
-            tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
+            tooltip: 'Hide a field from the form.'
+        },
+        {
+            type: 'checkbox',
+            key: 'clearOnHide',
+            label: 'Clear on hide',
+            tooltip: 'Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!',
         },
         {
             type: 'checkbox',

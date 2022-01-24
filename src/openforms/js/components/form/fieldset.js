@@ -21,7 +21,13 @@ const FIELDSET_BASIC = {
             key: 'hidden',
             label: 'Hidden',
             tooltip: 'A hidden field is still a part of the form, but is hidden from view.'
-        }
+        },
+        {
+            type: 'checkbox',
+            key: 'clearOnHide',
+            label: 'Clear on hide',
+            tooltip: 'Remove the value of this field from the submission if it is hidden',
+        },
     ]
 };
 
