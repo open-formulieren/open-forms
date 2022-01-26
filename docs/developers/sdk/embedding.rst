@@ -6,7 +6,7 @@ Embedding the SDK in a page
 
 The SDK can be embedded by loading the Javascript code and stylesheet.
 
-Assuming the SDK is hosted on ``https://example.com/sdk/``, two resources need to be
+Assuming the SDK is hosted on ``https://example.com/sdk/1.0.0/``, two resources need to be
 loaded.
 
 Loading static assets
@@ -16,13 +16,13 @@ Loading static assets
 
     .. code-block:: html
 
-        <link rel="stylesheet" href="https://example.com/sdk/open-forms-sdk.css" />
+        <link rel="stylesheet" href="https://example.com/sdk/1.0.0/open-forms-sdk.css" />
 
 2. The Javascript code
 
     .. code-block:: html
 
-        <script src="https://example.com/sdk/open-forms-sdk.js"></script>
+        <script src="https://example.com/sdk/1.0.0/open-forms-sdk.js"></script>
 
 Calling the SDK
 ===============
@@ -74,8 +74,8 @@ Full example
 .. code-block:: html
 
     <!-- Load stylesheet and SDK bundle -->
-    <link rel="stylesheet" href="https://example.com/sdk/open-forms-sdk.css" />
-    <script src="https://example.com/sdk/open-forms-sdk.js"></script>
+    <link rel="stylesheet" href="https://example.com/sdk/1.0.0/open-forms-sdk.css" />
+    <script src="https://example.com/sdk/1.0.0/open-forms-sdk.js"></script>
 
     <!-- Load a form and render it -->
     <div
@@ -89,3 +89,21 @@ Full example
       var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
       form.init();
     </script>
+
+Deploying the SDK
+=================
+
+The SDK is published as container image on
+`Docker Hub <https://hub.docker.com/r/openformulieren/open-forms-sdk>`_, containing
+the static Javascript and CSS assets:
+
+* ``open-forms-sdk.js`` and
+* ``open-forms-sdk.css``
+
+When you're deploying the ``latest`` tag, these assets are available in the webroot,
+e.g. ``http://localhost:8080/open-forms-sdk.js``.
+
+When you're using a pinned version, such as ``1.0.0``, the assets are available in that
+directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
+
+The SDK follows semantic versioning.

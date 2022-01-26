@@ -29,3 +29,4 @@ familiarize yourself with the design principles.
    i18n
    npm
    roadmap
+   releases
