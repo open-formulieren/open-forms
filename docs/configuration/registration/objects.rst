@@ -178,7 +178,7 @@ To configure the Objects API follow these steps:
       * **User ID**: Audit trail user ID, usually same as the Client ID
       * **User representation**: *For example:* ``Open Forms``
 
-4. Navigate to **Configuration** > **Objects API configuration**
+4. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Objects API registratie** line.
 5. Enter the following details:
 
    * **Objects API**: Select the Objects API (ORC) service created above

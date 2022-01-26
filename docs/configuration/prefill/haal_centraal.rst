@@ -7,16 +7,16 @@ Haal Centraal BRP bevragen
 `Haal Centraal`_ is an initiative to transform the currently used SOAP-services
 to consult the base registration, to modern RESTful API's.
 
-The `Haal Centraal BRP bevragen API`_ allows you to retrieve personal 
+The `Haal Centraal BRP bevragen API`_ allows you to retrieve personal
 information about the person filling out the form, based on the BSN.
 
 .. note::
 
    This service contains sensitive data and requires a connection to a specific
-   client system. Currently however, there are very few suppliers who offer 
+   client system. Currently however, there are very few suppliers who offer
    this service.
 
-   On the `Haal Centraal BRP bevragen API`_ Github, you can request credentials 
+   On the `Haal Centraal BRP bevragen API`_ Github, you can request credentials
    for a test environment that uses an API key.
 
 .. _`Haal Centraal BRP bevragen API`: https://github.com/VNG-Realisatie/Haal-Centraal-BRP-bevragen
@@ -39,7 +39,7 @@ Configuration
    * **OAS**: *URL to the Open API-specification provided by supplier or use the Github raw URL*
 
 4. Click **Save**
-5. Navigate to **Configuration** > **Haal Centraal configuration**
+5. Navigate to **Configuration** > **Overview**. In the **Prefill plugin** group, click on **Configuration** for the **Haal Centraal** line.
 6. Select for the **Haal Centraal API**, the **[ORC (Overige)] My BRP API**
    option, that we just created in step 3.
 7. Click **Save**

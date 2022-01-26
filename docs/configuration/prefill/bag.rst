@@ -28,7 +28,7 @@ Configuration
    * **OAS**: ``https://raw.githubusercontent.com/lvbag/BAG-API/4ab6ea5f3c2749f62d1079e2fe7539d4526c04e7/Technische%20specificatie/Archief/Yaml's/BAG%20API%20Individuele%20Bevragingen/resolved/individuelebevragingen/v2/adressen.yaml``
 
 4. Click **Save**
-5. Navigate to **Configuration** > **BAG configuration**
+5. Navigate to **Configuration** > **Overview**. In the **Address search plugin** group, click on **Configuration** for the **BAG** line.
 6. Select for the **BAG service**, the **[ORC (Overige)] BAG (Kadaster)**
    option, that we just created in step 3.
 7. Click **Save**

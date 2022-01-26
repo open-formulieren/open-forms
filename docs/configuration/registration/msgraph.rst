@@ -47,7 +47,7 @@ Configuration
 =============
 
 1. Obtain the parameters from the Azure application.
-2. In Open Forms, navigate to: **Configuration** > **Microsoft Graph Service**
+2. In Open Forms, navigate to: **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Microsoft Graph (OneDrive/SharePoint)** line.
 
    a. Click **Microsoft Graph Service toevoegen**.
    b. Fill out the form with the requested parameters; note the *Label* field is for internal use.

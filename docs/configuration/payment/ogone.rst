@@ -9,7 +9,7 @@ Open Forms supports the **Ingenico Ogone** legacy payment backend (using a ``PSP
 In order to make use of this module, administrators must create an *Ogone merchant* in
 the admin interface.
 
-1. Navigate to **Configuration** > **Ogone Merchant**.
+1. Navigate to **Configuration** > **Overview**. In the **Payment Provider Plugin** group, click on **Configuration** for the **Ogone legacy: Test merchant** line.
 
 2. Click **Add Ogone merchant**.
 

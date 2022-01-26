@@ -4,22 +4,22 @@
 StUF-ZDS
 ========
 
-The `StUF-ZDS`_ (StUF Zaak- en Documentservices) is a SOAP based Zaak and 
-Documents service. Open Forms can be configured to access this SOAP-service to 
+The `StUF-ZDS`_ (StUF Zaak- en Documentservices) is a SOAP based Zaak and
+Documents service. Open Forms can be configured to access this SOAP-service to
 register form submissions.
 
 .. _`StUF-ZDS`: https://www.gemmaonline.nl/index.php/Zaak-_en_Documentservices
 
 .. note::
 
-   This service contains sensitive data and requires a connection to an 
+   This service contains sensitive data and requires a connection to an
    external system, offered or maintained by a service provider.
 
 
 What does the Open Forms administator need?
 ===========================================
 
-The values for these parameters should be provided to the Open Forms 
+The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
 
 ============================  =======================================================================================
@@ -27,11 +27,11 @@ Parameter                     Description
 ============================  =======================================================================================
 **Security**
 Public certificate            The certificate, used by the service, to identify itself for 2-way TLS.
-**SOAP services**         
+**SOAP services**
 BeantwoordVraag endpoint      URL for the ``BeantwoordVraag`` SOAP-endpoint that Open Forms can access.
 VrijeBerichten endpoint       URL for the ``VrijeBerichten`` SOAP-endpoint that Open Forms can access.
 OntvangAsynchroon endpoint    URL for the ``OntvangAsynchroon`` SOAP-endpoint that Open Forms can access.
-**Stuurgegevens**             
+**Stuurgegevens**
 Ontvanger Organisatie         Name of the organization submissions are sent to.
 Ontvanger Applicatie          Name of the application submissions are sent to.
 **ZDS**
@@ -47,7 +47,7 @@ Documenttype omschrijving     Description of documenttype, used for the submissi
 What does the service provider need?
 ====================================
 
-The values for these parameters should be provided to the service provider by 
+The values for these parameters should be provided to the service provider by
 the Open Forms administrator.
 
 ============================  =======================================================================================
@@ -71,7 +71,7 @@ Configuration
 
    * **Label**: *Fill in a human readable label*, for example: ``My StUF-ZDS service``
 
-4. In the **StUF parameters** section enter the receiving details provided by 
+4. In the **StUF parameters** section enter the receiving details provided by
    the service provider. For the sending organization details, you can fill in:
 
    * **Versturende applicatie**: Open Forms
@@ -95,12 +95,12 @@ Configuration
     * **Certificate** and **Certificate key**: optionally provide a certificate and key file for client identification. If empty mutual TLS is disabled
 
 7. Click **Save**
-8. Navigate to **Configuration** > **StUF-ZDS configuration**
+8. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **StUF-ZDS** line.
 9. Select for the **Service**, the SOAP Service we created above
 10. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
 11. Click **Save**
 
-The StUF-ZDS configuration is now complete and can be selected as registration 
+The StUF-ZDS configuration is now complete and can be selected as registration
 backend in the form builder.
 
 

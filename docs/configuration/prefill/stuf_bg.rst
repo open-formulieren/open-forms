@@ -4,23 +4,23 @@
 StUF-BG
 =======
 
-`StUF-BG`_ (StUF Basis Gegegevens) is a message standard that allows retrieving 
-of personal information through a SOAP service from municipalities and 
-government organisations. Open Forms can be configured to use this service to 
+`StUF-BG`_ (StUF Basis Gegegevens) is a message standard that allows retrieving
+of personal information through a SOAP service from municipalities and
+government organisations. Open Forms can be configured to use this service to
 prefill personal data of the person filling out the form.
 
 .. _`StUF-BG`: https://www.gemmaonline.nl/index.php/Sectormodel_Basisgegevens:_StUF-BG
 
 .. note::
 
-   This service contains sensitive data and requires a connection to an 
+   This service contains sensitive data and requires a connection to an
    external system, offered or maintained by a service provider.
 
 
 What does the Open Forms administator need?
 ===========================================
 
-The values for these parameters should be provided to the Open Forms 
+The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
 
 ============================  =======================================================================================
@@ -28,9 +28,9 @@ Parameter                     Description
 ============================  =======================================================================================
 **Security**
 Public certificate            The certificate, used by the service, to identify itself for 2-way TLS.
-**SOAP services**         
+**SOAP services**
 BeantwoordVraag endpoint      URL for the ``BeantwoordVraag`` SOAP-endpoint that Open Forms can access.
-**Stuurgegevens**             
+**Stuurgegevens**
 Ontvanger Organisatie         Name of the organization submissions are sent to.
 Ontvanger Applicatie          Name of the application submissions are sent to.
 ============================  =======================================================================================
@@ -39,7 +39,7 @@ Ontvanger Applicatie          Name of the application submissions are sent to.
 What does the service provider need?
 ====================================
 
-The values for these parameters should be provided to the service provider by 
+The values for these parameters should be provided to the service provider by
 the Open Forms administrator.
 
 ============================  =======================================================================================
@@ -63,7 +63,7 @@ Configuration
 
    * **Label**: *Fill in a human readable label*, for example: ``My StUF-BG service``
 
-4. In the **StUF parameters** section enter the receiving details provided by 
+4. In the **StUF parameters** section enter the receiving details provided by
    the client. For the sending organiation details, you can fill in:
 
    * **Versturende applicatie**: Open Forms
@@ -87,7 +87,7 @@ Configuration
     * **Certificate** and **Certificate key**: optionally provide a certificate and key file for client identification. If empty mutual TLS is disabled
 
 7. Click **Save**
-8. Navigate to **Configuration** > **StUF-BG configuration**
+8. Navigate to **Configuration** > **Overview**. In the **Prefill plugin** group, click on **Configuration** for the **StUF-BG** line.
 9.  Select for the **Service**, the SOAP Service we created above
 10. Click **Save**
 

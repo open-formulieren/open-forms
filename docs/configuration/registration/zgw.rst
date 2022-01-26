@@ -4,37 +4,37 @@
 ZGW API's
 =========
 
-The `ZGW (Zaakgericht Werken) API's`_ are a suite of REST based Zaak services. 
+The `ZGW (Zaakgericht Werken) API's`_ are a suite of REST based Zaak services.
 Open Forms can be configured to access these API's to register form submissions.
 
 .. _`ZGW (Zaakgericht Werken) API's`: https://www.vngrealisatie.nl/producten/api-standaarden-zaakgericht-werken
 
 .. note::
 
-   This service contains sensitive data and requires a connection to an 
+   This service contains sensitive data and requires a connection to an
    external system, offered or maintained by a service provider.
 
 
 What does the Open Forms administator need?
 ===========================================
 
-The values for these parameters should be provided to the Open Forms 
+The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
 
 ============================  =======================================================================================
 Parameter                     Description
 ============================  =======================================================================================
-**Catalogi API**         
+**Catalogi API**
 API root URL                  Root URL for the Catalogi API that Open Forms can access.
 OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
-**Zaken API**         
+**Zaken API**
 API root URL                  Root URL for the Zaken API that Open Forms can access.
 OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
-**Documenten API**         
+**Documenten API**
 API root URL                  Root URL for the Documenten API that Open Forms can access.
 OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
@@ -49,7 +49,7 @@ Organisatie RSIN              The RSIN for the organization configured in the se
 What does the service provider need?
 ====================================
 
-The values for these parameters should be provided to the service provider by 
+The values for these parameters should be provided to the service provider by
 the Open Forms administrator.
 
 ============================  =======================================================================================
@@ -92,7 +92,7 @@ Configuration
    c. Click **Opslaan** and repeat to create configuration for the other components.
 
 
-3. Navigate to **Configuration** > **ZGW API"s configuration**
+3. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **ZGW API's** line.
 4. Enter the following details:
 
    * **Zaken API**: Select the Zaakregistratiecomponent (ZRC) service created above

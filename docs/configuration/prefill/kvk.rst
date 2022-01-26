@@ -4,9 +4,9 @@
 KvK Zoeken
 ==========
 
-The `KvK`_ (Kamer van Koophandel) is a government organisation that contains 
-information about businesses operating in the Netherlands. The KvK provides an 
-API to retrieve information about businesses. Open Forms can be configured to 
+The `KvK`_ (Kamer van Koophandel) is a government organisation that contains
+information about businesses operating in the Netherlands. The KvK provides an
+API to retrieve information about businesses. Open Forms can be configured to
 access this API in order to prefill business information within a form.
 
 .. note::
@@ -16,7 +16,7 @@ access this API in order to prefill business information within a form.
 
 .. warning::
 
-   The KvK has a deprecated "Search API" which is different from their 
+   The KvK has a deprecated "Search API" which is different from their
    "Zoeken API". Open Forms supports the "Zoeken API".
 
 .. _`KvK`: https://www.kvk.nl/
@@ -38,7 +38,7 @@ Configuration
    * **OAS**: *URL to the Open API-specification provided by KvK (typically, they show the link to the API specification below their API title as CMS uploaded file)*
 
 4. Click **Save**
-5. Navigate to **Configuration** > **KvK configuration**
+5. Navigate to **Configuration** > **Overview**. In the **Prefill plugin** group, click on **Configuration** for the **KvK Bedrijf via KvK-nummer** line.
 6. Select for the **Haal Centraal API**, the **[ORC (Overige)] My KvK Zoeken API**
    option, that we just created in step 3.
 7. Click **Save**
