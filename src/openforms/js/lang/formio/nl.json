@@ -276,5 +276,6 @@
   "Hide Label": "Verberg label",
   "Family members": "Gezinsleden",
   "Placeholder": "Placeholder",
-  "The placeholder text that will appear when this field is empty.": "De placeholder tekst die verschijnt als dit veld leeg is."
+  "The placeholder text that will appear when this field is empty.": "De placeholder tekst die verschijnt als dit veld leeg is.",
+  "Special fields": "Speciale velden"
 }
