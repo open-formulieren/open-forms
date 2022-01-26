@@ -111,10 +111,18 @@ RUN chown -R maykin /app
 USER maykin
 
 ARG COMMIT_HASH
+ARG RELEASE
 ENV GIT_SHA=${COMMIT_HASH}
+ENV RELEASE=${RELEASE}
+
 ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
 
 ARG SECRET_KEY=dummy
+
+LABEL org.label-schema.vcs-ref=$COMMIT_HASH \
+      org.label-schema.vcs-url="https://github.com/open-formulieren/open-forms" \
+      org.label-schema.version=$RELEASE \
+      org.label-schema.name="Open Forms"
 
 # Run collectstatic and compilemessages, so the result is already included in
 # the image

@@ -49,7 +49,7 @@
 
 {% block footer %}
     <div id="footer">
-        <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
+        <div class="version" title="Release: {{ settings.RELEASE|default:'' }}">
             {% blocktrans with version=settings.RELEASE %}version: {{version}}{% endblocktrans %}
         </div>
     </div>
