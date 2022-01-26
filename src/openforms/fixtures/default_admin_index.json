@@ -127,14 +127,6 @@
                 "appointmentsconfig"
             ],
             [
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "brp",
-                "brpconfig"
-            ],
-            [
                 "config",
                 "globalconfiguration"
             ],
@@ -159,64 +151,16 @@
                 "blacklist"
             ],
             [
-                "jcc",
-                "jccconfig"
-            ],
-            [
-                "kvk",
-                "kvkconfig"
-            ],
-            [
-                "microsoft",
-                "msgraphservice"
-            ],
-            [
                 "multidomain",
                 "domain"
-            ],
-            [
-                "payments_ogone",
-                "ogonemerchant"
             ],
             [
                 "prefill",
                 "prefillconfig"
             ],
             [
-                "prefill_haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "qmatic",
-                "qmaticconfig"
-            ],
-            [
-                "registrations_microsoft_graph",
-                "msgraphregistrationconfig"
-            ],
-            [
-                "registrations_objects_api",
-                "objectsapiconfig"
-            ],
-            [
                 "stuf",
                 "soapservice"
-            ],
-            [
-                "stuf",
-                "stufservice"
-            ],
-            [
-                "stuf_bg",
-                "stufbgconfig"
-            ],
-            [
-                "stuf_zds",
-                "stufzdsconfig"
-            ],
-            [
-                "zgw_apis",
-                "zgwconfig"
             ],
             [
                 "zgw_consumers",
