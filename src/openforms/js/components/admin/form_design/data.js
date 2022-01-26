@@ -1,5 +1,5 @@
 import {FormException} from '../../../utils/exception';
-import {get, post, put, apiDelete, ValidationErrors} from '../../../utils/fetch';
+import {get, post, put, ValidationErrors} from '../../../utils/fetch';
 import {
     FORM_DEFINITIONS_ENDPOINT,
     LOGICS_ENDPOINT,
@@ -51,11 +51,12 @@ const loadPlugins = async (plugins=[]) => {
 };
 
 
-const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step) => {
+const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step, onCreateFormStep, onFormDefinitionCreate) => {
     // First update/create the form definitions
-    const isNewFormDefinition = !!step.formDefinition;
-    const definitionCreateOrUpdate = isNewFormDefinition ? put : post;
+    const isNewFormDefinition = !step.formDefinition;
+    const definitionCreateOrUpdate = isNewFormDefinition ? post : put;
     const definitionEndpoint = step.formDefinition ? step.formDefinition : `${FORM_DEFINITIONS_ENDPOINT}`;
+    var definitionResponse, stepResponse;
 
     const definitionData = {
         name: step.name,
@@ -67,7 +68,7 @@ const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step) => 
     };
 
     try {
-        var definitionResponse = await definitionCreateOrUpdate(definitionEndpoint, csrftoken, definitionData, true);
+        definitionResponse = await definitionCreateOrUpdate(definitionEndpoint, csrftoken, definitionData, true);
         // handle any unexpected API errors
         if (!definitionResponse.ok) {
             throw new FormException(
@@ -102,7 +103,7 @@ const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step) => 
     };
 
     try {
-        var stepResponse = await stepCreateOrUpdate(stepEndpoint, csrftoken, stepData, true);
+        stepResponse = await stepCreateOrUpdate(stepEndpoint, csrftoken, stepData, true);
         // handle any unexpected API errors
         if (!stepResponse.ok) {
             throw new FormException(
@@ -115,6 +116,14 @@ const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step) => 
         // deals with it.
         throw e;
     }
+
+    // Once a FormDefinition and a FormStep have been created, they should no longer be seen as 'new'.
+    // This is important if another step/definition cause an error and then a 2nd attempt is made to
+    // save all FormDefinition/FormSteps.
+    if (isNewFormDefinition) {
+        onFormDefinitionCreate(definitionResponse.data);
+        onCreateFormStep(index, stepResponse.data.url, stepResponse.data.formDefinition);
+    }
 };
 
 
@@ -124,10 +133,10 @@ const updateOrCreateSingleFormStep = async (csrftoken, index, formUrl, step) => 
  * Validation errors raised for each individual step are caught and returned to the
  * caller.
  */
-const updateOrCreateFormSteps = async (csrftoken, formUrl, formSteps) => {
+const updateOrCreateFormSteps = async (csrftoken, formUrl, formSteps, onCreateFormStep, onFormDefinitionCreate) => {
     const stepPromises = formSteps.map( async (step, index) => {
         try {
-            await updateOrCreateSingleFormStep(csrftoken, index, formUrl, step);
+            await updateOrCreateSingleFormStep(csrftoken, index, formUrl, step, onCreateFormStep, onFormDefinitionCreate);
             return null;
         } catch (e) {
             if (e instanceof ValidationErrors) {
