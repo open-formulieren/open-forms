@@ -207,10 +207,9 @@ class ImportExportAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        form1, form2 = FormFactory.create_batch(2)
-        form_definition1, form_definition2 = FormDefinitionFactory.create_batch(2)
+        form1 = FormFactory.create(slug="my-slug")
+        form_definition1 = FormDefinitionFactory.create()
         FormStepFactory.create(form=form1, form_definition=form_definition1)
-        FormStepFactory.create(form=form2, form_definition=form_definition2)
 
         url = reverse("api:form-export", args=(form1.uuid,))
         response = self.client.post(
@@ -231,30 +230,18 @@ class ImportExportAPITests(APITestCase):
             HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        _slugfield = Form._meta.get_field("slug")
-        error = _slugfield.error_messages["unique"] % {
-            "model_name": Form._meta.verbose_name,
-            "field_label": _slugfield.verbose_name,
-        }
-        self.assertEqual(
-            response.json(),
-            {
-                "type": "http://testserver/fouten/ValidationError/",
-                "code": "invalid",
-                "title": _("Invalid input."),
-                "status": 400,
-                "detail": "",
-                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
-                "invalidParams": [
-                    {
-                        "name": "slug",
-                        "code": "unique",
-                        "reason": error,
-                    }
-                ],
-            },
-        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        imported_form = Form.objects.last()
+        imported_form_step = imported_form.formstep_set.first()
+        imported_form_definition = imported_form_step.form_definition
+
+        # check we imported a new form
+        self.assertNotEqual(form1.pk, imported_form.pk)
+        # check we added random hex chars
+        self.assertRegex(imported_form.slug, r"^my-slug-[0-9a-f]{6}$")
+        # check uuid mapping still works
+        self.assertEqual(imported_form_definition.uuid, form_definition1.uuid)
 
     def test_form_import_token_auth_required(self):
         url = reverse("api:forms-import")

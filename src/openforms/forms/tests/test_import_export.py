@@ -196,64 +196,25 @@ class ImportExportTests(TestCase):
 
     def test_import_form_slug_already_exists(self):
         product = ProductFactory.create()
-        form = FormFactory.create(product=product)
+        form = FormFactory.create(product=product, slug="my-slug")
         form_definition = FormDefinitionFactory.create()
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
 
-        form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
-            form.pk,
-            form_definition.pk,
-            form_step.pk,
-            form_logic.pk,
-        )
-
         call_command("export", form.pk, self.filepath)
 
-        old_form_definition_slug = form_definition.slug
-        form_definition.slug = "modified"
-        form_definition.save()
+        call_command("import", import_file=self.filepath)
 
-        with self.assertRaises(CommandError):
-            call_command("import", import_file=self.filepath)
+        imported_form = Form.objects.last()
+        imported_form_step = imported_form.formstep_set.first()
+        imported_form_definition = imported_form_step.form_definition
 
-        forms = Form.objects.all()
-        self.assertEqual(forms.count(), 1)
-        self.assertEqual(forms.last().pk, form_pk)
-        self.assertEqual(forms.last().uuid, form.uuid)
-        self.assertEqual(forms.last().active, form.active)
-        self.assertEqual(forms.last().registration_backend, form.registration_backend)
-        self.assertEqual(forms.last().name, form.name)
-        self.assertEqual(forms.last().internal_name, form.internal_name)
-        self.assertEqual(forms.last().product, form.product)
-        self.assertEqual(forms.last().slug, form.slug)
-
-        form_definitions = FormDefinition.objects.all()
-        fd2 = form_definitions.last()
-        self.assertEqual(form_definitions.count(), 1)
-        self.assertEqual(fd2.pk, form_definition_pk)
-        self.assertEqual(fd2.uuid, form_definition.uuid)
-        self.assertEqual(fd2.configuration, form_definition.configuration)
-        self.assertEqual(fd2.login_required, form_definition.login_required)
-        self.assertEqual(fd2.name, form_definition.name)
-        self.assertEqual(fd2.internal_name, form_definition.internal_name)
-        self.assertEqual(fd2.slug, form_definition.slug)
-
-        form_steps = FormStep.objects.all()
-        fs2 = form_steps.last()
-        self.assertEqual(form_steps.count(), 1)
-        self.assertEqual(fs2.pk, form_step_pk)
-        self.assertEqual(fs2.uuid, form_step.uuid)
-        self.assertEqual(fs2.form.pk, forms.last().pk)
-        self.assertEqual(fs2.form_definition.pk, fd2.pk)
-        self.assertEqual(fs2.optional, form_step.optional)
-        self.assertEqual(fs2.order, form_step.order)
-
-        form_logics = FormLogic.objects.all()
-        form_logic_2 = form_logics.last()
-        self.assertEqual(form_logics.count(), 1)
-        self.assertEqual(form_logic_2.pk, form_logic_pk)
-        self.assertEqual(forms.last().pk, form_logic_2.form.pk)
+        # check we imported a new form
+        self.assertNotEqual(form.pk, imported_form.pk)
+        # check we added random hex chars
+        self.assertRegex(imported_form.slug, r"^my-slug-[0-9a-f]{6}$")
+        # check uuid mapping still works
+        self.assertEqual(imported_form_definition.uuid, form_definition.uuid)
 
     def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
         product = ProductFactory.create()

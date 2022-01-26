@@ -1,4 +1,6 @@
 import json
+import random
+import string
 import zipfile
 from collections import defaultdict
 from typing import Dict, List
@@ -164,6 +166,25 @@ def import_form_data(
                     uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
             except ValidationError as e:
                 if (
+                    resource == "forms"
+                    and "slug" in e.detail
+                    and e.detail["slug"][0].code == "unique"
+                ):
+                    entry[
+                        "slug"
+                    ] = f'{entry["slug"]}-{"".join(random.choices(string.hexdigits, k=6))}'
+
+                    deserialized = serializer(
+                        data=entry,
+                        context={"request": request, "form": created_form},
+                        instance=existing_form_instance,
+                    )
+                    deserialized.is_valid(raise_exception=True)
+                    deserialized.save()
+                    created_form = deserialized.instance
+                    uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+
+                elif (
                     resource == "formDefinitions"
                     and "slug" in e.detail
                     and e.detail["slug"][0].code == "unique"
