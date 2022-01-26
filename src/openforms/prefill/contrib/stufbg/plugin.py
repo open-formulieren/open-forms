@@ -179,8 +179,11 @@ class StufBgPrefill(BasePlugin):
                     _("SyntaxError in response: {exception}").format(exception=e)
                 )
             else:
-                faults = xml.xpath("//*[local-name()='Fault']/faultstring")
-                if not faults or faults[0].text != "Object niet gevonden":
+                # we expect a valid 'object not found' response,
+                #   but also accept an empty response (for 3rd party backend implementation reasons)
+                if not is_object_not_found_response(
+                    xml
+                ) and not is_empty_wrapped_response(xml):
                     raise InvalidPluginConfiguration(
                         _(
                             "Unexpected response: expected '{message}' SOAP response"
@@ -197,3 +200,20 @@ class StufBgPrefill(BasePlugin):
                 ),
             ),
         ]
+
+
+def is_object_not_found_response(xml):
+    faults = xml.xpath("//*[local-name()='Fault']/faultstring")
+    if not faults or faults[0].text != "Object niet gevonden":
+        return False
+    else:
+        return True
+
+
+def is_empty_wrapped_response(xml):
+    meta = xml.xpath("//*[local-name()='Body']/*/*[local-name()='stuurgegevens']")
+    response = xml.xpath("//*[local-name()='Body']/*/*[local-name()='antwoord']")
+    if meta and not response:
+        return True
+    else:
+        return False
