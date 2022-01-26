@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from unittest.mock import patch
 
@@ -160,6 +161,28 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertEqual(field["defaultValue"], "some-default")
+
+    def test_prefill_exception(self):
+        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        register = Registry()
+
+        @register("demo")
+        class ErrorPrefill(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                raise Exception("boo")
+
+        with self.assertLogs(level=logging.ERROR):
+            new_configuration = apply_prefill(
+                configuration=form_step.form_definition.configuration,
+                submission=submission,
+                register=register,
+            )
+
+        field = new_configuration["components"][0]
+        self.assertIsNone(field["defaultValue"])
 
     def tests_no_prefill_configured(self):
         config = deepcopy(CONFIGURATION)
