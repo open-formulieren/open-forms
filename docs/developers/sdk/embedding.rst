@@ -106,4 +106,4 @@ e.g. ``http://localhost:8080/open-forms-sdk.js``.
 When you're using a pinned version, such as ``1.0.0``, the assets are available in that
 directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
 
-The SDK follow semantic versioning.
+The SDK follows semantic versioning.
