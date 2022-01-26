@@ -135,7 +135,7 @@ jobs:
           docker build . \
             --tag $IMAGE_NAME:$RELEASE_VERSION \
             --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
-            --build-arg RELEASE=${RELEASE_VERSION}
+            --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
         env:
           RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
 
