@@ -192,6 +192,23 @@ class FormSerializer(serializers.ModelSerializer):
             "confirmation_email_template",
             "confirmation_email_option",
         )
+        # whitelist
+        public_fields = (
+            "uuid",
+            "name",
+            "login_required",
+            "authentication_backends",
+            "login_options",
+            "payment_required",
+            "payment_options",
+            "literals",
+            "slug",
+            "url",
+            "steps",
+            "show_progress_indicator",
+            "maintenance_mode",
+            "active",
+        )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -230,6 +247,20 @@ class FormSerializer(serializers.ModelSerializer):
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
+
+        request = self.context.get("request")
+        # filter public fields if not staff and not exporting or schema generating
+        # request.is_mock_request is set by the export serializers (possibly from management command etc)
+        # also this can be called from schema generator without request
+        if (
+            request
+            and not getattr(request, "is_mock_request", False)
+            and not request.user.is_staff
+        ):
+            for field in list(fields.keys()):
+                if field not in self.Meta.public_fields:
+                    del fields[field]
+
         return fields
 
     def validate(self, attrs):

@@ -3,19 +3,53 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
+from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import UserFactory, StaffUserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
+from ..api.serializers import FormSerializer
 from ..constants import ConfirmationEmailOptions
 from ..models import Form
 from .factories import FormFactory, FormStepFactory
+
+
+class FormSerializerTests(APITestCase):
+    def test_public_fields_meta_exist_in_fields_meta(self):
+        # catch changes
+        for field in FormSerializer.Meta.public_fields:
+            with self.subTest(f"{field}"):
+                self.assertIn(field, FormSerializer.Meta.fields)
+
+    def test_get_fields_is_filtered_for_non_staff(self):
+        request = RequestFactory().get("/")
+        request.user = UserFactory()
+
+        serializer = FormSerializer(context={"request": request})
+        fields = serializer.get_fields()
+
+        # everything returned by get_fields() should exist in Meta.public_fields
+        for field in fields.keys():
+            with self.subTest(f"{field}"):
+                self.assertIn(field, FormSerializer.Meta.public_fields)
+
+    def test_get_fields_is_not_filtered_for_staff(self):
+        request = RequestFactory().get("/")
+        request.user = StaffUserFactory()
+
+        serializer = FormSerializer(context={"request": request})
+        fields = serializer.get_fields()
+
+        # everything returned by get_fields() should exist in Meta.fields
+        for field in fields.keys():
+            with self.subTest(f"{field}"):
+                self.assertIn(field, FormSerializer.Meta.fields)
 
 
 class FormsAPITests(APITestCase):
@@ -833,7 +867,6 @@ class FormsAPITests(APITestCase):
 
         for data in data_to_test:
             with self.subTest(data=data):
-
                 response = self.client.patch(url, data=data)
 
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
