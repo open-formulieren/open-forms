@@ -1,0 +1,16 @@
+[
+    "bag.BAGConfig",
+    "brp.BRPConfig",
+    "prefill_haalcentraal.HaalCentraalConfig",
+    "jcc.JccConfig",
+    "kvk.KVKConfig",
+    "registrations_microsoft_graph.MSGraphRegistrationConfig",
+    "microsoft.MSGraphService",
+    "registrations_objects_api.ObjectsAPIConfig",
+    "payments_ogone.OgoneMerchant",
+    "qmatic.QmaticConfig",
+    "stuf_bg.StufBGConfig",
+    "stuf_zds.StufZDSConfig",
+    "stuf.StufService",
+    "zgw_apis.ZgwConfig"
+]
