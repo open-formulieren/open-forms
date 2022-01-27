@@ -10,7 +10,6 @@
     "payments_ogone.OgoneMerchant",
     "qmatic.QmaticConfig",
     "stuf_bg.StufBGConfig",
-    "stuf_zds.StufZDSConfig",
     "stuf.StufService",
     "zgw_apis.ZgwConfig"
 ]
