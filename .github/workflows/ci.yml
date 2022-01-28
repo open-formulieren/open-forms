@@ -177,6 +177,77 @@ jobs:
         with:
           name: docker-image-test
           path: image-test.tar
+
+  end2end_tests:
+    name: Run the End2End test suite
+    runs-on: ubuntu-latest
+    needs:
+      - docker_build
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        # Needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext
+
+      - name: Download built image
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image
+
+      - name: Load image
+        run: |
+          docker image load -i image.tar
+
+      - name: Start containers and load data
+        run: |
+          docker-compose up -d
+          sleep 30
+          docker-compose logs
+          bin/load_ci_fixtures.sh open-forms_web_1
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SECRET_KEY: dummy
+          DB_USER: postgres
+          DB_PASSWORD: ''
+          CORS_ALLOW_ALL_ORIGINS: true
+
+      - name: Build frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run end2end tests
+        run: |
+          node_modules/.bin/cypress run
+
+      - name: Store generated files
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: videos
+          path: /home/runner/work/open-forms/open-forms/cypress/videos/
           retention-days: 1
 
   oas-up-to-date:

@@ -22,6 +22,8 @@ __pycache__
 /reports/
 /htmlcov/
 .coverage
+/cypress/videos/
+/cypress/screenshots/
 
 # Environment
 /deployment/app.*.yml
