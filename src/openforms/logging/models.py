@@ -59,9 +59,15 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_user(self) -> str:
+        # if there is a .user they own the log line (usually AVG type logs)
         if self.user_id:
-            return '{} "{}"'.format(gettext("User"), str(self.user))
-        return gettext("Anonymous user")
+            return _("Staff user {user}").format(user=str(self.user))
+        if self.is_submission:
+            auth = self.content_object.get_auth_mode_display()
+            if auth:
+                return _("Authenticated via plugin {auth}").format(auth=auth)
+        else:
+            return gettext("Anonymous user")
 
     @property
     def fmt_form(self) -> str:
