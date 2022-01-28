@@ -88,6 +88,26 @@ class DateField extends DateTimeField {
         return DateField.schema();
     }
 
+    constructor(component, options, data) {
+        super(component, options, data);
+
+        // These fields get automatically added to the configuration in the builder, and their value is `undefined`.
+        // For some reason, their value is then not saved in the backend. So, when comparing the configuration with the
+        // saved configuration (useDetectConfigurationChanged), they look different and cause a warning that the
+        // configuration has changed.
+        // By giving them a value when first build, then the values are saved in the backend. (Github #1255)
+        this.component.widget = {
+            ...this.component.widget,
+            disabledDates: null,
+            disableWeekends: null,
+            disableWeekdays: null,
+            disableFunction: null,
+            readOnly: false,
+            submissionTimezone: null,
+            timezone: '',
+        };
+  }
+
 }
 
 export default DateField;
