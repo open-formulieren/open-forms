@@ -99,3 +99,30 @@ class TestFormDefinitionAdmin(WebTest):
         self.assertEqual(
             copied_form.slug, _("{slug}-copy").format(slug=self.form_definition.slug)
         )
+
+    def test_deleted_forms_not_in_used_in(self):
+        form_definition = FormDefinitionFactory.create()
+        deleted_form = FormFactory.create(deleted_=True)
+        deleted_form_url = reverse(
+            "admin:forms_form_change",
+            kwargs={"object_id": deleted_form.pk},
+        )
+        active_form = FormFactory.create()
+        active_form_url = reverse(
+            "admin:forms_form_change",
+            kwargs={"object_id": active_form.pk},
+        )
+
+        FormStepFactory.create(form=deleted_form, form_definition=form_definition)
+        FormStepFactory.create(form=active_form, form_definition=form_definition)
+
+        response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
+
+        self.assertInHTML(
+            f'<li><a href="{active_form_url}">{active_form.admin_name}</a></li>',
+            str(response.content),
+        )
+        self.assertNotIn(
+            deleted_form_url,
+            str(response.content),
+        )
