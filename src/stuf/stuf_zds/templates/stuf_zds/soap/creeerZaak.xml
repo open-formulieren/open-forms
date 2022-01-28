@@ -1,4 +1,4 @@
-{% load l10n %}
+{% load l10n xml_node %}
 <ZKN:zakLk01
         xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
         xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
@@ -29,16 +29,15 @@
                <ZKN:omschrijving>{{ locatie.key }}</ZKN:omschrijving>
                <ZKN:lokatie>
                     <GML:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-                        <GML:pos>{{ locatie.lat|unlocalize }} {{ locatie.lng|unlocalize }}</GML:pos>
+                        <GML:pos>{{ locatie.coordinaat.lat|unlocalize }} {{ locatie.coordinaat.lng|unlocalize }}</GML:pos>
                     </GML:Point>
                </ZKN:lokatie>
         </ZKN:anderZaakObject>
         {% endif %}
         <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
         <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>
-        {% if betalings_indicatie %}<ZKN:betalingsIndicatie>{{ betalings_indicatie }}</ZKN:betalingsIndicatie>{% endif %}
-        {% if laatste_betaaldatum %}<ZKN:laatsteBetaaldatum>{{ laatste_betaaldatum }}</ZKN:laatsteBetaaldatum>{% endif %}
-
+        {% optional_node "ZKN:betalingsIndicatie" betalings_indicatie %}
+        {% optional_node "ZKN:laatsteBetaaldatum" laatste_betaaldatum %}
         <ZKN:zaakniveau>1</ZKN:zaakniveau>
         <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
@@ -55,14 +54,26 @@
                 <ZKN:gerelateerde>
                     {% if initiator.bsn %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                            <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
+                            {% optional_node "BG:inp.bsn" initiator.bsn %}
                             <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
-                            {% if initiator.geslachtsnaam %}<BG:geslachtsnaam>{{ initiator.geslachtsnaam }}</BG:geslachtsnaam>{% endif %}
-                            {% if initiator.voorvoegselGeslachtsnaam %}<BG:voorvoegselGeslachtsnaam>{{ initiator.voorvoegselGeslachtsnaam }}</BG:voorvoegselGeslachtsnaam>{% endif %}
-{#                            <BG:voorletters>?</BG:voorletters>#}
-                            {% if initiator.voornamen %}<BG:voornamen>{{ initiator.voornamen }}</BG:voornamen>{% endif %}
+                            {% optional_node "BG:geslachtsnaam" initiator.geslachtsnaam %}
+                            {% optional_node "BG:voorvoegselGeslachtsnaam" initiator.tussenvoegsel %}
+                            {% optional_node "BG:voorletters" initiator.voorletters %}
+                            {% optional_node "BG:voornamen" initiator.voornamen %}
 {#                            <BG:geslachtsaanduiding>?</BG:geslachtsaanduiding>#}
-                            {% if initiator.geboortedatum %}<BG:geboortedatum StUF:indOnvolledigeDatum="{{ initiator.geboortedatum.indicator }}">{{ initiator.geboortedatum.value }}</BG:geboortedatum>{% endif %}
+                            {% optional_node "BG:geboortedatum" initiator.geboortedatum %}
+
+                            {% if initiator.adres %}
+                            <BG:verblijfsadres>
+                                <BG:authentiek>J</BG:authentiek>
+                                {% optional_node "BG:wpl.woonplaatsNaam" initiator.adres.plaats %}
+                                {% optional_node "BG:gor.straatnaam" initiator.adres.straat %}
+                                {% optional_node "BG:aoa.postcode" initiator.adres.postcode %}
+                                {% optional_node "BG:aoa.huisnummer" initiator.adres.huisnummer %}
+                                {% optional_node "BG:aoa.huisletter" initiator.adres.huisletter %}
+                                {% optional_node "BG:aoa.huisnummertoevoeging" initiator.adres.huisnummer_toevoeging %}
+                             </BG:verblijfsadres>
+                            {% endif %}
                         </ZKN:natuurlijkPersoon>
                     {% elif initiator.kvk %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">

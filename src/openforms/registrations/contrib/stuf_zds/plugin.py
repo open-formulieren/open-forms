@@ -131,17 +131,91 @@ class StufZDSRegistration(BasePlugin):
 
     zaak_mapping = {
         "initiator.voornamen": RegistrationAttribute.initiator_voornamen,
+        "initiator.voorletters": RegistrationAttribute.initiator_voorletters,
         "initiator.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
-        "initiator.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
+        "initiator.tussenvoegsel": RegistrationAttribute.initiator_tussenvoegsel,
         "initiator.geboortedatum": FieldConf(
             RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
         ),
+        "initiator.adres.straat": RegistrationAttribute.initiator_straat,
+        "initiator.adres.huisnummer": RegistrationAttribute.initiator_huisnummer,
+        "initiator.adres.huisletter": RegistrationAttribute.initiator_huisletter,
+        "initiator.adres.huisnummer_toevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        "initiator.adres.postcode": RegistrationAttribute.initiator_postcode,
+        "initiator.adres.plaats": RegistrationAttribute.initiator_woonplaats,
+        "initiator.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
+        "initiator.mailadres": RegistrationAttribute.initiator_mailadres,
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
+        "initiator.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        # "initiator.kvk_nummer": RegistrationAttribute.initiator_kvk_nummer
+        "initiator.vestigingsnummer": RegistrationAttribute.initiator_vestigingsnummer,
         "initiator.bsn": FieldConf(submission_field="bsn"),
         "initiator.kvk": FieldConf(submission_field="kvk"),
-        "locatie": FieldConf(
+        # "locatie": FieldConf(
+        #     RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
+        # ),
+        "locatie.coordinaat": FieldConf(
             RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
         ),
+        "locatie.straat": RegistrationAttribute.locatie_straat,
+        "locatie.huisnummer": RegistrationAttribute.locatie_huisnummer,
+        "locatie.huisletter": RegistrationAttribute.locatie_huisletter,
+        "locatie.huisnummer_toevoeging": RegistrationAttribute.locatie_huisnummer_toevoeging,
+        "locatie.postcode": RegistrationAttribute.locatie_postcode,
+        "locatie.plaats": RegistrationAttribute.locatie_stad,
+        # roles
+        # derdepartij
+        "derdepartij.voornamen": RegistrationAttribute.derdepartij_voornamen,
+        "derdepartij.voorletters": RegistrationAttribute.derdepartij_voorletters,
+        "derdepartij.tussenvoegsel": RegistrationAttribute.derdepartij_tussenvoegsel,
+        "derdepartij.geslachtsnaam": RegistrationAttribute.derdepartij_geslachtsnaam,
+        "derdepartij.straat": RegistrationAttribute.derdepartij_straat,
+        "derdepartij.huisnummer": RegistrationAttribute.derdepartij_huisnummer,
+        "derdepartij.huisletter": RegistrationAttribute.derdepartij_huisletter,
+        "derdepartij.huisnummer_toevoeging": RegistrationAttribute.derdepartij_huisnummer_toevoeging,
+        "derdepartij.postcode": RegistrationAttribute.derdepartij_postcode,
+        "derdepartij.plaats": RegistrationAttribute.derdepartij_stad,
+        "derdepartij.telefoonnummer": RegistrationAttribute.derdepartij_telefoonnummer,
+        "derdepartij.mailadres": RegistrationAttribute.derdepartij_mailadres,
+        # contactpersoon
+        "contact.voornamen": RegistrationAttribute.contact_voornamen,
+        "contact.voorletters": RegistrationAttribute.contact_voorletters,
+        "contact.tussenvoegsel": RegistrationAttribute.contact_tussenvoegsel,
+        "contact.geslachtsnaam": RegistrationAttribute.contact_geslachtsnaam,
+        "contact.straat": RegistrationAttribute.contact_straat,
+        "contact.huisnummer": RegistrationAttribute.contact_huisnummer,
+        "contact.huisletter": RegistrationAttribute.contact_huisletter,
+        "contact.huisnummer_toevoeging": RegistrationAttribute.contact_huisnummer_toevoeging,
+        "contact.postcode": RegistrationAttribute.contact_postcode,
+        "contact.plaats": RegistrationAttribute.contact_stad,
+        "contact.telefoonnummer": RegistrationAttribute.contact_telefoonnummer,
+        "contact.mailadres": RegistrationAttribute.contact_mailadres,
+        # gemachtigde
+        "gemachtigde.voornamen": RegistrationAttribute.gemachtigde_voornamen,
+        "gemachtigde.voorletters": RegistrationAttribute.gemachtigde_voorletters,
+        "gemachtigde.tussenvoegsel": RegistrationAttribute.gemachtigde_tussenvoegsel,
+        "gemachtigde.geslachtsnaam": RegistrationAttribute.gemachtigde_geslachtsnaam,
+        "gemachtigde.straat": RegistrationAttribute.gemachtigde_straat,
+        "gemachtigde.huisnummer": RegistrationAttribute.gemachtigde_huisnummer,
+        "gemachtigde.huisletter": RegistrationAttribute.gemachtigde_huisletter,
+        "gemachtigde.huisnummer_toevoeging": RegistrationAttribute.gemachtigde_huisnummer_toevoeging,
+        "gemachtigde.postcode": RegistrationAttribute.gemachtigde_postcode,
+        "gemachtigde.plaats": RegistrationAttribute.gemachtigde_stad,
+        "gemachtigde.telefoonnummer": RegistrationAttribute.gemachtigde_telefoonnummer,
+        "gemachtigde.mailadres": RegistrationAttribute.gemachtigde_mailadres,
+        # overige rollen
+        "overige.voornamen": RegistrationAttribute.overige_voornamen,
+        "overige.voorletters": RegistrationAttribute.overige_voorletters,
+        "overige.tussenvoegsel": RegistrationAttribute.overige_tussenvoegsel,
+        "overige.geslachtsnaam": RegistrationAttribute.overige_geslachtsnaam,
+        "overige.straat": RegistrationAttribute.overige_straat,
+        "overige.huisnummer": RegistrationAttribute.overige_huisnummer,
+        "overige.huisletter": RegistrationAttribute.overige_huisletter,
+        "overige.huisnummer_toevoeging": RegistrationAttribute.overige_huisnummer_toevoeging,
+        "overige.postcode": RegistrationAttribute.overige_postcode,
+        "overige.plaats": RegistrationAttribute.overige_stad,
+        "overige.telefoonnummer": RegistrationAttribute.overige_telefoonnummer,
+        "overige.mailadres": RegistrationAttribute.overige_mailadres,
     }
 
     def register_submission(
