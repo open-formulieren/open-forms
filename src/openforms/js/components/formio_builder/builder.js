@@ -98,13 +98,23 @@ const FormIOBuilder = ({ configuration, onChange, onComponentMutated, forceUpdat
         }
     );
 
+    if (onComponentMutated) {
+        return (
+            <FormBuilder
+                form={formRef.current}
+                options={BUILDER_OPTIONS}
+                onChange={formSchema => onChange(cloneDeep(formSchema))}
+                onSaveComponent={onComponentMutated.bind(null, 'changed')}
+                onDeleteComponent={onComponentMutated.bind(null, 'removed')}
+            />
+        );
+    }
+
     return (
         <FormBuilder
             form={formRef.current}
             options={BUILDER_OPTIONS}
             onChange={formSchema => onChange(cloneDeep(formSchema))}
-            onSaveComponent={onComponentMutated.bind(null, 'changed')}
-            onDeleteComponent={onComponentMutated.bind(null, 'removed')}
         />
     );
 };
