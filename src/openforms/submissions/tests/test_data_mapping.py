@@ -7,8 +7,10 @@ from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
 from openforms.submissions.mapping import (
     FieldConf,
     apply_data_mapping,
+    extract_mapped_attributes,
     get_component,
     get_unmapped_data,
+    map_attributes_to_choices,
 )
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -302,4 +304,38 @@ class MappingTests(TestCase):
             "type": "text",
             "mapping_attr": "xyz_achternaam",
         }
+        self.assertEqual(actual, expected)
+
+    def test_extract_mapped_attributes(self):
+        mapping = {
+            "initiator.naam.voornaam": TestAttribute.initiator_voornamen,
+            "initiator.naam.achternaam": TestAttribute.initiator_geslachtsnaam,
+            "initiator.naam.tussenvoegsel": FieldConf(
+                TestAttribute.initiator_tussenvoegsel, default=""
+            ),
+        }
+        actual = extract_mapped_attributes(mapping)
+        expected = [
+            TestAttribute.initiator_voornamen,
+            TestAttribute.initiator_geslachtsnaam,
+            TestAttribute.initiator_tussenvoegsel,
+        ]
+        self.assertEqual(actual, expected)
+
+    def test_map_attributes_to_choices(self):
+        class ChoicesAttribute(DjangoChoices):
+            basic = ChoiceItem("basic", "Foo")
+            member = ChoiceItem("name_not_member", "Bar")
+            other = ChoiceItem("other", "Other")
+
+        attributes = [
+            # out of order
+            "name_not_member",
+            "basic",
+        ]
+        actual = map_attributes_to_choices(attributes, ChoicesAttribute)
+        expected = [
+            ("basic", "Foo"),
+            ("name_not_member", "Bar"),
+        ]
         self.assertEqual(actual, expected)

@@ -1,7 +1,7 @@
 import dataclasses
-from typing import Any, Callable, Mapping, Optional, Union
+from typing import Any, Callable, List, Mapping, Optional, Tuple, Union
 
-from djchoices import ChoiceItem
+from djchoices import ChoiceItem, DjangoChoices
 from glom import Assign, glom
 
 from openforms.submissions.models import Submission
@@ -152,6 +152,42 @@ def get_unmapped_data(
             data.pop(data_key, None)
 
     return data
+
+
+def extract_mapped_attributes(
+    mapping_config: Mapping[str, Union[str, FieldConf]]
+) -> List[str]:
+    """
+    extract used attributes from an apply_data_mapping() mapping
+    """
+    attributes = list()
+    for attr in mapping_config.values():
+        if isinstance(attr, FieldConf):
+            attributes.append(attr.attribute)
+        elif isinstance(attr, str):
+            attributes.append(attr)
+        else:
+            # shouldn't happen
+            raise ValueError("unknown type")
+    return attributes
+
+
+def map_attributes_to_choices(
+    attributes: List[str], const_class: DjangoChoices
+) -> List[Tuple[str, str]]:
+    """
+    map a subset of DjangoChoices values to choices
+    """
+    choices = list()
+    attributes = set(attributes)
+    # respect the classes ordering
+    for attr, label in const_class.choices:
+        if attr in attributes:
+            choices.append((attr, label))
+            attributes.remove(attr)
+    if attributes:
+        raise ValueError(f"unmapped attributes {attributes} in {const_class}")
+    return choices
 
 
 def get_component(submission, registration_attribute: str, component_attribute: str):
