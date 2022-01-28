@@ -7,7 +7,12 @@
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
-    <link rel="icon" type="image/png" href="{% static 'ico/favicon.png' %}">
+
+    <link href="{% static 'ico/favicon.svg' %}" sizes="any" rel="icon" type="image/svg+xml" />
+    <link href="{% static 'ico/favicon-96x96.png' %}" sizes="96x96" rel="icon" type="image/png" />
+    <link href="{% static 'ico/favicon-32x32.png' %}" sizes="32x32" rel="icon" type="image/png" />
+    <link href="{% static 'ico/favicon.png' %}" sizes="16x16" rel="icon" type="image/png" />
+    <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
 {% endblock %}
 
 {% block branding %}

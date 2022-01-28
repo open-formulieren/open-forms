@@ -1891,7 +1891,7 @@ msgstr "{} komt voor in {}"
 #, python-format
 msgid "The following form definitions contain fields with duplicate keys: %s"
 msgstr ""
-"De volgende formulierdefinities bevatten velden met dubbele sleutels: %s"
+"De volgende formulierdefinities bevatten velden met dubbele eigenschapsnamen: %s"
 
 #: openforms/forms/admin/form.py:205
 msgid "{} {} was successfully copied"
