@@ -14,6 +14,7 @@ os.environ.setdefault("DB_USER", "openforms"),
 os.environ.setdefault("DB_PASSWORD", "openforms"),
 
 os.environ.setdefault("ENVIRONMENT", "development")
+os.environ.setdefault("NUM_PROXIES", "0")
 
 os.environ.setdefault(
     "EHERKENNING_PRIVACY_POLICY", "https://www.maykinmedia.nl/en/privacy/"
