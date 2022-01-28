@@ -2,6 +2,30 @@
 Changelog
 =========
 
+1.0.0-rc.1 (2022-01-28)
+=======================
+
+* Updated several translations
+* Updated documentation with advanced JSON-logic examples
+* Updated documentation for the form basics
+* Updated documentation with versioning and release policies
+* [#1243] Fixed an admin bug that made form definitions crash
+* [#1206] Fixed StUF-BG configuration check to allow empty responses
+* [#1208] Fixed exports to use dynamic file upload URLs
+* [#1247] Updated admin menu structure to fit on screens (1080 pixels height) again
+* [#1237] Updated admin version info to show proper version
+* [#1227] Removed option to allow multiple options in selectboxes
+* [#1225] Updated admin formbuilder: Moved some fields to a new catagory
+* [#1123] Updated admin formbuilder: Fieldset now has a logic tab
+* [#1212] Updated prefilling to be more graceful
+* [#986] Fixed form definitons to handle unique URLs better
+* [#1217] Fixed import with duplicate form slug
+* [#1168] Fixed import with "form specific email" option enabled
+* [#1214] Fixed eIDAS ID storage field
+* [#1213] Added prefill tab to date field
+* [#1019] Added placeholder for text field
+* [#1083] Avoid checking logic on old data
+
 
 1.0.0-rc.0 (2022-01-17)
 =======================

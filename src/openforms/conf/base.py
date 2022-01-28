@@ -1015,7 +1015,6 @@ CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
 CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
-CSP_EXCLUDE_URL_PREFIXES = ("/admin/", )
 
 #
 # Tiny MCE default settings
