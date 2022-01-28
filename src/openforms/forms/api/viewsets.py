@@ -33,6 +33,7 @@ from .filters import FormLogicFilter, FormPriceLogicFilter
 from .parsers import (
     FormCamelCaseJSONParser,
     IgnoreConfigurationFieldCamelCaseJSONParser,
+    IgnoreConfigurationFieldCamelCaseJSONRenderer,
 )
 from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
@@ -150,6 +151,7 @@ class FormPriceLogicViewSet(viewsets.ModelViewSet):
 )
 class FormDefinitionViewSet(viewsets.ModelViewSet):
     parser_classes = (IgnoreConfigurationFieldCamelCaseJSONParser,)
+    renderer_classes = (IgnoreConfigurationFieldCamelCaseJSONRenderer,)
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
     pagination_class = PageNumberPagination
