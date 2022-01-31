@@ -474,7 +474,7 @@ elif os.path.exists(os.path.join(BASE_DIR, ".git")):
 else:
     GIT_SHA = None
 
-RELEASE = config("VERSION_TAG", GIT_SHA)
+RELEASE = config("RELEASE", GIT_SHA)
 
 # Base URL of where the SDK is hosted.
 SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl/sdk")
