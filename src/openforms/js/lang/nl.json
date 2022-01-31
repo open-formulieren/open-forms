@@ -479,6 +479,11 @@
     "description": "form_specific_email option label",
     "originalDefault": "Form specific email"
   },
+  "K1A6QK": {
+    "defaultMessage": "Component {label} requires login, but this form step doesn't have the login marked as required.",
+    "description": "No login required for formstep",
+    "originalDefault": "Component {label} requires login, but this form step doesn't have the login marked as required."
+  },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
     "description": "Form name field help text",
