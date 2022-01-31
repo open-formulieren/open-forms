@@ -3,6 +3,10 @@
 # stage re-using assets from the build stages. This keeps the final production
 # image minimal in size.
 
+# must be at the top to use it in FROM clauses
+ARG RELEASE=latest
+FROM openformulieren/open-forms-sdk:${RELEASE} as sdk-image
+
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
 FROM python:3.8-slim-buster AS backend-build
@@ -98,8 +102,9 @@ COPY --from=backend-build /app/src/ /app/src/
 # copy frontend build statics
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 COPY --from=frontend-build /app/node_modules/formiojs/dist/fonts /app/node_modules/formiojs/dist/fonts
+
 # Include SDK files
-COPY --from=openformulieren/open-forms-sdk:latest /sdk /app/static/sdk
+COPY --from=sdk-image /sdk /app/static/sdk
 
 # copy source code
 COPY ./src /app/src
@@ -111,7 +116,6 @@ RUN chown -R maykin /app
 USER maykin
 
 ARG COMMIT_HASH
-ARG RELEASE
 ENV GIT_SHA=${COMMIT_HASH}
 ENV RELEASE=${RELEASE}
 

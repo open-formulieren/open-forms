@@ -127,6 +127,9 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
 
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
           echo ::set-output name=tag::${VERSION}
           echo ::set-output name=git_hash::${GITHUB_SHA}
 
