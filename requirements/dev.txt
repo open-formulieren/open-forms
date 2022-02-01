@@ -305,7 +305,7 @@ django-yubin==1.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==2.2.26
+django==2.2.27
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -590,7 +590,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==8.3.2
+pillow==9.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

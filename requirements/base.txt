@@ -143,7 +143,7 @@ django-tinymce==3.4.0
     # via -r requirements/base.in
 django-yubin==1.6.0
     # via -r requirements/base.in
-django==2.2.26
+django==2.2.27
     # via
     #   -r requirements/base.in
     #   digid-eherkenning
@@ -257,7 +257,7 @@ orderedmultidict==1.0.1
     # via furl
 phonenumbers==8.12.29
     # via maykin-django-two-factor-auth
-pillow==8.3.2
+pillow==9.0.0
     # via
     #   -r requirements/base.in
     #   cairosvg
