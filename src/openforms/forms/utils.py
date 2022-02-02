@@ -12,7 +12,6 @@ from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from .api import serializers as api_serializers
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
