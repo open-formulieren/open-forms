@@ -12,6 +12,8 @@ class CSPPostProcessConfig(AppConfig):
     verbose_name = _("CSP post-processor")
 
     def ready(self):
+        from .drf import spectacular  # noqa - register DRF-spectacular extensions
+
         update_drf_modelserializer_mapping()
 
 
