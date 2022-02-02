@@ -4,6 +4,8 @@ from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
+from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
+
 
 @dataclass
 class PrivacyPolicyInfo:
@@ -17,7 +19,7 @@ class PrivacyPolicyInfoSerializer(serializers.Serializer):
             "Whether the user must agree to the privacy policy before submitting a form."
         )
     )
-    privacy_label = serializers.CharField(
+    privacy_label = CSPPostProcessedHTMLField(
         help_text=_(
             "The formatted label to use next to the checkbox when asking the user to agree to the privacy policy."
         ),

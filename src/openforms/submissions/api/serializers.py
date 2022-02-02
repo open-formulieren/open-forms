@@ -13,6 +13,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
+from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
@@ -455,7 +456,7 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
     )
 
     # TODO: apply HTML sanitation here with bleach
-    confirmation_page_content = serializers.CharField(
+    confirmation_page_content = CSPPostProcessedHTMLField(
         label=_("Confirmation page content"),
         required=False,
         help_text=_("Body text of the confirmation page. May contain HTML!"),
