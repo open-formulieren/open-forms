@@ -1,12 +1,13 @@
-{% load ui %}
+{% load ui solo_tags %}
 
 {% url 'cookie_consent_cookie_group_list' as manage_cookies_url %}
+{% get_solo 'config.GlobalConfiguration' as config %}
 
 <footer class="footer">
     <nav class="footer__nav">
         <ul class="list list--compact">
             <li class="list__item">
-                {% anchor href=settings.PRIVACY_POLICY_URL hover=True style='inherit' label=_('Privacy policy') %}
+                {% anchor href=config.privacy_policy_url hover=True style='inherit' label=_('Privacy policy') %}
             </li>
             <li class="list__item">
                 {% anchor href=manage_cookies_url hover=True style='inherit' label=_('Manage cookies') %}
