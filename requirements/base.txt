@@ -210,7 +210,9 @@ gemma-zds-client==1.0.1
 glom==20.11.0
     # via -r requirements/base.in
 html5lib==1.1
-    # via weasyprint
+    # via
+    #   -r requirements/base.in
+    #   weasyprint
 humanize==3.5.0
     # via flower
 idna==2.10
