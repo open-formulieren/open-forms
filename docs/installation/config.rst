@@ -90,6 +90,31 @@ See: https://github.com/adamchainz/django-cors-headers
   be used when making the actual request. These headers are added to the
   internal setting ``CORS_ALLOW_HEADERS``. Defaults to ``[]``.
 
+Content Security Policy (CSP) settings
+--------------------------------------
+
+* ``CSP_REPORT_ONLY``: if ``True``, CSP only reports violations but does not block them.
+  Defaults to ``False``, meaning the CSP is enforced.
+
+* ``CSP_REPORTS_SAVE``: whether to save violation reports to the database. Defaults to
+  ``False``.
+
+* ``CSP_REPORTS_LOG``: whether to log violation reports. In containerized environments
+  this will be logged to ``stdout``, otherwise to file. If monitoring (Sentry) is set
+  up, reports will also be visible there through logging. Defaults to ``True``.
+
+* ``CSP_REPORT_PERCENTAGE``: float between 0 and 1.0, expressing the percentage of
+  violations that will be reported. Defaults to ``1.0`` (100%).
+
+* ``CSP_EXTRA_DEFAULT_SRC``: A comma separated list of extra ``default-src`` directives.
+  Defaults to empty list.
+
+* ``CSP_EXTRA_IMG_SRC``: A comma separated list of extra ``img-src`` directives.
+  Defaults to empty list.
+
+See also the :ref:`developer documentation <developers_csp>` and
+https://django-csp.readthedocs.io/en/latest/ for more information on CSP.
+
 Log settings
 ------------
 

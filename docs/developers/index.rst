@@ -27,6 +27,7 @@ familiarize yourself with the design principles.
    plugins/index
    manual_testing
    i18n
+   csp
    npm
    roadmap
    releases
