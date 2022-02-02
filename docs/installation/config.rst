@@ -154,6 +154,7 @@ DigiD/EHerkenning/eIDAS settings
 * ``DIGID_SERVICE_ENTITY_ID``: The URL where the Identity Provider serves its metadata.
 * ``DIGID_SERVICE_NAME_NL``: The name (in Dutch) of the Service Provider.
 * ``DIGID_SERVICE_NAME_EN``: The name (in English) of the Service Provider.
+* ``DIGID_WANT_ASSERTIONS_SIGNED``: If ``True``, the XML assertions need to be signed, otherwise the whole response needs to be signed. Defaults to ``True``.
 * ``EHERKENNING_METADATA``: Path to the metadata file provided by the Identity Provider.
 * ``EHERKENNING_SERVICE_ENTITY_ID``: Value that matches the ``entityID`` attribute in the ``md:EntityDescriptor`` tag of the Identity Provider metadata.
 * ``EHERKENNING_ENTITY_ID``: It has the format ``urn:etoegang:DV:<OIN>:entities:<index>``. More information can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/EntityID>`__.
