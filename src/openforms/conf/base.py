@@ -1011,6 +1011,13 @@ CSP_BASE_URI = ["'self'"]
 
 CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
 
+CSP_EXCLUDE_URL_PREFIXES = (
+    # ReDoc/Swagger pull in external sources, so don't enforce CSP on API endpoints/documentation.
+    "/api/",
+    # FIXME: Admin pulls in bootstrap from CDN & has inline styles/scripts probably
+    "/admin/",
+)
+
 # note these are outdated/deprecated django-csp options
 # CSP_BLOCK_ALL_MIXED_CONTENT
 # CSP_PLUGIN_TYPES
