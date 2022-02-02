@@ -26,6 +26,8 @@ class TestSubmissionExportAdmin(WebTest):
                     {"type": "textfield", "key": "familienaam"},
                     {"type": "date", "key": "geboortedatum"},
                     {"type": "signature", "key": "signature"},
+                    {"type": "textfield", "key": "multi_str", "multiple": True},
+                    {"type": "file", "key": "my_file"},
                 ]
             }
         )
@@ -46,6 +48,25 @@ class TestSubmissionExportAdmin(WebTest):
                 "voornaam": "shea",
                 "familienaam": "meyers",
                 "geboortedatum": "01-01-1991",
+                "multi": ["aaa", "bbb"],
+                "my_file": [
+                    {
+                        "url": f"http://server/api/v1/submissions/files/uuid-uuid-uuid",
+                        "data": {
+                            "url": f"http://server/api/v1/submissions/files/uuid-uuid-uuid",
+                            "form": "",
+                            "name": "my-image.jpg",
+                            "size": 46114,
+                            "baseUrl": "http://server",
+                            "project": "",
+                        },
+                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "my-image.jpg",
+                    }
+                ],
             },
         )
 

@@ -1,4 +1,5 @@
 import dataclasses
+import json
 
 from django.http import FileResponse, HttpResponse
 from django.utils.timezone import make_naive
@@ -61,6 +62,13 @@ def export_submissions(
     return response
 
 
+def xml_serialize_value(value) -> str:
+    if isinstance(value, (list, dict)):
+        return json.dumps(value)
+    # let's re-use the JSON object serializer for dates, UUIDs, Decimals etc.
+    return str(serialize_objects_handler(value))
+
+
 class XMLKeyValueExport:
     title = "xml"
 
@@ -72,8 +80,7 @@ class XMLKeyValueExport:
             for key, value in row.items():
                 field = etree.SubElement(elem, "field", name=key)
 
-                # let's re-use the JSON object serializer for dates, UUIDs, Decimals etc.
-                field.text = serialize_objects_handler(value)
+                field.text = xml_serialize_value(value)
 
         return etree.tostring(
             root, xml_declaration=True, encoding="utf8", pretty_print=True
