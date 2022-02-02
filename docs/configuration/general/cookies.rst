@@ -55,6 +55,8 @@ configure some cookie settings first.
 .. image:: _assets/manage_cookies.png
 
 
+.. _configure_cookies:
+
 Configure cookies
 -----------------
 
@@ -106,6 +108,25 @@ and to ask to user for consent).
     the browser. If the user later declines these cookies, the cookies that are
     defined in the declined groups are deleted. If the configured cookie names 
     do not  match the actual cookie names, they are not deleted!
+
+
+Known cookies by data analytics tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The data analytics tools are third party scripts and can change their cookies
+at any time. For your convenience, we made an effort to document their cookies
+so you can configure these in the settings.
+
+**Google Analytics**
+
+* ``_ga``
+* ``_gat``
+* ``_gid``
+
+**SiteImprove**
+
+* ``AWSELBCORS``
+* ``nmstat``
 
 
 Configure privacy
