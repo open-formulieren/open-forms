@@ -831,7 +831,9 @@ DIGID = {
         "en": DIGID_SERVICE_NAME_EN,
     },
     "requested_attributes": ["bsn"],
-    "want_assertions_signed": True,
+    # Logius can sign the assertions (True) but others sign the entire response
+    # (False).
+    "want_assertions_signed": config("DIGID_WANT_ASSERTIONS_SIGNED", default=True),
 }
 
 #
