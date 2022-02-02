@@ -177,7 +177,7 @@ class FormUserSessionExpiryTests(APITestCase):
                     },
                 )
 
-    @override_settings(ROOT_URLCONF=__name__)
+    @override_settings(ROOT_URLCONF=__name__, CSP_REPORT_URI="/foo")
     def test_session_expiry_header_included(self):
         """
         Assert that the response contains a header indicating when the session expires.

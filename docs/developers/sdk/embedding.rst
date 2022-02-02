@@ -56,6 +56,14 @@ Available options
     Optional, but highly recommended. The SDK considers this as the base URL and builds all
     URLs relatively to this URL. If not provided, ``window.location.pathname`` is used.
 
+``CSPNonce``:
+    Recommended. The page's CSP Nonce value if inline styles are blocked by your
+    `Content Security Policy <https://content-security-policy.com/nonce/>`_. The Open
+    Forms SDK renders HTML in a number of places that may contain inline styles (as the
+    result of a WYSYWIG editor). If a nonce is provided, the inline styles receive the
+    value. Otherwise the styles will be blocked. This is not required if you have
+    ``style-src 'unsafe-inline'`` as part of your policy.
+
 ``lang``:
     Optional language to use for internationalizing. By default, this is looked up from
     the ``lang`` attribute of the ``html`` element in the DOM - if this is not set, the
@@ -67,6 +75,14 @@ Available options
 ``sentryEnv``:
     The label of the Sentry environment to use, for example ``'production'``. Used in
     combination with ``sentryDSN``. Defaults to an empty string.
+
+Content Security Policy (CSP)
+-----------------------------
+
+When you are embedding the SDK on your page, it must behave according to your Content
+Security Policy.
+
+Certain components have :ref:`specific CSP requirements <developers_csp_sdk_embedding>`.
 
 Full example
 ============

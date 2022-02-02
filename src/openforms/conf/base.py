@@ -151,6 +151,7 @@ INSTALLED_APPS = [
     "django_filters",
     "csp",
     "cspreports",
+    "csp_post_processor",
     "django_camunda",
     # Project applications.
     "openforms.accounts",
@@ -213,7 +214,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
-    # "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
+    "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
@@ -477,7 +479,9 @@ else:
 RELEASE = config("RELEASE", GIT_SHA)
 
 # Base URL of where the SDK is hosted.
-SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl/sdk")
+SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl/sdk/")
+if not SDK_BASE_URL.endswith("/"):
+    SDK_BASE_URL = f"{SDK_BASE_URL}/"
 
 # Submission download: how long-lived should the one-time URL be:
 SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
@@ -981,9 +985,20 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 #
 # NOTE: make sure values are a tuple or list, and to quote special values like 'self'
 
+# ideally we'd use BASE_URI but it'd have to be lazy or cause issues
 CSP_DEFAULT_SRC = [
-    "'self'"
-]  # ideally we'd use BASE_URI but it'd have to be lazy or cause issues
+    "'self'",
+    SDK_BASE_URL,
+] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
+
+# * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
+# * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)
+#   and the signature component which saves the image drawn on the canvas as data: URI
+CSP_IMG_SRC = (
+    CSP_DEFAULT_SRC
+    + ["data:", "https://service.pdok.nl/"]
+    + config("CSP_EXTRA_IMG_SRC", default=[], split=True)
+)
 
 # directives that don't fallback to default-src
 CSP_BASE_URI = ["'self'"]
@@ -995,7 +1010,13 @@ CSP_BASE_URI = ["'self'"]
 # CSP_SANDBOX # too much
 
 CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
-# CSP_INCLUDE_NONCE_IN = ["script-src"]  # if we inline we should at least have this
+
+CSP_EXCLUDE_URL_PREFIXES = (
+    # ReDoc/Swagger pull in external sources, so don't enforce CSP on API endpoints/documentation.
+    "/api/",
+    # FIXME: Admin pulls in bootstrap from CDN & has inline styles/scripts probably
+    "/admin/",
+)
 
 # note these are outdated/deprecated django-csp options
 # CSP_BLOCK_ALL_MIXED_CONTENT
@@ -1003,17 +1024,17 @@ CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
 # CSP_CHILD_SRC
 
 # report to our own django-csp-reports
-CSP_REPORT_ONLY = True  # danger
+CSP_REPORT_ONLY = config("CSP_REPORT_ONLY", False)  # enforce by default
 CSP_REPORT_URI = reverse_lazy("report_csp")
 
 #
 # Django CSP-report settings
 #
 CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", False)  # save as model
-CSP_REPORTS_LOG = False  # logging
+CSP_REPORTS_LOG = config("CSP_REPORTS_LOG", True)  # logging
 CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
-CSP_REPORT_PERCENTAGE = 1.0  # float between 0 and 1
+CSP_REPORT_PERCENTAGE = config("CSP_REPORT_PERCENTAGE", 1.0)  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 
 #

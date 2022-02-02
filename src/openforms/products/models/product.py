@@ -5,6 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from tinymce.models import HTMLField
 
+from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
+
 
 class Product(models.Model):
     """
@@ -20,11 +22,13 @@ class Product(models.Model):
     name = models.CharField(_("name"), max_length=50)
     price = models.DecimalField(_("price"), max_digits=10, decimal_places=2)
 
-    information = HTMLField(
-        _("information"),
-        blank=True,
-        help_text=_(
-            "Information text to be displayed in the confirmation page and confirmation email."
+    information = CSPPostProcessedWYSIWYGField(
+        HTMLField(
+            verbose_name=_("information"),
+            blank=True,
+            help_text=_(
+                "Information text to be displayed in the confirmation page and confirmation email."
+            ),
         ),
     )
 

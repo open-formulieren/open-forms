@@ -12,11 +12,7 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import (
-    StaffUserFactory,
-    TokenFactory,
-    UserFactory,
-)
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.tests.utils import NOOP_CACHES

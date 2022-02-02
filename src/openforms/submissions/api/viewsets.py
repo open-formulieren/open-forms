@@ -236,7 +236,10 @@ class SubmissionViewSet(
         submission = self.get_object()
         status = SubmissionProcessingStatus(request, submission)
         status.ensure_failure_can_be_managed()
-        serializer = SubmissionProcessingStatusSerializer(instance=status)
+        serializer = SubmissionProcessingStatusSerializer(
+            instance=status,
+            context={"request": request, "view": self},
+        )
         return Response(serializer.data)
 
     @extend_schema(

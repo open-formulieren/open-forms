@@ -28,6 +28,8 @@ class PrivacyPolicyInfoView(APIView):
                 privacy_label=conf.render_privacy_policy_label(),
             )
 
-        serializer = PrivacyPolicyInfoSerializer(instance=info)
+        serializer = PrivacyPolicyInfoSerializer(
+            instance=info, context={"request": request, "view": self}
+        )
 
         return Response(serializer.data)

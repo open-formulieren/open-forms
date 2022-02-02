@@ -7,11 +7,18 @@ include the SDK snippet directly.
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 
+{% if config.logo %}
+<style nonce="{{ request.csp_nonce }}">
+.page-header {
+    --of-logo-header-url: url('{{ config.logo.url }}');
+}
+</style>
+{% endif %}
+
 <header class="page-header {% if config.logo %}page-header--has-logo{% endif %}">
     {# if there's a logo, output a design token that the CSS can pick up to set as background #}
     <a
         class="anchor page-header__return-url"
         href="{% firstof config.main_website '#' %}"
-        {% if config.logo %}style="--of-logo-header-url: url('{{ config.logo.url }}')"{% endif %}
     >{% if config.main_website %}{% trans "Back to website" %}{% endif %}</a>
 </header>
