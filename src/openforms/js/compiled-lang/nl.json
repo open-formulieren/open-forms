@@ -691,6 +691,20 @@
       "value": "Formulierspecifieke e-mail"
     }
   ],
+  "K1A6QK": [
+    {
+      "type": 0,
+      "value": "Component "
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " requires login, but this form step doesn't have the login marked as required."
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,

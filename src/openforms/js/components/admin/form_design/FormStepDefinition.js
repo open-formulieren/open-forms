@@ -12,6 +12,7 @@ import FormRow from '../forms/FormRow';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import PluginWarning from './PluginWarning';
+import AuthenticationWarning from './AuthenticationWarning';
 
 const emptyConfiguration = {
     display: 'form',
@@ -54,6 +55,7 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
         <>
             <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
             <PluginWarning loginRequired={loginRequired} configuration={configuration}/>
+            <AuthenticationWarning loginRequired={loginRequired} configuration={configuration}/>
 
             <fieldset className="module aligned">
                 <h2>
