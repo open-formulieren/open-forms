@@ -11,6 +11,7 @@ from autoslug import AutoSlugField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
+from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
@@ -141,11 +142,13 @@ class Form(models.Model):
             "Leave blank to get value from global configuration."
         ),
     )
-    explanation_template = HTMLField(
-        _("explanation template"),
-        blank=True,
-        help_text=_(
-            "Content that will be shown on the start page of the form, below the title and above the log in text."
+    explanation_template = CSPPostProcessedWYSIWYGField(
+        HTMLField(
+            blank=True,
+            verbose_name=_("explanation template"),
+            help_text=_(
+                "Content that will be shown on the start page of the form, below the title and above the log in text."
+            ),
         ),
     )
 
