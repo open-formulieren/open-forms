@@ -7,10 +7,10 @@
 
 {% if config.piwik_enabled %}
 <!-- Piwik -->
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ request.csp_nonce }}">
 var pkBaseURL = "//{{ config.piwik_url|escapejs }}";
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
+</script><script type="text/javascript" nonce="{{ request.csp_nonce }}">
 try {
 var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", {{ config.piwik_site_id|escapejs }});
 piwikTracker.trackPageView();

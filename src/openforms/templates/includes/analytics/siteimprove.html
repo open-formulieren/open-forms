@@ -6,7 +6,7 @@
 {% endcomment %}
 
 {% if config.siteimprove_enabled %}
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ request.csp_nonce }}">
 /*<![CDATA[*/
 (function() {
 var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;

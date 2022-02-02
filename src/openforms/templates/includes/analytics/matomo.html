@@ -6,7 +6,7 @@
 
 {% if config.matomo_enabled %}
 <!-- Matomo -->
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ request.csp_nonce }}">
   var _paq = window._paq = window._paq || [];
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
