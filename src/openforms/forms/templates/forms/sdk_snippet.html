@@ -1,16 +1,17 @@
 {% load openforms %}{% if form %}{% with 'openforms-container' as div_id %}
 <div id="{{ div_id }}"></div>
 <script src="{{ sdk_js_url }}"></script>
-<script>
+<script nonce="{{ request.csp_nonce }}">
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
     const targetNode = document.getElementById('{{ div_id|escapejs }}');
     const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
+    const CSPNonce = '{{ request.csp_nonce|escapejs }}';
     {% if sdk_sentry_dsn %}const sentryDSN = '{% filter escapejs %}{{ sdk_sentry_dsn }}{% endfilter %}';{% endif %}
     {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}
     const form = new OpenForms.OpenForm(
         targetNode,
-        { baseUrl, formId, basePath{% if sdk_sentry_dsn %}, sentryDSN{% endif %}{% if sdk_sentry_env %}, sentryEnv{% endif %} }
+        { baseUrl, formId, basePath, CSPNonce{% if sdk_sentry_dsn %}, sentryDSN{% endif %}{% if sdk_sentry_env %}, sentryEnv{% endif %} }
     );
     form.init();
 </script>{% endwith %}{% endif %}

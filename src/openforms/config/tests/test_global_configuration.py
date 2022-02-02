@@ -71,8 +71,12 @@ class AdminTests(WebTest):
             header = form_page.pyquery(".page-header")
             self.assertTrue(header)
             self.assertIn("page-header--has-logo", header.attr("class"))
-            style = header.find("a").attr("style")
-            self.assertEqual(style, f"--of-logo-header-url: url('{config.logo.url}')")
+
+            style_tag = form_page.pyquery("style")
+            self.assertIn(
+                f"--of-logo-header-url: url('{config.logo.url}')",
+                style_tag.text(),
+            )
 
     def test_upload_png(self):
         logo = Path(settings.DJANGO_PROJECT_DIR) / "static" / "img" / "digid.png"

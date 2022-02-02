@@ -26,7 +26,7 @@
 {# Template out the configured design tokens JSON, if provided #}
 {% if config.design_token_values %}
     {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
-    <style>
+    <style nonce="{{ request.csp_nonce }}">
     :root {{% for token, value in design_tokens.items %}
       {{ token }}: {{ value }};{% endfor %}
     }
