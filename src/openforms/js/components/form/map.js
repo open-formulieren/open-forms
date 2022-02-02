@@ -62,7 +62,8 @@ export default class Map extends TextFieldComponent {
     }
 
     renderElement(value, index) {
-        return super.renderElement(value, index) + `<div id="map-${this.id}" style="height: 400px; position: relative;"/>`;
+        const inputRender = super.renderElement(value, index);
+        return `${inputRender}<div id="map-${this.id}" style="height: 400px; position: relative;"></div>`;
     }
 
     get inputInfo() {
