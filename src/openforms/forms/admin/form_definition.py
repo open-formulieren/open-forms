@@ -40,9 +40,10 @@ class FormDefinitionAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
+        form_steps = FormStep.objects.filter(form___is_deleted=False)
         used_in_forms = Prefetch(
             "formstep_set",
-            queryset=FormStep.objects.select_related("form")
+            queryset=form_steps.select_related("form")
             .order_by()
             .distinct("form", "form_definition"),
             to_attr="used_in_steps",
