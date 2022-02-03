@@ -10,6 +10,7 @@ if TYPE_CHECKING:  # pragma: nocover
     from openforms.accounts.models import User
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form
+    from openforms.plugins.plugin import AbstractBasePlugin
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -24,9 +25,7 @@ def _create_log(
     object: Model,
     event: str,
     extra_data: Optional[dict] = None,
-    plugin: Optional[
-        object
-    ] = None,  # TODO: define BasePlugin class in openforms.plugins
+    plugin: Optional["AbstractBasePlugin"] = None,
     error: Optional[Exception] = None,
     tags: Optional[list] = None,
     user: Optional["User"] = None,

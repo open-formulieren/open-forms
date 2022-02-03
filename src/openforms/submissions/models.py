@@ -714,6 +714,21 @@ class Submission(models.Model):
         # TODO support partial payments
         return self.payments.filter(status=PaymentStatus.registered).exists()
 
+    def get_auth_mode_display(self):
+        # compact anonymous display of authentication method
+        auth = []
+        if self.bsn:
+            auth.append("bsn")
+        if self.kvk:
+            auth.append("kvk")
+        if self.pseudo:
+            auth.append("pseudo")
+
+        if self.auth_plugin:
+            return f"{self.auth_plugin} ({','.join(auth)})"
+        else:
+            return ""
+
 
 class SubmissionStep(models.Model):
     """

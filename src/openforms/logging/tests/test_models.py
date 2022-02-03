@@ -125,27 +125,50 @@ class TimelineLogProxyTests(TestCase):
         self.assertEqual(f'"MyForm" (ID: {form.id})', log.fmt_form)
 
     @freeze_time("2020-01-02 12:34:00")
-    def test_format_accessors(self):
-        submission = SubmissionFactory.create(form__name="MyForm")
+    def test_formatting_accessors(self):
+        submission = SubmissionFactory.create(
+            form__name="MyForm", auth_plugin="digid", bsn="111222333"
+        )
+        # log with authenticated submission and plugin info
+        log = TimelineLogProxyFactory.create(
+            content_object=submission,
+            extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin"},
+        )
+        with self.subTest("user submission"):
+            auth = "digid (bsn)"
+            self.assertEqual(
+                _("Authenticated via plugin {auth}").format(auth=auth), log.fmt_user
+            )
+        with self.subTest("lead with submission"):
+            self.assertEqual(
+                f"[2020-01-02 13:34:00 CET] ({capfirst(_('submission'))} {submission.id})",
+                log.fmt_lead,
+            )
+        with self.subTest("form"):
+            self.assertEqual(f'"MyForm" (ID: {submission.form.id})', log.fmt_form)
+
+        with self.subTest("plugin"):
+            self.assertEqual('"MyPlugin" (myplugin)', log.fmt_plugin)
+
+        # log with staff user
         log = TimelineLogProxyFactory.create(
             content_object=submission,
             user=UserFactory(username="Bob"),
-            extra_data={"plugin_id": "myplugin", "plugin_label": "MyPlugin"},
         )
+        with self.subTest("user staff"):
+            # .user takes priority over submission auth
+            self.assertEqual(_("Staff user {user}").format(user="Bob"), log.fmt_user)
 
-        self.assertEqual(
-            f"[2020-01-02 13:34:00 CET] ({capfirst(_('submission'))} {submission.id})",
-            log.fmt_lead,
-        )
-        self.assertEqual(f'"MyForm" (ID: {submission.form.id})', log.fmt_form)
-        self.assertEqual(_("User") + ' "Bob"', log.fmt_user)
-        self.assertEqual('"MyPlugin" (myplugin)', log.fmt_plugin)
-
-        # fallbacks
+        # log with almost nothing
         log = TimelineLogProxyFactory.create(content_object=None, user=None)
-        self.assertEqual(_("Anonymous user"), log.fmt_user)
-        self.assertEqual(f"[2020-01-02 13:34:00 CET]", log.fmt_lead)
-        self.assertEqual(_("(unknown)"), log.fmt_plugin)
+        with self.subTest("user anon"):
+            self.assertEqual(_("Anonymous user"), log.fmt_user)
+
+        with self.subTest("lead no submission"):
+            self.assertEqual(f"[2020-01-02 13:34:00 CET]", log.fmt_lead)
+
+        with self.subTest("unknown plugin"):
+            self.assertEqual(_("(unknown)"), log.fmt_plugin)
 
 
 class AVGProxyModelTest(LoggingTestMixin, TestCase):

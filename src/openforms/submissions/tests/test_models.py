@@ -599,3 +599,8 @@ class SubmissionTests(TestCase):
                     submission.full_clean()
                 except ValidationError as exc:
                     self.fail(f"Unexpected validation error(s): {exc}")
+
+    def test_get_auth_mode_display(self):
+        submission = SubmissionFactory.build(auth_plugin="digid", bsn="123", kvk="123")
+
+        self.assertEqual(submission.get_auth_mode_display(), "digid (bsn,kvk)")
