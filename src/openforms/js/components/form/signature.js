@@ -1,10 +1,20 @@
 import {Formio} from 'react-formio';
 
-import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
+import {SENSITIVE_BASIC, DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 
 class SignatureField extends Formio.Components.components.signature {
     static editForm() {
-        return {components: [DEFAULT_SENSITIVE_TABS]};
+        const choicesSensitiveBasic = {
+            key: 'basic',
+            label: 'Basic',
+            components: [
+                ...SENSITIVE_BASIC.components.filter(component => component.key !== 'multiple'),
+            ]
+        };
+        let defaultSensitiveTabs = {...DEFAULT_SENSITIVE_TABS};
+        defaultSensitiveTabs.components[0] = choicesSensitiveBasic;
+
+        return {components: [defaultSensitiveTabs]};
     }
 
 }
