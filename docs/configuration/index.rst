@@ -21,3 +21,4 @@ configuration topics that come with Open Forms by default.
    prefill/index
    registration/index
    appointment/index
+   validation/index
