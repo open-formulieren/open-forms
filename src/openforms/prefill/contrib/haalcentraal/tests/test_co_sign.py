@@ -72,10 +72,10 @@ class CoSignPrefillTests(TestCase):
                 "identifier": "999990676",
                 "representation": "C. F. Wiegman",
                 "fields": {
-                    "_embedded.naam.voornamen": "Cornelia Francisca",
-                    "_embedded.naam.voorvoegsel": "",
-                    "_embedded.naam.voorletters": "C. F.",
-                    "_embedded.naam.geslachtsnaam": "Wiegman",
+                    "naam.voornamen": "Cornelia Francisca",
+                    "naam.voorvoegsel": "",
+                    "naam.voorletters": "C. F.",
+                    "naam.geslachtsnaam": "Wiegman",
                 },
             },
         )

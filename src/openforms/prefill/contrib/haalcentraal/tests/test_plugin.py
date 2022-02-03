@@ -46,8 +46,8 @@ class HaalCentraalPrefillTest(TestCase):
             [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
         expected = {
-            "_embedded.naam.voornamen": "Cornelia Francisca",
-            "_embedded.naam.geslachtsnaam": "Wiegman",
+            "naam.voornamen": "Cornelia Francisca",
+            "naam.geslachtsnaam": "Wiegman",
         }
         self.assertEqual(values, expected)
 
