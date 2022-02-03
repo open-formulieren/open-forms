@@ -1002,6 +1002,10 @@ CSP_IMG_SRC = (
     + config("CSP_EXTRA_IMG_SRC", default=[], split=True)
 )
 
+# firefox does not get the nonce from default-src, see
+# https://stackoverflow.com/a/63376012
+CSP_INCLUDE_NONCE_IN = ["style-src", "script-src"]
+
 # directives that don't fallback to default-src
 CSP_BASE_URI = ["'self'"]
 
