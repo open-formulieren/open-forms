@@ -13,7 +13,7 @@ from ..plugin import KVK_KVKNumberPrefill
 
 class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_defined_attributes_paths_resolve(self):
-        data = self.load_json_mock("basisprofiel_hoofdvestiging.json")
+        data = self.load_json_mock("basisprofiel_hoofdvestiging_response.json")
 
         # apply transform
         KVK_KVKNumberPrefill.modify_result(data)
@@ -31,12 +31,12 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
             status_code=200,
-            json=self.load_json_mock("basisprofiel_hoofdvestiging.json"),
+            json=self.load_json_mock("basisprofiel_hoofdvestiging_response.json"),
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
@@ -54,7 +54,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values_404(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
@@ -73,7 +73,7 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values_500(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",

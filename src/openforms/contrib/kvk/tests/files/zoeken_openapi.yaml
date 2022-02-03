@@ -1,0 +1,182 @@
+openapi: 3.0.1
+info:
+  title: API Zoeken
+  description: Documentatie voor API Zoeken.
+  version: "1.3"
+servers:
+- url: /test/api
+  description: only for testing with Swagger widget
+paths:
+  /v1/zoeken:
+    get:
+      tags:
+      - Zoeken
+      summary: Voor een bedrijf zoeken naar basisinformatie.
+      description: Er wordt max. 1000 resultaten getoond.
+      operationId: getResults
+      parameters:
+      - name: kvkNummer
+        in: query
+        description: "Nederlands Kamer van Koophandel nummer: bestaat uit 8 cijfers"
+        schema:
+          pattern: "^[0-9]{8}$"
+          type: string
+      - name: rsin
+        in: query
+        description: Rechtspersonen Samenwerkingsverbanden Informatie Nummer
+        schema:
+          pattern: "^[0-9]{9}$"
+          type: string
+      - name: vestigingsnummer
+        in: query
+        description: "Vestigingsnummer: uniek nummer dat bestaat uit 12 cijfers"
+        schema:
+          pattern: "^[0-9]{12}$"
+          type: string
+      - name: handelsnaam
+        in: query
+        description: De naam waaronder een vestiging of rechtspersoon handelt
+        schema:
+          type: string
+      - name: straatnaam
+        in: query
+        schema:
+          type: string
+      - name: plaats
+        in: query
+        schema:
+          type: string
+      - name: postcode
+        in: query
+        description: Mag alleen in combinatie met Huisnummer gezocht worden
+        schema:
+          type: string
+      - name: huisnummer
+        in: query
+        description: Mag alleen in combinatie met Postcode gezocht worden
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: "Filter op type: hoofdvestiging, nevenvestiging en/of rechtspersoon"
+        schema:
+          type: string
+      - name: InclusiefInactieveRegistraties
+        in: query
+        description: "Inclusief inactieve registraties: true, false"
+        schema:
+          type: boolean
+      - name: pagina
+        in: query
+        description: "Paginanummer, minimaal 1 en maximaal 1000"
+        schema:
+          type: number
+          default: "1"
+      - name: aantal
+        in: query
+        description: "Kies het aantal resultaten per pagina, minimaal 1 en maximaal\
+          \ 100"
+        schema:
+          type: number
+          default: "10"
+      responses:
+        default:
+          description: default response
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Resultaat'
+components:
+  schemas:
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        hreflang:
+          type: string
+        media:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+    Resultaat:
+      type: object
+      properties:
+        pagina:
+          type: integer
+          description: Geeft aan op welke pagina je bent. Start vanaf pagina 1
+          format: int32
+        aantal:
+          type: integer
+          description: Geeft het aantal zoek resultaten per pagina weer
+          format: int32
+        totaal:
+          type: integer
+          description: Totaal aantal zoekresultaten gevonden. De API Zoeken toont
+            max. 1000 resultaten.
+          format: int32
+        vorige:
+          type: string
+          description: Link naar de vorige pagina indien beschikbaar
+        volgende:
+          type: string
+          description: Link naar de volgende pagina indien beschikbaar
+        resultaten:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResultaatItem'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    ResultaatItem:
+      type: object
+      properties:
+        kvkNummer:
+          type: string
+          description: "Nederlands Kamer van Koophandel nummer: bestaat uit 8 cijfers"
+        rsin:
+          type: string
+          description: Rechtspersonen Samenwerkingsverbanden Informatie Nummer
+        vestigingsnummer:
+          type: string
+          description: "Vestigingsnummer: uniek nummer dat bestaat uit 12 cijfers"
+        handelsnaam:
+          type: string
+          description: De naam waaronder een vestiging of rechtspersoon handelt
+        straatnaam:
+          type: string
+        huisnummer:
+          type: integer
+          format: int32
+        huisnummerToevoeging:
+          type: string
+        postcode:
+          type: string
+          example: "Postcode: bestaat uit 4 cijfers en 2 letters"
+        plaats:
+          type: string
+        type:
+          type: string
+          description: hoofdvestiging/nevenvestiging/rechtspersoon
+        actief:
+          type: string
+          description: Indicatie of inschrijving actief is
+        vervallenNaam:
+          type: string
+          description: Bevat de vervallen handelsnaam of statutaire naam waar dit
+            zoekresultaat mee gevonden is.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
