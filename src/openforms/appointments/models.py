@@ -27,7 +27,7 @@ class AppointmentInfo(models.Model):
     )
     appointment_id = models.CharField(
         _("appointment ID"),
-        max_length=50,
+        max_length=64,
         blank=True,
     )
     error_information = models.TextField(
