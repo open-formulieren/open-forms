@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.contrib.auth.models import Permission
 from django.urls import reverse
 
 from rest_framework import status
@@ -204,6 +203,28 @@ class FormDefinitionsAPITests(APITestCase):
         config = FormDefinition.objects.get().configuration
         self.assertIn("someCamelCase", config)
         self.assertNotIn("some_amel_case", config)
+
+    def test_get_no_snakecase_camelcase_conversion(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            configuration={
+                "display": "form",
+                "components": [{"widget": {"time_24hr": True}}],
+            },
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        date_component = response.json()["configuration"]["components"][0]
+
+        self.assertIn("time_24hr", date_component["widget"])
 
     def test_delete(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])

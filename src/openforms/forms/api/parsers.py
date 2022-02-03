@@ -1,4 +1,5 @@
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 from .drf_camel_case import FormCamelCaseMixin
 
@@ -12,6 +13,13 @@ class IgnoreConfigurationFieldCamelCaseJSONParser(CamelCaseJSONParser):
     # variant can sometimes overwrite the camelCase variant, which breaks the pre-fill
     # functionality. This can happen because JSON objects DO NOT HAVE inherent ordering
     # and the spec is non-deterministic.
+    json_underscoreize = {"ignore_fields": ("configuration",)}
+
+
+class IgnoreConfigurationFieldCamelCaseJSONRenderer(CamelCaseJSONRenderer):
+    # This is needed for fields in the JSON configuration that have an underscore
+    # For example: time_24hr in the date component. See github issue
+    # https://github.com/open-formulieren/open-forms/issues/1255
     json_underscoreize = {"ignore_fields": ("configuration",)}
 
 
