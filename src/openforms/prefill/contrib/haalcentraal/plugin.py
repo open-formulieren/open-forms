@@ -40,10 +40,15 @@ class HaalCentraalPrefill(BasePlugin):
 
         client = config.service.build_client()
 
+        # manually build the URL, since HaalCentraal API spec & Open Personen have
+        # mismatching operation IDs
+        resource_url = f"ingeschrevenpersonen/{bsn}"
+
         try:
             data = client.retrieve(
                 "ingeschrevenpersonen",
                 burgerservicenummer=bsn,
+                url=resource_url,
                 request_kwargs=cls.request_kwargs,
             )
         except RequestException as e:
