@@ -82,7 +82,8 @@ class DigiDOIDCAuthentication(BasePlugin):
 
         params = urlencode({"id_token_hint": request.session["oidc_id_token"]})
         logout_endpoint = OpenIDConnectPublicConfig.get_solo().oidc_op_logout_endpoint
-        requests.get(f"{logout_endpoint}?{params}")
+        if logout_endpoint:
+            requests.get(f"{logout_endpoint}?{params}")
 
     def get_label(self) -> str:
         return "DigiD"
