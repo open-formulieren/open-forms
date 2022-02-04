@@ -15,6 +15,7 @@ import Trigger from './logic/Trigger';
 
 export const EMPTY_PRICE_RULE = {
     uuid: '',
+    _generatedId: '',  // consumers should generate this, as it's used for the React key prop if no uuid exists
     form: '',
     jsonLogicTrigger: {},
     price: '',
@@ -100,7 +101,7 @@ export const PriceLogic = ({ rules=[], onChange, onDelete, onAdd }) => {
             {
                 rules.map((rule, i) => (
                     <Rule
-                        key={i}
+                        key={rule.uuid || rule._generatedId}
                         {...rule}
                         onChange={onChange.bind(null, i)}
                         onDelete={onDelete.bind(null, i)}
