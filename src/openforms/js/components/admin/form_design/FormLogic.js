@@ -13,6 +13,7 @@ import {ValidationErrorContext} from '../forms/ValidationErrors';
 
 const EMPTY_RULE = {
     uuid: '',
+    _generatedId: '',  // consumers should generate this, as it's used for the React key prop if no uuid exists
     form: '',
     jsonLogicTrigger: {},
     isAdvanced: false,
@@ -92,7 +93,7 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
                 rules.map(([index, rule], _) => {
                     return (
                         <Rule
-                            key={index}
+                            key={rule.uuid || rule._generatedId}
                             {...rule}
                             onChange={onChange.bind(null, index)}
                             onDelete={onDelete.bind(null, index)}

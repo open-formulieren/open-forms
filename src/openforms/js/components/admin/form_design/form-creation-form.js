@@ -10,6 +10,7 @@ import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
+import {getUniqueRandomString} from '../../../utils/random';
 import FAIcon from '../FAIcon';
 import {ComponentsContext} from '../forms/Context';
 import Fieldset from '../forms/Fieldset';
@@ -439,7 +440,8 @@ function reducer(draft, action) {
             draft.logicRules.push({
                 ...EMPTY_RULE,
                 ...ruleOverrides,
-                form: url
+                form: url,
+                _generatedId: getUniqueRandomString(),
             });
             break;
         }
@@ -487,7 +489,8 @@ function reducer(draft, action) {
             const {form: {url}} = draft;
             draft.priceRules.push({
                 ...EMPTY_PRICE_RULE,
-                form: url
+                form: url,
+                _generatedId: getUniqueRandomString(),
             });
             break;
         }
