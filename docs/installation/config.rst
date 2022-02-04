@@ -211,6 +211,11 @@ Other settings
   duration are aborted and errors bubble up. Specific calls may use an explicitly
   provided timeout, which is not affected by this setting.
 
+* ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: You can control whether the session framework uses browser-length sessions
+  vs. persistent sessions. If this is set to ``True`` Django will use browser-length cookies that expire as soon as
+  the user closes their browser. Use this if you want people to have to log in every time they open a browser.
+  The default is ``False``.
+
 * ``CURL_CA_BUNDLE``: If this variable is set to an empty string, it disables SSL/TLS
   certificate verification. More information about why can be found on this
   `stackoverflow post <https://stackoverflow.com/a/48391751/7146757>`_. Even calls from
