@@ -18,6 +18,13 @@ Django Rest Framework extensions
    :members:
 
 
+Django Admin
+------------
+
+.. automodule:: openforms.utils.admin
+   :members:
+
+
 Email
 -----
 
