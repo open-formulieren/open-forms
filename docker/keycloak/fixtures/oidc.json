@@ -1,0 +1,23 @@
+[
+    {
+        "model": "digid_oidc.openidconnectpublicconfig",
+        "pk": 1,
+        "fields": {
+            "enabled": true,
+            "bsn_claim_name": "bsn",
+            "oidc_rp_client_id": "testid_public",
+            "oidc_rp_client_secret": "23a12032-e080-4f65-b733-ad2567ec1605",
+            "oidc_rp_sign_algo": "RS256",
+            "oidc_rp_scopes_list": "[\"openid\", \"bsn\"]",
+            "oidc_op_discovery_endpoint": "http://172.19.0.1:8080/auth/realms/test/",
+            "oidc_op_jwks_endpoint": "http://172.19.0.1:8080/auth/realms/test/protocol/openid-connect/certs",
+            "oidc_op_authorization_endpoint": "http://172.19.0.1:8080/auth/realms/test/protocol/openid-connect/auth",
+            "oidc_op_token_endpoint": "http://172.19.0.1:8080/auth/realms/test/protocol/openid-connect/token",
+            "oidc_op_user_endpoint": "http://172.19.0.1:8080/auth/realms/test/protocol/openid-connect/userinfo",
+            "oidc_op_logout_endpoint": "http://172.19.0.1:8080/auth/realms/test/protocol/openid-connect/logout",
+            "oidc_rp_idp_sign_key": "",
+            "oidc_redirect_allowed_hosts": "[]",
+            "oidc_keycloak_idp_hint": ""
+        }
+    }
+]
