@@ -349,7 +349,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "have",
                         "attribute": "hit",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
                 {
                     "id": "two",
@@ -358,7 +358,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "have",
                         "attribute": "miss",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
             ],
         }
@@ -388,7 +388,7 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertEqual(field["defaultValue"], "foo")
         field = new_configuration["components"][1]
-        self.assertEqual(field["defaultValue"], None)
+        self.assertEqual(field["defaultValue"], "")
 
         # second call hits cache
         new_configuration = apply_prefill(
@@ -402,7 +402,7 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertEqual(field["defaultValue"], "foo")
         field = new_configuration["components"][1]
-        self.assertEqual(field["defaultValue"], None)
+        self.assertEqual(field["defaultValue"], "")
 
     def test_apply_prefill_caches_values_across_steps_and_plugins(self):
         """
