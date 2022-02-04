@@ -341,7 +341,10 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
     readonly_fields = (
         "uuid",
         "created_on",
+        "file_name",
+        "content_type",
         "file_size",
+        "content",
     )
     date_hierarchy = "created_on"
 
@@ -353,7 +356,13 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
     file_size.short_description = _("File size")
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
         return False
 
 
