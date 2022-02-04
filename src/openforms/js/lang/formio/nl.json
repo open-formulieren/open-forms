@@ -111,7 +111,7 @@
   "The legend for this Fieldset.": "De legende voor deze veldengroep.",
   "Adds a tooltip to the side of this field.": "Voegt een tooltip toe aan de zijkant van het veld.",
   "Custom CSS class to add to this component.": "Aangepaste CSS class om aan dit component toe te voegen.",
-  "A hidden field is still a part of the form, but is hidden from view.": "Een verborgen veld is nog steeds onderdeel van het formulier, maar niet langer zichtbaar.",
+  "Hide a field from the form.": "Verberg een veld in het formulier.",
   "Disable the form input.": "Schakel de formulierinput uit.",
   "Opens up a modal to edit the value of this component.": "Opent een popup om de waarde van deze component te bewerken.",
   "The name of this field in the API endpoint.": "De naam van dit veld in de API.",
@@ -278,5 +278,7 @@
   "Placeholder": "Placeholder",
   "The placeholder text that will appear when this field is empty.": "De placeholder tekst die verschijnt als dit veld leeg is.",
   "Special fields": "Speciale velden",
-  "Invalid Postcode": "Ongeldige Postcode"
+  "Invalid Postcode": "Ongeldige Postcode",
+  "Clear on hide": "Wissen als veld verborgen is",
+  "Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!": "Verwijder de waarde van dit veld van de inzending als dit veld verborgen is. Let op: De waarde van dit veld wordt dan ook niet gebruikt in logica regels!"
 }
