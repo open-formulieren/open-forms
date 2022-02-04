@@ -27,11 +27,13 @@ So, to recap:
    form field default values.
 """
 import logging
+from collections import defaultdict
 from copy import deepcopy
 from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
+from glom import GlomError, Path, assign, glom
 from zgw_consumers.concurrent import parallel
 
 from openforms.logging import logevent
@@ -76,6 +78,75 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     fields = _extract_prefill_fields(configuration)
     grouped_fields = _group_prefills_by_plugin(fields)
 
+    results = _fetch_prefill_values_cached(grouped_fields, submission, register)
+
+    # finally, ensure the ``defaultValue`` is set based on prefill results
+    config_copy = deepcopy(configuration)
+    _set_default_values(config_copy, results)
+    return config_copy
+
+
+def _fetch_prefill_values_cached(
+    grouped_fields: Dict[str, list], submission: "Submission", register
+) -> Dict[str, Dict[str, Any]]:
+    """
+    Wraps _fetch_prefill_values() with similar signature but caches on submission.prefill_data
+
+    As complication the prefill is invoked per FormStep,
+        but different steps could have same plugin or even repeating prefills from same plugins
+
+    This means the cache may have values we're currently not interested in,
+        but want to keep for a different request
+    """
+    results: Dict[str, Dict[str, Any]] = dict()
+
+    cached = submission.prefill_data
+    cache_dirty = False
+
+    # grab what we want from cache and collect misses
+    fetch_fields = defaultdict(list)
+    for plugin_id, fields in grouped_fields.items():
+        for field in fields:
+            path = Path(plugin_id, field)
+            try:
+                assign(results, path, glom(cached, path), missing=dict)
+            except GlomError:
+                fetch_fields[plugin_id].append(field)
+
+    # fetch missing values
+    if fetch_fields:
+        fetch_results = _fetch_prefill_values(fetch_fields, submission, register)
+
+        # copy to result and update cache
+        for plugin_id, values in fetch_results.items():
+            for field, value in values.items():
+                path = Path(plugin_id, field)
+                assign(results, path, value, missing=dict)
+                assign(cached, path, value, missing=dict)
+                cache_dirty = True
+
+        # set None for fields not returned by plugin to block endless re-requesting
+        for plugin_id, fields in fetch_fields.items():
+            for field in fields:
+                path = Path(plugin_id, field)
+                try:
+                    glom(results, path)
+                except GlomError:
+                    assign(results, path, None, missing=dict)
+                    assign(cached, path, None, missing=dict)
+                    cache_dirty = True
+
+    # update cache if we have new values
+    if cache_dirty:
+        submission.prefill_data = cached
+        submission.save(update_fields=["prefill_data"])
+
+    return results
+
+
+def _fetch_prefill_values(
+    grouped_fields: Dict[str, list], submission: "Submission", register
+) -> Dict[str, Dict[str, Any]]:
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item
         plugin = register[plugin_id]
@@ -96,13 +167,7 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     with parallel() as executor:
         results = executor.map(invoke_plugin, grouped_fields.items())
 
-    # process the pre-fill results and fill them out
-    prefilled_values: Dict[str, Dict[str, Any]] = dict(results)
-
-    # finally, ensure the ``defaultValue`` is set based on prefill results
-    config_copy = deepcopy(configuration)
-    _set_default_values(config_copy, prefilled_values)
-    return config_copy
+    return dict(results)
 
 
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:

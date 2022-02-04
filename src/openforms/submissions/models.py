@@ -205,6 +205,12 @@ class Submission(models.Model):
         validators=[SerializerValidator(CoSignDataSerializer)],
         help_text=_("Authentication details of a co-signer."),
     )
+    prefill_data = JSONField(
+        _("prefill data"),
+        blank=True,
+        default=dict,
+        help_text=_("Data used for prefills."),
+    )
 
     # payment state
     price = models.DecimalField(
@@ -349,6 +355,8 @@ class Submission(models.Model):
         self.bsn = ""
         self.kvk = ""
         self.pseudo = ""
+        self.prefill_data = dict()
+
         for submission_step in self.submissionstep_set.select_related(
             "form_step", "form_step__form_definition"
         ).select_for_update():
