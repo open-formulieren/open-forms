@@ -223,8 +223,13 @@ Other settings
   Defaults to the automatically determined commit hash, if the application is
   run from a checked out Git repository.
 
-* ``VERSION_TAG``: The version of the application. If not provided, the
+* ``RELEASE``: The version of the application. If not provided, the
   ``GIT_SHA`` is used.
+
+* ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
+  This applies to both the session of end-users filling out forms and staff using the
+  administrative interface. Enabling this forces users to log in every time they open
+  their browser. Defaults to ``False``.
 
 * ``EXTRA_VERIFY_CERTS``: A comma-separated list of paths to certificates to trust, empty
   by default. If you're using self-signed certificates for the services that Open Forms

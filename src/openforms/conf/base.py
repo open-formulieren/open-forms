@@ -431,6 +431,9 @@ AUTHENTICATION_BACKENDS = [
 
 SESSION_COOKIE_NAME = "openforms_sessionid"
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = config(
+    "SESSION_EXPIRE_AT_BROWSER_CLOSE", default=False
+)
 
 LOGIN_URL = reverse_lazy("admin:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
