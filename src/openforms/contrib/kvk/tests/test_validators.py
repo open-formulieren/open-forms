@@ -48,11 +48,11 @@ class KvKValidatorTestCase(TestCase):
 class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_kvkNumber_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=200,
-            json=self.load_json_mock("companies.json"),
+            json=self.load_json_mock("zoeken_response.json"),
         )
         m.get(
             "https://companies/v1/zoeken?kvkNummer=90004760",
@@ -88,11 +88,11 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_rsin_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?rsin=111222333",
             status_code=200,
-            json=self.load_json_mock("companies.json"),
+            json=self.load_json_mock("zoeken_response.json"),
         )
         m.get(
             "https://companies/v1/zoeken?rsin=063308836",
@@ -120,11 +120,11 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_branchNumber_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?vestigingsnummer=112233445566",
             status_code=200,
-            json=self.load_json_mock("companies.json"),
+            json=self.load_json_mock("zoeken_response.json"),
         )
         m.get(
             "https://companies/v1/zoeken?vestigingsnummer=665544332211",

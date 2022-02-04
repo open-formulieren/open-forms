@@ -7,15 +7,15 @@ from zgw_consumers.constants import APITypes
 
 class KVKConfigManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("service")
+        return super().get_queryset().select_related("_service", "_profiles")
 
 
 class KVKConfig(SingletonModel):
     """
-    global configuration and defaults
+    Global configuration and defaults
     """
 
-    service = models.OneToOneField(
+    _service = models.OneToOneField(
         "zgw_consumers.Service",
         verbose_name=_("KvK API Zoeken"),
         help_text=_("API used for validation of KvK, RSIN and vestigingsnummer's"),
@@ -25,7 +25,7 @@ class KVKConfig(SingletonModel):
         null=True,
     )
 
-    profiles = models.OneToOneField(
+    _profiles = models.OneToOneField(
         "zgw_consumers.Service",
         verbose_name=_("KvK API Basisprofiel"),
         help_text=_("API used to retrieve basis profielen"),
@@ -39,3 +39,23 @@ class KVKConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("KvK configuration")
+
+    # FIXME: Patch ZGW Consumer behaviour to allow for 2 KvK API's.
+    #
+    # The KvK uses a single API root path to serve 2 API's. They differ in path
+    # but the path is included in the schema and thus is added automatically by
+    # ZGW Consumer. You cannot store 2 API's with the same API root, and adding
+    # their API base path causes the API base path to be duplicated in
+    # requests.
+
+    @property
+    def service(self):
+        s = self._service
+        s.api_root = s.api_root.replace("/v1/zoeken", "")
+        return s
+
+    @property
+    def profiles(self):
+        p = self._profiles
+        p.api_root = p.api_root.replace("/v1/basisprofielen", "")
+        return p

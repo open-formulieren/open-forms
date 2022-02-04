@@ -12,11 +12,11 @@ from openforms.contrib.kvk.tests.base import KVKTestMixin
 class KVKSearchClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=200,
-            json=self.load_json_mock("companies.json"),
+            json=self.load_json_mock("zoeken_response.json"),
         )
 
         client = KVKSearchClient()
@@ -29,7 +29,7 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_client_404(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=404,
@@ -40,7 +40,7 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="kvkapiprofileoas3")
+        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
             "https://companies/v1/zoeken?kvkNummer=69599084",
             status_code=500,
@@ -54,12 +54,12 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
             status_code=200,
-            json=self.load_json_mock("basisprofiel_hoofdvestiging.json"),
+            json=self.load_json_mock("basisprofiel_hoofdvestiging_response.json"),
         )
 
         client = KVKProfileClient()
@@ -71,7 +71,7 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client_404(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
@@ -84,7 +84,7 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client_500(self, m):
         mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="api_basisprofiel_widget"
+            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
         )
         m.get(
             "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",

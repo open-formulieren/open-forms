@@ -67,7 +67,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
 
     @classmethod
     def modify_result(cls, result):
-        # move the desired item from the unordered list to a know place
+        # Move the desired item from the unordered list to a known place
         address = _select_address(result["adressen"], "bezoekadres")
         if address:
             result["bezoekadres"] = address
