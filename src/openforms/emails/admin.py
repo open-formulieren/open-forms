@@ -14,6 +14,7 @@ from django_yubin.models import (
     QueuedMessage as YubinQueuedMessage,
 )
 
+from ..utils.admin import ReadOnlyAdminMixin
 from ..utils.mixins import UserIsStaffMixin
 from .connection_check import check_email_backend
 from .forms import ConfirmationEmailTemplateForm, EmailTestForm
@@ -46,7 +47,7 @@ class EmailTestAdminView(UserIsStaffMixin, PermissionRequiredMixin, FormView):
         return self.render_to_response(context)
 
 
-class LogAdmin(YubinLogAdmin):
+class LogReadOnlyAdmin(ReadOnlyAdminMixin, YubinLogAdmin):
     readonly_fields = [
         "message",
         "result",
@@ -54,21 +55,12 @@ class LogAdmin(YubinLogAdmin):
         "log_message",
     ]
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
 
 admin.site.unregister(YubinLog)
-admin.site.register(YubinLog, LogAdmin)
+admin.site.register(YubinLog, LogReadOnlyAdmin)
 
 
-class MessageAdmin(YubinMessageAdmin):
+class MessageReadOnlyAdmin(ReadOnlyAdminMixin, YubinMessageAdmin):
     readonly_fields = [
         "to_address",
         "from_address",
@@ -78,21 +70,12 @@ class MessageAdmin(YubinMessageAdmin):
         "date_sent",
     ]
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
 
 admin.site.unregister(YubinMessage)
-admin.site.register(YubinMessage, MessageAdmin)
+admin.site.register(YubinMessage, MessageReadOnlyAdmin)
 
 
-class QueuedMessageAdmin(YubinQueuedMessageAdmin):
+class QueuedMessageReadOnlyAdmin(ReadOnlyAdminMixin, YubinQueuedMessageAdmin):
     readonly_fields = [
         "message",
         "priority",
@@ -101,15 +84,6 @@ class QueuedMessageAdmin(YubinQueuedMessageAdmin):
         "date_queued",
     ]
 
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
 
 admin.site.unregister(YubinQueuedMessage)
-admin.site.register(YubinQueuedMessage, QueuedMessageAdmin)
+admin.site.register(YubinQueuedMessage, QueuedMessageReadOnlyAdmin)
