@@ -418,7 +418,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "alpha",
                         "attribute": "alpha_one",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
                 {
                     "id": "one2",
@@ -427,7 +427,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "bravo",
                         "attribute": "bravo_one",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
             ],
         }
@@ -443,7 +443,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "alpha",
                         "attribute": "alpha_two",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
                 {
                     "id": "two2",
@@ -452,7 +452,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "bravo",
                         "attribute": "bravo_two",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
                 # also add a recurring prefill attribute from step one
                 {
@@ -462,7 +462,7 @@ class PrefillHookTests(TransactionTestCase):
                         "plugin": "alpha",
                         "attribute": "alpha_one",
                     },
-                    "defaultValue": None,
+                    "defaultValue": "",
                 },
             ],
         }
