@@ -13,18 +13,19 @@ class SubmitActions(DjangoChoices):
     edit_again = ChoiceItem("_continue", _("Save and continue editing"))
 
 
-# defaults to True
-if getattr(settings, "COOKIE_CONSENT_LOG_ENABLED", True):
+def replace_cookie_log_admin():
+    # defaults to True
+    if getattr(settings, "COOKIE_CONSENT_LOG_ENABLED", True):
 
-    class LogAdmin(CookieLogAdmin):
-        def has_add_permission(self, request):
-            return False
+        class LogAdmin(CookieLogAdmin):
+            def has_add_permission(self, request):
+                return False
 
-        def has_delete_permission(self, request, obj=None):
-            return False
+            def has_delete_permission(self, request, obj=None):
+                return False
 
-        def has_change_permission(self, request, obj=None):
-            return False
+            def has_change_permission(self, request, obj=None):
+                return False
 
-    admin.site.unregister(CookieLog)
-    admin.site.register(CookieLog, LogAdmin)
+        admin.site.unregister(CookieLog)
+        admin.site.register(CookieLog, LogAdmin)

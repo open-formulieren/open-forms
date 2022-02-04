@@ -14,3 +14,7 @@ class UtilsConfig(AppConfig):
 
         mute_deprecation_warnings()
         monkeypatch_cookie_consent()
+
+        from openforms.utils.admin import replace_cookie_log_admin  # noqa
+
+        replace_cookie_log_admin()
