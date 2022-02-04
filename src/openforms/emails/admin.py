@@ -3,8 +3,16 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
-from django_yubin.admin import Log as YubinLogAdmin, Message as YubinMessageAdmin
-from django_yubin.models import Log as YubinLog, Message as YubinMessge
+from django_yubin.admin import (
+    Log as YubinLogAdmin,
+    Message as YubinMessageAdmin,
+    QueuedMessage as YubinQueuedMessageAdmin,
+)
+from django_yubin.models import (
+    Log as YubinLog,
+    Message as YubinMessage,
+    QueuedMessage as YubinQueuedMessage,
+)
 
 from ..utils.mixins import UserIsStaffMixin
 from .connection_check import check_email_backend
@@ -80,5 +88,28 @@ class MessageAdmin(YubinMessageAdmin):
         return False
 
 
-admin.site.unregister(YubinMessge)
-admin.site.register(YubinMessge, MessageAdmin)
+admin.site.unregister(YubinMessage)
+admin.site.register(YubinMessage, MessageAdmin)
+
+
+class QueuedMessageAdmin(YubinQueuedMessageAdmin):
+    readonly_fields = [
+        "message",
+        "priority",
+        "deferred",
+        "retries",
+        "date_queued",
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+admin.site.unregister(YubinQueuedMessage)
+admin.site.register(YubinQueuedMessage, QueuedMessageAdmin)
