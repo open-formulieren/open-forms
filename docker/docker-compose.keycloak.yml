@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=demo
+      - KEYCLOAK_PASSWORD=demo
+      - KEYCLOAK_IMPORT=/realm.json
+    volumes:
+      - ./keycloak/fixtures/realm.json:/realm.json
+    ports:
+    - 8080:8080

@@ -1,0 +1,171 @@
+[
+    {
+        "model": "forms.form",
+        "pk": 1,
+        "fields": {
+            "uuid": "3ea9541f-f863-445d-ba89-a0d089578c3b",
+            "name": "Digid via OIDC",
+            "internal_name": "",
+            "slug": "digid-oidc",
+            "product": null,
+            "registration_backend": "",
+            "registration_backend_options": {},
+            "payment_backend": "",
+            "payment_backend_options": {},
+            "authentication_backends": "[\"digid_oidc\"]",
+            "submission_confirmation_template": "",
+            "submission_allowed": "yes",
+            "show_progress_indicator": true,
+            "confirmation_email_option": "global_email",
+            "begin_text": "",
+            "previous_text": "",
+            "change_text": "",
+            "confirm_text": "",
+            "explanation_template": "",
+            "active": true,
+            "maintenance_mode": false,
+            "_is_deleted": false,
+            "successful_submissions_removal_limit": null,
+            "successful_submissions_removal_method": "",
+            "incomplete_submissions_removal_limit": null,
+            "incomplete_submissions_removal_method": "",
+            "errored_submissions_removal_limit": null,
+            "errored_submissions_removal_method": "",
+            "all_submissions_removal_limit": null
+        }
+    },
+    {
+        "model": "forms.formdefinition",
+        "pk": 1,
+        "fields": {
+            "uuid": "5f28e130-e5c3-4a3a-abe3-2f51e88b8e2a",
+            "name": "Stap 1",
+            "internal_name": "",
+            "slug": "oidc-step1",
+            "configuration": {
+                "display": "form",
+                "components": [
+                    {
+                        "id": "eki8hix",
+                        "key": "textField",
+                        "mask": false,
+                        "type": "textfield",
+                        "input": true,
+                        "label": "Text Field",
+                        "hidden": false,
+                        "prefix": "",
+                        "suffix": "",
+                        "unique": false,
+                        "widget": {
+                            "type": "input"
+                        },
+                        "dbIndex": false,
+                        "overlay": {
+                            "top": "",
+                            "left": "",
+                            "style": "",
+                            "width": "",
+                            "height": ""
+                        },
+                        "prefill": {
+                            "plugin": "",
+                            "attribute": ""
+                        },
+                        "tooltip": "",
+                        "disabled": false,
+                        "multiple": false,
+                        "redrawOn": "",
+                        "tabindex": "",
+                        "validate": {
+                            "custom": "",
+                            "unique": false,
+                            "pattern": "",
+                            "plugins": [],
+                            "multiple": false,
+                            "required": false,
+                            "maxLength": "",
+                            "minLength": "",
+                            "customPrivate": false,
+                            "strictDateValidation": false
+                        },
+                        "autofocus": false,
+                        "encrypted": false,
+                        "hideLabel": false,
+                        "inputMask": "",
+                        "inputType": "text",
+                        "modalEdit": false,
+                        "protected": false,
+                        "refreshOn": "",
+                        "tableView": true,
+                        "attributes": {},
+                        "deriveCity": false,
+                        "errorLabel": "",
+                        "persistent": true,
+                        "properties": {},
+                        "spellcheck": true,
+                        "validateOn": "change",
+                        "clearOnHide": true,
+                        "conditional": {
+                            "eq": "",
+                            "show": null,
+                            "when": null
+                        },
+                        "customClass": "",
+                        "description": "",
+                        "inputFormat": "plain",
+                        "placeholder": "",
+                        "showInEmail": false,
+                        "defaultValue": null,
+                        "registration": {
+                            "attribute": ""
+                        },
+                        "dataGridLabel": false,
+                        "labelPosition": "top",
+                        "showCharCount": false,
+                        "showWordCount": false,
+                        "calculateValue": "",
+                        "derivePostcode": "",
+                        "calculateServer": false,
+                        "isSensitiveData": false,
+                        "deriveStreetName": false,
+                        "deriveHouseNumber": "",
+                        "allowMultipleMasks": false,
+                        "customDefaultValue": "",
+                        "allowCalculateOverride": false
+                    }
+                ]
+            },
+            "login_required": true,
+            "is_reusable": false
+        }
+    },
+    {
+        "model": "forms.formstep",
+        "pk": 1,
+        "fields": {
+            "order": 0,
+            "uuid": "1c8ef0a8-2353-4e86-828b-5c02d7766d13",
+            "form": 1,
+            "form_definition": 1,
+            "optional": false,
+            "previous_text": "",
+            "save_text": "",
+            "next_text": ""
+        }
+    },
+    {
+        "model": "forms.formversion",
+        "pk": 1,
+        "fields": {
+            "uuid": "9e9c73d1-a6bb-47c0-8bb2-c1b4081158d1",
+            "created": "2022-02-04T13:59:12.475Z",
+            "form": 1,
+            "export_blob": {
+                "forms": "[{\"uuid\": \"3ea9541f-f863-445d-ba89-a0d089578c3b\", \"name\": \"Digid via OIDC\", \"internal_name\": \"\", \"login_required\": true, \"registration_backend\": \"\", \"registration_backend_options\": {}, \"authentication_backends\": [\"digid_oidc\"], \"payment_required\": false, \"payment_backend\": \"\", \"payment_backend_options\": {}, \"literals\": {\"previous_text\": {\"resolved\": \"Vorige stap\", \"value\": \"\"}, \"begin_text\": {\"resolved\": \"Formulier starten\", \"value\": \"\"}, \"change_text\": {\"resolved\": \"Wijzigen\", \"value\": \"\"}, \"confirm_text\": {\"resolved\": \"Verzenden\", \"value\": \"\"}}, \"product\": null, \"slug\": \"digid-oidc\", \"url\": \"http://testserver/api/v1/forms/3ea9541f-f863-445d-ba89-a0d089578c3b\", \"steps\": [{\"uuid\": \"1c8ef0a8-2353-4e86-828b-5c02d7766d13\", \"slug\": \"oidc-step1\", \"form_definition\": \"Stap 1\", \"index\": 0, \"literals\": {\"previous_text\": {\"resolved\": \"Vorige stap\", \"value\": \"\"}, \"save_text\": {\"resolved\": \"Tussentijds opslaan\", \"value\": \"\"}, \"next_text\": {\"resolved\": \"Volgende\", \"value\": \"\"}}, \"url\": \"http://testserver/api/v1/forms/3ea9541f-f863-445d-ba89-a0d089578c3b/steps/1c8ef0a8-2353-4e86-828b-5c02d7766d13\"}], \"show_progress_indicator\": true, \"maintenance_mode\": false, \"active\": true, \"is_deleted\": false, \"submission_confirmation_template\": \"\", \"explanation_template\": \"\", \"submission_allowed\": \"yes\", \"submissions_removal_options\": {\"successful_submissions_removal_limit\": null, \"successful_submissions_removal_method\": \"\", \"incomplete_submissions_removal_limit\": null, \"incomplete_submissions_removal_method\": \"\", \"errored_submissions_removal_limit\": null, \"errored_submissions_removal_method\": \"\", \"all_submissions_removal_limit\": null}, \"confirmation_email_template\": {\"subject\": \"\", \"content\": \"\"}, \"confirmation_email_option\": \"global_email\"}]",
+                "formLogic": "[]",
+                "formSteps": "[{\"uuid\": \"1c8ef0a8-2353-4e86-828b-5c02d7766d13\", \"index\": 0, \"slug\": \"oidc-step1\", \"configuration\": {\"display\": \"form\", \"components\": [{\"id\": \"eki8hix\", \"key\": \"textField\", \"mask\": false, \"type\": \"textfield\", \"input\": true, \"label\": \"Text Field\", \"hidden\": false, \"prefix\": \"\", \"suffix\": \"\", \"unique\": false, \"widget\": {\"type\": \"input\"}, \"dbIndex\": false, \"overlay\": {\"top\": \"\", \"left\": \"\", \"style\": \"\", \"width\": \"\", \"height\": \"\"}, \"prefill\": {\"plugin\": \"\", \"attribute\": \"\"}, \"tooltip\": \"\", \"disabled\": false, \"multiple\": false, \"redrawOn\": \"\", \"tabindex\": \"\", \"validate\": {\"custom\": \"\", \"unique\": false, \"pattern\": \"\", \"plugins\": [], \"multiple\": false, \"required\": false, \"maxLength\": \"\", \"minLength\": \"\", \"customPrivate\": false, \"strictDateValidation\": false}, \"autofocus\": false, \"encrypted\": false, \"hideLabel\": false, \"inputMask\": \"\", \"inputType\": \"text\", \"modalEdit\": false, \"protected\": false, \"refreshOn\": \"\", \"tableView\": true, \"attributes\": {}, \"deriveCity\": false, \"errorLabel\": \"\", \"persistent\": true, \"properties\": {}, \"spellcheck\": true, \"validateOn\": \"change\", \"clearOnHide\": true, \"conditional\": {\"eq\": \"\", \"show\": null, \"when\": null}, \"customClass\": \"\", \"description\": \"\", \"inputFormat\": \"plain\", \"placeholder\": \"\", \"showInEmail\": false, \"defaultValue\": null, \"registration\": {\"attribute\": \"\"}, \"dataGridLabel\": false, \"labelPosition\": \"top\", \"showCharCount\": false, \"showWordCount\": false, \"calculateValue\": \"\", \"derivePostcode\": \"\", \"calculateServer\": false, \"isSensitiveData\": false, \"deriveStreetName\": false, \"deriveHouseNumber\": \"\", \"allowMultipleMasks\": false, \"customDefaultValue\": \"\", \"allowCalculateOverride\": false}]}, \"form_definition\": \"http://testserver/api/v1/form-definitions/5f28e130-e5c3-4a3a-abe3-2f51e88b8e2a\", \"name\": \"Stap 1\", \"internal_name\": \"\", \"url\": \"http://testserver/api/v1/forms/3ea9541f-f863-445d-ba89-a0d089578c3b/steps/1c8ef0a8-2353-4e86-828b-5c02d7766d13\", \"login_required\": true, \"is_reusable\": false, \"literals\": {\"previous_text\": {\"resolved\": \"Vorige stap\", \"value\": \"\"}, \"save_text\": {\"resolved\": \"Tussentijds opslaan\", \"value\": \"\"}, \"next_text\": {\"resolved\": \"Volgende\", \"value\": \"\"}}}]",
+                "formDefinitions": "[{\"url\": \"http://testserver/api/v1/form-definitions/5f28e130-e5c3-4a3a-abe3-2f51e88b8e2a\", \"uuid\": \"5f28e130-e5c3-4a3a-abe3-2f51e88b8e2a\", \"name\": \"Stap 1\", \"internal_name\": \"\", \"slug\": \"oidc-step1\", \"configuration\": {\"display\": \"form\", \"components\": [{\"id\": \"eki8hix\", \"key\": \"textField\", \"mask\": false, \"type\": \"textfield\", \"input\": true, \"label\": \"Text Field\", \"hidden\": false, \"prefix\": \"\", \"suffix\": \"\", \"unique\": false, \"widget\": {\"type\": \"input\"}, \"dbIndex\": false, \"overlay\": {\"top\": \"\", \"left\": \"\", \"style\": \"\", \"width\": \"\", \"height\": \"\"}, \"prefill\": {\"plugin\": \"\", \"attribute\": \"\"}, \"tooltip\": \"\", \"disabled\": false, \"multiple\": false, \"redrawOn\": \"\", \"tabindex\": \"\", \"validate\": {\"custom\": \"\", \"unique\": false, \"pattern\": \"\", \"plugins\": [], \"multiple\": false, \"required\": false, \"maxLength\": \"\", \"minLength\": \"\", \"customPrivate\": false, \"strictDateValidation\": false}, \"autofocus\": false, \"encrypted\": false, \"hideLabel\": false, \"inputMask\": \"\", \"inputType\": \"text\", \"modalEdit\": false, \"protected\": false, \"refreshOn\": \"\", \"tableView\": true, \"attributes\": {}, \"deriveCity\": false, \"errorLabel\": \"\", \"persistent\": true, \"properties\": {}, \"spellcheck\": true, \"validateOn\": \"change\", \"clearOnHide\": true, \"conditional\": {\"eq\": \"\", \"show\": null, \"when\": null}, \"customClass\": \"\", \"description\": \"\", \"inputFormat\": \"plain\", \"placeholder\": \"\", \"showInEmail\": false, \"defaultValue\": null, \"registration\": {\"attribute\": \"\"}, \"dataGridLabel\": false, \"labelPosition\": \"top\", \"showCharCount\": false, \"showWordCount\": false, \"calculateValue\": \"\", \"derivePostcode\": \"\", \"calculateServer\": false, \"isSensitiveData\": false, \"deriveStreetName\": false, \"deriveHouseNumber\": \"\", \"allowMultipleMasks\": false, \"customDefaultValue\": \"\", \"allowCalculateOverride\": false}]}, \"login_required\": true, \"is_reusable\": false}]"
+            }
+        }
+    }
+]
