@@ -17,6 +17,7 @@ from openforms.logging.logevent import (
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
 
+from ..utils.admin import ReadOnlyAdminMixin
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
 from .models import (
@@ -320,7 +321,7 @@ class TemporaryFileUploadMediaView(PrivateMediaView):
 
 
 @admin.register(TemporaryFileUpload)
-class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
+class TemporaryFileUploadAdmin(ReadOnlyAdminMixin, PrivateMediaMixin, admin.ModelAdmin):
     list_display = (
         "uuid",
         "file_name",
@@ -341,7 +342,10 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
     readonly_fields = (
         "uuid",
         "created_on",
+        "file_name",
+        "content_type",
         "file_size",
+        "content",
     )
     date_hierarchy = "created_on"
 
@@ -352,9 +356,6 @@ class TemporaryFileUploadAdmin(PrivateMediaMixin, admin.ModelAdmin):
         return filesizeformat(obj.content.size)
 
     file_size.short_description = _("File size")
-
-    def has_add_permission(self, request, obj=None):
-        return False
 
 
 class SubmissionFileAttachmentMediaView(PrivateMediaView):
