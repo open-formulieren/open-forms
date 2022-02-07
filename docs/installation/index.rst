@@ -25,6 +25,7 @@ and expertise.
    docker_compose
    ansible
    config
+   file_uploads
    self_signed
    form_hosting
    issues/index

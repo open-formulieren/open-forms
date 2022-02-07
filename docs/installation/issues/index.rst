@@ -8,3 +8,4 @@ Common issues
    :caption: Further reading
 
    auth
+   http

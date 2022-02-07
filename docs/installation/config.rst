@@ -199,6 +199,9 @@ The following settings allow you to tweak the parameters of this mechanism.
 Other settings
 --------------
 
+* ``MAX_FILE_UPLOAD_SIZE``: configure the maximum allowed file upload size. See
+  :ref:`installation_file_uploads` for more details. The default is ``50M``.
+
 * ``DEBUG``: Used for more traceback information on development environment.
   Various other security settings are derived from this setting! Defaults to
   ``True`` for the ``dev`` environment, otherwise defaults to ``False``.
