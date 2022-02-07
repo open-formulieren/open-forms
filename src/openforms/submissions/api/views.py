@@ -1,6 +1,7 @@
 import os
 
 from django.conf import settings
+from django.template.defaultfilters import filesizeformat
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -66,8 +67,14 @@ class DownloadSubmissionReportView(GenericAPIView):
         "The uploads are stored temporarily and have to be claimed by the form submission "
         "using the returned JSON data. \n\n"
         "Access to this view requires an active form submission. "
-        "Unclaimed temporary files automatically expire after {expire_days} day(s). "
-    ).format(expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS),
+        "Unclaimed temporary files automatically expire after {expire_days} day(s). \n\n"
+        "The maximum upload size for this instance is `{max_upload_size}`. Note that "
+        "this includes the multipart metadata and boundaries, so the actual maximum "
+        "file upload size is slightly smaller."
+    ).format(
+        expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS,
+        max_upload_size=filesizeformat(settings.MAX_FILE_UPLOAD_SIZE),
+    ),
 )
 class TemporaryFileUploadView(GenericAPIView):
     parser_classes = [MaxFilesizeMultiPartParser]
