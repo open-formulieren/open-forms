@@ -12,5 +12,5 @@ Payment order ID: {{payment_order_id}}
 Submission details for {{form_name}} (submitted on {{datetime}})
 {% endblocktrans %}
 {% endif %}
-{% for key, value in submitted_data.items %}
+{% for key, value in submitted_data %}
 - {{ key }}: {% display_value value %}{% endfor %}{% endautoescape %}

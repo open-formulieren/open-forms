@@ -45,7 +45,7 @@
     <h2>{% trans "Form data" %}</h2>
 
     <table class="table">
-        {% for key, value in submission_data.items %}
+        {% for key, value in submission_data %}
             <tr>
                 <td class="table-cell-key">{{ key }}</td>
                 <td>{% display_value value %}</td>
