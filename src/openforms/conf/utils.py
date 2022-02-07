@@ -3,16 +3,25 @@ import re
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
 
-FILE_SIZE_CONVERSIONS = {
+S_NGINX = {
     "KiB": lambda val: val << 10,
     "MiB": lambda val: val << 20,
     "KB": lambda val: val * 1_000,
     "MB": lambda val: val * 1_000_000,
 }
-FILE_SIZE_CONVERSIONS["k"] = FILE_SIZE_CONVERSIONS["KiB"]
-FILE_SIZE_CONVERSIONS["K"] = FILE_SIZE_CONVERSIONS["KiB"]
-FILE_SIZE_CONVERSIONS["m"] = FILE_SIZE_CONVERSIONS["MiB"]
-FILE_SIZE_CONVERSIONS["M"] = FILE_SIZE_CONVERSIONS["MiB"]
+S_NGINX["k"] = S_NGINX["KiB"]
+S_NGINX["K"] = S_NGINX["KiB"]
+S_NGINX["m"] = S_NGINX["MiB"]
+S_NGINX["M"] = S_NGINX["MiB"]
+
+S_BINARY = {
+    "B": lambda val: val,
+    "KB": lambda val: val << 10,
+    "MB": lambda val: val << 20,
+    "GB": lambda val: val << 30,
+}
+for key, value in list(S_BINARY.items()):
+    S_BINARY[key.lower()] = value
 
 
 class Filesize:
@@ -25,6 +34,12 @@ class Filesize:
     """
 
     PATTERN = re.compile(r"^(?P<numbers>[0-9]+)(?P<unit>[a-zA-Z]+)?$")
+
+    S_NGINX = S_NGINX
+    S_BINARY = S_BINARY
+
+    def __init__(self, system=None):
+        self.system = system or self.S_NGINX
 
     def __call__(self, value) -> int:
         if isinstance(value, int):
@@ -40,7 +55,7 @@ class Filesize:
         if unit is None:
             return numbers
 
-        if not (converter := FILE_SIZE_CONVERSIONS.get(unit)):
+        if not (converter := self.system.get(unit)):
             raise ValueError(f"Unknown/unsupported unit: '{unit}'")
 
         return converter(numbers)
