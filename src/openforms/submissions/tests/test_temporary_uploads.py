@@ -136,6 +136,31 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, 413)
 
+    @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
+    def test_spoof_upload_size_dos_vector(self):
+        """
+        Test that spoofing the upload size does not lead to denial-of-service attack
+        vectors.
+
+        Django itself limits the request body stream in WSGIRequest initialization
+        based on the CONTENT_LENGTH header, see
+        django.core.handlers.wsgi.WSGIRequest.__init__
+        """
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:submissions:temporary-file-upload")
+        file = SimpleUploadedFile("my-file.txt", b"a" * 11, content_type="text/plain")
+
+        response = self.client.post(
+            url,
+            {"file": file},
+            format="multipart",
+            CONTENT_LENGTH="5",
+        )
+
+        # the limited stream causes no file to be present (can't be properly parsed)
+        self.assertTrue(400 <= response.status_code < 500)
+
     def test_delete_view_requires_registered_uploads(self):
         upload = TemporaryFileUploadFactory.create()
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
