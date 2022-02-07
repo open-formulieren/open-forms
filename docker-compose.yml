@@ -52,6 +52,7 @@ services:
       # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
+      - CSP_REPORT_ONLY=yes
     volumes:
       - private_media:/app/private-media
     ports:
