@@ -567,8 +567,8 @@ class Submission(models.Model):
         self,
         limit_keys_to: Optional[List[str]] = None,
         use_merged_data_fallback=False,
-    ) -> Dict[str, str]:
-        printable_data = OrderedDict()
+    ) -> List[Tuple[str, str]]:
+        printable_data = []
         attachment_data = self.get_merged_attachments()
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
@@ -579,7 +579,7 @@ class Submission(models.Model):
             if GlobalConfiguration.get_solo().enable_formio_formatters:
                 info, value = info
                 label = info["label"]
-                printable_data[label] = format_value(info, value)
+                printable_data.append((label, format_value(info, value)))
             else:
                 warnings.warn(
                     "Formatting without using the formio formatters registry is deprecated. "
@@ -592,19 +592,19 @@ class Submission(models.Model):
                 if info["type"] == "file":
                     files = attachment_data.get(key)
                     if files:
-                        printable_data[label] = _("attachment: %s") % (
+                        value = _("attachment: %s") % (
                             ", ".join(file.get_display_name() for file in files)
                         )
                     # FIXME: ugly workaround to patch the demo, this should be fixed properly
                     elif use_merged_data_fallback:
-                        printable_data[label] = merged_data.get(key)
+                        value = merged_data.get(key)
                     else:
-                        printable_data[label] = _("empty")
+                        value = _("empty")
 
                 elif info["type"] == "date" or (
                     info.get("appointments", {}).get("showDates", False)
                 ):
-                    printable_data[label] = _join_mapped(
+                    value = _join_mapped(
                         lambda v: fmt_date(parse_date(v)), info["value"]
                     )
 
@@ -617,7 +617,7 @@ class Submission(models.Model):
                         datetime.fromisoformat if appointment_time else parse_time
                     )
                     # strip off the seconds
-                    printable_data[label] = _join_mapped(
+                    value = _join_mapped(
                         lambda v: fmt_time(_parse_time(v)), info["value"]
                     )
 
@@ -628,21 +628,19 @@ class Submission(models.Model):
                         for entry in info["values"]
                         if selected_values.get(entry["value"])
                     ]
-                    printable_data[label] = ", ".join(selected_labels)
+                    value = ", ".join(selected_labels)
 
                 elif info["type"] == "number" or info["type"] == "currency":
                     if multiple:
-                        printable_data[label] = _join_mapped(
-                            lambda v: localize(v), info["value"]
-                        )
+                        value = _join_mapped(lambda v: localize(v), info["value"])
                     else:
-                        printable_data[label] = localize(info["value"])
+                        value = localize(info["value"])
                 elif info["type"] == "checkbox":
-                    printable_data[label] = yesno(info["value"])
+                    value = yesno(info["value"])
                 elif type(info["value"]) is dict:
                     printable_value = info["value"]
                     if "name" in printable_value:
-                        printable_data[label] = printable_value["name"]
+                        value = printable_value["name"]
                     else:
                         printable_value = list(printable_value.values())[0]
                         logger.warning(
@@ -651,7 +649,7 @@ class Submission(models.Model):
                             info["value"],
                             printable_value,
                         )
-                        printable_data[label] = printable_value["name"]
+                        value = printable_value["name"]
                 else:
                     printable_value = info["value"]
                     if values := info.get("values"):
@@ -668,13 +666,14 @@ class Submission(models.Model):
                         )
 
                     # more here? like getComponentValue() in the SDK?
-                    printable_data[label] = printable_value
+                    value = printable_value
 
+                printable_data.append((label, value))
         # finally, check if we have co-sign information to append
         if self.co_sign_data:
             if not (co_signer := self.co_sign_data.get("representation", "")):
                 logger.warning("Incomplete co-sign data for submission %s", self.uuid)
-            printable_data[gettext("Co-signed by")] = co_signer
+            printable_data.append((gettext("Co-signed by"), co_signer))
 
         return printable_data
 

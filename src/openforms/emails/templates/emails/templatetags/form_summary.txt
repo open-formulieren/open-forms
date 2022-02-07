@@ -1,4 +1,4 @@
 {% load i18n %}{% autoescape off %}{% if submitted_data %}{% trans "Summary" %}
 
-{% for key, value in submitted_data.items %}
+{% for key, value in submitted_data %}
 - {{ key }}: {% display_value value %}{% endfor %}{% endif %}{% endautoescape %}

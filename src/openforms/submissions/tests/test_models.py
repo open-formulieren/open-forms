@@ -269,8 +269,12 @@ class SubmissionTests(TestCase):
         printable_data = submission.get_printable_data()
 
         self.assertEqual(
-            printable_data["My Boxes"],
+            "My Boxes",
+            printable_data[0][0],
+        )
+        self.assertEqual(
             "test 1, test 2",
+            printable_data[0][1],
         )
 
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
@@ -324,8 +328,12 @@ class SubmissionTests(TestCase):
         printable_data = submission.get_printable_data()
 
         self.assertEqual(
-            printable_data["My Boxes"],
+            "My Boxes",
+            printable_data[0][0],
+        )
+        self.assertEqual(
             "test 1, test 2",
+            printable_data[0][1],
         )
 
     def test_submission_remove_sensitive_data(self):
