@@ -9,8 +9,11 @@ from PIL import Image, UnidentifiedImageError
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.forms.tests.factories import FormStepFactory
-from openforms.submissions.attachments import (
+from openforms.tests.utils import disable_2fa
+
+from ..attachments import (
     append_file_num_postfix,
     attach_uploads_to_submission_step,
     clean_mime_type,
@@ -18,13 +21,13 @@ from openforms.submissions.attachments import (
     resize_attachment,
     resolve_uploads_from_data,
 )
-from openforms.submissions.models import SubmissionFileAttachment
-from openforms.submissions.tests.factories import (
+from ..models import SubmissionFileAttachment
+from .factories import (
+    SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
     TemporaryFileUploadFactory,
 )
-from openforms.tests.utils import disable_2fa
 
 
 @temp_private_root()
@@ -276,6 +279,57 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.form_key, "my_file")
         self.assertEqual(attachment.original_name, "my-image.png")
         self.assertImageSize(attachment.content, 100, 100, "png")
+
+    def test_attach_upload_larger_than_configured_max_size_raises_413(self):
+        """
+        Continuing with too-large fields must raise a HTTP 413.
+
+        Formio validates client-side that the files are not too big. Thus, anyone
+        continuing with uploads that are too large for the field are most likely using
+        Postman/curl/... We are protecting against client-side validation bypasses here
+        by validating the upload sizes when the temporary uploads are connect to the
+        respective Formio component.
+        """
+        components = [
+            {
+                "key": "my_file",
+                "type": "file",
+                "fileMaxSize": "10B",
+            },
+        ]
+        upload = TemporaryFileUploadFactory.create(
+            file_name="aaa.txt", content__data=b"a" * 20, file_size=20
+        )
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "aaa.txt",
+                        "size": 20,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "aaa-12305610-2da4-4694-a341-ccb919c3d543.txt",
+                    "size": 20,
+                    "type": "text/plain",
+                    "storage": "url",
+                    "originalName": "aaa.txt",
+                }
+            ],
+        }
+        submission = SubmissionFactory.from_components(
+            completed=False,
+            with_report=False,
+            components_list=components,
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        with self.assertRaises(RequestEntityTooLarge):
+            attach_uploads_to_submission_step(submission_step)
 
     @disable_2fa
     def test_attachment_retrieve_view_requires_permission(self):

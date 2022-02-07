@@ -11,6 +11,7 @@ import PIL
 from glom import glom
 from PIL import Image
 
+from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
