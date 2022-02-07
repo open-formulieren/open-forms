@@ -9,7 +9,7 @@ import sentry_sdk
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 
-from .utils import config, get_sentry_integrations
+from .utils import Filesize, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root.
@@ -497,6 +497,8 @@ TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
 # a custom default timeout for the requests library, added via monkeypatch in
 # :mod:`openforms.setup`. Value is in seconds.
 DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
+
+MAX_FILE_UPLOAD_SIZE = config("MAX_FILE_UPLOAD_SIZE", default="50M", cast=Filesize())
 
 ##############################
 #                            #
