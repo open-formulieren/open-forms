@@ -3,16 +3,25 @@ import re
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
 
-S_NGINX = {
-    "KiB": lambda val: val << 10,
-    "MiB": lambda val: val << 20,
+S_SI = {
+    "B": lambda val: val,
     "KB": lambda val: val * 1_000,
     "MB": lambda val: val * 1_000_000,
+    "GB": lambda val: val * 1_000_000_000,
+    "KiB": lambda val: val << 10,
+    "MiB": lambda val: val << 20,
+    "GiB": lambda val: val << 30,
 }
-S_NGINX["k"] = S_NGINX["KiB"]
-S_NGINX["K"] = S_NGINX["KiB"]
-S_NGINX["m"] = S_NGINX["MiB"]
-S_NGINX["M"] = S_NGINX["MiB"]
+S_SI["b"] = S_SI["B"]
+
+S_NGINX = {
+    "k": S_SI["KiB"],
+    "K": S_SI["KiB"],
+    "m": S_SI["MiB"],
+    "M": S_SI["MiB"],
+    "g": S_SI["GiB"],
+    "G": S_SI["GiB"],
+}
 
 S_BINARY = {
     "B": lambda val: val,
@@ -35,11 +44,12 @@ class Filesize:
 
     PATTERN = re.compile(r"^(?P<numbers>[0-9]+)(?P<unit>[a-zA-Z]+)?$")
 
+    S_SI = S_SI
     S_NGINX = S_NGINX
     S_BINARY = S_BINARY
 
     def __init__(self, system=None):
-        self.system = system or self.S_NGINX
+        self.system = system or {**self.S_SI, **self.S_NGINX}
 
     def __call__(self, value) -> int:
         if isinstance(value, int):
