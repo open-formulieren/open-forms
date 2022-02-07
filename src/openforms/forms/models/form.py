@@ -316,7 +316,7 @@ class Form(models.Model):
 
     @transaction.atomic
     def copy(self):
-        form_steps = self.formstep_set.all()
+        form_steps = self.formstep_set.all().select_related("form_definition")
 
         copy = deepcopy(self)
         copy.pk = None
@@ -335,6 +335,14 @@ class Form(models.Model):
             form_step.pk = None
             form_step.uuid = _uuid.uuid4()
             form_step.form = copy
+
+            if not form_step.form_definition.is_reusable:
+                copy_form_definition = deepcopy(form_step.form_definition)
+                copy_form_definition.pk = None
+                copy_form_definition.uuid = _uuid.uuid4()
+                copy_form_definition.save()
+                form_step.form_definition = copy_form_definition
+
             form_step.save()
 
         return copy
