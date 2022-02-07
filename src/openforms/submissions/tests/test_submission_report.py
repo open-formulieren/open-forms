@@ -247,17 +247,11 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test currency", "1,23"),
             ("Test checkbox", "ja"),
         ]
-        for label, value in values:
-            with self.subTest(label):
-                self.assertIn(label, printable_data)
-                self.assertEqual(value, printable_data[label])
 
-        not_values = [
-            "Test date 0",
-        ]
-        for label in not_values:
-            with self.subTest(label):
-                self.assertNotIn(label, printable_data)
+        for expected, actual in zip(values, printable_data):
+            with self.subTest(expected[0]):
+                self.assertEqual(expected[0], actual[0])  # Labels
+                self.assertEqual(expected[1], actual[1])  # Values
 
     @override_settings(LANGUAGE_CODE="nl")
     def test_submission_printable_data_with_repeating_labels(self):
