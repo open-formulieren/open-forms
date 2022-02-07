@@ -259,6 +259,56 @@ class DownloadSubmissionReportTests(APITestCase):
             with self.subTest(label):
                 self.assertNotIn(label, printable_data)
 
+    @override_settings(LANGUAGE_CODE="nl")
+    def test_submission_printable_data_with_repeating_labels(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "radio1",
+                        "type": "radio",
+                        "label": "Test Equal label",
+                        "values": [
+                            {"label": "Test Option 1", "value": "testOption1"},
+                            {"label": "Test Option 2", "value": "testOption2"},
+                        ],
+                    },
+                    {
+                        "key": "radio2",
+                        "type": "radio",
+                        "label": "Test Equal label",
+                        "values": [
+                            {"label": "Test Option 1", "value": "testOption1"},
+                            {"label": "Test Option 2", "value": "testOption2"},
+                        ],
+                    },
+                ]
+            }
+        )
+        form_step = FormStepFactory.create(form_definition=form_def, form=form)
+        submission = SubmissionFactory.create(completed=True, form=form)
+        SubmissionStepFactory.create(
+            data={
+                "radio1": "testOption1",
+                "radio2": "testOption2",
+            },
+            submission=submission,
+            form_step=form_step,
+        )
+
+        printable_data = submission.get_printable_data()
+
+        values = [
+            ("Test Equal label", "Test Option 1"),
+            ("Test Equal label", "Test Option 2"),
+        ]
+
+        for expected, actual in zip(values, printable_data):
+            with self.subTest(expected[0]):
+                self.assertEqual(expected[0], actual[0])  # Labels
+                self.assertEqual(expected[1], actual[1])  # Values
+
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
     )
