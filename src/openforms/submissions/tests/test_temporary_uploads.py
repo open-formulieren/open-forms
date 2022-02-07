@@ -117,6 +117,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(upload.file_name, "my-file.txt")
         self.assertEqual(upload.content_type, "text/bar")
         self.assertEqual(upload.content.read(), b"my content")
+        self.assertEqual(upload.file_size, 10)
 
         # added to session
         self.assertEqual([str(upload.uuid)], self.client.session[UPLOADS_SESSION_KEY])

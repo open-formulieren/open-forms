@@ -97,6 +97,7 @@ class TemporaryFileUploadView(GenericAPIView):
             content=file,
             file_name=name,
             content_type=clean_mime_type(file.content_type),
+            file_size=file.size,
         )
         add_upload_to_session(upload, self.request.session)
 
