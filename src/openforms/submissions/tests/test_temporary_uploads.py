@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
@@ -120,6 +120,21 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # added to session
         self.assertEqual([str(upload.uuid)], self.client.session[UPLOADS_SESSION_KEY])
+
+    @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
+    def test_upload_too_large(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:submissions:temporary-file-upload")
+        file = SimpleUploadedFile("my-file.txt", b"a" * 11, content_type="text/plain")
+
+        response = self.client.post(
+            url,
+            {"file": file},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, 413)
 
     def test_delete_view_requires_registered_uploads(self):
         upload = TemporaryFileUploadFactory.create()

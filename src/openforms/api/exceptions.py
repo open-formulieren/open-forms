@@ -20,3 +20,9 @@ class PreconditionFailed(APIException):
     status_code = status.HTTP_412_PRECONDITION_FAILED
     default_detail = _("Precondition failed")
     default_code = "precondition_failed"
+
+
+class RequestEntityTooLarge(APIException):
+    status_code = 413  # does not exist in rest_framework.status
+    default_detail = _("Request entity too large")
+    default_code = "request_entity_too_large"

@@ -7,8 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import DestroyAPIView, GenericAPIView
-from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+
+from openforms.api.parsers import MaxFilesizeMultiPartParser
 
 from ..attachments import clean_mime_type
 from ..models import SubmissionReport, TemporaryFileUpload
@@ -69,7 +70,7 @@ class DownloadSubmissionReportView(GenericAPIView):
     ).format(expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS),
 )
 class TemporaryFileUploadView(GenericAPIView):
-    parser_classes = [MultiPartParser]
+    parser_classes = [MaxFilesizeMultiPartParser]
     serializer_class = TemporaryFileUploadSerializer
     authentication_classes = []
     permission_classes = [AnyActiveSubmissionPermission]
