@@ -306,7 +306,7 @@ class FormAdminCopyTests(TestCase):
         form = FormFactory.create(
             authentication_backends=["digid"], internal_name="internal"
         )
-        form_step = FormStepFactory.create(form=form)
+        form_step = FormStepFactory.create(form=form, form_definition__is_reusable=True)
         admin_url = reverse("admin:forms_form_change", args=(form.pk,))
 
         # React UI renders this input, so simulate it in a raw POST call
