@@ -15,6 +15,11 @@
     <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
 {% endblock %}
 
+{% block extrahead %}
+    {{ block.super }}
+    {{ settings.MAX_FILE_UPLOAD_SIZE|json_script:'setting-MAX_FILE_UPLOAD_SIZE' }}
+{% endblock extrahead %}
+
 {% block branding %}
     <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans 'Administration' %}</a></h1>
 {% endblock %}
