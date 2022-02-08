@@ -2,14 +2,18 @@ import logging
 import uuid
 
 from django.core.exceptions import PermissionDenied
+from django.utils.crypto import constant_time_compare
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 
 from furl import furl
+from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 
-from .models import Submission
+from .constants import RegistrationStatuses
+from .models import Submission, SubmissionFileAttachment
 from .tokens import submission_resume_token_generator
 from .utils import add_submmission_to_session
 
@@ -116,3 +120,63 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
         # Add the submission uuid to the query param
         form_resume_url.add({"submission_uuid": submission.uuid})
         return form_resume_url.url
+
+
+class SubmissionAttachmentDownloadView(PrivateMediaView):
+    # only consider finished submissions (those are eligible for further processing)
+    # and submissions that have been successfully registered with the registration
+    # backend
+    queryset = SubmissionFileAttachment.objects.filter(
+        submission_step__submission__completed_on__isnull=False,
+        submission_step__submission__registration_status=RegistrationStatuses.success,
+    )
+    # expose UUIDs in URLs instead of enumeration-attack susceptible PKs
+    slug_field = "uuid"
+    slug_url_kwarg = "uuid"
+    file_field = "content"
+
+    def has_permission(self):
+        """
+        Anonymous users have permission, we validate the content hash on the object.
+
+        TODO: double check
+        """
+        return True
+
+    def get_object(self, queryset=None):
+        assert queryset is None, "Code path with explicit queryset not supported"
+
+        # check that a hash parameter is present on the request
+        content_hash = self.request.GET.get("hash")
+        if not content_hash:
+            logger.warning(
+                "Unauthorized file download attempted (missing content hash). Path: %s, user: %r",
+                self.request.path,
+                self.request.user,
+            )
+            raise PermissionDenied(_("File access denied."))
+
+        # cache the object for future lookups
+        if not hasattr(self, "_object"):
+            obj = super().get_object(queryset=queryset)
+
+            if not constant_time_compare(obj.content_hash, content_hash):
+                logger.warning(
+                    "Unauthorized file download attempted (invalid content hash). Path: %s, user: %r",
+                    self.request.path,
+                    self.request.user,
+                )
+                raise PermissionDenied(_("File access denied."))
+
+            self._object = obj
+
+        return self._object
+
+    def get_sendfile_opts(self) -> dict:
+        submission_attachment = self.get_object()
+        opts = {
+            "attachment": True,
+            "attachment_filename": submission_attachment.file_name,
+            "mime_type": submission_attachment.content_type,
+        }
+        return opts
