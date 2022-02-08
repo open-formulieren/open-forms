@@ -815,30 +815,22 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 # DIGID
 #
 
-DIGID_METADATA = config("DIGID_METADATA", "")
-SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
-SSL_KEY_PATH = config("SSL_KEY_PATH", "")
 BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
-DIGID_SERVICE_ENTITY_ID = config(
-    "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
-)
-DIGID_SERVICE_NAME_NL = config("DIGID_SERVICE_NAME_NL", "")
-DIGID_SERVICE_NAME_EN = config("DIGID_SERVICE_NAME_EN", "")
+SSL_KEY_PATH = config("SSL_KEY_PATH", "")
+SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
 
 DIGID = {
     "base_url": BASE_URL,
     "entity_id": BASE_URL,
     # This is the metadata of the **Identity provider** NOT our own!
-    "metadata_file": DIGID_METADATA,
+    "metadata_file": config("DIGID_METADATA", ""),
     # SSL/TLS key
-    "key_file": SSL_KEY_PATH,
-    "cert_file": SSL_CERTIFICATE_PATH,
-    "service_entity_id": DIGID_SERVICE_ENTITY_ID,
+    "key_file": config("SSL_KEY_PATH", ""),
+    "cert_file": config("SSL_CERTIFICATE_PATH", ""),
+    "service_entity_id": config(
+        "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
+    ),
     "attribute_consuming_service_index": "1",
-    "service_name": {
-        "nl": DIGID_SERVICE_NAME_NL,
-        "en": DIGID_SERVICE_NAME_EN,
-    },
     "requested_attributes": ["bsn"],
     # Logius can sign the assertions (True) but others sign the entire response
     # (False).
@@ -846,56 +838,35 @@ DIGID = {
 }
 
 #
-# E-HERKENNING
+# E-HERKENNING / eIDAS
 #
 
-EHERKENNING_METADATA = config(
-    "EHERKENNING_METADATA",
-    "",
+EHERKENNING_METADATA = config("EHERKENNING_METADATA", "")
+EHERKENNING_SERVICE_ENTITY_ID = config("EHERKENNING_SERVICE_ENTITY_ID", "")
+EHERKENNING_ENTITY_ID = config("EHERKENNING_ENTITY_ID", "")
+EHERKENNING_LOA = config("EHERKENNING_LOA", "urn:etoegang:core:assurance-class:loa3")
+EHERKENNING_OIN = config("EHERKENNING_OIN", "")
+EHERKENNING_WANT_ASSERTIONS_SIGNED = config("EHERKENNING_WANT_ASSERTIONS_SIGNED", True)
+EHERKENNING_WANT_ASSERTIONS_ENCRYPTED = config(
+    "EHERKENNING_WANT_ASSERTIONS_ENCRYPTED", False
 )
-EHERKENNING_SERVICE_ENTITY_ID = config(
-    "EHERKENNING_SERVICE_ENTITY_ID",
-    "",
+EHERKENNING_SIGNATURE_ALGORITHM = config(
+    "EHERKENNING_SIGNATURE_ALGORITHM",
+    "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
 )
-EHERKENNING_ENTITY_ID = config(
-    "EHERKENNING_ENTITY_ID",
-    "",
-)
-EHERKENNING_LOA = config(
-    "EHERKENNING_LOA",
-    "urn:etoegang:core:assurance-class:loa3",
-)
-EHERKENNING_OIN = config(
-    "EHERKENNING_OIN",
-    "",
-)
-EHERKENNING_MAKELAAR_ID = config(
-    "EHERKENNING_MAKELAAR_ID",
-    "00000003520354760000",
-)
-PRIVACY_POLICY_URL = config(
-    "EHERKENNING_PRIVACY_POLICY",
-    "",
-)
-EHERKENNING_SERVICE_NAME_NL = config("EHERKENNING_SERVICE_NAME_NL", "")
-EHERKENNING_SERVICE_NAME_EN = config("EHERKENNING_SERVICE_NAME_EN", "")
-EHERKENNING_SERVICE_DESCRIPTION_NL = config("EHERKENNING_SERVICE_DESCRIPTION_NL", "")
-EHERKENNING_SERVICE_DESCRIPTION_EN = config("EHERKENNING_SERVICE_DESCRIPTION_EN", "")
-EHERKENNING_ORGANISATION_NAME_NL = config("EHERKENNING_ORGANISATION_NAME_NL", "")
-EHERKENNING_ORGANISATION_NAME_EN = config("EHERKENNING_ORGANISATION_NAME_EN", "")
+
 EHERKENNING_SERVICE_INDEX = config("EHERKENNING_SERVICE_INDEX", "1")
 EHERKENNING_SERVICE_UUID = config("EHERKENNING_SERVICE_UUID", "")
 EHERKENNING_SERVICE_INSTANCE_UUID = config("EHERKENNING_SERVICE_INSTANCE_UUID", "")
 
-EIDAS_SERVICE_NAME_NL = config("EIDAS_SERVICE_NAME_NL", "")
-EIDAS_SERVICE_NAME_EN = config("EIDAS_SERVICE_NAME_EN", "")
-EIDAS_SERVICE_DESCRIPTION_NL = config("EIDAS_SERVICE_DESCRIPTION_NL", "")
-EIDAS_SERVICE_DESCRIPTION_EN = config("EIDAS_SERVICE_DESCRIPTION_EN", "")
 EIDAS_SERVICE_INDEX = config("EIDAS_SERVICE_INDEX", "2")
 EIDAS_SERVICE_UUID = config("EIDAS_SERVICE_UUID", "")
 EIDAS_SERVICE_INSTANCE_UUID = config("EIDAS_SERVICE_INSTANCE_UUID", "")
 
 EHERKENNING = {
+    "want_assertions_signed": EHERKENNING_WANT_ASSERTIONS_SIGNED,
+    "want_assertions_encrypted": EHERKENNING_WANT_ASSERTIONS_ENCRYPTED,
+    "signature_algorithm": EHERKENNING_SIGNATURE_ALGORITHM,
     "metadata_file": EHERKENNING_METADATA,
     "key_file": SSL_KEY_PATH,
     "cert_file": SSL_CERTIFICATE_PATH,
@@ -903,23 +874,11 @@ EHERKENNING = {
     "service_entity_id": EHERKENNING_SERVICE_ENTITY_ID,
     "entity_id": EHERKENNING_ENTITY_ID,
     "oin": EHERKENNING_OIN,
-    "organisation_name": {
-        "nl": EHERKENNING_ORGANISATION_NAME_NL,
-        "en": EHERKENNING_ORGANISATION_NAME_EN,
-    },
     "services": [
         {
             "attribute_consuming_service_index": EHERKENNING_SERVICE_INDEX,
             "service_loa": EHERKENNING_LOA,
             "service_uuid": EHERKENNING_SERVICE_UUID,
-            "service_name": {
-                "nl": EHERKENNING_SERVICE_NAME_NL,
-                "en": EHERKENNING_SERVICE_NAME_EN,
-            },
-            "service_description": {
-                "nl": EHERKENNING_SERVICE_DESCRIPTION_NL,
-                "en": EHERKENNING_SERVICE_DESCRIPTION_EN,
-            },
             "service_instance_uuid": EHERKENNING_SERVICE_INSTANCE_UUID,
             "service_url": BASE_URL,
             # Either require and return RSIN and KVKNr (set 1) or require only KvKnr (set 2). The
@@ -929,38 +888,21 @@ EHERKENNING = {
                 {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
                 {"set_number": "2", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
             ],
-            "requested_attributes": [
-                "urn:etoegang:1.11:attribute-represented:KvKnr",
-            ],
-            "privacy_policy_url": {
-                "nl": PRIVACY_POLICY_URL,
-            },
-            "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
+            "requested_attributes": [],
+            "language": "nl",
         },
         {
             "attribute_consuming_service_index": EIDAS_SERVICE_INDEX,
             "service_loa": EHERKENNING_LOA,
             "service_uuid": EIDAS_SERVICE_UUID,
-            "service_name": {
-                "nl": EIDAS_SERVICE_NAME_NL,
-                "en": EIDAS_SERVICE_NAME_EN,
-            },
-            "service_description": {
-                "nl": EIDAS_SERVICE_DESCRIPTION_NL,
-                "en": EIDAS_SERVICE_DESCRIPTION_EN,
-            },
             "service_instance_uuid": EIDAS_SERVICE_INSTANCE_UUID,
             "service_url": BASE_URL,
             "entity_concerned_types_allowed": [
                 {"set_number": "1", "name": "urn:etoegang:1.9:EntityConcernedID:KvKnr"},
             ],
-            "requested_attributes": [
-                "urn:etoegang:1.11:attribute-represented:KvKnr",
-            ],
-            "privacy_policy_url": {
-                "nl": PRIVACY_POLICY_URL,
-            },
-            "herkenningsmakelaars_id": EHERKENNING_MAKELAAR_ID,
+            "requested_attributes": [],
+            "language": "nl",
+            "classifiers": ["eIDAS-inbound"],
         },
     ],
 }
