@@ -16,8 +16,17 @@ class UserFactory(factory.django.DjangoModelFactory):
         if extracted:
             for permission in extracted:
                 if isinstance(permission, str):
-                    # TODO support appname/model/action, for now lets assume we have unique codenames
-                    permission = Permission.objects.get(codename=permission)
+                    try:
+                        label, codename = permission.split(".")
+                    except ValueError:
+                        label = ""
+                        codename = permission
+
+                    filters = {"codename": codename}
+                    if label:
+                        filters["content_type__app_label"] = label
+
+                    permission = Permission.objects.get(**filters)
                 self.user_permissions.add(permission)
 
     class Meta:

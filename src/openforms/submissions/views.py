@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
@@ -122,7 +123,7 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
         return form_resume_url.url
 
 
-class SubmissionAttachmentDownloadView(PrivateMediaView):
+class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
     # only consider finished submissions (those are eligible for further processing)
     # and submissions that have been successfully registered with the registration
     # backend
@@ -134,14 +135,12 @@ class SubmissionAttachmentDownloadView(PrivateMediaView):
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
     file_field = "content"
+    permission_required = "submissions.view_submissionfileattachment"
 
     def has_permission(self):
-        """
-        Anonymous users have permission, we validate the content hash on the object.
-
-        TODO: double check
-        """
-        return True
+        if not self.request.user.is_staff:
+            return False
+        return super().has_permission()
 
     def get_object(self, queryset=None):
         assert queryset is None, "Code path with explicit queryset not supported"
@@ -177,6 +176,6 @@ class SubmissionAttachmentDownloadView(PrivateMediaView):
         opts = {
             "attachment": True,
             "attachment_filename": submission_attachment.file_name,
-            "mime_type": submission_attachment.content_type,
+            "mimetype": submission_attachment.content_type,
         }
         return opts
