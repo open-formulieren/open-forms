@@ -18,6 +18,7 @@ class FormFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Form
         rename = {"deleted_": "_is_deleted"}
+        django_get_or_create = ["slug"]
 
     class Params:
         generate_minimal_setup = factory.Trait(
@@ -37,6 +38,7 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FormDefinition
+        django_get_or_create = ["slug"]
 
     class Params:
         is_appointment = factory.Trait(

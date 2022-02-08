@@ -66,6 +66,7 @@ services:
     depends_on:
       - db
       - sdk
+      - redis
     networks:
       - open-forms-dev
 

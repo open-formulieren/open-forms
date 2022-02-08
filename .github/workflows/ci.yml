@@ -220,14 +220,31 @@ jobs:
         run: |
           docker image load -i image.tar
 
+      - name: Generate fixtures
+        run: |
+          bin/generate_cypress_fixtures.sh
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SECRET_KEY: dummy
+          DB_USER: postgres
+          DB_PASSWORD: ''
+
+      - name: Store generated fixture
+        uses: actions/upload-artifact@v2
+        with:
+          name: fixtures
+          path: /home/runner/work/open-forms/open-forms/cypress/data_fixtures/_build/
+          retention-days: 1
+
       - name: Start containers and load data
         run: |
           docker-compose up -d
-          sleep 30
+          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8000)" != "403" ]]; do
+              sleep 3;
+          done
           docker-compose logs
-          bin/load_ci_fixtures.sh open-forms_web_1
+          bin/load_cypress_fixtures.sh
         env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
