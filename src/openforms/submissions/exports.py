@@ -1,5 +1,4 @@
 import dataclasses
-import json
 
 from django.http import FileResponse, HttpResponse
 from django.utils.timezone import make_naive
