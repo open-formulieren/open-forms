@@ -1,4 +1,5 @@
 from django.conf import settings as django_settings
+from django.template.defaultfilters import filesizeformat
 
 
 def settings(request):
@@ -21,5 +22,9 @@ def settings(request):
 
     if hasattr(django_settings, "SENTRY_CONFIG"):
         context.update(dsn=django_settings.SENTRY_CONFIG.get("public_dsn", ""))
+
+    context["settings"]["MAX_FILE_UPLOAD_SIZE"] = filesizeformat(
+        django_settings.MAX_FILE_UPLOAD_SIZE
+    )
 
     return context

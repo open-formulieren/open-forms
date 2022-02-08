@@ -1,5 +1,74 @@
+import re
+
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
+
+S_SI = {
+    "B": lambda val: val,
+    "KB": lambda val: val * 1_000,
+    "MB": lambda val: val * 1_000_000,
+    "GB": lambda val: val * 1_000_000_000,
+    "KiB": lambda val: val << 10,
+    "MiB": lambda val: val << 20,
+    "GiB": lambda val: val << 30,
+}
+S_SI["b"] = S_SI["B"]
+
+S_NGINX = {
+    "k": S_SI["KiB"],
+    "K": S_SI["KiB"],
+    "m": S_SI["MiB"],
+    "M": S_SI["MiB"],
+    "g": S_SI["GiB"],
+    "G": S_SI["GiB"],
+}
+
+S_BINARY = {
+    "B": lambda val: val,
+    "KB": lambda val: val << 10,
+    "MB": lambda val: val << 20,
+    "GB": lambda val: val << 30,
+}
+for key, value in list(S_BINARY.items()):
+    S_BINARY[key.lower()] = value
+
+
+class Filesize:
+    """
+    Cast various filesize notations into an int of bytes.
+
+    Nginx measurement units: https://nginx.org/en/docs/syntax.html and parsing code:
+    https://hg.nginx.org/nginx/file/default/src/core/ngx_parse.c. Note that nginx uses
+    k/K for kibibytes and m/M for mebibytes (as opposed to kilobytes/megabytes).
+    """
+
+    PATTERN = re.compile(r"^(?P<numbers>[0-9]+)(?P<unit>[a-zA-Z]+)?$")
+
+    S_SI = S_SI
+    S_NGINX = S_NGINX
+    S_BINARY = S_BINARY
+
+    def __init__(self, system=None):
+        self.system = system or {**self.S_SI, **self.S_NGINX}
+
+    def __call__(self, value) -> int:
+        if isinstance(value, int):
+            return value
+
+        match = self.PATTERN.match(value)
+        if not match:
+            raise ValueError(
+                f"Value '{value}' does not match the pattern '<size><unit>' or '<size_in_bytes>'"
+            )
+
+        numbers, unit = int(match.group("numbers")), match.group("unit")
+        if unit is None:
+            return numbers
+
+        if not (converter := self.system.get(unit)):
+            raise ValueError(f"Unknown/unsupported unit: '{unit}'")
+
+        return converter(numbers)
 
 
 def config(option: str, default=undefined, *args, **kwargs):

@@ -92,6 +92,7 @@
   "File": "Bestand",
   "Specify template for name of uploaded file(s).": "Specifieer een template voor de naam van het/de ge\u00fcploade bestand(en).",
   "File Maximum Size": "Maximale bestandsgrootte",
+  "Note that the server upload limit is {{serverUploadLimit}}.": "Merk op dat de maximale uploadgrootte op de server {{serverUploadLimit}} is.",
   "Select": "Keuzelijst",
   "Display": "Weergave",
   "Conditional": "Conditie",

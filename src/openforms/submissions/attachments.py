@@ -4,13 +4,17 @@ from datetime import timedelta
 from typing import Iterable, Optional, Tuple
 from urllib.parse import urlparse
 
+from django.conf import settings
 from django.core.files.temp import NamedTemporaryFile
 from django.urls import Resolver404, resolve
+from django.utils.translation import gettext as _
 
 import PIL
 from glom import glom
 from PIL import Image
 
+from openforms.api.exceptions import RequestEntityTooLarge
+from openforms.conf.utils import Filesize
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -19,6 +23,10 @@ from openforms.submissions.models import (
 )
 
 DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
+
+# validate the size as Formio does (client-side) - meaning 1MB is actually 1MiB
+# https://github.com/formio/formio.js/blob/4.12.x/src/components/file/File.js#L523
+file_size_cast = Filesize(system=Filesize.S_BINARY)
 
 
 def temporary_upload_uuid_from_url(url: str) -> Optional[str]:
@@ -86,11 +94,24 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                 component, "of.image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]
             ),
         )
+        file_max_size = file_size_cast(
+            glom(component, "fileMaxSize", default=settings.MAX_FILE_UPLOAD_SIZE)
+        )
 
         base_name = glom(component, "file.name", default="")
 
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(uploads, start=1):
+            if upload.file_size > file_max_size:
+                raise RequestEntityTooLarge(
+                    _(
+                        "Upload {uuid} exceeds the maximum upload size of {max_size}b"
+                    ).format(
+                        uuid=upload.uuid,
+                        max_size=file_max_size,
+                    ),
+                )
+
             file_name = append_file_num_postfix(
                 upload.file_name, base_name, i, len(uploads)
             )

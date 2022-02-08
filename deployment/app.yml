@@ -12,6 +12,8 @@
     - maykinmedia.commonground
 
   vars:
+    of_max_upload_size: 50M
+
     # Application
     django_app_docker_name_prefix: open-forms
     django_app_docker_domain: TODO
@@ -76,7 +78,8 @@
     # django_app_nginx_ssl_certificate: /path/to/ssl-cert-chain.pem
     # django_app_nginx_ssl_key: /path/to/ssl-key.pem
     django_app_nginx_include_templates:
-      - "templates/nginx-includes.conf.tpl"
+      - templates/nginx-includes.conf.tpl
+      - templates/file-uploads.conf.tpl
 
     # Celery
     django_app_docker_use_celery: true

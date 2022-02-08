@@ -897,6 +897,12 @@ class TemporaryFileUpload(models.Model):
     )
     file_name = models.CharField(_("original name"), max_length=255)
     content_type = models.CharField(_("content type"), max_length=255)
+    # store the file size to not have to do disk IO to get the file size
+    file_size = models.PositiveIntegerField(
+        _("file size"),
+        default=0,
+        help_text=_("Size in bytes of the uploaded file."),
+    )
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
 
     objects = TemporaryFileUploadQuerySet.as_manager()

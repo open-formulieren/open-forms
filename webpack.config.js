@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const argv = require('yargs').argv;
 const paths = require('./build/paths');
@@ -34,6 +35,9 @@ module.exports = {
     // Plugins
     plugins: [
         new MiniCssExtractPlugin(),
+        new webpack.ProvidePlugin({
+            _: 'lodash',
+        })
     ],
 
     // Modules
@@ -78,6 +82,18 @@ module.exports = {
                         },
                     },
                 ],
+            },
+
+            // .ejs
+            {
+              test: /\.ejs$/,
+              loader: 'ejs-loader',
+              options: {
+                variable: 'ctx',
+                evaluate: /\{%([\s\S]+?)%\}/g,
+                interpolate: /\{\{([\s\S]+?)\}\}/g,
+                escape: /\{\{\{([\s\S]+?)\}\}\}/g,
+              },
             },
         ]
     },

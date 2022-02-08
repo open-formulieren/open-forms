@@ -179,7 +179,8 @@ const FILE_TAB = {
             label: 'File Maximum Size',
             placeholder: '10MB',
             tooltip: 'See <a href=\'https://github.com/danialfarid/ng-file-upload#full-reference\' target=\'_blank\'>https://github.com/danialfarid/ng-file-upload#full-reference</a> for how to specify file sizes.',
-            weight: 70
+            weight: 70,
+            description: 'Note that the server upload limit is {{serverUploadLimit}}.'
         },
         // {
         //     // used by the formio widget
@@ -208,6 +209,7 @@ class FileField extends BaseFileField {
             options: "{\"withCredentials\": true}",
             webcam: false,
             input: true,
+            fileMaxSize: '10MB',  // override default of 1GB
         }, ...extend);
     }
 

@@ -8,6 +8,8 @@ import customTemplates from './customTemplates';
 
 Templates.current = customTemplates;
 
+const maxFileUploadSize = JSON.parse(document.getElementById('setting-MAX_FILE_UPLOAD_SIZE').textContent);
+
 const BUILDER_OPTIONS = {
     builder: {
         basic: false,
@@ -65,7 +67,10 @@ const BUILDER_OPTIONS = {
     language: 'nl',
     i18n: {
         nl: nlStrings
-    }
+    },
+    evalContext: {
+        serverUploadLimit: maxFileUploadSize,
+    },
 };
 
 
