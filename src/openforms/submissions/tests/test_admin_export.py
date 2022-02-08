@@ -187,8 +187,18 @@ class TestSubmissionExportAdmin(WebTest):
             'attachment; filename="submissions_export.xml"',
         )
         self.assertIsNotNone(response.content)
+
         # check if it parses
-        etree.fromstring(response.content)
+        tree = etree.fromstring(response.content)
+
+        # check out structure
+        v = tree.xpath(
+            "/submissions/submission/field[@name='Formuliernaam']/value/text()"
+        )
+        self.assertEqual(v, [self.submission_1.form.admin_name])
+
+        v = tree.xpath("/submissions/submission/field[@name='multi']/value/text()")
+        self.assertEqual(v, ["aaa", "bbb"])
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
