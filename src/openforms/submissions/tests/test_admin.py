@@ -3,9 +3,7 @@ from unittest.mock import patch
 from django.urls import reverse
 from django.utils import timezone
 
-import tablib
 from django_webtest import WebTest
-from lxml import etree
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.config.models import GlobalConfiguration
@@ -14,7 +12,6 @@ from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
 from ..constants import RegistrationStatuses
-from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
@@ -137,159 +134,6 @@ class TestSubmissionAdmin(WebTest):
                 template="logging/events/submission_details_view_admin.txt"
             ).count(),
             1,
-        )
-
-    def test_export_csv_successfully_exports_csv_file(self):
-        response = self.app.get(
-            reverse("admin:submissions_submission_changelist"), user=self.user
-        )
-
-        form = response.forms["changelist-form"]
-        form["action"] = "export_csv"
-        form["_selected_action"] = [
-            str(submission.pk) for submission in Submission.objects.all()
-        ]
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["content-type"], "text/csv")
-        self.assertEqual(
-            response["content-disposition"],
-            'attachment; filename="submissions_export.csv"',
-        )
-        self.assertIsNotNone(response.content)
-        # check if it parses
-        tablib.Dataset().load(response.content.decode("utf8"), format="csv")
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_export_list.txt"
-            ).count(),
-            1,
-        )
-
-    def test_export_xlsx_successfully_exports_xlsx_file(self):
-        response = self.app.get(
-            reverse("admin:submissions_submission_changelist"), user=self.user
-        )
-
-        form = response.forms["changelist-form"]
-        form["action"] = "export_xlsx"
-        form["_selected_action"] = [
-            str(submission.pk) for submission in Submission.objects.all()
-        ]
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response["content-type"],
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        self.assertEqual(
-            response["content-disposition"],
-            'attachment; filename="submissions_export.xlsx"',
-        )
-        self.assertIsNotNone(response.content)
-        # check if it parses
-        tablib.Dataset().load(response.content, format="xlsx")
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_export_list.txt"
-            ).count(),
-            1,
-        )
-
-    def test_export_json_successfully_exports_json_file(self):
-        response = self.app.get(
-            reverse("admin:submissions_submission_changelist"), user=self.user
-        )
-
-        form = response.forms["changelist-form"]
-        form["action"] = "export_json"
-        form["_selected_action"] = [
-            str(submission.pk) for submission in Submission.objects.all()
-        ]
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["content-type"], "application/json")
-        self.assertEqual(
-            response["content-disposition"],
-            'attachment; filename="submissions_export.json"',
-        )
-        self.assertIsNotNone(response.content)
-        # check if it parses
-        response.json
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_export_list.txt"
-            ).count(),
-            1,
-        )
-
-    def test_export_xml_successfully_exports_xml_file(self):
-        response = self.app.get(
-            reverse("admin:submissions_submission_changelist"), user=self.user
-        )
-
-        form = response.forms["changelist-form"]
-        form["action"] = "export_xml"
-        form["_selected_action"] = [
-            str(submission.pk) for submission in Submission.objects.all()
-        ]
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["content-type"], "text/xml")
-        self.assertEqual(
-            response["content-disposition"],
-            'attachment; filename="submissions_export.xml"',
-        )
-        self.assertIsNotNone(response.content)
-        # check if it parses
-        etree.fromstring(response.content)
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_export_list.txt"
-            ).count(),
-            1,
-        )
-
-    def test_exporting_multiple_forms_fails(self):
-        step = FormStepFactory.create()
-        SubmissionFactory.create(form=step.form, completed_on=timezone.now())
-
-        response = self.app.get(
-            reverse("admin:submissions_submission_changelist"), user=self.user
-        )
-
-        form = response.forms["changelist-form"]
-        form["action"] = "export_csv"
-        form["_selected_action"] = [
-            str(submission.pk) for submission in Submission.objects.all()
-        ]
-
-        response = form.submit()
-
-        # Assert redirected back to html page
-        self.assertEqual(response.status_code, 302)
-        response = response.follow()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response["content-type"],
-            "text/html; charset=utf-8",
-        )
-        self.assertFalse(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_export_list.txt"
-            ).exists()
         )
 
     @patch("openforms.submissions.admin.on_completion_retry")

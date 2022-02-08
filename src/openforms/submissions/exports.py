@@ -61,8 +61,48 @@ def export_submissions(
     return response
 
 
+def _xml_basic_value(value) -> str:
+    # let's re-use the JSON object serializer for dates, UUIDs, Decimals etc.
+    return str(serialize_objects_handler(value))
+
+
+def _xml_value(parent, value, wrap_single=False):
+    if isinstance(value, list):
+        for v in value:
+            node = etree.SubElement(parent, "value")
+            _xml_value(node, v)
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            node = etree.SubElement(parent, "value", name=k)
+            _xml_value(node, v)
+    else:
+        if wrap_single:
+            node = etree.SubElement(parent, "value")
+        else:
+            node = parent
+        node.text = _xml_basic_value(value)
+
+
 class XMLKeyValueExport:
     title = "xml"
+
+    """
+    example:
+
+    <?xml version='1.0' encoding='utf8'?>
+    <submissions>
+        <submission>
+            <field name="Formuliernaam">
+              <value>Form 000</value>
+            </field>
+            <field name="Inzendingdatum">
+              <value>2022-02-08T15:15:56.769534</value>
+            </field>
+            <field name="multi">
+              <value>aaa</value>
+              <value>bbb</value>
+            </field>
+    """
 
     @classmethod
     def export_set(cls, dset):
@@ -71,9 +111,7 @@ class XMLKeyValueExport:
             elem = etree.SubElement(root, "submission")
             for key, value in row.items():
                 field = etree.SubElement(elem, "field", name=key)
-
-                # let's re-use the JSON object serializer for dates, UUIDs, Decimals etc.
-                field.text = serialize_objects_handler(value)
+                _xml_value(field, value, wrap_single=True)
 
         return etree.tostring(
             root, xml_declaration=True, encoding="utf8", pretty_print=True
