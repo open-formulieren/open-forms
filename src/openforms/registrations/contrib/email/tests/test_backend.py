@@ -3,17 +3,14 @@ from decimal import Decimal
 
 from django.core import mail
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from freezegun import freeze_time
+from furl import furl
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
+from openforms.forms.tests.factories import FormFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.exports import create_submission_export
@@ -31,42 +28,75 @@ from ..constants import AttachmentFormat
 from ..plugin import EmailRegistration
 
 
-@override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+@override_settings(
+    DEFAULT_FROM_EMAIL="info@open-forms.nl", BASE_URL="https://example.com"
+)
 class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(
-            name="MyName", internal_name="MyInternalName", registration_backend="email"
+            generate_minimal_setup=True,
+            name="MyName",
+            internal_name="MyInternalName",
+            registration_backend="email",
         )
-        cls.fd = FormDefinitionFactory.create()
-        cls.fs = FormStepFactory.create(form=cls.form, form_definition=cls.fd)
+        cls.fs = cls.form.formstep_set.get()
+        cls.fd = cls.fs.form_definition
 
     def test_submission_with_email_backend(self):
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+                {
+                    "key": "some_list",
+                    "type": "textfield",
+                    "multiple": True,
+                    "label": "some_list",
+                },
+                {"key": "file1", "type": "file", "label": "file1"},
+                {"key": "file2", "type": "file", "label": "file2"},
+            ],
+            submitted_data={
+                "foo": "bar",
+                "some_list": ["value1", "value2"],
+                "file1": [
+                    {  # truncated for brevity
+                        "url": "some://url",
+                        "name": "my-foo.bin",
+                        "type": "application/foo",
+                        "originalName": "my-foo.bin",
+                    }
+                ],
+                "file2": [
+                    {  # truncated for brevity
+                        "url": "some://url",
+                        "name": "my-bar.txt",
+                        "type": "text/bar",
+                        "originalName": "my-bar.txt",
+                    }
+                ],
+            },
+            form__name="MyName",
+            form__internal_name="MyInternalName",
+            form__registration_backend="email",
         )
-
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
+        submission_file_attachment_1 = SubmissionFileAttachmentFactory.create(
+            form_key="file1",
+            submission_step=submission.submissionstep_set.get(),
             file_name="my-foo.bin",
             content_type="application/foo",
         )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
+        submission_file_attachment_2 = SubmissionFileAttachmentFactory.create(
+            form_key="file2",
+            submission_step=submission.submissionstep_set.get(),
             file_name="my-bar.txt",
             content_type="text/bar",
         )
-
+        email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
         email_submission = EmailRegistration("email")
+
         email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
@@ -110,15 +140,24 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertTagWithTextIn("td", "some_list", message_html)
         self.assertTagWithTextIn("td", "value1, value2", message_html)
 
-        self.assertEqual(len(message.attachments), 2)
-        file1, file2 = message.attachments
-        self.assertEqual(file1[0], "my-foo.bin")
-        self.assertEqual(file1[1], b"content")  # still bytes
-        self.assertEqual(file1[2], "application/foo")
+        # files are no longer attached to the e-mail, but links are included instead
+        self.assertEqual(len(message.attachments), 0)
 
-        self.assertEqual(file2[0], "my-bar.txt")
-        self.assertEqual(file2[1], "content")  # this is text now
-        self.assertEqual(file2[2], "text/bar")
+        expected_download_path_1 = reverse(
+            "submissions:attachment-download",
+            kwargs={"uuid": submission_file_attachment_1.uuid},
+        )
+        expected_download_url_1 = furl(f"https://example.com{expected_download_path_1}")
+        expected_download_url_1.args["hash"] = submission_file_attachment_1.content_hash
+        expected_download_path_2 = reverse(
+            "submissions:attachment-download",
+            kwargs={"uuid": submission_file_attachment_2.uuid},
+        )
+        expected_download_url_2 = furl(f"https://example.com{expected_download_path_2}")
+        expected_download_url_2.args["hash"] = submission_file_attachment_2.content_hash
+
+        self.assertIn(f"{expected_download_url_1} (my-foo.bin)", message_text)
+        self.assertIn(f"{expected_download_url_2} (my-bar.txt)", message_text)
 
     def test_submission_with_email_backend_strip_out_urls(self):
         config = GlobalConfiguration.get_solo()
@@ -188,8 +227,23 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         """
         the update payment email is now based on the registration email and includes attachments
         """
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "voornaam", "type": "textfield"},
+                {"key": "someFile", "type": "file"},
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "someFile": [
+                    {  # truncated for brevity
+                        "url": "some://url",
+                        "name": "sample.bin",
+                        "type": "application/foo",
+                        "originalName": "sample.bin",
+                    }
+                ],
+            },
             form__name="MyName",
             form__internal_name="MyInternalName",
             form__product__price=Decimal("11.35"),
@@ -202,8 +256,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission=submission, status=PaymentStatus.completed
         )
         report = submission.report
-        SubmissionFileAttachmentFactory.create(
+        submission_file_attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
+            form_key="someFile",
             file_name="my-foo.bin",
             content_type="application/foo",
         )
@@ -266,12 +321,21 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertTagWithTextIn("td", "Voornaam", message_html)
         self.assertTagWithTextIn("td", "Foo", message_html)
 
-        self.assertEqual(len(message.attachments), 2)
-        file1, pdf_export = message.attachments
-        self.assertEqual(file1[0], "my-foo.bin")
-        self.assertEqual(file1[1], b"content")  # still bytes
-        self.assertEqual(file1[2], "application/foo")
+        # check that the file attachment is present with a link
+        self.assertTagWithTextIn("td", "Somefile", message_html)
+        expected_download_path = reverse(
+            "submissions:attachment-download",
+            kwargs={"uuid": submission_file_attachment.uuid},
+        )
+        expected_download_url = furl(f"https://example.com{expected_download_path}")
+        expected_download_url.args["hash"] = submission_file_attachment.content_hash
+        expected_html = f"""
+            <a href="{expected_download_url}" target="_blank" rel="noopener noreferrer">my-foo.bin</a>
+        """
+        self.assertInHTML(expected_html, message_html)
 
+        self.assertEqual(len(message.attachments), 1)
+        pdf_export = message.attachments[0]
         self.assertEqual(pdf_export[0], f"{report.title}.pdf")
         self.assertEqual(pdf_export[1], report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
@@ -346,17 +410,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
 
-        # Two upload attachments and two export attachments
-        self.assertEqual(len(message.attachments), 4)
+        # No upload attachments and two export attachments
+        self.assertEqual(len(message.attachments), 2)
 
-        file1, file2, csv_export, xlsx_export = message.attachments
-        self.assertEqual(file1[0], "my-foo.bin")
-        self.assertEqual(file1[1], b"content")  # still bytes
-        self.assertEqual(file1[2], "application/foo")
-
-        self.assertEqual(file2[0], "my-bar.txt")
-        self.assertEqual(file2[1], "content")  # this is text now
-        self.assertEqual(file2[2], "text/bar")
+        csv_export, xlsx_export = message.attachments
 
         qs = Submission.objects.filter(pk=submission.pk)
         self.assertEqual(
@@ -411,17 +468,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
 
-        # Two upload attachments and one export attachment
-        self.assertEqual(len(message.attachments), 3)
+        # No upload attachments and one export attachment
+        self.assertEqual(len(message.attachments), 1)
 
-        file1, file2, pdf_export = message.attachments
-        self.assertEqual(file1[0], "my-foo.bin")
-        self.assertEqual(file1[1], b"content")  # still bytes
-        self.assertEqual(file1[2], "application/foo")
-
-        self.assertEqual(file2[0], "my-bar.txt")
-        self.assertEqual(file2[1], "content")  # this is text now
-        self.assertEqual(file2[2], "text/bar")
+        pdf_export = message.attachments[0]
 
         self.assertEqual(pdf_export[0], f"{report.title}.pdf")
         self.assertEqual(pdf_export[1], report.content.read())
