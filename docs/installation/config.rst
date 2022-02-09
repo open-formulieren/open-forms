@@ -152,30 +152,19 @@ DigiD/EHerkenning/eIDAS settings
 * ``BASE_URL``: Base url on which open-forms is deployed.
 * ``DIGID_METADATA``: This is the path to the metadata file provided by the Identity Provider.
 * ``DIGID_SERVICE_ENTITY_ID``: The URL where the Identity Provider serves its metadata.
-* ``DIGID_SERVICE_NAME_NL``: The name (in Dutch) of the Service Provider.
-* ``DIGID_SERVICE_NAME_EN``: The name (in English) of the Service Provider.
 * ``DIGID_WANT_ASSERTIONS_SIGNED``: If ``True``, the XML assertions need to be signed, otherwise the whole response needs to be signed. Defaults to ``True``.
 * ``EHERKENNING_METADATA``: Path to the metadata file provided by the Identity Provider.
 * ``EHERKENNING_SERVICE_ENTITY_ID``: Value that matches the ``entityID`` attribute in the ``md:EntityDescriptor`` tag of the Identity Provider metadata.
 * ``EHERKENNING_ENTITY_ID``: It has the format ``urn:etoegang:DV:<OIN>:entities:<index>``. More information can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/EntityID>`__.
 * ``EHERKENNING_LOA``: LOA stands for 'Level Of Assurance'. The possible values can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/Level+of+assurance>`__. Defaults to ``"urn:etoegang:core:assurance-class:loa3"``.
 * ``EHERKENNING_OIN``: The OIN for the organisation. There is a OIN `catalogue <https://portaal.digikoppeling.nl/registers/>`_ that can be used to search for OINs.
-* ``EHERKENNING_MAKELAAR_ID``: The OIN of the broker.
-* ``EHERKENNING_PRIVACY_POLICY``: The URL for the privacy policy page.
-* ``EHERKENNING_SERVICE_NAME_NL``: The Dutch name of the service that requires EHerkenning authentication.
-* ``EHERKENNING_SERVICE_NAME_EN``: The English name of the service that requires EHerkenning authentication.
-* ``EHERKENNING_SERVICE_DESCRIPTION_NL``: The description (in Dutch) of the service that requires EHerkenning authentication.
-* ``EHERKENNING_SERVICE_DESCRIPTION_EN``: The description (in English) of the service that requires EHerkenning authentication.
-* ``EHERKENNING_ORGANISATION_NAME_NL``: The Dutch name of the organisation that provides the service that requires EHerkenning authentication.
-* ``EHERKENNING_ORGANISATION_NAME_EN``: The English name of the organisation that provides the service that requires EHerkenning authentication.
+* ``EHERKENNING_WANT_ASSERTIONS_SIGNED``: Whether the assertions in the responses should be signed. Defaults to ``True``.
+* ``EHERKENNING_WANT_ASSERTIONS_ENCRYPTED``: Whether the assertions should be encrypted. Defaults to ``False``.
+* ``EHERKENNING_SIGNATURE_ALGORITHM``: Which algorithm to use for the signatures. Defaults to rsa-sha256.
 * ``EHERKENNING_SERVICE_INDEX``: The index that was specified in the metadata for the eHerkenning service.
 * ``EHERKENNING_SERVICE_UUID``: The UUID of the eHerkenning service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
 * ``EHERKENNING_SERVICE_INSTANCE_UUID``: The UUID of the eHerkenning service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
 * ``EIDAS_SERVICE_INDEX``: The index that was specified in the metadata for the eIDAS service.
-* ``EIDAS_SERVICE_NAME_NL``: The Dutch name of the service that requires eIDAS authentication.
-* ``EIDAS_SERVICE_NAME_EN``: The Dutch name of the service that requires eIDAS authentication.
-* ``EIDAS_SERVICE_DESCRIPTION_NL``: The description (in Dutch) of the service that requires eIDAS authentication.
-* ``EIDAS_SERVICE_DESCRIPTION_EN``: The description (in English) of the service that requires eIDAS authentication.
 * ``EIDAS_SERVICE_UUID``: The UUID of the eIDAS service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
 * ``EIDAS_SERVICE_INSTANCE_UUID``: The UUID of the eIDAS service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
 
