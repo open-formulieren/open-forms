@@ -603,6 +603,10 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
                 message_html_only_tags,
             )
 
+        with self.subTest("attachments"):
+            # file uploads may not be added as attachments, see #1193
+            self.assertEqual(message.attachments, [])
+
 
 class UtilsTest(TestCase):
     def test_unwrap_anchors(self):
