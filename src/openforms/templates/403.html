@@ -1,10 +1,23 @@
-{% extends 'master.html' %}
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n %}
 
-{% block menu %}{% endblock %}
+{% block card %}
+    <div class="card">
+        <header class="card__header">
+            <h1 class="title">
+                {% trans "Sorry, you don't have access to this page (403)" %}
+            </h1>
+        </header>
 
-{% block content %}
-
-  <h1>Sorry, you don't have access to this page (403)</h1>
-
-
-{% endblock content %}
+        <div class="card__body">
+            {% block card_body %}
+                <p class="body">
+                    {% blocktrans trimmed %}
+                        You don't appear to have sufficient permissions to view this content.
+                        Please contact an administrator if you believe this to be an error.
+                    {% endblocktrans %}
+                </p>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
