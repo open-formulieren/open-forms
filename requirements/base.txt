@@ -153,7 +153,7 @@ django-timeline-logger==1.1.2
     # via -r requirements/base.in
 django-tinymce==3.4.0
     # via -r requirements/base.in
-django-yubin==1.6.0
+django-yubin==1.7.1
     # via -r requirements/base.in
 django==2.2.27
     # via
@@ -253,6 +253,8 @@ lxml==4.7.1
     #   python3-saml
     #   xmlsec
     #   zeep
+mail-parser==3.15.0
+    # via django-yubin
 maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
 git+https://github.com/maykinmedia/json-logic-py.git@1ceb93ad165d69a5639edc623d5613d0229c05e2#egg=maykin-json-logic-py
@@ -325,8 +327,6 @@ pyyaml==5.4.1
     # via
     #   drf-spectacular
     #   gemma-zds-client
-pyzmail36==1.0.4
-    # via django-yubin
 qrcode==6.1
     # via maykin-django-two-factor-auth
 redis==3.5.3
@@ -360,6 +360,8 @@ self-certifi==1.0.0
     # via -r requirements/base.in
 sentry-sdk==0.17.3
     # via -r requirements/base.in
+simplejson==3.17.6
+    # via mail-parser
 six==1.15.0
     # via
     #   click-repl
@@ -369,6 +371,7 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   jsonschema
+    #   mail-parser
     #   mozilla-django-oidc
     #   orderedmultidict
     #   pyopenssl
@@ -437,5 +440,4 @@ setuptools==57.5.0
     #   drf-jsonschema
     #   josepy
     #   jsonschema
-    #   pyzmail36
     #   weasyprint

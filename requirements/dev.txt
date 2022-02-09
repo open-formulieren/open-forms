@@ -320,7 +320,7 @@ django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-yubin==1.6.0
+django-yubin==1.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -530,6 +530,11 @@ lxml==4.7.1
     #   python3-saml
     #   xmlsec
     #   zeep
+mail-parser==3.15.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-yubin
 markdown==3.3.4
     # via
     #   -c requirements/ci.txt
@@ -748,11 +753,6 @@ pyyaml==5.4.1
     #   -r requirements/ci.txt
     #   drf-spectacular
     #   gemma-zds-client
-pyzmail36==1.0.4
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-yubin
 qrcode==6.1
     # via
     #   -c requirements/ci.txt
@@ -826,6 +826,11 @@ sentry-sdk==0.17.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+simplejson==3.17.6
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   mail-parser
 six==1.15.0
     # via
     #   -c requirements/ci.txt
@@ -839,6 +844,7 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   jsonschema
+    #   mail-parser
     #   mozilla-django-oidc
     #   orderedmultidict
     #   pyopenssl
@@ -1059,6 +1065,5 @@ setuptools==57.5.0
     #   drf-jsonschema
     #   josepy
     #   jsonschema
-    #   pyzmail36
     #   sphinx
     #   weasyprint
