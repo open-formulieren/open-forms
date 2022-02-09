@@ -359,13 +359,18 @@ class Submission(models.Model):
         self.pseudo = ""
         self.prefill_data = dict()
 
-        for submission_step in self.submissionstep_set.select_related(
-            "form_step", "form_step__form_definition"
-        ).select_for_update():
+        steps_qs = self.submissionstep_set.select_related(
+            "form_step",
+            "form_step__form_definition",
+        )
+        for submission_step in steps_qs.select_for_update():
             fields = submission_step.form_step.form_definition.sensitive_fields
             removed_data = {key: "" for key in fields}
             submission_step.data.update(removed_data)
             submission_step.save()
+
+            # handle the attachments
+            submission_step.attachments.filter(form_key__in=fields).delete()
         self._is_cleaned = True
 
         if self.co_sign_data:
@@ -913,7 +918,7 @@ class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
-    def as_form_dict(self) -> Mapping[str, "SubmissionFileAttachment"]:
+    def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
         files = defaultdict(list)
         for file in self:
             files[file.form_key].append(file)
