@@ -29,7 +29,7 @@ cairosvg==2.5.2
     # via weasyprint
 celery-once==3.0.1
     # via -r requirements/base.in
-celery==5.1.2
+celery==5.2.3
     # via
     #   -r requirements/base.in
     #   celery-once
@@ -53,7 +53,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-click==7.1.2
+click==8.0.3
     # via
     #   celery
     #   click-didyoumean
@@ -313,7 +313,7 @@ python-dotenv==0.14.0
     # via -r requirements/base.in
 git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d#egg=python3_saml
     # via -r requirements/base.in
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/base.in
     #   celery
@@ -433,7 +433,7 @@ zgw-consumers==0.17.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==57.5.0
+setuptools==59.6.0
     # via
     #   -r requirements/base.in
     #   celery

@@ -60,7 +60,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-celery==5.1.2
+celery==5.2.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -101,7 +101,7 @@ click-repl==0.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-click==7.1.2
+click==8.0.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -619,7 +619,7 @@ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pytz==2021.1
+pytz==2021.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -874,7 +874,7 @@ zgw-consumers==0.17.0
     #   -r requirements/base.txt
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==57.5.0
+setuptools==59.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

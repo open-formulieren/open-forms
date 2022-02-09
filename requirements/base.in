@@ -20,7 +20,7 @@ weasyprint
 zeep
 # Pinned setuptools to a version lower than 58 to allow pyzmail36 to be
 # installed, as required by django-yubin.
-setuptools < 58
+setuptools
 
 # Framework libraries
 django < 3.0

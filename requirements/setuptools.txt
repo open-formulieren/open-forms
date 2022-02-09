@@ -1,1 +1,1 @@
-setuptools<58
+setuptools
