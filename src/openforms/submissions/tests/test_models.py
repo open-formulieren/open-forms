@@ -4,6 +4,8 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
+from privates.test import temp_private_root
+
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -11,8 +13,12 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ..models import Submission
-from .factories import SubmissionFactory, SubmissionStepFactory
+from ..models import Submission, SubmissionFileAttachment
+from .factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+    SubmissionStepFactory,
+)
 
 
 class SubmissionTests(TestCase):
@@ -429,6 +435,29 @@ class SubmissionTests(TestCase):
                 "representation": "T. Hulk",
             },
         )
+
+    @temp_private_root()
+    def test_submission_delete_file_uploads_cascade(self):
+        """
+        Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
+        """
+        submission = SubmissionFactory.create(
+            completed=True, form__generate_minimal_setup=True
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission=submission
+        )
+        with self.subTest("test setup validation"):
+            self.assertTrue(attachment.content.storage.exists(attachment.content.path))
+
+        # delete the submission, it must cascade
+        submission.delete()
+
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
+        self.assertFalse(
+            SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+        )
+        self.assertFalse(attachment.content.storage.exists(attachment.content.path))
 
     def test_get_merged_appointment_data(self):
         form = FormFactory.create()
