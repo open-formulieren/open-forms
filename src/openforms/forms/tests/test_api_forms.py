@@ -164,7 +164,7 @@ class FormsAPITests(APITestCase):
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.get(url, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_form_successful(self):
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
