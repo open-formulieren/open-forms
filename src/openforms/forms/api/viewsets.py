@@ -237,7 +237,7 @@ class FormViewSet(viewsets.ModelViewSet):
 
     parser_classes = (FormCamelCaseJSONParser,)
     renderer_classes = (FormCamelCaseJSONRenderer,)
-    queryset = Form.objects.filter(_is_deleted=False).prefetch_related(
+    queryset = Form.objects.all().prefetch_related(
         Prefetch(
             "formstep_set",
             queryset=FormStep.objects.select_related("form_definition").order_by(
@@ -254,7 +254,11 @@ class FormViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         if not self.request.user.is_staff:
             # if not staff then only show active
-            queryset = queryset.filter(active=True)
+            queryset = queryset.filter(active=True).filter(_is_deleted=False)
+        elif self.request.user.is_staff and self.action != "retrieve":
+            # So that the admin can display deleted forms, but the list endpoint doesn't return them
+            queryset = queryset.filter(_is_deleted=False)
+
         return queryset
 
     def initialize_request(self, request, *args, **kwargs):
