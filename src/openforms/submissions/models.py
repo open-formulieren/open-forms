@@ -39,8 +39,9 @@ from openforms.utils.validators import (
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
+from .mixins import DeleteFileFieldFilesMixin
 from .pricing import get_submission_price
-from .query import SubmissionManager
+from .query import DeleteFilesQuerySet, SubmissionManager
 from .serializers import CoSignDataSerializer
 
 logger = logging.getLogger(__name__)
@@ -879,17 +880,12 @@ def submission_file_upload_to(instance, filename):
     return fmt_upload_to("submission-uploads", instance, filename)
 
 
-class TemporaryFileUploadQuerySet(models.QuerySet):
+class TemporaryFileUploadQuerySet(DeleteFilesQuerySet):
     def select_prune(self, age: timedelta):
         return self.filter(created_on__lt=timezone.now() - age)
 
-    def delete(self):
-        # overwrite the method so the admin etc delete properly
-        for tmp in self:
-            tmp.delete()
 
-
-class TemporaryFileUpload(models.Model):
+class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     content = PrivateMediaFileField(
         verbose_name=_("content"),
@@ -912,12 +908,8 @@ class TemporaryFileUpload(models.Model):
         verbose_name = _("temporary file upload")
         verbose_name_plural = _("temporary file uploads")
 
-    def delete(self, using=None, keep_parents=False):
-        self.content.delete(save=False)
-        super().delete(using=using, keep_parents=keep_parents)
 
-
-class SubmissionFileAttachmentQuerySet(models.QuerySet):
+class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySet):
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
@@ -961,7 +953,7 @@ class SubmissionFileAttachmentManager(models.Manager):
             )
 
 
-class SubmissionFileAttachment(models.Model):
+class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission_step = models.ForeignKey(
         to="SubmissionStep",
@@ -1002,10 +994,8 @@ class SubmissionFileAttachment(models.Model):
     class Meta:
         verbose_name = _("submission file attachment")
         verbose_name_plural = _("submission file attachments")
-
-    def delete(self, using=None, keep_parents=False):
-        self.content.delete(save=False)
-        super().delete(using=using, keep_parents=keep_parents)
+        # see https://docs.djangoproject.com/en/2.2/topics/db/managers/#using-managers-for-related-object-access
+        base_manager_name = "objects"
 
     def get_display_name(self):
         return self.file_name or self.original_name

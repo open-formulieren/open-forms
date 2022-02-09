@@ -17,6 +17,7 @@ from django.utils import timezone
 from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 from openforms.payments.models import SubmissionPayment
+from openforms.utils.files import get_file_field_names
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission
@@ -107,3 +108,32 @@ class BaseSubmissionManager(models.Manager):
 
 
 SubmissionManager = BaseSubmissionManager.from_queryset(SubmissionQuerySet)
+
+
+class DeleteFilesQuerySet(models.QuerySet):
+    def _delete_filefields_storage(self) -> None:
+        # TODO: we might want to wrap this in transaction.on_commit, see also
+        # DeleteFileFieldFilesMixin
+        file_field_names = get_file_field_names(self.model)
+        del_query = self._chain()
+
+        # iterator in case we're dealing with large querysets and memory could be
+        # exhausted
+        for obj in del_query.iterator():
+            for name in file_field_names:
+                filefield = getattr(obj, name)
+                filefield.delete(save=False)
+
+    def _raw_delete(self, using):
+        # raw delete is called in fast_deletes
+        self._delete_filefields_storage()
+        return super()._raw_delete(using)
+
+    _raw_delete.alters_data = True
+
+    def delete(self):
+        self._delete_filefields_storage()
+        return super().delete()
+
+    delete.alters_data = True
+    delete.queryset_only = True
