@@ -24,6 +24,7 @@ from .factories import (
 )
 
 
+@temp_private_root()
 class SubmissionTests(TestCase):
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
@@ -351,6 +352,7 @@ class SubmissionTests(TestCase):
                 "components": [
                     {"key": "textFieldSensitive", "isSensitiveData": True},
                     {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                    {"key": "sensitiveFile", "type": "file", "isSensitiveData": True},
                 ],
             }
         )
@@ -379,6 +381,9 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step,
         )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step, form_key="sensitiveFile"
+        )
         submission_step_2 = SubmissionStepFactory.create(
             submission=submission,
             data={
@@ -387,6 +392,8 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step_2,
         )
+        with self.subTest("validate testdata setup"):
+            self.assertTrue(attachment.content.storage.exists(attachment.content.name))
 
         submission.remove_sensitive_data()
 
@@ -406,6 +413,12 @@ class SubmissionTests(TestCase):
         self.assertEqual(submission.bsn, "")
         self.assertEqual(submission.kvk, "")
         self.assertEqual(submission.prefill_data, {})
+
+        with self.subTest("attachment deletion"):
+            self.assertFalse(attachment.content.storage.exists(attachment.content.name))
+            self.assertFalse(
+                SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+            )
 
     def test_submission_remove_sensitive_co_sign_data(self):
         """
@@ -439,7 +452,6 @@ class SubmissionTests(TestCase):
             },
         )
 
-    @temp_private_root()
     def test_submission_delete_file_uploads_cascade(self):
         """
         Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
@@ -462,7 +474,6 @@ class SubmissionTests(TestCase):
         )
         self.assertFalse(attachment.content.storage.exists(attachment.content.path))
 
-    @temp_private_root()
     def test_submission_delete_file_uploads_cascade_file_already_gone(self):
         """
         Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
