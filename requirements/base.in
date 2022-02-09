@@ -1,5 +1,5 @@
 # Core python libraries
-celery < 5  # Flower does not work with Celery 5
+celery ~= 5.0  # Celery 5.2 requires setuptools<59.7.0,>=59.1.1
 celery-once
 defusedxml
 furl
