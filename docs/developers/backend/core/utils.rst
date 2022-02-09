@@ -53,3 +53,9 @@ Validators
 
 .. automodule:: openforms.utils.validators
    :members:
+
+Model file fields
+-----------------
+
+.. automodule:: openforms.utils.files
+   :members:

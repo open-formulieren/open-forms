@@ -31,6 +31,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
+from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import (
     AllowedRedirectValidator,
     SerializerValidator,
@@ -39,9 +40,8 @@ from openforms.utils.validators import (
 
 from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
-from .mixins import DeleteFileFieldFilesMixin
 from .pricing import get_submission_price
-from .query import DeleteFilesQuerySet, SubmissionManager
+from .query import SubmissionManager
 from .serializers import CoSignDataSerializer
 
 logger = logging.getLogger(__name__)
@@ -880,7 +880,7 @@ def submission_file_upload_to(instance, filename):
     return fmt_upload_to("submission-uploads", instance, filename)
 
 
-class TemporaryFileUploadQuerySet(DeleteFilesQuerySet):
+class TemporaryFileUploadQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     def select_prune(self, age: timedelta):
         return self.filter(created_on__lt=timezone.now() - age)
 
@@ -909,7 +909,7 @@ class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
         verbose_name_plural = _("temporary file uploads")
 
 
-class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySet):
+class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
