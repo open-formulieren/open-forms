@@ -433,3 +433,14 @@ class SubmissionAttachmentTest(TestCase):
 
         actual = clean_mime_type("")
         self.assertEqual("application/octet-stream", actual)
+
+    def test_content_hash_calculation(self):
+        submission_file_attachment = SubmissionFileAttachmentFactory.create(
+            content__data=b"a predictable hash source"
+        )
+        # generated using https://passwordsgenerator.net/sha256-hash-generator/
+        expected_content_hash = (
+            "21bfcc609236ad74408c0e9c73e2e9ef963f676e36c4586f18d75e65c3b0e0df"
+        )
+
+        self.assertEqual(submission_file_attachment.content_hash, expected_content_hash)

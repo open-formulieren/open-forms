@@ -77,7 +77,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> Submission:
         """
-        generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep tree from a list of formio components
+        generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep
+        tree from a list of formio components
 
         remember to generate from privates.test import temp_private_root
         """
@@ -127,7 +128,9 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    form_step = factory.SubFactory(FormStepFactory)
+    form_step = factory.SubFactory(
+        FormStepFactory, form=factory.SelfAttribute("..submission.form")
+    )
 
     class Meta:
         model = SubmissionStep

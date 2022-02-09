@@ -38,11 +38,20 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     return {"submitted_data": filtered_data}
 
 
-@register.simple_tag()
-def display_value(value: Any):
+@register.simple_tag(takes_context=True)
+def display_value(context, value: Any):
+    _is_html = not context.get("rendering_text", False)
     if isinstance(value, dict) and value.get("originalName"):
         # uploads
         return value["originalName"]
     if isinstance(value, (list, tuple)):
-        return ", ".join(map(display_value, value))
+        return ", ".join([display_value(context, v) for v in value])
+
+    # output - see if we have something that can output as html and as plain text
+    method = "as_html" if _is_html else "as_plain_text"
+    formatter = getattr(value, method, None)
+    if formatter is not None and callable(formatter):
+        return formatter()
+
+    # fall back to default of string representation
     return str(value)

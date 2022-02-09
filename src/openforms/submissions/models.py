@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import os.path
 import uuid
@@ -926,9 +927,6 @@ class SubmissionFileAttachmentQuerySet(models.QuerySet):
             files[file.form_key].append(file)
         return dict(files)
 
-    def as_mail_tuples(self) -> List[Tuple[str, Any, str]]:
-        return [(f.get_display_name(), f.content.read(), f.content_type) for f in self]
-
 
 class SubmissionFileAttachmentManager(models.Manager):
     def create_from_upload(
@@ -1014,3 +1012,17 @@ class SubmissionFileAttachment(models.Model):
 
     def get_format(self):
         return os.path.splitext(self.get_display_name())[1].lstrip(".")
+
+    @property
+    def content_hash(self) -> str:
+        """
+        Calculate the sha256 hash of the content.
+
+        MD5 is fast, but has known collisions, so we use sha256 instead.
+        """
+        chunk_size = 8192
+        sha256 = hashlib.sha256()
+        with self.content.open(mode="rb") as file_content:
+            while chunk := file_content.read(chunk_size):
+                sha256.update(chunk)
+        return sha256.hexdigest()

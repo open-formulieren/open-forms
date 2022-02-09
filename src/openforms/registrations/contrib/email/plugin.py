@@ -6,7 +6,6 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
@@ -20,6 +19,7 @@ from ...registry import register
 from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
+from .presentation import SubmittedDataWrapper
 
 
 @register("email")
@@ -45,7 +45,27 @@ class EmailRegistration(BasePlugin):
         options: dict,
         extra_context=None,
     ):
-        submitted_data = submission.get_printable_data()
+        # extract the formatted data first
+        printable_data: list = submission.get_printable_data()
+        # get the attachment data, keyed by form component key, value is a model instance
+        attachments = submission.get_merged_attachments()
+        # these are not related to each other now, but we can iterate over the components
+        # by keys and inject the file information again so we can generate URLs to
+        # download the files.
+        display_data = []
+
+        # get_printable_data relies on ``get_ordered_data_with_component_type``
+        for (key, info), (label, display) in zip(
+            submission.get_ordered_data_with_component_type().items(), printable_data
+        ):
+            is_file = info.get("type") == "file"
+            if is_file:
+                files = attachments.get(key, [])
+                display = SubmittedDataWrapper(is_file=True, value=files)
+            else:
+                display = SubmittedDataWrapper(is_file=False, value=display)
+
+            display_data.append((label, display))
 
         context = {
             "form_name": submission.form.admin_name,
@@ -53,7 +73,7 @@ class EmailRegistration(BasePlugin):
             "datetime": timezone.localtime(submission.completed_on).strftime(
                 "%H:%M:%S %d-%m-%Y"
             ),
-            "submitted_data": submitted_data,
+            "submitted_data": display_data,
         }
         if extra_context:
             context.update(extra_context)
@@ -69,10 +89,8 @@ class EmailRegistration(BasePlugin):
         text_content = strip_tags_plus(text_content)
         text_content = html.unescape(text_content)
 
-        attachments = submission.attachments.as_mail_tuples()
-
         attachment_formats = options.get("attachment_formats", [])
-        extra_attachments = []
+        attachments = []
         for attachment_format in attachment_formats:
             mime_type = types_map[f".{attachment_format}"]
             if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:
@@ -85,14 +103,14 @@ class EmailRegistration(BasePlugin):
                     export_data,
                     mime_type,
                 )
-                extra_attachments.append(attachment)
+                attachments.append(attachment)
             elif attachment_format == AttachmentFormat.pdf:
                 attachment = (
                     f"{submission.report.title}.pdf",
                     submission.report.content.read(),
                     mime_type,
                 )
-                extra_attachments.append(attachment)
+                attachments.append(attachment)
 
         send_mail_html(
             subject,
@@ -100,7 +118,7 @@ class EmailRegistration(BasePlugin):
             settings.DEFAULT_FROM_EMAIL,
             recipients,
             fail_silently=False,
-            attachment_tuples=attachments + extra_attachments,
+            attachment_tuples=attachments,
             text_message=text_content,
         )
 
