@@ -1,3 +1,5 @@
+import logging
+import os
 from collections import OrderedDict
 from unittest.mock import patch
 
@@ -5,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
+from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
@@ -452,6 +455,49 @@ class SubmissionTests(TestCase):
 
         # delete the submission, it must cascade
         submission.delete()
+
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
+        self.assertFalse(
+            SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+        )
+        self.assertFalse(attachment.content.storage.exists(attachment.content.path))
+
+    @temp_private_root()
+    def test_submission_delete_file_uploads_cascade_file_already_gone(self):
+        """
+        Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
+        """
+        submission = SubmissionFactory.create(
+            completed=True, form__generate_minimal_setup=True
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission=submission
+        )
+        os.remove(attachment.content.path)
+        with self.subTest("test setup validation"):
+            self.assertFalse(attachment.content.storage.exists(attachment.content.path))
+
+        # delete the submission, it must cascade
+        exc = Exception("Delete failed")
+
+        with patch(
+            "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
+        ) as mock_delete:
+            with LogCapture(level=logging.WARNING) as capture:
+                submission.delete()
+
+        mock_delete.assert_called_once_with(attachment.content.name)
+        capture.check(
+            (
+                "openforms.utils.files",
+                "WARNING",
+                "File delete on model %r (pk=%s, field=content) failed: Delete failed"
+                % (
+                    SubmissionFileAttachment,
+                    attachment.pk,
+                ),
+            ),
+        )
 
         self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
         self.assertFalse(
