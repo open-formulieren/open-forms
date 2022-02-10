@@ -12,14 +12,17 @@ they are available for Django settings initialization.
 import logging
 import os
 import sys
-import tempfile
 import warnings
+from pathlib import Path
 
 from django.conf import settings
 from django.urls import reverse
 from django.utils.http import is_safe_url
 
 import defusedxml
+import portalocker
+import redis
+from django_redis import get_redis_connection
 from dotenv import load_dotenv
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
@@ -43,13 +46,48 @@ def setup_env():
 
 
 def load_self_signed_certs() -> None:
+    needs_extra_verify_certs = os.environ.get("EXTRA_VERIFY_CERTS")
+    if not needs_extra_verify_certs:
+        return
+
     _certs_initialized = bool(os.environ.get("REQUESTS_CA_BUNDLE"))
     if _certs_initialized:
         return
 
-    # create target directory for resulting combined certificate file
-    target_dir = tempfile.mkdtemp()
-    _load_self_signed_certs(target_dir)
+    # create target directory before hand and account for possible race conditions
+    target_dir = Path(settings.SELF_CERTIFI_DIR)
+    os.makedirs(target_dir, exist_ok=True)
+    lockfile = target_dir / ".lock"
+
+    # check if we have a valid connection - dev environments may not have redis running
+    conn = get_redis_connection("portalocker")
+    try:
+        conn.ping()
+    except redis.ConnectionError:
+        if not settings.DEBUG:
+            raise
+        logger.warning(
+            "Portalocker Redis connection is not alive, falling back to simple file lock"
+        )
+        lock = portalocker.TemporaryFileLock(lockfile)
+    else:
+        lock = portalocker.RedisLock(channel="load_self_signed_certs", connection=conn)
+
+    try:
+        # acquire lock - errors from timeouts should automatically lead to container restarts
+        # and thus staggered initializations
+        with lock:
+            lockfile.touch()
+            _load_self_signed_certs(str(target_dir))
+            lockfile.unlink(missing_ok=True)
+    except portalocker.AlreadyLocked:  # pragma:nocover
+        logger.info("Could not acquire a self-certifi lock, exiting...")
+        logger.debug(
+            "On failure to acquire locks, your (container) orchestration should "
+            "restart the container(s)"
+        )
+        sys.exit(1)
+
     _certs_initialized = True
 
 
