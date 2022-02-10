@@ -88,10 +88,18 @@ CACHES = {
     },
     "oidc": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_DEFAULT', 'localhost:6379/0')}",
+        "LOCATION": f"redis://{config('CACHE_OIDC', 'localhost:6379/0')}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
+        },
+    },
+    "portalocker": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/0')}",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": False,
         },
     },
 }
@@ -805,6 +813,13 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
 #
 SOLO_CACHE = "default"
 SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
+
+#
+# Self-Certifi
+#
+SELF_CERTIFI_DIR = config(
+    "SELF_CERTIFI_DIR", os.path.join(BASE_DIR, "certifi_ca_bundle")
+)
 
 #
 # Django Cookie-Consent
