@@ -28,7 +28,6 @@
     "@rjsf/core": "^3.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "bem.js": "^1.0.10",
-    "consumerjs": "^3.2.0",
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.11.1",
     "formiojs": "^4.13.0",
