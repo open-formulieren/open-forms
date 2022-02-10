@@ -72,11 +72,13 @@ LOGGING["loggers"].update(
 
 # in memory cache and django-axes don't get along.
 # https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
-CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-    "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
-    "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-}
+CACHES.update(
+    {
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+        "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    }
+)
 
 #
 # Library settings

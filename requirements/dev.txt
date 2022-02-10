@@ -635,6 +635,10 @@ pluggy==0.13.1
     #   pytest
 polib==1.1.0
     # via django-rosetta
+portalocker[redis]==2.3.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 prometheus-client==0.13.1
     # via
     #   -c requirements/ci.txt
@@ -768,6 +772,7 @@ redis==3.5.3
     #   -r requirements/ci.txt
     #   celery-once
     #   django-redis
+    #   portalocker
 regex==2020.11.13
     # via
     #   -c requirements/ci.txt

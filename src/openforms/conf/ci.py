@@ -11,12 +11,14 @@ os.environ.setdefault("SECRET_KEY", "dummy")
 
 from .base import *  # noqa isort:skip
 
-CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-    # See: https://github.com/jazzband/django-axes/blob/master/docs/configuration.rst#cache-problems
-    "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
-    "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-}
+CACHES.update(
+    {
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        # See: https://github.com/jazzband/django-axes/blob/master/docs/configuration.rst#cache-problems
+        "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+        "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    }
+)
 
 # shut up logging
 LOGGING["loggers"].update(

@@ -280,6 +280,8 @@ pillow==9.0.0
     #   weasyprint
 platformdirs==2.2.0
     # via zeep
+portalocker[redis]==2.3.2
+    # via -r requirements/base.in
 prometheus-client==0.13.1
     # via flower
 prompt-toolkit==3.0.27
@@ -333,6 +335,7 @@ redis==3.5.3
     # via
     #   celery-once
     #   django-redis
+    #   portalocker
 requests==2.26.0
     # via
     #   django-camunda

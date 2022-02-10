@@ -16,6 +16,7 @@ __pycache__
 
 # Generated files
 /docs/_build
+/certifi_ca_bundle
 
 # Coverage reports
 /reports/
