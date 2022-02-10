@@ -14,7 +14,7 @@ if (argv.production) {
 
 /**
  * Webpack configuration
- * Run using "webpack" or "gulp build"
+ * Run using "webpack" or "npm run build"
  */
 module.exports = {
     // Entry points locations.
