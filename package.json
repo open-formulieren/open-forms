@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "gulp test",
+    "test": "echo 'no tests set up yet'; exit 1",
     "build": "gulp build",
     "watch": "webpack -w",
     "start": "webpack -w",
