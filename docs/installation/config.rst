@@ -219,6 +219,9 @@ Other settings
 * ``CACHE_AXES``: The Redis cache location for Axes (used to prevent brute
   force attacks). Defaults to ``localhost:6379/0``.
 
+* ``CACHE_OIDC``: The Redis cache location for the OIDC configuration. Defaults
+  to ``localhost:6379/0``.
+
 * ``ENVIRONMENT``: Short string to indicate the environment (test, production,
   etc.) Defaults to ``""``.
 
@@ -239,6 +242,11 @@ Other settings
   communicates with, specify the path to those (root) certificates here, rather than
   disabling SSL certificate verification. Example:
   ``EXTRA_VERIFY_CERTS=/etc/ssl/root1.crt,/etc/ssl/root2.crt``.
+
+* ``SELF_CERTIFI_DIR``: Temporary directory where the generated bundle of
+  ``EXTRA_VERIFY_CERTS`` will be stored.
+
+* ``CACHE_PORTALOCKER``: Redis URL for file locks. Defaults to ``localhost:6379/0``.
 
 * ``DEFAULT_TIMEOUT_REQUESTS``: The default timeout duration (in seconds) when calling
   external APIs/services. Defaults to ``10.0``. Requests taking longer than this
