@@ -15,7 +15,7 @@ services:
   sdk:
     image: openformulieren/open-forms-sdk
     ports:
-    - 8001:80
+    - 8001:8080
 
   busybox:
     image: busybox
@@ -83,8 +83,10 @@ services:
       - redis
 
   celery-flower:
-    image: mher/flower
+    build: .
+    image: openformulieren/open-forms:latest
     environment: *web_env
+    command: /celery_flower.sh
     ports:
       - 5555:5555
     depends_on:
