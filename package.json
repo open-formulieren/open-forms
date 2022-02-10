@@ -1,7 +1,7 @@
 {
   "name": "openforms",
   "version": "1.0.0-rc.1",
-  "description": "openforms project",
+  "description": "Open Forms",
   "main": "src/static/openforms/js/openforms.js",
   "directories": {
     "doc": "doc"
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/maykinmedia/openforms.git"
+    "url": "git+ssh://git@github.com/open-formulieren/open-forms.git"
   },
   "author": "Maykin Media",
   "license": "UNLICENSED",
