@@ -502,10 +502,11 @@ class SubmissionTests(TestCase):
             (
                 "openforms.utils.files",
                 "WARNING",
-                "File delete on model %r (pk=%s, field=content) failed: Delete failed"
+                "File delete on model %r (pk=%s, field=content, path=%s) failed: Delete failed"
                 % (
                     SubmissionFileAttachment,
                     attachment.pk,
+                    attachment.content.path,
                 ),
             ),
         )

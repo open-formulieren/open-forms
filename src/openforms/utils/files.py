@@ -4,23 +4,13 @@ Implement :class:`django.db.models.FileField` related utilities.
 These utilities apply to file fields and subclasses thereof.
 """
 import logging
-from typing import List, Literal
+from typing import List
 
 from django.db import models
 from django.db.models.base import ModelBase
 from django.db.models.fields.files import FieldFile
 
 logger = logging.getLogger(__name__)
-
-LogLevel = Literal[
-    "debug",
-    "info",
-    "warning",
-    "error",
-    "exception",
-    "critical",
-    "fatal",
-]
 
 
 def get_file_field_names(model: ModelBase) -> List[str]:
@@ -40,9 +30,8 @@ class log_failed_deletes:
     are surpressed.
     """
 
-    def __init__(self, filefield: FieldFile, level: LogLevel = "warning"):
+    def __init__(self, filefield: FieldFile):
         self.filefield = filefield
-        self.level = level
 
     def __enter__(self):
         return self
@@ -50,12 +39,12 @@ class log_failed_deletes:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         instance = self.filefield.instance
         if exc_value:
-            logger.log(
-                getattr(logging, self.level.upper()),
-                "File delete on model %r (pk=%s, field=%s) failed: %s",
+            logger.warning(
+                "File delete on model %r (pk=%s, field=%s, path=%s) failed: %s",
                 type(instance),
                 instance.pk,
                 self.filefield.field.name,
+                self.filefield.path,
                 exc_value,
                 exc_info=exc_value,
             )
