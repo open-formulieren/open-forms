@@ -1,3 +1,4 @@
+import inspect
 from uuid import UUID
 
 from django.db import transaction
@@ -195,13 +196,21 @@ UUID_OR_SLUG_PARAMETER = OpenApiParameter(
 )
 
 
+_FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
+    [f"- `{field}`" for field in FormSerializer._get_admin_field_names()]
+)
+
+
 @extend_schema_view(
     list=extend_schema(
         summary=_("List forms"),
         description=_(
             "List the active forms, including the pointers to the form steps. "
-            "Form steps are included in order as they should appear."
-        ),
+            "Form steps are included in order as they should appear.\n\n"
+            "**Warning: the response data depends on user permissions**\n\n"
+            "Non-staff users receive a subset of the documented fields which are used "
+            "for internal form configuration. These fields are:\n\n{admin_fields}"
+        ).format(admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN),
     ),
     retrieve=extend_schema(
         summary=_("Retrieve form details"),
@@ -233,6 +242,13 @@ class FormViewSet(viewsets.ModelViewSet):
     form definition. Multiple definitions are combined in logical steps to build a
     multi-step/page form for end-users to fill out. Form definitions can be (and are)
     re-used among different forms.
+
+    **Warning: the response data depends on user permissions**
+
+    Non-staff users receive a subset of the documented fields which are used
+    for internal form configuration. These fields are:
+
+    {admin_fields}
     """
 
     parser_classes = (FormCamelCaseJSONParser,)
@@ -260,6 +276,11 @@ class FormViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(_is_deleted=False)
 
         return queryset
+
+    def get_serializer(self, *args, **kwargs):
+        # overridden so that drf-spectacular calls this rather than using get_serializer_class,
+        # as we need the request in the serializer context
+        return super().get_serializer(*args, **kwargs)
 
     def initialize_request(self, request, *args, **kwargs):
         """
@@ -391,6 +412,11 @@ class FormViewSet(viewsets.ModelViewSet):
             serializer.validated_data["is_create"],
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+FormViewSet.__doc__ = inspect.getdoc(FormViewSet).format(
+    admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN
+)
 
 
 @extend_schema(

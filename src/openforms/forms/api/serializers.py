@@ -1,3 +1,5 @@
+from typing import List
+
 from django.db import transaction
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -9,7 +11,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
-from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.api.utils import (
+    get_from_serializer_data_or_instance,
+    underscore_to_camel,
+)
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
@@ -126,6 +131,17 @@ class SubmissionsRemovalOptionsSerializer(serializers.ModelSerializer):
 
 
 class FormSerializer(serializers.ModelSerializer):
+    """
+    Represent a single `Form` definition.
+
+    Contains all the relevant metadata and configuration from the form design. Form
+    renderers should use this as starting point.
+
+    Note that this schema is used for both non-admin users filling out forms and
+    admin users designing forms. The fields that are only relevant for admin users are:
+    {admin_fields}.
+    """
+
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
     authentication_backends = serializers.ListField(
@@ -192,6 +208,24 @@ class FormSerializer(serializers.ModelSerializer):
             "confirmation_email_template",
             "confirmation_email_option",
         )
+        # allowlist for anonymous users
+        public_fields = (
+            "uuid",
+            "name",
+            "explanation_template",
+            "login_required",
+            "authentication_backends",
+            "login_options",
+            "payment_required",
+            "payment_options",
+            "literals",
+            "slug",
+            "url",
+            "steps",
+            "show_progress_indicator",
+            "maintenance_mode",
+            "active",
+        )
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
@@ -202,6 +236,15 @@ class FormSerializer(serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+
+    @classmethod
+    def _get_admin_field_names(cls, camelize=True) -> List[str]:
+        formatter = underscore_to_camel if camelize else lambda x: x
+        return [
+            formatter(name)
+            for name in cls.Meta.fields
+            if name not in cls.Meta.public_fields
+        ]
 
     @transaction.atomic()
     def create(self, validated_data):
@@ -230,6 +273,26 @@ class FormSerializer(serializers.ModelSerializer):
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
         fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
+
+        request = self.context.get("request")
+        view = self.context.get("view")
+        is_api_schema_generation = (
+            getattr(view, "swagger_fake_view", False) if view else False
+        )
+        is_mock_request = request and getattr(
+            request, "is_mock_request", is_api_schema_generation
+        )
+
+        admin_only_fields = self._get_admin_field_names(camelize=False)
+
+        # filter public fields if not staff and not exporting or schema generating
+        # request.is_mock_request is set by the export serializers (possibly from management command etc)
+        # also this can be called from schema generator without request
+        if request and not is_mock_request:
+            if not request.user.is_staff:
+                for admin_field in admin_only_fields:
+                    del fields[admin_field]
+
         return fields
 
     def validate(self, attrs):
@@ -297,6 +360,13 @@ class FormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail) from e
         # serializer does some normalization, so make sure to update the data
         attrs[options_field] = serializer.data
+
+
+FormSerializer.__doc__ = FormSerializer.__doc__.format(
+    admin_fields=", ".join(
+        [f"`{field}`" for field in FormSerializer._get_admin_field_names()]
+    )
+)
 
 
 class FormExportSerializer(FormSerializer):

@@ -462,8 +462,25 @@ paths:
   /api/v1/forms:
     get:
       operationId: forms_list
-      description: List the active forms, including the pointers to the form steps.
-        Form steps are included in order as they should appear.
+      description: |-
+        List the active forms, including the pointers to the form steps. Form steps are included in order as they should appear.
+
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used for internal form configuration. These fields are:
+
+        - `internalName`
+        - `registrationBackend`
+        - `registrationBackendOptions`
+        - `paymentBackend`
+        - `paymentBackendOptions`
+        - `product`
+        - `isDeleted`
+        - `submissionConfirmationTemplate`
+        - `submissionAllowed`
+        - `submissionsRemovalOptions`
+        - `confirmationEmailTemplate`
+        - `confirmationEmailOption`
       summary: List forms
       parameters:
       - in: header
@@ -502,6 +519,24 @@ paths:
         form definition. Multiple definitions are combined in logical steps to build a
         multi-step/page form for end-users to fill out. Form definitions can be (and are)
         re-used among different forms.
+
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `internalName`
+        - `registrationBackend`
+        - `registrationBackendOptions`
+        - `paymentBackend`
+        - `paymentBackendOptions`
+        - `product`
+        - `isDeleted`
+        - `submissionConfirmationTemplate`
+        - `submissionAllowed`
+        - `submissionsRemovalOptions`
+        - `confirmationEmailTemplate`
+        - `confirmationEmailOption`
       summary: Create form
       parameters:
       - in: header
@@ -886,6 +921,24 @@ paths:
         form definition. Multiple definitions are combined in logical steps to build a
         multi-step/page form for end-users to fill out. Form definitions can be (and are)
         re-used among different forms.
+
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `internalName`
+        - `registrationBackend`
+        - `registrationBackendOptions`
+        - `paymentBackend`
+        - `paymentBackendOptions`
+        - `product`
+        - `isDeleted`
+        - `submissionConfirmationTemplate`
+        - `submissionAllowed`
+        - `submissionsRemovalOptions`
+        - `confirmationEmailTemplate`
+        - `confirmationEmailOption`
       summary: Retrieve form details
       parameters:
       - in: header
@@ -928,6 +981,24 @@ paths:
         form definition. Multiple definitions are combined in logical steps to build a
         multi-step/page form for end-users to fill out. Form definitions can be (and are)
         re-used among different forms.
+
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `internalName`
+        - `registrationBackend`
+        - `registrationBackendOptions`
+        - `paymentBackend`
+        - `paymentBackendOptions`
+        - `product`
+        - `isDeleted`
+        - `submissionConfirmationTemplate`
+        - `submissionAllowed`
+        - `submissionsRemovalOptions`
+        - `confirmationEmailTemplate`
+        - `confirmationEmailOption`
       summary: Update all details of a form
       parameters:
       - in: header
@@ -976,6 +1047,24 @@ paths:
         form definition. Multiple definitions are combined in logical steps to build a
         multi-step/page form for end-users to fill out. Form definitions can be (and are)
         re-used among different forms.
+
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `internalName`
+        - `registrationBackend`
+        - `registrationBackendOptions`
+        - `paymentBackend`
+        - `paymentBackendOptions`
+        - `product`
+        - `isDeleted`
+        - `submissionConfirmationTemplate`
+        - `submissionAllowed`
+        - `submissionsRemovalOptions`
+        - `confirmationEmailTemplate`
+        - `confirmationEmailOption`
       summary: Update given details of a form
       parameters:
       - in: header
@@ -3191,6 +3280,15 @@ components:
       - title
     Form:
       type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`.
       properties:
         uuid:
           type: string
@@ -3912,6 +4010,15 @@ components:
             $ref: '#/components/schemas/Submission'
     PatchedForm:
       type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`.
       properties:
         uuid:
           type: string
