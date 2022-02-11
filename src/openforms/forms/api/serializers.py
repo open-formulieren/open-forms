@@ -212,6 +212,7 @@ class FormSerializer(serializers.ModelSerializer):
         public_fields = (
             "uuid",
             "name",
+            "explanation_template",
             "login_required",
             "authentication_backends",
             "login_options",
