@@ -1,8 +1,14 @@
+import logging
+import os
 from collections import OrderedDict
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
+
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
+from privates.test import temp_private_root
+from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
@@ -11,10 +17,15 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ..models import Submission
-from .factories import SubmissionFactory, SubmissionStepFactory
+from ..models import Submission, SubmissionFileAttachment
+from .factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+    SubmissionStepFactory,
+)
 
 
+@temp_private_root()
 class SubmissionTests(TestCase):
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
@@ -342,6 +353,7 @@ class SubmissionTests(TestCase):
                 "components": [
                     {"key": "textFieldSensitive", "isSensitiveData": True},
                     {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                    {"key": "sensitiveFile", "type": "file", "isSensitiveData": True},
                 ],
             }
         )
@@ -370,6 +382,9 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step,
         )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step, form_key="sensitiveFile"
+        )
         submission_step_2 = SubmissionStepFactory.create(
             submission=submission,
             data={
@@ -378,8 +393,11 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step_2,
         )
+        with self.subTest("validate testdata setup"):
+            self.assertTrue(attachment.content.storage.exists(attachment.content.name))
 
-        submission.remove_sensitive_data()
+        with capture_on_commit_callbacks(execute=True):
+            submission.remove_sensitive_data()
 
         submission.refresh_from_db()
         submission_step.refresh_from_db()
@@ -397,6 +415,12 @@ class SubmissionTests(TestCase):
         self.assertEqual(submission.bsn, "")
         self.assertEqual(submission.kvk, "")
         self.assertEqual(submission.prefill_data, {})
+
+        with self.subTest("attachment deletion"):
+            self.assertFalse(attachment.content.storage.exists(attachment.content.name))
+            self.assertFalse(
+                SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+            )
 
     def test_submission_remove_sensitive_co_sign_data(self):
         """
@@ -429,6 +453,73 @@ class SubmissionTests(TestCase):
                 "representation": "T. Hulk",
             },
         )
+
+    def test_submission_delete_file_uploads_cascade(self):
+        """
+        Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
+        """
+        submission = SubmissionFactory.create(
+            completed=True, form__generate_minimal_setup=True
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission=submission
+        )
+        with self.subTest("test setup validation"):
+            self.assertTrue(attachment.content.storage.exists(attachment.content.path))
+
+        # delete the submission, it must cascade
+        with capture_on_commit_callbacks(execute=True):
+            submission.delete()
+
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
+        self.assertFalse(
+            SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+        )
+        self.assertFalse(attachment.content.storage.exists(attachment.content.path))
+
+    def test_submission_delete_file_uploads_cascade_file_already_gone(self):
+        """
+        Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
+        """
+        submission = SubmissionFactory.create(
+            completed=True, form__generate_minimal_setup=True
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission=submission
+        )
+        os.remove(attachment.content.path)
+        with self.subTest("test setup validation"):
+            self.assertFalse(attachment.content.storage.exists(attachment.content.path))
+
+        # delete the submission, it must cascade
+        exc = Exception("Delete failed")
+
+        with patch(
+            "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
+        ) as mock_delete:
+            with LogCapture(level=logging.WARNING) as capture:
+                with capture_on_commit_callbacks(execute=True):
+                    submission.delete()
+
+        mock_delete.assert_called_once_with(attachment.content.name)
+        capture.check(
+            (
+                "openforms.utils.files",
+                "WARNING",
+                "File delete on model %r (pk=%s, field=content, path=%s) failed: Delete failed"
+                % (
+                    SubmissionFileAttachment,
+                    attachment.pk,
+                    attachment.content.path,
+                ),
+            ),
+        )
+
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
+        self.assertFalse(
+            SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
+        )
+        self.assertFalse(attachment.content.storage.exists(attachment.content.path))
 
     def test_get_merged_appointment_data(self):
         form = FormFactory.create()

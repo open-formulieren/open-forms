@@ -31,6 +31,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
+from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import (
     AllowedRedirectValidator,
     SerializerValidator,
@@ -358,13 +359,18 @@ class Submission(models.Model):
         self.pseudo = ""
         self.prefill_data = dict()
 
-        for submission_step in self.submissionstep_set.select_related(
-            "form_step", "form_step__form_definition"
-        ).select_for_update():
+        steps_qs = self.submissionstep_set.select_related(
+            "form_step",
+            "form_step__form_definition",
+        )
+        for submission_step in steps_qs.select_for_update():
             fields = submission_step.form_step.form_definition.sensitive_fields
             removed_data = {key: "" for key in fields}
             submission_step.data.update(removed_data)
             submission_step.save()
+
+            # handle the attachments
+            submission_step.attachments.filter(form_key__in=fields).delete()
         self._is_cleaned = True
 
         if self.co_sign_data:
@@ -879,17 +885,12 @@ def submission_file_upload_to(instance, filename):
     return fmt_upload_to("submission-uploads", instance, filename)
 
 
-class TemporaryFileUploadQuerySet(models.QuerySet):
+class TemporaryFileUploadQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     def select_prune(self, age: timedelta):
         return self.filter(created_on__lt=timezone.now() - age)
 
-    def delete(self):
-        # overwrite the method so the admin etc delete properly
-        for tmp in self:
-            tmp.delete()
 
-
-class TemporaryFileUpload(models.Model):
+class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     content = PrivateMediaFileField(
         verbose_name=_("content"),
@@ -912,16 +913,12 @@ class TemporaryFileUpload(models.Model):
         verbose_name = _("temporary file upload")
         verbose_name_plural = _("temporary file uploads")
 
-    def delete(self, using=None, keep_parents=False):
-        self.content.delete(save=False)
-        super().delete(using=using, keep_parents=keep_parents)
 
-
-class SubmissionFileAttachmentQuerySet(models.QuerySet):
+class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
-    def as_form_dict(self) -> Mapping[str, "SubmissionFileAttachment"]:
+    def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
         files = defaultdict(list)
         for file in self:
             files[file.form_key].append(file)
@@ -961,7 +958,7 @@ class SubmissionFileAttachmentManager(models.Manager):
             )
 
 
-class SubmissionFileAttachment(models.Model):
+class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission_step = models.ForeignKey(
         to="SubmissionStep",
@@ -1002,10 +999,8 @@ class SubmissionFileAttachment(models.Model):
     class Meta:
         verbose_name = _("submission file attachment")
         verbose_name_plural = _("submission file attachments")
-
-    def delete(self, using=None, keep_parents=False):
-        self.content.delete(save=False)
-        super().delete(using=using, keep_parents=keep_parents)
+        # see https://docs.djangoproject.com/en/2.2/topics/db/managers/#using-managers-for-related-object-access
+        base_manager_name = "objects"
 
     def get_display_name(self):
         return self.file_name or self.original_name
