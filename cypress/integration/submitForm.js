@@ -12,17 +12,21 @@ describe('Basic integration test', () => {
     cy.formStartButton().click()
 
     // Step 1
-    cy.formField("field1").type("foo");
-    cy.continueButton().should("not.have.attr", "aria-disabled");
-    cy.continueButton().click()
+    cy.formField("field1").should("be.visible").type("foo");
+    cy.continueButton().should(($button) => {
+      expect($button).not.to.have.attr("aria-disabled");
+      $button.click();
+    });
 
     // Step 2
-    cy.formField("field2").type("bar");
-    cy.continueButton().should("not.have.attr", "aria-disabled");
-    cy.continueButton().click();
+    cy.formField("field2").should("be.visible").type("bar");
+    cy.continueButton().should(($button) => {
+      expect($button).not.to.have.attr("aria-disabled");
+      $button.click();
+    });
 
+    cy.privacyCheckbox().click();
     cy.confirmationButton().click();
-    cy.contains('Verzenden').click();
 
     cy.contains("Download uw inzending als PDF document", {timeout: 20000}).should("be.visible");
   })

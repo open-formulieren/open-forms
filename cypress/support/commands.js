@@ -32,7 +32,7 @@ Cypress.Commands.add("formStartButton", () => {
 
 // Find a form field by its key
 Cypress.Commands.add("formField", (fieldKey, timeout=10000) => {
-    cy.wait(400)  // Required because the DOM seems to be re-rendered
+    cy.wait(1000)
     return cy.get(`.openforms-form-control--${fieldKey}`, {timeout: timeout});
 })
 
@@ -41,7 +41,12 @@ Cypress.Commands.add("continueButton", (timeout=10000) => {
     return cy.get('button[name="next"][type="submit"]', {timeout: timeout});
 })
 
+// Find the privacyCheckbox
+Cypress.Commands.add("privacyCheckbox", (timeout=20000) => {
+    return cy.get('input[name="privacy"]', {timeout: timeout});
+})
+
 // Find the confirmationButton
 Cypress.Commands.add("confirmationButton", (timeout=20000) => {
-    return cy.get('input[name="privacy"]', {timeout: timeout});
+    return cy.get('button[name="confirm"]', {timeout: timeout});
 })
