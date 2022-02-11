@@ -287,9 +287,10 @@ class FormSerializer(serializers.ModelSerializer):
         # filter public fields if not staff and not exporting or schema generating
         # request.is_mock_request is set by the export serializers (possibly from management command etc)
         # also this can be called from schema generator without request
-        if request and not is_mock_request and not request.user.is_staff:
-            for admin_field in admin_only_fields:
-                del fields[admin_field]
+        if request and not is_mock_request:
+            if not request.user.is_staff:
+                for admin_field in admin_only_fields:
+                    del fields[admin_field]
 
         return fields
 
