@@ -3191,6 +3191,15 @@ components:
       - title
     Form:
       type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `explanationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`.
       properties:
         uuid:
           type: string
@@ -3912,6 +3921,15 @@ components:
             $ref: '#/components/schemas/Submission'
     PatchedForm:
       type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `explanationTemplate`, `submissionAllowed`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`.
       properties:
         uuid:
           type: string

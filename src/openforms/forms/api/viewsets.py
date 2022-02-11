@@ -261,6 +261,11 @@ class FormViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def get_serializer(self, *args, **kwargs):
+        # overridden so that drf-spectacular calls this rather than using get_serializer_class,
+        # as we need the request in the serializer context
+        return super().get_serializer(*args, **kwargs)
+
     def initialize_request(self, request, *args, **kwargs):
         """
         Method overridden to account for the lookup on uuid OR slug.
