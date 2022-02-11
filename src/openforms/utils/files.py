@@ -6,7 +6,7 @@ These utilities apply to file fields and subclasses thereof.
 import logging
 from typing import List
 
-from django.db import models
+from django.db import models, transaction
 from django.db.models.base import ModelBase
 from django.db.models.fields.files import FieldFile
 
@@ -72,8 +72,9 @@ class DeleteFileFieldFilesMixin:
         # Postponing that decision, as likely a number of tests will fail because they
         # run in transactions.
         file_field_names = get_file_field_names(type(self))
-        result = super().delete(*args, **kwargs)
-        _delete_obj_files(file_field_names, self)
+        with transaction.atomic():
+            result = super().delete(*args, **kwargs)
+            transaction.on_commit(lambda: _delete_obj_files(file_field_names, self))
         return result
 
     delete.alters_data = True
@@ -108,16 +109,18 @@ class DeleteFilesQuerySetMixin:
     def _raw_delete(self, using):
         # raw delete is called in fast_deletes
         callback = self._get_delete_filefields_storage_callback()
-        result = super()._raw_delete(using)
-        callback()
+        with transaction.atomic():
+            result = super()._raw_delete(using)
+            transaction.on_commit(callback)
         return result
 
     _raw_delete.alters_data = True
 
     def delete(self):
         callback = self._get_delete_filefields_storage_callback()
-        result = super().delete()
-        callback()
+        with transaction.atomic():
+            result = super().delete()
+            transaction.on_commit(callback)
         return result
 
     delete.alters_data = True

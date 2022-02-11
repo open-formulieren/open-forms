@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, override_settings
 
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
@@ -185,7 +186,9 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
 
-        response = self.client.delete(url)
+        with capture_on_commit_callbacks(execute=True):
+            response = self.client.delete(url)
+
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expect the file and instance to be deleted
@@ -209,7 +212,8 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         path = upload.content.path
         self.assertTrue(os.path.exists(path))
 
-        upload.delete()
+        with capture_on_commit_callbacks(execute=True):
+            upload.delete()
 
         # expect the file and instance to be deleted
         self.assertFalse(os.path.exists(path))
@@ -228,7 +232,8 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         for path in paths:
             self.assertTrue(os.path.exists(path))
 
-        TemporaryFileUpload.objects.all().delete()
+        with capture_on_commit_callbacks(execute=True):
+            TemporaryFileUpload.objects.all().delete()
 
         for path in paths:
             self.assertFalse(os.path.exists(path))

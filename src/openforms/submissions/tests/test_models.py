@@ -6,6 +6,7 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
+from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
@@ -395,7 +396,8 @@ class SubmissionTests(TestCase):
         with self.subTest("validate testdata setup"):
             self.assertTrue(attachment.content.storage.exists(attachment.content.name))
 
-        submission.remove_sensitive_data()
+        with capture_on_commit_callbacks(execute=True):
+            submission.remove_sensitive_data()
 
         submission.refresh_from_db()
         submission_step.refresh_from_db()
@@ -466,7 +468,8 @@ class SubmissionTests(TestCase):
             self.assertTrue(attachment.content.storage.exists(attachment.content.path))
 
         # delete the submission, it must cascade
-        submission.delete()
+        with capture_on_commit_callbacks(execute=True):
+            submission.delete()
 
         self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
         self.assertFalse(
@@ -495,7 +498,8 @@ class SubmissionTests(TestCase):
             "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
         ) as mock_delete:
             with LogCapture(level=logging.WARNING) as capture:
-                submission.delete()
+                with capture_on_commit_callbacks(execute=True):
+                    submission.delete()
 
         mock_delete.assert_called_once_with(attachment.content.name)
         capture.check(
