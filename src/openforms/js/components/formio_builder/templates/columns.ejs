@@ -1,0 +1,7 @@
+<div class="columns">
+    {% ctx.component.columns.forEach(function(column, index) {%}
+        <div class="col--span-{{column.size}}" ref="{{ctx.columnKey}}">
+    {{ctx.columnComponents[index]}}
+        </div>
+    {%}) %}
+</div>
