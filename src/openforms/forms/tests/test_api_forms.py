@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory, StaffUserFactory
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
@@ -24,7 +24,7 @@ class FormSerializerTests(APITestCase):
     def test_public_fields_meta_exist_in_fields_meta(self):
         # catch changes
         for field in FormSerializer.Meta.public_fields:
-            with self.subTest(f"{field}"):
+            with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.fields)
 
     def test_get_fields_is_filtered_for_non_staff(self):
@@ -36,7 +36,7 @@ class FormSerializerTests(APITestCase):
 
         # everything returned by get_fields() should exist in Meta.public_fields
         for field in fields.keys():
-            with self.subTest(f"{field}"):
+            with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.public_fields)
 
     def test_get_fields_is_not_filtered_for_staff(self):
@@ -48,7 +48,7 @@ class FormSerializerTests(APITestCase):
 
         # everything returned by get_fields() should exist in Meta.fields
         for field in fields.keys():
-            with self.subTest(f"{field}"):
+            with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.fields)
 
 
