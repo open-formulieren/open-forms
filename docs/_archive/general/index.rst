@@ -18,21 +18,6 @@ In addition to BEM we limit the scope of components to the "border-box" preventi
 components from defining a margin on itself. Parent components control the margins
 of its children.
 
-The view is a component without parents and should be directly linked to a template.
-It's role is to "orchestrate" child components.
-
-To compile SASS to CSS run::
-
-    $ gulp sass
-
-To create a new component run ::
-
-    $ gulp create-component --name my-compoment-name --scss
-
-To create a new view run ::
-
-    $ gulp create-view --name my-compoment-name --scss
-
 JavaScript
 ==========
 
@@ -45,15 +30,7 @@ SASS.
 
 Compiling ES6 to ES5::
 
-    $ gulp js
-
-To create a new component run ::
-
-    $ gulp create-component --name my-compoment-name --js
-
-To create a new view run ::
-
-    $ gulp create-view --name my-compoment-name --js
+    $ npm run build
 
 All third party libraries should be installed using npm::
 

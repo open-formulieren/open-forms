@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const argv = require('yargs').argv;
 const paths = require('./build/paths');
 
@@ -13,7 +14,7 @@ if (argv.production) {
 
 /**
  * Webpack configuration
- * Run using "webpack" or "gulp build"
+ * Run using "webpack" or "npm run build"
  */
 module.exports = {
     // Entry points locations.
@@ -37,7 +38,13 @@ module.exports = {
         new MiniCssExtractPlugin(),
         new webpack.ProvidePlugin({
             _: 'lodash',
-        })
+        }),
+        // copy leaflet files, replaces gulp action
+        new CopyPlugin({
+          patterns: [
+            { from: 'node_modules/leaflet/dist/images', to: 'images' },
+          ],
+        }),
     ],
 
     // Modules
