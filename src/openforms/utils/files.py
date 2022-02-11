@@ -72,8 +72,9 @@ class DeleteFileFieldFilesMixin:
         # Postponing that decision, as likely a number of tests will fail because they
         # run in transactions.
         file_field_names = get_file_field_names(type(self))
+        result = super().delete(*args, **kwargs)
         _delete_obj_files(file_field_names, self)
-        return super().delete(*args, **kwargs)
+        return result
 
     delete.alters_data = True
 
@@ -90,27 +91,34 @@ class DeleteFilesQuerySetMixin:
        doesn't use your custom queryset class.
     """
 
-    def _delete_filefields_storage(self) -> None:
-        # TODO: we might want to wrap this in transaction.on_commit, see also
-        # DeleteFileFieldFilesMixin
+    def _get_delete_filefields_storage_callback(self) -> callable:
         file_field_names = get_file_field_names(self.model)
-        del_query = self._chain()
 
-        # iterator in case we're dealing with large querysets and memory could be
-        # exhausted
-        for obj in del_query.iterator():
-            _delete_obj_files(file_field_names, obj)
+        # we cannot use an iterator, as the query will come up empty after the DELETE
+        # query is done. This could potentially lead to memory exhaustion on large
+        # datasets
+        objects_to_delete = list(self._chain())
+
+        def callback():
+            for obj in objects_to_delete:
+                _delete_obj_files(file_field_names, obj)
+
+        return callback
 
     def _raw_delete(self, using):
         # raw delete is called in fast_deletes
-        self._delete_filefields_storage()
-        return super()._raw_delete(using)
+        callback = self._get_delete_filefields_storage_callback()
+        result = super()._raw_delete(using)
+        callback()
+        return result
 
     _raw_delete.alters_data = True
 
     def delete(self):
-        self._delete_filefields_storage()
-        return super().delete()
+        callback = self._get_delete_filefields_storage_callback()
+        result = super().delete()
+        callback()
+        return result
 
     delete.alters_data = True
     delete.queryset_only = True
