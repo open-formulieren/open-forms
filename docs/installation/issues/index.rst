@@ -8,4 +8,5 @@ Common issues
    :caption: Further reading
 
    form_auth
+   admin_auth
    http
