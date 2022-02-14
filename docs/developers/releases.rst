@@ -145,3 +145,21 @@ release branch (still) passes.
 
 Bundling of SDK inside Open Forms backend image
 -----------------------------------------------
+
+The Open Forms backend image includes a version of the SDK for ease of deployment under
+the ``/static/sdk/`` prefix. The particular SDK version should be aligned with the
+backend version, which can be controlled through docker build args.
+
+To produce a backend image build of Open Forms version ``x.y.z`` with SDK version
+``a.b.c``, the following steps must be performed in the right order:
+
+1. Build the SDK version ``a.b.c.`` and ensure it is pushed to Docker Hub or otherwise
+   available to the backend build environment.
+2. Specify ``--build-arg RELEASE=x.y.z`` and ``--build-arg SDK_RELEASE=a.b.c.`` for the
+   backend image build.
+3. Build, tag and push the backend image.
+
+By default ``RELEASE`` and ``SDK_RELEASE`` are set to ``latest``, and if the SDK image
+is not available on the local filesystem, it will be pulled from Docker Hub.
+
+.. todo:: Set up the SDK and backend version compatibility matrix
