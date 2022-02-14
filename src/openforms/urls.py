@@ -12,6 +12,7 @@ from django.views.generic import TemplateView
 
 from decorator_include import decorator_include
 
+from openforms.accounts.oidc.views import AdminLoginFailure
 from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
 from openforms.utils.views import ErrorDetailView
@@ -44,6 +45,7 @@ urlpatterns = [
             staff_member_required, "openforms.config.urls", namespace="config"
         ),
     ),
+    path("admin/login/failure/", AdminLoginFailure.as_view(), name="admin-oidc-error"),
     path("admin/", admin.site.urls),
     path(
         "reset/<uidb64>/<token>/",

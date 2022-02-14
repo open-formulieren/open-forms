@@ -1,0 +1,27 @@
+{% extends "admin/login.html" %}
+{% load i18n %}
+
+
+{% block content %}
+
+<p class="errornote">
+    {% trans "There was an error while logging in with your organization account." %}
+</p>
+
+<div id="content-main">
+    <p>
+    {% blocktrans trimmed %}
+        There was a problem while logging in with your organization account.
+        Please contact your Open Forms administrator with this error message to
+        resolve this:
+    {% endblocktrans %}
+    </p>
+
+    <p><code>{{ oidc_error|linebreaksbr }}</code></p>
+
+    <p>
+        <a href="{% url 'admin:login' %}">{% trans "Back to login" %}</a>
+    </p>
+</div>
+
+{% endblock %}
