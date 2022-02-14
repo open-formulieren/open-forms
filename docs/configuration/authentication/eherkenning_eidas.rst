@@ -69,4 +69,4 @@ Step by step overview
 .. _`OIN`: https://www.logius.nl/diensten/oin
 
 
-Problems? You might want to check out :ref:`installation_issues_auth`.
+Problems? You might want to check out :ref:`installation_issues_form_auth`.

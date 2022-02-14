@@ -1,7 +1,7 @@
-.. _installation_issues_auth:
+.. _installation_issues_form_auth:
 
-Authentication issues
-=====================
+Form authentication issues
+==========================
 
 If you enabled :ref:`DigiD <configuration_authentication_digid>`, 
 :ref:`eHerkenning or eIDAS <configuration_authentication_eherkenning_eidas>` 

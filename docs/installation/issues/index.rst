@@ -7,5 +7,6 @@ Common issues
    :maxdepth: 1
    :caption: Further reading
 
-   auth
+   form_auth
+   admin_auth
    http

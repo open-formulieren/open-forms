@@ -991,6 +991,7 @@ OPENFORMS_LOCATION_CLIENT = config(
 # Mozilla Django OIDC DB settings
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+OIDC_CALLBACK_CLASS = "openforms.accounts.oidc.views.OIDCCallbackView"
 MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
 MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 
