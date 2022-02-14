@@ -10,4 +10,10 @@ services:
     volumes:
       - ./keycloak/fixtures/realm.json:/realm.json
     ports:
-    - 8080:8080
+      - 8080:8080
+    networks:
+      - open-forms-dev
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
