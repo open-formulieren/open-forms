@@ -155,11 +155,15 @@ To produce a backend image build of Open Forms version ``x.y.z`` with SDK versio
 
 1. Build the SDK version ``a.b.c.`` and ensure it is pushed to Docker Hub or otherwise
    available to the backend build environment.
-2. Specify ``--build-arg RELEASE=x.y.z`` and ``--build-arg SDK_RELEASE=a.b.c.`` for the
-   backend image build.
-3. Build, tag and push the backend image.
+2. Update the file ``.sdk-release`` in the backend repository with the version ``a.b.c``
+3. Specify ``--build-arg RELEASE=x.y.z`` and ``--build-arg SDK_RELEASE=a.b.c.`` for the
+   backend image build. On CI, this happens automatically.
+4. Build, tag and push the backend image.
 
 By default ``RELEASE`` and ``SDK_RELEASE`` are set to ``latest``, and if the SDK image
 is not available on the local filesystem, it will be pulled from Docker Hub.
+
+On CI, if the backend release is ``latest``, SDK release ``latest`` will be included.
+Otherwise, the release in the file ``.sdk-release`` is used.
 
 .. todo:: Set up the SDK and backend version compatibility matrix
