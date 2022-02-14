@@ -12,7 +12,7 @@ $ docker-compose up
 The fixtures are present in `cypress/data_fixtures` and can be loaded using this command:
 
 ```bash
-$ bin/load_ci_fixtures.sh <container_name>
+$ bin/load_cypress_fixtures.sh <container_name>
 ```
 
 Where `<container_name>` is the name of the running Open Forms web container

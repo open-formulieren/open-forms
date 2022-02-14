@@ -27,6 +27,7 @@ familiarize yourself with the design principles.
    plugins/index
    extending
    manual_testing
+   integration_testing
    i18n
    csp
    npm
