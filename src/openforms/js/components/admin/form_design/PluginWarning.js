@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import {PluginsContext} from './Context';
+import MessageList from './warnings/MessageList';
 
 
 const PluginWarning = ({loginRequired, configuration}) => {
@@ -71,19 +72,7 @@ const PluginWarning = ({loginRequired, configuration}) => {
     checkPrefillsAuth(configuration);
 
     if ( warnings.length > 0 ) {
-     const formattedWarnings = warnings.map((item, index) => {
-         return (
-            <li key={index} className="warning" >
-                {item}
-            </li>
-         )
-     })
-
-     return (
-        <ul className="messagelist">
-            {formattedWarnings}
-        </ul>
-     );
+        return (<MessageList warnings={warnings} />);
     }
 
     return null;

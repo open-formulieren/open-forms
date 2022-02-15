@@ -2,6 +2,7 @@ import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import FormioUtils from 'formiojs/utils';
 import PropTypes from 'prop-types';
+import MessageList from './warnings/MessageList';
 
 
 const CUSTOM_FIELD_TYPES = ['npFamilyMembers'];
@@ -26,17 +27,7 @@ const AuthenticationWarning = ({loginRequired, configuration}) => {
         />
     ));
 
-    return (
-        <ul className="messagelist">
-            {
-                formattedWarnings.map((warning, index) => {
-                    return (
-                        <li key={index} className="warning">{warning}</li>
-                    );
-                })
-            }
-        </ul>
-    );
+    return (<MessageList warnings={formattedWarnings}/>);
 
 };
 

@@ -4,6 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import Modal from '../Modal';
 import {ChangelistTable, ChangelistColumn} from '../tables';
+import MessageList from './warnings/MessageList';
 
 
 const AffectedFormType = PropTypes.shape({
@@ -43,6 +44,21 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
     };
 
     if (!changed) return null;
+
+    const formattedWarning = (
+        <FormattedMessage
+            description="Warning when modifying existing form definitions"
+            defaultMessage="You are modifying an existing form definition! This change affects <link>{count, plural,
+                one {# form}
+                other {# forms}
+            }</link>"
+            values={{
+                count: affectedForms.length,
+                link: (chunks) => (<a href="#" onClick={onShowModal}>{chunks}</a>)
+            }}
+        />
+    );
+
     return (
         <>
             <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} title={`Formulieren (${affectedForms.length})`}>
@@ -51,21 +67,7 @@ const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
                 </AffectedFormsTable>
             </Modal>
 
-            <ul className="messagelist">
-                <li className="warning">
-                    <FormattedMessage
-                        description="Warning when modifying existing form definitions"
-                        defaultMessage="You are modifying an existing form definition! This change affects <link>{count, plural,
-                            one {# form}
-                            other {# forms}
-                        }</link>"
-                        values={{
-                            count: affectedForms.length,
-                            link: (chunks) => (<a href="#" onClick={onShowModal}>{chunks}</a>)
-                        }}
-                    />
-                </li>
-            </ul>
+            <MessageList warnings={[formattedWarning]} />
         </>
     );
 };

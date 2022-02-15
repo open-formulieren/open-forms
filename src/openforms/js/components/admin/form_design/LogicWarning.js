@@ -1,6 +1,7 @@
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import PropTypes from 'prop-types';
+import MessageList from "./warnings/MessageList";
 
 
 
@@ -16,18 +17,7 @@ const LogicWarning = ({warnings}) => {
         />
     ));
 
-    return (
-        <ul className="messagelist">
-            {
-                formattedWarnings.map((warning, index) => {
-                    return (
-                        <li key={index} className="warning">{warning}</li>
-                    );
-                })
-            }
-        </ul>
-    );
-
+    return (<MessageList warnings={formattedWarnings}/>);
 };
 
 
