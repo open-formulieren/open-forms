@@ -14,9 +14,15 @@ logger = logging.getLogger(__name__)
 #
 # Custom signals
 #
-co_sign_authentication_success = Signal(
-    providing_args=["request", "plugin", "submission"]
-)
+co_sign_authentication_success = Signal()
+"""
+Signal a succesful co-sign authentication.
+
+Provides:
+    :arg request: the HttpRequest instance
+    :arg plugin: authentication plugin identifier
+    :arg submission: The :class:`Submission` instance being co-signed.
+"""
 
 
 #
