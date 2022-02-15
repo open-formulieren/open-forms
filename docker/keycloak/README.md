@@ -1,7 +1,7 @@
 # Keycloak infrastructure
 
 Open Forms supports OpenID Connect as an authentication protocol. Keycloak is
-an example of an Identity Provider that supports OIDC
+an example of an Identity Provider that supports OIDC.
 
 We include a compose stack for development and CI purposes. This is **NOT** suitable
 for production usage.
@@ -24,8 +24,7 @@ Assuming the docker containers specified in `docker-compose.yml` in the root dir
 are running, run the following commands:
 
 ```bash
-cat keycloak/fixtures/oidc_form.json | docker exec -i <openforms_container_name> src/manage.py loaddata --format=json -
-cat keycloak/fixtures/oidc.json | docker exec -i <openforms_container_name> src/manage.py loaddata --format=json -
+cat docker/keycloak/fixtures/oidc.json | docker-compose exec web src/manage.py loaddata --format=json -
 ```
 
 This loads an example form configured to use DigiD via OIDC for authentication and

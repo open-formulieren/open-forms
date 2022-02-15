@@ -41,7 +41,7 @@ class OpenIDConnectEHerkenningConfigForm(OpenIDConnectConfigForm):
                     _(
                         "eHerkenning via OpenID Connect is selected as authentication backend "
                         "for one or more Forms, please remove this backend from these "
-                        "Forms before disabling this authentication backend."
+                        "forms before disabling this authentication backend."
                     )
                 )
         return enabled

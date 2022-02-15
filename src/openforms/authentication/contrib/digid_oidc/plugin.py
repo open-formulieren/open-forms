@@ -31,8 +31,6 @@ class DigiDOIDCAuthentication(BasePlugin):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": "digid_oidc"},
         )
-        # The return_url becomes the DigiD relay state - this is why we add the co-sign
-        # param to that URL and not the `form_url`.
         return_url = furl(auth_return_url).set(
             {
                 "next": form_url,
