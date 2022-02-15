@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template import Context, Template
@@ -199,7 +198,7 @@ class GlobalConfiguration(SingletonModel):
     # tokens or even have the OF-specific design tokens included in the municipality dist
     # already, see for example https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css
 
-    design_token_values = JSONField(
+    design_token_values = models.JSONField(
         _("design token values"),
         blank=True,
         default=dict,
@@ -436,7 +435,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Amount of days when all submissions will be permanently deleted"),
     )
 
-    plugin_configuration = JSONField(
+    plugin_configuration = models.JSONField(
         _("plugin configuration"),
         blank=True,
         default=dict,

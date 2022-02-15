@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
-from django.contrib.postgres.fields import JSONField
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
@@ -200,14 +199,14 @@ class Submission(models.Model):
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
     )
-    co_sign_data = JSONField(
+    co_sign_data = models.JSONField(
         _("co-sign data"),
         blank=True,
         default=dict,
         validators=[SerializerValidator(CoSignDataSerializer)],
         help_text=_("Authentication details of a co-signer."),
     )
-    prefill_data = JSONField(
+    prefill_data = models.JSONField(
         _("prefill data"),
         blank=True,
         default=dict,
@@ -239,7 +238,7 @@ class Submission(models.Model):
             "Note that this date will be updated even if the registration is not successful."
         ),
     )
-    registration_result = JSONField(
+    registration_result = models.JSONField(
         _("registration backend result"),
         blank=True,
         null=True,
@@ -756,7 +755,7 @@ class SubmissionStep(models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
     form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
-    data = JSONField(_("data"), blank=True, null=True)
+    data = models.JSONField(_("data"), blank=True, null=True)
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 

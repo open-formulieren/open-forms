@@ -6,7 +6,6 @@ from functools import partial
 from typing import List, Tuple
 
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.urls import reverse
@@ -38,7 +37,7 @@ class FormDefinition(models.Model):
     slug = AutoSlugField(
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
-    configuration = JSONField(
+    configuration = models.JSONField(
         _("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
     )

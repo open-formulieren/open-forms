@@ -1,6 +1,5 @@
 import uuid as _uuid
 
-from django.contrib.postgres.fields.jsonb import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -18,7 +17,7 @@ class FormVersion(models.Model):
         to="forms.Form",
         on_delete=models.CASCADE,
     )
-    export_blob = JSONField(
+    export_blob = models.JSONField(
         help_text=_(
             "The form, form definitions and form steps that make up this version, saved as JSON data."
         ),
