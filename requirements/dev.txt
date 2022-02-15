@@ -160,7 +160,7 @@ defusedxml==0.6.0
     #   digid-eherkenning
     #   django-camunda
     #   python3-saml
-digid_eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@d61ffe90322b9bb51c700b784181fe13a5253034
+digid_eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@e14e7df15ade8b43fbc93129a742fc5935ee203a
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
