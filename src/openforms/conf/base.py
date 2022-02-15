@@ -909,6 +909,11 @@ EHERKENNING = {
             "requested_attributes": [],
             "language": "nl",
         },
+    ],
+}
+
+if EIDAS_SERVICE_INDEX:
+    EHERKENNING["services"].append(
         {
             "attribute_consuming_service_index": EIDAS_SERVICE_INDEX,
             "service_loa": EHERKENNING_LOA,
@@ -921,9 +926,8 @@ EHERKENNING = {
             "requested_attributes": [],
             "language": "nl",
             "classifiers": ["eIDAS-inbound"],
-        },
-    ],
-}
+        }
+    )
 
 #
 # Location Client
