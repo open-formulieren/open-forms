@@ -28,6 +28,7 @@ services:
       context: .
       args:
         RELEASE: ${TAG:-latest}
+        SDK_RELEASE: ${TAG:-latest}
     image: openformulieren/open-forms:${TAG:-latest}
     environment: &web_env
       - DJANGO_SETTINGS_MODULE=openforms.conf.docker

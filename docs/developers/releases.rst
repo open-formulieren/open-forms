@@ -1,4 +1,4 @@
-.. developers_releases:
+.. _developers_releases:
 
 Release flow
 ============
@@ -6,6 +6,8 @@ Release flow
 Open Forms periodically releases new versions - feature releases and/or bugfix releases.
 
 This document is intended for release managers preparing and pushing out a new release.
+
+.. _developers_releases_versioning:
 
 Versioning policy
 -----------------
@@ -116,3 +118,52 @@ This is to be fleshed out more, but some existing channels are:
 * Common Ground slack
 * commonground.nl
 * possible email subscribers
+
+Stable releases and on-going development
+----------------------------------------
+
+Open Forms follows the one-flow branching model: the ``master`` branch is the main
+branch. Features and bugfixes are developed in separate branches (e.g. ``feature/foo``
+and ``issue/bar``) with a pull request to ``master``.
+
+Supported stable (and upcoming) releases have their own branch following the pattern
+``stable/<major>.<minor>.x``. Conforming to the :ref:`developers_releases_versioning`,
+bugfixes merged into ``master`` must be backported to the respective release branch(es).
+Pull requests with bugfixes must be tagged with the **needs-backport** label. The
+release branches are tested in CI as well.
+
+The person merging the pull request is responsible for making sure the fix ends up in
+the appropriate release branch as well. This can be done via:
+
+* cherry-picking the relevant commit(s) on the release branch and pushing to the release
+  branch
+* creating a branch to cherry-pick the commit(s) on and make a pull request to the
+  release branch
+
+The person merging the pull request is responsible for making sure the build on the
+release branch (still) passes.
+
+Bundling of SDK inside Open Forms backend image
+-----------------------------------------------
+
+The Open Forms backend image includes a version of the SDK for ease of deployment under
+the ``/static/sdk/`` prefix. The particular SDK version should be aligned with the
+backend version, which can be controlled through docker build args.
+
+To produce a backend image build of Open Forms version ``x.y.z`` with SDK version
+``a.b.c``, the following steps must be performed in the right order:
+
+1. Build the SDK version ``a.b.c.`` and ensure it is pushed to Docker Hub or otherwise
+   available to the backend build environment.
+2. Update the file ``.sdk-release`` in the backend repository with the version ``a.b.c``
+3. Specify ``--build-arg RELEASE=x.y.z`` and ``--build-arg SDK_RELEASE=a.b.c.`` for the
+   backend image build. On CI, this happens automatically.
+4. Build, tag and push the backend image.
+
+By default ``RELEASE`` and ``SDK_RELEASE`` are set to ``latest``, and if the SDK image
+is not available on the local filesystem, it will be pulled from Docker Hub.
+
+On CI, if the backend release is ``latest``, SDK release ``latest`` will be included.
+Otherwise, the release in the file ``.sdk-release`` is used.
+
+.. todo:: Set up the SDK and backend version compatibility matrix

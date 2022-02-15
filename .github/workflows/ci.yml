@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release/*
     tags:
       - '*'
   pull_request:
@@ -130,8 +131,13 @@ jobs:
           # PRs result in version 'merge' -> transform that into 'latest'
           [ "$VERSION" == "merge" ] && VERSION=latest
 
+          # Obtain the SDK release to bundle along, use latest if backend is also latest
+          SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
+          [ "$VERSION" == "latest" ] && SDK_RELEASE=latest
+
           echo ::set-output name=tag::${VERSION}
           echo ::set-output name=git_hash::${GITHUB_SHA}
+          echo ::set-output name=sdk_release::${SDK_RELEASE}
 
       - name: Build the Docker image
         run: |
@@ -139,6 +145,7 @@ jobs:
             --tag $IMAGE_NAME:$RELEASE_VERSION \
             --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
             --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
+            --build-arg SDK_RELEASE=${{ steps.vars.outputs.sdk_release }}
         env:
           RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
 
