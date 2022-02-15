@@ -47,7 +47,7 @@ import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
-import {getFormComponents, findComponent} from './utils';
+import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
 
 const initialFormState = {
     form: {
@@ -291,12 +291,6 @@ function reducer(draft, action) {
         case 'EDIT_STEP_COMPONENT_MUTATED':  {
             const {mutationType, schema, args} = action.payload;
 
-            // check if we need updates to the backendRegistrationOptions
-            const {registrationBackend, registrationBackendOptions} = draft.form;
-            const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
-            if (handler == null) break;
-
-
             let originalComp;
             switch (mutationType) {
                 case 'changed': {
@@ -307,8 +301,20 @@ function reducer(draft, action) {
                     originalComp = null;
                     break;
                 }
-                throw new Error(`Unknown mutation type '${mutationType}'`);
+                default:
+                    throw new Error(`Unknown mutation type '${mutationType}'`);
             }
+
+            // Check if a key has been changed and if the logic rules need updating
+            const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
+            if (hasKeyChanged) {
+                draft.logicRules = replaceComponentKeyInLogic(draft.logicRules, originalComp.key, schema.key);
+            }
+
+            // check if we need updates to the backendRegistrationOptions
+            const {registrationBackend, registrationBackendOptions} = draft.form;
+            const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
+            if (handler == null) break;
 
             const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
             if (updatedOptions) {

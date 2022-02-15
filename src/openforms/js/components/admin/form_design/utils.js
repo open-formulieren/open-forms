@@ -44,5 +44,40 @@ const findComponent = (formSteps = [], test) => {
     return null;
 };
 
+const checkKeyChange = (mutationType, newComponent, oldComponent) => {
+    if (mutationType !== 'changed') return false;
 
-export {stripIdFromComponents, getFormComponents, findComponent};
+    return newComponent.key !== oldComponent.key;
+};
+
+const replaceComponentKeyInLogic = (existingLogicRules, originalKey, newKey) => {
+    return existingLogicRules.map((rule, index) => {
+        if (!JSON.stringify(rule).includes(originalKey)) {
+            return rule;
+        }
+
+        let newRule = {...rule};
+        // Replace the key in the JSON trigger
+        const stringJsonTrigger = JSON.stringify(rule.jsonLogicTrigger);
+        const compToReplace = JSON.stringify({var: originalKey});
+        newRule.jsonLogicTrigger = JSON.parse(
+            stringJsonTrigger.replace(compToReplace, JSON.stringify({var: newKey}))
+        );
+        // Replace the key in the actions
+        newRule.actions = newRule.actions.map((action, index) => {
+            if (action.component !== originalKey) {
+                return action;
+            }
+
+            return {
+                ...action,
+                component: newKey
+            };
+        })
+
+        return newRule;
+    });
+};
+
+
+export {stripIdFromComponents, getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic};
