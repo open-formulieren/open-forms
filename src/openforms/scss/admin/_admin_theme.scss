@@ -331,6 +331,21 @@ div#container {
 }
 
 
+// login template from 2FA in combination with admin
+body.login {
+  #container {
+    #header {
+      box-sizing: border-box;
+      width: 100%;
+      border-bottom: none;
+    }
+
+    #main {
+      padding-top: 0;
+    }
+  }
+}
+
 /**
  * DJANGO-BETTER-ADMIN-ARRAYFIELD
  * Some elements are marked as !important because the style is loaded after
