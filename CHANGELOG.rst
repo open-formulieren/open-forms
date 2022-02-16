@@ -2,6 +2,84 @@
 Changelog
 =========
 
+1.0.0-rc.2 (2022-02-16)
+=======================
+
+Second release candidate with various bugfixes and some project tooling improvements
+
+Bugfixes
+--------
+
+* [#1207] Fixed excessive remote service calls in prefill machinery
+* [#1255] Fixed warnings being displayed incorrectly while form editing
+* [#944] Display submission authentication information in logevent logging
+* [#1275] Added additional warnings in the form designer for components requiring
+  authentication
+* [#1278] Fixed Haal Centraal prefill according to spec
+* [#1269] Added SESSION_EXPIRE_AT_BROWSER_CLOSE configuration option
+* [#807] Implemented a strict Content Security Policy
+    - allow script/style assets from own source
+    - allow script/style assets from SDK base url
+    - allow a limited number of inline script/style via nonce
+* Allow for configurable DigiD XML signing
+* [#1288] Fixed invalid map component markup
+* Update the NUM_PROXIES configuration option default value to protect against
+  X-Forwarded-For header spoofing
+* [#1285] Remove the multiple option from signature component
+* Handle KvK non-unique API roots
+* [#1127] Added ``clearOnHide`` configuration option for hidden fields
+* [#1222] Fixed visual state when deleting logic rules
+* [#1273] Fixed various logs to be readonly (even for superusers)
+* [#1280] Fixed reusable definition handling when copying form
+* [#1099] Fixed rendering submission data when duplicate labels exist (PDF, confirmation email)
+* [#1193] Fixed file upload component/handling
+    - configured and documented webserver upload size limit
+    - ensured file uploads are not attached to emails but are instead downloadable from
+      the backend. A staff account is required for this.
+    - ensured individually configured component file size limits are enforced
+    - ensured file uploads are deleted from the storage when submission data is pruned/
+      stripped from sensitive data
+* [#1272] Hardened XML submission export to handle multiple values
+* [#1299] Updated to celery 5
+* [#1216] Fixed retrieving deleted forms in the API
+* Fixed docker-compose with correct non-privileged nginx SDK port numbers
+* [#1251] Fixed container file system polution when using self-signed certificates
+* Fixed leaking of Form processing configuration
+* [#1199] Handle possible OIDC duplicate user email problems
+* [#1018] WCAG added title attribute to header logo
+* [#1330] Fixed dealing with component/field configuration changes when they are used
+  in logic
+* [#1296] Refactor warning component
+* Bumped to Django 3.2 (LTS) and update third party packages
+
+New features
+------------
+
+* [#1291] Privacy policy link in footer is now configurable
+
+Documentation
+-------------
+
+* Clarified cookies and analytics documentation
+* Document stable release branches
+* Document bundled SDK image tag in release process
+
+Project maintenance
+-------------------
+
+* Cleaned up a TODO in logging.logevent
+* Fixed sourcing the build/version information to display in the admin
+* Ensure that the SDK build bundled in the backend image is correctly versioned
+* Upgraded dependencies with security releases
+    - Django
+    - Pillow
+* Upgraded frontend dependencies with security releases (dev tooling)
+* Replaced gulp-based frontend dev stack with pure webpack
+* Bumped to django-yubin 1.7, drops pyzmail36 transitive dep
+* Deleted a bunch of dead (test) code
+* Improved DigiD/eHerkenning settings
+
+
 1.0.0-rc.1 (2022-01-28)
 =======================
 
