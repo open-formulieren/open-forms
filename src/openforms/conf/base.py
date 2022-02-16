@@ -988,8 +988,9 @@ CSP_INCLUDE_NONCE_IN = ["style-src", "script-src"]
 # directives that don't fallback to default-src
 CSP_BASE_URI = ["'self'"]
 
-# CSP_FRAME_ANCESTORS = ["'self'"]  # this will break hosting a form to be framed by a CMS
-# CSP_FRAME_SRC = ["'self'"]  # this will break hosting iframe widgets like maps
+# Frame directives do not fall back to default-src
+CSP_FRAME_ANCESTORS = ["'self'"]
+CSP_FRAME_SRC = ["'self'"]
 # CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
 # CSP_FORM_ACTION = ["'self'"]  # forms, possibly problematic with payments
 # CSP_SANDBOX # too much
