@@ -1,0 +1,47 @@
+@import '~microscope-sass/lib/grid';
+
+
+@import '../../../ui/static/ui/scss/settings';
+
+$bootstrap-ratio-mobile: 12 / $grid-columns-mobile;
+$bootstrap-ratio-tablet: 12 / $grid-columns-tablet;
+$bootstrap-ratio-laptop: 12 / $grid-columns-laptop;
+$bootstrap-ratio-desktop: 12 / $grid-columns-desktop;
+
+@mixin bootstrap-span($property, $cols) {
+  $bs-span: $cols / 12 * 100%;
+  @include responsive(
+    $property,
+    $bs-span / $bootstrap-ratio-mobile,
+    $bs-span / $bootstrap-ratio-tablet,
+    $bs-span / $bootstrap-ratio-laptop,
+    $bs-span / $bootstrap-ratio-desktop,
+  );
+}
+
+.columns {
+  display: flex;
+  width: 100%;
+
+  .alert-info {
+    text-indent: -9999px;  // basically push the text off the screen
+    line-height: 0; // collapse the lines to not take up vertical space
+
+    &:after {  // the real magic -> insert our own content
+        display: block; // needs to take up space
+        content: "\2b"; // font-awesome unicode for +
+        line-height: initial;  // reset line height
+        text-indent: 0; // reset text indent
+    }
+  }
+
+  .column {
+    $col-sizes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;
+
+    @each $col-size in $col-sizes {
+      &--span-#{$col-size} {
+        @include bootstrap-span(width, $col-size);
+      }
+    }
+  }
+}

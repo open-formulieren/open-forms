@@ -34,10 +34,15 @@ li.nav-item {
 .aligned {
   .field-configuration,
   .formio.builder {
+    max-width: 100%;
     label {
       float: none;
       width: initial;
     }
+  }
+
+  .row {
+    margin: 0 !important;
   }
 }
 
