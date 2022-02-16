@@ -47,12 +47,23 @@ div#header {
 
 }
 
-#user-tools a {
-  border-bottom: none;
-  text-decoration: underline;
+#user-tools {
+  // fixme - hardcoded magic numbers, because of the domain switcher that may or may not be there
+  height: 32px;
 
-  &:focus, &:hover {
-    color: $color_darkest;
+  a {
+    border-bottom: none;
+    text-decoration: underline;
+
+    &:focus, &:hover {
+      color: $color_darkest;
+    }
+  }
+
+  .user-tools__switcher {
+    select {
+      box-sizing: border-box !important;
+    }
   }
 }
 
@@ -295,7 +306,7 @@ div#container {
 
     // 42px from admin index, 8px to add more vertical spacing again between branding and dropdown
     // which are now both child elements of the header
-    top: 42px + 8px;
+    top: 42px + 16px;
 
     left: auto;
     display: block;
