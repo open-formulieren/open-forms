@@ -1,7 +1,7 @@
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import PropTypes from 'prop-types';
-import MessageList from "./warnings/MessageList";
+import MessageList from './warnings/MessageList';
 
 
 
