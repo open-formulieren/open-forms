@@ -265,6 +265,36 @@
       "value": "Type"
     }
   ],
+  "8hSjw4": [
+    {
+      "type": 0,
+      "value": "Component "
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "key"
+    },
+    {
+      "type": 0,
+      "value": ") uses a non-existent component key "
+    },
+    {
+      "type": 1,
+      "value": "missingKey"
+    },
+    {
+      "type": 0,
+      "value": " in the simple logic."
+    }
+  ],
   "8pemD3": [
     {
       "type": 0,

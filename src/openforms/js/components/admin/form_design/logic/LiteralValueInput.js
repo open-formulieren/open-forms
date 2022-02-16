@@ -47,7 +47,7 @@ const LiteralValueInput = ({name, componentType, value='', onChange, ...extraPro
 
 LiteralValueInput.propTypes = {
     name: PropTypes.string.isRequired,
-    componentType: PropTypes.string.isRequired,
+    componentType: PropTypes.string,
     value: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number,

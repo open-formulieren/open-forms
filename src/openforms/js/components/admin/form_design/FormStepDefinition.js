@@ -13,6 +13,8 @@ import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import PluginWarning from './PluginWarning';
 import AuthenticationWarning from './AuthenticationWarning';
+import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
+import LogicWarning from './LogicWarning';
 
 const emptyConfiguration = {
     display: 'form',
@@ -51,11 +53,14 @@ const FormStepDefinition = ({ url='', name='', internalName='', slug='', previou
     };
 
     const { changed, affectedForms } = useDetectConfigurationChanged(url, configuration);
+    const { warnings } = useDetectSimpleLogicErrors(configuration);
+
     return (
         <>
             <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
             <PluginWarning loginRequired={loginRequired} configuration={configuration}/>
             <AuthenticationWarning loginRequired={loginRequired} configuration={configuration}/>
+            <LogicWarning warnings={warnings}/>
 
             <fieldset className="module aligned">
                 <h2>
