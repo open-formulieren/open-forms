@@ -160,7 +160,7 @@ const reducer = (draft, action) => {
     }
 };
 
-const Trigger = ({ name, logic, onChange, children }) => {
+const Trigger = ({ name, logic, onChange, error, children }) => {
     const allComponents = useContext(ComponentsContext);
     // break down the json logic back into variables that can be managed by components state
     const parsedLogic = parseJsonLogic(logic, allComponents);
@@ -306,6 +306,7 @@ const Trigger = ({ name, logic, onChange, children }) => {
     return (
         <div className="logic-trigger">
             <div className="logic-trigger__editor">
+                {error && <div className="logic-trigger__error">{error}</div> }
                 <div className="dsl-editor">
                     <div className="dsl-editor__node">
                         <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
@@ -369,6 +370,7 @@ Trigger.propTypes = {
     name: PropTypes.string.isRequired,
     logic: PropTypes.object,
     onChange: PropTypes.func.isRequired,
+    error: PropTypes.string,
     children: PropTypes.node,
 };
 

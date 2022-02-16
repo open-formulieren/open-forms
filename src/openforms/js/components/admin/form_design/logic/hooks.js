@@ -10,6 +10,8 @@ const useOnChanged = (value, callback) => {
     const previousValue = usePrevious(value);
     useEffect(
         () => {
+            // if it's the first render, do not fire an update
+            if (!previousValue) return;
             // if nothing changed, do not fire an update
             if (previousValue && isEqual(previousValue, value)) return;
             callback();

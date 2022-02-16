@@ -15,7 +15,7 @@ const EMPTY_RULE = {
     uuid: '',
     _generatedId: '',  // consumers should generate this, as it's used for the React key prop if no uuid exists
     form: '',
-    jsonLogicTrigger: {},
+    jsonLogicTrigger: {'': [{'var': ''}, null]},
     isAdvanced: false,
     actions: [],
 };
