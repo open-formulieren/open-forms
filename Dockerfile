@@ -115,7 +115,7 @@ RUN chown -R maykin /app
 # drop privileges
 USER maykin
 
-ARG COMMIT_HASH
+ARG RELEASE COMMIT_HASH
 ENV GIT_SHA=${COMMIT_HASH}
 ENV RELEASE=${RELEASE}
 
