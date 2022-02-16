@@ -41,7 +41,12 @@ point for the changelog entry:
 
 .. code-block:: bash
 
-    git log <previous-release-tag>..HEAD --reverse
+    git log <previous-release-tag>...HEAD \
+        --date=format:"%Y-%m-%d" \
+        --cherry \
+        --decorate=auto \
+        --pretty=format:"* %s %d"
+        --reverse
 
 **Bumping the version**
 
