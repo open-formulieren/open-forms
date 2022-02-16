@@ -35,39 +35,13 @@ $bootstrap-ratio-desktop: 12 / $grid-columns-desktop;
     }
   }
 
-  .col {
-    &--span-1 {
-      @include bootstrap-span(width, 1);
-    }
-    &--span-2 {
-      @include bootstrap-span(width, 2);
-    }
-    &--span-3 {
-      @include bootstrap-span(width, 3);
-    }
-    &--span-4 {
-      @include bootstrap-span(width, 4);
-    }
-    &--span-5 {
-      @include bootstrap-span(width, 5);
-    }
-    &--span-6 {
-      @include bootstrap-span(width, 6);
-    }
-    &--span-7 {
-      @include bootstrap-span(width, 7);
-    }
-    &--span-8 {
-      @include bootstrap-span(width, 8);
-    }
-    &--span-9 {
-      @include bootstrap-span(width, 9);
-    }
-    &--span-10 {
-      @include bootstrap-span(width, 10);
-    }
-    &--span-11 {
-      @include bootstrap-span(width, 11);
+  .column {
+    $col-sizes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;
+
+    @each $col-size in $col-sizes {
+      &--span-#{$col-size} {
+        @include bootstrap-span(width, $col-size);
+      }
     }
   }
 }
