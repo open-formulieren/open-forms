@@ -142,7 +142,7 @@ defusedxml==0.6.0
     #   digid-eherkenning
     #   django-camunda
     #   python3-saml
-digid_eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@e14e7df15ade8b43fbc93129a742fc5935ee203a
+digid-eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@e14e7df15ade8b43fbc93129a742fc5935ee203a
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -360,7 +360,7 @@ drf-spectacular==0.20.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-elastic-apm==5.8.1
+elastic-apm==6.7.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

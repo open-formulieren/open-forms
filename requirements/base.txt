@@ -77,7 +77,7 @@ defusedxml==0.6.0
     #   digid-eherkenning
     #   django-camunda
     #   python3-saml
-digid_eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@e14e7df15ade8b43fbc93129a742fc5935ee203a
+digid-eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@e14e7df15ade8b43fbc93129a742fc5935ee203a
     # via -r requirements/base.in
 django==3.2.12
     # via
@@ -204,7 +204,7 @@ drf-polymorphic @ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6f
     # via -r requirements/base.in
 drf-spectacular==0.20.2
     # via -r requirements/base.in
-elastic-apm==5.8.1
+elastic-apm==6.7.2
     # via -r requirements/base.in
 et-xmlfile==1.1.0
     # via openpyxl
