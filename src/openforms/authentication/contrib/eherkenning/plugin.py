@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 
 from django.conf import settings
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
+from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 from furl import furl

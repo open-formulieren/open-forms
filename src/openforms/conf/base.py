@@ -69,6 +69,10 @@ DATABASES = {
     }
 }
 
+# keep the current schema for now and deal with migrating to BigAutoField later, see
+# https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

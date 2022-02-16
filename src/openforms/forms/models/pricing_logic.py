@@ -1,6 +1,5 @@
 import uuid as _uuid
 
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -34,7 +33,7 @@ class FormPriceLogic(models.Model):
         on_delete=models.CASCADE,
         help_text=_("Form to which the pricing JSON logic applies."),
     )
-    json_logic_trigger = JSONField(
+    json_logic_trigger = models.JSONField(
         verbose_name=_("JSON logic"),
         help_text=_(
             'JSON logic expression that must evaluate to "true" for the price '

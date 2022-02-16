@@ -2,7 +2,6 @@ import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING, List
 
-from django.contrib.postgres.fields import JSONField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Max, Sum
 from django.utils.translation import gettext_lazy as _
@@ -83,7 +82,7 @@ class SubmissionPayment(models.Model):
         "submissions.Submission", related_name="payments", on_delete=models.CASCADE
     )
     plugin_id = models.CharField(_("Payment backend"), max_length=UNIQUE_ID_MAX_LENGTH)
-    plugin_options = JSONField(
+    plugin_options = models.JSONField(
         _("Payment options"),
         blank=True,
         null=True,

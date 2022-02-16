@@ -1,6 +1,6 @@
 import rest_framework_nested
 
-assert rest_framework_nested.__version__ == "0.93.3"
+assert rest_framework_nested.__version__ == "0.93.4"
 
 
 from rest_framework_nested.viewsets import (

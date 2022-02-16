@@ -229,7 +229,9 @@ class RegistrationHookTests(TestCase):
         self.assertIsNone(
             submission_no_registration_backend.registration_result,
         )
-        self.assertEqual(self.submission.last_register_date, timezone.now())
+        self.assertEqual(
+            submission_no_registration_backend.last_register_date, timezone.now()
+        )
 
     def test_submission_is_not_completed_yet(self):
         submission = SubmissionFactory.create(completed=False)

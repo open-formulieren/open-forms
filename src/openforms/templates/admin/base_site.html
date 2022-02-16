@@ -24,6 +24,8 @@
     <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans 'Administration' %}</a></h1>
 {% endblock %}
 
+{# part of block usertools #}
+
 {% block welcome-msg %}
     {% trans 'Logged in as' %}
     <strong>{% firstof user.get_short_name user.get_username %}</strong>.
@@ -46,6 +48,8 @@
 
     {% multidomain_switcher %}
 {% endblock %}
+
+{# end block usertools #}
 
 {% block nav-global %}{% endblock %}
 

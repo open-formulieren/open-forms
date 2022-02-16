@@ -12,8 +12,24 @@ logger = logging.getLogger(__name__)
 # custom signal to decouple actions done by feature modules - this avoids having to
 # import specific module functionality and also allows third party apps/extensions to
 # tap into certain events.
-submission_start = Signal(providing_args=["instance", "request"])
-submission_complete = Signal(providing_args=["request"])
+
+submission_start = Signal()
+"""
+Signal creation of a new :class:`openforms.models.Submission` instance.
+
+Provides:
+    :arg instance: The :class:`openforms.models.Submission` instance created.
+    :arg request: the HttpRequest instance (or DRF wrapper around it).
+"""
+
+
+submission_complete = Signal()
+"""
+Signal completion of a :class:`openforms.models.Submission` instance.
+
+Provides:
+    :arg request: the HttpRequest instance (or DRF wrapper around it).
+"""
 
 
 @receiver(post_delete, sender=SubmissionReport)

@@ -21,6 +21,7 @@ handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
 admin.site.index_title = _("Welcome to the Open Forms admin")
+admin.site.enable_nav_sidebar = False
 
 urlpatterns = [
     path(

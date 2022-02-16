@@ -14,6 +14,11 @@ amqp==5.0.9
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   kombu
+asgiref==3.5.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django
 attrs==20.3.0
     # via
     #   -c requirements/ci.txt
@@ -164,7 +169,7 @@ digid_eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenni
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==2.2.27
+django==3.2.12
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -183,6 +188,7 @@ django==2.2.27
     #   django-decorator-include
     #   django-filter
     #   django-formtools
+    #   django-hijack
     #   django-jenkins
     #   django-otp
     #   django-phonenumber-field
@@ -192,6 +198,7 @@ django==2.2.27
     #   django-rosetta
     #   django-sendfile2
     #   django-silk
+    #   django-solo
     #   django-timeline-logger
     #   djangorestframework
     #   drf-jsonschema
@@ -202,7 +209,7 @@ django==2.2.27
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-admin-index==1.5.0
+django-admin-index==1.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -210,14 +217,13 @@ django-appconf==1.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-axes
     #   django-cookie-consent
     #   django-timeline-logger
 django-autoslug==1.9.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-axes==5.5.0
+django-axes==5.31.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -248,13 +254,12 @@ django-compat==1.0.15
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-hijack
     #   django-hijack-admin
-django-cookie-consent==0.2.6
+django-cookie-consent==0.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-cors-headers==3.7.0
+django-cors-headers==3.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -262,7 +267,7 @@ django-csp==3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-csp-reports==1.5
+django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -283,7 +288,7 @@ django-formtools==2.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-django-hijack==2.1.10
+django-hijack==2.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -301,7 +306,7 @@ django-jenkins==0.110.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-ordered-model==3.4.1
+django-ordered-model==3.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -321,7 +326,7 @@ django-privates==1.2.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-django-redis==4.12.1
+django-redis==5.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -339,14 +344,14 @@ django-sendfile2==0.6.0
     #   django-privates
 django-silk==4.1.0
     # via -r requirements/dev.in
-django-solo==1.1.3
+django-solo==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-camunda
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==1.1.2
+django-timeline-logger==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -362,7 +367,7 @@ django-yubin==1.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-djangorestframework==3.12.4
+djangorestframework==3.13.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -382,11 +387,11 @@ docutils==0.16
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
-drf_jsonschema @ git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852
+drf-jsonschema @ git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-drf-nested-routers==0.93.3
+drf-nested-routers==0.93.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -734,7 +739,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python3_saml @ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d
+python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -747,6 +752,7 @@ pytz==2021.3
     #   django
     #   django-silk
     #   django-yubin
+    #   djangorestframework
     #   flower
     #   o365
     #   tzlocal
@@ -1069,6 +1075,7 @@ setuptools==59.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
+    #   django-axes
     #   drf-jsonschema
     #   josepy
     #   jsonschema

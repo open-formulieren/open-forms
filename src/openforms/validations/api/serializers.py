@@ -14,7 +14,7 @@ class ValidationResultSerializer(serializers.Serializer):
         label=_("Is valid"), help_text=_("Boolean indicating value passed validation.")
     )
     messages = serializers.ListField(
-        serializers.CharField(
+        child=serializers.CharField(
             label=_("error message"),
             help_text=_("error message"),
         ),

@@ -4648,6 +4648,7 @@ components:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
       required:
       - email
       - suspendedOn
@@ -4800,8 +4801,10 @@ components:
           description: Boolean indicating value passed validation.
         messages:
           type: array
-          items: {}
-          readOnly: true
+          items:
+            type: string
+            title: error message
+            description: error message
           description: List of validation error messages for display.
       required:
       - isValid

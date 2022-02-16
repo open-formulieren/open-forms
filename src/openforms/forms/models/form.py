@@ -2,7 +2,6 @@ import uuid as _uuid
 from copy import deepcopy
 from typing import List
 
-from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
@@ -58,12 +57,12 @@ class Form(models.Model):
     registration_backend = RegistrationBackendChoiceField(
         _("registration backend"), blank=True
     )
-    registration_backend_options = JSONField(
+    registration_backend_options = models.JSONField(
         _("registration backend options"), default=dict, blank=True, null=True
     )
 
     payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
-    payment_backend_options = JSONField(
+    payment_backend_options = models.JSONField(
         _("payment backend options"), default=dict, blank=True, null=True
     )
 
@@ -383,11 +382,11 @@ class FormLogic(models.Model):
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
     )
-    json_logic_trigger = JSONField(
+    json_logic_trigger = models.JSONField(
         verbose_name=_("JSON logic"),
         help_text=_("JSON logic associated with a step in a form."),
     )
-    actions = JSONField(
+    actions = models.JSONField(
         verbose_name=_("actions"),
         help_text=_("Which action(s) to perform if the JSON logic evaluates to true."),
     )
