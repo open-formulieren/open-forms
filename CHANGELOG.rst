@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.0.0-rc.3 (2022-02-16)
+=======================
+
+Release candidate 2 had some more bugfixes.
+
+* [#1254] Fixed columns component to not depend on bootstrap
+* Fix missing RELEASE build arg in dockerfile
+* Bump elastic-apm preventing container start
+* Fix admin login styles after Django 3.2 upgrade
+* Do not display version number on admin login page
+* Fix dropdown menu styling if the domain switcher is enabled
+
 1.0.0-rc.2 (2022-02-16)
 =======================
 
