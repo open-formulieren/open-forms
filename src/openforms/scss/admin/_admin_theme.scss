@@ -3,6 +3,9 @@ Generic admin styling overrides.
 
 DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
  */
+@use "sass:list" as list;
+@use "sass:selector" as selector;
+
 @import "../vars";
 
 /* Overrides */
@@ -21,17 +24,27 @@ a:focus, a:hover {
   color: $color_link_hover;
 }
 
-#header {
+div#header {
   color: $color_secondary_light;
   background: $color_primary;
-  /* border-bottom: 8px solid $color_secondary; */
-  position: sticky;
-  top: 0;
-  z-index: 100000;
-
+  // padding of 40px by django, fixed position pulls it out of the document so
+  // we need to compensate for the padding manually.
+  width: calc(100% - 2 * 40px);
+  /* Added to attach body */
+  border-bottom: 8px solid $color_secondary;
   a:link, a:visited {
     color: $color_lightest;
   }
+
+  // some admin pages (form definitions, form designer) include bootstrap which is
+  // just a massive PITA and we need these overrides because of the CSS reset that's
+  // loaded.
+  &, * {
+    box-sizing: content-box;
+  }
+  height: auto;
+  line-height: normal;
+
 }
 
 #user-tools a {
@@ -47,27 +60,23 @@ a:focus, a:hover {
   background: $color_primary;
 }
 
-#branding {
-  h1 {
-    color: $color_secondary;
-
-    a:link, a:visited {
-      color: $color_secondary;
-    }
-  }
-}
-
 div.breadcrumbs {
   background: $color_secondary;
   color: $color_primary;
-  position: sticky;
-  top: 60px;
-  z-index: 100000;
+  position: relative; // scrolling makes it hide behind the header
+  top: 94px; // #header height
+
+
+  // top: (94px - 4px) !important;
+  // position: sticky;
+  // top: 60px;
+  // z-index: 100000;
 
   a {
     color: $color_dark;
 
-    &:focus, &:hover {
+    &:focus,
+    &:hover {
       color: $color_darkest;
     }
   }
@@ -235,66 +244,92 @@ div.breadcrumbs {
  * DJANGO ADMIN INDEX
  */
 
-.dropdown-menu,
-div#container .dropdown-menu {
-  /* Override for Environment banner */
-  top: 48px;
-  /* Added to attach body */
-  border-bottom: 8px solid $color_secondary;
-}
+@mixin admin-index-link(
+  $background-color--active: $color_secondary,
+  $color--active: $color-primary,
+  $color-link: $color_lightest,
+) {
 
-.breadcrumbs {
-  top: 48px !important;
-}
+  @each $sel in & {
+    $last-selector: list.nth(list.nth(selector.parse($sel), 1), -1);
+    $selector-active: "#{&}#{$last-selector}--active";
 
-/* Integration into color scheme */
-.dropdown-menu {
-  background-color: $color_primary;
-
-  .dropdown-menu__item,
-  .dropdown-menu__item:link,
-  .dropdown-menu__item:visited {
-    color: $color_lightest;
-
-    &.dropdown-menu__item--active {
-      background-color: $color_secondary;
+    @at-root #{$selector-active} {
+      background-color: $background-color--active;
       text-decoration: none;
-      color: $color_primary;
+
+      &, &:link, &:visited {
+        color: $color--active;
+      }
 
       &:hover {
-        color: $color_lightest;
+        color: $color-lightest;
       }
     }
+  }
+
+  &, &:link, &:visited {
+    color: $color-link;
 
     &:hover {
       background-color: $color_primary_dark;
     }
   }
 
-  .dropdown-menu__drop {
+}
+
+// some admin pages (form definitions, form designer) include bootstrap which is
+// just a massive PITA and we need these overrides because of the CSS reset that's
+// loaded.
+div#container {
+
+  .content #content {
+    padding-top: 20px; // restore original django padding
+  }
+
+  #main {
+    padding-top: 94px; // account for header height offset, which is positioned fixed
+  }
+
+  .dropdown-menu {
+
+    // 42px from admin index, 8px to add more vertical spacing again between branding and dropdown
+    // which are now both child elements of the header
+    top: 42px + 8px;
+
+    left: auto;
+    display: block;
+    float: initial;
     background-color: $color_primary;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2)
-  }
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: normal;
 
-  .dropdown-menu__link,
-  .dropdown-menu__link:link,
-  .dropdown-menu__link:visited {
-    color: $color_lightest;
-
-    &:hover {
-      background-color: $color_primary_dark;
+    &__item {
+      @include admin-index-link($color--active: $color_primary);
+      background-color: $color_primary;
     }
 
-    &.dropdown-menu__link--active {
-      background-color: $color_primary_dark;
-      text-decoration: none;
+    &__drop {
+      background-color: $color_primary;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                  0 6px 20px 0 rgba(0, 0, 0, 0.2);
+      /* Override for wider dropdown */
+      min-width: 250px;
+    }
+
+    &__link {
+      @include admin-index-link(
+        $background-color--active: $color_primary_dark,
+        $color--active: $color_lightest,
+      );
     }
   }
 }
-/* Override for wider dropdown */
-.dropdown-menu .dropdown-menu__drop {
-  min-width: 250px;
-}
+
 
 /**
  * DJANGO-BETTER-ADMIN-ARRAYFIELD
@@ -347,9 +382,21 @@ div#container .dropdown-menu {
 /**
  * Branding
  */
-#branding h1 {
-  a:link, a:visited {
-    font-weight: bold;
+
+ // some admin pages (form definitions, form designer) include bootstrap which is
+ // just a massive PITA and we need these overrides because of the CSS reset that's
+ // loaded.
+#branding {
+  h1 {
+    color: $color_secondary;
+    // bootstrap mess
+    line-height: normal;
+
+    a:link,
+    a:visited {
+      color: $color_secondary;
+      font-weight: bold;
+    }
   }
 }
 

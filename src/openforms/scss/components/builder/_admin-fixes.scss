@@ -18,34 +18,9 @@ body {
   font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif !important;
 }
 
-div#header {
-  height: auto;
-  line-height: normal;
-}
-
 div#user-tools {
   strong {
     font-weight: bold;
-  }
-}
-
-
-div#container {
-  .dropdown-menu {
-    position: sticky;
-    top: 48px;
-    left: auto;
-    display: block;
-    float: initial;
-    background-color: $color_primary;
-    border: none;
-    border-radius: 0;
-    padding: 0 40px;
-    margin: 0;
-    font-size: 14px;
-    line-height: normal;
-    border-bottom: 8px solid $color_secondary !important;
-    z-index: 10000000;
   }
 }
 
