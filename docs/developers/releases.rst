@@ -16,6 +16,12 @@ Open Forms follows `semantic versioning <https://semver.org/>`_. This means that
 have versions ``MAJOR.minor.patch``, optionally suffixed with a pre-release identifier
 such as ``-beta.0`` or ``-rc.1``.
 
+Note that Open Forms itself has a version, and the API provided by Open Forms has its
+own version. API changes must also be judged based on semver and result in a matching
+version number change. This is tracked in the ``API_VERSION`` setting.
+
+See also the :ref:`developers_versioning`.
+
 Preparing a release
 -------------------
 

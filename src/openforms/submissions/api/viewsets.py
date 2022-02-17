@@ -163,6 +163,14 @@ class SubmissionViewSet(
         This guarantees that the submission is removed from the session without having
         to rely on the client being able to make another call. IF it is detected in the
         status endpoint that a retry is needed, the ID is added back to the session.
+
+        ---
+        **Warning**
+
+        The schema of the validation errors response is currently marked as
+        experimental. See our versioning policy in the developer documentation for
+        what this means.
+        ---
         """
         submission = self.get_object()
         validation_serializer = validate_submission_completion(

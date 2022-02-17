@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 1.0.0-alpha
+  version: 1.0.0-rc.3
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -2176,6 +2176,14 @@ paths:
         This guarantees that the submission is removed from the session without having
         to rely on the client being able to make another call. IF it is detected in the
         status endpoint that a retry is needed, the ID is added back to the session.
+
+        ---
+        **Warning**
+
+        The schema of the validation errors response is currently marked as
+        experimental. See our versioning policy in the developer documentation for
+        what this means.
+        ---
       summary: Complete a submission
       parameters:
       - in: path
@@ -3189,6 +3197,7 @@ components:
       required:
       - incompleteSteps
       - submissionAllowed
+      x-experimental: true
     ComponentProperty:
       type: object
       properties:

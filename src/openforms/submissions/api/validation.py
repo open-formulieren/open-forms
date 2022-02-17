@@ -10,6 +10,7 @@ from typing import List, Optional
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from openforms.api.utils import mark_experimental
 from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
@@ -48,6 +49,7 @@ class IncompleteStepSerializer(serializers.Serializer):
     )
 
 
+@mark_experimental
 class CompletionValidationSerializer(serializers.Serializer):
     incomplete_steps = IncompleteStepSerializer(many=True)
     submission_allowed = serializers.ChoiceField(
