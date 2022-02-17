@@ -4179,6 +4179,7 @@
             "description": "",
             "placeholder": "",
             "showInEmail": true,
+            "decimalLimit": 2,
             "defaultValue": null,
             "registration": {
                 "attribute": ""
@@ -4825,7 +4826,7 @@
             "name": "",
             "type": "checkbox",
             "input": true,
-            "label": "Checkbox default",
+            "label": "Checkbox Default",
             "value": "",
             "hidden": false,
             "prefix": "",
