@@ -31,3 +31,4 @@ familiarize yourself with the design principles.
    npm
    roadmap
    releases
+   versioning

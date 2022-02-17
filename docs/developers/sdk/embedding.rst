@@ -9,6 +9,9 @@ The SDK can be embedded by loading the Javascript code and stylesheet.
 Assuming the SDK is hosted on ``https://example.com/sdk/1.0.0/``, two resources need to be
 loaded.
 
+Before you embed a particular version of the SDK, please familiarize yourself with the
+:ref:`versioning policy <developers_versioning>`.
+
 Loading static assets
 =====================
 
