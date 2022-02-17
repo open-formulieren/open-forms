@@ -2,8 +2,8 @@
 Installation
 ============
 
-This installation is meant for developers of Open Forms. If you are looking to 
-install Open Forms to try it out, or to run it in production, please consult 
+This installation is meant for developers of Open Forms. If you are looking to
+install Open Forms to try it out, or to run it in production, please consult
 the documentation.
 
 The project is developed in `Python`_ using the `Django framework`_.
@@ -17,9 +17,17 @@ You need the following libraries and/or programs:
 * `Python`_ 3.8 or above
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
-* `Node.js`_
+* `Node.js`_ (LTS version)
 * `npm`_
 * `yarn`_
+
+You will also need the following libraries:
+
+* pkg-config
+* libxml2-dev
+* libxmlsec1-dev
+* libxmlsec1-openssl
+* libpq-dev
 
 .. _Python: https://www.python.org/
 .. _Django framework: https://www.djangoproject.com/
