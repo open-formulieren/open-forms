@@ -18,7 +18,10 @@ const BASIC = {
         {
             type: 'textfield',
             key: 'key',
-            label: 'Property Name'
+            label: 'Property Name',
+            validate: {
+                required: true
+            }
         },
         {
             type: 'textfield',
