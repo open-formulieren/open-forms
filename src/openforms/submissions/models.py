@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
-from django.utils.formats import localize
+from django.utils.formats import number_format
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -137,7 +137,7 @@ def _get_values(value: Any, filter_func=bool) -> List[Any]:
     return [item for item in value if filter_func(item)]
 
 
-def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
+def _join_mapped(formatter: callable, value: Any, seperator: str = "; ") -> str:
     # filter and map a single or multiple value into a joined string
     formatted_values = [formatter(x) for x in _get_values(value)]
     return seperator.join(formatted_values)
@@ -516,6 +516,7 @@ class Submission(models.Model):
                         or component.get("data", {}).get("values"),
                         # appointments stuff...
                         "appointments": component.get("appointments", {}),
+                        "decimalLimit": component.get("decimalLimit"),
                     }
         # now append remaining data that doesn't have a matching component
         for key, value in merged_data.items():
@@ -624,13 +625,13 @@ class Submission(models.Model):
                     files = attachment_data.get(key)
                     if files:
                         value = _("attachment: %s") % (
-                            ", ".join(file.get_display_name() for file in files)
+                            "; ".join(file.get_display_name() for file in files)
                         )
                     # FIXME: ugly workaround to patch the demo, this should be fixed properly
                     elif use_merged_data_fallback:
                         value = merged_data.get(key)
                     else:
-                        value = _("empty")
+                        value = ""
 
                 elif info["type"] == "date" or (
                     info.get("appointments", {}).get("showDates", False)
@@ -659,13 +660,21 @@ class Submission(models.Model):
                         for entry in info["values"]
                         if selected_values.get(entry["value"])
                     ]
-                    value = ", ".join(selected_labels)
+                    value = "; ".join(selected_labels)
 
                 elif info["type"] == "number" or info["type"] == "currency":
                     if multiple:
-                        value = _join_mapped(lambda v: localize(v), info["value"])
+                        value = _join_mapped(
+                            lambda v: number_format(v, info.get("decimalLimit")),
+                            info["value"],
+                        )
                     else:
-                        value = localize(info["value"])
+                        value = number_format(info["value"], info.get("decimalLimit"))
+                elif info["type"] == "signature":
+                    if info["value"]:
+                        value = _("signature added")
+                    else:
+                        value = ""
                 elif info["type"] == "checkbox":
                     value = yesno(info["value"])
                 elif type(info["value"]) is dict:

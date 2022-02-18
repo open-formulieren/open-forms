@@ -2,6 +2,7 @@ import json
 import os
 
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from openforms.emails.templatetags.form_summary import display_value
 from openforms.submissions.tests.factories import (
@@ -42,6 +43,13 @@ class LegacyFormatterTestCase(TestCase):
         # these should not be in .data
         del data["textAreaHidden"]
         del data["signatureHidden"]
+
+        # empty map should send no coordinates
+        data["mapEmpty"] = []
+
+        # translated string
+        assert "Signature" in text_printed
+        text_printed["Signature"] = _("signature added")
 
         # check if we have something for every data element
         self.assertEqual(len(text_printed), len(data))
