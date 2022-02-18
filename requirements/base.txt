@@ -137,7 +137,7 @@ django-choices==1.7.1
     #   zgw-consumers
 django-compat==1.0.15
     # via django-hijack-admin
-django-cookie-consent==0.3.0
+django-cookie-consent==0.3.1
     # via -r requirements/base.in
 django-cors-headers==3.11.0
     # via -r requirements/base.in

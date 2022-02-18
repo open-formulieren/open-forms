@@ -3,7 +3,7 @@ from django.core.signals import setting_changed
 
 from django_sendfile.utils import _get_sendfile
 
-from openforms.setup import monkeypatch_cookie_consent, mute_deprecation_warnings
+from openforms.setup import mute_deprecation_warnings
 
 
 class UtilsConfig(AppConfig):
@@ -18,7 +18,6 @@ class UtilsConfig(AppConfig):
         setting_changed.connect(clear_lru_cache_on_settings_changed)
 
         mute_deprecation_warnings()
-        monkeypatch_cookie_consent()
 
         from openforms.utils.admin import replace_cookie_log_admin  # noqa
 

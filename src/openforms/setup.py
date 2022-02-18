@@ -16,8 +16,6 @@ import warnings
 from pathlib import Path
 
 from django.conf import settings
-from django.urls import reverse
-from django.utils.http import is_safe_url
 
 import defusedxml
 import portalocker
@@ -89,28 +87,6 @@ def load_self_signed_certs() -> None:
         sys.exit(1)
 
     _certs_initialized = True
-
-
-def monkeypatch_cookie_consent():
-    from cookie_consent.views import CookieGroupBaseProcessView
-
-    _original = CookieGroupBaseProcessView.get_success_url
-
-    def get_success_url(self):
-        original = _original(self)
-
-        safe_redirect = is_safe_url(
-            original, settings.ALLOWED_HOSTS, self.request.is_secure()
-        )
-        if safe_redirect:
-            return original
-
-        # not a safe redirect
-        logger.warning("Unsafe redirect detected: %s", original)
-        default = reverse("cookie_consent_cookie_group_list")
-        return self.request.headers.get("referer") or default
-
-    CookieGroupBaseProcessView.get_success_url = get_success_url
 
 
 def monkeypatch_requests():
