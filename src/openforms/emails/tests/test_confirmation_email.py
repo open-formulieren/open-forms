@@ -306,7 +306,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_confirmation_email_template("{% summary %}", context)
 
-        self.assertIn("Value 1, Value 2", rendered_content)
+        self.assertIn("Value 1; Value 2", rendered_content)
 
 
 @override_settings(

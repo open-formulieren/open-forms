@@ -235,15 +235,15 @@ class DownloadSubmissionReportTests(APITestCase):
         values = [
             ("Test Radio", "Test Option 1"),
             ("Test Select", "Test Option 2"),
-            ("Test Select 2", "Test Option 2, Test Option 1"),
+            ("Test Select 2", "Test Option 2; Test Option 1"),
             ("Test date 1", "2 januari 2022"),
-            ("Test date 2", "2 januari 2022, 3 februari 2022"),
+            ("Test date 2", "2 januari 2022; 3 februari 2022"),
             ("Test time 1", "17:30"),
             ("Afspraakdatum", "24 december 2021"),
             ("Afspraaktijdstip", "08:10"),
             ("Test number 1", "1"),
             ("Test number 2", "1,23"),
-            ("Test number 3", "4,2, 2,71"),
+            ("Test number 3", "4,20; 2,71"),
             ("Test currency", "1,23"),
             ("Test checkbox", "ja"),
         ]

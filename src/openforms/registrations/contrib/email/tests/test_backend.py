@@ -651,7 +651,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
 
         message_html = message.alternatives[0][0]
-        self.assertIn("Backend, Frontend", message_html)
+        self.assertIn("Backend; Frontend", message_html)
 
     @patch("openforms.registrations.contrib.email.plugin.EmailConfig.get_solo")
     def test_with_global_config_attach_files(self, mock_get_solo):
