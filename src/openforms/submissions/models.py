@@ -675,9 +675,15 @@ class Submission(models.Model):
                         value = _("signature added")
                     else:
                         value = ""
+                elif info["type"] == "map":
+                    if info["value"]:
+                        value = _join_mapped(str, info["value"], ", ")
+                    else:
+                        value = ""
                 elif info["type"] == "checkbox":
                     value = yesno(info["value"])
                 elif type(info["value"]) is dict:
+                    # TODO what is the use-case for this?
                     printable_value = info["value"]
                     if "name" in printable_value:
                         value = printable_value["name"]
@@ -709,6 +715,7 @@ class Submission(models.Model):
                     value = printable_value
 
                 printable_data.append((label, value))
+
         # finally, check if we have co-sign information to append
         if self.co_sign_data:
             if not (co_signer := self.co_sign_data.get("representation", "")):

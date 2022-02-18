@@ -1,50 +1,47 @@
-import json
-import os
+from unittest.mock import patch
 
-from django.test import TestCase
 from django.utils.translation import gettext as _
 
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.templatetags.form_summary import display_value
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 
-from ...utils import iter_components
-
-FILES_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "files",
-)
+from .mixins import BaseFormatterTestCase, load_json
 
 
-def load_json(filename: str):
-    with open(os.path.join(FILES_DIR, filename), "r") as infile:
-        return json.load(infile)
+class KitchensinkFormatterTestCase(BaseFormatterTestCase):
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_legacy(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=False)
 
+        self.run_test()
 
-class LegacyFormatterTestCase(TestCase):
-    def assertComponentKeyExists(self, components, key):
-        for component in iter_components(components):
-            if component.get("key") == key:
-                # pass
-                return
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_formio(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
 
-        known = ", ".join(sorted(c.get("key") for c in iter_components(components)))
-        self.fail(f"cannot find component '{key}' in {known}")
+        self.run_test()
 
-    def test_printable_data(self):
+    def run_test(self):
         configuration = load_json("kitchensink_components.json")
         data = load_json("kitchensink_data.json")
-        text_printed = load_json("kitchensink_printable_legacy_text.json")
+        text_printed = load_json("kitchensink_printable_text.json")
+
+        # for sanity
+        self.assertFlatConfiguration(configuration)
 
         # upfix some bugs/issues:
 
         # these should not be in .data
+        # TODO remove from data fixture once #1354 is fixed
         del data["textAreaHidden"]
         del data["signatureHidden"]
 
         # empty map should send no coordinates
+        # TODO update data fixture when #1346 is fixed
         data["mapEmpty"] = []
 
         # translated string
@@ -52,6 +49,7 @@ class LegacyFormatterTestCase(TestCase):
         text_printed["Signature"] = _("signature added")
 
         # check if we have something for every data element
+        # TODO does this make sense? do we ALWAYS have a printable for every data?
         self.assertEqual(len(text_printed), len(data))
 
         submission = SubmissionFactory.from_components(
@@ -95,5 +93,5 @@ class LegacyFormatterTestCase(TestCase):
         self.assertEqual(text_values, html_values)
 
         for label, value in text_printed.items():
-            with self.subTest(f"text: {label}: {value}"):
-                self.assertEqual(text_values[label], value)
+            with self.subTest(f"{label} -> '{value}'"):
+                self.assertEqual(value, text_values[label])

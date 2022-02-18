@@ -23,22 +23,22 @@ class DefaultFormatterTestCase(TestCase):
         data = load_json("all_components_data.json")
         expected = {
             "bsn": "123456782",
-            # "map": "52.3782943985417, 4.899629917973432",
+            "map": "52.3782943985417; 4.899629917973432",
             "date": "24 december 2021",
-            "file": "leeg",
+            "file": "",
             "iban": "RO09 BCYP 0000 0012 3456 7890",
             "time": "16:26",
             "email": "test@example.com",
             "radio": "Option 2",
-            "number": "42.123",
+            "number": "42,123",
             "select": "Option 1",
-            "password": "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF",
+            "password": "secret",  # "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF",
             "postcode": "1234 AA",
             "textArea": "Textarea test",
             # "signature": "data:image/png;base64,iVBO[truncated]",
             "textField": "Simple text input",
             "phoneNumber": "+31633924456",
-            "selectBoxes": "Option 1, Option 2",
+            "selectBoxes": "Option 1; Option 2",
             "licenseplate": "1-AAA-BB",
             "select2": "29 december 2021",
             "select3": "08:15",
@@ -62,7 +62,7 @@ class DefaultFormatterTestCase(TestCase):
 
         formatted = format_value(time_component, data)
 
-        expected = "16:26, 08:42, 23:01"
+        expected = "16:26; 08:42; 23:01"
         self.assertEqual(formatted, expected)
 
     def test_formatter_empty_value(self):
@@ -73,10 +73,29 @@ class DefaultFormatterTestCase(TestCase):
 
         self.assertEqual(formatted, "")
 
+    def run_multi_test(self, component, cases):
+        for value, expected in cases:
+            with self.subTest(value=value, expected=expected):
+                actual = format_value(component, value)
+                self.assertEqual(actual, expected)
+
+    def test_formatter_number(self):
+        component = {
+            "type": "number",
+            "multiple": False,
+        }
+        yes, no, maybe = _("yes,no,maybe").split(",")
+        expected = [
+            (0, "0"),
+            (1, "1"),
+            (-1, "-1"),
+            (1234.56, "1.234,56"),
+        ]
+        self.run_multi_test(component, expected)
+
     def test_formatter_checkbox(self):
         component = {
             "type": "checkbox",
-            "label": "Some checkbox",
             "multiple": False,
         }
         yes, no, maybe = _("yes,no,maybe").split(",")
@@ -84,9 +103,4 @@ class DefaultFormatterTestCase(TestCase):
             (True, yes),
             (False, no),
         ]
-
-        for value, expected_formatted in expected:
-            with self.subTest(value=value, expected=expected_formatted):
-                formatted = format_value(component, value)
-
-                self.assertEqual(formatted, expected_formatted)
+        self.run_multi_test(component, expected)
