@@ -99,6 +99,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -110,6 +111,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -121,6 +123,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -132,6 +135,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
             ]
@@ -274,6 +278,7 @@ class SubmissionTests(TestCase):
                     ],
                     "multiple": False,
                     "appointments": {},
+                    "decimalLimit": None,
                 }
             },
         )
