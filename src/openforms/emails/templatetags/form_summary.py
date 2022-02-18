@@ -45,7 +45,7 @@ def display_value(context, value: Any):
         # uploads
         return value["originalName"]
     if isinstance(value, (list, tuple)):
-        return "; ".join([display_value(context, v) for v in value])
+        return "; ".join(display_value(context, v) for v in filter(None, value))
 
     # output - see if we have something that can output as html and as plain text
     method = "as_html" if _is_html else "as_plain_text"
