@@ -17,7 +17,7 @@ You need the following libraries and/or programs:
 * `Python`_ 3.8 or above
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
-* `Node.js`_ (LTS version)
+* `Node.js`_ (LTS version, see the Dockerfile for version information)
 * `npm`_
 * `yarn`_
 
@@ -29,6 +29,8 @@ You will also need the following libraries:
 * libxmlsec1-openssl
 * libpq-dev
 
+You will also need to have `Redis`_ for `Celery`_ to work.
+
 .. _Python: https://www.python.org/
 .. _Django framework: https://www.djangoproject.com/
 .. _Virtualenv: https://virtualenv.pypa.io/en/stable/
@@ -37,6 +39,8 @@ You will also need the following libraries:
 .. _Node.js: http://nodejs.org/
 .. _npm: https://www.npmjs.com/
 .. _yarn: https://yarnpkg.com/
+.. _Redis: https://redis.io/
+.. _Celery: https://docs.celeryproject.org/en/stable/
 
 
 Getting started
