@@ -335,7 +335,7 @@ django-relativedelta==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-django-rosetta==0.9.4
+django-rosetta==0.9.8
     # via -r requirements/dev.in
 django-sendfile2==0.6.0
     # via
@@ -849,7 +849,6 @@ six==1.15.0
     #   click-repl
     #   django-choices
     #   django-compat
-    #   django-rosetta
     #   freezegun
     #   furl
     #   html5lib
