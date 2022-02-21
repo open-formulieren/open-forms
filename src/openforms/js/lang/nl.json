@@ -134,6 +134,11 @@
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
   },
+  "7/n6O+": {
+    "defaultMessage": "Dit formulier heeft geen versies.",
+    "description": "No form version history message",
+    "originalDefault": "This form has no versions."
+  },
   "70Q0CM": {
     "defaultMessage": "'Vorige' tekst",
     "description": "literals.previousText form label",
@@ -185,7 +190,7 @@
     "originalDefault": "Type"
   },
   "8hSjw4": {
-    "defaultMessage": "Component {label} ({key}) uses a non-existent component key {missingKey} in the simple logic.",
+    "defaultMessage": "Component {label} ({key}) steunt op een niet-bestaande component key {missingKey} in de eenvoudige logica.",
     "description": "Wrong simple logic warning",
     "originalDefault": "Component {label} ({key}) uses a non-existent component key {missingKey} in the simple logic."
   },
@@ -485,7 +490,7 @@
     "originalDefault": "Form specific email"
   },
   "K1A6QK": {
-    "defaultMessage": "Component {label} requires login, but this form step doesn't have the login marked as required.",
+    "defaultMessage": "Component {label} vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap.",
     "description": "No login required for formstep",
     "originalDefault": "Component {label} requires login, but this form step doesn't have the login marked as required."
   },
@@ -503,6 +508,11 @@
     "defaultMessage": "Handmatig ingesteld",
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
+  },
+  "KzlSYi": {
+    "defaultMessage": "Herstellen",
+    "description": "Restore form version link",
+    "originalDefault": "Restore"
   },
   "L0g8AL": {
     "defaultMessage": "Betaalprovider",
@@ -543,6 +553,11 @@
     "defaultMessage": "Veld",
     "description": "Formio component selection label",
     "originalDefault": "Component"
+  },
+  "NE5h2q": {
+    "defaultMessage": "Omschrijving",
+    "description": "Description column header",
+    "originalDefault": "Description"
   },
   "NwTdLM": {
     "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
@@ -713,6 +728,11 @@
     "defaultMessage": "verplicht",
     "description": "component property \"required\" label",
     "originalDefault": "required"
+  },
+  "WHqkYA": {
+    "defaultMessage": "Datum/tijd",
+    "description": "Date/time column header",
+    "originalDefault": "Date/time"
   },
   "WQCs+M": {
     "defaultMessage": "Product",
@@ -1069,6 +1089,11 @@
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
   },
+  "pGmjYH": {
+    "defaultMessage": "Gebruiker",
+    "description": "User column header",
+    "originalDefault": "User"
+  },
   "pWHOT1": {
     "defaultMessage": "Waarde",
     "description": "JSON editor: 'value' header label",
@@ -1228,6 +1253,11 @@
     "defaultMessage": "Telefoonnummer veld",
     "description": "Phone Number Component field label",
     "originalDefault": "Phone Number Component"
+  },
+  "z0bXZT": {
+    "defaultMessage": "Actie",
+    "description": "Action column header",
+    "originalDefault": "Action"
   },
   "zLTTBw": {
     "defaultMessage": "Veld waar beschikbare datums voor een afspraak komen te staan",

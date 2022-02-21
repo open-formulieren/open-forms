@@ -134,6 +134,11 @@
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
   },
+  "7/n6O+": {
+    "defaultMessage": "This form has no versions.",
+    "description": "No form version history message",
+    "originalDefault": "This form has no versions."
+  },
   "70Q0CM": {
     "defaultMessage": "Previous text",
     "description": "literals.previousText form label",
@@ -504,6 +509,11 @@
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
   },
+  "KzlSYi": {
+    "defaultMessage": "Restore",
+    "description": "Restore form version link",
+    "originalDefault": "Restore"
+  },
   "L0g8AL": {
     "defaultMessage": "Payment provider",
     "description": "Payment provider fieldset title",
@@ -543,6 +553,11 @@
     "defaultMessage": "Component",
     "description": "Formio component selection label",
     "originalDefault": "Component"
+  },
+  "NE5h2q": {
+    "defaultMessage": "Description",
+    "description": "Description column header",
+    "originalDefault": "Description"
   },
   "NwTdLM": {
     "defaultMessage": "Component where locations for an appointment will be shown",
@@ -713,6 +728,11 @@
     "defaultMessage": "required",
     "description": "component property \"required\" label",
     "originalDefault": "required"
+  },
+  "WHqkYA": {
+    "defaultMessage": "Date/time",
+    "description": "Date/time column header",
+    "originalDefault": "Date/time"
   },
   "WQCs+M": {
     "defaultMessage": "Product",
@@ -1069,6 +1089,11 @@
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
   },
+  "pGmjYH": {
+    "defaultMessage": "User",
+    "description": "User column header",
+    "originalDefault": "User"
+  },
   "pWHOT1": {
     "defaultMessage": "Value",
     "description": "JSON editor: 'value' header label",
@@ -1228,6 +1253,11 @@
     "defaultMessage": "Phone Number Component",
     "description": "Phone Number Component field label",
     "originalDefault": "Phone Number Component"
+  },
+  "z0bXZT": {
+    "defaultMessage": "Action",
+    "description": "Action column header",
+    "originalDefault": "Action"
   },
   "zLTTBw": {
     "defaultMessage": "Component where dates for an appointment will be shown",
