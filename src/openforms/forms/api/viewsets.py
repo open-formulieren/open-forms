@@ -29,7 +29,7 @@ from ..models import (
     FormStep,
     FormVersion,
 )
-from ..utils import export_form, form_to_json, import_form
+from ..utils import export_form, import_form
 from .filters import FormLogicFilter, FormPriceLogicFilter
 from .parsers import (
     FormCamelCaseJSONParser,
@@ -477,14 +477,10 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
         """Save the current version of the form so that it can later be retrieved"""
 
         form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
-
-        form_json = form_to_json(form.id)
-        form_version = FormVersion.objects.create(
+        form_version = FormVersion.objects.create_for(
             form=form,
-            export_blob=form_json,
             user=request.user,
         )
-
         serializer = self.serializer_class(instance=form_version)
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
 

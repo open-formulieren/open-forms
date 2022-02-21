@@ -1,8 +1,32 @@
 import uuid as _uuid
+from typing import Optional
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from .form import Form
+
+User = get_user_model()
+
+
+class FormVersionManager(models.Manager):
+    def create_for(self, form: Form, user: Optional[User] = None) -> "FormVersion":
+        """
+        Create a new ``FormVersion`` record for a given form.
+        """
+        # circular dependencies
+        from ..utils import form_to_json
+
+        form_json = form_to_json(form.id)
+        version_number = self.filter(form=form).count() + 1
+        return self.create(
+            form=form,
+            export_blob=form_json,
+            user=user,
+            description=_("Version {number}").format(number=version_number),
+        )
 
 
 class FormVersion(models.Model):
@@ -34,6 +58,8 @@ class FormVersion(models.Model):
         blank=True,
         help_text=_("Description/context about this particular version."),
     )
+
+    objects = FormVersionManager()
 
     class Meta:
         verbose_name = _("form version")
