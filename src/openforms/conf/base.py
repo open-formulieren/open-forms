@@ -9,7 +9,7 @@ import sentry_sdk
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 
-from .utils import Filesize, build_sdk_base_url, config, get_sentry_integrations
+from .utils import Filesize, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root.
@@ -500,14 +500,6 @@ SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
 
 BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 
-# Base URL of where the SDK is hosted.
-SDK_BASE_URL = config(
-    "SDK_BASE_URL",
-    default=build_sdk_base_url(BASE_DIR, BASE_URL, RELEASE),
-)
-if not SDK_BASE_URL.endswith("/"):
-    SDK_BASE_URL = f"{SDK_BASE_URL}/"
-
 # Submission download: how long-lived should the one-time URL be:
 SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
     "SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS", default=1
@@ -975,7 +967,6 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 # ideally we'd use BASE_URI but it'd have to be lazy or cause issues
 CSP_DEFAULT_SRC = [
     "'self'",
-    SDK_BASE_URL,
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
 
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted

@@ -49,9 +49,6 @@ Common settings
 * ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery.
   Defaults to ``redis://127.0.0.1:6379/1``.
 
-* ``SDK_BASE_URL``: URL for the retrieving Open Forms SDK files.
-  Defaults to ``https://open-forms.test.maykin.opengem.nl/sdk``.
-
 .. _email-settings:
 
 Email settings
@@ -220,6 +217,11 @@ Other settings
 
 * ``RELEASE``: The version of the application. If not provided, the
   ``GIT_SHA`` is used.
+
+* ``SDK_RELEASE``: The version of the SDK bundled. By default, this is sourced from the
+  ``.sdk-release`` file and should only be overridden if you're doing things in custom
+  Docker images. The value is used to know which SDK JS/CSS files to include on the form
+  detail page.
 
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the

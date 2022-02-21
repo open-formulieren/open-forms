@@ -10,7 +10,6 @@ def settings(request):
         "PROJECT_NAME",
         "RELEASE",
         "GIT_SHA",
-        "SDK_BASE_URL",
         "PRIVACY_POLICY_URL",
     )
 
