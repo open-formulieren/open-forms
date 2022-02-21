@@ -4,7 +4,8 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {get, post} from '../../../utils/fetch';
 import {FORM_ENDPOINT} from '../form_design/constants';
-import Loader from "../Loader";
+import Loader from '../Loader';
+import User from '../User';
 
 
 const FormVersionsTable = ({ csrftoken, formUuid }) => {
@@ -42,8 +43,12 @@ const FormVersionsTable = ({ csrftoken, formUuid }) => {
     const rows = formVersions.map((version, index) => {
         const created = new Date(version.created);
         return (
-           <tr key={index}>
+           <tr key={version.uuid}>
                 <th>{ created.toDateString() } { created.toLocaleTimeString() }</th>
+                <td>
+                    {version.user ? <User {...version.user} /> : '-'}
+                </td>
+                <td>{version.description}</td>
                 <td><a href="#" onClick={(event) => {
                     event.preventDefault();
                     restoreVersion(csrftoken, formUuid, version.uuid);
@@ -60,13 +65,16 @@ const FormVersionsTable = ({ csrftoken, formUuid }) => {
                 {rows.length > 0 ?
                     <table id="change-history">
                         <thead>
-                        <tr>
-                            <th scope="col">Datum/Tijd</th>
-                            <th scope="col">Actie</th>
-                        </tr>
+                        {/* TODO: apply react-intl here */}
+                            <tr>
+                                <th scope="col">Datum/Tijd</th>
+                                <th scope="col">Gebruiker</th>
+                                <th scope="col">Omschrijving</th>
+                                <th scope="col">Actie</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {rows}
+                            {rows}
                         </tbody>
                     </table> : <p>Dit formulier heeft geen versies.</p>
                 }
