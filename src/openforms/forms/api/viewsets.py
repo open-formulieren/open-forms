@@ -479,7 +479,11 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
         form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
 
         form_json = form_to_json(form.id)
-        form_version = FormVersion.objects.create(form=form, export_blob=form_json)
+        form_version = FormVersion.objects.create(
+            form=form,
+            export_blob=form_json,
+            user=request.user,
+        )
 
         serializer = self.serializer_class(instance=form_version)
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
