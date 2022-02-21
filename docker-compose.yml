@@ -24,11 +24,11 @@ services:
       - private_media:/private-media
 
   web:
-    build:
+    build: &web_build
       context: .
       args:
         RELEASE: ${TAG:-latest}
-        SDK_RELEASE: ${TAG:-latest}
+        SDK_RELEASE: ${SDK_TAG:-latest}
     image: openformulieren/open-forms:${TAG:-latest}
     environment: &web_env
       - DJANGO_SETTINGS_MODULE=openforms.conf.docker
@@ -68,8 +68,8 @@ services:
       - web
 
   celery:
-    build: .
-    image: openformulieren/open-forms:latest
+    build: *web_build
+    image: openformulieren/open-forms:${TAG:-latest}
     environment: *web_env
     command: /celery_worker.sh
     depends_on:
@@ -77,8 +77,8 @@ services:
       - redis
 
   celery-beat:
-    build: .
-    image: openformulieren/open-forms:latest
+    build: *web_build
+    image: openformulieren/open-forms:${TAG:-latest}
     environment: *web_env
     command: /celery_beat.sh
     depends_on:
@@ -86,8 +86,8 @@ services:
       - redis
 
   celery-flower:
-    build: .
-    image: openformulieren/open-forms:latest
+    build: *web_build
+    image: openformulieren/open-forms:${TAG:-latest}
     environment: *web_env
     command: /celery_flower.sh
     ports:
