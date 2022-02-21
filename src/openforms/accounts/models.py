@@ -63,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("configuration_overview", _("Can access configuration overview")),
         )
 
-    def get_full_name(self):
+    def get_full_name(self) -> str:
         """
         Returns the first_name plus the last_name, with a space in between.
         """
