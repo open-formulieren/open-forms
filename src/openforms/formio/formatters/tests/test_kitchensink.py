@@ -15,17 +15,19 @@ from .mixins import BaseFormatterTestCase, load_json
 class KitchensinkFormatterTestCase(BaseFormatterTestCase):
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     def test_legacy(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=False)
 
-        self.run_test()
+        self.run_test(mock_get_solo, False)
 
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     def test_formio(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
 
-        self.run_test()
+        self.run_test(mock_get_solo, True)
 
-    def run_test(self):
+    def run_test(self, mock_get_solo, formio_enabled):
+        mock_get_solo.return_value = GlobalConfiguration(
+            enable_formio_formatters=formio_enabled
+        )
+
         configuration = load_json("kitchensink_components.json")
         data = load_json("kitchensink_data.json")
         text_printed = load_json("kitchensink_printable_text.json")

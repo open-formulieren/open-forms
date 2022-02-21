@@ -131,15 +131,27 @@ def _get_values(value: Any, filter_func=bool) -> List[Any]:
     """
     Filter a single or multiple value into a list of acceptable values.
     """
+    # TODO using bool() to filter is evil
     # normalize values into a list
     if not isinstance(value, (list, tuple)):
         value = [value]
     return [item for item in value if filter_func(item)]
 
 
-def _join_mapped(formatter: callable, value: Any, seperator: str = "; ") -> str:
+def _not_null_empty(value):
+    return value not in (None, "")
+
+
+def _join_mapped(
+    formatter: callable,
+    value: Any,
+    seperator: str = "; ",
+    filter_func=bool,
+) -> str:
     # filter and map a single or multiple value into a joined string
-    formatted_values = [formatter(x) for x in _get_values(value)]
+    formatted_values = [
+        formatter(x) for x in _get_values(value, filter_func=filter_func)
+    ]
     return seperator.join(formatted_values)
 
 
@@ -663,13 +675,21 @@ class Submission(models.Model):
                     value = "; ".join(selected_labels)
 
                 elif info["type"] == "number" or info["type"] == "currency":
+                    if info["type"] == "currency":
+                        # force currency formatting with 2 decimals even if None
+                        num_decimals = info.get("decimalLimit") or 2
+                    else:
+                        num_decimals = info.get("decimalLimit")
+
                     if multiple:
                         value = _join_mapped(
-                            lambda v: number_format(v, info.get("decimalLimit")),
+                            lambda v: number_format(v, num_decimals),
                             info["value"],
+                            filter_func=_not_null_empty,
                         )
                     else:
-                        value = number_format(info["value"], info.get("decimalLimit"))
+                        value = number_format(info["value"], num_decimals)
+
                 elif info["type"] == "signature":
                     if info["value"]:
                         value = _("signature added")

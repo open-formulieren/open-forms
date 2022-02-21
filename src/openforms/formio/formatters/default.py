@@ -1,4 +1,5 @@
-from typing import Any, Dict, Iterable, List, Union
+import datetime
+from typing import Any, Dict, Iterable, List, TypedDict, Union
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
@@ -11,7 +12,13 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from .registry import register
 
 
-def _get_value_label(possible_values: list, value: str) -> str:
+class ValueLabelDict(TypedDict):
+    # TODO do we want this?
+    value: str
+    label: str
+
+
+def get_value_label(possible_values: List[ValueLabelDict], value: str) -> str:
     for possible_value in possible_values:
         if possible_value["value"] == value:
             return possible_value["label"]
@@ -21,36 +28,29 @@ def _get_value_label(possible_values: list, value: str) -> str:
     return value
 
 
-# NOTE filtering with bool() is evil and might eat zeros, False etc
-# this only still here for dev/debug/review purposes
-# def _get_values(value: Any, filter_func=bool) -> List[Any]:
-#     """
-#     Filter a single or multiple value into a list of acceptable values.
-#     """
-#     # normalize values into a list
-#     if not isinstance(value, (list, tuple)):
-#         value = [value]
-#     return [item for item in value if filter_func(item)]
-
-
-def _join_mapped(value: Any, formatter: callable = str, seperator: str = ", ") -> str:
+def join_mapped(value: Any, formatter: callable = str, separator: str = ", ") -> str:
     # map multiple value into a joined string
     # note: filter before passing to this
-    return seperator.join(map(formatter, value))
+    # TODO if this stays this simple after the refactoring we can inline and remove it
+    return separator.join(map(formatter, value))
 
 
 class FormioFormatter(AbstractBasePlugin):
-    empty_display = ""  # _("empty")
     multiple_separator = "; "  # ", "
-    empty_values = [None, ""]
 
-    def is_empty(self, component: dict, value: Any):
+    # there is an interesting open question on what to do for empty values
+    # currently we're eating them in normalise_value_to_list()
+    empty_values = [None, ""]
+    # empty_display = ""  # _("empty")
+
+    def is_empty_value(self, component: dict, value: Any):
         return value in self.empty_values
 
     def normalise_value_to_list(self, component: dict, value: Any):
         multiple = component.get("multiple", False)
+        # note this breaks if multiple is true and value not a list
         value = value if multiple else [value]
-        return [v for v in value if not self.is_empty(component, v)]
+        return [v for v in value if not self.is_empty_value(component, v)]
 
     def join_formatted_values(
         self, component: dict, formatted_values: Iterable[str]
@@ -61,12 +61,12 @@ class FormioFormatter(AbstractBasePlugin):
         return formatted
 
     def __call__(self, component: dict, value: Any) -> str:
-        values = self.normalise_value_to_list(
-            component, value
-        )  # normalize to list of values
+        # note all this depends on value not being unexpected type or shape
+        values = self.normalise_value_to_list(component, value)
         formatted_values = (
             force_str(self.format(component, value)) for value in values
         )
+        # logically we'd want a .filter_formatted_values() step here
         return self.process_result(
             component, self.join_formatted_values(component, formatted_values)
         )
@@ -125,12 +125,8 @@ class FileFormatter(FormioFormatter):
         return formatted
 
     def format(self, component: Dict, value: List) -> str:
-        if value:
-            formatted = value["originalName"]
-        else:
-            # TODO do we even need this branch?
-            formatted = self.empty_display
-        return formatted
+        # this is only valid for display to the user (because filename component option, dedupe etc)
+        return value["originalName"]
 
 
 @register("textarea")
@@ -175,38 +171,35 @@ class SelectFormatter(FormioFormatter):
     def format(self, component: Dict, value: str) -> str:
         # TODO re-enable this untested code
         # if component.get("appointments", {}).get("showDates", False):
-        #     return _join_mapped(value, lambda v: fmt_date(parse_date(v)))
+        #     return join_mapped(value, lambda v: fmt_date(parse_date(v)))
         # elif component.get("appointments", {}).get("showTimes", False):
         #     # strip off the seconds
-        #     return _join_mapped( value, lambda v: fmt_time(datetime.fromisoformat(v)))
-        return _get_value_label(component["data"]["values"], value)
+        #     return join_mapped(value, lambda v: fmt_time(datetime.fromisoformat(v)))
+        return get_value_label(component["data"]["values"], value)
 
 
 @register("currency")
 class CurrencyFormatter(FormioFormatter):
     def format(self, component: Dict, value: float) -> str:
         # localized and forced to decimalLimit
-        # NOTE we mirror formio and default to 2 decimals
-        return number_format(value, decimal_pos=component.get("decimalLimit") or 2)
+        # note we mirror formio and default to 2 decimals
+        return number_format(value, decimal_pos=component.get("decimalLimit", 2))
 
 
 @register("radio")
 class RadioFormatter(FormioFormatter):
     def format(self, component: Dict, value: str) -> str:
-        return _get_value_label(component["values"], value)
+        return get_value_label(component["values"], value)
 
 
 @register("signature")
 class SignatureFormatter(FormioFormatter):
     def format(self, component: Dict, value: str) -> str:
-        if value:
-            return _("signature added")
-        else:
-            return ""
+        return _("signature added")
 
 
 @register("map")
 class MapFormatter(FormioFormatter):
     def format(self, component: Dict, value: List[float]) -> str:
         # use a comma here since its a single data element
-        return _join_mapped(value, str, ", ")
+        return join_mapped(value, separator=", ")

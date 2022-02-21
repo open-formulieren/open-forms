@@ -19,6 +19,7 @@ def load_json(filename: str):
 
 class DefaultFormatterTestCase(TestCase):
     def test_formatters(self):
+        # TODO ditch all_components*.json stuff after #1301 is fixed
         all_components = load_json("all_components.json")["components"]
         data = load_json("all_components_data.json")
         expected = {
@@ -45,13 +46,14 @@ class DefaultFormatterTestCase(TestCase):
         }
 
         for component in all_components:
-            with self.subTest(type=component["type"]):
+            with self.subTest(key=component["key"], type=component["type"]):
                 self.assertEqual(
                     format_value(component, data[component["key"]]),
                     expected[component["key"]],
                 )
 
     def test_formatter_multiple(self):
+        # TODO simplify without reference to all_components.json
         all_components = load_json("all_components.json")["components"]
         time_component = next(
             (component for component in all_components if component["key"] == "time")
@@ -66,6 +68,7 @@ class DefaultFormatterTestCase(TestCase):
         self.assertEqual(formatted, expected)
 
     def test_formatter_empty_value(self):
+        # TODO simplify without reference to all_components.json
         all_components = load_json("all_components.json")["components"]
         component = all_components[0]
 
@@ -73,7 +76,7 @@ class DefaultFormatterTestCase(TestCase):
 
         self.assertEqual(formatted, "")
 
-    def run_multi_test(self, component, cases):
+    def run_test_cases(self, component, cases):
         for value, expected in cases:
             with self.subTest(value=value, expected=expected):
                 actual = format_value(component, value)
@@ -82,25 +85,38 @@ class DefaultFormatterTestCase(TestCase):
     def test_formatter_number(self):
         component = {
             "type": "number",
-            "multiple": False,
         }
-        yes, no, maybe = _("yes,no,maybe").split(",")
         expected = [
+            ("", ""),
+            (None, ""),
             (0, "0"),
             (1, "1"),
             (-1, "-1"),
             (1234.56, "1.234,56"),
         ]
-        self.run_multi_test(component, expected)
+        self.run_test_cases(component, expected)
 
     def test_formatter_checkbox(self):
         component = {
             "type": "checkbox",
-            "multiple": False,
         }
         yes, no, maybe = _("yes,no,maybe").split(",")
         expected = [
+            ("", ""),
+            (None, ""),
             (True, yes),
             (False, no),
         ]
-        self.run_multi_test(component, expected)
+        self.run_test_cases(component, expected)
+
+    def test_formatter_currency_multiple(self):
+        component = {
+            "type": "currency",
+            "multiple": True,
+        }
+        expected = [
+            ([None], ""),
+            ([0, 1, 2], "0,00; 1,00; 2,00"),
+            ([1234.56, 1, 0], "1.234,56; 1,00; 0,00"),
+        ]
+        self.run_test_cases(component, expected)
