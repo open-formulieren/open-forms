@@ -9,6 +9,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from .factories import FormVersionFactory
 from .utils import EXPORT_BLOB
 
 
@@ -161,3 +162,66 @@ class RestoreVersionTest(TestCase):
         restored_form_definition = form_steps.get().form_definition
 
         self.assertEqual(form_definition, restored_form_definition)
+
+    def test_restore_form_with_reusable_form_definition(self):
+        """
+        Test that restoring forms with re-usable form definitions restores those as well.
+
+        Regression test for issue #1348.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__is_reusable=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "reusable1",
+                    }
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__is_reusable=False,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "notReusable",
+                    }
+                ]
+            },
+        )
+        version = FormVersionFactory.create(form=form)
+        # now delete the form step, we'll restore it in a bit
+        form.formstep_set.all()[0].delete()
+        with self.subTest("verify test setup"):
+            self.assertNotEqual(version.export_blob, {})
+            self.assertEqual(form.formstep_set.count(), 1)
+            self.assertFalse(
+                form.formstep_set.filter(form_definition__is_reusable=True).exists()
+            )
+
+        # do the actual restore
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        self.assertEqual(form.formstep_set.count(), 2)
+        form_steps = form.formstep_set.all()
+
+        self.assertTrue(form_steps[0].form_definition.is_reusable)
+        self.assertEqual(
+            form_steps[0].form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "reusable1",
+                    }
+                ]
+            },
+        )
+        self.assertFalse(form_steps[1].form_definition.is_reusable)
