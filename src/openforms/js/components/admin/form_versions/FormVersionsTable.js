@@ -7,7 +7,7 @@ import {FORM_ENDPOINT} from '../form_design/constants';
 import Loader from "../Loader";
 
 
-const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
+const FormVersionsTable = ({ csrftoken, formUuid }) => {
     const [formVersions, setFormVersions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -16,7 +16,17 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
             `${FORM_ENDPOINT}/${formUuid}/versions/${versionUuid}/restore`,
             csrftoken
         );
-        window.location = redirectUrl;
+        // finalize the "transaction".
+        //
+        // * schedule a success message
+        // * obtain the admin URL to redirect to the detail page for further editing
+        const messageData = {
+            isCreate: false,
+            submitAction: '_continue',
+        };
+        const messageResponse = await post(`${FORM_ENDPOINT}/${formUuid}/admin-message`, csrftoken, messageData);
+        // this full-page reload ensures that the admin messages are displayed
+        window.location = messageResponse.data.redirectUrl;
     };
 
     const getFormVersions = async (uuid) => {
@@ -36,7 +46,7 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
                 <th>{ created.toDateString() } { created.toLocaleTimeString() }</th>
                 <td><a href="#" onClick={(event) => {
                     event.preventDefault();
-                    restoreVersion(csrftoken, formUuid, version.uuid, formAdminUrl);
+                    restoreVersion(csrftoken, formUuid, version.uuid);
                 }}>Herstellen</a></td>
             </tr>
         );
@@ -69,7 +79,6 @@ const FormVersionsTable = ({ csrftoken, formUuid, formAdminUrl}) => {
 FormVersionsTable.propTypes = {
     csrftoken: PropTypes.string.isRequired,
     formUuid: PropTypes.string.isRequired,
-    formAdminUrl: PropTypes.string.isRequired,
 }
 
 export default FormVersionsTable;
