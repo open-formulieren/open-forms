@@ -1,5 +1,7 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n django_admin_index %}
+
+{% block nav-global %}{% include "includes/app_list.html" %}{% endblock nav-global %}
 
 {% block title %} {% trans "Import forms" %} {{ block.super }} {% endblock %}
 
