@@ -109,6 +109,42 @@ using ``npm run watch``.
 .. _Sass: https://sass-lang.com/
 
 
+Using the SDK in the Open Forms backend
+=======================================
+
+The Docker image build copies the build artifacts of the SDK into the backend container.
+This is not available during local development, but can be mimicked by symlinking or
+fully copying a build of the SDK to Django's staticfiles. This enables you to use
+this particular SDK build for local backend dev and testing.
+
+1. First, ensure you have checked out the SDK repository and made a production build:
+
+   .. code-block:: bash
+
+      cd /path/to/code/
+      git checkout git@github.com:open-formulieren/open-forms-sdk.git
+      cd open-forms-sdk
+      yarn install
+      yarn build
+
+   This produces the production build artifacts in the ``dist`` folder, it should contain
+   ``open-forms-sdk.js`` and ``open-forms-sdk.css`` files.
+
+2. Next, symlink this so it gets picked up by Django's staticfiles:
+
+   .. code-block:: bash
+
+      $ ln -s /path/to/code/open-forms-sdk/dist src/openforms/static/sdk
+
+3. Finally, you *can* run collectstatic to verify it all works as expected.
+
+   .. code-block:: bash
+
+      $ python src/manage.py collectstatic --link
+
+If you're using a tagged version with the SDK code in a subdirectory, you can set the
+``SDK_RELEASE`` environment variable - it defaults to ``latest`` in dev settings.
+
 Update installation
 ===================
 

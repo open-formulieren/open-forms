@@ -493,10 +493,12 @@ else:
 
 RELEASE = config("RELEASE", GIT_SHA)
 
-# Base URL of where the SDK is hosted.
-SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl/sdk/")
-if not SDK_BASE_URL.endswith("/"):
-    SDK_BASE_URL = f"{SDK_BASE_URL}/"
+with open(os.path.join(BASE_DIR, ".sdk-release"), "r") as sdk_release_file:
+    sdk_release_default = sdk_release_file.read().strip()
+
+SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
+
+BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 
 # Submission download: how long-lived should the one-time URL be:
 SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
@@ -839,7 +841,6 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 DIGID_METADATA = config("DIGID_METADATA", "")
 SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
 SSL_KEY_PATH = config("SSL_KEY_PATH", "")
-BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 DIGID_SERVICE_ENTITY_ID = config(
     "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
 )
@@ -966,7 +967,6 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 # ideally we'd use BASE_URI but it'd have to be lazy or cause issues
 CSP_DEFAULT_SRC = [
     "'self'",
-    SDK_BASE_URL,
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
 
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted

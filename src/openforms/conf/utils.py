@@ -1,4 +1,6 @@
+import os
 import re
+from urllib.parse import urljoin
 
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis

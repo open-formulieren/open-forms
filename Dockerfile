@@ -103,11 +103,13 @@ COPY --from=backend-build /app/src/ /app/src/
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
 COPY --from=frontend-build /app/node_modules/formiojs/dist/fonts /app/node_modules/formiojs/dist/fonts
 
-# Include SDK files
-COPY --from=sdk-image /sdk /app/static/sdk
+# Include SDK files. Collectstatic produces both the versions with and without hash
+# in the STATICFILES_ROOT
+COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
 
 # copy source code
 COPY ./src /app/src
+COPY ./.sdk-release /app/.sdk-release
 
 RUN useradd -M -u 1000 maykin
 RUN chown -R maykin /app
@@ -115,9 +117,9 @@ RUN chown -R maykin /app
 # drop privileges
 USER maykin
 
-ARG RELEASE COMMIT_HASH
+ARG RELEASE ARG SDK_RELEASE=latest COMMIT_HASH
 ENV GIT_SHA=${COMMIT_HASH}
-ENV RELEASE=${RELEASE}
+ENV RELEASE=${RELEASE} SDK_RELEASE=${SDK_RELEASE}
 
 ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
 
