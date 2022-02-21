@@ -493,6 +493,11 @@ else:
 
 RELEASE = config("RELEASE", GIT_SHA)
 
+with open(os.path.join(BASE_DIR, ".sdk-release"), "r") as sdk_release_file:
+    sdk_release_default = sdk_release_file.read().strip()
+
+SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
+
 BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 
 # Base URL of where the SDK is hosted.

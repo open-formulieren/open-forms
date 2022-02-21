@@ -19,6 +19,7 @@ os.environ.setdefault("NUM_PROXIES", "0")
 os.environ.setdefault(
     "EHERKENNING_PRIVACY_POLICY", "https://www.maykinmedia.nl/en/privacy/"
 )
+os.environ.setdefault("SDK_RELEASE", "latest")
 
 from .base import *  # noqa isort:skip
 
