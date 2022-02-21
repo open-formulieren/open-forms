@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Any, Dict, Iterable, List, TypedDict, Union
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
@@ -6,6 +6,7 @@ from django.utils.dateparse import parse_date, parse_time
 from django.utils.encoding import force_str
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as _
+from glom import glom
 
 from openforms.plugins.plugin import AbstractBasePlugin
 
@@ -169,13 +170,23 @@ class SelectBoxesFormatter(FormioFormatter):
 @register("select")
 class SelectFormatter(FormioFormatter):
     def format(self, component: Dict, value: str) -> str:
-        # TODO re-enable this untested code
-        # if component.get("appointments", {}).get("showDates", False):
-        #     return join_mapped(value, lambda v: fmt_date(parse_date(v)))
-        # elif component.get("appointments", {}).get("showTimes", False):
-        #     # strip off the seconds
-        #     return join_mapped(value, lambda v: fmt_time(datetime.fromisoformat(v)))
-        return get_value_label(component["data"]["values"], value)
+        # grab appointment specific data
+        if glom(component, "appointments.showDates", default=False):
+            return fmt_date(parse_date(value))
+        elif glom(component, "appointments.showTimes", default=False):
+            # strip the seconds from a full ISO datetime
+            return fmt_time(datetime.fromisoformat(value))
+        elif glom(component, "appointments.showLocations", default=False) or glom(
+            component, "appointments.showProducts", default=False
+        ):
+            if isinstance(value, dict):
+                return value["name"]
+            else:
+                # shouldn't happen
+                return str(value)
+        else:
+            # regular value select
+            return get_value_label(component["data"]["values"], value)
 
 
 @register("currency")

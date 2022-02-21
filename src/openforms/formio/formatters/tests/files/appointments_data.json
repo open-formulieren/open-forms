@@ -1,0 +1,10 @@
+{
+    "appointmentProduct": {"identifier":  "foo", "name": "Foo Product"},
+    "appointmentProductEmpty": "",
+    "appointmentLocation": {"identifier":  "foo", "name": "Foo Location"},
+    "appointmentLocationEmpty": "",
+    "appointmentDate": "2022-02-14",
+    "appointmentDateEmpty": "",
+    "appointmentTime": "2022-02-14T08:15:00+01:00",
+    "appointmentTimeEmpty": ""
+}
