@@ -348,7 +348,7 @@ class SubmissionTests(TestCase):
             printable_data[0][0],
         )
         self.assertEqual(
-            "test 1, test 2",
+            "test 1; test 2",
             printable_data[0][1],
         )
 
