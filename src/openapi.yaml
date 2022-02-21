@@ -3684,8 +3684,17 @@ components:
           format: date-time
           readOnly: true
           description: Date and time of creation of the form version.
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        description:
+          type: string
+          title: Version description
+          description: Description/context about this particular version.
       required:
       - created
+      - user
     GenericObject:
       type: object
       description: Generic object
@@ -4782,6 +4791,26 @@ components:
       - adminUrl
       - name
       - url
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        fullName:
+          type: string
+        firstName:
+          type: string
+          maxLength: 255
+        lastName:
+          type: string
+          maxLength: 255
+      required:
+      - fullName
+      - username
     ValidationInput:
       type: object
       properties:

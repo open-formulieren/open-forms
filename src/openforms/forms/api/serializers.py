@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.accounts.api.serializers import UserSerializer
 from openforms.api.utils import (
     get_from_serializer_data_or_instance,
     underscore_to_camel,
@@ -537,11 +538,15 @@ class FormImportSerializer(serializers.Serializer):
 
 
 class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer(required=False, read_only=True)
+
     class Meta:
         model = FormVersion
         fields = (
             "uuid",
             "created",
+            "user",
+            "description",
         )
 
 

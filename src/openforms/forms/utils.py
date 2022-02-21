@@ -108,6 +108,7 @@ def import_form(import_file, existing_form_instance=None):
     return import_form_data(import_data, existing_form_instance)
 
 
+@transaction.atomic
 def import_form_data(
     import_data: dict, existing_form_instance: Form = None
 ) -> List[FormDefinition]:
@@ -117,6 +118,12 @@ def import_form_data(
     created_form_definitions = []
 
     created_form = None
+
+    # when restoring a previous version, delete the current form configuration,
+    # it will be replaced with the import data.
+    if existing_form_instance:
+        FormStep.objects.filter(form=existing_form_instance).delete()
+        FormLogic.objects.filter(form=existing_form_instance).delete()
 
     for resource, model in IMPORT_ORDER.items():
         data = import_data[resource]
@@ -135,12 +142,6 @@ def import_form_data(
 
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
-
-            if resource == "formSteps" and existing_form_instance:
-                FormStep.objects.filter(form=existing_form_instance).delete()
-
-            if resource == "formLogic" and existing_form_instance:
-                FormLogic.objects.filter(form=existing_form_instance).delete()
 
             if resource == "forms" and existing_form_instance:
                 deserialized = serializer(
@@ -196,14 +197,17 @@ def import_form_data(
                     ).get_hash()
 
                     if existing_fd_hash == imported_fd_hash:
-                        # The form definition that is being imported
-                        # is identical to the existing form definition
-                        # with the same slug, use existing instead
-                        # of creating new definition
+                        # The form definition that is being imported is identical to
+                        # the existing form definition # with the same slug, use
+                        # existing instead # of creating new definition. This may be
+                        # both single and multiple use (is_reusable=True) form
+                        # definitions. Note that the mapping will include the same UUID
+                        # here often, which is okay for find-and-replace.
                         uuid_mapping[old_uuid] = str(existing_fd.uuid)
                     else:
                         # The imported form definition configuration
                         # is different, create a new form definition
+                        # TODO: this would still cause unique slug constraint errors, no?
                         entry.pop("url")
                         entry.pop("uuid")
                         new_fd = FormDefinition(**entry)

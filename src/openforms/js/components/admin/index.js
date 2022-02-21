@@ -44,15 +44,11 @@ const mountFormVersions = (locale, messages) => {
     if (!formVersionsNodes.length) return;
 
     for (const formVersionsNode of formVersionsNodes) {
-        const { formUuid, csrftoken, formAdminUrl } = formVersionsNode.dataset;
+        const { formUuid, csrftoken } = formVersionsNode.dataset;
 
         ReactDOM.render(
             <IntlProvider messages={messages} locale={locale} defaultLocale="en">
-                <FormVersionsTable
-                    csrftoken={csrftoken}
-                    formUuid={formUuid}
-                    formAdminUrl={formAdminUrl}
-                />
+                <FormVersionsTable csrftoken={csrftoken} formUuid={formUuid} />
             </IntlProvider>,
             formVersionsNode
         );

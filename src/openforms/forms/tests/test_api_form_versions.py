@@ -166,7 +166,9 @@ class FormVersionRestoreAPITests(APITestCase):
 
         form.refresh_from_db()
 
-        self.assertEqual(1, FormVersion.objects.all().count())
+        self.assertEqual(
+            2, FormVersion.objects.count()
+        )  # restore creates its own FormVersion
         self.assertEqual("Test Form 1", form.name)
         self.assertEqual("Test Form Internal 1", form.internal_name)
         self.assertEqual(2, FormDefinition.objects.all().count())
