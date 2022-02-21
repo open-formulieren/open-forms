@@ -1,6 +1,7 @@
 import datetime
 
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from openforms.forms.models import FormDefinition, FormStep, FormVersion
 from openforms.forms.tests.factories import (
@@ -29,16 +30,25 @@ class RestoreVersionTest(TestCase):
             export_blob=EXPORT_BLOB,
         )
 
-        self.assertEqual(1, FormVersion.objects.all().count())
-        self.assertEqual(1, FormDefinition.objects.all().count())
+        self.assertEqual(1, FormVersion.objects.count())
+        self.assertEqual(1, FormDefinition.objects.count())
 
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(1, FormVersion.objects.all().count())
+        self.assertEqual(
+            2, FormVersion.objects.count()
+        )  # the restore creates a new version itself
         self.assertEqual("Test Form 1", form.name)
         self.assertEqual("Test Form Internal 1", form.internal_name)
-        self.assertEqual(2, FormDefinition.objects.all().count())
+        self.assertEqual(2, FormDefinition.objects.count())
+        last_version = FormVersion.objects.order_by("-created").first()
+        self.assertEqual(
+            last_version.description,
+            _("Restored form version {version} (from {created}).").format(
+                version=1, created=version.created.isoformat()
+            ),
+        )
 
         form_steps = FormStep.objects.filter(form=form)
 
@@ -75,8 +85,10 @@ class RestoreVersionTest(TestCase):
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(1, FormVersion.objects.all().count())
-        self.assertEqual(2, FormDefinition.objects.all().count())
+        self.assertEqual(
+            2, FormVersion.objects.count()
+        )  # the restore creates a new version itself
+        self.assertEqual(2, FormDefinition.objects.count())
 
         form_steps = FormStep.objects.filter(form=form)
 
@@ -87,7 +99,12 @@ class RestoreVersionTest(TestCase):
         self.assertEqual("test-definition-1-2", restored_form_definition.slug)
 
     def test_handling_uuid(self):
-        """Test what happens if the version being imported has the same definition UUID as another existing form definition"""
+        """
+        Assert that existing UUIDs get replaced with new ones while restoring.
+
+        Test what happens if the version being imported has the same definition UUID as
+        another existing form definition.
+        """
         form_definition = FormDefinitionFactory.create(
             uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",
             slug="test-definition-1",
@@ -111,7 +128,7 @@ class RestoreVersionTest(TestCase):
             form_definition,
             FormDefinition.objects.get(uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8"),
         )
-        self.assertNotEqual("f0dad93b-333b-49af-868b-a6bcb94fa1b8", new_fd.uuid)
+        self.assertNotEqual("f0dad93b-333b-49af-868b-a6bcb94fa1b8", str(new_fd.uuid))
 
     def test_restore_twice_a_version(self):
         form_definition = FormDefinitionFactory.create(
@@ -130,7 +147,7 @@ class RestoreVersionTest(TestCase):
             form.restore_old_version(version.uuid)
             form.refresh_from_db()
 
-        self.assertEqual(2, FormDefinition.objects.all().count())
+        self.assertEqual(2, FormDefinition.objects.count())
 
     def test_form_definition_same_slug_same_configuration(self):
         """Test that restoring a form definition with a slug that matches the slug of another form definition
@@ -152,8 +169,10 @@ class RestoreVersionTest(TestCase):
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(1, FormVersion.objects.all().count())
-        self.assertEqual(1, FormDefinition.objects.all().count())
+        self.assertEqual(
+            2, FormVersion.objects.count()
+        )  # the restore creates a new version itself
+        self.assertEqual(1, FormDefinition.objects.count())
 
         form_steps = FormStep.objects.filter(form=form)
 

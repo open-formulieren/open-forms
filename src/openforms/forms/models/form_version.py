@@ -12,7 +12,9 @@ User = get_user_model()
 
 
 class FormVersionManager(models.Manager):
-    def create_for(self, form: Form, user: Optional[User] = None) -> "FormVersion":
+    def create_for(
+        self, form: Form, description="", user: Optional[User] = None
+    ) -> "FormVersion":
         """
         Create a new ``FormVersion`` record for a given form.
         """
@@ -20,12 +22,11 @@ class FormVersionManager(models.Manager):
         from ..utils import form_to_json
 
         form_json = form_to_json(form.id)
-        version_number = self.filter(form=form).count() + 1
+        if not description:
+            version_number = self.filter(form=form).count() + 1
+            description = _("Version {number}").format(number=version_number)
         return self.create(
-            form=form,
-            export_blob=form_json,
-            user=user,
-            description=_("Version {number}").format(number=version_number),
+            form=form, export_blob=form_json, user=user, description=description
         )
 
 

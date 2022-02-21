@@ -1,9 +1,12 @@
 import uuid as _uuid
 from copy import deepcopy
-from typing import List
+from typing import List, Optional
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
+from django.db.models import F, Window
+from django.db.models.functions import DenseRank
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -22,6 +25,8 @@ from openforms.utils.validators import DjangoTemplateValidator
 
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
 from .utils import literal_getter
+
+User = get_user_model()
 
 
 class FormQuerySet(models.QuerySet):
@@ -361,14 +366,33 @@ class Form(models.Model):
             yield from form_step.iter_components(recursive=recursive)
 
     @transaction.atomic
-    def restore_old_version(self, form_version_uuid: str) -> None:
+    def restore_old_version(
+        self, form_version_uuid: str, user: Optional[User] = None
+    ) -> None:
         from ..utils import import_form_data
         from .form_version import FormVersion
 
-        form_version = FormVersion.objects.get(uuid=form_version_uuid)
+        form_version = (
+            FormVersion.objects
+            # note that the index here is 1-based
+            .annotate(
+                index=Window(expression=DenseRank(), order_by=[F("created")])
+            ).get(uuid=form_version_uuid)
+        )
         old_version_data = form_version.export_blob
 
         import_form_data(old_version_data, form_version.form)
+
+        # now create a new FormVersion for this restore as well, tracking those nuances
+        # in the description.
+        FormVersion.objects.create_for(
+            form=self,
+            user=user,
+            description=_("Restored form version {version} (from {created}).").format(
+                version=form_version.index,
+                created=form_version.created.isoformat(),
+            ),
+        )
 
     @property
     def admin_name(self) -> str:

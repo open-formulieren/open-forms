@@ -490,7 +490,7 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
         form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         form_version = get_object_or_404(FormVersion, uuid=self.kwargs["uuid"])
 
-        form.restore_old_version(form_version.uuid)
+        form.restore_old_version(form_version.uuid, user=request.user)
 
         return Response(status=status.HTTP_201_CREATED)
 
