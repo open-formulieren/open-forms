@@ -108,6 +108,7 @@ COPY --from=sdk-image /sdk /app/static/sdk
 
 # copy source code
 COPY ./src /app/src
+COPY ./sdk-release /app/.sdk-release
 
 RUN useradd -M -u 1000 maykin
 RUN chown -R maykin /app
@@ -117,7 +118,7 @@ USER maykin
 
 ARG RELEASE COMMIT_HASH
 ENV GIT_SHA=${COMMIT_HASH}
-ENV RELEASE=${RELEASE}
+ENV RELEASE=${RELEASE} SDK_RELEASE=${SDK_RELEASE}
 
 ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
 

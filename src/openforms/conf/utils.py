@@ -1,4 +1,6 @@
+import os
 import re
+from urllib.parse import urljoin
 
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
@@ -110,3 +112,10 @@ def get_sentry_integrations() -> list:
         extra.append(celery.CeleryIntegration())
 
     return [*default, *extra]
+
+
+def build_sdk_base_url(base_dir: str, base_url: str, release: str) -> str:
+    with open(os.path.join(base_dir, ".sdk-release"), "r") as sdk_release_file:
+        sdk_release = sdk_release_file.read().strip()
+    sdk_path = "/sdk/" if release == "latest" else f"/sdk/{sdk_release}/"
+    return urljoin(base_url, sdk_path)

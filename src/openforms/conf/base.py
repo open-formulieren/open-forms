@@ -9,7 +9,7 @@ import sentry_sdk
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 
-from .utils import Filesize, config, get_sentry_integrations
+from .utils import Filesize, build_sdk_base_url, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root.
@@ -493,8 +493,13 @@ else:
 
 RELEASE = config("RELEASE", GIT_SHA)
 
+BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
+
 # Base URL of where the SDK is hosted.
-SDK_BASE_URL = config("SDK_BASE_URL", "https://open-forms.test.maykin.opengem.nl/sdk/")
+SDK_BASE_URL = config(
+    "SDK_BASE_URL",
+    default=build_sdk_base_url(BASE_DIR, BASE_URL, RELEASE),
+)
 if not SDK_BASE_URL.endswith("/"):
     SDK_BASE_URL = f"{SDK_BASE_URL}/"
 
@@ -839,7 +844,6 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 DIGID_METADATA = config("DIGID_METADATA", "")
 SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
 SSL_KEY_PATH = config("SSL_KEY_PATH", "")
-BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 DIGID_SERVICE_ENTITY_ID = config(
     "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
 )
