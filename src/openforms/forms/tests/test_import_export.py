@@ -2,7 +2,7 @@ import json
 import os
 import zipfile
 
-from django.core.management import CommandError, call_command
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
@@ -104,7 +104,10 @@ class ImportExportTests(TestCase):
             product=product,
             authentication_backends=["digid"],
             registration_backend="email",
-            registration_backend_options={"to_emails": ["foo@bar.baz"]},
+            registration_backend_options={
+                "to_emails": ["foo@bar.baz"],
+                "attach_files_to_email": None,
+            },
             payment_backend="ogone-legacy",
             payment_backend_options={"merchant_id": merchant.id},
         )
