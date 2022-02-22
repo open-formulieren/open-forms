@@ -6,6 +6,7 @@ from django.utils.dateparse import parse_date, parse_time
 from django.utils.encoding import force_str
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as _
+
 from glom import glom
 
 from openforms.plugins.plugin import AbstractBasePlugin

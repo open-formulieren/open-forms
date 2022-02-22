@@ -9,6 +9,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
+from ...utils import iter_components
 from .mixins import BaseFormatterTestCase, load_json
 
 
@@ -35,22 +36,26 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
 
         # upfix some bugs/issues:
 
-        # these should not be in .data
-        # TODO remove from data fixture once #1354 is fixed
-        del data["textAreaHidden"]
-        del data["signatureHidden"]
-
         # empty map should send no coordinates
         # TODO update data fixture when #1346 is fixed
         data["mapEmpty"] = []
+        data["mapHidden"] = []
 
         # translated string
         assert "Signature" in text_printed
         text_printed["Signature"] = _("signature added")
 
-        # check if we have something for every data element
-        # TODO does this make sense? do we ALWAYS have a printable for every data?
-        self.assertEqual(len(text_printed), len(data))
+        expected_labels = set(c["label"] for c in iter_components(configuration))
+        expected_keys = set(c["key"] for c in iter_components(configuration))
+
+        expected_labels.remove("Update note")
+        expected_keys.remove("updateNote")
+
+        expected_keys.remove("numberEmpty")
+        expected_keys.remove("currencyEmpty")
+
+        self.assertEqual(set(text_printed.keys()), set(expected_labels))
+        self.assertEqual(set(data.keys()), set(expected_keys))
 
         submission = SubmissionFactory.from_components(
             configuration["components"], submitted_data=data, completed=True
@@ -80,6 +85,9 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         )
 
         printable_data = submission.get_printable_data()
+
+        # check if we have something for all components
+        self.assertEqual(set(d[0] for d in printable_data), set(expected_labels))
 
         text_values = dict()
         for label, value in printable_data:
