@@ -169,6 +169,12 @@
       "value": "Authenticatiemethode"
     }
   ],
+  "7/n6O+": [
+    {
+      "type": 0,
+      "value": "Dit formulier heeft geen versies."
+    }
+  ],
   "70Q0CM": [
     {
       "type": 0,
@@ -288,7 +294,7 @@
     },
     {
       "type": 0,
-      "value": ") uses a non-existent component key "
+      "value": ") steunt op een niet-bestaande component key "
     },
     {
       "type": 1,
@@ -296,7 +302,7 @@
     },
     {
       "type": 0,
-      "value": " in the simple logic."
+      "value": " in de eenvoudige logica."
     }
   ],
   "8pemD3": [
@@ -732,7 +738,7 @@
     },
     {
       "type": 0,
-      "value": " requires login, but this form step doesn't have the login marked as required."
+      "value": " vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap."
     }
   ],
   "KIy7Wr": [
@@ -751,6 +757,12 @@
     {
       "type": 0,
       "value": "Handmatig ingesteld"
+    }
+  ],
+  "KzlSYi": [
+    {
+      "type": 0,
+      "value": "Herstellen"
     }
   ],
   "L0g8AL": [
@@ -799,6 +811,12 @@
     {
       "type": 0,
       "value": "Veld"
+    }
+  ],
+  "NE5h2q": [
+    {
+      "type": 0,
+      "value": "Omschrijving"
     }
   ],
   "NwTdLM": [
@@ -1027,6 +1045,12 @@
     {
       "type": 0,
       "value": "verplicht"
+    }
+  ],
+  "WHqkYA": [
+    {
+      "type": 0,
+      "value": "Datum/tijd"
     }
   ],
   "WQCs+M": [
@@ -1459,6 +1483,12 @@
       "value": "Actie toevoegen"
     }
   ],
+  "pGmjYH": [
+    {
+      "type": 0,
+      "value": "Gebruiker"
+    }
+  ],
   "pWHOT1": [
     {
       "type": 0,
@@ -1649,6 +1679,12 @@
     {
       "type": 0,
       "value": "Telefoonnummer veld"
+    }
+  ],
+  "z0bXZT": [
+    {
+      "type": 0,
+      "value": "Actie"
     }
   ],
   "zLTTBw": [

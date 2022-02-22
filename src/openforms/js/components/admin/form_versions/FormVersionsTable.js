@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
+import {FormattedDate, FormattedMessage, FormattedTime} from 'react-intl';
 
 import {get, post} from '../../../utils/fetch';
 import {FORM_ENDPOINT} from '../form_design/constants';
@@ -31,28 +32,34 @@ const FormVersionsTable = ({ csrftoken, formUuid }) => {
     };
 
     const getFormVersions = async (uuid) => {
-        const response = await get(
-            `${FORM_ENDPOINT}/${uuid}/versions`
-        );
+        const response = await get(`${FORM_ENDPOINT}/${uuid}/versions`);
         setFormVersions(response.data);
         setIsLoading(false);
     };
 
-    useAsync(async () => {await getFormVersions(formUuid);}, []);
+    useAsync(async () => await getFormVersions(formUuid), []);
 
     const rows = formVersions.map((version, index) => {
         const created = new Date(version.created);
         return (
            <tr key={version.uuid}>
-                <th>{ created.toDateString() } { created.toLocaleTimeString() }</th>
+                <th>
+                    <FormattedDate value={created} year="numeric" month="long" day="2-digit" />
+                    &nbsp;&nbsp;
+                    <FormattedTime value={created} />
+                </th>
                 <td>
                     {version.user ? <User {...version.user} /> : '-'}
                 </td>
                 <td>{version.description}</td>
-                <td><a href="#" onClick={(event) => {
-                    event.preventDefault();
-                    restoreVersion(csrftoken, formUuid, version.uuid);
-                }}>Herstellen</a></td>
+                <td>
+                    <a href="#" onClick={(event) => {
+                        event.preventDefault();
+                        restoreVersion(csrftoken, formUuid, version.uuid);
+                    }}>
+                        <FormattedMessage description="Restore form version link" defaultMessage="Restore" />
+                    </a>
+                </td>
             </tr>
         );
     });
@@ -67,16 +74,29 @@ const FormVersionsTable = ({ csrftoken, formUuid }) => {
                         <thead>
                         {/* TODO: apply react-intl here */}
                             <tr>
-                                <th scope="col">Datum/Tijd</th>
-                                <th scope="col">Gebruiker</th>
-                                <th scope="col">Omschrijving</th>
-                                <th scope="col">Actie</th>
+                                <th scope="col">
+                                    <FormattedMessage description="Date/time column header" defaultMessage="Date/time" />
+                                </th>
+                                <th scope="col">
+                                    <FormattedMessage description="User column header" defaultMessage="User" />
+                                </th>
+                                <th scope="col">
+                                    <FormattedMessage description="Description column header" defaultMessage="Description" />
+                                </th>
+                                <th scope="col">
+                                    <FormattedMessage description="Action column header" defaultMessage="Action" />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {rows}
                         </tbody>
-                    </table> : <p>Dit formulier heeft geen versies.</p>
+                    </table>
+                    : <p>
+                        <FormattedMessage
+                            description="No form version history message"
+                            defaultMessage="This form has no versions." />
+                    </p>
                 }
             </>
         );
