@@ -28,4 +28,7 @@ class EmailConfig(SingletonModel):
         return force_str(self._meta.verbose_name)
 
     def apply_defaults_to(self, options: dict):
-        options.setdefault("attach_files_to_email", self.attach_files_to_email)
+        # key may be present and have the value None, or may be absent -> .get also returns None
+        current_val = options.get("attach_files_to_email")
+        if current_val is None:
+            options["attach_files_to_email"] = self.attach_files_to_email
