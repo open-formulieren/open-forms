@@ -19,6 +19,7 @@ from ...registry import register
 from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
+from .models import EmailConfig
 from .presentation import SubmittedDataWrapper
 
 
@@ -28,6 +29,9 @@ class EmailRegistration(BasePlugin):
     configuration_options = EmailOptionsSerializer
 
     def register_submission(self, submission: Submission, options: dict) -> None:
+        config = EmailConfig.get_solo()
+        config.apply_defaults_to(options)
+
         # explicitly get a reference before registering
         set_submission_reference(submission)
 

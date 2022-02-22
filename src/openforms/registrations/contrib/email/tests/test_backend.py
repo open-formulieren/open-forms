@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
@@ -25,6 +26,7 @@ from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat
+from ..models import EmailConfig
 from ..plugin import EmailRegistration
 
 
@@ -650,3 +652,91 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         message_html = message.alternatives[0][0]
         self.assertIn("Backend, Frontend", message_html)
+
+    @patch("openforms.registrations.contrib.email.plugin.EmailConfig.get_solo")
+    def test_with_global_config_attach_files(self, mock_get_solo):
+        # cases with global config / options override tuples
+        cases = [
+            (EmailConfig(attach_files_to_email=True), {"attach_files_to_email": None}),
+            (EmailConfig(attach_files_to_email=False), {"attach_files_to_email": True}),
+        ]
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+                {
+                    "key": "some_list",
+                    "type": "textfield",
+                    "multiple": True,
+                    "label": "some_list",
+                },
+                {"key": "file1", "type": "file", "label": "file1"},
+                {"key": "file2", "type": "file", "label": "file2"},
+            ],
+            submitted_data={
+                "foo": "bar",
+                "some_list": ["value1", "value2"],
+                "file1": [
+                    {  # truncated for brevity
+                        "url": "some://url",
+                        "name": "my-foo.bin",
+                        "type": "application/foo",
+                        "originalName": "my-foo.bin",
+                    }
+                ],
+                "file2": [
+                    {  # truncated for brevity
+                        "url": "some://url",
+                        "name": "my-bar.txt",
+                        "type": "text/bar",
+                        "originalName": "my-bar.txt",
+                    }
+                ],
+            },
+            form__name="MyName",
+            form__internal_name="MyInternalName",
+            form__registration_backend="email",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="file1",
+            submission_step=submission.submissionstep_set.get(),
+            file_name="my-foo.bin",
+            content_type="application/foo",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="file2",
+            submission_step=submission.submissionstep_set.get(),
+            file_name="my-bar.txt",
+            content_type="text/bar",
+        )
+        email_submission = EmailRegistration("email")
+
+        for global_config, options_override in cases:
+            with self.subTest(
+                global_config_attach=global_config.attach_files_to_email,
+                form_options=options_override,
+            ):
+                email_form_options = {
+                    "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+                    **options_override,
+                }
+                mock_get_solo.return_value = global_config
+
+                email_submission.register_submission(submission, email_form_options)
+
+                # Verify that email was sent
+                self.assertEqual(len(mail.outbox), 1)
+
+                message = mail.outbox.pop()
+
+                # global config file used -> uploads are attached
+                self.assertEqual(len(message.attachments), 2)
+                file1, file2 = message.attachments
+                self.assertEqual(file1[0], "my-foo.bin")
+                self.assertEqual(file1[1], b"content")  # still bytes
+                self.assertEqual(file1[2], "application/foo")
+
+                self.assertEqual(file2[0], "my-bar.txt")
+                self.assertEqual(file2[1], "content")  # this is text now
+                self.assertEqual(file2[2], "text/bar")
