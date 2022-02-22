@@ -21,7 +21,8 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     payment_emails = serializers.ListField(
         child=serializers.EmailField(),
         label=_(
-            "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
+            "The email addresses to which the payment status update will be sent "
+            "(defaults to general registration addresses)"
         ),
         required=False,
     )
