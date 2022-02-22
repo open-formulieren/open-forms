@@ -3,6 +3,8 @@ import datetime
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
+from freezegun import freeze_time
+
 from openforms.forms.models import FormDefinition, FormStep, FormVersion
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -65,6 +67,44 @@ class RestoreVersionTest(TestCase):
             {"components": [{"test": "1", "key": "test"}]},
             restored_form_definition.configuration,
         )
+
+    @freeze_time("2022-02-21T17:00:00Z")
+    def test_restore_version_description_correct(self):
+        """
+        Assert that the counting of the form version number works correctly.
+        """
+        form1, form2 = FormFactory.create_batch(2, generate_minimal_setup=True)
+        form_version1 = FormVersion.objects.create_for(form=form1)
+        form_version2 = FormVersion.objects.create_for(form=form2)
+
+        for form_version in [form_version1, form_version2]:
+            with self.subTest(form_version=form_version):
+                self.assertEqual(
+                    form_version.description, _("Version {number}").format(number=1)
+                )
+
+        with freeze_time("2022-02-21T18:00:00Z"):
+            form_version3 = FormVersion.objects.create_for(form=form1)
+            form_version4 = FormVersion.objects.create_for(form=form2)
+
+            # check that restoring is correct
+            for form, form_version in [
+                (form1, form_version3),
+                (form2, form_version4),
+            ]:
+                with self.subTest(form=form, form_version=form_version):
+                    form.restore_old_version(form_version_uuid=form_version.uuid)
+                    last_version = (
+                        FormVersion.objects.filter(form=form)
+                        .order_by("-created", "-pk")
+                        .first()
+                    )
+                    self.assertEqual(
+                        last_version.description,
+                        _("Restored form version {version} (from {created}).").format(
+                            version=2, created="2022-02-21T18:00:00+00:00"
+                        ),
+                    )
 
     def test_form_definition_same_slug_different_configuration(self):
         """Test that restoring a form definition with a slug that matches the slug of another form definition

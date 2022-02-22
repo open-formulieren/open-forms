@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Window
-from django.db.models.functions import DenseRank
+from django.db.models.functions import RowNumber
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -372,13 +372,19 @@ class Form(models.Model):
         from ..utils import import_form_data
         from .form_version import FormVersion
 
-        form_version = (
-            FormVersion.objects
-            # note that the index here is 1-based
-            .annotate(
-                index=Window(expression=DenseRank(), order_by=[F("created")])
-            ).get(uuid=form_version_uuid)
+        # we use the window function to find the record with its index in _all_
+        # of the form revisions. Note that we cannot call a .get(...) on this result set,
+        # as that always spits out the RowNumber==1, while we want to know the index of
+        # the record in the _total_ set of revisions (our window, with no partitioning).
+        form_versions = self.formversion_set.annotate(
+            index=Window(
+                expression=RowNumber(), order_by=F("created").asc()
+            ),  # oldest version gets lowest row number
         )
+        form_versions_mapping = {
+            form_version.uuid: form_version for form_version in form_versions
+        }
+        form_version = form_versions_mapping[form_version_uuid]
         old_version_data = form_version.export_blob
 
         import_form_data(old_version_data, form_version.form)
