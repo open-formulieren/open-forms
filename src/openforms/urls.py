@@ -76,13 +76,14 @@ urlpatterns = [
     path(
         "digid-oidc/",
         include(
-            "openforms.authentication.contrib.digid_oidc.urls", namespace="digid_oidc"
+            "openforms.authentication.contrib.digid_eherkenning_oidc.digid_urls",
+            namespace="digid_oidc",
         ),
     ),
     path(
         "eherkenning-oidc/",
         include(
-            "openforms.authentication.contrib.eherkenning_oidc.urls",
+            "openforms.authentication.contrib.digid_eherkenning_oidc.eherkenning_urls",
             namespace="eherkenning_oidc",
         ),
     ),

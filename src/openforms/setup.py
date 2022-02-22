@@ -94,48 +94,16 @@ def load_self_signed_certs() -> None:
 def monkeypatch_mozilla_django_oidc_get_from_settings():
     def get_next_url(request, redirect_field_name):
         """
-        To allow the list of allowed redirect hosts for OIDC to be dynamic,
-        we have to override this function to use the list of hosts from the
-        configuration models
+        `mozilla-django-oidc` uses `OIDC_REDIRECT_ALLOWED_HOSTS` to determine
+        whether a redirect is allowed. This is monkeypatched to bring it in line
+        with the CORS policy
         """
-        from django.utils.http import is_safe_url
-
-        from mozilla_django_oidc.utils import import_from_settings
-
-        from openforms.authentication.contrib.digid_oidc.models import (
-            OpenIDConnectPublicConfig,
-        )
-        from openforms.authentication.contrib.eherkenning_oidc.models import (
-            OpenIDConnectEHerkenningConfig,
-        )
-
-        # TODO use generic list of domains that are allowed to embed forms?
-        if request.path == reverse("digid_oidc:oidc_authentication_init"):
-            config = OpenIDConnectPublicConfig.get_solo()
-        elif request.path == reverse("eherkenning_oidc:oidc_authentication_init"):
-            config = OpenIDConnectEHerkenningConfig.get_solo()
+        from openforms.utils.redirect import allow_redirect_url
 
         next_url = request.GET.get(redirect_field_name)
         if next_url:
-            kwargs = {
-                "url": next_url,
-                "require_https": import_from_settings(
-                    "OIDC_REDIRECT_REQUIRE_HTTPS", request.is_secure()
-                ),
-            }
-
-            hosts = list(
-                getattr(
-                    config,
-                    "oidc_redirect_allowed_hosts",
-                    import_from_settings("OIDC_REDIRECT_ALLOWED_HOSTS", []),
-                )
-            )
-            hosts.append(request.get_host())
-            kwargs["allowed_hosts"] = hosts
-
-            is_safe = is_safe_url(**kwargs)
-            if is_safe:
+            # Check if redirect is allowed with CORS policy, ignore for relative URLs
+            if allow_redirect_url(next_url) or next_url.startswith("/"):
                 return next_url
         return None
 
