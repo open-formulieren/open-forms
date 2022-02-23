@@ -231,7 +231,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
 
     def test_form_auth_cleaned_after_completion(self):
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(bsn="foo", kvk="foo", pseudo="foo")
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
         session = self.client.session
@@ -247,6 +247,16 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         cleaned_session = self.client.session
 
         self.assertNotIn(FORM_AUTH_SESSION_KEY, cleaned_session)
+
+        # assert that identifying attributs are hashed on completion
+        submission.refresh_from_db()
+        for attr in ["bsn", "kvk", "pseudo"]:
+            with self.subTest(attr=attr):
+                value = getattr(submission, attr)
+                self.assertTrue(
+                    bool(value), "Expected a hashed value instead of empty value"
+                )
+                self.assertNotEqual(value, "foo")
 
 
 @temp_private_root()
