@@ -704,3 +704,25 @@ class SubmissionTests(TestCase):
         submission = SubmissionFactory.build(auth_plugin="digid", bsn="123", kvk="123")
 
         self.assertEqual(submission.get_auth_mode_display(), "digid (bsn,kvk)")
+
+    @override_settings(
+        PASSWORD_HASHERS=["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
+    )
+    def test_hash_identifying_attributes_after_completion(self):
+        """
+        Test that the factory properly hashes the identifying attributes.
+        """
+        attrs = {
+            "bsn": "000000000",
+            "kvk": "123455789",
+            "pseudo": "some-pseudo",
+        }
+        submission = SubmissionFactory.create(**attrs, completed=True)
+
+        submission.refresh_from_db()
+
+        for attr, original_value in attrs.items():
+            with self.subTest(**{attr: original_value}):
+                current_val = getattr(submission, attr)
+                self.assertNotEqual(current_val, original_value)
+                self.assertTrue(current_val.startswith("pbkdf2_sha256$"))
