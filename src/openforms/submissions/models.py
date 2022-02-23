@@ -200,6 +200,12 @@ class Submission(models.Model):
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
     )
+    auth_attributes_hashed = models.BooleanField(
+        _("identifying attributes hashed"),
+        help_text=_("are the auth/identifying attributes hashed?"),
+        default=False,
+        editable=False,
+    )
     co_sign_data = models.JSONField(
         _("co-sign data"),
         blank=True,
@@ -400,6 +406,7 @@ class Submission(models.Model):
         for attr in attrs:
             hashed = get_salted_hash(getattr(self, attr))
             setattr(self, attr, hashed)
+        self.auth_attributes_hashed = True
 
     def load_execution_state(self) -> SubmissionState:
         """

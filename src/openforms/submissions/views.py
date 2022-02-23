@@ -76,12 +76,11 @@ class ResumeFormMixin:
 
         # there are two modus operandi - the submission may not be completed yet, in
         # which case we don't have a hashed value yet, but the raw value (used for
-        # prefill and the like). We should only compare hashes if the submissions is
-        # completed.
-        is_completed = submission.completed_on is not None
+        # prefill and the like). There are also other flows where the attributes may
+        # be hashed despite the submission not being completed yet.
         current_auth_value = self.request.session[FORM_AUTH_SESSION_KEY]["value"]
 
-        if is_completed:
+        if submission.auth_attributes_hashed:
             is_auth_data_correct = check_salted_hash(
                 current_auth_value, submission_auth_value, setter=None
             )
