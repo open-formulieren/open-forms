@@ -36,6 +36,12 @@ class TypeMappingTests(SimpleTestCase):
         ]
         data = load_json("kitchensink_data.json", FORMIO_FILES_DIR)
 
+        # formio doesn't submit anything for empty numeric fields
+        # this is handled by the plugin calling merged_data.get(key, None) before the to_python() we're testing
+        # so here we simulate that behaviour
+        data["numberEmpty"] = None
+        data["currencyEmpty"] = None
+
         skip_keys = [
             "updateNote",
         ]
@@ -50,6 +56,7 @@ class TypeMappingTests(SimpleTestCase):
             "checkboxEmpty": False,
             "checkboxHidden": True,
             "currency": Decimal("1234.56"),
+            "currencyEmpty": None,
             "currencyHidden": Decimal("123"),
             "currencyDecimal": Decimal("1234.56"),
             "currencyDecimalHidden": Decimal("123.45"),
@@ -148,6 +155,7 @@ class TypeMappingTests(SimpleTestCase):
             "mapEmpty": [52.379648, 4.9020928],
             "mapHidden": [52.379648, 4.9020928],
             "number": 1234,
+            "numberEmpty": None,
             "numberHidden": 1234,
             "numberDecimal": 1234.56,
             "numberDecimalMulti": [1234.56, 100, 12.3, 1, 0],
