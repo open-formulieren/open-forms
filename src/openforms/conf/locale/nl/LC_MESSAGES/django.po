@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-21 16:14+0100\n"
-"PO-Revision-Date: 2022-02-21 16:40+0020\n"
+"POT-Creation-Date: 2022-02-23 10:30+0100\n"
+"PO-Revision-Date: 2022-02-23 10:35+0020\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -108,7 +108,6 @@ msgid "Can access configuration overview"
 msgstr "Heeft toegang tot configuratieoverzicht"
 
 #: openforms/accounts/templates/admin/oidc_failure.html:8
-#| msgid "Login with organization account"
 msgid "There was an error while logging in with your organization account."
 msgstr ""
 "Er deed zich een fout voor bij het inloggen met uw organisatie-account."
@@ -123,7 +122,6 @@ msgstr ""
 "uw Open Formulieren beheerder met deze foutmelding om dit op te lossen:"
 
 #: openforms/accounts/templates/admin/oidc_failure.html:23
-#| msgid "Back to top"
 msgid "Back to login"
 msgstr "Terug naar inloggen"
 
@@ -150,7 +148,6 @@ msgid "Precondition failed"
 msgstr "Er is niet voldaan een bepaalde voorwaarde"
 
 #: openforms/api/exceptions.py:27
-#| msgid "Request type"
 msgid "Request entity too large"
 msgstr "Verzoekinhoud is te groot"
 
@@ -2499,7 +2496,7 @@ msgstr ""
 msgid "You may edit it again below."
 msgstr "U kunt deze hieronder weer bewerken."
 
-#: openforms/forms/models/form.py:46 openforms/forms/models/form.py:403
+#: openforms/forms/models/form.py:46 openforms/forms/models/form.py:409
 #: openforms/forms/models/form_definition.py:29
 #: openforms/forms/models/form_step.py:17
 #: openforms/forms/models/form_version.py:34
@@ -2721,39 +2718,39 @@ msgstr "{name} (kopie)"
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:391
+#: openforms/forms/models/form.py:397
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:407
+#: openforms/forms/models/form.py:413
 msgid "Form to which the JSON logic applies."
 msgstr "Formulier waar de JSON-logic voor geldt."
 
-#: openforms/forms/models/form.py:410
+#: openforms/forms/models/form.py:416
 #: openforms/forms/models/pricing_logic.py:37
 msgid "JSON logic"
 msgstr "JSON-logic"
 
-#: openforms/forms/models/form.py:411
+#: openforms/forms/models/form.py:417
 msgid "JSON logic associated with a step in a form."
 msgstr "JSON-logic gekoppeld aan een stap in een formulier."
 
-#: openforms/forms/models/form.py:414
+#: openforms/forms/models/form.py:420
 msgid "actions"
 msgstr "acties"
 
-#: openforms/forms/models/form.py:415
+#: openforms/forms/models/form.py:421
 msgid "Which action(s) to perform if the JSON logic evaluates to true."
 msgstr ""
 "Welke actie(s) moet(en) worden uitgevoerd als de JSON-logic wordt "
 "geëvalueerd als waar."
 
-#: openforms/forms/models/form.py:418
+#: openforms/forms/models/form.py:424
 msgid "is advanced"
 msgstr "Is geavanceerd"
 
-#: openforms/forms/models/form.py:420
+#: openforms/forms/models/form.py:426
 msgid ""
 "Is this an advanced rule (the admin user manually wrote the trigger as "
 "JSON)?"
@@ -2839,7 +2836,6 @@ msgstr "{form_name} stap {order}: {definition_name}"
 
 #: openforms/forms/models/form_version.py:27
 #, python-brace-format
-#| msgid "Branch number"
 msgid "Version {number}"
 msgstr "Versie {number}"
 
@@ -2860,12 +2856,10 @@ msgid "User who authored this version."
 msgstr "Gebruiker die deze versie aangemaakt heeft."
 
 #: openforms/forms/models/form_version.py:58
-#| msgid "Zaaktype description"
 msgid "version description"
 msgstr "Versie-omschrijving"
 
 #: openforms/forms/models/form_version.py:60
-#| msgid "Action type for this particular action"
 msgid "Description/context about this particular version."
 msgstr "Omschrijving/context bij deze specifieke versie."
 
@@ -3067,7 +3061,6 @@ msgstr "Beheerder {user}"
 
 #: openforms/logging/models.py:68
 #, python-brace-format
-#| msgid "eIDAS authentication plugin"
 msgid "Authenticated via plugin {auth}"
 msgstr "Geauthenticeerd via plugin {auth}"
 
@@ -4217,6 +4210,22 @@ msgstr ""
 "De e-mailadressen waarnaar de update van de betalingsstatus wordt verzonden "
 "(standaard wordt het algemene e-mailadres gebruikt)"
 
+#: openforms/registrations/contrib/email/config.py:30
+#: openforms/registrations/contrib/email/models.py:14
+msgid "attach files to email"
+msgstr "voeg bestanden als bijlage toe aan e-mail"
+
+#: openforms/registrations/contrib/email/config.py:34
+msgid ""
+"Enable to attach file uploads to the registration email. If set, this "
+"overrides the global default. Form designers should take special care to "
+"ensure that the total file upload sizes do not exceed the email size limit."
+msgstr ""
+"Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te "
+"voegen. Als een waarde gezet is, dan heeft deze hogere prioriteit dan de "
+"globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale"
+" maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
+
 #: openforms/registrations/contrib/email/constants.py:7
 msgid "PDF"
 msgstr "PDF"
@@ -4229,23 +4238,40 @@ msgstr "CSV"
 msgid "Excel"
 msgstr "Excel"
 
-#: openforms/registrations/contrib/email/plugin.py:27
+#: openforms/registrations/contrib/email/models.py:17
+msgid ""
+"Enable to attach file uploads to the registration email. Note that this is "
+"the global default which may be overridden per form. Form designers should "
+"take special care to ensure that the total file upload sizes do not exceed "
+"the email size limit."
+msgstr ""
+"Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te "
+"voegen. Dit is de globale configuratie die per formulier overschreven kan "
+"worden. Formulierbeheerders moeten ervoor zorgen dat de totale maximale "
+"bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
+
+#: openforms/registrations/contrib/email/models.py:25
+#| msgid "Email security configuration"
+msgid "Email registration configuration"
+msgstr "E-mailregistratieconfiguratie"
+
+#: openforms/registrations/contrib/email/plugin.py:35
 msgid "Email registration"
 msgstr "E-mail registratie"
 
-#: openforms/registrations/contrib/email/plugin.py:34
+#: openforms/registrations/contrib/email/plugin.py:47
 #, python-brace-format
 msgid "[Open Forms] {form_name} - submission {public_reference}"
 msgstr "[Open Formulieren] {form_name} - inzending {public_reference}"
 
-#: openforms/registrations/contrib/email/plugin.py:130
+#: openforms/registrations/contrib/email/plugin.py:158
 #, python-brace-format
 msgid ""
 "[Open Forms] {form_name} - submission payment received {public_reference}"
 msgstr ""
 "[Open Formulieren] {form_name} - betaling ontvangen {public_reference}"
 
-#: openforms/registrations/contrib/email/plugin.py:156
+#: openforms/registrations/contrib/email/plugin.py:184
 msgid "Test"
 msgstr "Testen"
 
@@ -4889,12 +4915,6 @@ msgstr "Maak tijdelijk bestand aan"
 
 #: openforms/submissions/api/views.py:66
 #, python-brace-format
-#| msgid ""
-#| "File upload handler for the Form.io file upload \"url\" storage type.\n"
-#| "\n"
-#| "The uploads are stored temporarily and have to be claimed by the form submission using the returned JSON data. \n"
-#| "\n"
-#| "Access to this view requires an active form submission. Unclaimed temporary files automatically expire after {expire_days} day(s). "
 msgid ""
 "File upload handler for the Form.io file upload \"url\" storage type.\n"
 "\n"
@@ -5113,7 +5133,6 @@ msgid "Authentication details of a co-signer."
 msgstr "Authenticatiedetails van een mede-ondertekenaar."
 
 #: openforms/submissions/models.py:210
-#| msgid "Prefill"
 msgid "prefill data"
 msgstr "Prefillgegevens"
 
@@ -5338,7 +5357,6 @@ msgid "content type"
 msgstr "content type"
 
 #: openforms/submissions/models.py:903
-#| msgid "File size"
 msgid "file size"
 msgstr "Bestandsgrootte"
 
@@ -5426,7 +5444,6 @@ msgid "Total payment required"
 msgstr "Totaalbedrag te voldoen"
 
 #: openforms/submissions/views.py:156 openforms/submissions/views.py:168
-#| msgid "last accessed"
 msgid "File access denied."
 msgstr "Bestandstoegang geblokkeerd."
 
@@ -5464,7 +5481,6 @@ msgstr "Afmelden"
 
 #: openforms/templates/admin/base_site.html:69
 #, python-format
-#| msgid "version: %(version)s"
 msgid "version %(version)s"
 msgstr "versie %(version)s"
 
@@ -5577,6 +5593,19 @@ msgstr "Opslaan en nieuwe toevoegen"
 #: openforms/utils/admin.py:16
 msgid "Save and continue editing"
 msgstr "Opslaan en opnieuw bewerken"
+
+#: openforms/utils/api/drf_jsonschema.py:53
+msgid "(use global default)"
+msgstr "(gebruik globale configuratie)"
+
+#: openforms/utils/api/drf_jsonschema.py:54
+#| msgid "Yes"
+msgid "yes"
+msgstr "ja"
+
+#: openforms/utils/api/drf_jsonschema.py:55
+msgid "no"
+msgstr "nee"
 
 #: openforms/utils/validators.py:14
 msgid "Expected a numerical value."
