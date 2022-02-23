@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
@@ -72,10 +73,25 @@ class ResumeFormMixin:
         submission_auth_value = getattr(
             submission, self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
         )
-        is_auth_data_correct = (
-            submission_auth_value
-            == self.request.session[FORM_AUTH_SESSION_KEY]["value"]
-        )
+
+        # there are two modus operandi - the submission may not be completed yet, in
+        # which case we don't have a hashed value yet, but the raw value (used for
+        # prefill and the like). We should only compare hashes if the submissions is
+        # completed.
+        is_completed = submission.completed_on is not None
+        current_auth_value = self.request.session[FORM_AUTH_SESSION_KEY]["value"]
+
+        if is_completed:
+            is_auth_data_correct = check_salted_hash(
+                current_auth_value, submission_auth_value, setter=None
+            )
+        else:
+            # timing attacks are not a concern here, as you need to go through a valid
+            # authentication flow first which sets the value in the session. Additionally,
+            # enumeration would still be possible and you don't necessarily leak passwords
+            # that may be used on other sites - end-users cannot change their BSN/KVK etc.
+            # anyway.
+            is_auth_data_correct = submission_auth_value == current_auth_value
 
         return is_auth_plugin_correct and is_auth_data_correct
 

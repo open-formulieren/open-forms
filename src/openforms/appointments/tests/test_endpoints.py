@@ -341,6 +341,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            bsn="000000000",
             components_list=[
                 {
                     "key": "product",
@@ -373,12 +374,22 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                 "submission_uuid": submission.uuid,
             },
         )
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "000000000",
+        }
+        session.save()
 
         # one day after token generation
         with freeze_time("2021-07-16T21:15:00Z"):
             response = self.client.get(endpoint)
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
+        # after initiating change, we expect the bsn to be stored in plain text (again)
+        self.assertEqual(new_submission.bsn, "000000000")
         expected_redirect_url = (
             f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
             f"?submission_uuid={new_submission.uuid}"
