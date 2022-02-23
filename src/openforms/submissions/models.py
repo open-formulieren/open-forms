@@ -40,6 +40,7 @@ from openforms.utils.validators import (
 )
 
 from ..contrib.kvk.validators import validate_kvk
+from ..formio.formatters.printable import filter_printable
 from .constants import RegistrationStatuses
 from .pricing import get_submission_price
 from .query import SubmissionManager
@@ -508,45 +509,28 @@ class Submission(models.Model):
         )
 
         # first collect data we have in the same order the components are defined in the form
-        for component in self.form.iter_components(recursive=True):
+        for component in filter_printable(self.form.iter_components(recursive=True)):
             key = component["key"]
-            if key in merged_data:
-                if enable_formio_formatters:
-                    component.setdefault("label", key)
-                    ordered_data[key] = (
-                        component,
-                        merged_data[key],
-                    )
-                else:
-                    ordered_data[key] = {
-                        "type": component["type"],
-                        "value": merged_data[key],
-                        "label": component.get("label", key),
-                        "multiple": component.get("multiple", False),
-                        # The select component has the values/labels nested in a 'data' field
-                        "values": component.get("values")
-                        or component.get("data", {}).get("values"),
-                        # appointments stuff...
-                        "appointments": component.get("appointments", {}),
-                        "decimalLimit": component.get("decimalLimit"),
-                    }
-        # now append remaining data that doesn't have a matching component
-        for key, value in merged_data.items():
-            if key not in ordered_data:
-                if enable_formio_formatters:
-                    ordered_data[key] = (
-                        {
-                            "type": "unknown component",
-                            "label": key,
-                        },
-                        merged_data[key],
-                    )
-                else:
-                    ordered_data[key] = {
-                        "type": "unknown component",
-                        "value": merged_data[key],
-                        "label": key,
-                    }
+            value = merged_data.get(key, None)
+            if enable_formio_formatters:
+                component.setdefault("label", key)
+                ordered_data[key] = (
+                    component,
+                    value,
+                )
+            else:
+                ordered_data[key] = {
+                    "type": component["type"],
+                    "value": value,
+                    "label": component.get("label", key),
+                    "multiple": component.get("multiple", False),
+                    # The select component has the values/labels nested in a 'data' field
+                    "values": component.get("values")
+                    or component.get("data", {}).get("values"),
+                    # appointments stuff...
+                    "appointments": component.get("appointments", {}),
+                    "decimalLimit": component.get("decimalLimit"),
+                }
 
         return ordered_data
 
@@ -616,11 +600,15 @@ class Submission(models.Model):
         attachment_data = self.get_merged_attachments()
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
+        enable_formio_formatters = (
+            GlobalConfiguration.get_solo().enable_formio_formatters
+        )
+
         for key, info in self.get_ordered_data_with_component_type().items():
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
-            if GlobalConfiguration.get_solo().enable_formio_formatters:
+            if enable_formio_formatters:
                 info, value = info
                 label = info["label"]
                 printable_data.append((label, format_value(info, value)))
@@ -682,13 +670,18 @@ class Submission(models.Model):
                         num_decimals = info.get("decimalLimit")
 
                     if multiple:
+                        # filtering _not_null_empty is part of fix for legacy issue where empty number/currency field would not be printed
                         value = _join_mapped(
                             lambda v: number_format(v, num_decimals),
                             info["value"],
                             filter_func=_not_null_empty,
                         )
                     else:
-                        value = number_format(info["value"], num_decimals)
+                        if info["value"] is None:
+                            # part of fix for legacy issue where empty number/currency field would not be printed
+                            value = ""
+                        else:
+                            value = number_format(info["value"], num_decimals)
 
                 elif info["type"] == "signature":
                     if info["value"]:

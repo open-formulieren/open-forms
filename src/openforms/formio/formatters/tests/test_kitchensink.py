@@ -10,6 +10,7 @@ from openforms.submissions.tests.factories import (
 )
 
 from ...utils import iter_components
+from ..printable import filter_printable
 from .mixins import BaseFormatterTestCase, load_json
 
 
@@ -45,11 +46,12 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         assert "Signature" in text_printed
         text_printed["Signature"] = _("signature added")
 
-        expected_labels = set(c["label"] for c in iter_components(configuration))
-        expected_keys = set(c["key"] for c in iter_components(configuration))
-
-        expected_labels.remove("Update note")
-        expected_keys.remove("updateNote")
+        expected_labels = set(
+            c["label"] for c in filter_printable(iter_components(configuration))
+        )
+        expected_keys = set(
+            c["key"] for c in filter_printable(iter_components(configuration))
+        )
 
         expected_keys.remove("numberEmpty")
         expected_keys.remove("currencyEmpty")
