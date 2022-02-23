@@ -1,9 +1,12 @@
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from openforms.submissions.utils import get_submissions_from_session
 
 from ...utils.api.views import ListMixin
 from ..registry import register
@@ -44,6 +47,15 @@ class AuthenticationLogoutView(APIView):
             "Calling this endpoint will clear the current user session and delete the session cookie."
         ),
     )
+    @transaction.atomic()
     def delete(self, request, *args, **kwargs):
+        # first, hash all the submissions identifying parameters before flushing
+        # the session. These submissions become effectively unreachable (unless there
+        # is still a resume link somewhere).
+        submissions = get_submissions_from_session(request.session)
+        for submission in submissions:
+            submission.hash_identifying_attributes()
+            submission.save()
+
         request.session.flush()
         return Response(status=status.HTTP_204_NO_CONTENT)

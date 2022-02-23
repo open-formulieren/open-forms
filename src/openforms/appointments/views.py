@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 
 from furl import furl
 
+from openforms.authentication.service import FORM_AUTH_SESSION_KEY, store_auth_details
 from openforms.submissions.models import Submission
 from openforms.submissions.views import ResumeFormMixin
 
@@ -32,7 +33,13 @@ class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
     token_generator = submission_appointment_token_generator
 
     def custom_submission_modifications(self, submission: Submission) -> Submission:
-        return Submission.objects.copy(submission)
+        # note that we need to ensure the plain text auth attribute value needs to be set again
+        # for machinery relying on it to work. hashes are one-way, so we need to use the session
+        # data.
+        new_submission = Submission.objects.copy(submission)
+        if (form_auth := self.request.session.get(FORM_AUTH_SESSION_KEY)) is not None:
+            store_auth_details(new_submission, form_auth)
+        return new_submission
 
     def get_form_resume_url(self, submission: Submission) -> str:
         next_step = find_first_appointment_step(submission.form)

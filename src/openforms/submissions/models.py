@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
+from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
@@ -26,6 +27,7 @@ from glom import glom
 from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
@@ -181,23 +183,29 @@ class Submission(models.Model):
     )
     bsn = models.CharField(
         _("BSN"),
-        max_length=9,
+        max_length=255,  # large enough to accomodate hashes
         default=get_default_bsn,
         blank=True,
         validators=(validate_bsn,),
     )
     kvk = models.CharField(
         _("KvK number"),
-        max_length=9,
+        max_length=255,  # large enough to accomodate hashes
         default=get_default_kvk,
         blank=True,
         validators=(validate_kvk,),
     )
     pseudo = models.CharField(
         _("Pseudo ID"),
-        max_length=64,
+        max_length=255,  # large enough to accomodate hashes
         blank=True,
         help_text=_("Pseudo ID provided by authentication with eIDAS"),
+    )
+    auth_attributes_hashed = models.BooleanField(
+        _("identifying attributes hashed"),
+        help_text=_("are the auth/identifying attributes hashed?"),
+        default=False,
+        editable=False,
     )
     co_sign_data = models.JSONField(
         _("co-sign data"),
@@ -383,6 +391,23 @@ class Submission(models.Model):
             )
 
         self.save()
+
+    def hash_identifying_attributes(self):
+        """
+        Generate a salted hash for each of the identifying attributes.
+
+        Hashes allow us to compare correct values at a later stage, while still
+        preventing sensitive data to be available in plain text if the database were
+        to leak.
+
+        We use :module:`django.contrib.auth.hashers` for the actual salting and hashing,
+        relying on the global Django ``PASSWORD_HASHERS`` setting.
+        """
+        attrs = [AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo]
+        for attr in attrs:
+            hashed = get_salted_hash(getattr(self, attr))
+            setattr(self, attr, hashed)
+        self.auth_attributes_hashed = True
 
     def load_execution_state(self) -> SubmissionState:
         """

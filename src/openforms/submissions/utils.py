@@ -16,6 +16,7 @@ from openforms.logging import logevent
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, TemporaryFileUpload
+from .query import SubmissionQuerySet
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,14 @@ def remove_submission_from_session(
     Remove the submission UUID from the session if it's present.
     """
     remove_from_session_list(session, SUBMISSIONS_SESSION_KEY, str(submission.uuid))
+
+
+def get_submissions_from_session(session: SessionBase) -> SubmissionQuerySet:
+    """
+    Retrieve the submission instances that are currently in the session.
+    """
+    uuids = session.get(SUBMISSIONS_SESSION_KEY, [])
+    return Submission.objects.filter(uuid__in=uuids)
 
 
 def add_upload_to_session(upload: TemporaryFileUpload, session: SessionBase) -> None:
