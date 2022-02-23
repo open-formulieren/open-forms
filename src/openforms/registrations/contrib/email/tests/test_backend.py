@@ -206,12 +206,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "foo": "https://allowed.com",
         }
 
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
-        )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
+        submission = SubmissionFactory.from_data(data, completed=True)
 
         email_submission = EmailRegistration("email")
         email_submission.register_submission(submission, email_form_options)

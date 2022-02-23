@@ -27,6 +27,8 @@ from .factories import (
 
 @temp_private_root()
 class SubmissionTests(TestCase):
+    maxDiff = None
+
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
@@ -85,7 +87,9 @@ class SubmissionTests(TestCase):
         )
         SubmissionStepFactory.create(
             submission=submission,
-            form_step=FormStepFactory.create(form=submission.form),
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(
@@ -183,7 +187,9 @@ class SubmissionTests(TestCase):
         )
         SubmissionStepFactory.create(
             submission=submission,
-            form_step=FormStepFactory.create(form=submission.form),
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(

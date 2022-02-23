@@ -158,11 +158,6 @@ class DownloadSubmissionReportTests(APITestCase):
                         "label": "Test date 2",
                         "multiple": True,
                     },
-                    {
-                        "key": "time0",
-                        "type": "time",
-                        "label": "Test time 1",
-                    },
                     # appointment fields are special...
                     {
                         "key": "date3",
@@ -171,6 +166,11 @@ class DownloadSubmissionReportTests(APITestCase):
                         "appointments": {
                             "showDates": True,
                         },
+                    },
+                    {
+                        "key": "time0",
+                        "type": "time",
+                        "label": "Test time 0",
                     },
                     {
                         "key": "time1",
@@ -215,6 +215,7 @@ class DownloadSubmissionReportTests(APITestCase):
                 "radio1": "testOption1",
                 "select1": "testOption2",
                 "select2": ["testOption2", "testOption1"],
+                "date0": "",
                 "date1": "2022-01-02",
                 "date2": ["2022-01-02", "2022-02-03"],
                 "time0": "17:30:00",
@@ -236,10 +237,11 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test Radio", "Test Option 1"),
             ("Test Select", "Test Option 2"),
             ("Test Select 2", "Test Option 2; Test Option 1"),
+            ("Test date 0", ""),
             ("Test date 1", "2 januari 2022"),
             ("Test date 2", "2 januari 2022; 3 februari 2022"),
-            ("Test time 1", "17:30"),
             ("Afspraakdatum", "24 december 2021"),
+            ("Test time 0", "17:30"),
             ("Afspraaktijdstip", "08:10"),
             ("Test number 1", "1"),
             ("Test number 2", "1,23"),
@@ -248,8 +250,8 @@ class DownloadSubmissionReportTests(APITestCase):
             ("Test checkbox", "ja"),
         ]
 
-        for expected, actual in zip(values, printable_data):
-            with self.subTest(expected[0]):
+        for i, (expected, actual) in enumerate(zip(values, printable_data)):
+            with self.subTest(i=i, e=expected[0]):
                 self.assertEqual(expected[0], actual[0])  # Labels
                 self.assertEqual(expected[1], actual[1])  # Values
 
