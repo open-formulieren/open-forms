@@ -7,7 +7,11 @@ from .constants import AuthAttribute
 
 class FormAuth(TypedDict):
     plugin: str
-    attribute: Literal["bsn", "kvk", "pseudo"]
+    attribute: Literal[
+        AuthAttribute.bsn,
+        AuthAttribute.kvk,
+        AuthAttribute.pseudo,
+    ]
     value: str
 
 

@@ -27,6 +27,7 @@ from glom import glom
 from privates.fields import PrivateMediaFileField
 from weasyprint import HTML
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import format_value
 from openforms.forms.models import FormStep
@@ -402,7 +403,7 @@ class Submission(models.Model):
         We use :module:`django.contrib.auth.hashers` for the actual salting and hashing,
         relying on the global Django ``PASSWORD_HASHERS`` setting.
         """
-        attrs = ["bsn", "kvk", "pseudo"]
+        attrs = [AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo]
         for attr in attrs:
             hashed = get_salted_hash(getattr(self, attr))
             setattr(self, attr, hashed)

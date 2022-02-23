@@ -250,7 +250,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # assert that identifying attributs are hashed on completion
         submission.refresh_from_db()
-        for attr in ["bsn", "kvk", "pseudo"]:
+        for attr in [AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo]:
             with self.subTest(attr=attr):
                 value = getattr(submission, attr)
                 self.assertTrue(
