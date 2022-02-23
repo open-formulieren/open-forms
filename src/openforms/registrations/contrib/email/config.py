@@ -31,9 +31,8 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_null=True,
         default=None,  # falls back to the global default
         help_text=_(
-            "Enable to attach file uploads to the registration email. Note that this "
-            "is the global default which may be overridden per form. Form designers "
-            "should take special care to ensure that the total file upload sizes do "
-            "not exceed the email size limit."
+            "Enable to attach file uploads to the registration email. If set, this "
+            "overrides the global default. Form designers should take special care to "
+            "ensure that the total file upload sizes do not exceed the email size limit."
         ),
     )

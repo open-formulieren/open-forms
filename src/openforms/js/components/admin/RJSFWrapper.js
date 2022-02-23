@@ -65,6 +65,7 @@ CustomFieldTemplate.propTypes = {
     hidden: PropTypes.bool,
     required: PropTypes.bool,
     displayLabel: PropTypes.bool,
+    schema: PropTypes.object.isRequired,
 };
 
 /*
