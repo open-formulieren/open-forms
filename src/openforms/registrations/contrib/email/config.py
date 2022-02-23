@@ -21,7 +21,18 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     payment_emails = serializers.ListField(
         child=serializers.EmailField(),
         label=_(
-            "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
+            "The email addresses to which the payment status update will be sent "
+            "(defaults to general registration addresses)"
         ),
         required=False,
+    )
+    attach_files_to_email = serializers.BooleanField(
+        label=_("attach files to email"),
+        allow_null=True,
+        default=None,  # falls back to the global default
+        help_text=_(
+            "Enable to attach file uploads to the registration email. If set, this "
+            "overrides the global default. Form designers should take special care to "
+            "ensure that the total file upload sizes do not exceed the email size limit."
+        ),
     )

@@ -18,13 +18,19 @@ building the form.
 File uploads/attachments
 ------------------------
 
-Any files uploaded as part of the submission are not added as email attachments.
+By default, any files uploaded as part of the submission are not added as email attachments.
 Instead, the e-mail contains download links to the individual files. These links require
 users to be authenticated and have the correct permissions:
 
 * users must be staff users
 * users must have permission to read file attachments. The standard group "Behandelaars"
   offers this permission.
+
+However, you can override this on a global *and* per-form level. It is the
+responsibility of the form designer to ensure that the upload file size limits are
+configured appropriately to ensure that emails will not be rejected because of too-large
+sizes. This depends largely on the mail/SMTP service you are using, see also
+:ref:`email-settings`.
 
 .. note::
 

@@ -1,6 +1,6 @@
 import html
 from mimetypes import types_map
-from typing import List, NoReturn, Tuple
+from typing import List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
 from django.template.loader import get_template
@@ -19,7 +19,15 @@ from ...registry import register
 from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
+from .models import EmailConfig
 from .presentation import SubmittedDataWrapper
+
+
+class EmailOptions(TypedDict):
+    to_emails: List[str]
+    attachment_formats: List[str]
+    payment_emails: List[str]
+    attach_files_to_email: Optional[bool]
 
 
 @register("email")
@@ -27,7 +35,12 @@ class EmailRegistration(BasePlugin):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: dict) -> None:
+    def register_submission(
+        self, submission: Submission, options: EmailOptions
+    ) -> None:
+        config = EmailConfig.get_solo()
+        config.apply_defaults_to(options)
+
         # explicitly get a reference before registering
         set_submission_reference(submission)
 
@@ -42,7 +55,7 @@ class EmailRegistration(BasePlugin):
         recipients,
         subject,
         submission: Submission,
-        options: dict,
+        options: EmailOptions,
         extra_context=None,
     ):
         # extract the formatted data first
@@ -89,8 +102,23 @@ class EmailRegistration(BasePlugin):
         text_content = strip_tags_plus(text_content)
         text_content = html.unescape(text_content)
 
-        attachment_formats = options.get("attachment_formats", [])
         attachments = []
+
+        # per form or global default to attach file uploads to the e-mail directly.
+        # NOTE that it's explicitly the responsibility of the form designer to ensure
+        # the total attachment size is below the SMTP server limit. We do not perform
+        # any checking of that as it'd rely on complex configuration and/or guesswork.
+        if options.get("attach_files_to_email"):
+            attachments += [
+                (
+                    file_attachment.get_display_name(),
+                    file_attachment.content.read(),
+                    file_attachment.content_type,
+                )
+                for file_attachment in submission.attachments
+            ]
+
+        attachment_formats = options.get("attachment_formats", [])
         for attachment_format in attachment_formats:
             mime_type = types_map[f".{attachment_format}"]
             if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:

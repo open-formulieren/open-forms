@@ -1,7 +1,14 @@
 """
 drf_jsonschema integration - register custom converters
 """
-from drf_jsonschema.converters import PrimaryKeyRelatedFieldConverter, converter
+from django.utils.translation import gettext_lazy as _
+
+from drf_jsonschema.converters import (
+    BooleanFieldConverter,
+    PrimaryKeyRelatedFieldConverter,
+    converter,
+)
+from rest_framework import serializers
 
 from .fields import PrimaryKeyRelatedAsChoicesField
 
@@ -28,5 +35,24 @@ class PrimaryKeyRelatedAsChoicesFieldConverter(PrimaryKeyRelatedFieldConverter):
         if field.allow_null:
             result["enum"].insert(0, None)
             result["enumNames"].insert(0, "-------")
+
+        return result
+
+
+@converter
+class NullBooleanFieldConverter(BooleanFieldConverter):
+    field_class = [serializers.BooleanField, serializers.NullBooleanField]
+
+    def convert(self, field):
+        result = super().convert(field)
+
+        # ensure that we get a dropdown rather than checkbox to discern between null/true/false
+        if field.allow_null:
+            result["enum"] = [None, True, False]
+            result["enumNames"] = [
+                _("(use global default)"),
+                _("yes"),
+                _("no"),
+            ]
 
         return result

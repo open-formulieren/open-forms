@@ -34,7 +34,7 @@
     }
   }
 
-  &__label {
+  &__label:first-letter {
     text-transform: capitalize;
   }
 

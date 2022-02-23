@@ -9,6 +9,7 @@
     "registrations_objects_api.ObjectsAPIConfig",
     "payments_ogone.OgoneMerchant",
     "qmatic.QmaticConfig",
+    "registrations_email.EmailConfig",
     "stuf_bg.StufBGConfig",
     "stuf_zds.StufZDSConfig",
     "stuf.StufService",

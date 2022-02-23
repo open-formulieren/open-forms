@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Form from '@rjsf/core';
+import Widgets from '@rjsf/core/lib/components/widgets';
+import {isSelect, optionsList} from '@rjsf/core/lib/utils';
 
 import Field from './forms/Field';
 import FAIcon from './FAIcon';
-
 
 /*
  Adapted from:
@@ -20,15 +21,20 @@ const CustomFieldTemplate = ({
     hidden,
     required,
     displayLabel,
+    schema,
 }) => {
+    const isNullBoolean = isSelect(schema) && schema.type.includes('boolean');
     if (hidden) {
         return <div className="hidden">{children}</div>;
     }
 
+    // label should be displayed for nullable boolean dropdowns
+    const hideLabel = (!displayLabel && !isNullBoolean);
+
     return (
         <div className="rjsf-field">
             <div className={`rjsf-field__field ${rawErrors ? 'rjsf-field__field--error' : ''}`}>
-                {(displayLabel && label) && (
+                {(!hideLabel && label) && (
                     <label className={`rjsf-field__label ${required ? 'required' : ''}`} htmlFor={id}>
                         {label}
                     </label>
@@ -59,6 +65,7 @@ CustomFieldTemplate.propTypes = {
     hidden: PropTypes.bool,
     required: PropTypes.bool,
     displayLabel: PropTypes.bool,
+    schema: PropTypes.object.isRequired,
 };
 
 /*
@@ -71,14 +78,43 @@ const CustomCheckboxWidget = ({
     value,
     disabled,
     readonly,
+    label,
     autofocus,
     onChange,
+    ...props
 }) => {
+
+    // if it's nullable, defer to a dropdown
+    if (isSelect(schema)) {
+        const enumOptions = optionsList(schema);
+        for (let option of enumOptions) {
+            option.value = JSON.stringify(option.value);
+        }
+        const stringValue = typeof value != 'string' ? JSON.stringify(value) : value;
+        const _onChange = (value) => {
+            onChange(JSON.parse(value));
+        };
+        return (
+            <Widgets.SelectWidget
+                {...props}
+                options={{...props.options, enumOptions}}
+                id={id}
+                schema={{default: 'null', ...schema}}
+                value={stringValue}
+                disabled={disabled}
+                readonly={readonly}
+                label={label}
+                autofocus={autofocus}
+                onChange={_onChange}
+            />
+        );
+    }
+
     // The CustomCheckboxWidget is rendered as a children of the CustomFieldTemplate, which makes styling a bit trickier
     return (
         <div className="rjsf-field__checkbox">
             <label className="rjsf-field__label" htmlFor={id}>
-                {schema.title}
+                {label}
             </label>
             <input
                 type="checkbox"
